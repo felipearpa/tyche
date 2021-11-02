@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFramework>netcoreapp6.0</TargetFramework>
+    </PropertyGroup>
+    <ItemGroup>
+        <Compile Include="TypeBuilder.fs" />
+        <Compile Include="Validation.fs" />
+        <Compile Include="Uuid.fs" />
+        <Compile Include="Barcode.fs" />
+        <Compile Include="NonEmptyString.fs" />
+        <Compile Include="Percentage.fs" />
+        <Compile Include="Number.fs" />
+        <Compile Include="DateTime.fs" />
+    </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.0" />
+    </ItemGroup>
+</Project>

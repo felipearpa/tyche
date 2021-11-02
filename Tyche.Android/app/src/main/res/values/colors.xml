@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="purple_200">#FFBB86FC</color>
+    <color name="purple_500">#FF6200EE</color>
+    <color name="purple_700">#FF3700B3</color>
+    <color name="teal_200">#FF03DAC5</color>
+    <color name="teal_700">#FF018786</color>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+
+    <color name="cyan_800">#FF00838F</color>
+    <color name="blue_lagoon">#FF005662</color>
+    <color name="indigo_200">#FF9FA8DA</color>
+    <color name="kimberly">#FF6F79A8</color>
+    <color name="white_smoke">#FFF8F8F8</color>
+    <color name="carmine">#FFB00020</color>
+
+    <color name="blue_gray_50">#FFECEFF1</color>
+    <color name="charcoal">#FF36454F</color>
+    <color name="blue_gray_600">#FF546E7A</color>
+    <color name="grayish_blue">#FF29434E</color>
+
+    <color name="nord0">#FF2E3440</color>
+    <color name="nord1">#FF3B4252</color>
+    <color name="nord2">#FF434C5E</color>
+    <color name="nord3">#FF4C566A</color>
+
+    <color name="nord4">#FFD8DEE9</color>
+    <color name="nord5">#FFE5E9F0</color>
+    <color name="nord6">#FFECEFF4</color>
+
+    <color name="nord7">#FF2E3440</color>
+    <color name="nord8">#FF88C0D0</color>
+    <color name="nord9">#FF81A1C1</color>
+    <color name="nord10">#FF5E81AC</color>
+
+    <color name="nord11">#FFBF616A</color>
+    <color name="nord12">#FFD08770</color>
+    <color name="nord13">#FFEBCB8B</color>
+    <color name="nord14">#FFA3BE8C</color>
+    <color name="nord15">#FFB48EAD</color>
+
+    <color name="nord9_variant">#FF527391</color>
+    <color name="nord10_variant">#FF2E557D</color>
+</resources>

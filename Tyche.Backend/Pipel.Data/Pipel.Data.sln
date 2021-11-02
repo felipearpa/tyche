@@ -1,0 +1,46 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Pipel.Data", "Pipel.Data\Pipel.Data.fsproj", "{489BE90A-B3ED-4433-86EB-09C8AA6C6562}"
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Pipel.Data.Test", "Pipel.Data.Test\Pipel.Data.Test.fsproj", "{9CF5B85E-644E-4840-9D5E-A0CA0994249C}"
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Pipel.Core", "..\Pipel.Core\Pipel.Core\Pipel.Core.fsproj", "{9EDE18B4-AA43-4A2E-87F9-2CCA41F8D100}"
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Pipel.Type", "..\Pipel.Type\Pipel.Type\Pipel.Type.fsproj", "{FCB85F69-0EDF-4E86-A308-34A81B82C5AE}"
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Pipel.Core.Test", "..\Pipel.Core\Pipel.Core.Test\Pipel.Core.Test.fsproj", "{662B04A6-747D-4282-B93C-7FC1F1EE958F}"
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Pipel.Type.Test", "..\Pipel.Type\Pipel.Type.Test\Pipel.Type.Test.fsproj", "{60B8DF2D-DD49-4305-81CB-0C5663968A95}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{489BE90A-B3ED-4433-86EB-09C8AA6C6562}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{489BE90A-B3ED-4433-86EB-09C8AA6C6562}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{489BE90A-B3ED-4433-86EB-09C8AA6C6562}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{489BE90A-B3ED-4433-86EB-09C8AA6C6562}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9EDE18B4-AA43-4A2E-87F9-2CCA41F8D100}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9EDE18B4-AA43-4A2E-87F9-2CCA41F8D100}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9EDE18B4-AA43-4A2E-87F9-2CCA41F8D100}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9EDE18B4-AA43-4A2E-87F9-2CCA41F8D100}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FCB85F69-0EDF-4E86-A308-34A81B82C5AE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FCB85F69-0EDF-4E86-A308-34A81B82C5AE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FCB85F69-0EDF-4E86-A308-34A81B82C5AE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FCB85F69-0EDF-4E86-A308-34A81B82C5AE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{662B04A6-747D-4282-B93C-7FC1F1EE958F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{662B04A6-747D-4282-B93C-7FC1F1EE958F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{662B04A6-747D-4282-B93C-7FC1F1EE958F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{662B04A6-747D-4282-B93C-7FC1F1EE958F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{60B8DF2D-DD49-4305-81CB-0C5663968A95}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{60B8DF2D-DD49-4305-81CB-0C5663968A95}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{60B8DF2D-DD49-4305-81CB-0C5663968A95}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{60B8DF2D-DD49-4305-81CB-0C5663968A95}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9CF5B85E-644E-4840-9D5E-A0CA0994249C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9CF5B85E-644E-4840-9D5E-A0CA0994249C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9CF5B85E-644E-4840-9D5E-A0CA0994249C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9CF5B85E-644E-4840-9D5E-A0CA0994249C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

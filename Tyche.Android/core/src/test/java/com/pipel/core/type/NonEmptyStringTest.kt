@@ -1,0 +1,24 @@
+package com.pipel.core.type
+
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertThrows
+import org.junit.jupiter.api.Test
+
+class NonEmptyStringTest {
+
+    @Test
+    fun `given a not empty string when a NonEmptyString is created then a NonEmptyString than contains the string value is returned`() {
+        val sourceString = "not empty string"
+        val nonEmptyString = NonEmptyString(sourceString)
+        assertEquals(sourceString, nonEmptyString.value)
+    }
+
+    @Test
+    fun `given an empty string when a NonEmptyString is created then an exception is raised`() {
+        val sourceString = ""
+        assertThrows(
+            IllegalArgumentException::class.java
+        ) { NonEmptyString(sourceString) }
+    }
+
+}

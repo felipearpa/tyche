@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+        <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Compile Include="Validation.fs" />
+        <Compile Include="PoolLayout.fs" />
+        <Compile Include="PoolLayoutApplicationMapper.fs" />
+        <Compile Include="FindActivePoolsLayouts.fs" />
+        <Compile Include="RegistersForRepositories.fs" />
+        <Compile Include="RegistersForMappers.fs" />
+        <Compile Include="RegistersForUseCases.fs" />
+        <Compile Include="RegistersForDatabases.fs" />
+        <Compile Include="WebApplicationInit.fs" />
+        <Compile Include="WebApplicationBuilderInit.fs" />
+        <Compile Include="Program.fs" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Include=".dockerignore" />
+      <Content Include="Dockerfile" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\Pipel.Tyche.PoolLayout\Pipel.Tyche.PoolLayout\Pipel.Tyche.PoolLayout.fsproj" />
+    </ItemGroup>
+
+</Project>

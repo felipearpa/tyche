@@ -1,0 +1,33 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netcoreapp6.0</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Compile Include="Query\QueryFunc.fs" />
+        <Compile Include="Query\QueryString.fs" />
+        <Compile Include="Mapper.fs" />
+        <Compile Include="IQueryableRepository.fs" />
+        <Compile Include="IReaderRepository.fs" />
+        <Compile Include="IAdderRepository.fs" />
+        <Compile Include="IUpdaterRepository.fs" />
+        <Compile Include="IRemoverRepository.fs" />
+        <Compile Include="IUnitOfWork.fs" />
+        <Compile Include="UseCases.fs" />
+        <Compile Include="EntityFrameworkCore\Repository.fs" />
+        <Compile Include="EntityFrameworkCore\UnitOfWork.fs" />
+        <Compile Include="MongoDb\Repository.fs" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.0" />
+        <PackageReference Include="MongoDB.Driver" Version="2.13.2" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\Pipel.Core\Pipel.Core\Pipel.Core.fsproj" />
+      <ProjectReference Include="..\..\Pipel.Type\Pipel.Type\Pipel.Type.fsproj" />
+    </ItemGroup>
+
+</Project>

@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Tyche</string>
+
+    <string name="searcher_label">Ingrese algún texto</string>
+    <string name="create_until">Créala hasta: %s</string>
+    <string name="retry">Reintentar</string>
+    <string name="retry_title">Lo siento. El servidor tardó demasiado tiempo en responder</string>
+    <string name="empty_list">La lista esta vacia</string>
+</resources>

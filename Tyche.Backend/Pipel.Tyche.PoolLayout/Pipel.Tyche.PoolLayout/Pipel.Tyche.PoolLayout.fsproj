@@ -1,0 +1,27 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <WarnOn>3390;$(WarnOn)</WarnOn>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Compile Include="Data\MongoDatabase.fs" />
+        <Compile Include="Data\PoolLayout.fs" />
+        <Compile Include="Data\PoolLayoutRepository.fs" />
+        <Compile Include="Domain\PoolLayout.fs" />
+        <Compile Include="UseCases\Queries\ActivePoolLayoutQuery.fs" />
+        <Compile Include="UseCases\FindActivePoolsLayoutsUseCase.fs" />
+        <Compile Include="PoolLayoutDomainMapper.fs" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="MongoDB.Driver" Version="2.13.2" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\Pipel.Data\Pipel.Data\Pipel.Data.fsproj" />
+    </ItemGroup>
+
+</Project>
