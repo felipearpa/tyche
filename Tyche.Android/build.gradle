@@ -1,23 +1,26 @@
 buildscript {
     ext {
         core_ktx_version = '1.7.0'
-        material_version = '1.4.0'
-        compose_version = '1.0.4'
+        material_version = '1.5.0'
+        compose_version = '1.1.1'
         paging_compose_version = '1.0.0-alpha14'
         dagger_hilt_version = '2.38.1'
         junit_jupiter_api_version = '5.8.1'
         mockito_version = '4.0.0'
-        coroutines_test_version = '1.5.0'
+        coroutines_test_version = '1.5.2'
         android_junit_test_version = '1.1.3'
         android_espresso_version = '3.4.0'
+        androidx_appcompat_version = '1.4.1'
+        androidx_lifecycle_version = '2.4.1'
     }
     repositories {
         google()
         mavenCentral()
+        maven { url = uri("https://jitpack.io") }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.0.3'
-        classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.5.31'
+        classpath 'com.android.tools.build:gradle:7.1.2'
+        classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.6.10'
         classpath "com.google.dagger:hilt-android-gradle-plugin:$dagger_hilt_version"
         classpath 'de.mannodermaus.gradle.plugins:android-junit5:1.8.0.0'
     }

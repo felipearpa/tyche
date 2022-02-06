@@ -1,18 +1,18 @@
 namespace Pipel.Tyche.PoolLayout.Domain.UseCases
 
+open System
+open Amazon.DynamoDBv2.Model
 open Pipel.Core
+open Pipel.Core.DateTimeExtensions
 open Pipel.Data
-open Pipel.Data.Query
 open Pipel.Data.UseCases
 open Pipel.Tyche.PoolLayout.Domain
-open Pipel.Tyche.PoolLayout.Domain.UseCases.Queries
 open Pipel.Tyche.PoolLayout.Data
-open Pipel.Type
 
 [<Interface>]
 type IFindActivePoolsLayoutsUseCase =
 
-    abstract AsyncExecute : NonEmptyString option * int * int -> Async<PoolLayout Page>
+    abstract AsyncExecute : string option * string option -> Async<PoolLayout CursorPage>
 
 type FindActivePoolsLayoutsUseCase
     (
@@ -22,12 +22,25 @@ type FindActivePoolsLayoutsUseCase
 
     interface IFindActivePoolsLayoutsUseCase with
 
-        member this.AsyncExecute(filter: NonEmptyString option, skip: int, take: int) =
+        member this.AsyncExecute(filterText, next) =
             async {
-                let queryFunc =
-                    QueryFunc.normalize (ActivePoolLayoutQuery.execute filter)
+                let nowIsoString =
+                    DateTime.Now.ToUniversalTime().ToISOString()
 
                 return!
-                    poolLayoutRepository
-                    |> asyncFindAndPaginate queryFunc skip take mapFromDataToDomainFunc
+                    asyncFindWithCursorPagination
+                        next
+                        mapFromDataToDomainFunc
+                        (fun next ->
+                            poolLayoutRepository.AsyncFindWithCursorPagination(
+                                filterText,
+                                next,
+                                (("and #startOpeningDateTime <= :startOpeningDateTime and #endOpeningDateTime > :endOpeningDateTime",
+                                  dict [ ":startOpeningDateTime", AttributeValue(nowIsoString)
+                                         ":endOpeningDateTime", AttributeValue(nowIsoString) ],
+                                  dict [ "#startOpeningDateTime", "startOpeningDateTime"
+                                         "#endOpeningDateTime", "endOpeningDateTime" ]
+                                  |> Some)
+                                 |> Some)
+                            ))
             }

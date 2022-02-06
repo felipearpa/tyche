@@ -1,12 +1,12 @@
 module JsonTest
 
 open Xunit
+open Pipel.Core
 open Pipel.Core.Json
 
 [<Fact>]
 let ``given an object when it's serialized and after deserialized then the object is equal to deserialized object`` () =
-    let jsonSerializer =
-        DefaultJsonSerializer() :> IJsonSerializer
+    let jsonSerializer = DefaultJsonSerializer() :> ISerializer
 
     let obj =
         {| Code = "c1"

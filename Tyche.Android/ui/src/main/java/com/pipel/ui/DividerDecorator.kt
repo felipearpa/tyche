@@ -9,15 +9,15 @@ import androidx.compose.ui.unit.Dp
 
 @Composable
 fun DividerDecorator(top: Dp? = null, bottom: Dp? = null, content: @Composable () -> Unit) {
-    top?.let { top ->
+    top?.let {
         Divider()
-        Spacer(modifier = Modifier.height(top))
+        Spacer(modifier = Modifier.height(it))
     }
 
     content()
 
-    bottom?.let { bottom ->
-        Spacer(modifier = Modifier.height(bottom))
+    bottom?.let {
+        Spacer(modifier = Modifier.height(it))
         Divider()
     }
 }

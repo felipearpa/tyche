@@ -10,7 +10,7 @@ It's the model to manage the pools layouts.
 
 ```f#
 type PoolLayoutPK =
-    { PoolLayoutId: Uuid }
+    { PoolLayoutId: Ulid }
 
 type PoolLayout =
     { PoolLayoutPK: PoolLayoutPK

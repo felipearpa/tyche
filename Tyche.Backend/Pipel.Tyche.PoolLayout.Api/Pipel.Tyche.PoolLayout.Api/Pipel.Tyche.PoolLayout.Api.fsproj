@@ -14,6 +14,7 @@
         <Compile Include="RegistersForMappers.fs" />
         <Compile Include="RegistersForUseCases.fs" />
         <Compile Include="RegistersForDatabases.fs" />
+        <Compile Include="RegistersForHelpers.fs" />
         <Compile Include="WebApplicationInit.fs" />
         <Compile Include="WebApplicationBuilderInit.fs" />
         <Compile Include="Program.fs" />
@@ -26,6 +27,11 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\Pipel.Tyche.PoolLayout\Pipel.Tyche.PoolLayout\Pipel.Tyche.PoolLayout.fsproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="AWSSDK.Extensions.NETCore.Setup" Version="3.7.1" />
+      <PackageReference Update="FSharp.Core" Version="6.0.3" />
     </ItemGroup>
 
 </Project>

@@ -4,7 +4,7 @@ data class NonEmptyString(val value: String) {
 
     init {
         if (value.isEmpty()) {
-            throw IllegalArgumentException("")
+            throw IllegalArgumentException("UUID string must be not empty")
         }
     }
 

@@ -53,6 +53,14 @@ type NonEmptyString100 =
         | NonEmptyString100 it -> it
 
 [<RequireQualifiedAccess>]
+module String =
+
+    let tryFrom (element: string) =
+        match isNull element with
+        | false -> Some element
+        | _ -> None
+
+[<RequireQualifiedAccess>]
 module NonEmptyString =
 
     let value (element: NonEmptyString) : string = TypeBuilder.value element

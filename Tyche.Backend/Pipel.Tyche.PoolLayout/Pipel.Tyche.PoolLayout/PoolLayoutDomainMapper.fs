@@ -7,7 +7,7 @@ open Pipel.Type
 module PoolLayoutDomainMapper =
 
     let mapFromDomainToData (persistenceModel: PoolLayoutEntity) =
-        { PoolLayout.PoolLayoutPK = { PoolLayoutId = Uuid.From persistenceModel.PoolLayoutId }
+        { PoolLayout.PoolLayoutPK = { PoolLayoutId = Ulid.From persistenceModel.PoolLayoutId }
           Name = NonEmptyString100.From persistenceModel.Name
-          OpeningStartDateTime = DateTime.From persistenceModel.OpeningStartDateTime
-          OpeningEndDateTime = DateTime.From persistenceModel.OpeningEndDateTime }
+          OpeningStartDateTime = DateTime.From persistenceModel.StartOpeningDateTime
+          OpeningEndDateTime = DateTime.From persistenceModel.EndOpeningDateTime }

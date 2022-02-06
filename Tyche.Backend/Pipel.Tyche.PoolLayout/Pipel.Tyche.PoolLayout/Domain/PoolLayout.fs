@@ -3,7 +3,7 @@ namespace Pipel.Tyche.PoolLayout.Domain
 open Pipel.Type
 
 type PoolLayoutPK =
-    { PoolLayoutId: Uuid }
+    { PoolLayoutId: Ulid }
 
 type PoolLayout =
     { PoolLayoutPK: PoolLayoutPK

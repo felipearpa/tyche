@@ -5,6 +5,7 @@ open Pipel.Tyche.PoolLayout.Api.RegistersForDatabases
 open Pipel.Tyche.PoolLayout.Api.RegistersForRepositories
 open Pipel.Tyche.PoolLayout.Api.RegistersForUseCases
 open Pipel.Tyche.PoolLayout.Api.RegistersForMappers
+open Pipel.Tyche.PoolLayout.Api.RegistersForHelpers
 
 type WebApplicationBuilder with
 
@@ -15,4 +16,5 @@ type WebApplicationBuilder with
             .RegisterRepositories()
             .RegisterUseCases()
             .RegisterMappers()
+            .RegisterHelpers()
         |> ignore

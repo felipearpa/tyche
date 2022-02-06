@@ -2,6 +2,7 @@ namespace Pipel.Core.Json
 
 open System.Text.Json
 open System.Text.Json.Serialization
+open Pipel.Core
 
 type DefaultJsonSerializer() =
 
@@ -12,7 +13,7 @@ type DefaultJsonSerializer() =
         options.Converters.Add(JsonFSharpConverter())
         options
 
-    interface IJsonSerializer with
+    interface ISerializer with
 
         member this.Serialize<'T>(value: 'T) : string =
             JsonSerializer.Serialize<'T>(value, createDefaultOptions ())

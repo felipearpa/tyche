@@ -3,7 +3,7 @@ namespace Pipel.Tyche.PoolLayout.Api
 open System
 
 type PoolLayoutResponse =
-    { PoolLayoutId: Guid
+    { PoolLayoutId: string
       Name: string
-      OpeningStartDateTime: DateTime
-      OpeningEndDateTime: DateTime }
+      StartOpeningDateTime: DateTime
+      EndOpeningDateTime: DateTime }

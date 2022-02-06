@@ -16,15 +16,12 @@ let createClientForFindActivePoolsLayoutsUseCase () =
     let findActivePoolsLayoutsUseCase = Mock<IFindActivePoolsLayoutsUseCase>()
 
     findActivePoolsLayoutsUseCase
-        .Setup(fun x -> x.AsyncExecute(It.IsAny<NonEmptyString option>(), It.IsAny<int>(), It.IsAny<int>()))
+        .Setup(fun x -> x.AsyncExecute(It.IsAny<string option>(), It.IsAny<string option>()))
         .Returns(
             Task.FromResult(
-                { Page.ItemsCount = 1
-                  Skip = 0
-                  Take = 1
-                  HasNext = false
+                { CursorPage.NextToken = None
                   Items =
-                      [| { PoolLayout.PoolLayoutPK = { PoolLayoutPK.PoolLayoutId = Uuid.newUuid () }
+                      [| { PoolLayout.PoolLayoutPK = { PoolLayoutPK.PoolLayoutId = Ulid.newUlid () }
                            Name = NonEmptyString100.From "Copa América 2021"
                            OpeningStartDateTime = DateTime.now ()
                            OpeningEndDateTime = DateTime.now () } |] }

@@ -5,7 +5,7 @@ open System.Net
 open System.Text
 open Microsoft.AspNetCore.Http
 open Microsoft.AspNetCore.Diagnostics
-open Pipel.Core.Json
+open Pipel.Core
 
 exception NotFoundException of string
 exception AlreadyExistException of string
@@ -43,7 +43,7 @@ module Exception =
     let createResponseText
         (context: HttpContext)
         (funcCreateCustomCode: Exception -> string option)
-        (jsonSerializer: IJsonSerializer)
+        (jsonSerializer: ISerializer)
         : string option =
         let feature =
             context.Features.Get<IExceptionHandlerPathFeature>()
@@ -75,7 +75,7 @@ module Exception =
     let asyncUpdateResponseToDefaultError
         (context: HttpContext)
         (funcCreateCustomCode: Exception -> string option)
-        (jsonSerializer: IJsonSerializer)
+        (jsonSerializer: ISerializer)
         =
         async {
             match createResponseText context funcCreateCustomCode jsonSerializer with

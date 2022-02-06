@@ -15,12 +15,11 @@ type WebApplication with
 
         this.MapGet(
             "/poolLayout/findActivePoolsLayouts",
-            Func<_, _, _, _, _, _>
-                (fun (filter: string) (skip: int) (take: int) (findActivePoolsLayoutsUseCase: IFindActivePoolsLayoutsUseCase) (mapFromDomainToViewFunc: MapFunc<PoolLayout, PoolLayoutResponse>) ->
+            Func<_, _, _, _, _>
+                (fun (filterText: string) (nextToken: string) (findActivePoolsLayoutsUseCase: IFindActivePoolsLayoutsUseCase) (mapFromDomainToViewFunc: MapFunc<PoolLayout, PoolLayoutResponse>) ->
                     FindActivePoolsLayouts.execute
-                        filter
-                        skip
-                        take
+                        filterText
+                        nextToken
                         findActivePoolsLayoutsUseCase
                         mapFromDomainToViewFunc
                     |> Async.StartAsTask)

@@ -9,10 +9,12 @@
         <Compile Include="Barcode.fs" />
         <Compile Include="NonEmptyString.fs" />
         <Compile Include="Percentage.fs" />
-        <Compile Include="Number.fs" />
+        <Compile Include="PositiveInt.fs" />
         <Compile Include="DateTime.fs" />
+        <Compile Include="Ulid.fs" />
     </ItemGroup>
     <ItemGroup>
-        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.0" />
+        <PackageReference Include="Ulid" Version="1.2.6" />
+        <PackageReference Update="FSharp.Core" Version="6.0.3" />
     </ItemGroup>
 </Project>

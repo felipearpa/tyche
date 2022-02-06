@@ -8,7 +8,7 @@ module PoolLayoutApplicationMapper =
     let mapFromDomainToApplication (domainModel: PoolLayout) =
         { PoolLayoutResponse.PoolLayoutId =
               domainModel.PoolLayoutPK.PoolLayoutId
-              |> Uuid.value
+              |> Ulid.toString
           Name = domainModel.Name |> NonEmptyString100.value
-          OpeningStartDateTime = domainModel.OpeningStartDateTime |> DateTime.value
-          OpeningEndDateTime = domainModel.OpeningEndDateTime |> DateTime.value }
+          StartOpeningDateTime = domainModel.OpeningStartDateTime |> DateTime.value
+          EndOpeningDateTime = domainModel.OpeningEndDateTime |> DateTime.value }

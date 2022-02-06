@@ -16,6 +16,10 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Pipel.Core", "..\Pipel.Core
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Pipel.Core.Test", "..\Pipel.Core\Pipel.Core.Test\Pipel.Core.Test.fsproj", "{A81623B2-8B6F-4B4A-800C-CAB2F31D0B7A}"
 EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Pipel.Data.DynamoDb", "..\Pipel.Data.DynamoDb\Pipel.Data.DynamoDb\Pipel.Data.DynamoDb.fsproj", "{48FE48FC-CE7C-4D64-B0C2-9B940E80F934}"
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Pipel.Data.DynamoDb.Test", "..\Pipel.Data.DynamoDb\Pipel.Data.DynamoDb.Test\Pipel.Data.DynamoDb.Test.fsproj", "{C439545F-DD80-43DD-957E-1D6F9E67770E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -54,5 +58,13 @@ Global
 		{06D4B1C2-F2DC-42F1-BC7F-52A5A87D8527}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{06D4B1C2-F2DC-42F1-BC7F-52A5A87D8527}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{06D4B1C2-F2DC-42F1-BC7F-52A5A87D8527}.Release|Any CPU.Build.0 = Release|Any CPU
+		{48FE48FC-CE7C-4D64-B0C2-9B940E80F934}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{48FE48FC-CE7C-4D64-B0C2-9B940E80F934}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{48FE48FC-CE7C-4D64-B0C2-9B940E80F934}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{48FE48FC-CE7C-4D64-B0C2-9B940E80F934}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C439545F-DD80-43DD-957E-1D6F9E67770E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C439545F-DD80-43DD-957E-1D6F9E67770E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C439545F-DD80-43DD-957E-1D6F9E67770E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C439545F-DD80-43DD-957E-1D6F9E67770E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

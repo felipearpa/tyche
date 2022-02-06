@@ -1,15 +1,25 @@
 ﻿namespace Pipel.Tyche.PoolLayout.Data
 
 open System
-open MongoDB.Bson.Serialization.Attributes
+open Amazon.DynamoDBv2.DataModel
 
 type PoolLayoutEntityPK =
     { PoolLayoutId: Guid }
 
+[<DynamoDBTable("Pool")>]
 [<CLIMutable>]
 type PoolLayoutEntity =
-    { [<BsonId>]
-      PoolLayoutId: Guid
+    { [<DynamoDBProperty("pk")>]
+      Pk: string
+      [<DynamoDBProperty("sk")>]
+      Sk: string
+      [<DynamoDBProperty("poolLayoutId")>]
+      PoolLayoutId: string
+      [<DynamoDBProperty("name")>]
       Name: string
-      OpeningStartDateTime: DateTime
-      OpeningEndDateTime: DateTime }
+      [<DynamoDBProperty("startOpeningDateTime")>]
+      StartOpeningDateTime: DateTime
+      [<DynamoDBProperty("endOpeningDateTime")>]
+      EndOpeningDateTime: DateTime
+      [<DynamoDBProperty("filter")>]
+      Filter: string }

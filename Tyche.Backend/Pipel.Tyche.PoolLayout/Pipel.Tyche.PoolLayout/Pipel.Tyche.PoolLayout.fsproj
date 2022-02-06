@@ -7,21 +7,20 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Compile Include="Data\MongoDatabase.fs" />
         <Compile Include="Data\PoolLayout.fs" />
         <Compile Include="Data\PoolLayoutRepository.fs" />
         <Compile Include="Domain\PoolLayout.fs" />
-        <Compile Include="UseCases\Queries\ActivePoolLayoutQuery.fs" />
         <Compile Include="UseCases\FindActivePoolsLayoutsUseCase.fs" />
         <Compile Include="PoolLayoutDomainMapper.fs" />
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="MongoDB.Driver" Version="2.13.2" />
+      <ProjectReference Include="..\..\Pipel.Data.DynamoDb\Pipel.Data.DynamoDb\Pipel.Data.DynamoDb.fsproj" />
+      <ProjectReference Include="..\..\Pipel.Data\Pipel.Data\Pipel.Data.fsproj" />
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\Pipel.Data\Pipel.Data\Pipel.Data.fsproj" />
+      <PackageReference Update="FSharp.Core" Version="6.0.3" />
     </ItemGroup>
 
 </Project>

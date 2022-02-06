@@ -1,9 +1,8 @@
 namespace Pipel.Tyche.PoolLayout.Api
 
-open Microsoft.Extensions.Configuration
+open Amazon.DynamoDBv2
 open Microsoft.Extensions.DependencyInjection
-open Microsoft.Extensions.Options
-open Pipel.Tyche.PoolLayout.Data
+open Microsoft.Extensions.Configuration
 
 module RegistersForDatabases =
 
@@ -11,10 +10,5 @@ module RegistersForDatabases =
 
         member this.RegisterDatabases(configuration: IConfiguration) =
             this
-                .Configure<MongoDatabaseSettings>(configuration.GetSection("DatabaseSettings"))
-                .AddSingleton<IMongoDatabaseSettings>(fun sp ->
-                    sp
-                        .GetRequiredService<IOptions<MongoDatabaseSettings>>()
-                        .Value
-                    :> IMongoDatabaseSettings)
-                .AddSingleton<IMongoContext, MongoContext>()
+                .AddDefaultAWSOptions(configuration.GetAWSOptions())
+                .AddAWSService<IAmazonDynamoDB>()

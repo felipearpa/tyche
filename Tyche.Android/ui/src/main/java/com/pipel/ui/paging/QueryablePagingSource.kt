@@ -3,31 +3,29 @@ package com.pipel.ui.paging
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.pipel.core.PagingQuery
-import kotlin.math.max
 
 open class QueryablePagingSource<TModel : Any>(private val pagingQuery: PagingQuery<TModel>) :
-    PagingSource<Int, TModel>() {
+    PagingSource<String, TModel>() {
 
-    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, TModel> {
-        val skip = params.key ?: 0
-        val take = params.loadSize
-
+    override suspend fun load(params: LoadParams<String>): LoadResult<String, TModel> {
         return try {
-            val page = pagingQuery.execute(skip = skip, take = take)
+            val page = pagingQuery.execute(params.key)
             LoadResult.Page(
                 data = page.items,
-                prevKey = if (skip > 0) max(skip - take, 0) else null,
-                nextKey = if (page.hasNext) skip + take else null
+                prevKey = null,
+                nextKey = page.nextToken
             )
         } catch (ex: Exception) {
             LoadResult.Error(ex)
         }
     }
 
-    override fun getRefreshKey(state: PagingState<Int, TModel>): Int? {
+    override fun getRefreshKey(state: PagingState<String, TModel>): String? {
         return state.anchorPosition?.let { anchorPosition ->
-            state.closestPageToPosition(anchorPosition)?.prevKey?.plus(1)
-                ?: state.closestPageToPosition(anchorPosition)?.nextKey?.minus(1)
+            val anchorPageIndex = state.pages.indexOf(state.closestPageToPosition(anchorPosition))
+            state.pages.getOrNull(anchorPageIndex + 1)?.prevKey ?: state.pages.getOrNull(
+                anchorPageIndex - 1
+            )?.nextKey
         }
     }
 }

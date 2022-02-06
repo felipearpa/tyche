@@ -6,6 +6,6 @@ data class Uuid(val value: UUID) {
     override fun toString(): String = value.toString()
 
     companion object {
-        fun randomUUID(): Uuid = Uuid(UUID.randomUUID())
+        fun randomUuid(): Uuid = Uuid(UUID.randomUUID())
     }
 }

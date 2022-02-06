@@ -1,7 +1,7 @@
 package com.pipel.ui
 
 import androidx.paging.PagingSource
-import com.pipel.core.Page
+import com.pipel.core.CursorPage
 import com.pipel.core.PagingQuery
 import com.pipel.ui.paging.QueryablePagingSource
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -34,7 +34,7 @@ class QueryablePagingSourceTest {
     @Test
     fun `given a paging query when function load of QueryablePagingSource is called then a LoadResult Page is returned`() =
         runBlockingTest {
-            `when`(pagingQuery.execute(anyInt(), anyInt())).thenReturn(Page.empty())
+            `when`(pagingQuery.execute(anyInt(), anyInt())).thenReturn(CursorPage.empty())
             val loadResult = queryablePagingSource.load(
                 PagingSource.LoadParams.Refresh(
                     key = null,
@@ -73,7 +73,7 @@ class QueryablePagingSourceTest {
             val initialKey = 15
             val loadSize = 10
             `when`(pagingQuery.execute(anyInt(), anyInt())).thenReturn(
-                Page(
+                CursorPage(
                     items = emptyList(),
                     itemsCount = 0,
                     skip = 0,
@@ -105,7 +105,7 @@ class QueryablePagingSourceTest {
         initialKey: Int?
     ) =
         runBlockingTest {
-            `when`(pagingQuery.execute(anyInt(), anyInt())).thenReturn(Page.empty())
+            `when`(pagingQuery.execute(anyInt(), anyInt())).thenReturn(CursorPage.empty())
             val loadResult = queryablePagingSource.load(
                 PagingSource.LoadParams.Refresh(
                     key = initialKey,
@@ -128,7 +128,7 @@ class QueryablePagingSourceTest {
         loadSize: Int
     ) =
         runBlockingTest {
-            `when`(pagingQuery.execute(anyInt(), anyInt())).thenReturn(Page.empty())
+            `when`(pagingQuery.execute(anyInt(), anyInt())).thenReturn(CursorPage.empty())
             val loadResult = queryablePagingSource.load(
                 PagingSource.LoadParams.Refresh(
                     key = initialKey,
@@ -149,7 +149,7 @@ class QueryablePagingSourceTest {
     fun `given a PagingQuery where hasNext is false when function load of QueryablePagingSource is called then LoadResult's nextKey is null`() =
         runBlockingTest {
             `when`(pagingQuery.execute(anyInt(), anyInt())).thenReturn(
-                Page(
+                CursorPage(
                     items = emptyList(),
                     itemsCount = 0,
                     skip = 0,
@@ -179,7 +179,7 @@ class QueryablePagingSourceTest {
             val initialKey = 5
             val loadSize = 10
             `when`(pagingQuery.execute(anyInt(), anyInt())).thenReturn(
-                Page(
+                CursorPage(
                     items = emptyList(),
                     itemsCount = 0,
                     skip = 0,

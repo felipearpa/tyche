@@ -11,7 +11,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.pipel.tyche.ui.poollayout.PoolLayoutView
+import com.pipel.tyche.poolLayout.ui.PoolLayoutView
 import com.pipel.tyche.ui.theme.TycheTheme
 import com.pipel.tyche.ui.theme.appTopBar
 import com.pipel.tyche.ui.theme.onAppTopBar
