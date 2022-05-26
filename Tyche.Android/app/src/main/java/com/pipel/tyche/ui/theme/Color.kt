@@ -38,3 +38,12 @@ val Colors.onAppTopBar: Color
 
 val Colors.onPrimaryLight: Color
     get() = if (isLight) nord0.copy(alpha = 0.54f) else nord0.copy(alpha = 0.54f)
+
+val Colors.stableIndicator: Color
+    get() = if (isLight) nord12 else nord12
+
+val Colors.upIndicator: Color
+    get() = if (isLight) nord14 else nord14
+
+val Colors.downIndicator: Color
+    get() = if (isLight) nord11 else nord11

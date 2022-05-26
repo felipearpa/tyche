@@ -7,3 +7,9 @@ Tyche is an App for playing soccer pools. The preferred language of App is Spani
 This view shows the opened pools which they are available to create and play.
 
 ![PoolLayout](images/PoolLayout.png)
+
+## Pool
+
+This view shows the opened pools which you are registered.
+
+![Pool](images/Pool.png)

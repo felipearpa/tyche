@@ -18,8 +18,6 @@ type FindPoolsUseCase(poolRepository: IPoolRepository, mapFromDataToDomainFunc: 
 
         member this.AsyncExecute(poolLayoutPK, filterText, next) =
             async {
-
-
                 return!
                     asyncFindWithCursorPagination
                         next

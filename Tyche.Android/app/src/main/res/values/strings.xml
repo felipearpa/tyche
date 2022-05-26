@@ -4,6 +4,7 @@
     <string name="searcher_label">Enter some text</string>
     <string name="create_until">Create it until: %s</string>
     <string name="retry">Retry</string>
-    <string name="retry_title">Sorry. The server took long to respond. Wait for a little of time and retry</string>
+    <string name="retry_title">Sorry. The server didn\'t respond. Wait for a little of time and retry</string>
     <string name="empty_list">The list is empty</string>
+    <string name="position">Position %d</string>
 </resources>

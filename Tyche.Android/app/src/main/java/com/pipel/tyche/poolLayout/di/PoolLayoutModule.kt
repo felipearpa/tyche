@@ -1,8 +1,8 @@
 package com.pipel.tyche.poolLayout.di
 
 import com.pipel.tyche.poolLayout.data.PoolLayoutRepository
-import com.pipel.tyche.poolLayout.useCase.DefaultFindPoolsLayoutsUseCase
-import com.pipel.tyche.poolLayout.useCase.FindPoolsLayoutsUseCase
+import com.pipel.tyche.poolLayout.useCase.DefaultActiveFindActivePoolsLayoutsUseCase
+import com.pipel.tyche.poolLayout.useCase.FindActivePoolsLayoutsUseCase
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -17,7 +17,7 @@ interface PoolLayoutUseCaseModule {
 
     @Binds
     @Singleton
-    fun provideFindPoolsLayoutsUseCase(impl: DefaultFindPoolsLayoutsUseCase): FindPoolsLayoutsUseCase
+    fun provideFindActivePoolsLayoutsUseCase(impl: DefaultActiveFindActivePoolsLayoutsUseCase): FindActivePoolsLayoutsUseCase
 
 }
 

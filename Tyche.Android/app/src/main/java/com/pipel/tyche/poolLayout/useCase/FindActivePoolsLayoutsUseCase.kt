@@ -6,17 +6,17 @@ import com.pipel.tyche.poolLayout.domain.PoolLayout
 import com.pipel.tyche.poolLayout.mapper.PoolLayoutMapper
 import javax.inject.Inject
 
-interface FindPoolsLayoutsUseCase {
+interface FindActivePoolsLayoutsUseCase {
 
     suspend fun execute(nextToken: String?, filter: String = ""): CursorPage<PoolLayout>
 
 }
 
-class DefaultFindPoolsLayoutsUseCase @Inject constructor(private val poolLayoutRepository: PoolLayoutRepository) :
-    FindPoolsLayoutsUseCase {
+class DefaultActiveFindActivePoolsLayoutsUseCase @Inject constructor(private val poolLayoutRepository: PoolLayoutRepository) :
+    FindActivePoolsLayoutsUseCase {
 
     override suspend fun execute(nextToken: String?, filter: String): CursorPage<PoolLayout> {
-        return poolLayoutRepository.getPoolsLayouts(nextToken, filter)
+        return poolLayoutRepository.getActivePoolsLayouts(nextToken, filter)
             .map(PoolLayoutMapper::mapFromDataToDomain)
     }
 

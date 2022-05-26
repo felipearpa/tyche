@@ -1,4 +1,4 @@
-package com.pipel.tyche.poolLayout.ui
+package com.pipel.tyche.pool.ui
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Divider
@@ -11,18 +11,18 @@ import androidx.compose.ui.unit.dp
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.pipel.core.empty
-import com.pipel.tyche.poolLayout.view.PoolLayoutModel
+import com.pipel.tyche.pool.view.PoolModel
 import com.pipel.tyche.ui.Filter
 import com.pipel.tyche.ui.column.RefreshableLazyColumn
 
 @Composable
-fun PoolLayoutView(viewModel: PoolLayoutViewModel) {
+fun PoolView(viewModel: PoolViewModel) {
     val filterText by viewModel.filterTextFlow.collectAsState(String.empty())
-    val lazyItems = viewModel.poolsLayoutsFlow.collectAsLazyPagingItems()
+    val lazyItems = viewModel.poolsFlow.collectAsLazyPagingItems()
     val onFilterChange = { newFilterText: String -> viewModel.applyFilter(newFilterText) }
     val pageSize = viewModel.pageSize
-    PoolLayoutList(
-        lazyPoolsLayouts = lazyItems,
+    PoolList(
+        lazyPools = lazyItems,
         filterText = filterText,
         onFilterChange = onFilterChange,
         fakeItemCount = pageSize
@@ -30,15 +30,17 @@ fun PoolLayoutView(viewModel: PoolLayoutViewModel) {
 }
 
 @Composable
-fun PoolLayoutList(
-    lazyPoolsLayouts: LazyPagingItems<PoolLayoutModel>,
+fun PoolList(
+    lazyPools: LazyPagingItems<PoolModel>,
     filterText: String,
     onFilterChange: (String) -> Unit,
     fakeItemCount: Int
 ) {
     RefreshableLazyColumn(
-        modifier = Modifier.fillMaxWidth(),
-        lazyItems = lazyPoolsLayouts,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp),
+        lazyItems = lazyPools,
         contentPadding = PaddingValues(8.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
         filterContent = {
@@ -50,22 +52,21 @@ fun PoolLayoutList(
         onLoadingContent = {
             for (i in 1..fakeItemCount) {
                 Spacer(modifier = Modifier.height(8.dp))
-                FakePoolLayoutItem(modifier = Modifier.fillMaxWidth())
+                FakePoolItem(modifier = Modifier.fillMaxWidth())
                 Divider()
             }
         }
-    ) { poolLayout ->
-        PoolLayoutItem(poolLayout = poolLayout, modifier = Modifier.fillMaxWidth())
+    ) { pool ->
+        PoolItem(pool = pool, modifier = Modifier.fillMaxWidth())
         Divider()
     }
 }
 
 @Preview(showBackground = true)
 @Composable
-private fun PoolLayoutListPreview() {
-    val lazyItems = poolsLayoutsModelsFlowForPreview().collectAsLazyPagingItems()
-    PoolLayoutList(
-        lazyPoolsLayouts = lazyItems,
+private fun PoolListPreview() {
+    PoolList(
+        lazyPools = poolsModelsFlowForPreview().collectAsLazyPagingItems(),
         filterText = String.empty(),
         onFilterChange = {},
         fakeItemCount = 10

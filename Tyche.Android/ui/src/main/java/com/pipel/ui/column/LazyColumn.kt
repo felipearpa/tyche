@@ -1,18 +1,24 @@
-package com.pipel.ui
+package com.pipel.ui.column
 
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.items
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
+import com.pipel.ui.gesturesDisabled
 
 @Composable
 private fun <TModel : Any> LazyColumn(
     modifier: Modifier = Modifier,
     lazyItems: LazyPagingItems<TModel>,
+    contentPadding: PaddingValues = PaddingValues(0.dp),
+    verticalArrangement: Arrangement.Vertical = Arrangement.Bottom,
     filterContent: @Composable (() -> Unit)? = null,
     onLoadingContent: @Composable () -> Unit,
     onLoadingAppendContent: @Composable () -> Unit,
@@ -22,7 +28,9 @@ private fun <TModel : Any> LazyColumn(
     itemContent: @Composable (TModel) -> Unit
 ) {
     LazyColumn(
-        modifier = modifier.gesturesDisabled(lazyItems.loadState.refresh is LoadState.Loading)
+        modifier = modifier.gesturesDisabled(lazyItems.loadState.refresh is LoadState.Loading),
+        contentPadding = contentPadding,
+        verticalArrangement = verticalArrangement
     ) {
         filterContent?.let { filterContent ->
             item { filterContent() }
@@ -76,6 +84,8 @@ private fun <TModel : Any> LazyColumn(
 fun <TModel : Any> RefreshableLazyColumn(
     modifier: Modifier = Modifier,
     lazyItems: LazyPagingItems<TModel>,
+    contentPadding: PaddingValues = PaddingValues(0.dp),
+    verticalArrangement: Arrangement.Vertical = Arrangement.Bottom,
     filterContent: @Composable (() -> Unit)? = null,
     onLoadingContent: @Composable () -> Unit,
     onLoadingAppendContent: @Composable () -> Unit,
@@ -96,6 +106,8 @@ fun <TModel : Any> RefreshableLazyColumn(
             modifier = modifier,
             lazyItems = lazyItems,
             filterContent = filterContent,
+            contentPadding = contentPadding,
+            verticalArrangement = verticalArrangement,
             onLoadingContent = onLoadingContent,
             onLoadingAppendContent = onLoadingAppendContent,
             onErrorAppendContent = onErrorAppendContent,

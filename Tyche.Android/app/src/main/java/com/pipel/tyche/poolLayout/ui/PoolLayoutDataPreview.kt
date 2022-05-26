@@ -37,5 +37,5 @@ fun poolsLayoutsForPreview(): List<PoolLayout> {
 fun poolsLayoutsModelsForPreview(): List<PoolLayoutModel> =
     poolsLayoutsForPreview().map(PoolLayoutMapper::mapFromDomainToView)
 
-fun poolLayoutFlowForPreview(): Flow<PagingData<PoolLayoutModel>> =
+fun poolsLayoutsModelsFlowForPreview(): Flow<PagingData<PoolLayoutModel>> =
     flowOf(PagingData.from(poolsLayoutsModelsForPreview()))

@@ -1,7 +1,8 @@
 package com.pipel.tyche.ui.column
 
-import androidx.compose.foundation.layout.*
-import androidx.compose.material.Divider
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -17,25 +18,18 @@ import com.pipel.tyche.ui.theme.TycheTheme
 
 @Composable
 fun ColumnEmpty(modifier: Modifier = Modifier) {
-    Column(
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = modifier.padding(top = 8.dp)
+    Row(
+        modifier = modifier,
+        horizontalArrangement = Arrangement.spacedBy(4.dp, Alignment.CenterHorizontally),
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Icon(
-                painter = painterResource(id = R.drawable.baseline_sentiment_neutral_24),
-                contentDescription = String.empty(),
-                modifier = Modifier.size(24.dp, 24.dp)
-            )
+        Icon(
+            painter = painterResource(id = R.drawable.baseline_sentiment_neutral_24),
+            contentDescription = String.empty(),
+            modifier = Modifier.size(24.dp, 24.dp)
+        )
 
-            Text(text = stringResource(id = R.string.empty_list))
-        }
-
-        Divider()
+        Text(text = stringResource(id = R.string.empty_list))
     }
 }
 

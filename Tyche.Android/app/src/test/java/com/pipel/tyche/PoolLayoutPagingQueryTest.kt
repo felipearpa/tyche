@@ -3,7 +3,7 @@ package com.pipel.tyche
 import com.pipel.core.CursorPage
 import com.pipel.core.empty
 import com.pipel.tyche.poolLayout.ui.PoolLayoutPagingQuery
-import com.pipel.tyche.poolLayout.useCase.FindPoolsLayoutsUseCase
+import com.pipel.tyche.poolLayout.useCase.FindActivePoolsLayoutsUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.jupiter.api.BeforeEach
@@ -20,13 +20,13 @@ class PoolLayoutPagingQueryTest {
     private lateinit var poolLayoutPagingQuery: PoolLayoutPagingQuery
 
     @Mock
-    private lateinit var findPoolsLayoutsUseCase: FindPoolsLayoutsUseCase
+    private lateinit var findActivePoolsLayoutsUseCase: FindActivePoolsLayoutsUseCase
 
     @BeforeEach
     fun setup() {
         MockitoAnnotations.openMocks(this)
         poolLayoutPagingQuery = PoolLayoutPagingQuery(
-            findPoolsLayoutsUseCase = findPoolsLayoutsUseCase,
+            findPoolsLayoutsUseCase = findActivePoolsLayoutsUseCase,
             filterFunc = { String.empty() })
     }
 
@@ -35,10 +35,10 @@ class PoolLayoutPagingQueryTest {
     fun `given a FindPoolsLayoutsUseCase when the function execute of PoolLayoutPagingQuery is executed then the function execute of FindPoolsLayoutsUseCase is called`() =
         runBlockingTest {
             `when`(
-                findPoolsLayoutsUseCase.execute(anyString(), anyString())
+                findActivePoolsLayoutsUseCase.execute(anyString(), anyString())
             ).thenReturn(CursorPage.empty())
             poolLayoutPagingQuery.execute(String.empty())
-            verify(findPoolsLayoutsUseCase, Times(1)).execute(anyString(), anyString())
+            verify(findActivePoolsLayoutsUseCase, Times(1)).execute(anyString(), anyString())
         }
 
 }

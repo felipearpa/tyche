@@ -7,9 +7,9 @@ import retrofit2.http.Query
 interface PoolLayoutRepository {
 
     @GET("poolLayout/findActivePoolsLayouts")
-    suspend fun getPoolsLayouts(
+    suspend fun getActivePoolsLayouts(
         @Query("nextToken") nextToken: String?,
-        @Query("filterText") filterText: String = ""
+        @Query("filterText") filterText: String?
     ): CursorPage<PoolLayoutResponse>
 
 }
