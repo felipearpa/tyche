@@ -34,6 +34,7 @@ android {
     composeOptions {
         kotlinCompilerExtensionVersion compose_version
     }
+    namespace 'com.pipel.ui'
 }
 
 dependencies {
