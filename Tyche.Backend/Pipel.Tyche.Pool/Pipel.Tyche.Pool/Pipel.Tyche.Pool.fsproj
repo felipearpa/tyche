@@ -4,15 +4,15 @@
         <TargetFramework>net6.0</TargetFramework>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <WarnOn>3390;$(WarnOn)</WarnOn>
-        <RootNamespace>Pipel.Tyche.MyPool</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
+        <Compile Include="Data\PoolLayout.fs" />
         <Compile Include="Data\Pool.fs" />
         <Compile Include="Data\PoolRepository.fs" />
         <Compile Include="Domain\PoolLayout.fs" />
         <Compile Include="Domain\Pool.fs" />
-        <Compile Include="UseCases\FindMyPoolsUseCase.fs" />
+        <Compile Include="UseCases\FindPoolsUseCase.fs" />
         <Compile Include="PoolDomainMapper.fs" />
     </ItemGroup>
 

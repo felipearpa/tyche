@@ -8,8 +8,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Compile Include="UseCases\Queries\ActivePoolLayoutQueryTests.fs" />
-        <Compile Include="UseCases\FindPoolsLayoutsUseCaseTests.fs" />
+        <Compile Include="UseCases\FindPoolsUseCaseTests.fs" />
         <Compile Include="PoolLayoutDomainMapperTests.fs" />
         <Compile Include="Program.fs" />
     </ItemGroup>
