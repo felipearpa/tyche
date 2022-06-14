@@ -8,14 +8,14 @@ import javax.inject.Inject
 
 interface FindActivePoolsLayoutsUseCase {
 
-    suspend fun execute(nextToken: String?, filter: String = ""): CursorPage<PoolLayout>
+    suspend fun execute(nextToken: String?, filter: String? = null): CursorPage<PoolLayout>
 
 }
 
 class DefaultActiveFindActivePoolsLayoutsUseCase @Inject constructor(private val poolLayoutRepository: PoolLayoutRepository) :
     FindActivePoolsLayoutsUseCase {
 
-    override suspend fun execute(nextToken: String?, filter: String): CursorPage<PoolLayout> {
+    override suspend fun execute(nextToken: String?, filter: String?): CursorPage<PoolLayout> {
         return poolLayoutRepository.getActivePoolsLayouts(nextToken, filter)
             .map(PoolLayoutMapper::mapFromDataToDomain)
     }

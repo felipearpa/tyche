@@ -5,11 +5,11 @@ plugins {
 }
 
 android {
-    compileSdk 31
+    compileSdk 32
 
     defaultConfig {
         minSdk 23
-        targetSdk 31
+        targetSdk 32
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
@@ -40,8 +40,7 @@ dependencies {
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junit_jupiter_api_version"
     testImplementation "org.junit.jupiter:junit-jupiter-params:$junit_jupiter_api_version"
     testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutines_test_version"
-    testImplementation "org.mockito:mockito-inline:$mockito_version"
-    testImplementation "org.mockito:mockito-junit-jupiter:$mockito_version"
+    testImplementation "io.mockk:mockk:$mockk_version"
     androidTestImplementation "androidx.test.ext:junit:$android_junit_test_version"
     androidTestImplementation "androidx.test.espresso:espresso-core:$android_espresso_version"
 }

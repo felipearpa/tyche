@@ -8,17 +8,17 @@ class NonEmptyStringTest {
 
     @Test
     fun `given a not empty string when a NonEmptyString is created then a NonEmptyString than contains the string value is returned`() {
-        val sourceString = "not empty string"
-        val nonEmptyString = NonEmptyString(sourceString)
-        assertEquals(sourceString, nonEmptyString.value)
+        val sourceRaw = "not empty string"
+        val nonEmptyString = NonEmptyString(sourceRaw)
+        assertEquals(sourceRaw, nonEmptyString.value)
     }
 
     @Test
     fun `given an empty string when a NonEmptyString is created then an exception is raised`() {
-        val sourceString = ""
+        val sourceRaw = ""
         assertThrows(
             IllegalArgumentException::class.java
-        ) { NonEmptyString(sourceString) }
+        ) { NonEmptyString(sourceRaw) }
     }
 
 }

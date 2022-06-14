@@ -4,41 +4,37 @@ import com.pipel.core.CursorPage
 import com.pipel.core.empty
 import com.pipel.tyche.poolLayout.ui.PoolLayoutPagingQuery
 import com.pipel.tyche.poolLayout.useCase.FindActivePoolsLayoutsUseCase
+import io.mockk.coEvery
+import io.mockk.coVerify
+import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.runBlockingTest
-import org.junit.jupiter.api.BeforeEach
+import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Test
-import org.mockito.ArgumentMatchers.anyString
-import org.mockito.Mock
-import org.mockito.Mockito.`when`
-import org.mockito.Mockito.verify
-import org.mockito.MockitoAnnotations
-import org.mockito.internal.verification.Times
 
 class PoolLayoutPagingQueryTest {
-
-    private lateinit var poolLayoutPagingQuery: PoolLayoutPagingQuery
-
-    @Mock
-    private lateinit var findActivePoolsLayoutsUseCase: FindActivePoolsLayoutsUseCase
-
-    @BeforeEach
-    fun setup() {
-        MockitoAnnotations.openMocks(this)
-        poolLayoutPagingQuery = PoolLayoutPagingQuery(
-            findPoolsLayoutsUseCase = findActivePoolsLayoutsUseCase,
-            filterFunc = { String.empty() })
-    }
 
     @ExperimentalCoroutinesApi
     @Test
     fun `given a FindPoolsLayoutsUseCase when the function execute of PoolLayoutPagingQuery is executed then the function execute of FindPoolsLayoutsUseCase is called`() =
-        runBlockingTest {
-            `when`(
-                findActivePoolsLayoutsUseCase.execute(anyString(), anyString())
-            ).thenReturn(CursorPage.empty())
+        runTest {
+            val findActivePoolsLayoutsUseCase = mockk<FindActivePoolsLayoutsUseCase>()
+            coEvery {
+                findActivePoolsLayoutsUseCase.execute(
+                    any(),
+                    any()
+                )
+            } returns CursorPage.empty()
+
+            val poolLayoutPagingQuery =
+                PoolLayoutPagingQuery(findActivePoolsLayoutsUseCase = findActivePoolsLayoutsUseCase)
             poolLayoutPagingQuery.execute(String.empty())
-            verify(findActivePoolsLayoutsUseCase, Times(1)).execute(anyString(), anyString())
+
+            coVerify(exactly = 1) {
+                findActivePoolsLayoutsUseCase.execute(
+                    any(),
+                    any()
+                )
+            }
         }
 
 }

@@ -8,12 +8,12 @@ import com.pipel.tyche.poolLayout.view.PoolLayoutModel
 
 class PoolLayoutPagingQuery(
     private val findActivePoolsLayoutsUseCase: FindActivePoolsLayoutsUseCase,
-    private val filterFunc: () -> String
+    private val filterFunc: (() -> String?)? = null
 ) :
     PagingQuery<PoolLayoutModel> {
 
     override suspend fun execute(nextToken: String?): CursorPage<PoolLayoutModel> {
-        return findActivePoolsLayoutsUseCase.execute(nextToken, filterFunc())
+        return findActivePoolsLayoutsUseCase.execute(nextToken, filterFunc?.invoke())
             .map(PoolLayoutMapper::mapFromDomainToView)
     }
 
