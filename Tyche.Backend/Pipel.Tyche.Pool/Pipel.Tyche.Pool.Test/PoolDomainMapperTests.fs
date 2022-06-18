@@ -1,4 +1,4 @@
-module PoolLayoutDomainMapperTests
+module PoolDomainMapperTests
 
 open System
 open Pipel.Tyche.Pool
@@ -8,7 +8,7 @@ open Pipel.Type
 open Xunit
 
 [<Fact>]
-let ``given a PoolLayoutEntity when this one is mapped to PoolLayout then an identical PoolLayout is returned`` () =
+let ``given a PoolEntity when this one is mapped to Pool then an identical Pool is returned`` () =
     let poolEntity =
         { PoolEntity.PoolLayoutId = Ulid.newUlid () |> Ulid.toString
           Pk = ""

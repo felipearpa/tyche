@@ -5,6 +5,7 @@ import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import com.pipel.core.empty
 import kotlinx.coroutines.Job
@@ -32,7 +33,7 @@ fun SearcherTextField(
         },
         label = label,
         singleLine = true,
-        modifier = modifier
+        modifier = modifier.testTag("textField")
     )
 }
 
