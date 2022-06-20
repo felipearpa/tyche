@@ -1,4 +1,4 @@
-module PoolControllerTests
+module FindPoolsTests
 
 open System.Net.Http
 open System.Threading.Tasks
@@ -13,9 +13,9 @@ open Xunit
 open Pipel.Tyche.Pool.Domain
 
 let createClientForFindActivePoolsLayoutsUseCase () =
-    let findPoolsUseCase = Mock<IFindPoolsUseCase>()
+    let findPoolsUseCaseMock = Mock<IFindPoolsUseCase>()
 
-    findPoolsUseCase
+    findPoolsUseCaseMock
         .Setup(fun x -> x.AsyncExecute(It.IsAny<PoolLayoutPK>(), It.IsAny<string option>(), It.IsAny<string option>()))
         .Returns(
             Task.FromResult(
@@ -36,7 +36,7 @@ let createClientForFindActivePoolsLayoutsUseCase () =
             .WithWebHostBuilder(fun builder ->
                 builder.ConfigureServices
                     (fun services ->
-                        services.AddTransient<IFindPoolsUseCase>(fun provider -> findPoolsUseCase.Object)
+                        services.AddTransient<IFindPoolsUseCase>(fun provider -> findPoolsUseCaseMock.Object)
                         |> ignore)
                 |> ignore)
 

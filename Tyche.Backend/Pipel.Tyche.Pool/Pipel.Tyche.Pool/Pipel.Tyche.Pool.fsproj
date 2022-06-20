@@ -10,10 +10,16 @@
         <Compile Include="Data\PoolLayout.fs" />
         <Compile Include="Data\Pool.fs" />
         <Compile Include="Data\PoolRepository.fs" />
+        <Compile Include="Data\PoolGambler.fs" />
+        <Compile Include="Data\PoolGamblerRepository.fs" />
         <Compile Include="Domain\PoolLayout.fs" />
         <Compile Include="Domain\Pool.fs" />
+        <Compile Include="Domain\Gambler.fs" />
+        <Compile Include="Domain\PoolGambler.fs" />
         <Compile Include="UseCases\FindPoolsUseCase.fs" />
+        <Compile Include="UseCases\FindPoolsGamblersUseCase.fs" />
         <Compile Include="PoolDomainMapper.fs" />
+        <Compile Include="PoolGamblerDomainMapper.fs" />
     </ItemGroup>
 
     <ItemGroup>
@@ -22,7 +28,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Update="FSharp.Core" Version="6.0.3" />
+      <PackageReference Update="FSharp.Core" Version="6.0.5" />
     </ItemGroup>
 
 </Project>

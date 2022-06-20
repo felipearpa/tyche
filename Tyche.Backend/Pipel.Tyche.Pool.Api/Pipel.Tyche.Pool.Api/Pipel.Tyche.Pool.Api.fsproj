@@ -7,8 +7,11 @@
 
     <ItemGroup>
         <Compile Include="Pool.fs" />
+        <Compile Include="PoolGambler.fs" />
         <Compile Include="PoolApplicationMapper.fs" />
+        <Compile Include="PoolGamblerApplicationMapper.fs" />
         <Compile Include="FindPoolsUseCase.fs" />
+        <Compile Include="FindPoolsGamblersUseCase.fs" />
         <Compile Include="RegistersForRepositories.fs" />
         <Compile Include="RegistersForMappers.fs" />
         <Compile Include="RegistersForUseCases.fs" />
@@ -29,8 +32,8 @@
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="AWSSDK.Extensions.NETCore.Setup" Version="3.7.1" />
-      <PackageReference Update="FSharp.Core" Version="6.0.3" />
+      <PackageReference Include="AWSSDK.Extensions.NETCore.Setup" Version="3.7.2" />
+      <PackageReference Update="FSharp.Core" Version="6.0.5" />
     </ItemGroup>
 
 </Project>

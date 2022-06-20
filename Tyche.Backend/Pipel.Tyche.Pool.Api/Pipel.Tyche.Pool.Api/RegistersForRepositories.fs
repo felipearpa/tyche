@@ -8,4 +8,6 @@ module RegistersForRepositories =
     type IServiceCollection with
 
         member this.RegisterRepositories() =
-            this.AddScoped<IPoolRepository, PoolRepository>()
+            this
+                .AddScoped<IPoolRepository, PoolRepository>()
+                .AddScoped<IPoolGamblerRepository, PoolGamblerRepository>()

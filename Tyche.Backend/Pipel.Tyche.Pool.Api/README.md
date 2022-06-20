@@ -4,6 +4,10 @@ It's the rest service to manage the pools.
 
 ## End points
 
-### `pool/findPools?poolLayoutId=01FQWJ2KC6HPFPB0CWBM624SHA`
+### `pool/findPools?poolLayoutId=#`
 
-Return a page of the pools associated to a pool layout and matches with the filter.
+Return a page of the Pools associated to a pool layout and matches with the filter.
+
+### `pool/findPoolsGamblers?poolId=#`
+
+Return a page of the PoolsGamblers associated to a pool and matches with the filter.

@@ -12,9 +12,10 @@
         <Compile Include="PositiveInt.fs" />
         <Compile Include="DateTime.fs" />
         <Compile Include="Ulid.fs" />
+        <Compile Include="Email.fs" />
     </ItemGroup>
     <ItemGroup>
         <PackageReference Include="Ulid" Version="1.2.6" />
-        <PackageReference Update="FSharp.Core" Version="6.0.3" />
+        <PackageReference Update="FSharp.Core" Version="6.0.5" />
     </ItemGroup>
 </Project>

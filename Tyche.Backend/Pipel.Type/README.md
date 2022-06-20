@@ -9,6 +9,7 @@ This project has the next types:
 - `Percentage`
 - `PositiveInt`
 - `Uuid`
+- `Email`
 
 The next one is an example of a model that uses this data types:
 

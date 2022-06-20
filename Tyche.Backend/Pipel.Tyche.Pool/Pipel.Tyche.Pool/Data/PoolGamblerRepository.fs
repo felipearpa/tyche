@@ -10,18 +10,14 @@ open Pipel.Data.DynamoDb
 open Pipel.Data.DynamoDb.Repository
 open Pipel.Tyche.Pool.Data
 
-type IPoolRepository =
+type IPoolGamblerRepository =
 
-    abstract AsyncFindWithCursorPagination:
-        PoolLayoutEntityPK * string option * string option -> Async<PoolEntity CursorPage>
+    abstract AsyncFindWithCursorPagination: PoolEntityPK * string option * string option -> Async<PoolGamblerEntity CursorPage>
 
-type PoolRepository(serializer: ISerializer, client: IAmazonDynamoDB) =
+type PoolGamblerRepository(serializer: ISerializer, client: IAmazonDynamoDB) =
 
     [<Literal>]
     let tableName = "Pool"
-
-    [<Literal>]
-    let poolLayoutText = "POOLLAYOUT"
 
     [<Literal>]
     let poolText = "POOL"
@@ -29,22 +25,20 @@ type PoolRepository(serializer: ISerializer, client: IAmazonDynamoDB) =
     let context = new DynamoDBContext(client)
 
     let map (dictionary: IDictionary<string, AttributeValue>) =
-        context.FromDocument<PoolEntity>(Document.FromAttributeMap(Dictionary(dictionary)))
+        context.FromDocument<PoolGamblerEntity>(Document.FromAttributeMap(Dictionary(dictionary)))
 
-    interface IPoolRepository with
+    interface IPoolGamblerRepository with
 
-        member this.AsyncFindWithCursorPagination(poolLayoutEntityPK, filterText, next) =
+        member this.AsyncFindWithCursorPagination(poolPK, filterText, next) =
             async {
                 let mutable defaultCondition =
-                    "begins_with(#pk, :poolLayout) and begins_with(#sk, :pool) and #pk = :poolLayoutPK"
+                    "#pk = :poolPK"
 
                 let mutable defaultAttributeValues =
-                    dict [ ":poolLayout", AttributeValue($"#{poolLayoutText}#")
-                           ":pool", AttributeValue($"#{poolText}#")
-                           ":poolLayoutPK", AttributeValue($"#{poolLayoutText}#{poolLayoutEntityPK.PoolLayoutId}") ]
+                    dict [ ":poolPK", AttributeValue($"#{poolText}#{poolPK.PoolId}") ]
 
                 let mutable defaultAttributeNames =
-                    dict [ "#pk", "pk"; "#sk", "sk" ]
+                    dict [ "#pk", "pk" ]
 
                 if filterText.IsSome then
                     defaultCondition <-

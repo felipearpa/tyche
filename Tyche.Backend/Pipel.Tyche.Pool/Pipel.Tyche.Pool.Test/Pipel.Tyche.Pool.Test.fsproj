@@ -9,15 +9,17 @@
 
     <ItemGroup>
         <Compile Include="UseCases\FindPoolsUseCaseTests.fs" />
-        <Compile Include="PoolLayoutDomainMapperTests.fs" />
+        <Compile Include="UseCases\FindPoolsGamblersUseCaseTests.fs" />
+        <Compile Include="PoolDomainMapperTests.fs" />
+        <Compile Include="PoolGamblerDomainMapperTests.fs" />
         <Compile Include="Program.fs" />
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.1.0" />
-        <PackageReference Include="Moq" Version="4.16.1" />
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.2.0" />
+        <PackageReference Include="Moq" Version="4.18.1" />
         <PackageReference Include="xunit" Version="2.4.1" />
-        <PackageReference Include="xunit.runner.visualstudio" Version="2.4.3">
+        <PackageReference Include="xunit.runner.visualstudio" Version="2.4.5">
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
             <PrivateAssets>all</PrivateAssets>
         </PackageReference>
@@ -25,7 +27,7 @@
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
             <PrivateAssets>all</PrivateAssets>
         </PackageReference>
-        <PackageReference Update="FSharp.Core" Version="6.0.3" />
+        <PackageReference Update="FSharp.Core" Version="6.0.5" />
     </ItemGroup>
 
     <ItemGroup>

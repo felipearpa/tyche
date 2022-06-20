@@ -17,7 +17,21 @@ type WebApplication with
             "/pool/findPools",
             Func<_, _, _, _, _, _>
                 (fun (poolLayoutId: string) (filterText: string) (nextToken: string) (findPoolsUseCase: IFindPoolsUseCase) (mapFromDomainToViewFunc: MapFunc<Pool, PoolResponse>) ->
-                    FindPools.execute poolLayoutId filterText nextToken findPoolsUseCase mapFromDomainToViewFunc
+                    FindPoolsUseCase.execute poolLayoutId filterText nextToken findPoolsUseCase mapFromDomainToViewFunc
+                    |> Async.StartAsTask)
+        )
+        |> ignore
+
+        this.MapGet(
+            "/pool/findPoolsGamblers",
+            Func<_, _, _, _, _, _>
+                (fun (poolId: string) (filterText: string) (nextToken: string) (findPoolsGamblersUseCase: IFindPoolsGamblersUseCase) (mapFromDomainToViewFunc: MapFunc<PoolGambler, PoolGamblerResponse>) ->
+                    FindPoolsGamblersUseCase.execute
+                        poolId
+                        filterText
+                        nextToken
+                        findPoolsGamblersUseCase
+                        mapFromDomainToViewFunc
                     |> Async.StartAsTask)
         )
         |> ignore

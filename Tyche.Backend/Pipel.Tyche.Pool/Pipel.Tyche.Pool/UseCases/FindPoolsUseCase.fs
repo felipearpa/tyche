@@ -7,7 +7,6 @@ open Pipel.Tyche.Pool.Domain
 open Pipel.Tyche.Pool.Data
 open Pipel.Type
 
-[<Interface>]
 type IFindPoolsUseCase =
 
     abstract AsyncExecute : PoolLayoutPK * string option * string option -> Async<Pool CursorPage>

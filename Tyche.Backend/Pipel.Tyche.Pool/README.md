@@ -6,7 +6,7 @@ It contents the business rules to manage the pools.
 
 ### `Pool`
 
-It's the model to manage the pools.
+It's the model to manage the Pools.
 
 ```f#
 type PoolLayoutPK = { PoolLayoutId: Ulid }
@@ -21,8 +21,29 @@ type Pool =
       BeforePosition: PositiveInt option }
 ```
 
+### `PoolGambler`
+
+It's the model to manage the PoolsGamblers.
+
+```f#
+type PoolGamblerPK =
+    { PoolPK: PoolPK
+      GamblerPK: GamblerPK }
+
+type PoolGambler =
+    { PoolGamblerPK: PoolGamblerPK
+      GamblerEmail: Email
+      Score: PositiveInt option
+      CurrentPosition: PositiveInt option
+      BeforePosition: PositiveInt option }
+```
+
 ## Use cases
 
 ### `FindPoolsUseCase`
 
-Return the pools associated to a pool layout.
+Return the Pool list associated to a PoolLayout.
+
+### `FindPoolsGamblersUseCase`
+
+Return the PoolGambler list associated to a Pool.

@@ -8,4 +8,6 @@ module RegistersForUseCases =
     type IServiceCollection with
 
         member this.RegisterUseCases() =
-            this.AddTransient<IFindPoolsUseCase, FindPoolsUseCase>()
+            this
+                .AddTransient<IFindPoolsUseCase, FindPoolsUseCase>()
+                .AddTransient<IFindPoolsGamblersUseCase, FindPoolsGamblersUseCase>()

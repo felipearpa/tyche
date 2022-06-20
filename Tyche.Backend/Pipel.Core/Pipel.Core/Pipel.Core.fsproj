@@ -15,10 +15,10 @@
         <Compile Include="Dict.fs" />
     </ItemGroup>
     <ItemGroup>
-        <PackageReference Include="FSharp.SystemTextJson" Version="0.17.4" />
+        <PackageReference Include="FSharp.SystemTextJson" Version="0.18.24" />
         <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.2.2" />
         <PackageReference Include="Microsoft.AspNetCore.Diagnostics.Abstractions" Version="2.2.0" />
-        <PackageReference Include="System.Linq.Dynamic.Core" Version="1.2.17" />
-        <PackageReference Update="FSharp.Core" Version="6.0.3" />
+        <PackageReference Include="System.Linq.Dynamic.Core" Version="1.2.18" />
+        <PackageReference Update="FSharp.Core" Version="6.0.5" />
     </ItemGroup>
 </Project>
