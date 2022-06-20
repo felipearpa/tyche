@@ -193,6 +193,6 @@ private fun DownProgressIndicatorPreview() {
 @Composable
 private fun FakePreview() {
     TycheTheme {
-        FakePoolItem()
+        FakePoolItem(modifier = Modifier.fillMaxWidth())
     }
 }

@@ -17,7 +17,7 @@ fun <TModel : Any> RefreshableLazyColumn(
     contentPadding: PaddingValues = PaddingValues(0.dp),
     verticalArrangement: Arrangement.Vertical = Arrangement.Bottom,
     filterContent: @Composable (() -> Unit)? = null,
-    onLoadingContent: @Composable () -> Unit,
+    onLoadingContent: @Composable (() -> Unit)? = null,
     itemContent: @Composable (TModel) -> Unit
 ) {
     RefreshableLazyColumn(
@@ -48,9 +48,8 @@ fun <TModel : Any> RefreshableLazyColumn(
         },
         onEmptyContent = {
             ColumnEmpty(modifier = Modifier.fillMaxWidth())
-        },
-        itemContent = { item ->
-            itemContent(item)
         }
-    )
+    ) { item ->
+        itemContent(item)
+    }
 }

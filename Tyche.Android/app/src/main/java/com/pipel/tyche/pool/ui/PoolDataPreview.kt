@@ -10,17 +10,15 @@ import com.pipel.tyche.pool.view.PoolModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 
-fun poolsForPreview(): List<Pool> {
-    return listOf(
-        Pool(
-            poolId = Ulid.randomUlid(),
-            poolLayoutId = Ulid.randomUlid(),
-            poolName = NonEmptyString("Copa América 2022 UTP"),
-            currentPosition = PositiveInt(1),
-            beforePosition = null
-        )
+fun poolsForPreview(): List<Pool> = listOf(
+    Pool(
+        poolId = Ulid.randomUlid(),
+        poolLayoutId = Ulid.randomUlid(),
+        poolName = NonEmptyString("Copa América 2022 UTP"),
+        currentPosition = PositiveInt(1),
+        beforePosition = null
     )
-}
+)
 
 fun poolsModelsForPreview(): List<PoolModel> =
     poolsForPreview().map(PoolMapper::mapFromDomainToView)

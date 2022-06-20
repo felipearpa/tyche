@@ -9,24 +9,30 @@ import com.pipel.tyche.pool.view.PoolModel
 
 object PoolMapper {
 
-    fun mapFromDataToDomain(dataModel: PoolResponse): Pool {
-        return Pool(
+    fun mapFromDataToDomain(dataModel: PoolResponse): Pool =
+        Pool(
             poolId = Ulid(dataModel.poolId),
             poolLayoutId = Ulid(dataModel.poolLayoutId),
             poolName = NonEmptyString(dataModel.poolName),
-            currentPosition = if (dataModel.currentPosition != null) PositiveInt(dataModel.currentPosition) else null,
-            beforePosition = if (dataModel.beforePosition != null) PositiveInt(dataModel.beforePosition) else null
+            currentPosition = dataModel.currentPosition?.let { currentPosition ->
+                return@let PositiveInt(
+                    currentPosition
+                )
+            },
+            beforePosition = dataModel.beforePosition?.let { beforePosition ->
+                return@let PositiveInt(
+                    beforePosition
+                )
+            }
         )
-    }
 
-    fun mapFromDomainToView(domainModel: Pool): PoolModel {
-        return PoolModel(
+    fun mapFromDomainToView(domainModel: Pool): PoolModel =
+        PoolModel(
             poolId = domainModel.poolId.value,
             poolLayoutId = domainModel.poolLayoutId.value,
             poolName = domainModel.poolName.value,
-            currentPosition = if (domainModel.currentPosition != null) domainModel.currentPosition.value else null,
-            beforePosition = if (domainModel.beforePosition != null) domainModel.beforePosition.value else null
+            currentPosition = domainModel.currentPosition?.let { currentPosition -> return@let currentPosition.value },
+            beforePosition = domainModel.beforePosition?.let { beforePosition -> return@let beforePosition.value }
         )
-    }
 
 }

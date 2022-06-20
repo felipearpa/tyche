@@ -20,7 +20,7 @@ private fun <TModel : Any> LazyColumn(
     contentPadding: PaddingValues = PaddingValues(0.dp),
     verticalArrangement: Arrangement.Vertical = Arrangement.Bottom,
     filterContent: @Composable (() -> Unit)? = null,
-    onLoadingContent: @Composable () -> Unit,
+    onLoadingContent: @Composable (() -> Unit)? = null,
     onLoadingAppendContent: @Composable () -> Unit,
     onErrorAppendContent: @Composable () -> Unit,
     onErrorContent: @Composable () -> Unit,
@@ -37,7 +37,8 @@ private fun <TModel : Any> LazyColumn(
         }
 
         with(lazyItems) {
-            if (loadState.refresh !is LoadState.Loading) {
+
+            val defaultContent = {
                 items(lazyItems) { item ->
                     itemContent(item!!)
                 }
@@ -51,10 +52,18 @@ private fun <TModel : Any> LazyColumn(
                 }
             }
 
+            if (loadState.refresh !is LoadState.Loading) {
+                defaultContent()
+            }
+
             when {
                 loadState.refresh is LoadState.Loading -> {
                     item {
-                        onLoadingContent()
+                        onLoadingContent?.let { loadingContent ->
+                            loadingContent()
+                        } ?: run {
+                            defaultContent()
+                        }
                     }
                 }
 
@@ -87,7 +96,7 @@ fun <TModel : Any> RefreshableLazyColumn(
     contentPadding: PaddingValues = PaddingValues(0.dp),
     verticalArrangement: Arrangement.Vertical = Arrangement.Bottom,
     filterContent: @Composable (() -> Unit)? = null,
-    onLoadingContent: @Composable () -> Unit,
+    onLoadingContent: @Composable (() -> Unit)? = null,
     onLoadingAppendContent: @Composable () -> Unit,
     onErrorAppendContent: @Composable () -> Unit,
     onErrorContent: @Composable () -> Unit,

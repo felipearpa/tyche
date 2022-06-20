@@ -34,7 +34,7 @@ fun PoolList(
     lazyPools: LazyPagingItems<PoolModel>,
     filterText: String,
     onFilterChange: (String) -> Unit,
-    fakeItemCount: Int
+    fakeItemCount: Int? = null
 ) {
     RefreshableLazyColumn(
         modifier = Modifier
@@ -49,11 +49,13 @@ fun PoolList(
                 onFilterChange = onFilterChange
             )
         },
-        onLoadingContent = {
-            for (i in 1..fakeItemCount) {
-                Spacer(modifier = Modifier.height(8.dp))
-                FakePoolItem(modifier = Modifier.fillMaxWidth())
-                Divider()
+        onLoadingContent = fakeItemCount?.let { count ->
+            {
+                for (i in 1..count) {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    FakePoolItem(modifier = Modifier.fillMaxWidth())
+                    Divider()
+                }
             }
         }
     ) { pool ->
@@ -68,7 +70,6 @@ private fun PoolListPreview() {
     PoolList(
         lazyPools = poolsModelsFlowForPreview().collectAsLazyPagingItems(),
         filterText = String.empty(),
-        onFilterChange = {},
-        fakeItemCount = 10
+        onFilterChange = {}
     )
 }

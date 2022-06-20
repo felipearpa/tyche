@@ -9,22 +9,20 @@ import com.pipel.tyche.poolLayout.view.PoolLayoutModel
 
 object PoolLayoutMapper {
 
-    fun mapFromDataToDomain(dataModel: PoolLayoutResponse): PoolLayout {
-        return PoolLayout(
+    fun mapFromDataToDomain(dataModel: PoolLayoutResponse): PoolLayout =
+        PoolLayout(
             Ulid(dataModel.poolLayoutId),
             NonEmptyString(dataModel.name),
             DateTime(dataModel.startOpeningDateTime),
             DateTime(dataModel.endOpeningDateTime)
         )
-    }
 
-    fun mapFromDomainToView(domainModel: PoolLayout): PoolLayoutModel {
-        return PoolLayoutModel(
+    fun mapFromDomainToView(domainModel: PoolLayout): PoolLayoutModel =
+        PoolLayoutModel(
             domainModel.poolLayoutId.value,
             domainModel.name.value,
             domainModel.openingStartDateTime.value,
             domainModel.openingEndDateTime.value
         )
-    }
 
 }

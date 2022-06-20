@@ -34,7 +34,7 @@ fun PoolLayoutList(
     lazyPoolsLayouts: LazyPagingItems<PoolLayoutModel>,
     filterText: String,
     onFilterChange: (String) -> Unit,
-    fakeItemCount: Int
+    fakeItemCount: Int? = null
 ) {
     RefreshableLazyColumn(
         modifier = Modifier.fillMaxWidth(),
@@ -47,11 +47,13 @@ fun PoolLayoutList(
                 onFilterChange = onFilterChange
             )
         },
-        onLoadingContent = {
-            for (i in 1..fakeItemCount) {
-                Spacer(modifier = Modifier.height(8.dp))
-                FakePoolLayoutItem(modifier = Modifier.fillMaxWidth())
-                Divider()
+        onLoadingContent = fakeItemCount?.let { count ->
+            {
+                for (i in 1..count) {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    FakePoolLayoutItem(modifier = Modifier.fillMaxWidth())
+                    Divider()
+                }
             }
         }
     ) { poolLayout ->
@@ -67,7 +69,6 @@ private fun PoolLayoutListPreview() {
     PoolLayoutList(
         lazyPoolsLayouts = lazyItems,
         filterText = String.empty(),
-        onFilterChange = {},
-        fakeItemCount = 10
+        onFilterChange = {}
     )
 }
