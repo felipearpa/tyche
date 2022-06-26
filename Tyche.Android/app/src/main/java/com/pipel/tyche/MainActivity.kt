@@ -19,6 +19,10 @@ import com.pipel.tyche.pool.ui.PoolView
 import com.pipel.tyche.pool.ui.PoolViewModel
 import com.pipel.tyche.pool.ui.PoolViewModelFactory
 import com.pipel.tyche.pool.ui.providePoolViewModelFactory
+import com.pipel.tyche.poolGambler.ui.PoolGamblerView
+import com.pipel.tyche.poolGambler.ui.PoolGamblerViewModel
+import com.pipel.tyche.poolGambler.ui.PoolGamblerViewModelFactory
+import com.pipel.tyche.poolGambler.ui.providePoolGamblerViewModelFactory
 import com.pipel.tyche.poolLayout.ui.PoolLayoutView
 import com.pipel.tyche.ui.theme.TycheTheme
 import com.pipel.tyche.ui.theme.appTopBar
@@ -36,6 +40,7 @@ class MainActivity : ComponentActivity() {
     @InstallIn(ActivityComponent::class)
     interface ViewModelFactoryProvider {
         fun poolViewModelFactory(): PoolViewModelFactory
+        fun poolGamblerViewModelFactory(): PoolGamblerViewModelFactory
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -75,18 +80,40 @@ fun poolViewModel(): PoolViewModel {
         LocalContext.current as Activity,
         MainActivity.ViewModelFactoryProvider::class.java
     ).poolViewModelFactory()
-    return viewModel(factory = providePoolViewModelFactory(factory, "01FQWJ2KC6HPFPB0CWBM624SHA"))
+    return viewModel(
+        factory = providePoolViewModelFactory(
+            assistedFactory = factory,
+            pooLayoutId = "01FQWJ2KC6HPFPB0CWBM624SHA"
+        )
+    )
+}
+
+@Composable
+fun poolGamblerViewModel(): PoolGamblerViewModel {
+    val factory = EntryPointAccessors.fromActivity(
+        LocalContext.current as Activity,
+        MainActivity.ViewModelFactoryProvider::class.java
+    ).poolGamblerViewModelFactory()
+    return viewModel(
+        factory = providePoolGamblerViewModelFactory(
+            assistedFactory = factory,
+            pooId = "01FWY439D279KT6N8QS4E4PB0V"
+        )
+    )
 }
 
 @Composable
 fun Outlet() {
     val navController = rememberNavController()
-    NavHost(navController, startDestination = "Pool") {
+    NavHost(navController, startDestination = "PoolGambler") {
         composable(route = "PoolLayout") {
             PoolLayoutView(hiltViewModel())
         }
         composable(route = "Pool") {
             PoolView(poolViewModel())
+        }
+        composable(route = "PoolGambler") {
+            PoolGamblerView(poolGamblerViewModel())
         }
     }
 }
