@@ -37,7 +37,7 @@ let ``given a basic settings when asyncFindWithCursorPagination is called then a
 
     let afterPage =
         client.Object
-        |> asyncFindWithCursorPagination "table" None (fun attrs -> "") None serializer
+        |> asyncScan "table" None (fun attrs -> "") None serializer
         |> Async.RunSynchronously
 
     Assert.Equal(0, afterPage.Items.Count())

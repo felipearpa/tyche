@@ -64,5 +64,5 @@ type PoolRepository(serializer: ISerializer, client: IAmazonDynamoDB) =
 
                 return!
                     client
-                    |> asyncFindWithCursorPagination tableName (Some filter) map next (KeySerializer(serializer))
+                    |> asyncScan tableName (Some filter) map next (KeySerializer(serializer))
             }

@@ -12,12 +12,16 @@ open Pipel.Tyche.Pool.Data
 
 type IPoolGamblerRepository =
 
-    abstract AsyncFindWithCursorPagination: PoolEntityPK * string option * string option -> Async<PoolGamblerEntity CursorPage>
+    abstract AsyncFindWithCursorPagination:
+        PoolEntityPK * string option * string option -> Async<PoolGamblerEntity CursorPage>
 
 type PoolGamblerRepository(serializer: ISerializer, client: IAmazonDynamoDB) =
 
     [<Literal>]
     let tableName = "Pool"
+
+    [<Literal>]
+    let indexName = "pk-score-index"
 
     [<Literal>]
     let poolText = "POOL"
@@ -31,32 +35,39 @@ type PoolGamblerRepository(serializer: ISerializer, client: IAmazonDynamoDB) =
 
         member this.AsyncFindWithCursorPagination(poolPK, filterText, next) =
             async {
-                let mutable defaultCondition =
-                    "#pk = :poolPK"
+                let keyExpression = "#pk = :poolPK"
 
-                let mutable defaultAttributeValues =
+                let mutable filterExpression: string option =
+                    None
+
+                let mutable attributeValues =
                     dict [ ":poolPK", AttributeValue($"#{poolText}#{poolPK.PoolId}") ]
 
-                let mutable defaultAttributeNames =
+                let mutable attributeNames =
                     dict [ "#pk", "pk" ]
 
                 if filterText.IsSome then
-                    defaultCondition <-
-                        defaultCondition
-                        + " and contains(#filter, :filter)"
+                    filterExpression <- Some "contains(#filter, :filter)"
 
-                    defaultAttributeValues <-
-                        defaultAttributeValues
+                    attributeValues <-
+                        attributeValues
                         |> Dict.union (dict [ ":filter", AttributeValue(filterText.Value.ToLower()) ])
 
-                    defaultAttributeNames <-
-                        defaultAttributeNames
+                    attributeNames <-
+                        attributeNames
                         |> Dict.union (dict [ "#filter", "filter" ])
-
-                let filter =
-                    (defaultCondition, defaultAttributeValues, Some defaultAttributeNames)
 
                 return!
                     client
-                    |> asyncFindWithCursorPagination tableName (Some filter) map next (KeySerializer(serializer))
+                    |> asyncQuery
+                        tableName
+                        (Some indexName)
+                        keyExpression
+                        filterExpression
+                        attributeValues
+                        (Some attributeNames)
+                        false
+                        map
+                        next
+                        (KeySerializer(serializer))
             }
