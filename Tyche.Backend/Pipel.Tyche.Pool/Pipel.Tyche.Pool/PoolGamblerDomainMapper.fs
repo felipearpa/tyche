@@ -7,8 +7,9 @@ open Pipel.Type
 module PoolGamblerDomainMapper =
 
     let mapFromDomainToData (persistenceModel: PoolGamblerEntity) =
-        { PoolGambler.PoolGamblerPK = { PoolPK = { PoolId = Ulid.From persistenceModel.GamblerId  }
-                                        GamblerPK = { GamblerId = Ulid.From persistenceModel.GamblerId } }
+        { PoolGambler.PoolGamblerPK =
+            { PoolPK = { PoolId = Ulid.From persistenceModel.PoolId }
+              GamblerPK = { GamblerId = Ulid.From persistenceModel.GamblerId } }
           GamblerEmail = Email.From persistenceModel.GamblerEmail
           Score = PositiveInt.TryFromNullable persistenceModel.Score
           CurrentPosition = PositiveInt.TryFromNullable persistenceModel.CurrentPosition

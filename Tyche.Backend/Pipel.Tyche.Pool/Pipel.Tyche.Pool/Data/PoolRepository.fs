@@ -12,7 +12,7 @@ open Pipel.Tyche.Pool.Data
 
 type IPoolRepository =
 
-    abstract AsyncFindWithCursorPagination:
+    abstract AsyncFind:
         PoolLayoutEntityPK * string option * string option -> Async<PoolEntity CursorPage>
 
 type PoolRepository(serializer: ISerializer, client: IAmazonDynamoDB) =
@@ -33,7 +33,7 @@ type PoolRepository(serializer: ISerializer, client: IAmazonDynamoDB) =
 
     interface IPoolRepository with
 
-        member this.AsyncFindWithCursorPagination(poolLayoutEntityPK, filterText, next) =
+        member this.AsyncFind(poolLayoutEntityPK, filterText, next) =
             async {
                 let mutable defaultCondition =
                     "begins_with(#pk, :poolLayout) and begins_with(#sk, :pool) and #pk = :poolLayoutPK"

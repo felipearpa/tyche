@@ -21,22 +21,19 @@ type KeySerializer(serializer: ISerializer) =
             )
 
         member this.Deserialize value =
-            let dictionary =
-                serializer.Deserialize<Dictionary<string, obj>>(value)
+            let dictionary = serializer.Deserialize<Dictionary<string, obj>>(value)
 
             dict [ "pk", AttributeValue(dictionary.["pk"].ToString())
                    "sk", AttributeValue(dictionary.["sk"].ToString()) ]
 
-[<Interface>]
 type IPoolLayoutRepository =
 
-    abstract AsyncFindWithCursorPagination :
-        string option * string option * DbFilter option -> Async<PoolLayoutEntity CursorPage>
+    abstract AsyncFind: string option * string option * ScanFilter option -> Async<PoolLayoutEntity CursorPage>
 
 type PoolLayoutRepository(serializer: ISerializer, client: IAmazonDynamoDB) =
 
     [<Literal>]
-    let tableName = "Pool"
+    let tableName = "PoolLayout"
 
     let context = new DynamoDBContext(client)
 
@@ -45,7 +42,7 @@ type PoolLayoutRepository(serializer: ISerializer, client: IAmazonDynamoDB) =
 
     interface IPoolLayoutRepository with
 
-        member this.AsyncFindWithCursorPagination(filterText, next, filter) =
+        member this.AsyncFind(filterText, next, filter) =
             async {
                 let customCondition, customAttributeValues, customAttributeNames =
                     match filter with
@@ -78,10 +75,10 @@ type PoolLayoutRepository(serializer: ISerializer, client: IAmazonDynamoDB) =
                         defaultAttributeNames
                         |> Dict.union (dict [ "#filter", "filter" ])
 
-                let (filter: DbFilter) =
+                let (filter: ScanFilter) =
                     (defaultCondition, defaultAttributeValues, Some defaultAttributeNames)
 
                 return!
                     client
-                    |> asyncFindWithCursorPagination tableName (Some filter) map next (KeySerializer(serializer))
+                    |> asyncScan tableName (Some filter) map next (KeySerializer(serializer))
             }

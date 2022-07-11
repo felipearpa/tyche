@@ -10,8 +10,10 @@
     <ItemGroup>
         <Compile Include="UseCases\FindPoolsUseCaseTests.fs" />
         <Compile Include="UseCases\FindPoolsGamblersUseCaseTests.fs" />
+        <Compile Include="UseCases\FindPoolsGamesUseCaseTests.fs" />
         <Compile Include="PoolDomainMapperTests.fs" />
         <Compile Include="PoolGamblerDomainMapperTests.fs" />
+        <Compile Include="PoolGameDomainMapperTests.fs" />
         <Compile Include="Program.fs" />
     </ItemGroup>
 

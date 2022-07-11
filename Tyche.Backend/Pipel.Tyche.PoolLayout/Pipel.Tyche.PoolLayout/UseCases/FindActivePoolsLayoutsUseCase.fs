@@ -12,7 +12,7 @@ open Pipel.Tyche.PoolLayout.Data
 [<Interface>]
 type IFindActivePoolsLayoutsUseCase =
 
-    abstract AsyncExecute : string option * string option -> Async<PoolLayout CursorPage>
+    abstract AsyncExecute: string option * string option -> Async<PoolLayout CursorPage>
 
 type FindActivePoolsLayoutsUseCase
     (
@@ -28,19 +28,16 @@ type FindActivePoolsLayoutsUseCase
                     DateTime.Now.ToUniversalTime().ToISOString()
 
                 return!
-                    asyncFindWithCursorPagination
-                        next
-                        mapFromDataToDomainFunc
-                        (fun next ->
-                            poolLayoutRepository.AsyncFindWithCursorPagination(
-                                filterText,
-                                next,
-                                (("and #startOpeningDateTime <= :startOpeningDateTime and #endOpeningDateTime > :endOpeningDateTime",
-                                  dict [ ":startOpeningDateTime", AttributeValue(nowIsoString)
-                                         ":endOpeningDateTime", AttributeValue(nowIsoString) ],
-                                  dict [ "#startOpeningDateTime", "startOpeningDateTime"
-                                         "#endOpeningDateTime", "endOpeningDateTime" ]
-                                  |> Some)
-                                 |> Some)
-                            ))
+                    asyncFindWithCursorPagination next mapFromDataToDomainFunc (fun next ->
+                        poolLayoutRepository.AsyncFind(
+                            filterText,
+                            next,
+                            (("and #startOpeningDateTime <= :startOpeningDateTime and #endOpeningDateTime > :endOpeningDateTime",
+                              dict [ ":startOpeningDateTime", AttributeValue(nowIsoString)
+                                     ":endOpeningDateTime", AttributeValue(nowIsoString) ],
+                              dict [ "#startOpeningDateTime", "startOpeningDateTime"
+                                     "#endOpeningDateTime", "endOpeningDateTime" ]
+                              |> Some)
+                             |> Some)
+                        ))
             }

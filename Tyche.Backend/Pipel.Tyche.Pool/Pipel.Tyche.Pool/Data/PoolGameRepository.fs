@@ -10,47 +10,45 @@ open Pipel.Data.DynamoDb
 open Pipel.Data.DynamoDb.Repository
 open Pipel.Tyche.Pool.Data
 
-type IPoolGamblerRepository =
+type IPoolGameRepository =
 
-    abstract AsyncFind: PoolEntityPK * string option * string option -> Async<PoolGamblerEntity CursorPage>
+    abstract AsyncFind: PoolEntityPK * string option * string option -> Async<PoolGameEntity CursorPage>
 
-type PoolGamblerRepository(serializer: ISerializer, client: IAmazonDynamoDB) =
+type PoolGameRepository(serializer: ISerializer, client: IAmazonDynamoDB) =
 
     [<Literal>]
     let tableName = "Pool"
 
     [<Literal>]
-    let indexName = "pk-score-index"
-
-    [<Literal>]
     let poolText = "POOL"
 
     [<Literal>]
-    let gamblerText = "GAMBLER"
+    let gameText = "GAME"
 
     let context = new DynamoDBContext(client)
 
     let map (dictionary: IDictionary<string, AttributeValue>) =
-        context.FromDocument<PoolGamblerEntity>(Document.FromAttributeMap(Dictionary(dictionary)))
+        context.FromDocument<PoolGameEntity>(Document.FromAttributeMap(Dictionary(dictionary)))
 
-    interface IPoolGamblerRepository with
+    interface IPoolGameRepository with
 
         member this.AsyncFind(poolPK, filterText, next) =
             async {
-                let keyExpression = "#pk = :poolPK"
+                let keyExpression =
+                    "#pk = :poolPK and begins_with(#sk, :gamePK)"
 
                 let mutable filterExpression: string option =
-                    Some "begins_with(#sk, :gamblerPK)"
+                    None
 
                 let mutable attributeValues =
                     dict [ ":poolPK", AttributeValue($"#{poolText}#{poolPK.PoolId}")
-                           ":gamblerPK", AttributeValue($"#{gamblerText}#") ]
+                           ":gamePK", AttributeValue($"#{gameText}#") ]
 
                 let mutable attributeNames =
                     dict [ "#pk", "pk"; "#sk", "sk" ]
 
                 if filterText.IsSome then
-                    filterExpression <- Some " and contains(#filter, :filter)"
+                    filterExpression <- Some "contains(#filter, :filter)"
 
                     attributeValues <-
                         attributeValues
@@ -64,7 +62,7 @@ type PoolGamblerRepository(serializer: ISerializer, client: IAmazonDynamoDB) =
                     client
                     |> asyncQuery
                         tableName
-                        (Some indexName)
+                        None
                         keyExpression
                         filterExpression
                         attributeValues

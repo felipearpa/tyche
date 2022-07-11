@@ -18,3 +18,5 @@ module RegistersForMappers =
                 .AddSingleton<MapFunc<PoolGambler, PoolGamblerResponse>>(
                     PoolGamblerApplicationMapper.mapFromDomainToApplication
                 )
+                .AddSingleton<MapFunc<PoolGameEntity, PoolGame>>(PoolGameDomainMapper.mapFromDomainToData)
+                .AddSingleton<MapFunc<PoolGame, PoolGameResponse>>(PoolGameApplicationMapper.mapFromDomainToApplication)

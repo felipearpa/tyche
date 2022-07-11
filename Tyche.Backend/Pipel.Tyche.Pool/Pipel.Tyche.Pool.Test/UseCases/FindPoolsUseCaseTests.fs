@@ -20,7 +20,7 @@ let ``given an empty next token and an empty filter when FindActivePoolsLayoutsU
     let asyncFindAndPaginateSignature =
         FuncAs.LinqExpression
             (fun (repository: IPoolRepository) ->
-                repository.AsyncFindWithCursorPagination(
+                repository.AsyncFind(
                     It.IsAny<PoolLayoutEntityPK>(),
                     It.IsAny<string option>(),
                     It.IsAny<string option>()

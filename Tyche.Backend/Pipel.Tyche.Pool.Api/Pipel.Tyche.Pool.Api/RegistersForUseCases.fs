@@ -11,3 +11,4 @@ module RegistersForUseCases =
             this
                 .AddTransient<IFindPoolsUseCase, FindPoolsUseCase>()
                 .AddTransient<IFindPoolsGamblersUseCase, FindPoolsGamblersUseCase>()
+                .AddTransient<IFindPoolsGamesUseCase, FindPoolsGamesUseCase>()

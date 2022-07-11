@@ -22,7 +22,7 @@ type FindPoolsGamblersUseCase(poolGamblerRepository: IPoolGamblerRepository, map
                         next
                         mapFromDataToDomainFunc
                         (fun next ->
-                            poolGamblerRepository.AsyncFindWithCursorPagination(
+                            poolGamblerRepository.AsyncFind(
                                 { PoolEntityPK.PoolId = poolPK.PoolId |> Ulid.toString },
                                 filterText,
                                 next

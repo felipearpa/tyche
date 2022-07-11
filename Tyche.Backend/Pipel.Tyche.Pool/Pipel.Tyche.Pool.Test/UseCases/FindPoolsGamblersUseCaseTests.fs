@@ -22,7 +22,7 @@ let ``given an empty next token and an empty filter when FindActivePoolsGamblers
 
     let asyncFindAndPaginateSignature =
         FuncAs.LinqExpression (fun (repository: IPoolGamblerRepository) ->
-            repository.AsyncFindWithCursorPagination(It.IsAny(), It.IsAny(), It.IsAny()))
+            repository.AsyncFind(It.IsAny(), It.IsAny(), It.IsAny()))
 
     poolGamblerRepositoryMock
         .Setup(asyncFindAndPaginateSignature)

@@ -35,3 +35,17 @@ type WebApplication with
                     |> Async.StartAsTask)
         )
         |> ignore
+
+        this.MapGet(
+            "/pool/findPoolsGames",
+            Func<_, _, _, _, _, _>
+                (fun (poolId: string) (filterText: string) (nextToken: string) (findPoolsGamesUseCase: IFindPoolsGamesUseCase) (mapFromDomainToViewFunc: MapFunc<PoolGame, PoolGameResponse>) ->
+                    FindPoolsGamesUseCase.execute
+                        poolId
+                        filterText
+                        nextToken
+                        findPoolsGamesUseCase
+                        mapFromDomainToViewFunc
+                    |> Async.StartAsTask)
+        )
+        |> ignore

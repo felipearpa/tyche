@@ -10,8 +10,8 @@ open Xunit
 [<Fact>]
 let ``given a PoolGamblerEntity when this one is mapped to PoolGambler then an identical PoolGambler is returned`` () =
     let poolGamblerEntity =
-        { PoolGamblerEntity.Pk = ""
-          Sk = ""
+        { PoolGamblerEntity.Pk = "sk"
+          Sk = "pk"
           PoolId = Ulid.newUlid () |> Ulid.toString
           GamblerId = Ulid.newUlid () |> Ulid.toString
           GamblerEmail = "email@email.com"
@@ -27,4 +27,25 @@ let ``given a PoolGamblerEntity when this one is mapped to PoolGambler then an i
         poolGamblerEntity.PoolId,
         poolGambler.PoolGamblerPK.PoolPK.PoolId
         |> Ulid.toString
+    )
+
+    Assert.Equal(
+        poolGamblerEntity.GamblerId,
+        poolGambler.PoolGamblerPK.GamblerPK.GamblerId
+        |> Ulid.toString
+    )
+
+    Assert.Equal(poolGamblerEntity.GamblerEmail, poolGambler.GamblerEmail |> Email.toString)
+    Assert.Equal(poolGamblerEntity.Score, poolGambler.Score |> PositiveInt.nullableValue)
+
+    Assert.Equal(
+        poolGamblerEntity.CurrentPosition,
+        poolGambler.CurrentPosition
+        |> PositiveInt.nullableValue
+    )
+
+    Assert.Equal(
+        poolGamblerEntity.BeforePosition,
+        poolGambler.BeforePosition
+        |> PositiveInt.nullableValue
     )

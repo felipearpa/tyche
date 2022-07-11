@@ -12,14 +12,20 @@
         <Compile Include="Data\PoolRepository.fs" />
         <Compile Include="Data\PoolGambler.fs" />
         <Compile Include="Data\PoolGamblerRepository.fs" />
+        <Compile Include="Data\PoolGame.fs" />
+        <Compile Include="Data\PoolGameRepository.fs" />
         <Compile Include="Domain\PoolLayout.fs" />
         <Compile Include="Domain\Pool.fs" />
         <Compile Include="Domain\Gambler.fs" />
         <Compile Include="Domain\PoolGambler.fs" />
+        <Compile Include="Domain\Game.fs" />
+        <Compile Include="Domain\PoolGame.fs" />
         <Compile Include="UseCases\FindPoolsUseCase.fs" />
         <Compile Include="UseCases\FindPoolsGamblersUseCase.fs" />
+        <Compile Include="UseCases\FindPoolsGamesUseCase.fs" />
         <Compile Include="PoolDomainMapper.fs" />
         <Compile Include="PoolGamblerDomainMapper.fs" />
+        <Compile Include="PoolGameDomainMapper.fs" />
     </ItemGroup>
 
     <ItemGroup>

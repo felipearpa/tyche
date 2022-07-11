@@ -11,3 +11,4 @@ module RegistersForRepositories =
             this
                 .AddScoped<IPoolRepository, PoolRepository>()
                 .AddScoped<IPoolGamblerRepository, PoolGamblerRepository>()
+                .AddScoped<IPoolGameRepository, PoolGameRepository>()

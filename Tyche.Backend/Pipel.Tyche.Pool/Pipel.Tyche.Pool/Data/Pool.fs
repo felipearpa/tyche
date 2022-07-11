@@ -10,17 +10,24 @@ type PoolEntityPK = { PoolId: string }
 type PoolEntity =
     { [<DynamoDBProperty("pk")>]
       Pk: string
+
       [<DynamoDBProperty("sk")>]
       Sk: string
+
       [<DynamoDBProperty("poolId")>]
       PoolId: string
+
       [<DynamoDBProperty("poolLayoutId")>]
       PoolLayoutId: string
+
       [<DynamoDBProperty("poolName")>]
       PoolName: string
+
       [<DynamoDBProperty("currentPosition")>]
       CurrentPosition: int Nullable
+
       [<DynamoDBProperty("beforePosition")>]
       BeforePosition: int Nullable
+
       [<DynamoDBProperty("filter")>]
       Filter: string }

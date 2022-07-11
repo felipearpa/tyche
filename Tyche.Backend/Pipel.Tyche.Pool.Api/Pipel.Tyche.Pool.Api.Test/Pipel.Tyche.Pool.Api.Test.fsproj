@@ -14,6 +14,7 @@
         <Compile Include="PoolGamblerApplicationMapperTests.fs" />
         <Compile Include="FindPoolsTests.fs" />
         <Compile Include="FindPoolsGamblersTests.fs" />
+        <Compile Include="FindPoolsGamesTests.fs" />
         <Compile Include="Program.fs" />
     </ItemGroup>
 

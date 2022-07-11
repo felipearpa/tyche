@@ -15,16 +15,12 @@ open Xunit
 let ``given an empty next token and an empty filter when FindActivePoolsLayoutsUseCase is executed then all of active PoolLayout are returned``
     ()
     =
-    let poolLayoutRepositoryMock = Mock<IPoolLayoutRepository>()
+    let poolLayoutRepositoryMock =
+        Mock<IPoolLayoutRepository>()
 
     let asyncFindAndPaginateSignature =
-        FuncAs.LinqExpression
-            (fun (repository: IPoolLayoutRepository) ->
-                repository.AsyncFindWithCursorPagination(
-                    It.IsAny<string option>(),
-                    It.IsAny<string option>(),
-                    It.IsAny<DbFilter option>()
-                ))
+        FuncAs.LinqExpression (fun (repository: IPoolLayoutRepository) ->
+            repository.AsyncFind(It.IsAny<string option>(), It.IsAny<string option>(), It.IsAny<ScanFilter option>()))
 
     poolLayoutRepositoryMock
         .Setup(asyncFindAndPaginateSignature)
@@ -32,13 +28,13 @@ let ``given an empty next token and an empty filter when FindActivePoolsLayoutsU
             Task.FromResult(
                 { CursorPage.NextToken = None
                   Items =
-                      [| { PoolLayoutEntity.PoolLayoutId = Ulid.newUlid () |> Ulid.toString
-                           Name = "Copa América 2021"
-                           StartOpeningDateTime = DateTime.Now
-                           EndOpeningDateTime = DateTime.Now
-                           Pk = ""
-                           Sk = ""
-                           Filter = "" } |] }
+                    [| { PoolLayoutEntity.PoolLayoutId = Ulid.newUlid () |> Ulid.toString
+                         Name = "Copa América 2021"
+                         StartOpeningDateTime = DateTime.Now
+                         EndOpeningDateTime = DateTime.Now
+                         Pk = ""
+                         Sk = ""
+                         Filter = "" } |] }
             )
             |> Async.AwaitTask
         )

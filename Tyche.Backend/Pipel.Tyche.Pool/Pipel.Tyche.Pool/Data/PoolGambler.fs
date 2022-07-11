@@ -12,19 +12,27 @@ type PoolGamblerEntityPK =
 type PoolGamblerEntity =
     { [<DynamoDBProperty("pk")>]
       Pk: string
+
       [<DynamoDBProperty("sk")>]
       Sk: string
+
       [<DynamoDBProperty("poolId")>]
       PoolId: string
+
       [<DynamoDBProperty("gamblerId")>]
       GamblerId: string
+
       [<DynamoDBProperty("gamblerEmail")>]
       GamblerEmail: string
+
       [<DynamoDBProperty("score")>]
       Score: int Nullable
+
       [<DynamoDBProperty("currentPosition")>]
       CurrentPosition: int Nullable
+
       [<DynamoDBProperty("beforePosition")>]
       BeforePosition: int Nullable
+
       [<DynamoDBProperty("filter")>]
       Filter: string }
