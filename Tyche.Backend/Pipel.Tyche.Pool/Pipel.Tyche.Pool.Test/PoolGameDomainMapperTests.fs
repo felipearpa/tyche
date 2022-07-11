@@ -31,7 +31,7 @@ let ``given a PoolGameEntity when is mapped to PoolGame then an identical PoolGa
 
     Assert.Equal(poolGameEntity.PoolId, poolGame.PoolGamePK.PoolPK.PoolId |> Ulid.toString)
     Assert.Equal(poolGameEntity.GameId, poolGame.PoolGamePK.GamePK.GameId |> Ulid.toString)
-    Assert.Equal(poolGameEntity.HomeTeamId, poolGame.HomeTeamId |> Ulid.toString)
+    Assert.Equal(poolGameEntity.HomeTeamId, poolGame.HomeTeamPK.TeamId |> Ulid.toString)
     Assert.Equal(poolGameEntity.HomeTeamName, poolGame.HomeTeamName |> NonEmptyString100.value)
 
     Assert.Equal(
@@ -40,7 +40,7 @@ let ``given a PoolGameEntity when is mapped to PoolGame then an identical PoolGa
         |> PositiveInt.nullableValue
     )
 
-    Assert.Equal(poolGameEntity.AwayTeamId, poolGame.AwayTeamId |> Ulid.toString)
+    Assert.Equal(poolGameEntity.AwayTeamId, poolGame.AwayTeamPK.TeamId |> Ulid.toString)
     Assert.Equal(poolGameEntity.AwayTeamName, poolGame.AwayTeamName |> NonEmptyString100.value)
 
     Assert.Equal(

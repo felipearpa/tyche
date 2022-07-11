@@ -14,7 +14,8 @@ open Xunit
 let ``given an empty next token and an empty filter when FindPoolsGamesUseCase is executed then all of PoolsGames are returned``
     ()
     =
-    let poolGameRepositoryMock = Mock<IPoolGameRepository>()
+    let poolGameRepositoryMock =
+        Mock<IPoolGameRepository>()
 
     let poolId = Ulid.newUlid ()
     let gameId = Ulid.newUlid ()
@@ -54,11 +55,11 @@ let ``given an empty next token and an empty filter when FindPoolsGamesUseCase i
             { PoolGamePK =
                 { PoolPK = { PoolPK.PoolId = poolId }
                   GamePK = { GamePK.GameId = gameId } }
-              HomeTeamId = Ulid.newUlid ()
+              HomeTeamPK = { TeamPK.TeamId = Ulid.newUlid () }
               HomeTeamName = NonEmptyString100.From "Colombia"
               HomeTeamScore = PositiveInt.TryFrom 1
               HomeTeamBet = PositiveInt.TryFrom 2
-              AwayTeamId = Ulid.newUlid ()
+              AwayTeamPK = { TeamPK.TeamId = Ulid.newUlid () }
               AwayTeamName = NonEmptyString100.From "Brasil"
               AwayTeamScore = PositiveInt.TryFrom 3
               AwayTeamBet = PositiveInt.TryFrom 2

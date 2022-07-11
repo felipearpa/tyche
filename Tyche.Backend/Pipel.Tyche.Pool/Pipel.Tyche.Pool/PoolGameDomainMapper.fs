@@ -10,11 +10,11 @@ module PoolGameDomainMapper =
         { PoolGame.PoolGamePK =
             { PoolGamePK.PoolPK = { PoolPK.PoolId = Ulid.From persistenceModel.PoolId }
               GamePK = { GamePK.GameId = Ulid.From persistenceModel.GameId } }
-          HomeTeamId = Ulid.From persistenceModel.HomeTeamId
+          HomeTeamPK = { TeamPK.TeamId = Ulid.From persistenceModel.HomeTeamId }
           HomeTeamName = NonEmptyString100.From persistenceModel.HomeTeamName
           HomeTeamScore = PositiveInt.TryFromNullable persistenceModel.HomeTeamScore
           HomeTeamBet = PositiveInt.TryFromNullable persistenceModel.HomeTeamBet
-          AwayTeamId = Ulid.From persistenceModel.AwayTeamId
+          AwayTeamPK = { TeamPK.TeamId = Ulid.From persistenceModel.AwayTeamId }
           AwayTeamName = NonEmptyString100.From persistenceModel.AwayTeamName
           AwayTeamScore = PositiveInt.TryFromNullable persistenceModel.AwayTeamScore
           AwayTeamBet = PositiveInt.TryFromNullable persistenceModel.AwayTeamBet

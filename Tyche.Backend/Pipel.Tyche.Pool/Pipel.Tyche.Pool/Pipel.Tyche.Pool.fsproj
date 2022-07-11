@@ -19,6 +19,7 @@
         <Compile Include="Domain\Gambler.fs" />
         <Compile Include="Domain\PoolGambler.fs" />
         <Compile Include="Domain\Game.fs" />
+        <Compile Include="Domain\Team.fs" />
         <Compile Include="Domain\PoolGame.fs" />
         <Compile Include="UseCases\FindPoolsUseCase.fs" />
         <Compile Include="UseCases\FindPoolsGamblersUseCase.fs" />

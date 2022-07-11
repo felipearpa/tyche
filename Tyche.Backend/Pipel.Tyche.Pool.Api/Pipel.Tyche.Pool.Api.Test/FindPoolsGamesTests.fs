@@ -25,11 +25,11 @@ let createClientForFindPoolsGamesUseCase () =
                     [| { PoolGame.PoolGamePK =
                            { PoolGamePK.PoolPK = { PoolPK.PoolId = Ulid.newUlid () }
                              GamePK = { GamePK.GameId = Ulid.newUlid () } }
-                         HomeTeamId = Ulid.newUlid ()
+                         HomeTeamPK = { TeamPK.TeamId = Ulid.newUlid () }
                          HomeTeamName = NonEmptyString100.From "Colombia"
                          HomeTeamScore = PositiveInt.TryFrom 1
                          HomeTeamBet = PositiveInt.TryFrom 1
-                         AwayTeamId = Ulid.newUlid ()
+                         AwayTeamPK = { TeamPK.TeamId = Ulid.newUlid () }
                          AwayTeamName = NonEmptyString100.From "Brasil"
                          AwayTeamScore = PositiveInt.TryFrom 1
                          AwayTeamBet = PositiveInt.TryFrom 1

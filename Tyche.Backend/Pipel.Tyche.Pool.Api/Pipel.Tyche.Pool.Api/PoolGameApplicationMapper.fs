@@ -10,7 +10,7 @@ module PoolGameApplicationMapper =
           GameId =
             domainModel.PoolGamePK.GamePK.GameId
             |> Ulid.toString
-          HomeTeamId = domainModel.HomeTeamId |> Ulid.toString
+          HomeTeamId = domainModel.HomeTeamPK.TeamId |> Ulid.toString
           HomeTeamName =
             domainModel.HomeTeamName
             |> NonEmptyString100.value
@@ -20,7 +20,7 @@ module PoolGameApplicationMapper =
           HomeTeamBet =
             domainModel.HomeTeamBet
             |> PositiveInt.nullableValue
-          AwayTeamId = domainModel.AwayTeamId |> Ulid.toString
+          AwayTeamId = domainModel.AwayTeamPK.TeamId |> Ulid.toString
           AwayTeamName =
             domainModel.AwayTeamName
             |> NonEmptyString100.value
