@@ -26,6 +26,8 @@ type Pool =
 It's the model to manage the PoolsGamblers.
 
 ```f#
+type GamblerPK = { GamblerId: Ulid }
+
 type PoolGamblerPK =
     { PoolPK: PoolPK
       GamblerPK: GamblerPK }
@@ -38,6 +40,31 @@ type PoolGambler =
       BeforePosition: PositiveInt option }
 ```
 
+### `PoolGame`
+
+It's the model to manage the PoolsGames.
+
+```f#
+type GamePK = { GameId: Ulid }
+
+type PoolGamePK =
+    { PoolPK: PoolPK
+      GamePK: GamePK }
+
+type PoolGame =
+    { PoolGamePK: PoolGamePK
+      HomeTeamId: Ulid
+      HomeTeamName: NonEmptyString100
+      HomeTeamScore: PositiveInt option
+      HomeTeamBet: PositiveInt option
+      AwayTeamId: Ulid
+      AwayTeamName: NonEmptyString100
+      AwayTeamScore: PositiveInt option
+      AwayTeamBet: PositiveInt option
+      BetScore: PositiveInt option
+      MatchDateTime: DateTime }
+```
+
 ## Use cases
 
 ### `FindPoolsUseCase`
@@ -47,3 +74,7 @@ Return the Pool list associated to a PoolLayout.
 ### `FindPoolsGamblersUseCase`
 
 Return the PoolGambler list associated to a Pool.
+
+### `FindPoolsGamesUseCase`
+
+Return the PoolGame list associated to a Pool.
