@@ -1,0 +1,30 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net7.0</TargetFramework>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Compile Include="Type\Username.fs" />
+        <Compile Include="Type\Password.fs" />
+        <Compile Include="Domain\UserEntity.fs" />
+        <Compile Include="Domain\User.fs" />
+        <Compile Include="Domain\UserMapper.fs" />
+        <Compile Include="Domain\IUserRepository.fs" />
+        <Compile Include="Infrastructure\UserDynamoDbRepository.fs" />
+        <Compile Include="Application\UserViewModel.fs" />
+        <Compile Include="Application\UserMapper.fs" />
+        <Compile Include="Application\UserCreation\CreateUserCommand.fs" />
+        <Compile Include="Application\UserCreation\CreateUserCommandHandler.fs" />
+        <Compile Include="Application\Login\LoginCommand.fs" />
+        <Compile Include="Application\Login\LoginCommandHandler.fs" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\Felipearpa.Crypto\Felipearpa.Crypto\Felipearpa.Crypto.fsproj" />
+      <ProjectReference Include="..\..\Felipearpa.Data.DynamoDb\Felipearpa.Data.DynamoDb\Felipearpa.Data.DynamoDb.fsproj" />
+      <ProjectReference Include="..\..\Felipearpa.Type\Felipearpa.Type\Felipearpa.Type.fsproj" />
+    </ItemGroup>
+
+</Project>

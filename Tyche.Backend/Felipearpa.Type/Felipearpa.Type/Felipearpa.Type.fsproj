@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFramework>netcoreapp7.0</TargetFramework>
+    </PropertyGroup>
+    <ItemGroup>
+        <Compile Include="Validation.fs" />
+        <Compile Include="Uuid.fs" />
+        <Compile Include="Barcode.fs" />
+        <Compile Include="String.fs" />
+        <Compile Include="NonEmptyString.fs" />
+        <Compile Include="NonEmptyString100.fs" />
+        <Compile Include="Percentage.fs" />
+        <Compile Include="Ulid.fs" />
+        <Compile Include="Email.fs" />
+    </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="Ulid" Version="1.2.6" />
+        <PackageReference Update="FSharp.Core" Version="7.0.200" />
+    </ItemGroup>
+</Project>

@@ -1,0 +1,164 @@
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        google()
+        mavenCentral()
+    }
+}
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        google()
+        mavenCentral()
+        maven { url = uri("https://jitpack.io") }
+    }
+
+    versionCatalogs {
+        create("androidxAppcompat") {
+            version("appcompat", "1.6.1")
+            library("appcompat", "androidx.appcompat", "appcompat").versionRef("appcompat")
+        }
+
+        create("androidxActivity") {
+            version("activityCompose", "1.6.1")
+            library("activityCompose", "androidx.activity", "activity-compose").versionRef("activityCompose")
+        }
+
+        create("androidxLifecycle") {
+            version("lifecycle", "2.6.1")
+            library("lifecycleViewmodelCompose", "androidx.lifecycle", "lifecycle-viewmodel-compose").versionRef("lifecycle")
+        }
+
+        create("androidxCore") {
+            version("coreKtx", "1.9.0")
+            library("coreKtx", "androidx.core", "core-ktx").versionRef("coreKtx")
+        }
+
+        create("androidxCompose") {
+            version("compose", "2022.10.00")
+            library("composeBom", "androidx.compose", "compose-bom").versionRef("compose")
+        }
+
+        create("androidxComposeUi") {
+            version("compose", "1.3.3")
+            library("ui", "androidx.compose.ui", "ui").versionRef("compose")
+            library("uiGraphics", "androidx.compose.ui", "ui-graphics").versionRef("compose")
+            library("uiToolingPreview", "androidx.compose.ui", "ui-tooling-preview").versionRef("compose")
+            library("uiTestJunit4", "androidx.compose.ui", "ui-test-junit4").versionRef("compose")
+            library("uiTooling", "androidx.compose.ui", "ui-tooling").versionRef("compose")
+            library("uiTestManifest", "androidx.compose.ui", "ui-test-manifest").versionRef("compose")
+        }
+
+        create("androidxComposeMaterial3") {
+            version("material", "1.0.1")
+            library("material3", "androidx.compose.material3", "material3").versionRef("material")
+        }
+
+        create("androidxPaging") {
+            version("pagingCompose", "1.0.0-alpha18")
+            library("pagingCompose", "androidx.paging", "paging-compose").versionRef("pagingCompose")
+        }
+
+        create("androidxTestExt") {
+            version("junitKtx", "1.1.5")
+            library("junitKtx", "androidx.test.ext", "junit-ktx").versionRef("junitKtx")
+        }
+
+        create("androidxTest") {
+            version("espresso", "3.5.1")
+            library("espressoCore", "androidx.test.espresso", "espresso-core").versionRef("espresso")
+        }
+
+        create("androidxSecurity") {
+            version("crypto", "1.0.0")
+            library("securityCrypto", "androidx.security", "security-crypto").versionRef("crypto")
+        }
+
+        create("comGoogleAndroidMaterial") {
+            version("material", "1.8.0")
+            library("material", "com.google.android.material", "material").versionRef("material")
+        }
+
+        create("junit") {
+            version("junit", "4.13.2")
+            library("junit", "junit", "junit").versionRef("junit")
+        }
+
+        create("comSquareupRetrofit2") {
+            version("retrofit", "2.9.0")
+            library("retrofit", "com.squareup.retrofit2", "retrofit").versionRef("retrofit")
+            library("converterGson", "com.squareup.retrofit2", "converter-gson").versionRef("retrofit")
+        }
+
+        create("comSquareupOkhttp3") {
+            version("loggingInterceptor", "4.10.0")
+            library("loggingInterceptor", "com.squareup.okhttp3", "logging-interceptor").versionRef("loggingInterceptor")
+        }
+
+        create("comGoogleCodeGson") {
+            version("gson", "2.10.1")
+            library("gson", "com.google.code.gson", "gson").versionRef("gson")
+        }
+
+        create("comGoogleDagger") {
+            version("hilt", "2.45")
+            library("hiltAndroid", "com.google.dagger", "hilt-android").versionRef("hilt")
+            library("hiltCompiler", "com.google.dagger", "hilt-compiler").versionRef("hilt")
+            library("hiltAndroidGradlePlugin", "com.google.dagger", "hilt-android-gradle-plugin").versionRef("hilt")
+        }
+
+        create("comGoogleAccompanist") {
+            version("swiperefresh", "0.20.0")
+            library("accompanistSwiperefresh", "com.google.accompanist", "accompanist-swiperefresh").versionRef("swiperefresh")
+
+            version("placeholderMaterial", "0.29.2-rc")
+            library("accompanistPlaceholderMaterial", "com.google.accompanist", "accompanist-placeholder-material").versionRef("placeholderMaterial")
+        }
+
+        create("ioCoilKt") {
+            version("coil", "2.2.2")
+            library("coil", "io.coil-kt", "coil").versionRef("coil")
+            library("coilCompose", "io.coil-kt", "coil-compose").versionRef("coil")
+        }
+
+        create("androidxNavigation") {
+            version("navigationCompose", "2.5.3")
+            library("navigationCompose", "androidx.navigation", "navigation-compose").versionRef("navigationCompose")
+        }
+
+        create("androidxHilt") {
+            version("hiltNavigationCompose", "1.0.0")
+            library("hiltNavigationCompose", "androidx.hilt", "hilt-navigation-compose").versionRef("hiltNavigationCompose")
+        }
+
+        create("androidxConstraintlayout") {
+            version("constraintlayout", "1.0.1")
+            library("constraintlayoutCompose", "androidx.constraintlayout", "constraintlayout-compose").versionRef("constraintlayout")
+        }
+
+        create("ioMockk") {
+            version("mockk", "1.13.5")
+            library("mockk", "io.mockk", "mockk").versionRef("mockk")
+            library("mockkAndroid", "io.mockk", "mockk-android").versionRef("mockk")
+        }
+
+        create("orgJetbrainsKotlinx") {
+            version("kotlinxCoroutinesTest", "1.6.4")
+            library("kotlinxCoroutinesTest", "org.jetbrains.kotlinx", "kotlinx-coroutines-test").versionRef("kotlinxCoroutinesTest")
+        }
+
+        create("comGithubGuepardoapps") {
+            version("kulid", "2.0.0.0")
+            library("kulid", "com.github.guepardoapps", "kulid").versionRef("kulid")
+        }
+    }
+}
+rootProject.name = "Tyche"
+include ':app'
+include ':core'
+include ':ui'
+include ':user'
+include ':pool'
+include ':bet'
+include ':appCore'
+include ':appUi'

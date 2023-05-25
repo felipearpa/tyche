@@ -1,0 +1,26 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net7.0</TargetFramework>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <WarnOn>3390;$(WarnOn)</WarnOn>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Compile Include="Data\PoolLayout.fs" />
+        <Compile Include="Data\PoolLayoutRepository.fs" />
+        <Compile Include="Domain\PoolLayout.fs" />
+        <Compile Include="UseCases\FindActivePoolsLayoutsUseCase.fs" />
+        <Compile Include="PoolLayoutDomainMapper.fs" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\Felipearpa.Data.DynamoDb\Felipearpa.Data.DynamoDb\Felipearpa.Data.DynamoDb.fsproj" />
+      <ProjectReference Include="..\..\Felipearpa.Data\Felipearpa.Data\Felipearpa.Data.fsproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Update="FSharp.Core" Version="7.0.0" />
+    </ItemGroup>
+
+</Project>

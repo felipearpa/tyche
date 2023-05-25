@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Tyche</string>
+    <string name="create_account_action">Crear cuenta</string>
+    <string name="account_exists_text">¿Ya tienes una cuenta?</string>
+    <string name="log_in_action">Inicia sesión</string>
+    <string name="play_pool_text">Mira quién ha acertado más marcadores y supéralo ahora mismo</string>
+    <string name="score_tab">Puntajes</string>
+    <string name="bet_tab">Apuestas</string>
+</resources>

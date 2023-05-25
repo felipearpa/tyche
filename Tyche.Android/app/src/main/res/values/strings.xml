@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Tyche</string>
+    <string name="create_account_action">Create account</string>
+    <string name="account_exists_text">Do you have an account already?</string>
+    <string name="log_in_action">Log in</string>
+    <string name="play_pool_text">See who\'s has hit more scores and get over one right now</string>
+    <string name="score_tab">Scores</string>
+    <string name="bet_tab">Bets</string>
+</resources>
