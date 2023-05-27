@@ -28,6 +28,9 @@ type PoolGamblerBetDynamoDbRepository(keySerializer: IKeySerializer, client: IAm
     [<Literal>]
     let matchText = "MATCH"
 
+    [<Literal>]
+    let matchDateTimeText = "MATCH_DATE_TIME"
+
     let context = new DynamoDBContext(client)
 
     let map (dictionary: IDictionary<string, AttributeValue>) =
@@ -35,17 +38,17 @@ type PoolGamblerBetDynamoDbRepository(keySerializer: IKeySerializer, client: IAm
 
     interface IPoolGamblerBetRepository with
 
-        member this.GetPoolGamblerBets(poolId, gamblerId, maybeSearchText, maybeNext) =
+        member this.GetPendingPoolGamblerBetsPoolGamblerBets(poolId, gamblerId, maybeSearchText, maybeNext) =
             async {
-                let keyConditionExpression = "#pk = :pk and :now < #matchDateTime"
+                let keyConditionExpression = "#pk = :pk"
 
-                let defaultFilterConditionExpression: string = null
+                let defaultFilterConditionExpression = ":now < #matchDateTime"
 
                 let defaultAttributeValues =
                     dict
                         [ ":pk",
-                          AttributeValue($"#{gamblerText}#{gamblerId |> Ulid.value}#{poolText}#{poolId |> Ulid.value}")
-                          ":now", AttributeValue(S = DateTime.Now.ToUniversalTime().ToString("o")) ]
+                          AttributeValue($"{gamblerText}#{gamblerId |> Ulid.value}#{poolText}#{poolId |> Ulid.value}")
+                          ":now", AttributeValue(DateTime.Now.ToUniversalTime().ToString("o")) ]
 
                 let defaultAttributeNames = dict [ "#pk", "pk"; "#matchDateTime", "matchDateTime" ]
 
@@ -53,7 +56,7 @@ type PoolGamblerBetDynamoDbRepository(keySerializer: IKeySerializer, client: IAm
                     match maybeSearchText with
                     | None -> (defaultFilterConditionExpression, defaultAttributeValues, defaultAttributeNames)
                     | Some filterText ->
-                        ("contains(#filter, :filter)",
+                        ($"{defaultFilterConditionExpression} and contains(#filter, :filter)",
                          defaultAttributeValues
                          |> Dict.union (dict [ ":filter", AttributeValue(filterText.ToLower()) ])
                          :> IDictionary<_, _>,
@@ -62,7 +65,7 @@ type PoolGamblerBetDynamoDbRepository(keySerializer: IKeySerializer, client: IAm
                 let request =
                     QueryRequest(
                         TableName = tableName,
-                        IndexName = "pk-matchDateTime-index",
+                        IndexName = "GetPendingPoolGamblerBets-index",
                         KeyConditionExpression = keyConditionExpression,
                         FilterExpression = filterExpression,
                         ExpressionAttributeNames = Dictionary attributeNames,
@@ -90,8 +93,8 @@ type PoolGamblerBetDynamoDbRepository(keySerializer: IKeySerializer, client: IAm
                 let key =
                     dict
                         [ "pk",
-                          AttributeValue($"#{gamblerText}#{gamblerId |> Ulid.value}#{poolText}#{poolId |> Ulid.value}")
-                          "sk", AttributeValue($"#{matchText}#{matchId |> Ulid.value}") ]
+                          AttributeValue($"{gamblerText}#{gamblerId |> Ulid.value}#{poolText}#{poolId |> Ulid.value}")
+                          "sk", AttributeValue($"{matchText}#{matchId |> Ulid.value}") ]
 
                 let updateExpression =
                     "SET #homeTeamBet = :homeTeamBet, #awayTeamBet = :awayTeamBet"

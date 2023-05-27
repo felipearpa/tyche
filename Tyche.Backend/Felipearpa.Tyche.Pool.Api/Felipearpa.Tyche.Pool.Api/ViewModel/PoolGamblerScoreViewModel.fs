@@ -4,7 +4,6 @@ open System
 
 type PoolGamblerScoreViewModel =
     { PoolId: string
-      PoolLayoutId: string
       PoolName: string
       GamblerId: string
       GamblerUsername: string

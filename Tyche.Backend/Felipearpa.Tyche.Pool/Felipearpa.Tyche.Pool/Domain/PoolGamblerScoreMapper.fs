@@ -6,7 +6,6 @@ module PoolGamblerScoreMapper =
 
     let mapToDomain (poolGamblerScoreEntity: PoolGamblerScoreEntity) =
         { PoolGamblerScore.PoolId = poolGamblerScoreEntity.PoolId |> Ulid.newOf
-          PoolLayoutId = poolGamblerScoreEntity.PoolLayoutId |> Ulid.newOf
           PoolName = poolGamblerScoreEntity.PoolName |> NonEmptyString100.newOf
           GamblerId = poolGamblerScoreEntity.GamblerId |> Ulid.newOf
           GamblerUsername = poolGamblerScoreEntity.GamblerUsername |> NonEmptyString100.newOf

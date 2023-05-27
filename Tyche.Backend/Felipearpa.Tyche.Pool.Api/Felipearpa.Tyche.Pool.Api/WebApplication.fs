@@ -91,33 +91,34 @@ module WebApplication =
                 .RequireAuthorization()
             |> ignore
 
-            this.MapGet(
-                "/pool/{poolId}/gambler/{gamblerId}/bets",
-                Func<_, _, _, _, _, _>
-                    (fun
-                        (poolId: string)
-                        (gamblerId: string)
-                        (searchText: string)
-                        (next: string)
-                        (getPoolGamblerBetsQuery: GetPoolGamblerBetsQuery) ->
-                        async {
-                            let! page =
-                                getPoolGamblerBetsQuery.ExecuteAsync(
-                                    poolId |> Ulid.newOf,
-                                    gamblerId |> Ulid.newOf,
-                                    searchText |> Option.ofObj,
-                                    next |> Option.ofObj
-                                )
+            this
+                .MapGet(
+                    "/pool/{poolId}/gambler/{gamblerId}/bets",
+                    Func<_, _, _, _, _, _>
+                        (fun
+                            (poolId: string)
+                            (gamblerId: string)
+                            (searchText: string)
+                            (next: string)
+                            (getPoolGamblerBetsQuery: GetPoolGamblerBetsQuery) ->
+                            async {
+                                let! page =
+                                    getPoolGamblerBetsQuery.ExecuteAsync(
+                                        poolId |> Ulid.newOf,
+                                        gamblerId |> Ulid.newOf,
+                                        searchText |> Option.ofObj,
+                                        next |> Option.ofObj
+                                    )
 
-                            return page |> CursorPage.map PoolGamblerBetMapper.mapToViewModel
-                        }
-                        |> Async.StartAsTask)
-            )
-
+                                return page |> CursorPage.map PoolGamblerBetMapper.mapToViewModel
+                            }
+                            |> Async.StartAsTask)
+                )
+                .RequireAuthorization()
             |> ignore
 
             this
-                .MapPut(
+                .MapPatch(
                     "/bet",
                     Func<_, _, _>(fun (betRequest: BetRequest) (betCommand: BetCommand) ->
                         async {

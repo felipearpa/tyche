@@ -1,3 +1,0 @@
-
-// Get all of active pools layouts
-GET https://localhost:5001/poolLayout/findActivePoolsLayouts?skip=0&take=5 HTTP/1.1

@@ -29,8 +29,8 @@ type PoolDynamoDbRepository(client: IAmazonDynamoDB) =
 
                 let mutable attributeValues =
                     dict
-                        [ ":pk", AttributeValue($"#{poolText}#{poolId}")
-                          ":sk", AttributeValue($"#{poolText}#{poolId}") ]
+                        [ ":pk", AttributeValue($"{poolText}#{poolId}")
+                          ":sk", AttributeValue($"{poolText}#{poolId}") ]
 
                 let mutable attributeNames = dict [ "#pk", "pk"; "#sk", "sk" ]
 

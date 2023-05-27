@@ -34,18 +34,20 @@ type PoolGamblerScoreDynamoDbRepository(keySerializer: IKeySerializer, client: I
             async {
                 let keyConditionExpression = "#sk = :sk"
 
-                let defaultFilterConditionExpression: string = null
+                let defaultFilterConditionExpression = "#status = :status"
 
                 let mutable defaultAttributeValues =
-                    dict [ ":sk", AttributeValue($"#{gamblerText}#{gamblerId |> Ulid.value}") ]
+                    dict
+                        [ ":sk", AttributeValue($"{gamblerText}#{gamblerId |> Ulid.value}")
+                          ":status", AttributeValue("OPENED") ]
 
-                let mutable defaultAttributeNames = dict [ "#sk", "sk" ]
+                let mutable defaultAttributeNames = dict [ "#sk", "sk"; "#status", "status" ]
 
                 let filterExpression, attributeValues, attributeNames =
                     match maybeSearchText with
                     | None -> (defaultFilterConditionExpression, defaultAttributeValues, defaultAttributeNames)
                     | Some filterText ->
-                        ("contains(#filter, :filter)",
+                        ($"{defaultFilterConditionExpression} and contains(#filter, :filter)",
                          defaultAttributeValues
                          |> Dict.union (dict [ ":filter", AttributeValue(filterText.ToLower()) ])
                          :> IDictionary<_, _>,
@@ -54,7 +56,7 @@ type PoolGamblerScoreDynamoDbRepository(keySerializer: IKeySerializer, client: I
                 let request =
                     QueryRequest(
                         TableName = tableName,
-                        IndexName = "sk-poolName-index",
+                        IndexName = "GetPoolGamblerScoresByGambler-index",
                         KeyConditionExpression = keyConditionExpression,
                         FilterExpression = filterExpression,
                         ExpressionAttributeNames = Dictionary attributeNames,
@@ -81,14 +83,14 @@ type PoolGamblerScoreDynamoDbRepository(keySerializer: IKeySerializer, client: I
             async {
                 let keyConditionExpression = "#pk = :pk"
 
-                let defaultFilterConditionExpression = "begins_with(#sk, :sk)"
+                let defaultFilterConditionExpression = "#status = :status"
 
                 let mutable defaultAttributeValues =
                     dict
-                        [ ":pk", AttributeValue($"#{poolText}#{poolId |> Ulid.value}")
-                          ":sk", AttributeValue($"#{gamblerText}#") ]
+                        [ ":pk", AttributeValue($"{poolText}#{poolId |> Ulid.value}")
+                          ":status", AttributeValue("OPENED") ]
 
-                let mutable defaultAttributeNames = dict [ "#pk", "pk"; "#sk", "sk" ]
+                let mutable defaultAttributeNames = dict [ "#pk", "pk"; "#status", "status" ]
 
                 let filterExpression, attributeValues, attributeNames =
                     match maybeSearchText with
@@ -103,7 +105,7 @@ type PoolGamblerScoreDynamoDbRepository(keySerializer: IKeySerializer, client: I
                 let request =
                     QueryRequest(
                         TableName = tableName,
-                        IndexName = "pk-currentPosition-index",
+                        IndexName = "GetPoolGamblerScoresByPool-index",
                         KeyConditionExpression = keyConditionExpression,
                         FilterExpression = filterExpression,
                         ExpressionAttributeNames = Dictionary attributeNames,

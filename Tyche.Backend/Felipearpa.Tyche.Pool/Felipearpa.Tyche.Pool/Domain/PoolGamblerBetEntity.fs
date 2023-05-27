@@ -49,7 +49,4 @@ type PoolGamblerBetEntity =
       BetScore: Nullable<int>
 
       [<DynamoDBProperty("matchDateTime")>]
-      MatchDateTime: DateTime
-
-      [<DynamoDBProperty("filter")>]
-      Filter: string }
+      MatchDateTime: DateTime }

@@ -15,9 +15,6 @@ type PoolGamblerScoreEntity =
       [<DynamoDBProperty("poolId")>]
       PoolId: string
 
-      [<DynamoDBProperty("poolLayoutId")>]
-      PoolLayoutId: string
-
       [<DynamoDBProperty("poolName")>]
       PoolName: string
 
@@ -34,7 +31,4 @@ type PoolGamblerScoreEntity =
       BeforePosition: int Nullable
 
       [<DynamoDBProperty("score")>]
-      Score: int Nullable
-
-      [<DynamoDBProperty("filter")>]
-      Filter: string }
+      Score: int Nullable }

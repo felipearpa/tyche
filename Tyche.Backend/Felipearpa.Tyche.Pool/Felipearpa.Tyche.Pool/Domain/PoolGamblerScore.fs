@@ -4,7 +4,6 @@ open Felipearpa.Type
 
 type PoolGamblerScore =
     { PoolId: Ulid
-      PoolLayoutId: Ulid
       PoolName: NonEmptyString100
       GamblerId: Ulid
       GamblerUsername: NonEmptyString100

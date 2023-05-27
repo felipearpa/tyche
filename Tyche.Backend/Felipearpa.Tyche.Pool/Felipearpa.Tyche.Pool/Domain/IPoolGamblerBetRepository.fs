@@ -10,6 +10,7 @@ type BetFailure = | MatchLocked
 
 type IPoolGamblerBetRepository =
 
-    abstract GetPoolGamblerBets: Ulid * Ulid * string option * string option -> Async<PoolGamblerBet CursorPage>
+    abstract GetPendingPoolGamblerBetsPoolGamblerBets:
+        Ulid * Ulid * string option * string option -> Async<PoolGamblerBet CursorPage>
 
     abstract BetAsync: Ulid * Ulid * Ulid * TeamScore<BetScore> -> Result<PoolGamblerBet, BetFailure> Async
