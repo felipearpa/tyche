@@ -20,7 +20,7 @@ dependencyResolutionManagement {
         }
 
         create("androidxActivity") {
-            version("activityCompose", "1.6.1")
+            version("activityCompose", "1.7.2")
             library("activityCompose", "androidx.activity", "activity-compose").versionRef("activityCompose")
         }
 
@@ -30,17 +30,17 @@ dependencyResolutionManagement {
         }
 
         create("androidxCore") {
-            version("coreKtx", "1.9.0")
+            version("coreKtx", "1.10.1")
             library("coreKtx", "androidx.core", "core-ktx").versionRef("coreKtx")
         }
 
         create("androidxCompose") {
-            version("compose", "2022.10.00")
+            version("compose", "2023.05.01")
             library("composeBom", "androidx.compose", "compose-bom").versionRef("compose")
         }
 
         create("androidxComposeUi") {
-            version("compose", "1.3.3")
+            version("compose", "1.4.3")
             library("ui", "androidx.compose.ui", "ui").versionRef("compose")
             library("uiGraphics", "androidx.compose.ui", "ui-graphics").versionRef("compose")
             library("uiToolingPreview", "androidx.compose.ui", "ui-tooling-preview").versionRef("compose")
@@ -50,12 +50,12 @@ dependencyResolutionManagement {
         }
 
         create("androidxComposeMaterial3") {
-            version("material", "1.0.1")
+            version("material", "1.1.0")
             library("material3", "androidx.compose.material3", "material3").versionRef("material")
         }
 
         create("androidxPaging") {
-            version("pagingCompose", "1.0.0-alpha18")
+            version("pagingCompose", "1.0.0-alpha20")
             library("pagingCompose", "androidx.paging", "paging-compose").versionRef("pagingCompose")
         }
 
@@ -75,7 +75,7 @@ dependencyResolutionManagement {
         }
 
         create("comGoogleAndroidMaterial") {
-            version("material", "1.8.0")
+            version("material", "1.9.0")
             library("material", "com.google.android.material", "material").versionRef("material")
         }
 
@@ -91,7 +91,7 @@ dependencyResolutionManagement {
         }
 
         create("comSquareupOkhttp3") {
-            version("loggingInterceptor", "4.10.0")
+            version("loggingInterceptor", "4.11.0")
             library("loggingInterceptor", "com.squareup.okhttp3", "logging-interceptor").versionRef("loggingInterceptor")
         }
 
@@ -101,22 +101,20 @@ dependencyResolutionManagement {
         }
 
         create("comGoogleDagger") {
-            version("hilt", "2.45")
+            version("hilt", "2.46.1")
             library("hiltAndroid", "com.google.dagger", "hilt-android").versionRef("hilt")
             library("hiltCompiler", "com.google.dagger", "hilt-compiler").versionRef("hilt")
             library("hiltAndroidGradlePlugin", "com.google.dagger", "hilt-android-gradle-plugin").versionRef("hilt")
         }
 
         create("comGoogleAccompanist") {
-            version("swiperefresh", "0.20.0")
-            library("accompanistSwiperefresh", "com.google.accompanist", "accompanist-swiperefresh").versionRef("swiperefresh")
-
-            version("placeholderMaterial", "0.29.2-rc")
-            library("accompanistPlaceholderMaterial", "com.google.accompanist", "accompanist-placeholder-material").versionRef("placeholderMaterial")
+            version("accompanist", "0.30.1")
+            library("accompanistSwiperefresh", "com.google.accompanist", "accompanist-swiperefresh").versionRef("accompanist")
+            library("accompanistPlaceholderMaterial", "com.google.accompanist", "accompanist-placeholder-material").versionRef("accompanist")
         }
 
         create("ioCoilKt") {
-            version("coil", "2.2.2")
+            version("coil", "2.4.0")
             library("coil", "io.coil-kt", "coil").versionRef("coil")
             library("coilCompose", "io.coil-kt", "coil-compose").versionRef("coil")
         }
@@ -143,7 +141,7 @@ dependencyResolutionManagement {
         }
 
         create("orgJetbrainsKotlinx") {
-            version("kotlinxCoroutinesTest", "1.6.4")
+            version("kotlinxCoroutinesTest", "1.7.1")
             library("kotlinxCoroutinesTest", "org.jetbrains.kotlinx", "kotlinx-coroutines-test").versionRef("kotlinxCoroutinesTest")
         }
 
