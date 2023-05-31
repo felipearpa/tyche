@@ -1,5 +1,6 @@
 package com.felipearpa.tyche.home.ui
 
+import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -42,7 +44,7 @@ fun HomeView(
     HomeView(
         onLoginClick = onLoginRequested,
         onCreateAccountClick = onAccountCreationRequested,
-        modifier = Modifier.padding(all = 16.dp)
+        modifier = Modifier.padding(all = 8.dp)
     )
 }
 
@@ -88,8 +90,7 @@ private fun ConstraintLayoutScope.Title(viewRef: ConstrainedLayoutReference) {
         Icon(
             painter = painterResource(id = R.drawable.ic_tyche_logo),
             contentDescription = emptyString(),
-            modifier = Modifier.height(64.dp),
-            tint = MaterialTheme.colorScheme.primary
+            modifier = Modifier.height(64.dp)
         )
 
         Spacer(modifier = Modifier.width(4.dp))
@@ -101,8 +102,7 @@ private fun ConstraintLayoutScope.Title(viewRef: ConstrainedLayoutReference) {
             Icon(
                 painter = painterResource(id = R.drawable.ic_tyche_title),
                 contentDescription = emptyString(),
-                modifier = Modifier.height(48.dp),
-                tint = MaterialTheme.colorScheme.primary
+                modifier = Modifier.height(48.dp)
             )
         }
     }
@@ -155,10 +155,7 @@ private fun ConstraintLayoutScope.LoginView(
         bottom.linkTo(parent.bottom)
         start.linkTo(parent.start)
     }, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-        Text(
-            text = stringResource(id = R.string.account_exists_text),
-            style = MaterialTheme.typography.titleSmall
-        )
+        Text(text = stringResource(id = R.string.account_exists_text))
 
         Text(
             text = buildAnnotatedString {
@@ -171,16 +168,33 @@ private fun ConstraintLayoutScope.LoginView(
                     append(stringResource(id = R.string.log_in_action))
                 }
             },
-            style = MaterialTheme.typography.titleSmall,
             modifier = Modifier.clickable { onLoginClick() }
         )
     }
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun HomeViewPreview() {
-    TycheTheme {
-        HomeView(onLoginClick = {}, onCreateAccountClick = {})
+    TycheTheme(dynamicColor = false) {
+        Surface {
+            HomeView(
+                modifier = Modifier.padding(all = 8.dp),
+                onLoginClick = {},
+                onCreateAccountClick = {}
+            )
+        }
+    }
+}
+
+@Preview(showBackground = true, showSystemUi = true, uiMode = UI_MODE_NIGHT_YES)
+@Composable
+fun HomeViewDarkPreview() {
+    TycheTheme(dynamicColor = false) {
+        HomeView(
+            modifier = Modifier.padding(all = 8.dp),
+            onLoginClick = {},
+            onCreateAccountClick = {}
+        )
     }
 }
