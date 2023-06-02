@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace 'com.felipearpa.ui'
+    namespace 'com.felipearpa.tyche.ui'
     compileSdk 33
 
     defaultConfig {
@@ -58,6 +58,7 @@ dependencies {
     implementation(androidxNavigation.navigationCompose)
 
     implementation(comGoogleAccompanist.accompanistSwiperefresh)
+    implementation(comGoogleAccompanist.accompanistPlaceholderMaterial)
 
     implementation(androidxLifecycle.lifecycleViewmodelCompose)
 

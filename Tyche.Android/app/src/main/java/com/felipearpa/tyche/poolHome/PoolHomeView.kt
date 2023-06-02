@@ -31,20 +31,20 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
-import com.felipearpa.appUi.Message
-import com.felipearpa.appUi.shimmer
-import com.felipearpa.appUi.toUIMessage
-import com.felipearpa.bet.poolGamblerBetListViewModel
-import com.felipearpa.bet.ui.PoolGamblerBetListView
-import com.felipearpa.bet.ui.PoolGamblerBetListViewModel
-import com.felipearpa.core.emptyString
-import com.felipearpa.pool.gamblerScoreListViewModel
-import com.felipearpa.pool.ui.gamblerScore.GamblerScoreListView
-import com.felipearpa.pool.ui.gamblerScore.GamblerScoreListViewModel
+import com.felipearpa.tyche.ui.Message
+import com.felipearpa.tyche.ui.shimmer
+import com.felipearpa.tyche.ui.toUIMessage
+import com.felipearpa.tyche.bet.poolGamblerBetListViewModel
+import com.felipearpa.tyche.bet.ui.PoolGamblerBetListView
+import com.felipearpa.tyche.bet.ui.PoolGamblerBetListViewModel
+import com.felipearpa.tyche.core.emptyString
+import com.felipearpa.tyche.pool.gamblerScoreListViewModel
+import com.felipearpa.tyche.pool.ui.gamblerScore.GamblerScoreListView
+import com.felipearpa.tyche.pool.ui.gamblerScore.GamblerScoreListViewModel
 import com.felipearpa.tyche.R
-import com.felipearpa.ui.ViewState
-import com.felipearpa.ui.onLoading
-import com.felipearpa.ui.onSuccess
+import com.felipearpa.tyche.ui.ViewState
+import com.felipearpa.tyche.ui.onLoading
+import com.felipearpa.tyche.ui.onSuccess
 
 enum class Tab {
     GAMBLER_SCORE,

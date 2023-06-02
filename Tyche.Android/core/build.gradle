@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace 'com.felipearpa.core'
+    namespace 'com.felipearpa.tyche.core'
     compileSdk 33
 
     defaultConfig {

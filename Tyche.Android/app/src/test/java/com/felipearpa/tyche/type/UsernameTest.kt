@@ -1,5 +1,6 @@
 package com.felipearpa.tyche.type
 
+import com.felipearpa.tyche.user.type.Username
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertThrows
 import org.junit.Test

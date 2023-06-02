@@ -6,4 +6,5 @@
     <string name="remote_communication_failure_message">¡Vaya! En este momento tenemos problemas para conectarnos a nuestros servidores. Por favor, revise su conexión a Internet y vuelva a intentarlo más tarde. Si el problema persiste, nuestro equipo siempre está aquí para ayudarle.</string>
     <string name="unknown_failure_message">¡Vaya! Algo ha salido mal y no estamos seguros de qué es. Por favor, inténtelo de nuevo más tarde o póngase en contacto con nuestro amable equipo de atención al cliente para obtener ayuda.</string>
     <string name="empty_list_message">Nada para mostrar.</string>
+    <string name="searching_label">Escriba para buscar</string>
 </resources>

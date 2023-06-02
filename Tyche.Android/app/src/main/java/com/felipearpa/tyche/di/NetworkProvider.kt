@@ -1,9 +1,9 @@
 package com.felipearpa.tyche.di
 
 import android.content.Context
-import com.felipearpa.core.network.NetworkExceptionHandler
-import com.felipearpa.ui.network.RetrofitExceptionHandler
-import com.felipearpa.user.AuthInterceptor
+import com.felipearpa.tyche.core.network.NetworkExceptionHandler
+import com.felipearpa.tyche.ui.network.RetrofitExceptionHandler
+import com.felipearpa.tyche.user.AuthInterceptor
 import com.google.gson.*
 import dagger.Module
 import dagger.Provides

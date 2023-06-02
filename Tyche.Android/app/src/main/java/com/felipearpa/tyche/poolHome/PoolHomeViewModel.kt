@@ -2,13 +2,13 @@ package com.felipearpa.tyche.poolHome
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.felipearpa.core.network.NetworkException
-import com.felipearpa.pool.application.GetPoolUseCase
-import com.felipearpa.pool.ui.PoolModel
-import com.felipearpa.pool.ui.toModel
-import com.felipearpa.ui.UnknownException
-import com.felipearpa.ui.ViewState
-import com.felipearpa.ui.network.toNetworkAppException
+import com.felipearpa.tyche.core.network.NetworkException
+import com.felipearpa.tyche.pool.application.GetPoolUseCase
+import com.felipearpa.tyche.pool.ui.PoolModel
+import com.felipearpa.tyche.pool.ui.toModel
+import com.felipearpa.tyche.ui.UnknownException
+import com.felipearpa.tyche.ui.ViewState
+import com.felipearpa.tyche.ui.network.toNetworkAppException
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.flow.MutableStateFlow

@@ -153,10 +153,8 @@ dependencyResolutionManagement {
 }
 rootProject.name = "Tyche"
 include ':app'
-include ':core'
-include ':ui'
 include ':user'
 include ':pool'
 include ':bet'
-include ':appCore'
-include ':appUi'
+include ':core'
+include ':ui'

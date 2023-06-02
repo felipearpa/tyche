@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace 'com.felipearpa.user'
+    namespace 'com.felipearpa.tyche.user'
     compileSdk 33
 
     defaultConfig {
@@ -85,6 +85,4 @@ dependencies {
 dependencies {
     implementation project(path: ':core')
     implementation project(path: ':ui')
-    implementation project(path: ':appCore')
-    implementation project(path: ':appUi')
 }

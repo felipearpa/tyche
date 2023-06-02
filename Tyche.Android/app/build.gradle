@@ -97,11 +97,9 @@ dependencies {
 }
 
 dependencies {
-    implementation project(path: ':core')
-    implementation project(path: ':ui')
     implementation project(path: ':user')
     implementation project(path: ':pool')
     implementation project(path: ':bet')
-    implementation project(path: ':appCore')
-    implementation project(path: ':appUi')
+    implementation project(path: ':core')
+    implementation project(path: ':ui')
 }

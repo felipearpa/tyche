@@ -31,7 +31,7 @@ import androidx.constraintlayout.compose.ConstrainedLayoutReference
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.ConstraintLayoutScope
 import androidx.constraintlayout.compose.Dimension
-import com.felipearpa.core.emptyString
+import com.felipearpa.tyche.core.emptyString
 import com.felipearpa.tyche.R
 import com.felipearpa.tyche.ui.theme.TycheTheme
 
