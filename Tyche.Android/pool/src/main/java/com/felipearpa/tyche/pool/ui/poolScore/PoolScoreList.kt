@@ -18,7 +18,8 @@ import androidx.compose.ui.unit.dp
 import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
-import androidx.paging.compose.items
+import androidx.paging.compose.itemContentType
+import androidx.paging.compose.itemKey
 import com.felipearpa.tyche.core.emptyString
 import com.felipearpa.tyche.core.type.Ulid
 import com.felipearpa.tyche.pool.R
@@ -51,8 +52,18 @@ fun PoolScoreList(
             { loadingContent(count = count) }
         }
     ) {
-        items(lazyPoolGamblerScores) { poolGamblerScore ->
-            poolGamblerScore?.let { nonNullablePoolScore ->
+        items(
+            count = lazyPoolGamblerScores.itemCount,
+            key = lazyPoolGamblerScores.itemKey { poolGamblerScore ->
+                Pair(
+                    poolGamblerScore.poolId,
+                    poolGamblerScore.gamblerId
+                )
+            },
+            contentType = lazyPoolGamblerScores.itemContentType { "PoolGamblerScore" }
+        ) { index ->
+            val item = lazyPoolGamblerScores[index]
+            item?.let { nonNullablePoolScore ->
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -111,7 +122,6 @@ fun PoolScoreListPreview() {
             listOf(
                 PoolGamblerScoreModel(
                     poolId = Ulid.randomUlid().value,
-                    poolLayoutId = Ulid.randomUlid().value,
                     poolName = "Tyche American Cup YYYY",
                     gamblerId = Ulid.randomUlid().value,
                     gamblerUsername = "user-tyche",

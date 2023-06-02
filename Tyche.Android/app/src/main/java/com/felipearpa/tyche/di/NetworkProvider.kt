@@ -1,6 +1,5 @@
 package com.felipearpa.tyche.di
 
-import android.content.Context
 import com.felipearpa.tyche.core.network.NetworkExceptionHandler
 import com.felipearpa.tyche.ui.network.RetrofitExceptionHandler
 import com.felipearpa.tyche.user.AuthInterceptor
@@ -8,7 +7,6 @@ import com.google.gson.*
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -31,7 +29,6 @@ object NetworkProvider {
     @Provides
     @Singleton
     fun provideOkHttpClient(
-        @ApplicationContext context: Context,
         httpLoggingInterceptor: HttpLoggingInterceptor,
         authInterceptor: AuthInterceptor
     ): OkHttpClient =
@@ -58,7 +55,7 @@ object NetworkProvider {
     @Singleton
     fun provideRetrofit(gson: Gson, okHttpClient: OkHttpClient): Retrofit =
         Retrofit.Builder().apply {
-            baseUrl("https://0cfe-181-59-233-121.ngrok-free.app")
+            baseUrl("https://64a1-181-59-233-121.ngrok-free.app")
             addConverterFactory(GsonConverterFactory.create(gson))
             client(okHttpClient)
         }.build()

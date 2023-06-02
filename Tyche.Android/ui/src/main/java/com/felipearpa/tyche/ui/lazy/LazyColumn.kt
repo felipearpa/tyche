@@ -22,7 +22,7 @@ fun <T : Any> LazyColumn(
     loadingContent: (LazyListScope.() -> Unit)? = null,
     itemContent: LazyListScope.() -> Unit
 ) = LazyColumn(
-    modifier = Modifier,
+    modifier = modifier,
     lazyItems = lazyItems,
     contentPadding = PaddingValues(8.dp),
     verticalArrangement = Arrangement.spacedBy(8.dp),

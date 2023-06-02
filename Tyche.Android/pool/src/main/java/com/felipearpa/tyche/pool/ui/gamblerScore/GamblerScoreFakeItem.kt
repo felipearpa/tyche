@@ -13,7 +13,6 @@ fun GamblerScoreFakeItem(modifier: Modifier = Modifier) {
     GamblerScoreItem(
         poolGamblerScore = PoolGamblerScoreModel(
             poolId = Ulid.randomUlid().value,
-            poolLayoutId = Ulid.randomUlid().value,
             poolName = "XXXXXXXXXXXXXXXXXXXX",
             gamblerId = Ulid.randomUlid().value,
             gamblerUsername = "XXXXXXXXXXXXXXXXXXXX",

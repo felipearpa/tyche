@@ -2,7 +2,6 @@ package com.felipearpa.tyche.pool.domain
 
 data class PoolGamblerScore(
     val poolId: String,
-    val poolLayoutId: String,
     val poolName: String,
     val gamblerId: String,
     val gamblerUsername: String,

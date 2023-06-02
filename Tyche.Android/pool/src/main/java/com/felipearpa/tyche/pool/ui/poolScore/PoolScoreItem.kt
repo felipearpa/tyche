@@ -92,7 +92,6 @@ fun PoolScoreItemPreview() {
     PoolScoreItem(
         poolGamblerScore = PoolGamblerScoreModel(
             poolId = Ulid.randomUlid().value,
-            poolLayoutId = Ulid.randomUlid().value,
             poolName = "Tyche American Cup YYYY",
             gamblerId = Ulid.randomUlid().value,
             gamblerUsername = "user-tyche",

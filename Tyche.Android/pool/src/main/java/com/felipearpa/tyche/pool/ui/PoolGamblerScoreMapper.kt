@@ -5,7 +5,6 @@ import com.felipearpa.tyche.pool.domain.PoolGamblerScore
 fun PoolGamblerScore.toModel() =
     PoolGamblerScoreModel(
         poolId = this.poolId,
-        poolLayoutId = this.poolLayoutId,
         poolName = this.poolName,
         gamblerId = this.gamblerId,
         gamblerUsername = this.gamblerUsername,

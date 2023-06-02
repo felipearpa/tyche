@@ -38,7 +38,7 @@ type UserDynamoDbRepository(client: IAmazonDynamoDB, hasher: IHasher) =
               "hash", AttributeValue(userEntity.Hash) ]
 
     let buildUserUniqueAttributesMap user =
-        dict [ "pk", AttributeValue($"#{userNameText}#{user.Username |> Username.value}") ]
+        dict [ "pk", AttributeValue($"{userNameText}#{user.Username |> Username.value}") ]
 
     let createUserInDbAsync createUserTransaction =
         async {
