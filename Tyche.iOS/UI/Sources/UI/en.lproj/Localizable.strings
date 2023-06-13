@@ -1,0 +1,5 @@
+"remote_communication_failure_title" = "Network error";
+"remote_communication_failure_message" = "Oops! We\'re having trouble connecting to our servers right now. Please check your internet connection and give it another shot later. If the issue persists, our team is always here to help";
+"unknown_failure_title" = "Unexpected Error";
+"unknown_failure_message" = "Oops! Something went wrong and we\'re not sure what. Please give it another try later or reach out to our friendly customer support team for help";
+"done_action" = "Done";

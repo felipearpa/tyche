@@ -1,0 +1,684 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		D204461C2A367F2300390319 /* User in Frameworks */ = {isa = PBXBuildFile; productRef = D204461B2A367F2300390319 /* User */; };
+		D2127F392A2C2F240047DED7 /* TycheApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2127F382A2C2F240047DED7 /* TycheApp.swift */; };
+		D2127F3D2A2C2F260047DED7 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D2127F3C2A2C2F260047DED7 /* Assets.xcassets */; };
+		D2127F402A2C2F260047DED7 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D2127F3F2A2C2F260047DED7 /* Preview Assets.xcassets */; };
+		D2127F452A2C2F260047DED7 /* Tyche.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = D2127F432A2C2F260047DED7 /* Tyche.xcdatamodeld */; };
+		D2127F4F2A2C2F270047DED7 /* TycheTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2127F4E2A2C2F270047DED7 /* TycheTests.swift */; };
+		D2127F592A2C2F270047DED7 /* TycheUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2127F582A2C2F270047DED7 /* TycheUITests.swift */; };
+		D2127F5B2A2C2F270047DED7 /* TycheUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2127F5A2A2C2F270047DED7 /* TycheUITestsLaunchTests.swift */; };
+		D2127F6C2A2C305D0047DED7 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = D2127F6E2A2C305D0047DED7 /* Localizable.strings */; };
+		D2127F712A2C30F00047DED7 /* ColorScheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2127F702A2C30F00047DED7 /* ColorScheme.swift */; };
+		D2127F732A2C31FF0047DED7 /* ResourceScheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2127F722A2C31FF0047DED7 /* ResourceScheme.swift */; };
+		D2127F752A2C33210047DED7 /* StringScheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2127F742A2C33210047DED7 /* StringScheme.swift */; };
+		D2127F782A2C335E0047DED7 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2127F772A2C335E0047DED7 /* HomeView.swift */; };
+		D2127F7A2A2C33920047DED7 /* RouterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2127F792A2C33920047DED7 /* RouterView.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		D2127F4B2A2C2F270047DED7 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D2127F2D2A2C2F240047DED7 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D2127F342A2C2F240047DED7;
+			remoteInfo = Tyche;
+		};
+		D2127F552A2C2F270047DED7 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D2127F2D2A2C2F240047DED7 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D2127F342A2C2F240047DED7;
+			remoteInfo = Tyche;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		D204461A2A367F1400390319 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		D2127F352A2C2F240047DED7 /* Tyche.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Tyche.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		D2127F382A2C2F240047DED7 /* TycheApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TycheApp.swift; sourceTree = "<group>"; };
+		D2127F3C2A2C2F260047DED7 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		D2127F3F2A2C2F260047DED7 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		D2127F442A2C2F260047DED7 /* Tyche.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Tyche.xcdatamodel; sourceTree = "<group>"; };
+		D2127F4A2A2C2F270047DED7 /* TycheTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TycheTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		D2127F4E2A2C2F270047DED7 /* TycheTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TycheTests.swift; sourceTree = "<group>"; };
+		D2127F542A2C2F270047DED7 /* TycheUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TycheUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		D2127F582A2C2F270047DED7 /* TycheUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TycheUITests.swift; sourceTree = "<group>"; };
+		D2127F5A2A2C2F270047DED7 /* TycheUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TycheUITestsLaunchTests.swift; sourceTree = "<group>"; };
+		D2127F6D2A2C305D0047DED7 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
+		D2127F6F2A2C30800047DED7 /* es-CO */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "es-CO"; path = "es-CO.lproj/Localizable.strings"; sourceTree = "<group>"; };
+		D2127F702A2C30F00047DED7 /* ColorScheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorScheme.swift; sourceTree = "<group>"; };
+		D2127F722A2C31FF0047DED7 /* ResourceScheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResourceScheme.swift; sourceTree = "<group>"; };
+		D2127F742A2C33210047DED7 /* StringScheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringScheme.swift; sourceTree = "<group>"; };
+		D2127F772A2C335E0047DED7 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
+		D2127F792A2C33920047DED7 /* RouterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouterView.swift; sourceTree = "<group>"; };
+		D23350B92A2D2E6300391B16 /* UI */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = UI; path = ../UI; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		D2127F322A2C2F240047DED7 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D204461C2A367F2300390319 /* User in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D2127F472A2C2F270047DED7 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D2127F512A2C2F270047DED7 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		D2127F2C2A2C2F240047DED7 = {
+			isa = PBXGroup;
+			children = (
+				D23350B82A2D2E6300391B16 /* Packages */,
+				D2127F372A2C2F240047DED7 /* Tyche */,
+				D2127F4D2A2C2F270047DED7 /* TycheTests */,
+				D2127F572A2C2F270047DED7 /* TycheUITests */,
+				D2127F362A2C2F240047DED7 /* Products */,
+				D2127F672A2C2FD50047DED7 /* Frameworks */,
+			);
+			sourceTree = "<group>";
+		};
+		D2127F362A2C2F240047DED7 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				D2127F352A2C2F240047DED7 /* Tyche.app */,
+				D2127F4A2A2C2F270047DED7 /* TycheTests.xctest */,
+				D2127F542A2C2F270047DED7 /* TycheUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		D2127F372A2C2F240047DED7 /* Tyche */ = {
+			isa = PBXGroup;
+			children = (
+				D204461A2A367F1400390319 /* Info.plist */,
+				D2127F762A2C33340047DED7 /* ui */,
+				D2127F382A2C2F240047DED7 /* TycheApp.swift */,
+				D2127F3C2A2C2F260047DED7 /* Assets.xcassets */,
+				D2127F432A2C2F260047DED7 /* Tyche.xcdatamodeld */,
+				D2127F3E2A2C2F260047DED7 /* Preview Content */,
+				D2127F6E2A2C305D0047DED7 /* Localizable.strings */,
+				D2127F702A2C30F00047DED7 /* ColorScheme.swift */,
+				D2127F722A2C31FF0047DED7 /* ResourceScheme.swift */,
+				D2127F742A2C33210047DED7 /* StringScheme.swift */,
+			);
+			path = Tyche;
+			sourceTree = "<group>";
+		};
+		D2127F3E2A2C2F260047DED7 /* Preview Content */ = {
+			isa = PBXGroup;
+			children = (
+				D2127F3F2A2C2F260047DED7 /* Preview Assets.xcassets */,
+			);
+			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		D2127F4D2A2C2F270047DED7 /* TycheTests */ = {
+			isa = PBXGroup;
+			children = (
+				D2127F4E2A2C2F270047DED7 /* TycheTests.swift */,
+			);
+			path = TycheTests;
+			sourceTree = "<group>";
+		};
+		D2127F572A2C2F270047DED7 /* TycheUITests */ = {
+			isa = PBXGroup;
+			children = (
+				D2127F582A2C2F270047DED7 /* TycheUITests.swift */,
+				D2127F5A2A2C2F270047DED7 /* TycheUITestsLaunchTests.swift */,
+			);
+			path = TycheUITests;
+			sourceTree = "<group>";
+		};
+		D2127F672A2C2FD50047DED7 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		D2127F762A2C33340047DED7 /* ui */ = {
+			isa = PBXGroup;
+			children = (
+				D2127F772A2C335E0047DED7 /* HomeView.swift */,
+				D2127F792A2C33920047DED7 /* RouterView.swift */,
+			);
+			path = ui;
+			sourceTree = "<group>";
+		};
+		D23350B82A2D2E6300391B16 /* Packages */ = {
+			isa = PBXGroup;
+			children = (
+				D23350B92A2D2E6300391B16 /* UI */,
+			);
+			name = Packages;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		D2127F342A2C2F240047DED7 /* Tyche */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D2127F5E2A2C2F270047DED7 /* Build configuration list for PBXNativeTarget "Tyche" */;
+			buildPhases = (
+				D2127F312A2C2F240047DED7 /* Sources */,
+				D2127F322A2C2F240047DED7 /* Frameworks */,
+				D2127F332A2C2F240047DED7 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Tyche;
+			packageProductDependencies = (
+				D204461B2A367F2300390319 /* User */,
+			);
+			productName = Tyche;
+			productReference = D2127F352A2C2F240047DED7 /* Tyche.app */;
+			productType = "com.apple.product-type.application";
+		};
+		D2127F492A2C2F270047DED7 /* TycheTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D2127F612A2C2F270047DED7 /* Build configuration list for PBXNativeTarget "TycheTests" */;
+			buildPhases = (
+				D2127F462A2C2F270047DED7 /* Sources */,
+				D2127F472A2C2F270047DED7 /* Frameworks */,
+				D2127F482A2C2F270047DED7 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				D2127F4C2A2C2F270047DED7 /* PBXTargetDependency */,
+			);
+			name = TycheTests;
+			productName = TycheTests;
+			productReference = D2127F4A2A2C2F270047DED7 /* TycheTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		D2127F532A2C2F270047DED7 /* TycheUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D2127F642A2C2F270047DED7 /* Build configuration list for PBXNativeTarget "TycheUITests" */;
+			buildPhases = (
+				D2127F502A2C2F270047DED7 /* Sources */,
+				D2127F512A2C2F270047DED7 /* Frameworks */,
+				D2127F522A2C2F270047DED7 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				D2127F562A2C2F270047DED7 /* PBXTargetDependency */,
+			);
+			name = TycheUITests;
+			productName = TycheUITests;
+			productReference = D2127F542A2C2F270047DED7 /* TycheUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		D2127F2D2A2C2F240047DED7 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1430;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+					D2127F342A2C2F240047DED7 = {
+						CreatedOnToolsVersion = 14.3.1;
+					};
+					D2127F492A2C2F270047DED7 = {
+						CreatedOnToolsVersion = 14.3.1;
+						TestTargetID = D2127F342A2C2F240047DED7;
+					};
+					D2127F532A2C2F270047DED7 = {
+						CreatedOnToolsVersion = 14.3.1;
+						TestTargetID = D2127F342A2C2F240047DED7;
+					};
+				};
+			};
+			buildConfigurationList = D2127F302A2C2F240047DED7 /* Build configuration list for PBXProject "Tyche" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				"es-CO",
+			);
+			mainGroup = D2127F2C2A2C2F240047DED7;
+			productRefGroup = D2127F362A2C2F240047DED7 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				D2127F342A2C2F240047DED7 /* Tyche */,
+				D2127F492A2C2F270047DED7 /* TycheTests */,
+				D2127F532A2C2F270047DED7 /* TycheUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		D2127F332A2C2F240047DED7 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D2127F402A2C2F260047DED7 /* Preview Assets.xcassets in Resources */,
+				D2127F6C2A2C305D0047DED7 /* Localizable.strings in Resources */,
+				D2127F3D2A2C2F260047DED7 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D2127F482A2C2F270047DED7 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D2127F522A2C2F270047DED7 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		D2127F312A2C2F240047DED7 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D2127F712A2C30F00047DED7 /* ColorScheme.swift in Sources */,
+				D2127F7A2A2C33920047DED7 /* RouterView.swift in Sources */,
+				D2127F752A2C33210047DED7 /* StringScheme.swift in Sources */,
+				D2127F392A2C2F240047DED7 /* TycheApp.swift in Sources */,
+				D2127F782A2C335E0047DED7 /* HomeView.swift in Sources */,
+				D2127F732A2C31FF0047DED7 /* ResourceScheme.swift in Sources */,
+				D2127F452A2C2F260047DED7 /* Tyche.xcdatamodeld in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D2127F462A2C2F270047DED7 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D2127F4F2A2C2F270047DED7 /* TycheTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D2127F502A2C2F270047DED7 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D2127F5B2A2C2F270047DED7 /* TycheUITestsLaunchTests.swift in Sources */,
+				D2127F592A2C2F270047DED7 /* TycheUITests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		D2127F4C2A2C2F270047DED7 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D2127F342A2C2F240047DED7 /* Tyche */;
+			targetProxy = D2127F4B2A2C2F270047DED7 /* PBXContainerItemProxy */;
+		};
+		D2127F562A2C2F270047DED7 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D2127F342A2C2F240047DED7 /* Tyche */;
+			targetProxy = D2127F552A2C2F270047DED7 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		D2127F6E2A2C305D0047DED7 /* Localizable.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				D2127F6D2A2C305D0047DED7 /* en */,
+				D2127F6F2A2C30800047DED7 /* es-CO */,
+			);
+			name = Localizable.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		D2127F5C2A2C2F270047DED7 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		D2127F5D2A2C2F270047DED7 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		D2127F5F2A2C2F270047DED7 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"Tyche/Preview Content\"";
+				DEVELOPMENT_TEAM = H7N4H27ULJ;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Tyche/Info.plist;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.felipearpa.Tyche;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		D2127F602A2C2F270047DED7 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"Tyche/Preview Content\"";
+				DEVELOPMENT_TEAM = H7N4H27ULJ;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Tyche/Info.plist;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.felipearpa.Tyche;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		D2127F622A2C2F270047DED7 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = H7N4H27ULJ;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.felipearpa.TycheTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Tyche.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Tyche";
+			};
+			name = Debug;
+		};
+		D2127F632A2C2F270047DED7 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = H7N4H27ULJ;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.felipearpa.TycheTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Tyche.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Tyche";
+			};
+			name = Release;
+		};
+		D2127F652A2C2F270047DED7 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = H7N4H27ULJ;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.felipearpa.TycheUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = Tyche;
+			};
+			name = Debug;
+		};
+		D2127F662A2C2F270047DED7 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = H7N4H27ULJ;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.felipearpa.TycheUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = Tyche;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		D2127F302A2C2F240047DED7 /* Build configuration list for PBXProject "Tyche" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D2127F5C2A2C2F270047DED7 /* Debug */,
+				D2127F5D2A2C2F270047DED7 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		D2127F5E2A2C2F270047DED7 /* Build configuration list for PBXNativeTarget "Tyche" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D2127F5F2A2C2F270047DED7 /* Debug */,
+				D2127F602A2C2F270047DED7 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		D2127F612A2C2F270047DED7 /* Build configuration list for PBXNativeTarget "TycheTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D2127F622A2C2F270047DED7 /* Debug */,
+				D2127F632A2C2F270047DED7 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		D2127F642A2C2F270047DED7 /* Build configuration list for PBXNativeTarget "TycheUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D2127F652A2C2F270047DED7 /* Debug */,
+				D2127F662A2C2F270047DED7 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		D204461B2A367F2300390319 /* User */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = User;
+		};
+/* End XCSwiftPackageProductDependency section */
+
+/* Begin XCVersionGroup section */
+		D2127F432A2C2F260047DED7 /* Tyche.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				D2127F442A2C2F260047DED7 /* Tyche.xcdatamodel */,
+			);
+			currentVersion = D2127F442A2C2F260047DED7 /* Tyche.xcdatamodel */;
+			path = Tyche.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
+	};
+	rootObject = D2127F2D2A2C2F240047DED7 /* Project object */;
+}
