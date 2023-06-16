@@ -114,7 +114,7 @@
 			isa = PBXGroup;
 			children = (
 				D204461A2A367F1400390319 /* Info.plist */,
-				D2127F762A2C33340047DED7 /* ui */,
+				D2127F762A2C33340047DED7 /* UI */,
 				D2127F382A2C2F240047DED7 /* TycheApp.swift */,
 				D2127F3C2A2C2F260047DED7 /* Assets.xcassets */,
 				D2127F432A2C2F260047DED7 /* Tyche.xcdatamodeld */,
@@ -159,13 +159,13 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		D2127F762A2C33340047DED7 /* ui */ = {
+		D2127F762A2C33340047DED7 /* UI */ = {
 			isa = PBXGroup;
 			children = (
 				D2127F772A2C335E0047DED7 /* HomeView.swift */,
 				D2127F792A2C33920047DED7 /* RouterView.swift */,
 			);
-			path = ui;
+			path = UI;
 			sourceTree = "<group>";
 		};
 		D23350B82A2D2E6300391B16 /* Packages */ = {
