@@ -9,7 +9,7 @@ sealed class NetworkAppException : Throwable() {
 
 fun NetworkException.toNetworkAppException(): Throwable {
     return when (this) {
-        NetworkException.RemoteCommunicationException -> NetworkAppException.RemoteCommunicationFailure
+        NetworkException.RemoteCommunication -> NetworkAppException.RemoteCommunicationFailure
         else -> this
     }
 }

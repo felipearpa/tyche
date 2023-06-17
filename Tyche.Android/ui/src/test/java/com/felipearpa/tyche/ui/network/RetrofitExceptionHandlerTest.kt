@@ -1,5 +1,6 @@
 package com.felipearpa.tyche.ui.network
 
+import com.felipearpa.tyche.core.network.RetrofitExceptionHandler
 import io.mockk.clearAllMocks
 import kotlinx.coroutines.test.runTest
 import okhttp3.MediaType
@@ -54,11 +55,11 @@ class RetrofitExceptionHandlerTest {
 
             assertTrue(result.isFailure)
 
-            assertTrue(result.exceptionOrNull() is com.felipearpa.tyche.core.network.NetworkException.HttpException)
+            assertTrue(result.exceptionOrNull() is com.felipearpa.tyche.core.network.NetworkException.Http)
 
             assertEquals(
                 expectedHttpCode,
-                (result.exceptionOrNull() as com.felipearpa.tyche.core.network.NetworkException.HttpException).httpStatusCode.value
+                (result.exceptionOrNull() as com.felipearpa.tyche.core.network.NetworkException.Http).httpStatusCode.value
             )
         }
 
@@ -73,7 +74,7 @@ class RetrofitExceptionHandlerTest {
 
             assertTrue(result.isFailure)
 
-            assertTrue(result.exceptionOrNull() is com.felipearpa.tyche.core.network.NetworkException.RemoteCommunicationException)
+            assertTrue(result.exceptionOrNull() is com.felipearpa.tyche.core.network.NetworkException.RemoteCommunication)
         }
 
     @Test
@@ -87,6 +88,6 @@ class RetrofitExceptionHandlerTest {
 
             assertTrue(result.isFailure)
 
-            assertTrue(result.exceptionOrNull() is com.felipearpa.tyche.core.network.NetworkException.RemoteCommunicationException)
+            assertTrue(result.exceptionOrNull() is com.felipearpa.tyche.core.network.NetworkException.RemoteCommunication)
         }
 }

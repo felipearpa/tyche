@@ -38,7 +38,7 @@ class AccountRemoteRepositoryTest {
     fun `given a http exception with code 'bad request' when createUser is performed then an invalid credentials failure result is returned`() =
         runTest {
             val httpException =
-                NetworkException.HttpException(httpStatusCode = HttpStatusCode.BAD_REQUEST)
+                NetworkException.Http(httpStatusCode = HttpStatusCode.BAD_REQUEST)
 
             coEvery { networkExceptionHandler.handle<LoginResponse>(block = any()) } returns
                     Result.failure(

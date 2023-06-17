@@ -38,7 +38,7 @@ class LoginRemoteRepositoryTest {
     fun `given a http exception with code 'conflict' when login is performed then an user already registered failure result is returned`() =
         runTest {
             val httpException =
-                NetworkException.HttpException(httpStatusCode = HttpStatusCode.CONFLICT)
+                NetworkException.Http(httpStatusCode = HttpStatusCode.CONFLICT)
 
             coEvery { networkExceptionHandler.handle<LoginResponse>(block = any()) } returns
                     Result.failure(

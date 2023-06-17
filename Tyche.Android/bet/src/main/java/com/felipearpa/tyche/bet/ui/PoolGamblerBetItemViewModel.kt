@@ -8,7 +8,7 @@ import com.felipearpa.tyche.bet.domain.BetException
 import com.felipearpa.tyche.core.type.BetScore
 import com.felipearpa.tyche.core.type.TeamScore
 import com.felipearpa.tyche.core.type.Ulid
-import com.felipearpa.tyche.ui.UnknownException
+import com.felipearpa.tyche.ui.UnknownLocalizedException
 import com.felipearpa.tyche.ui.ViewState
 import com.felipearpa.tyche.ui.isFailure
 import dagger.assisted.Assisted
@@ -66,7 +66,7 @@ class PoolGamblerBetItemViewModel @AssistedInject constructor(
     private fun mapToAppException(exception: Throwable): Throwable {
         return when (exception) {
             is BetException.Forbidden -> BetAppException.Forbidden
-            else -> UnknownException()
+            else -> UnknownLocalizedException()
         }
     }
 

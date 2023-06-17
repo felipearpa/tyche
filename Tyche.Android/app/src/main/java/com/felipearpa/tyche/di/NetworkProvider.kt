@@ -1,7 +1,7 @@
 package com.felipearpa.tyche.di
 
 import com.felipearpa.tyche.core.network.NetworkExceptionHandler
-import com.felipearpa.tyche.ui.network.RetrofitExceptionHandler
+import com.felipearpa.tyche.core.network.RetrofitExceptionHandler
 import com.felipearpa.tyche.user.AuthInterceptor
 import com.google.gson.*
 import dagger.Module

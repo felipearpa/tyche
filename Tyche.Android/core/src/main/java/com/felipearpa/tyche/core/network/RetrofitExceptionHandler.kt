@@ -1,8 +1,5 @@
-package com.felipearpa.tyche.ui.network
+package com.felipearpa.tyche.core.network
 
-import com.felipearpa.tyche.core.network.NetworkException
-import com.felipearpa.tyche.core.network.NetworkExceptionHandler
-import com.felipearpa.tyche.core.network.toHtpStatusCode
 import retrofit2.HttpException
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
@@ -14,14 +11,16 @@ class RetrofitExceptionHandler : NetworkExceptionHandler {
             Result.success(block())
         } catch (httpException: HttpException) {
             Result.failure(
-                NetworkException.HttpException(
+                NetworkException.Http(
                     httpStatusCode = httpException.code().toHtpStatusCode()
                 )
             )
         } catch (ignored: UnknownHostException) {
-            Result.failure(NetworkException.RemoteCommunicationException)
+            Result.failure(NetworkException.RemoteCommunication)
         } catch (ignored: SocketTimeoutException) {
-            Result.failure(NetworkException.RemoteCommunicationException)
+            Result.failure(NetworkException.RemoteCommunication)
+        } catch (exception: Exception) {
+            Result.failure(exception)
         }
     }
 }

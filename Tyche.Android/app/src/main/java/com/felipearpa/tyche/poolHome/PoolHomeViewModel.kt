@@ -6,7 +6,7 @@ import com.felipearpa.tyche.core.network.NetworkException
 import com.felipearpa.tyche.pool.application.GetPoolUseCase
 import com.felipearpa.tyche.pool.ui.PoolModel
 import com.felipearpa.tyche.pool.ui.toModel
-import com.felipearpa.tyche.ui.UnknownException
+import com.felipearpa.tyche.ui.UnknownLocalizedException
 import com.felipearpa.tyche.ui.ViewState
 import com.felipearpa.tyche.ui.network.toNetworkAppException
 import dagger.assisted.Assisted
@@ -44,5 +44,5 @@ class PoolHomeViewModel @AssistedInject constructor(
 private fun Throwable.toAppException() =
     when (this) {
         is NetworkException -> this.toNetworkAppException()
-        else -> UnknownException()
+        else -> UnknownLocalizedException()
     }

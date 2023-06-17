@@ -39,7 +39,7 @@ class PoolGamblerBetRepositoryTest {
     fun `given a http exception with code 'forbidden' when bet is performed then a forbidden failure result is returned`() =
         runTest {
             val httpException =
-                NetworkException.HttpException(httpStatusCode = HttpStatusCode.FORBIDDEN)
+                NetworkException.Http(httpStatusCode = HttpStatusCode.FORBIDDEN)
 
             coEvery { networkExceptionHandler.handle<CursorPage<PoolGamblerBetResponse>>(block = any()) } returns
                     Result.failure(

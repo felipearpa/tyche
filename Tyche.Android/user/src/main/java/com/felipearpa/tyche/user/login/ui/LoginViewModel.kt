@@ -3,9 +3,9 @@ package com.felipearpa.tyche.user.login.ui
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.felipearpa.tyche.core.network.NetworkException
-import com.felipearpa.tyche.ui.UnknownException
+import com.felipearpa.tyche.ui.UnknownLocalizedException
 import com.felipearpa.tyche.ui.ViewState
-import com.felipearpa.tyche.ui.network.toNetworkAppException
+import com.felipearpa.tyche.ui.network.toNetworkLocalizedException
 import com.felipearpa.tyche.user.UserProfile
 import com.felipearpa.tyche.user.login.application.LoginUseCase
 import com.felipearpa.tyche.user.login.domain.LoginException
@@ -41,7 +41,7 @@ class LoginViewModel @Inject constructor(private val loginUseCase: LoginUseCase)
 
 private fun Throwable.toAppException() =
     when (this) {
-        LoginException.InvalidCredentials -> LoginAppException.InvalidCredential
-        is NetworkException -> this.toNetworkAppException()
-        else -> UnknownException()
+        is LoginException -> this.toLoginLocalizedException()
+        is NetworkException -> this.toNetworkLocalizedException()
+        else -> UnknownLocalizedException()
     }

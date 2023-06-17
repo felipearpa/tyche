@@ -3,7 +3,7 @@ package com.felipearpa.tyche.user.account.ui
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.felipearpa.tyche.core.network.NetworkException
-import com.felipearpa.tyche.ui.UnknownException
+import com.felipearpa.tyche.ui.UnknownLocalizedException
 import com.felipearpa.tyche.ui.ViewState
 import com.felipearpa.tyche.ui.network.toNetworkAppException
 import com.felipearpa.tyche.user.UserProfile
@@ -45,5 +45,5 @@ private fun Throwable.toAppException() =
     when (this) {
         CreateUserException.UserAlreadyRegistered -> UserCreationAppException.UserAlreadyRegisteredCreation
         is NetworkException -> this.toNetworkAppException()
-        else -> UnknownException()
+        else -> UnknownLocalizedException()
     }
