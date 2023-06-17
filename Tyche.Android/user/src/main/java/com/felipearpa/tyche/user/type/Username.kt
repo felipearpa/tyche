@@ -16,7 +16,7 @@ value class Username(val value: String) {
 
     companion object {
 
-        fun hasPattern(value: String): Boolean {
+        fun isValid(value: String): Boolean {
             return try {
                 checkEmpty(value)
                 checkUsernamePattern(value)

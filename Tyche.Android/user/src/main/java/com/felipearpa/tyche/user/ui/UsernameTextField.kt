@@ -3,26 +3,28 @@ package com.felipearpa.tyche.user.ui
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import com.felipearpa.tyche.user.R
 import com.felipearpa.tyche.user.type.Username
 
 @Composable
 fun UsernameTextField(
     value: String,
     onValueChanged: (String) -> Unit,
-    label: @Composable () -> Unit,
-    validationFailureContent: @Composable () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var isError by remember { mutableStateOf(false) }
+    var isValid by remember { mutableStateOf(true) }
 
     Column {
         OutlinedTextField(
@@ -32,8 +34,10 @@ fun UsernameTextField(
                     onValueChanged(newValue)
                 }
             },
-            label = label,
-            isError = isError,
+            label = {
+                Text(text = stringResource(id = R.string.username_text))
+            },
+            isError = !isValid,
             singleLine = true,
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Ascii,
@@ -41,15 +45,17 @@ fun UsernameTextField(
             ),
             keyboardActions = KeyboardActions(
                 onDone = {
-                    isError = !Username.hasPattern(value)
-                    println("isError: $isError")
+                    isValid = Username.isValid(value)
                 }
             ),
             modifier = modifier
         )
 
-        if (isError) {
-            validationFailureContent()
+        if (!isValid) {
+            Text(
+                text = stringResource(id = R.string.username_validation_failure_message),
+                color = MaterialTheme.colorScheme.error
+            )
         }
     }
 }

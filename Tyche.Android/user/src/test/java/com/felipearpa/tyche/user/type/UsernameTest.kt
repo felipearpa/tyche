@@ -11,8 +11,8 @@ class UsernameWithValidValuesTest(private val value: String) {
 
     @Test
     fun `given a valid username string when an Username is created then an Username with the string contained is returned`() {
-        val email = Username(value)
-        assertEquals(value, email.value)
+        val username = Username(value)
+        assertEquals(value, username.value)
     }
 
     companion object {

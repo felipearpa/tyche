@@ -9,7 +9,6 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -29,10 +28,9 @@ import androidx.compose.ui.unit.dp
 import com.felipearpa.tyche.core.emptyString
 import com.felipearpa.tyche.ui.Message
 import com.felipearpa.tyche.ui.ViewState
-import com.felipearpa.tyche.ui.onFailure
-import com.felipearpa.tyche.ui.onInitial
-import com.felipearpa.tyche.ui.onLoading
-import com.felipearpa.tyche.ui.onSuccess
+import com.felipearpa.tyche.ui.isFailure
+import com.felipearpa.tyche.ui.isLoading
+import com.felipearpa.tyche.ui.isSuccess
 import com.felipearpa.tyche.ui.toUIMessage
 import com.felipearpa.tyche.user.R
 import com.felipearpa.tyche.user.UserProfile
@@ -49,9 +47,9 @@ fun LoginView(
 ) {
     val viewState by viewModel.state.collectAsState(initial = ViewState.Initial)
 
-    var user by remember {
+    var loginCredential by remember {
         mutableStateOf(
-            User(
+            LoginCredentialModel(
                 username = emptyString(),
                 password = emptyString()
             )
@@ -60,13 +58,13 @@ fun LoginView(
 
     var hasErrors by remember { mutableStateOf(true) }
 
-    val onUserEdited: (User) -> Unit = { newUser ->
-        user = newUser
-        hasErrors = user.hasErrors()
+    val onUserEdited: (LoginCredentialModel) -> Unit = { newUser ->
+        loginCredential = newUser
+        hasErrors = loginCredential.hasErrors()
     }
 
     val onDoneClick: () -> Unit = {
-        viewModel.login(user = user)
+        viewModel.login(loginCredentialCredential = loginCredential)
     }
 
     Scaffold(topBar = {
@@ -77,22 +75,51 @@ fun LoginView(
     }) { paddingValues ->
 
         Column(modifier = Modifier.padding(paddingValues = paddingValues)) {
-
-            viewState.onInitial {
-                InitialContent(user = user, onUserEdited = onUserEdited)
-            }.onLoading {
-                LoadingContent(user = user, onUserEdited = onUserEdited)
-            }.onSuccess { loggedInUserProfile ->
-                SuccessContent(onLoggedIn = onLoggedIn, loggedInUserProfile = loggedInUserProfile)
-            }.onFailure { failure ->
-                FailureContent(
-                    user = user,
+            if (!viewState.isSuccess()) {
+                LoginContent(
+                    state = viewState,
+                    loginCredential = loginCredential,
                     onUserEdited = onUserEdited,
-                    failure = failure,
-                    onConfirmButton = viewModel::resetState
+                    onDismissFailure = viewModel::resetState
+                )
+            } else {
+                SuccessContent(
+                    onLoggedIn = onLoggedIn,
+                    loggedInUserProfile = (viewState as ViewState.Success).invoke()
                 )
             }
         }
+    }
+}
+
+@Composable
+private fun LoginContent(
+    state: ViewState<UserProfile>,
+    loginCredential: LoginCredentialModel,
+    onUserEdited: (LoginCredentialModel) -> Unit,
+    onDismissFailure: () -> Unit
+) {
+    if (state.isLoading()) {
+        LinearProgressIndicator(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 8.dp)
+        )
+    }
+
+    LoginView(
+        loginCredential = loginCredential,
+        onUserEdited = onUserEdited,
+        modifier = Modifier
+            .padding(start = 8.dp, end = 8.dp)
+            .fillMaxWidth()
+    )
+
+    if (state.isFailure()) {
+        Failure(
+            failure = (state as ViewState.Failure).invoke(),
+            onConfirmClick = onDismissFailure
+        )
     }
 }
 
@@ -110,54 +137,6 @@ private fun SuccessContent(
         delay(5.seconds)
         onLoggedIn(loggedInUserProfile)
     }
-}
-
-@Composable
-private fun FailureContent(
-    user: User,
-    onUserEdited: (User) -> Unit,
-    failure: Throwable,
-    onConfirmButton: () -> Unit
-) {
-    LoginView(
-        user = user,
-        onUserEdited = onUserEdited,
-        modifier = Modifier
-            .padding(start = 8.dp, end = 8.dp)
-            .fillMaxWidth()
-    )
-
-    Failure(failure = failure, onConfirmClick = onConfirmButton)
-}
-
-@Composable
-private fun LoadingContent(
-    user: User,
-    onUserEdited: (User) -> Unit
-) {
-    LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
-
-    LoginView(
-        user = user,
-        onUserEdited = onUserEdited,
-        modifier = Modifier
-            .padding(start = 8.dp, end = 8.dp, top = 8.dp)
-            .fillMaxWidth()
-    )
-}
-
-@Composable
-private fun InitialContent(
-    user: User,
-    onUserEdited: (User) -> Unit
-) {
-    LoginView(
-        user = user,
-        onUserEdited = onUserEdited,
-        modifier = Modifier
-            .padding(start = 8.dp, end = 8.dp)
-            .fillMaxWidth()
-    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -178,34 +157,20 @@ private fun AppTopBar(onBackClick: (() -> Unit)?, onDoneClick: (() -> Unit)?) {
 
 @Composable
 private fun LoginView(
-    user: User,
-    onUserEdited: (user: User) -> Unit,
+    loginCredential: LoginCredentialModel,
+    onUserEdited: (loginCredential: LoginCredentialModel) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(8.dp)) {
         UsernameTextField(
-            value = user.username,
-            onValueChanged = { newValue -> onUserEdited(user.copy(username = newValue)) },
-            label = { Text(text = stringResource(id = R.string.username_text)) },
-            validationFailureContent = {
-                Text(
-                    text = stringResource(id = R.string.username_validation_failure_message),
-                    color = MaterialTheme.colorScheme.error
-                )
-            },
+            value = loginCredential.username,
+            onValueChanged = { newValue -> onUserEdited(loginCredential.copy(username = newValue)) },
             modifier = Modifier.fillMaxWidth()
         )
 
         PasswordTextField(
-            value = user.password,
-            onValueChanged = { newValue -> onUserEdited(user.copy(password = newValue)) },
-            label = { Text(text = stringResource(id = R.string.password_text)) },
-            validationFailureContent = {
-                Text(
-                    text = stringResource(id = R.string.password_validation_failure_message),
-                    color = MaterialTheme.colorScheme.error
-                )
-            },
+            value = loginCredential.password,
+            onValueChanged = { newValue -> onUserEdited(loginCredential.copy(password = newValue)) },
             modifier = Modifier.fillMaxWidth()
         )
     }
@@ -256,7 +221,7 @@ private fun AppTopBarPreview() {
 @Composable
 private fun LoginViewPreview() {
     LoginView(
-        user = User(username = emptyString(), password = emptyString()),
+        loginCredential = LoginCredentialModel(username = emptyString(), password = emptyString()),
         onUserEdited = {},
         modifier = Modifier.fillMaxWidth()
     )

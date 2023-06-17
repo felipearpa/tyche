@@ -29,10 +29,10 @@ class LoginViewModel @Inject constructor(private val loginUseCase: LoginUseCase)
         }
     }
 
-    fun login(user: User) {
+    fun login(loginCredentialCredential: LoginCredentialModel) {
         viewModelScope.launch {
             _state.emit(ViewState.Loading)
-            loginUseCase.execute(loginInput = user.toLoginCommand())
+            loginUseCase.execute(loginInput = loginCredentialCredential.toLoginInput())
                 .onSuccess { userProfile -> _state.emit(ViewState.Success(userProfile)) }
                 .onFailure { exception -> _state.emit(ViewState.Failure(exception.toAppException())) }
         }

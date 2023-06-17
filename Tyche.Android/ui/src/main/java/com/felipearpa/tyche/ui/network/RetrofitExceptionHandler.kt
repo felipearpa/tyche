@@ -1,12 +1,13 @@
 package com.felipearpa.tyche.ui.network
 
 import com.felipearpa.tyche.core.network.NetworkException
+import com.felipearpa.tyche.core.network.NetworkExceptionHandler
 import com.felipearpa.tyche.core.network.toHtpStatusCode
 import retrofit2.HttpException
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
 
-class RetrofitExceptionHandler : com.felipearpa.tyche.core.network.NetworkExceptionHandler {
+class RetrofitExceptionHandler : NetworkExceptionHandler {
 
     override suspend fun <T> handle(block: suspend () -> T): Result<T> {
         return try {

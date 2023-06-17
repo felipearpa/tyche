@@ -9,7 +9,6 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -219,26 +218,12 @@ private fun UserCreationView(
         UsernameTextField(
             value = user.username,
             onValueChanged = { newValue -> onUserEdited(user.copy(username = newValue)) },
-            label = { Text(text = stringResource(id = R.string.username_text)) },
-            validationFailureContent = {
-                Text(
-                    text = stringResource(id = R.string.username_validation_failure_message),
-                    color = MaterialTheme.colorScheme.error
-                )
-            },
             modifier = Modifier.fillMaxWidth()
         )
 
         PasswordTextField(
             value = user.password,
             onValueChanged = { newValue -> onUserEdited(user.copy(password = newValue)) },
-            label = { Text(text = stringResource(id = R.string.password_text)) },
-            validationFailureContent = {
-                Text(
-                    text = stringResource(id = R.string.password_validation_failure_message),
-                    color = MaterialTheme.colorScheme.error
-                )
-            },
             modifier = Modifier.fillMaxWidth()
         )
     }

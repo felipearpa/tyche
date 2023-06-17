@@ -5,7 +5,7 @@ import com.felipearpa.tyche.core.network.NetworkException
 import com.felipearpa.tyche.core.network.NetworkExceptionHandler
 import com.felipearpa.tyche.user.LoginResponse
 import com.felipearpa.tyche.user.User
-import com.felipearpa.tyche.user.account.domain.CreateUserException
+import com.felipearpa.tyche.user.login.domain.LoginException
 import com.felipearpa.tyche.user.login.domain.LoginRemoteDataSource
 import com.felipearpa.tyche.user.type.Password
 import com.felipearpa.tyche.user.type.Username
@@ -53,6 +53,6 @@ class LoginRemoteRepositoryTest {
             )
 
             assertTrue(result.isFailure)
-            assertEquals(CreateUserException.UserAlreadyRegistered, result.exceptionOrNull())
+            assertEquals(LoginException.InvalidCredentials, result.exceptionOrNull())
         }
 }
