@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -31,8 +30,8 @@ import androidx.constraintlayout.compose.ConstrainedLayoutReference
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.ConstraintLayoutScope
 import androidx.constraintlayout.compose.Dimension
-import com.felipearpa.tyche.core.emptyString
 import com.felipearpa.tyche.R
+import com.felipearpa.tyche.core.emptyString
 import com.felipearpa.tyche.ui.theme.TycheTheme
 
 @Composable
@@ -138,9 +137,11 @@ private fun ConstraintLayoutScope.CreationAccount(
             top.linkTo(descriptionView.bottom)
             bottom.linkTo(loginView.top)
             start.linkTo(parent.start)
-        }, contentAlignment = Alignment.Center
+            end.linkTo(parent.end)
+        },
+        contentAlignment = Alignment.Center
     ) {
-        Button(modifier = Modifier.fillMaxWidth(), onClick = onCreateAccountClick) {
+        Button(onClick = onCreateAccountClick) {
             Text(text = stringResource(id = R.string.create_account_action))
         }
     }

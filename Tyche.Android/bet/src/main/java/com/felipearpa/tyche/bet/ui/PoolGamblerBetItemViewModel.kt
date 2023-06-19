@@ -58,15 +58,8 @@ class PoolGamblerBetItemViewModel @AssistedInject constructor(
                 if (exception is BetException.Forbidden) {
                     poolGamblerBet.isLockEnforced = true
                 }
-                _state.emit(ViewState.Failure(mapToAppException(exception = exception)))
+                _state.emit(ViewState.Failure(exception.toLocalizedException()))
             }
-        }
-    }
-
-    private fun mapToAppException(exception: Throwable): Throwable {
-        return when (exception) {
-            is BetException.Forbidden -> BetAppException.Forbidden
-            else -> UnknownLocalizedException()
         }
     }
 
@@ -90,3 +83,9 @@ class PoolGamblerBetItemViewModel @AssistedInject constructor(
         _state.value = ViewState.Success(poolGamblerBet)
     }
 }
+
+private fun Throwable.toLocalizedException() =
+    when (this) {
+        is BetException.Forbidden -> BetLocalizedException.Forbidden
+        else -> UnknownLocalizedException()
+    }

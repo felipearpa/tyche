@@ -4,7 +4,7 @@ import com.felipearpa.tyche.core.network.HttpStatusCode
 import com.felipearpa.tyche.core.network.NetworkException
 import com.felipearpa.tyche.core.network.NetworkExceptionHandler
 import com.felipearpa.tyche.user.LoginResponse
-import com.felipearpa.tyche.user.User
+import com.felipearpa.tyche.user.account.domain.User
 import com.felipearpa.tyche.user.account.domain.AccountRemoteDataSource
 import com.felipearpa.tyche.user.login.domain.LoginException
 import com.felipearpa.tyche.user.type.Password

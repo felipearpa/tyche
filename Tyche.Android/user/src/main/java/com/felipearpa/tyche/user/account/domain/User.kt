@@ -1,4 +1,4 @@
-package com.felipearpa.tyche.user
+package com.felipearpa.tyche.user.account.domain
 
 import com.felipearpa.tyche.user.type.Password
 import com.felipearpa.tyche.user.type.Username

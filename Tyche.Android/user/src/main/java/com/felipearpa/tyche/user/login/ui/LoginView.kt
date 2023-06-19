@@ -55,7 +55,7 @@ fun LoginView(
 
     var hasErrors by remember { mutableStateOf(true) }
 
-    val onUserEdited: (LoginCredentialModel) -> Unit = { newUser ->
+    val onLoginCredentialEdited: (LoginCredentialModel) -> Unit = { newUser ->
         loginCredential = newUser
         hasErrors = loginCredential.hasErrors()
     }
@@ -76,7 +76,7 @@ fun LoginView(
                 LoginContent(
                     state = viewState,
                     loginCredential = loginCredential,
-                    onUserEdited = onUserEdited,
+                    onLoginCredentialEdited = onLoginCredentialEdited,
                     onDismissFailure = viewModel::resetState
                 )
             } else {
@@ -93,7 +93,7 @@ fun LoginView(
 private fun LoginContent(
     state: ViewState<UserProfile>,
     loginCredential: LoginCredentialModel,
-    onUserEdited: (LoginCredentialModel) -> Unit,
+    onLoginCredentialEdited: (LoginCredentialModel) -> Unit,
     onDismissFailure: () -> Unit
 ) {
     if (state.isLoading()) {
@@ -106,7 +106,7 @@ private fun LoginContent(
 
     LoginView(
         loginCredential = loginCredential,
-        onUserEdited = onUserEdited,
+        onUserEdited = onLoginCredentialEdited,
         modifier = Modifier
             .padding(start = 8.dp, end = 8.dp)
             .fillMaxWidth()

@@ -31,9 +31,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
-import com.felipearpa.tyche.ui.Message
-import com.felipearpa.tyche.ui.shimmer
-import com.felipearpa.tyche.ui.toUIMessage
+import com.felipearpa.tyche.R
 import com.felipearpa.tyche.bet.poolGamblerBetListViewModel
 import com.felipearpa.tyche.bet.ui.PoolGamblerBetListView
 import com.felipearpa.tyche.bet.ui.PoolGamblerBetListViewModel
@@ -41,10 +39,12 @@ import com.felipearpa.tyche.core.emptyString
 import com.felipearpa.tyche.pool.gamblerScoreListViewModel
 import com.felipearpa.tyche.pool.ui.gamblerScore.GamblerScoreListView
 import com.felipearpa.tyche.pool.ui.gamblerScore.GamblerScoreListViewModel
-import com.felipearpa.tyche.R
+import com.felipearpa.tyche.ui.LocalizedException
+import com.felipearpa.tyche.ui.Message
 import com.felipearpa.tyche.ui.ViewState
 import com.felipearpa.tyche.ui.onLoading
 import com.felipearpa.tyche.ui.onSuccess
+import com.felipearpa.tyche.ui.shimmer
 
 enum class Tab {
     GAMBLER_SCORE,
@@ -82,7 +82,10 @@ fun PoolHomeView(viewModel: PoolHomeViewModel, onPoolScoreListRequested: () -> U
     when (state) {
         is ViewState.Failure -> {
             val exception = (state as ViewState.Failure).invoke()
-            Message(iconResourceId = R.drawable.ic_sentiment_sad, message = exception.toUIMessage())
+            Message(
+                iconResourceId = R.drawable.ic_sentiment_sad,
+                message = (exception as LocalizedException).failureReason ?: emptyString()
+            )
         }
 
         else -> Scaffold(

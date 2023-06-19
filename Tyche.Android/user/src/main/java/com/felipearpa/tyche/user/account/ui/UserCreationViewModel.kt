@@ -5,10 +5,10 @@ import androidx.lifecycle.viewModelScope
 import com.felipearpa.tyche.core.network.NetworkException
 import com.felipearpa.tyche.ui.UnknownLocalizedException
 import com.felipearpa.tyche.ui.ViewState
-import com.felipearpa.tyche.ui.network.toNetworkAppException
+import com.felipearpa.tyche.ui.network.toNetworkLocalizedException
 import com.felipearpa.tyche.user.UserProfile
 import com.felipearpa.tyche.user.account.application.CreateUserUseCase
-import com.felipearpa.tyche.user.account.domain.CreateUserException
+import com.felipearpa.tyche.user.account.domain.UserCreationException
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -31,19 +31,19 @@ class UserCreationViewModel @Inject constructor(
         }
     }
 
-    fun create(user: User) {
+    fun create(user: UserModel) {
         viewModelScope.launch {
             _state.emit(ViewState.Loading)
             createUserUseCase.execute(user.toCreateUserCommand())
                 .onSuccess { userProfile -> _state.emit(ViewState.Success(userProfile)) }
-                .onFailure { exception -> _state.emit(ViewState.Failure(exception.toAppException())) }
+                .onFailure { exception -> _state.emit(ViewState.Failure(exception.toLocalizedException())) }
         }
     }
 }
 
-private fun Throwable.toAppException() =
+private fun Throwable.toLocalizedException() =
     when (this) {
-        CreateUserException.UserAlreadyRegistered -> UserCreationAppException.UserAlreadyRegisteredCreation
-        is NetworkException -> this.toNetworkAppException()
+        is UserCreationException -> this.toUserCreationLocalizedException()
+        is NetworkException -> this.toNetworkLocalizedException()
         else -> UnknownLocalizedException()
     }

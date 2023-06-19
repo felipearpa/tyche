@@ -9,9 +9,10 @@
     <string name="username_validation_failure_message">Username must be between 3–16 characters and can only contain letters, numbers, underscores, and hyphens</string>
     <string name="password_text">Password</string>
     <string name="password_validation_failure_message">Password must be between 8–16 characters and include at least one uppercase letter, one lowercase letter, one number, and one special character</string>
-    <string name="invalid_credentials_failure_title">Login failed</string>
+    <string name="invalid_credential_failure_title">Login failed</string>
     <string name="invalid_credential_failure_message">Incorrect username or password</string>
     <string name="user_creation_title">Creation</string>
+    <string name="user_already_registered_failure_title">Username is already in use</string>
     <string name="user_already_registered_failure_message">This username is already in use. Please choose another one</string>
     <string name="user_success_login_message">Congratulations! You\'re in the game and ready to place your bet. Let the fun begin!</string>
 </resources>

@@ -34,12 +34,12 @@ class LoginViewModel @Inject constructor(private val loginUseCase: LoginUseCase)
             _state.emit(ViewState.Loading)
             loginUseCase.execute(loginInput = loginCredentialCredential.toLoginInput())
                 .onSuccess { userProfile -> _state.emit(ViewState.Success(userProfile)) }
-                .onFailure { exception -> _state.emit(ViewState.Failure(exception.toAppException())) }
+                .onFailure { exception -> _state.emit(ViewState.Failure(exception.toLocalizedException())) }
         }
     }
 }
 
-private fun Throwable.toAppException() =
+private fun Throwable.toLocalizedException() =
     when (this) {
         is LoginException -> this.toLoginLocalizedException()
         is NetworkException -> this.toNetworkLocalizedException()

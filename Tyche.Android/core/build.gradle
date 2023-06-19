@@ -49,4 +49,5 @@ dependencies {
 
     testImplementation(junit.junit)
     testImplementation(ioMockk.mockk)
+    testImplementation(orgJetbrainsKotlinx.kotlinxCoroutinesTest)
 }

@@ -35,9 +35,9 @@ import com.felipearpa.tyche.bet.R
 import com.felipearpa.tyche.core.emptyString
 import com.felipearpa.tyche.core.type.TeamScore
 import com.felipearpa.tyche.core.type.Ulid
+import com.felipearpa.tyche.ui.LocalizedException
 import com.felipearpa.tyche.ui.onFailure
 import com.felipearpa.tyche.ui.onLoading
-import com.felipearpa.tyche.ui.toUIMessage
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 
@@ -59,9 +59,9 @@ fun PoolGamblerBetItemView(
         )
 
         state.onFailure { exception ->
-            if (exception !is BetAppException.Forbidden) {
+            if (exception !is BetLocalizedException.Forbidden) {
                 Text(
-                    text = exception.toUIMessage(),
+                    text = (exception as LocalizedException).failureReason ?: emptyString(),
                     color = MaterialTheme.colorScheme.error,
                     modifier = Modifier.fillMaxWidth()
                 )

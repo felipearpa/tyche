@@ -8,13 +8,21 @@ import com.felipearpa.tyche.user.login.domain.LoginException
 
 sealed class LoginLocalizedException : LocalizedException() {
 
-    object InvalidCredential : LoginAppException()
+    object InvalidCredential : LoginLocalizedException()
 
     override val errorDescription: String?
-        @Composable get() = stringResource(id = R.string.invalid_credential_failure_message)
+        @Composable get() =
+            when (this) {
+                InvalidCredential ->
+                    stringResource(id = R.string.invalid_credential_failure_title)
+            }
 
     override val failureReason: String?
-        @Composable get() = stringResource(id = R.string.invalid_credentials_failure_title)
+        @Composable get() =
+            when (this) {
+                InvalidCredential ->
+                    stringResource(id = R.string.invalid_credential_failure_message)
+            }
 }
 
 fun LoginException.toLoginLocalizedException() =

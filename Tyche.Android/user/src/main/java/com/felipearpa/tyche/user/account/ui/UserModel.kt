@@ -3,11 +3,11 @@ package com.felipearpa.tyche.user.account.ui
 import com.felipearpa.tyche.user.type.Password
 import com.felipearpa.tyche.user.type.Username
 
-data class User(
+data class UserModel(
     val username: String,
     val password: String
 )
 
-fun User.hasErrors(): Boolean {
+fun UserModel.hasErrors(): Boolean {
     return !(Username.isValid(this.username) && Password.isValid(this.password))
 }

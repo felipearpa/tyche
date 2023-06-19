@@ -8,7 +8,7 @@ import com.felipearpa.tyche.pool.ui.PoolModel
 import com.felipearpa.tyche.pool.ui.toModel
 import com.felipearpa.tyche.ui.UnknownLocalizedException
 import com.felipearpa.tyche.ui.ViewState
-import com.felipearpa.tyche.ui.network.toNetworkAppException
+import com.felipearpa.tyche.ui.network.toNetworkLocalizedException
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -35,14 +35,14 @@ class PoolHomeViewModel @AssistedInject constructor(
             maybePool.onSuccess { pool ->
                 _state.emit(ViewState.Success(pool.toModel()))
             }.onFailure { exception ->
-                _state.emit(ViewState.Failure(exception.toAppException()))
+                _state.emit(ViewState.Failure(exception.toLocalizedException()))
             }
         }
     }
 }
 
-private fun Throwable.toAppException() =
+private fun Throwable.toLocalizedException() =
     when (this) {
-        is NetworkException -> this.toNetworkAppException()
+        is NetworkException -> this.toNetworkLocalizedException()
         else -> UnknownLocalizedException()
     }

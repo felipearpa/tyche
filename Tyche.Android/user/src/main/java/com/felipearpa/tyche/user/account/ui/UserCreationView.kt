@@ -4,10 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -21,18 +18,17 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.felipearpa.tyche.core.emptyString
+import com.felipearpa.tyche.ui.ExceptionAlertDialog
+import com.felipearpa.tyche.ui.LocalizedException
 import com.felipearpa.tyche.ui.Message
 import com.felipearpa.tyche.ui.ViewState
-import com.felipearpa.tyche.ui.onFailure
-import com.felipearpa.tyche.ui.onInitial
-import com.felipearpa.tyche.ui.onLoading
-import com.felipearpa.tyche.ui.onSuccess
-import com.felipearpa.tyche.ui.toUIMessage
+import com.felipearpa.tyche.ui.isFailure
+import com.felipearpa.tyche.ui.isLoading
+import com.felipearpa.tyche.ui.isSuccess
 import com.felipearpa.tyche.user.R
 import com.felipearpa.tyche.user.UserProfile
 import com.felipearpa.tyche.user.ui.PasswordTextField
@@ -46,9 +42,11 @@ fun UserCreationView(
     onUserCreated: (UserProfile) -> Unit,
     onBack: () -> Unit
 ) {
+    val viewState by viewModel.state.collectAsState(initial = ViewState.Initial)
+
     var user by remember {
         mutableStateOf(
-            User(
+            UserModel(
                 username = emptyString(), password = emptyString()
             )
         )
@@ -56,9 +54,7 @@ fun UserCreationView(
 
     var hasErrors by remember { mutableStateOf(true) }
 
-    val viewState by viewModel.state.collectAsState(initial = ViewState.Initial)
-
-    val onUserEdited: (User) -> Unit = { newUser ->
+    val onUserEdited: (UserModel) -> Unit = { newUser ->
         user = newUser
         hasErrors = user.hasErrors()
     }
@@ -75,31 +71,51 @@ fun UserCreationView(
     }) { paddingValues ->
 
         Column(modifier = Modifier.padding(paddingValues = paddingValues)) {
-
-            viewState.onInitial {
-                InitialContent(
-                    user = user,
-                    onUserEdited = onUserEdited
-                )
-            }.onLoading {
-                LoadingContent(
-                    user = user,
-                    onUserEdited = onUserEdited
-                )
-            }.onSuccess { createdUserProfile ->
-                SuccessContent(
-                    onUserCreated = onUserCreated,
-                    createdUserProfile = createdUserProfile
-                )
-            }.onFailure { failure ->
-                FailureContent(
+            if (viewState.isSuccess()) {
+                UserCreationContent(
+                    state = viewState,
                     user = user,
                     onUserEdited = onUserEdited,
-                    failure = failure,
-                    onConfirmButton = viewModel::resetState
+                    onDismissFailure = viewModel::resetState
+                )
+            } else {
+                SuccessContent(
+                    onUserCreated = onUserCreated,
+                    createdUserProfile = (viewState as ViewState.Success).invoke()
                 )
             }
         }
+    }
+}
+
+@Composable
+private fun UserCreationContent(
+    state: ViewState<UserProfile>,
+    user: UserModel,
+    onUserEdited: (UserModel) -> Unit,
+    onDismissFailure: () -> Unit
+) {
+    if (state.isLoading()) {
+        LinearProgressIndicator(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 8.dp)
+        )
+    }
+
+    UserCreationView(
+        user = user,
+        onUserEdited = onUserEdited,
+        modifier = Modifier
+            .padding(start = 8.dp, end = 8.dp)
+            .fillMaxWidth()
+    )
+
+    if (state.isFailure()) {
+        ExceptionAlertDialog(
+            failure = (state as ViewState.Failure).invoke() as LocalizedException,
+            onDismissClick = onDismissFailure
+        )
     }
 }
 
@@ -117,80 +133,6 @@ private fun SuccessContent(
         delay(5.seconds)
         onUserCreated(createdUserProfile)
     }
-}
-
-@Composable
-fun InitialContent(
-    user: User,
-    onUserEdited: (User) -> Unit
-) {
-    UserCreationView(
-        user = user,
-        onUserEdited = onUserEdited,
-        modifier = Modifier
-            .padding(start = 8.dp, end = 8.dp)
-            .fillMaxWidth()
-    )
-}
-
-@Composable
-private fun FailureContent(
-    user: User,
-    onUserEdited: (User) -> Unit,
-    failure: Throwable,
-    onConfirmButton: () -> Unit
-) {
-    UserCreationView(
-        user = user,
-        onUserEdited = onUserEdited,
-        modifier = Modifier
-            .padding(start = 8.dp, end = 8.dp)
-            .fillMaxWidth()
-    )
-
-    Failure(failure = failure, onConfirmClick = onConfirmButton)
-}
-
-@Composable
-private fun Failure(failure: Throwable, onConfirmClick: () -> Unit) {
-    AlertDialog(
-        onDismissRequest = onConfirmClick,
-        confirmButton = {
-            TextButton(onClick = onConfirmClick)
-            { Text(text = stringResource(id = R.string.done_action)) }
-        },
-        text = {
-            Text(
-                text = when (failure) {
-                    is UserCreationAppException.UserAlreadyRegisteredCreation -> stringResource(id = R.string.user_already_registered_failure_message)
-                    else -> failure.toUIMessage()
-                }
-            )
-        },
-        icon = {
-            Icon(
-                painter = painterResource(id = R.drawable.ic_sentiment_sad),
-                contentDescription = emptyString(),
-                modifier = Modifier.size(40.dp, 40.dp)
-            )
-        }
-    )
-}
-
-@Composable
-private fun LoadingContent(
-    user: User,
-    onUserEdited: (User) -> Unit
-) {
-    LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
-
-    UserCreationView(
-        user = user,
-        onUserEdited = onUserEdited,
-        modifier = Modifier
-            .padding(start = 8.dp, end = 8.dp, top = 8.dp)
-            .fillMaxWidth()
-    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -211,7 +153,7 @@ private fun AppTopBar(onBackClick: (() -> Unit)?, onDoneClick: (() -> Unit)?) {
 
 @Composable
 private fun UserCreationView(
-    user: User, onUserEdited: (user: User) -> Unit,
+    user: UserModel, onUserEdited: (user: UserModel) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -231,14 +173,6 @@ private fun UserCreationView(
 
 @Preview(showBackground = true)
 @Composable
-fun FailurePreview() {
-    Failure(
-        failure = UserCreationAppException.UserAlreadyRegisteredCreation,
-        onConfirmClick = {})
-}
-
-@Preview(showBackground = true)
-@Composable
 private fun AppTopBarPreview() {
     AppTopBar(
         onBackClick = {},
@@ -250,7 +184,7 @@ private fun AppTopBarPreview() {
 @Composable
 private fun UserCreationViewPreview() {
     UserCreationView(
-        user = User(username = emptyString(), password = emptyString()),
+        user = UserModel(username = emptyString(), password = emptyString()),
         onUserEdited = {},
         modifier = Modifier.fillMaxWidth()
     )
