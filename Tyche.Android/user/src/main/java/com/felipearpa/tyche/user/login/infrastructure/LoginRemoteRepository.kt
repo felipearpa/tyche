@@ -9,7 +9,7 @@ import com.felipearpa.tyche.user.login.domain.LoginException
 import com.felipearpa.tyche.user.login.domain.LoginRemoteDataSource
 import com.felipearpa.tyche.user.login.domain.LoginRepository
 import com.felipearpa.tyche.user.login.domain.toLoginRequest
-import com.felipearpa.tyche.user.toProfile
+import com.felipearpa.tyche.user.toLoginProfile
 import javax.inject.Inject
 
 class LoginRemoteRepository @Inject constructor(
@@ -20,7 +20,8 @@ class LoginRemoteRepository @Inject constructor(
 
     override suspend fun login(loginCredential: LoginCredential): Result<LoginProfile> {
         return networkExceptionHandler.handle {
-            loginRemoteDataSource.login(loginRequest = loginCredential.toLoginRequest()).toProfile()
+            loginRemoteDataSource.login(loginRequest = loginCredential.toLoginRequest())
+                .toLoginProfile()
         }.recoverHttpException { exception ->
             return when (exception.httpStatusCode) {
                 HttpStatusCode.CONFLICT -> Result.failure(LoginException.InvalidCredentials)

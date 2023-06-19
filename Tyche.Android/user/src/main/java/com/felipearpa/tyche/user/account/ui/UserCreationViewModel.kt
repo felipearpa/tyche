@@ -8,6 +8,7 @@ import com.felipearpa.tyche.ui.ViewState
 import com.felipearpa.tyche.ui.network.toNetworkLocalizedException
 import com.felipearpa.tyche.user.UserProfile
 import com.felipearpa.tyche.user.account.application.CreateUserUseCase
+import com.felipearpa.tyche.user.account.application.toCreateUserInput
 import com.felipearpa.tyche.user.account.domain.UserCreationException
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
@@ -34,7 +35,7 @@ class UserCreationViewModel @Inject constructor(
     fun create(user: UserModel) {
         viewModelScope.launch {
             _state.emit(ViewState.Loading)
-            createUserUseCase.execute(user.toCreateUserCommand())
+            createUserUseCase.execute(user.toCreateUserInput())
                 .onSuccess { userProfile -> _state.emit(ViewState.Success(userProfile)) }
                 .onFailure { exception -> _state.emit(ViewState.Failure(exception.toLocalizedException())) }
         }

@@ -5,7 +5,7 @@ import com.felipearpa.tyche.core.network.recoverNetworkException
 import com.felipearpa.tyche.pool.domain.Pool
 import com.felipearpa.tyche.pool.domain.PoolRemoteDataSource
 import com.felipearpa.tyche.pool.domain.PoolRepository
-import com.felipearpa.tyche.pool.domain.toDomain
+import com.felipearpa.tyche.pool.domain.toPool
 import javax.inject.Inject
 
 class PoolRemoteRepository @Inject constructor(
@@ -16,7 +16,7 @@ class PoolRemoteRepository @Inject constructor(
 
     override suspend fun getPool(poolId: String): Result<Pool> {
         return networkExceptionHandler.handle {
-            poolRemoteDataSource.getPool(poolId = poolId).toDomain()
+            poolRemoteDataSource.getPool(poolId = poolId).toPool()
         }.recoverNetworkException { exception ->
             return Result.failure(exception)
         }

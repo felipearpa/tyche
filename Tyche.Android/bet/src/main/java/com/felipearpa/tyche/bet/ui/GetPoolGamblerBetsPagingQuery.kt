@@ -13,4 +13,4 @@ suspend fun getPoolGamblerBetsPagingQuery(
     gamblerId = gamblerId,
     next = next,
     searchText = search()
-).map { page -> page.map { gamblerPool -> gamblerPool.toModel() } }
+).map { page -> page.map { gamblerPool -> gamblerPool.toPoolGamblerBetModel() } }

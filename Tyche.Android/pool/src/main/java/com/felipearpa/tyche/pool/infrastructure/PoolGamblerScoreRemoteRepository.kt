@@ -6,7 +6,7 @@ import com.felipearpa.tyche.core.paging.CursorPage
 import com.felipearpa.tyche.pool.domain.PoolGamblerScore
 import com.felipearpa.tyche.pool.domain.PoolGamblerScoreRemoteDataSource
 import com.felipearpa.tyche.pool.domain.PoolGamblerScoreRepository
-import com.felipearpa.tyche.pool.domain.toDomain
+import com.felipearpa.tyche.pool.domain.toPoolGamblerScore
 import javax.inject.Inject
 
 class PoolGamblerScoreRemoteRepository @Inject constructor(
@@ -25,7 +25,7 @@ class PoolGamblerScoreRemoteRepository @Inject constructor(
                 gamblerId = gamblerId,
                 next = next,
                 searchText = searchText
-            ).map { gamblerPoolResponse -> gamblerPoolResponse.toDomain() }
+            ).map { gamblerPoolResponse -> gamblerPoolResponse.toPoolGamblerScore() }
         }.recoverNetworkException { exception ->
             return Result.failure(exception)
         }
@@ -41,7 +41,7 @@ class PoolGamblerScoreRemoteRepository @Inject constructor(
                 poolId = poolId,
                 next = next,
                 searchText = searchText
-            ).map { gamblerPoolResponse -> gamblerPoolResponse.toDomain() }
+            ).map { gamblerPoolResponse -> gamblerPoolResponse.toPoolGamblerScore() }
         }.recoverNetworkException { exception ->
             return Result.failure(exception)
         }

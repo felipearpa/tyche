@@ -8,6 +8,7 @@ import com.felipearpa.tyche.ui.ViewState
 import com.felipearpa.tyche.ui.network.toNetworkLocalizedException
 import com.felipearpa.tyche.user.UserProfile
 import com.felipearpa.tyche.user.login.application.LoginUseCase
+import com.felipearpa.tyche.user.login.application.toLoginInput
 import com.felipearpa.tyche.user.login.domain.LoginException
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow

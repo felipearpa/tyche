@@ -5,8 +5,8 @@ import com.felipearpa.tyche.bet.domain.BetException
 import com.felipearpa.tyche.bet.domain.PoolGamblerBet
 import com.felipearpa.tyche.bet.domain.PoolGamblerBetRemoteDataSource
 import com.felipearpa.tyche.bet.domain.PoolGamblerBetRepository
-import com.felipearpa.tyche.bet.domain.toDomain
-import com.felipearpa.tyche.bet.domain.toRequest
+import com.felipearpa.tyche.bet.domain.toBetRequest
+import com.felipearpa.tyche.bet.domain.toPoolGamblerBet
 import com.felipearpa.tyche.core.network.HttpStatusCode
 import com.felipearpa.tyche.core.network.NetworkExceptionHandler
 import com.felipearpa.tyche.core.network.recoverHttpException
@@ -31,7 +31,7 @@ class PoolGamblerBetRemoteRepository @Inject constructor(
                 gamblerId = gamblerId,
                 next = next,
                 searchText = searchText
-            ).map { poolGamblerBetResponse -> poolGamblerBetResponse.toDomain() }
+            ).map { poolGamblerBetResponse -> poolGamblerBetResponse.toPoolGamblerBet() }
         }.recoverNetworkException { exception ->
             return Result.failure(exception)
         }
@@ -39,7 +39,7 @@ class PoolGamblerBetRemoteRepository @Inject constructor(
 
     override suspend fun bet(bet: Bet): Result<PoolGamblerBet> {
         return networkExceptionHandler.handle {
-            poolGamblerBetRemoteDataSource.bet(betRequest = bet.toRequest()).toDomain()
+            poolGamblerBetRemoteDataSource.bet(betRequest = bet.toBetRequest()).toPoolGamblerBet()
         }.recoverHttpException { exception ->
             return when (exception.httpStatusCode) {
                 HttpStatusCode.FORBIDDEN -> Result.failure(BetException.Forbidden)

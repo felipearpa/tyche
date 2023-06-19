@@ -3,6 +3,7 @@ package com.felipearpa.tyche.user.account.application
 import com.felipearpa.tyche.user.LoginStorage
 import com.felipearpa.tyche.user.UserProfile
 import com.felipearpa.tyche.user.account.domain.AccountRepository
+import com.felipearpa.tyche.user.account.domain.toUser
 import javax.inject.Inject
 
 class CreateUserUseCase @Inject constructor(

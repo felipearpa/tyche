@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.felipearpa.tyche.core.network.NetworkException
 import com.felipearpa.tyche.pool.application.GetPoolUseCase
 import com.felipearpa.tyche.pool.ui.PoolModel
-import com.felipearpa.tyche.pool.ui.toModel
+import com.felipearpa.tyche.pool.ui.toPoolModel
 import com.felipearpa.tyche.ui.UnknownLocalizedException
 import com.felipearpa.tyche.ui.ViewState
 import com.felipearpa.tyche.ui.network.toNetworkLocalizedException
@@ -33,7 +33,7 @@ class PoolHomeViewModel @AssistedInject constructor(
 
             val maybePool = getPoolUseCase.execute(poolId = poolId)
             maybePool.onSuccess { pool ->
-                _state.emit(ViewState.Success(pool.toModel()))
+                _state.emit(ViewState.Success(pool.toPoolModel()))
             }.onFailure { exception ->
                 _state.emit(ViewState.Failure(exception.toLocalizedException()))
             }
