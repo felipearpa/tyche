@@ -1,4 +1,4 @@
-package com.felipearpa.tyche.pool.ui.poolScore
+package com.felipearpa.tyche.pool.ui.poolscore
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider

@@ -1,4 +1,4 @@
-package com.felipearpa.tyche.pool.ui.gamblerScore
+package com.felipearpa.tyche.pool.ui.gamblerscore
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement

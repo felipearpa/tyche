@@ -1,4 +1,4 @@
-package com.felipearpa.tyche.pool.ui.poolScore
+package com.felipearpa.tyche.pool.ui.poolscore
 
 object PoolScoreListRoute {
 

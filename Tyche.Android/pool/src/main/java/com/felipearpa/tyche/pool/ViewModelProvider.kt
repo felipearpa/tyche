@@ -4,10 +4,10 @@ import android.app.Activity
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.felipearpa.tyche.pool.ui.gamblerScore.GamblerScoreListViewModel
-import com.felipearpa.tyche.pool.ui.gamblerScore.provideGamblerScoreListViewModelFactory
-import com.felipearpa.tyche.pool.ui.poolScore.PoolScoreListViewModel
-import com.felipearpa.tyche.pool.ui.poolScore.providePoolScoreListViewModelFactory
+import com.felipearpa.tyche.pool.ui.gamblerscore.GamblerScoreListViewModel
+import com.felipearpa.tyche.pool.ui.gamblerscore.provideGamblerScoreListViewModelFactory
+import com.felipearpa.tyche.pool.ui.poolscore.PoolScoreListViewModel
+import com.felipearpa.tyche.pool.ui.poolscore.providePoolScoreListViewModelFactory
 import dagger.hilt.android.EntryPointAccessors
 
 @Composable

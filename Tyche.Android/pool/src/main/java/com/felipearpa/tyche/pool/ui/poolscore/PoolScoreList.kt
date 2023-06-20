@@ -1,4 +1,4 @@
-package com.felipearpa.tyche.pool.ui.poolScore
+package com.felipearpa.tyche.pool.ui.poolscore
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box

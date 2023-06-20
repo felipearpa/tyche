@@ -1,4 +1,4 @@
-package com.felipearpa.tyche.pool.ui.gamblerScore
+package com.felipearpa.tyche.pool.ui.gamblerscore
 
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth

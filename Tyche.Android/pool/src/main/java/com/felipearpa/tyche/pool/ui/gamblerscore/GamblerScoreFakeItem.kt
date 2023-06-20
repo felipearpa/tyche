@@ -1,4 +1,4 @@
-package com.felipearpa.tyche.pool.ui.poolScore
+package com.felipearpa.tyche.pool.ui.gamblerscore
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
@@ -9,17 +9,18 @@ import com.felipearpa.tyche.pool.ui.PoolGamblerScoreModel
 import com.felipearpa.tyche.ui.shimmer
 
 @Composable
-fun PoolScoreFakeItem(modifier: Modifier = Modifier) {
-    PoolScoreItem(
+fun GamblerScoreFakeItem(modifier: Modifier = Modifier) {
+    GamblerScoreItem(
         poolGamblerScore = PoolGamblerScoreModel(
-            poolId = Ulid.randomUlid().toString(),
+            poolId = Ulid.randomUlid().value,
             poolName = "XXXXXXXXXXXXXXXXXXXX",
             gamblerId = Ulid.randomUlid().value,
             gamblerUsername = "XXXXXXXXXXXXXXXXXXXX",
             currentPosition = 1,
-            beforePosition = 2,
+            beforePosition = 1,
             score = 10
         ),
+        isLoggedIn = false,
         modifier = modifier,
         shimmerModifier = Modifier.shimmer()
     )
@@ -27,6 +28,6 @@ fun PoolScoreFakeItem(modifier: Modifier = Modifier) {
 
 @Preview(showBackground = true)
 @Composable
-private fun PoolScoreFakeItemPreview() {
-    PoolScoreFakeItem(modifier = Modifier.fillMaxWidth())
+private fun GamblerScoreFakeItemPreview() {
+    GamblerScoreFakeItem(modifier = Modifier.fillMaxWidth())
 }

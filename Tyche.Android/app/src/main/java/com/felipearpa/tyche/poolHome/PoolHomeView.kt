@@ -37,8 +37,8 @@ import com.felipearpa.tyche.bet.ui.PoolGamblerBetListView
 import com.felipearpa.tyche.bet.ui.PoolGamblerBetListViewModel
 import com.felipearpa.tyche.core.emptyString
 import com.felipearpa.tyche.pool.gamblerScoreListViewModel
-import com.felipearpa.tyche.pool.ui.gamblerScore.GamblerScoreListView
-import com.felipearpa.tyche.pool.ui.gamblerScore.GamblerScoreListViewModel
+import com.felipearpa.tyche.pool.ui.gamblerscore.GamblerScoreListView
+import com.felipearpa.tyche.pool.ui.gamblerscore.GamblerScoreListViewModel
 import com.felipearpa.tyche.ui.LocalizedException
 import com.felipearpa.tyche.ui.Message
 import com.felipearpa.tyche.ui.ViewState

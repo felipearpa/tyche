@@ -15,8 +15,8 @@ import androidx.navigation.navArgument
 import com.felipearpa.tyche.home.ui.HomeRoute
 import com.felipearpa.tyche.home.ui.HomeView
 import com.felipearpa.tyche.pool.poolScoreListViewModel
-import com.felipearpa.tyche.pool.ui.poolScore.PoolScoreListRoute
-import com.felipearpa.tyche.pool.ui.poolScore.PoolScoreListView
+import com.felipearpa.tyche.pool.ui.poolscore.PoolScoreListRoute
+import com.felipearpa.tyche.pool.ui.poolscore.PoolScoreListView
 import com.felipearpa.tyche.poolHome.PoolHomeView
 import com.felipearpa.tyche.poolHome.PoolHomeViewRoute
 import com.felipearpa.tyche.ui.theme.TycheTheme

@@ -1,4 +1,4 @@
-package com.felipearpa.tyche.pool.ui.gamblerScore
+package com.felipearpa.tyche.pool.ui.gamblerscore
 
 import com.felipearpa.tyche.pool.application.GetPoolGamblerScoresByPoolUseCase
 import com.felipearpa.tyche.pool.ui.toPoolGamblerScoreModel
