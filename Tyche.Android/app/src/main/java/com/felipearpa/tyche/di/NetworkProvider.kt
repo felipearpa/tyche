@@ -1,7 +1,5 @@
 package com.felipearpa.tyche.di
 
-import com.felipearpa.tyche.core.network.NetworkExceptionHandler
-import com.felipearpa.tyche.core.network.RetrofitExceptionHandler
 import com.felipearpa.tyche.user.AuthInterceptor
 import com.google.gson.*
 import dagger.Module
@@ -59,8 +57,4 @@ object NetworkProvider {
             addConverterFactory(GsonConverterFactory.create(gson))
             client(okHttpClient)
         }.build()
-
-    @Provides
-    @Singleton
-    fun provideNetworkExceptionHandler(): NetworkExceptionHandler = RetrofitExceptionHandler()
 }

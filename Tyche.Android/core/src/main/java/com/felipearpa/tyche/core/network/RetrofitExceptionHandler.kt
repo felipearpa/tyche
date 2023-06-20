@@ -3,8 +3,9 @@ package com.felipearpa.tyche.core.network
 import retrofit2.HttpException
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
+import javax.inject.Inject
 
-class RetrofitExceptionHandler : NetworkExceptionHandler {
+class RetrofitExceptionHandler @Inject constructor() : NetworkExceptionHandler {
 
     override suspend fun <T> handle(block: suspend () -> T): Result<T> {
         return try {

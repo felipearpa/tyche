@@ -1,6 +1,8 @@
 plugins {
     id 'com.android.library'
     id 'org.jetbrains.kotlin.android'
+    id 'com.google.dagger.hilt.android'
+    id 'kotlin-kapt'
 }
 
 android {
@@ -46,6 +48,10 @@ dependencies {
     implementation(comGithubGuepardoapps.kulid)
 
     implementation(comSquareupRetrofit2.retrofit)
+
+    implementation(comGoogleDagger.hiltAndroid)
+    implementation(androidxHilt.hiltNavigationCompose)
+    kapt(comGoogleDagger.hiltCompiler)
 
     testImplementation(junit.junit)
     testImplementation(ioMockk.mockk)
