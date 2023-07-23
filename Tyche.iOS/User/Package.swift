@@ -33,8 +33,9 @@ let package = Package(
                 "Swinject",
             ],
             resources: [
-                .process("en.lproj/Localizable.strings"),
-                .process("es-CO.lproj/Localizable.strings"),
+                .process("Localizable/en.lproj/Localizable.strings"),
+                .process("Localizable/es-CO.lproj/Localizable.strings"),
+                .process("Resource/Assets.xcassets"),
             ]),
         .testTarget(
             name: "UserTests",

@@ -1,7 +1,10 @@
 import SwiftUI
+import UI
 import User
 
 struct HomeView: View {
+    let onLoginRequested: () -> Void
+    
     var body: some View {
         VStack {
             HStack {
@@ -23,19 +26,18 @@ struct HomeView: View {
             
             Spacer()
             
-            Button(action: {
-            }) {
+            Button(action: {}) {
                 Text(StringScheme.createAccountAction.localizedKey)
-                    .foregroundColor(ColorScheme.primaryColor)
             }
             
             Spacer()
             
             HStack {
                 Text(StringScheme.accountExistsText.localizedKey)
-
-                NavigationLink(StringScheme.logInAction.localizedKey, value: LoginRoute())
-                    .foregroundColor(ColorScheme.primaryColor)
+                
+                Button(action: { onLoginRequested() }) {
+                    Text(StringScheme.logInAction.localizedKey)
+                }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
         }
@@ -45,6 +47,6 @@ struct HomeView: View {
 
 struct HomeView_Previews: PreviewProvider {
     static var previews: some View {
-        HomeView()
+        HomeView(onLoginRequested: {})
     }
 }

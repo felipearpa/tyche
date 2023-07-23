@@ -1,8 +1,0 @@
-"username_text" = "Nombre de usuario";
-"password_text" = "Contraseña";
-"login_title" = "Iniciar sesión";
-"login_action" = "Iniciar sesión";
-"username_validation_failure_message" = "El nombre de usuario debe tener entre 3 y 16 caracteres y solo puede contener letras, números, guiones bajos y guiones";
-"password_validation_failure_message" = "La contraseña debe tener entre 8 y 16 caracteres e incluir al menos una letra mayúscula, una letra minúscula, un número y un carácter especial";
-"invalid_credential_failure_title" = "Inicio de sesión fallido";
-"invalid_credential_failure_message" = "Nombre de usuario o contraseña iconrrectos";

@@ -1,8 +1,0 @@
-"username_text" = "Username";
-"password_text" = "Password";
-"login_title" = "Login";
-"login_action" = "Login";
-"username_validation_failure_message" = "Username must be between 3–16 characters and can only contain letters, numbers, underscores, and hyphens";
-"password_validation_failure_message" = "Password must be between 8–16 characters and include at least one uppercase letter, one lowercase letter, one number, and one special character";
-"invalid_credential_failure_title" = "Login failed";
-"invalid_credential_failure_message" = "Incorrect username or password";

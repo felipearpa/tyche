@@ -1,6 +1,6 @@
 import Foundation
 
-public class LocalizedErrorWrapper: LocalizedError {
+public struct LocalizedErrorWrapper: LocalizedError {
     var underlyingError: LocalizedError
 
     public var errorDescription: String? { underlyingError.errorDescription }
@@ -8,13 +8,24 @@ public class LocalizedErrorWrapper: LocalizedError {
     public var recoverySuggestion: String? { underlyingError.recoverySuggestion }
     public var helpAnchor: String? { underlyingError.helpAnchor }
     
-    init(underlyingError: LocalizedError) {
+    public init(underlyingError: LocalizedError) {
         self.underlyingError = underlyingError
     }
 }
 
+public extension Error {
+    @inlinable
+    func localizedErrorWrapperOrNull() -> LocalizedErrorWrapper? {
+        if let localizedError = self as? LocalizedError {
+            return LocalizedErrorWrapper(underlyingError: localizedError)
+        }
+        
+        return nil
+    }
+}
+
 public extension ViewState {
-    
+     @inlinable
     func localizedErrorWrapperOrNull() -> LocalizedErrorWrapper? {
         if case .failure(let error) = self {
             if let localizedError = error as? LocalizedError {

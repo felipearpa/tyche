@@ -1,5 +1,5 @@
 import Foundation
 
 public protocol URLBasePathProvider {
-    func prependBasePath(string: String) -> URL?
+    func prependBasePath(_ string: String) -> URL?
 }

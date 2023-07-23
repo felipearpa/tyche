@@ -1,4 +1,4 @@
-public struct LoginProfile {
+public struct LoginProfile : Codable {
     let token: String
-    let user: UserProfile
+    public let user: UserProfile
 }

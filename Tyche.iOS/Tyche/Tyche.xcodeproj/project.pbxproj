@@ -16,11 +16,13 @@
 		D2127F592A2C2F270047DED7 /* TycheUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2127F582A2C2F270047DED7 /* TycheUITests.swift */; };
 		D2127F5B2A2C2F270047DED7 /* TycheUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2127F5A2A2C2F270047DED7 /* TycheUITestsLaunchTests.swift */; };
 		D2127F6C2A2C305D0047DED7 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = D2127F6E2A2C305D0047DED7 /* Localizable.strings */; };
-		D2127F712A2C30F00047DED7 /* ColorScheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2127F702A2C30F00047DED7 /* ColorScheme.swift */; };
 		D2127F732A2C31FF0047DED7 /* ResourceScheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2127F722A2C31FF0047DED7 /* ResourceScheme.swift */; };
 		D2127F752A2C33210047DED7 /* StringScheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2127F742A2C33210047DED7 /* StringScheme.swift */; };
 		D2127F782A2C335E0047DED7 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2127F772A2C335E0047DED7 /* HomeView.swift */; };
 		D2127F7A2A2C33920047DED7 /* RouterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2127F792A2C33920047DED7 /* RouterView.swift */; };
+		D2BB75112A5B65D500C7AE04 /* Pool in Frameworks */ = {isa = PBXBuildFile; productRef = D2BB75102A5B65D500C7AE04 /* Pool */; };
+		D2C23D612A3E428D003CC860 /* UI in Frameworks */ = {isa = PBXBuildFile; productRef = D2C23D602A3E428D003CC860 /* UI */; };
+		D2C23D632A3E4290003CC860 /* Core in Frameworks */ = {isa = PBXBuildFile; productRef = D2C23D622A3E4290003CC860 /* Core */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -54,7 +56,6 @@
 		D2127F5A2A2C2F270047DED7 /* TycheUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TycheUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		D2127F6D2A2C305D0047DED7 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		D2127F6F2A2C30800047DED7 /* es-CO */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "es-CO"; path = "es-CO.lproj/Localizable.strings"; sourceTree = "<group>"; };
-		D2127F702A2C30F00047DED7 /* ColorScheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorScheme.swift; sourceTree = "<group>"; };
 		D2127F722A2C31FF0047DED7 /* ResourceScheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResourceScheme.swift; sourceTree = "<group>"; };
 		D2127F742A2C33210047DED7 /* StringScheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringScheme.swift; sourceTree = "<group>"; };
 		D2127F772A2C335E0047DED7 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
@@ -67,7 +68,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D2C23D612A3E428D003CC860 /* UI in Frameworks */,
 				D204461C2A367F2300390319 /* User in Frameworks */,
+				D2BB75112A5B65D500C7AE04 /* Pool in Frameworks */,
+				D2C23D632A3E4290003CC860 /* Core in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -120,7 +124,6 @@
 				D2127F432A2C2F260047DED7 /* Tyche.xcdatamodeld */,
 				D2127F3E2A2C2F260047DED7 /* Preview Content */,
 				D2127F6E2A2C305D0047DED7 /* Localizable.strings */,
-				D2127F702A2C30F00047DED7 /* ColorScheme.swift */,
 				D2127F722A2C31FF0047DED7 /* ResourceScheme.swift */,
 				D2127F742A2C33210047DED7 /* StringScheme.swift */,
 			);
@@ -194,6 +197,9 @@
 			name = Tyche;
 			packageProductDependencies = (
 				D204461B2A367F2300390319 /* User */,
+				D2C23D602A3E428D003CC860 /* UI */,
+				D2C23D622A3E4290003CC860 /* Core */,
+				D2BB75102A5B65D500C7AE04 /* Pool */,
 			);
 			productName = Tyche;
 			productReference = D2127F352A2C2F240047DED7 /* Tyche.app */;
@@ -310,7 +316,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D2127F712A2C30F00047DED7 /* ColorScheme.swift in Sources */,
 				D2127F7A2A2C33920047DED7 /* RouterView.swift in Sources */,
 				D2127F752A2C33210047DED7 /* StringScheme.swift in Sources */,
 				D2127F392A2C2F240047DED7 /* TycheApp.swift in Sources */,
@@ -664,6 +669,18 @@
 		D204461B2A367F2300390319 /* User */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = User;
+		};
+		D2BB75102A5B65D500C7AE04 /* Pool */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Pool;
+		};
+		D2C23D602A3E428D003CC860 /* UI */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = UI;
+		};
+		D2C23D622A3E4290003CC860 /* Core */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Core;
 		};
 /* End XCSwiftPackageProductDependency section */
 

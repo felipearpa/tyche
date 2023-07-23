@@ -8,7 +8,7 @@ struct PasswordTextField : View {
     
     var body: some View {
         VStack {
-            ZStack(alignment: .trailing) {
+            ZStack {
                 if !isPasswordTextVisible {
                     InternalSecureField(
                         value: $value,
@@ -26,7 +26,7 @@ struct PasswordTextField : View {
             
             if !isValid {
                 Text(StringScheme.passwordValidationFailureMessage.localizedKey)
-                    .foregroundColor(ColorScheme.errorColor)
+                    .foregroundColor(ColorScheme.error.color)
             }
         }
     }
@@ -39,14 +39,11 @@ private struct InternalSecureField : View {
     
     var body: some View {
         SecureField(StringScheme.passwordText.localizedKey, text: $value)
-            .border(isValid ? Color.clear : ColorScheme.errorColor)
+            .border(isValid ? Color.clear : ColorScheme.error.color)
             .overlay(alignment: .trailing) {
                 Image(systemName: isPasswordTextVisible ? "eye.slash.fill" : "eye.fill")
-                    .accentColor(.secondary)
                     .padding(.horizontal)
-                    .onTapGesture {
-                        isPasswordTextVisible.toggle()
-                    }
+                    .onTapGesture { isPasswordTextVisible.toggle() }
             }
             .onReceive(value.publisher.collect()) { newValue in
                 if newValue.count > 16 {
@@ -68,7 +65,7 @@ private struct InternalTextField : View {
         TextField(StringScheme.passwordText.localizedKey, text: $value)
             .autocapitalization(.none)
             .autocorrectionDisabled(true)
-            .border(isValid ? Color.clear : ColorScheme.errorColor)
+            .border(isValid ? Color.clear : ColorScheme.error.color)
             .overlay(alignment: .trailing) {
                 Image(systemName: isPasswordTextVisible ? "eye.slash.fill" : "eye.fill")
                     .accentColor(.secondary)

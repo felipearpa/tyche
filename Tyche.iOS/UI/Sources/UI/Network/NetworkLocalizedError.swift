@@ -20,7 +20,6 @@ public enum NetworkLocalizedError: LocalizedError {
 }
 
 public extension NetworkError {
-    
     func toNetworkLocalizedError() -> Error {
         return NetworkLocalizedError.remoteCommunication
     }

@@ -25,8 +25,9 @@ let package = Package(
             name: "UI",
             dependencies: ["Core"],
             resources: [
-                .process("en.lproj/Localizable.strings"),
-                .process("es-CO.lproj/Localizable.strings"),
+                .process("Localizable/en.lproj/Localizable.strings"),
+                .process("Localizable/es-CO.lproj/Localizable.strings"),
+                .process("Resource/Assets.xcassets"),
             ]),
         .testTarget(
             name: "UITests",

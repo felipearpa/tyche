@@ -12,8 +12,12 @@ public class LoginViewModel: ObservableObject {
         self.loginUseCase = loginUseCase
     }
     
-    @MainActor func resetState() {
-        state = .initial
+    func resetState() {
+        Task {
+            await MainActor.run {
+                state = .initial
+            }
+        }
     }
     
     func login(loginCredential: LoginCredentialModel) {

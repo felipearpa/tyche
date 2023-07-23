@@ -1,0 +1,8 @@
+"remote_communication_failure_title" = "Error de red";
+"remote_communication_failure_message" = "¡Vaya! En este momento tenemos problemas para conectarnos a nuestros servidores. Por favor, revise su conexión a Internet y vuelva a intentarlo más tarde. Si el problema persiste, nuestro equipo siempre está aquí para ayudarle";
+"unknown_failure_title" = "Error inesperado";
+"unknown_failure_message" = "¡Vaya! Algo ha salido mal y no estamos seguros de qué es. Por favor, inténtelo de nuevo más tarde o póngase en contacto con nuestro amable equipo de atención al cliente para obtener ayuda";
+"done_action" = "Hecho";
+"empty_list_message" = "Nada para mostrar";
+"retry_action" = "Reintentar";
+"searching_label" = "Escriba para buscar";
