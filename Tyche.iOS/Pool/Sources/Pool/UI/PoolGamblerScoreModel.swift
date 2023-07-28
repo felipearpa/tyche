@@ -18,7 +18,7 @@ struct PoolGamblerScoreModel: Identifiable, Hashable, Codable {
 }
 
 extension PoolGamblerScoreModel {
-    func calculateDifference() -> Int? {
+    func difference() -> Int? {
         guard let currentPosition = self.currentPosition else {
             return nil
         }

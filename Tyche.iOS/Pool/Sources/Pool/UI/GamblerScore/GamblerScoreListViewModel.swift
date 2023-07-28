@@ -2,10 +2,12 @@ import Foundation
 import Core
 import UI
 
-public class PoolScoreListViewModel: ObservableObject {
-    private let getPoolGamblerScoresByGamblerUseCase : GetPoolGamblerScoresByGamblerUseCase
+public class GamblerScoreListViewModel: ObservableObject {
+    private let getPoolGamblerScoresByPoolUseCase : GetPoolGamblerScoresByPoolUseCase
     
-    private let gamblerId: String
+    let gamblerId: String?
+    
+    private let poolId: String
     
     private var searchText: String? = nil
     
@@ -21,16 +23,18 @@ public class PoolScoreListViewModel: ObservableObject {
     }()
     
     public init(
-        getPoolGamblerScoresByGamblerUseCase : GetPoolGamblerScoresByGamblerUseCase,
-        gamblerId: String
+        getPoolGamblerScoresByPoolUseCase : GetPoolGamblerScoresByPoolUseCase,
+        gamblerId: String?,
+        poolId: String
     ) {
-        self.getPoolGamblerScoresByGamblerUseCase = getPoolGamblerScoresByGamblerUseCase
+        self.getPoolGamblerScoresByPoolUseCase = getPoolGamblerScoresByPoolUseCase
         self.gamblerId = gamblerId
+        self.poolId = poolId
         
         self.pagingSource = PoolGamblerScorePagingSource(
             pagingQuery: { [unowned self] next in
-                await getPoolGamblerScoresByGamblerUseCase.execute(
-                    gamblerId: self.gamblerId,
+                await getPoolGamblerScoresByPoolUseCase.execute(
+                    poolId: self.poolId,
                     next: next,
                     searchText: self.searchText
                 )

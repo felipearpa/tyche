@@ -29,4 +29,21 @@ class PoolGamblerScoreRemoteRepository : PoolGamblerScoreRepository {
             }
         }
     }
+    
+    func getPoolGamblerScoresByPool(
+        poolId: String,
+        next: String?,
+        searchText: String?
+    ) async -> Result<CursorPage<PoolGamblerScore>, Error> {
+        return await networkErrorHandler.handle {
+            let page = try await poolGamblerScoreRemoteDataSource.getPoolGamblerScoresByPool(
+                poolId: poolId,
+                next: next,
+                searchText: searchText
+            )
+            return page.map { poolGamblerScoreResponse in
+                poolGamblerScoreResponse.toPoolGamblerScore()
+            }
+        }
+    }
 }

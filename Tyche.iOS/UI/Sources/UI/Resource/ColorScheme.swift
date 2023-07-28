@@ -2,9 +2,11 @@ import SwiftUI
 
 public enum ColorScheme : String {
     case primary = "primary_color"
-    case primaryContainer = "PrimaryContainerColor"
     case onPrimary = "OnPrimaryColor"
+    case primaryContainer = "PrimaryContainerColor"
+    case onPrimaryContainer = "on_primary_containter_color"
     case secondaryContainer = "SecondaryContainerColor"
+    case onSecondaryContainer = "on_secondary_container"
     case onSecondary = "OnSecondaryColor"
     case error = "ErrorColor"
     case positive = "PositiveColor"

@@ -43,7 +43,7 @@ public struct PagingVStack
                 loadingContent()
                     .allowsHitTesting(false)
             case .notLoading(endOfPaginationReached: let endOfPaginationReached):
-                MainContent(
+                ListContent(
                     lazyPager: lazyPager,
                     endOfPaginationReached: endOfPaginationReached,
                     emptyContent: emptyContent,
@@ -55,13 +55,13 @@ public struct PagingVStack
                 errorContent(error)
             }
         }
-        .onAppearOnce {
+        .onAppear {
             lazyPager.refresh()
         }
     }
 }
 
-private struct MainContent
+private struct ListContent
 <Key,
  Item: Identifiable & Hashable,
  EmptyContent: View,
@@ -69,7 +69,7 @@ private struct MainContent
  ErrorContentOnConcatenate: View,
  ItemContent: View>: View
 {
-    let lazyPager: LazyPager<Key, Item>
+    @ObservedObject var lazyPager: LazyPager<Key, Item>
     let endOfPaginationReached: Bool
     let emptyContent: () -> EmptyContent
     let loadingContentOnAppend: () -> LoadingContentOnConcatenate

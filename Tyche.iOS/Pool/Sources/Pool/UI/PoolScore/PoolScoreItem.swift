@@ -16,7 +16,7 @@ struct PoolScoreItem: View {
             
             Spacer()
             
-            if let difference = poolGamblerScore.calculateDifference() {
+            if let difference = poolGamblerScore.difference() {
                 ProgressIndicator(difference: difference)
             }
         }

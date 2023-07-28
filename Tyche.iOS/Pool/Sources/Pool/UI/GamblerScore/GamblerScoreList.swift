@@ -2,9 +2,9 @@ import SwiftUI
 import Core
 import UI
 
-struct PoolScoreList: View {
-    let lazyPager: LazyPager<String, PoolGamblerScoreModel>
-    let onPoolDetailRequested: (String) -> Void
+struct GamblerScoreList: View {
+    @ObservedObject var lazyPager: LazyPager<String, PoolGamblerScoreModel>
+    let loggedInGamblerId: String?
     
     var body: some View {
         PagingVStack(
@@ -16,16 +16,17 @@ struct PoolScoreList: View {
                 Divider()
             }
         ) { poolGamblerScore in
-            PoolScoreItem(poolGamblerScore: poolGamblerScore)
-                .onTapGesture {
-                    onPoolDetailRequested(poolGamblerScore.poolId)
-                }
+            GamblerScoreItem(
+                poolGamblerScore: poolGamblerScore,
+                isLoggedIn: loggedInGamblerId != nil ? loggedInGamblerId == poolGamblerScore.gamblerId : false
+            )
+
             Divider()
         }
     }
 }
 
-struct PoolScoreFakeList : View {
+struct GamblerScoreFakeList : View {
     private let poolGamblerScores: [PoolGamblerScoreModel] = (1...50).lazy.map { _ in
         fakePoolGamblerScoreModel()
     }
@@ -34,8 +35,12 @@ struct PoolScoreFakeList : View {
         ScrollView {
             LazyVStack(spacing: 8) {
                 ForEach(poolGamblerScores) { poolGamblerScore in
-                    PoolScoreItem(poolGamblerScore: poolGamblerScore)
-                        .shimmer()
+                    GamblerScoreItem(
+                        poolGamblerScore: poolGamblerScore,
+                        isLoggedIn: false
+                    )
+                    .shimmer()
+                    
                     Divider()
                 }
             }
@@ -43,9 +48,9 @@ struct PoolScoreFakeList : View {
     }
 }
 
-struct PoolScoreList_Previews: PreviewProvider {
+struct GamblerScoreList_Previews: PreviewProvider {
     static var previews: some View {
-        PoolScoreList(
+        GamblerScoreList(
             lazyPager: LazyPager(
                 pagingData: PagingData(
                     pagingConfig: PagingConfig(prefetchDistance: 5),
@@ -56,13 +61,13 @@ struct PoolScoreList_Previews: PreviewProvider {
                     )
                 )
             ),
-            onPoolDetailRequested: { _ in }
+            loggedInGamblerId: "logged-in-gambler-id"
         )
     }
 }
 
-struct PoolScoreFakeList_Previews: PreviewProvider {
+struct GamblerScoreFakeList_Previews: PreviewProvider {
     static var previews: some View {
-        PoolScoreFakeList()
+        GamblerScoreFakeList()
     }
 }

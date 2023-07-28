@@ -23,6 +23,8 @@
 		D2BB75112A5B65D500C7AE04 /* Pool in Frameworks */ = {isa = PBXBuildFile; productRef = D2BB75102A5B65D500C7AE04 /* Pool */; };
 		D2C23D612A3E428D003CC860 /* UI in Frameworks */ = {isa = PBXBuildFile; productRef = D2C23D602A3E428D003CC860 /* UI */; };
 		D2C23D632A3E4290003CC860 /* Core in Frameworks */ = {isa = PBXBuildFile; productRef = D2C23D622A3E4290003CC860 /* Core */; };
+		D2DAB7982A6DB78D00ED29AC /* PoolHomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2DAB7972A6DB78D00ED29AC /* PoolHomeView.swift */; };
+		D2DAB79A2A6DB7B400ED29AC /* PoolHomeRoute.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2DAB7992A6DB7B400ED29AC /* PoolHomeRoute.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -61,6 +63,8 @@
 		D2127F772A2C335E0047DED7 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		D2127F792A2C33920047DED7 /* RouterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouterView.swift; sourceTree = "<group>"; };
 		D23350B92A2D2E6300391B16 /* UI */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = UI; path = ../UI; sourceTree = "<group>"; };
+		D2DAB7972A6DB78D00ED29AC /* PoolHomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PoolHomeView.swift; sourceTree = "<group>"; };
+		D2DAB7992A6DB7B400ED29AC /* PoolHomeRoute.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PoolHomeRoute.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -167,6 +171,8 @@
 			children = (
 				D2127F772A2C335E0047DED7 /* HomeView.swift */,
 				D2127F792A2C33920047DED7 /* RouterView.swift */,
+				D2DAB7972A6DB78D00ED29AC /* PoolHomeView.swift */,
+				D2DAB7992A6DB7B400ED29AC /* PoolHomeRoute.swift */,
 			);
 			path = UI;
 			sourceTree = "<group>";
@@ -316,7 +322,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D2DAB79A2A6DB7B400ED29AC /* PoolHomeRoute.swift in Sources */,
 				D2127F7A2A2C33920047DED7 /* RouterView.swift in Sources */,
+				D2DAB7982A6DB78D00ED29AC /* PoolHomeView.swift in Sources */,
 				D2127F752A2C33210047DED7 /* StringScheme.swift in Sources */,
 				D2127F392A2C2F240047DED7 /* TycheApp.swift in Sources */,
 				D2127F782A2C335E0047DED7 /* HomeView.swift in Sources */,

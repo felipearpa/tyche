@@ -53,6 +53,18 @@ func poolGamblerScoreModel() -> PoolGamblerScoreModel {
     )
 }
 
+func poolGamblerScoreModelWithoutPositionData() -> PoolGamblerScoreModel {
+    return PoolGamblerScoreModel(
+        poolId: "P6Z8V4",
+        poolName: "Athena Olympics 2024",
+        gamblerId: "M9L2S7",
+        gamblerUsername: "athena-challenger",
+        currentPosition: nil,
+        beforePosition: nil,
+        score: 10
+    )
+}
+
 func fakePoolGamblerScoreModel() -> PoolGamblerScoreModel {
     return PoolGamblerScoreModel(
         poolId: UUID().uuidString,

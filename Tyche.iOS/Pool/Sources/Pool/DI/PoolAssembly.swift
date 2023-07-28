@@ -6,7 +6,7 @@ public class PoolAssembly : Assembly {
 
     public init() {}
     
-    public func assemble(container: Swinject.Container) {
+    public func assemble(container: Container) {
         container.register(PoolGamblerScoreRemoteDataSource.self) { resolver in
             PoolGamblerScoreAlamofireDateSource(
                 urlBasePathProvider: resolver.resolve(URLBasePathProvider.self)!,
@@ -23,6 +23,12 @@ public class PoolAssembly : Assembly {
         
         container.register(GetPoolGamblerScoresByGamblerUseCase.self) { resolver in
             GetPoolGamblerScoresByGamblerUseCase(
+                poolGamblerScoreRepository: resolver.resolve(PoolGamblerScoreRepository.self)!
+            )
+        }
+        
+        container.register(GetPoolGamblerScoresByPoolUseCase.self) { resolver in
+            GetPoolGamblerScoresByPoolUseCase(
                 poolGamblerScoreRepository: resolver.resolve(PoolGamblerScoreRepository.self)!
             )
         }

@@ -1,3 +1,3 @@
-public struct GamblerScoreRoute : Hashable {
+public struct GamblerScoreRoute: Hashable {
     public init() {}
 }

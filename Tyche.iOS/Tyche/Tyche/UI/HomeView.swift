@@ -8,11 +8,11 @@ struct HomeView: View {
     var body: some View {
         VStack {
             HStack {
-                Image(ResourceScheme.tycheLogo.localized)
+                ResourceScheme.tycheLogo.image
                     .resizable()
                     .frame(width: 64, height: 64)
                 
-                Image(ResourceScheme.tycheTitle.localized)
+                ResourceScheme.tycheTitle.image
                     .resizable()
                     .scaledToFit()
                     .frame(height: 64)

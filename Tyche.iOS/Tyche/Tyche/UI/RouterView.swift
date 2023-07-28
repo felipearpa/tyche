@@ -6,7 +6,7 @@ import Pool
 
 struct RouterView: View {
     @State private var path = NavigationPath()
-    @State private var user: UserProfile? = nil
+    @State private var loggedInuser: UserProfile? = nil
     
     var diResolver = DIResolver(
         resolver:Assembler([CoreAssembly(), LoginAssembly(), PoolAssembly()]).resolver
@@ -17,11 +17,13 @@ struct RouterView: View {
         
         NavigationStack(path: $path) {
             InitialView(
-                user: user,
-                onLoginRequested: { path.append(LoginRoute()) }
+                diResolver: diResolver,
+                user: loggedInuser,
+                onLoginRequested: { path.append(LoginRoute()) },
+                onPoolDetailRequested: { poolId in path.append(PoolHomeRoute(poolId: poolId)) }
             )
             .onAppear {
-                user = try! loginStorage?.get()?.user
+                loggedInuser = try! loginStorage?.get()?.user
             }
             .navigationDestination(for: LoginRoute.self) { loginRoute in
                 LoginView(
@@ -33,8 +35,15 @@ struct RouterView: View {
                     ),
                     onLogin: { loggedUser in
                         path.removeLast(path.count)
-                        user = loggedUser
+                        loggedInuser = loggedUser
                     }
+                )
+            }
+            .navigationDestination(for: PoolHomeRoute.self) { poolHomeRoute in
+                PoolHomeView(
+                    diResolver: diResolver,
+                    gamblerId: loggedInuser?.userId,
+                    poolId: poolHomeRoute.poolId
                 )
             }
         }
@@ -43,9 +52,10 @@ struct RouterView: View {
 }
 
 private struct InitialView : View {
+    let diResolver: DIResolver
     let user: UserProfile?
     let onLoginRequested: () -> Void
-    @EnvironmentObject var diResolver: DIResolver
+    let onPoolDetailRequested: (String) -> Void
     
     var body: some View {
         if user == nil {
@@ -57,7 +67,8 @@ private struct InitialView : View {
                         poolGamblerScoreRepository: diResolver.resolve(PoolGamblerScoreRepository.self)!
                     ),
                     gamblerId: user!.userId
-                )
+                ),
+                onPoolDetailRequested: onPoolDetailRequested
             )
         }
     }

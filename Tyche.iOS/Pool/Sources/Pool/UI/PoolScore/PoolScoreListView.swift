@@ -5,29 +5,36 @@ import UI
 private let defaultDebounceTimeInMilliseconds = 700
 
 public struct PoolScoreListView: View {
-    @ObservedObject private var viewModel: PoolScoreListViewModel
-    @StateObject var searchDebounceText = DebounceString(dueTime: .milliseconds(defaultDebounceTimeInMilliseconds))
-    var lazyPager: LazyPager<String, PoolGamblerScoreModel>
+    @StateObject private var viewModel: PoolScoreListViewModel
+    @StateObject private var searchDebounceText = DebounceString(dueTime: .milliseconds(defaultDebounceTimeInMilliseconds))
+    private let onPoolDetailRequested: (String) -> Void
     
-    public init(viewModel: PoolScoreListViewModel) {
-        self.viewModel = viewModel
-        self.lazyPager = LazyPager(pagingData: viewModel.pagingData)
+    public init(
+        viewModel: @autoclosure @escaping () -> PoolScoreListViewModel,
+        onPoolDetailRequested: @escaping (String) -> Void)
+    {
+        self._viewModel = .init(wrappedValue: viewModel())
+        self.onPoolDetailRequested = onPoolDetailRequested
     }
     
     public var body: some View {
-        PoolScoreList(lazyPager: lazyPager)
-            .navigationTitle(StringScheme.gamblerPoolListTitle.localizedString)
-            .padding(8)
-            .searchable(
-                text: $searchDebounceText.text,
-                prompt: UI.StringScheme.searchingLabel.localizedString
-            )
-            .refreshable {
-                lazyPager.refresh()
-            }
-            .onChange(of: searchDebounceText.debouncedText) { newSearchText in
-                viewModel.search(newSearchText)
-            }
+        PoolScoreList(
+            lazyPager: viewModel.lazyPager,
+            onPoolDetailRequested: onPoolDetailRequested
+        )
+        .navigationTitle(StringScheme.gamblerPoolListTitle.localizedString)
+        .padding(8)
+        .searchable(
+            text: $searchDebounceText.text,
+            placement: .navigationBarDrawer(displayMode: .automatic),
+            prompt: UI.StringScheme.searchingLabel.localizedString
+        )
+        .refreshable {
+            viewModel.lazyPager.refresh()
+        }
+        .onChange(of: searchDebounceText.debouncedText) { newSearchText in
+            viewModel.search(newSearchText)
+        }
     }
 }
 
@@ -45,6 +52,19 @@ struct PoolScoreListView_Previews: PreviewProvider {
                 )
             )
         }
+        
+        func getPoolGamblerScoresByPool(
+            poolId: String,
+            next: String?,
+            searchText: String?
+        ) async -> Result<Core.CursorPage<PoolGamblerScore>, Error> {
+            .success(
+                CursorPage(
+                    items: poolGamblerScores(),
+                    next: nil
+                )
+            )
+        }
     }
     
     static var previews: some View {
@@ -55,7 +75,8 @@ struct PoolScoreListView_Previews: PreviewProvider {
                         poolGamblerScoreRepository: PoolGamblerScoreFakeRepository()
                     ),
                     gamblerId: "gambler-id"
-                )
+                ),
+                onPoolDetailRequested: { _ in }
             )
         }
     }
