@@ -25,8 +25,8 @@ struct PasswordTextField : View {
             }
             
             if !isValid {
-                Text(StringScheme.passwordValidationFailureMessage.localizedKey)
-                    .foregroundColor(ColorScheme.error.color)
+                Text(String(.passwordValidationFailureMessage))
+                    .foregroundColor(.primary)
             }
         }
     }
@@ -38,8 +38,8 @@ private struct InternalSecureField : View {
     @Binding var isPasswordTextVisible : Bool
     
     var body: some View {
-        SecureField(StringScheme.passwordText.localizedKey, text: $value)
-            .border(isValid ? Color.clear : ColorScheme.error.color)
+        SecureField(String(.passwordText), text: $value)
+            .border(isValid ? Color.clear : Color(sharedResource: .error))
             .overlay(alignment: .trailing) {
                 Image(systemName: isPasswordTextVisible ? "eye.slash.fill" : "eye.fill")
                     .padding(.horizontal)
@@ -62,10 +62,10 @@ private struct InternalTextField : View {
     @Binding var isPasswordTextVisible : Bool
     
     var body: some View {
-        TextField(StringScheme.passwordText.localizedKey, text: $value)
+        TextField(String(.passwordText), text: $value)
             .autocapitalization(.none)
             .autocorrectionDisabled(true)
-            .border(isValid ? Color.clear : ColorScheme.error.color)
+            .border(isValid ? Color.clear : Color(sharedResource: .error))
             .overlay(alignment: .trailing) {
                 Image(systemName: isPasswordTextVisible ? "eye.slash.fill" : "eye.fill")
                     .accentColor(.secondary)

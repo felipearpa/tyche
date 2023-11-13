@@ -7,29 +7,36 @@ private let defaultDebounceTimeInMilliseconds = 700
 public struct PoolScoreListView: View {
     @StateObject private var viewModel: PoolScoreListViewModel
     @StateObject private var searchDebounceText = DebounceString(dueTime: .milliseconds(defaultDebounceTimeInMilliseconds))
-    private let onPoolDetailRequested: (String) -> Void
+    private let onPoolDetailRequested: (PoolProfile) -> Void
     
     public init(
         viewModel: @autoclosure @escaping () -> PoolScoreListViewModel,
-        onPoolDetailRequested: @escaping (String) -> Void)
+        onPoolDetailRequested: @escaping (PoolProfile) -> Void)
     {
         self._viewModel = .init(wrappedValue: viewModel())
         self.onPoolDetailRequested = onPoolDetailRequested
     }
     
     public var body: some View {
+        let _ = Self._printChanges()
+        
         PoolScoreList(
             lazyPager: viewModel.lazyPager,
-            onPoolDetailRequested: onPoolDetailRequested
+            onPoolDetailRequested: { poolId in
+                onPoolDetailRequested(PoolProfile(poolId: poolId))
+            }
         )
-        .navigationTitle(StringScheme.gamblerPoolListTitle.localizedString)
+        .navigationTitle(String(.gamblerPoolListTitle))
         .padding(8)
         .searchable(
             text: $searchDebounceText.text,
             placement: .navigationBarDrawer(displayMode: .automatic),
-            prompt: UI.StringScheme.searchingLabel.localizedString
+            prompt: String(sharedResource: .searchingLabel)
         )
         .refreshable {
+            viewModel.lazyPager.refresh()
+        }
+        .onAppearOnce {
             viewModel.lazyPager.refresh()
         }
         .onChange(of: searchDebounceText.debouncedText) { newSearchText in

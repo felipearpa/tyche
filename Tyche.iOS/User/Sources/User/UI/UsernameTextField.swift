@@ -7,9 +7,9 @@ struct UsernameTextField : View {
     
     var body: some View {
         VStack {
-            TextField(StringScheme.usernameText.localizedKey, text: $value)
+            TextField(String(.usernameText), text: $value)
                 .autocapitalization(.none)
-                .border(isValid ? Color.clear : ColorScheme.error.color)
+                .border(isValid ? Color.clear : Color(sharedResource: .error))
                 .onReceive(value.publisher.collect()) { newValue in
                     if newValue.count > 16 {
                         value = String(newValue.prefix(16))
@@ -20,8 +20,8 @@ struct UsernameTextField : View {
                 }
             
             if !isValid {
-                Text(StringScheme.usernameValidationFailureMessage.localizedKey)
-                    .foregroundColor(ColorScheme.error.color)
+                Text(String(.usernameValidationFailureMessage))
+                    .foregroundColor(Color(sharedResource: .error))
             }
         }
     }

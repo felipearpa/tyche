@@ -15,4 +15,5 @@ type PoolGamblerBetViewModel =
       AwayTeamScore: Nullable<int>
       AwayTeamBet: Nullable<int>
       Score: Nullable<int>
-      MatchDateTime: DateTime }
+      MatchDateTime: DateTime
+      isLocked: bool }

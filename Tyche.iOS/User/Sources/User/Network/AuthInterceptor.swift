@@ -13,13 +13,15 @@ class AuthInterceptor : RequestInterceptor {
         for session: Session,
         completion: @escaping (Result<URLRequest, Error>) -> Void
     ) {
-        guard let loginProfile = try? loginStorage.get() else {
-            completion(.success(urlRequest))
-            return
+        Task {
+            guard let loginProfile = try? await loginStorage.get() else {
+                completion(.success(urlRequest))
+                return
+            }
+            
+            var newUrlRequest = urlRequest
+            newUrlRequest.setValue("Bearer \(loginProfile.token)", forHTTPHeaderField: "Authorization")
+            completion(.success(newUrlRequest))
         }
-        
-        var newUrlRequest = urlRequest
-        newUrlRequest.setValue("Bearer \(loginProfile.token)", forHTTPHeaderField: "Authorization")
-        completion(.success(newUrlRequest))
     }
 }

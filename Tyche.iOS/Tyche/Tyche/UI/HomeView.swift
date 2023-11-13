@@ -8,11 +8,11 @@ struct HomeView: View {
     var body: some View {
         VStack {
             HStack {
-                ResourceScheme.tycheLogo.image
+                Image(.tycheLogo)
                     .resizable()
                     .frame(width: 64, height: 64)
                 
-                ResourceScheme.tycheTitle.image
+                Image(.tycheTitle)
                     .resizable()
                     .scaledToFit()
                     .frame(height: 64)
@@ -21,22 +21,22 @@ struct HomeView: View {
             
             Spacer()
             
-            Text(StringScheme.playPoolText.localizedKey)
+            Text(String(.playPoolText))
                 .font(.largeTitle)
             
             Spacer()
             
             Button(action: {}) {
-                Text(StringScheme.createAccountAction.localizedKey)
+                Text(String(.createAccountAction))
             }
             
             Spacer()
             
             HStack {
-                Text(StringScheme.accountExistsText.localizedKey)
+                Text(String(.accountExistsText))
                 
                 Button(action: { onLoginRequested() }) {
-                    Text(StringScheme.logInAction.localizedKey)
+                    Text(String(.logInAction))
                 }
             }
             .frame(maxWidth: .infinity, alignment: .leading)

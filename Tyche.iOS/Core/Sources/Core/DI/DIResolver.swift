@@ -9,6 +9,6 @@ public class DIResolver : ObservableObject {
     }
     
     public func resolve<T>(_ serviceType: T.Type) -> T? {
-        return self.resolver.resolve(serviceType)
+        self.resolver.resolve(serviceType)
     }
 }

@@ -28,9 +28,6 @@ type PoolGamblerBetDynamoDbRepository(keySerializer: IKeySerializer, client: IAm
     [<Literal>]
     let matchText = "MATCH"
 
-    [<Literal>]
-    let matchDateTimeText = "MATCH_DATE_TIME"
-
     let context = new DynamoDBContext(client)
 
     let map (dictionary: IDictionary<string, AttributeValue>) =

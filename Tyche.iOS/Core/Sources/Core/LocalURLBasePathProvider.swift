@@ -5,7 +5,7 @@ public class LocalURLBasePathProvider : URLBasePathProvider {
     private let basePath: String
     
     public convenience init() {
-        self.init(basePath: "https://33a7-181-59-233-121.ngrok-free.app/")
+        self.init(basePath: "https://guiding-terminally-cicada.ngrok-free.app/")
     }
     
     init(basePath: String) {

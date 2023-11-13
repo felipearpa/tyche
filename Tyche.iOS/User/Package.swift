@@ -32,11 +32,7 @@ let package = Package(
                 "Alamofire",
                 "Swinject",
             ],
-            resources: [
-                .process("Localizable/en.lproj/Localizable.strings"),
-                .process("Localizable/es-CO.lproj/Localizable.strings"),
-                .process("Resource/Assets.xcassets"),
-            ]),
+            resources: [.process("Localizable/Localizable.xcstrings")]),
         .testTarget(
             name: "UserTests",
             dependencies: ["User"]),

@@ -23,13 +23,13 @@ private struct UpProgressIndicator: View {
     
     var body: some View {
         HStack(spacing: 0) {
-            ResourceScheme.arrowUpward.image
+            Image(.arrowUpward)
                 .resizable()
                 .frame(width: 24, height: 24)
             Text(String(abs(progress)))
                 .font(.footnote)
         }
-        .foregroundColor(ColorScheme.positive.color)
+        .foregroundStyle(Color(.positive))
     }
 }
 
@@ -38,22 +38,22 @@ private struct DownProgressIndicator: View {
     
     var body: some View {
         HStack(spacing: 0) {
-            ResourceScheme.arrowDownward.image
+            Image(.arrowDownward)
                 .resizable()
                 .frame(width: 24, height: 24)
             Text(String(abs(progress)))
                 .font(.footnote)
         }
-        .foregroundColor(ColorScheme.negative.color)
+        .foregroundStyle(Color(.negative))
     }
 }
 
 private struct StableProgressIndicator: View {
     var body: some View {
-        ResourceScheme.horizontalRule.image
+        Image(.horizontalRule)
             .resizable()
             .frame(width: 24, height: 24)
-            .foregroundColor(ColorScheme.neutral.color)
+            .foregroundStyle(Color(.neutral))
     }
 }
 

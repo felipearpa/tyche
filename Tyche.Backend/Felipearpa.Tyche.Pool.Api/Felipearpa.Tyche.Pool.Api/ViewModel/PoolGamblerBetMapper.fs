@@ -32,4 +32,5 @@ module PoolGamblerBetMapper =
             | Some score -> score.AwayTeamValue |> BetScore.value |> Nullable
             | None -> Nullable()
           Score = poolGamblerBet.Score |> Option.toNullable
-          MatchDateTime = poolGamblerBet.MatchDateTime.ToUniversalTime() }
+          MatchDateTime = poolGamblerBet.MatchDateTime.ToUniversalTime()
+          isLocked = poolGamblerBet.isLocked }

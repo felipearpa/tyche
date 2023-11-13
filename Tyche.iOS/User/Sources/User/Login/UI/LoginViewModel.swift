@@ -3,8 +3,7 @@ import Core
 import UI
 
 public class LoginViewModel: ObservableObject {
-    
-    @Published @MainActor private(set) var state: ViewState<UserProfile> = .initial
+    @Published @MainActor private(set) var state: LodableViewState<UserProfile> = .initial
     
     private let loginUseCase: LoginUseCase
     
@@ -42,7 +41,6 @@ public class LoginViewModel: ObservableObject {
 }
 
 private extension Error {
-    
     func toLocalizedError() -> Error {
         if let loginError = self as? LoginError {
             return loginError.toLoginLocalizedError()

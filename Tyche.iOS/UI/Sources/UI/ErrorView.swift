@@ -9,7 +9,7 @@ public struct ErrorView: View {
     
     public var body: some View {
         VStack(spacing: 8) {
-            ResourceScheme.sentimentDissatisfied.image
+            Image(.sentimentDissatisfied)
                 .resizable()
                 .frame(width: 40, height: 40)
             

@@ -3,13 +3,15 @@ import Core
 import UI
 
 struct GamblerScoreList: View {
-    @ObservedObject var lazyPager: LazyPager<String, PoolGamblerScoreModel>
+    var lazyPager: LazyPager<String, PoolGamblerScoreModel>
     let loggedInGamblerId: String?
     
     var body: some View {
+        let _ = Self._printChanges()
+        
         PagingVStack(
             lazyPager: lazyPager,
-            loadingContent: { PoolScoreFakeList() },
+            loadingContent: { GamblerScoreFakeList() },
             loadingContentOnConcatenate: {
                 PoolScoreItem(poolGamblerScore: fakePoolGamblerScoreModel())
                     .shimmer()
@@ -20,7 +22,7 @@ struct GamblerScoreList: View {
                 poolGamblerScore: poolGamblerScore,
                 isLoggedIn: loggedInGamblerId != nil ? loggedInGamblerId == poolGamblerScore.gamblerId : false
             )
-
+            
             Divider()
         }
     }
@@ -32,17 +34,15 @@ struct GamblerScoreFakeList : View {
     }
     
     var body: some View {
-        ScrollView {
-            LazyVStack(spacing: 8) {
-                ForEach(poolGamblerScores) { poolGamblerScore in
-                    GamblerScoreItem(
-                        poolGamblerScore: poolGamblerScore,
-                        isLoggedIn: false
-                    )
-                    .shimmer()
-                    
-                    Divider()
-                }
+        LazyVStack(spacing: 8) {
+            ForEach(poolGamblerScores) { poolGamblerScore in
+                GamblerScoreItem(
+                    poolGamblerScore: poolGamblerScore,
+                    isLoggedIn: false
+                )
+                .shimmer()
+                
+                Divider()
             }
         }
     }

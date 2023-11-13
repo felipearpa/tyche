@@ -18,7 +18,7 @@ type LocalJWTGenerator(jwtSettings: IJwtSetting) =
     interface IJwtGenerator with
 
         member this.GenerateToken(jwtSubject) =
-            let tokenHandler = new JwtSecurityTokenHandler()
+            let tokenHandler = JwtSecurityTokenHandler()
 
             let key = Encoding.ASCII.GetBytes(jwtSettings.Key)
 

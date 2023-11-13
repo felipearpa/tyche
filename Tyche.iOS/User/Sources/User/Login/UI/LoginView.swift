@@ -33,7 +33,7 @@ public struct LoginView: View {
                     .padding(8)
             }
         }
-        .navigationTitle(StringScheme.loginTitle.localizedKey)
+        .navigationTitle(String(.loginTitle))
         .navigationBarBackButtonHidden(viewModel.state.isLoading())
     }
 }
@@ -41,7 +41,7 @@ public struct LoginView: View {
 private struct MainContent: View {
     let onLogin: (LoginCredentialModel) -> Void
     let reset: () -> Void
-    let viewState: ViewState<UserProfile>
+    let viewState: LodableViewState<UserProfile>
 
     @State private var loginCredential = LoginCredentialModel(username: "", password: "")
     @State private var isValid = false
@@ -56,13 +56,13 @@ private struct MainContent: View {
         .textFieldStyle(.roundedBorder)
         .padding(8)
         .toolbar {
-            Button(StringScheme.loginAction.localizedKey) {
+            Button(String(.loginAction)) {
                 onLogin(loginCredential)
             }
             .disabled(!isValid || viewState.isLoading())
         }
         .blur(radius: viewState.isLoading() ? 3 : 0)
-        .errorAlert(.constant(viewState.localizedErrorWrapperOrNull())) {
+        .errorAlert(.constant(viewState.localizedErrorOrNull())) {
             reset()
         }
         .onChange(of: loginCredential) { newLoginCredential in
@@ -77,12 +77,12 @@ private struct SuccessContent: View {
     var body: some View {
         VStack(spacing: 8) {
             MessageView(
-                icon: ResourceScheme.sentimentVerySatisfied.image,
-                message: StringScheme.successLoginMessage.localizedString
+                icon: Image(sharedResource: .sentimentVerySatisfied),
+                message: String(.successLoginMessage)
             )
             
             Button(action: { onContinue() }) {
-                Text(StringScheme.continueAction.localizedKey)
+                Text((String(.continueAction)))
             }
             .buttonStyle(.borderedProminent)
         }

@@ -34,10 +34,7 @@ let package = Package(
                 "Alamofire",
                 "Swinject",
             ],
-            resources: [
-                .process("Localizable/en.lproj/Localizable.strings"),
-                .process("Localizable/es-CO.lproj/Localizable.strings"),
-            ]),
+            resources: [.process("Localizable/Localizable.xcstrings")]),
         .testTarget(
             name: "PoolTests",
             dependencies: ["Pool"]),

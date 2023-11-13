@@ -5,7 +5,7 @@ private struct CustomError : Error {}
 
 final class ViewStateTests: XCTestCase {
     func testGivenALoadingViewStateWhenIsLoadingIsPerformedThenTrueIsReturned() throws {
-        let viewState = ViewState<String>.loading
+        let viewState = LodableViewState<String>.loading
         
         let isLoading = viewState.isLoading()
         
@@ -18,12 +18,12 @@ final class ViewStateTests: XCTestCase {
         }
     }
     
-    func givenANotLoadingViewStateWhenIsLoadingIsPerformedThenFalseIsReturned(viewState: ViewState<String>) throws {
+    func givenANotLoadingViewStateWhenIsLoadingIsPerformedThenFalseIsReturned(viewState: LodableViewState<String>) throws {
         XCTAssertFalse(viewState.isLoading())
     }
     
     func testGivenAFailureViewStateWhenIsFailureIsPerformedThenTrueIsReturned() throws {
-        let viewState = ViewState<String>.failure(CustomError())
+        let viewState = LodableViewState<String>.failure(CustomError())
         
         let isFailure = viewState.isFailure()
         
@@ -36,12 +36,12 @@ final class ViewStateTests: XCTestCase {
         }
     }
     
-    func givenANotFailureViewStateWhenIsFailureIsPerformedThenFalseIsReturned(viewState: ViewState<String>) throws {
+    func givenANotFailureViewStateWhenIsFailureIsPerformedThenFalseIsReturned(viewState: LodableViewState<String>) throws {
         XCTAssertFalse(viewState.isFailure())
     }
     
     func testGivenAFailureViewStateWhenErrorOrNullIsPerformedThenTheErrorIsReturned() throws {
-        let viewState = ViewState<String>.failure(CustomError())
+        let viewState = LodableViewState<String>.failure(CustomError())
         
         let error = viewState.errorOrNull()
         
@@ -54,20 +54,20 @@ final class ViewStateTests: XCTestCase {
         }
     }
     
-    func givenANotFailureViewStateWhenErrorOrNullIsPerformedThenNullIsReturned(viewState: ViewState<String>) throws {
+    func givenANotFailureViewStateWhenErrorOrNullIsPerformedThenNullIsReturned(viewState: LodableViewState<String>) throws {
         let error = viewState.errorOrNull()
         XCTAssertTrue(error == nil)
     }
     
-    private func notLoadingViewStates() -> [ViewState<String>] {
-        return [ ViewState<String>.initial,
-                 ViewState<String>.success("Ok"),
-                 ViewState<String>.failure(CustomError()) ]
+    private func notLoadingViewStates() -> [LodableViewState<String>] {
+        return [ LodableViewState<String>.initial,
+                 LodableViewState<String>.success("Ok"),
+                 LodableViewState<String>.failure(CustomError()) ]
     }
     
-    private func notFailureViewStates() -> [ViewState<String>] {
-        return [ ViewState<String>.initial,
-                 ViewState<String>.loading,
-                 ViewState<String>.success("Ok") ]
+    private func notFailureViewStates() -> [LodableViewState<String>] {
+        return [ LodableViewState<String>.initial,
+                 LodableViewState<String>.loading,
+                 LodableViewState<String>.success("Ok") ]
     }
 }

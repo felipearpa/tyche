@@ -1,5 +1,7 @@
 namespace Felipearpa.Core.Paging
 
+open System.Linq
+
 type CursorPage<'T> = { Items: 'T seq; Next: string option }
 
 module CursorPage =
@@ -17,3 +19,5 @@ module CursorPage =
           Next = page.Next }
 
     let fromSeq seq = { CursorPage.Items = seq; Next = None }
+
+    let isEmpty<'T> (page: CursorPage<'T>) = page.Items.Count() = 0

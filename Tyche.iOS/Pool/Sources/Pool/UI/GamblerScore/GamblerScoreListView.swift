@@ -10,12 +10,17 @@ public struct GamblerScoreListView: View {
     }
     
     public var body: some View {
+        let _ = Self._printChanges()
+        
         GamblerScoreList(
             lazyPager: viewModel.lazyPager,
             loggedInGamblerId: viewModel.gamblerId
         )
         .padding(8)
         .refreshable {
+            viewModel.lazyPager.refresh()
+        }
+        .onAppearOnce {
             viewModel.lazyPager.refresh()
         }
     }
@@ -40,7 +45,7 @@ struct GamblerScoreListView_Previews: PreviewProvider {
             poolId: String,
             next: String?,
             searchText: String?
-        ) async -> Result<Core.CursorPage<PoolGamblerScore>, Error> {
+        ) async -> Result<CursorPage<PoolGamblerScore>, Error> {
             .success(
                 CursorPage(
                     items: poolGamblerScores(),

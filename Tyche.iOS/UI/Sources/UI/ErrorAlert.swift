@@ -11,7 +11,7 @@ public extension View {
             isPresented: .constant(unwrappedLocalizedError != nil),
             error: unwrappedLocalizedError
         ) { _ in 
-            Button(StringScheme.doneAction.localizedKey) {
+            Button(String(.doneAction)) {
                 localizedError.wrappedValue = nil
                 onDismiss()
             }

@@ -4,6 +4,16 @@ import SwiftUI
 private let IncompleteLoadState = LoadState.notLoading(endOfPaginationReached: false)
 private let CompleteLoadState = LoadState.notLoading(endOfPaginationReached: true)
 
+private let RefreshLoading = CombinedLoadStates(
+    refresh: LoadState.loading,
+    append: IncompleteLoadState
+)
+
+private let AppendLoading = CombinedLoadStates(
+    refresh: IncompleteLoadState,
+    append: LoadState.loading
+)
+
 public class LazyPager<Key, Item>: ObservableObject, Sequence {
     @MainActor @Published public var loadState: CombinedLoadStates = CombinedLoadStates(
         refresh: LoadState.loading,
@@ -44,10 +54,9 @@ public class LazyPager<Key, Item>: ObservableObject, Sequence {
     private func fetch(key: Key?) {
         Task {
             await MainActor.run {
-                loadState = CombinedLoadStates(
-                    refresh: LoadState.loading,
-                    append: IncompleteLoadState
-                )
+                if loadState != RefreshLoading {
+                    loadState = RefreshLoading
+                }
             }
             
             retryAction = { [unowned self] in fetch(key: key) }
@@ -116,10 +125,9 @@ public class LazyPager<Key, Item>: ObservableObject, Sequence {
         guard await !loadState.append.isLoading() else { return }
         
         await MainActor.run {
-            loadState = CombinedLoadStates(
-                refresh: IncompleteLoadState,
-                append: LoadState.loading
-            )
+            if loadState != AppendLoading {
+                loadState = AppendLoading
+            }
         }
         
         retryAction = { [unowned self] in await append(key: key) }
@@ -158,17 +166,35 @@ public class LazyPager<Key, Item>: ObservableObject, Sequence {
     }
 }
 
-public struct CombinedLoadStates {
+public struct CombinedLoadStates: Equatable {
     public let refresh: LoadState
     public let append: LoadState
+    
+    public static func ==(lhs: CombinedLoadStates, rhs: CombinedLoadStates) -> Bool {
+        return lhs.refresh == rhs.refresh && lhs.append == rhs.append
+    }
 }
 
-public enum LoadState {
+public enum LoadState: Equatable {
     case notLoading(endOfPaginationReached: Bool)
-    
     case loading
-    
     case failure(Error)
+    
+    public static func ==(lhs: LoadState, rhs: LoadState) -> Bool {
+        switch (lhs, rhs) {
+        case (.notLoading, .notLoading):
+            return true
+            
+        case (.loading, .loading):
+            return true
+            
+        case (.failure, .failure):
+            return true
+            
+        default:
+            return false
+        }
+    }
 }
 
 public extension LoadState {

@@ -5,7 +5,7 @@ import UI
 public class GamblerScoreListViewModel: ObservableObject {
     private let getPoolGamblerScoresByPoolUseCase : GetPoolGamblerScoresByPoolUseCase
     
-    let gamblerId: String?
+    let gamblerId: String
     
     private let poolId: String
     
@@ -24,7 +24,7 @@ public class GamblerScoreListViewModel: ObservableObject {
     
     public init(
         getPoolGamblerScoresByPoolUseCase : GetPoolGamblerScoresByPoolUseCase,
-        gamblerId: String?,
+        gamblerId: String,
         poolId: String
     ) {
         self.getPoolGamblerScoresByPoolUseCase = getPoolGamblerScoresByPoolUseCase

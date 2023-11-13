@@ -15,7 +15,7 @@ public struct PaginVStackRetryableError: View {
             
             Button(action: {
             }) {
-                Text(StringScheme.retryAction.localizedKey)
+                Text(String(.retryAction))
             }
             .buttonStyle(.borderedProminent)
         }

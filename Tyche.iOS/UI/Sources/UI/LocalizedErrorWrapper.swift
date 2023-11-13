@@ -2,7 +2,7 @@ import Foundation
 
 public struct LocalizedErrorWrapper: LocalizedError {
     var underlyingError: LocalizedError
-
+    
     public var errorDescription: String? { underlyingError.errorDescription }
     public var failureReason: String? { underlyingError.failureReason }
     public var recoverySuggestion: String? { underlyingError.recoverySuggestion }
@@ -15,24 +15,22 @@ public struct LocalizedErrorWrapper: LocalizedError {
 
 public extension Error {
     @inlinable
-    func localizedErrorWrapperOrNull() -> LocalizedErrorWrapper? {
+    func localizedErrorOrNull() -> LocalizedErrorWrapper? {
         if let localizedError = self as? LocalizedError {
             return LocalizedErrorWrapper(underlyingError: localizedError)
         }
-        
         return nil
     }
 }
 
-public extension ViewState {
-     @inlinable
-    func localizedErrorWrapperOrNull() -> LocalizedErrorWrapper? {
+public extension LodableViewState {
+    @inlinable
+    func localizedErrorOrNull() -> LocalizedErrorWrapper? {
         if case .failure(let error) = self {
             if let localizedError = error as? LocalizedError {
                 return LocalizedErrorWrapper(underlyingError: localizedError)
             }
         }
-        
         return nil
     }
 }

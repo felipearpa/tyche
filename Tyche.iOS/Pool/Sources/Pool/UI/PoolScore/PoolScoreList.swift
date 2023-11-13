@@ -7,6 +7,8 @@ struct PoolScoreList: View {
     let onPoolDetailRequested: (String) -> Void
     
     var body: some View {
+        let _ = Self._printChanges()
+        
         PagingVStack(
             lazyPager: lazyPager,
             loadingContent: { PoolScoreFakeList() },
@@ -31,13 +33,11 @@ struct PoolScoreFakeList : View {
     }
     
     var body: some View {
-        ScrollView {
-            LazyVStack(spacing: 8) {
-                ForEach(poolGamblerScores) { poolGamblerScore in
-                    PoolScoreItem(poolGamblerScore: poolGamblerScore)
-                        .shimmer()
-                    Divider()
-                }
+        LazyVStack(spacing: 8) {
+            ForEach(poolGamblerScores) { poolGamblerScore in
+                PoolScoreItem(poolGamblerScore: poolGamblerScore)
+                    .shimmer()
+                Divider()
             }
         }
     }

@@ -13,7 +13,7 @@ public class LoginUseCase {
         let maybeLoginProfile = await loginRepository.login(loginCredential: loginInput.toLoginCrendential())
         
         if case .success(let loginProfile) = maybeLoginProfile {
-            try! loginStorage.store(loginProfile: loginProfile)
+            try! await loginStorage.store(loginProfile: loginProfile)
         }
         
         return maybeLoginProfile.map { loginProfile in

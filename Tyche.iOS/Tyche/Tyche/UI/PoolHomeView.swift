@@ -1,25 +1,35 @@
 import SwiftUI
 import Swinject
 import Core
-import Pool
 import UI
+import Pool
+import Bet
 
 private let defaultDebounceTimeInMilliseconds = 700
 
+private enum Tab: Int {
+    case gamblerScores
+    case bets
+}
+
 struct PoolHomeView: View {
     let diResolver: DIResolver
-    let gamblerId: String?
+    let gamblerId: String
     let poolId: String
-    @StateObject private var searchDebounceText = DebounceString(dueTime: .milliseconds(defaultDebounceTimeInMilliseconds))
     
-    init(diResolver: DIResolver, gamblerId: String?, poolId: String) {
+    @StateObject private var searchDebounceText = DebounceString(dueTime: .milliseconds(defaultDebounceTimeInMilliseconds))
+    @State private var selectedTab = Tab.gamblerScores
+    
+    init(diResolver: DIResolver, gamblerId: String, poolId: String) {
         self.diResolver = diResolver
         self.gamblerId = gamblerId
         self.poolId = poolId
     }
     
     var body: some View {
-        TabView {
+        let _ = Self._printChanges()
+        
+        TabView(selection: $selectedTab) {
             GamblerScoreListView(
                 viewModel: GamblerScoreListViewModel(
                     getPoolGamblerScoresByPoolUseCase: GetPoolGamblerScoresByPoolUseCase(
@@ -29,12 +39,37 @@ struct PoolHomeView: View {
                     poolId: poolId
                 )
             )
+            .tag(Tab.gamblerScores)
             .tabItem {
-                Label(StringScheme.scoreTab.localizedKey,
-                      image: ResourceScheme.sportScore.name)
+                Label(
+                    title: { Text(String(.scoreTab)) },
+                    icon: { Image(.sportScore) }
+                )
+            }
+            
+            PoolGamblerBetListView(
+                viewModel: PoolGamblerBetListViewModel(
+                    getPoolGamblerBetsUseCase: GetPoolGamblerBetsUseCase(
+                        poolGamblerBetRepository: diResolver.resolve(PoolGamblerBetRepository.self)!
+                    ),
+                    gamblerId: gamblerId,
+                    poolId: poolId
+                )
+            )
+            .tag(Tab.bets)
+            .tabItem {
+                Label(
+                    title: { Text(String(.betTab)) },
+                    icon: { Image(.money) }
+                )
             }
         }
         .navigationTitle("Pool")
+        .searchable(
+            text: $searchDebounceText.text,
+            placement: .navigationBarDrawer(displayMode: .automatic),
+            prompt: String(sharedResource: .searchingLabel)
+        )
     }
 }
 
@@ -52,7 +87,7 @@ struct PoolHomeView_Previews: PreviewProvider {
             diResolver: DIResolver(
                 resolver: Assembler([PoolHomeAssembler()]).resolver
             ),
-            gamblerId: nil,
+            gamblerId: "gambler-id",
             poolId: "pool-id"
         )
     }

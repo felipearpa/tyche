@@ -23,7 +23,7 @@ public struct MessageView: View {
 struct Message_Previews: PreviewProvider {
     static var previews: some View {
         MessageView(
-            icon: ResourceScheme.horizontalRule.image,
-            message: "Congratulations! You're now here")
+            icon: Image(.sentimentDissatisfied),
+            message: "Nothing to show")
     }
 }

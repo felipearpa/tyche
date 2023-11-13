@@ -1,0 +1,43 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "" : {
+
+    },
+    "forbidden_bet_failure_description" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Forbidden bet"
+          }
+        },
+        "es-CO" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apuesta no permitida"
+          }
+        }
+      }
+    },
+    "forbidden_bet_failure_reason" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Betting is currently unavailable"
+          }
+        },
+        "es-CO" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Las apuestas están actualmente deshabilitadas"
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.0"
+}

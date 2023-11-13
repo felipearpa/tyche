@@ -9,7 +9,7 @@ struct PoolScoreItem: View {
             VStack(alignment:.leading) {
                 Text(poolGamblerScore.poolName)
                 if let currentPosition = poolGamblerScore.currentPosition {
-                    Text(String(format: StringScheme.positionLabel.localizedString, String(currentPosition)))
+                    Text(String(format: String(.positionLabel), String(currentPosition)))
                         .font(.footnote)
                 }
             }

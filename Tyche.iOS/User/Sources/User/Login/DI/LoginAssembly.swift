@@ -27,7 +27,7 @@ public class LoginAssembly : Assembly {
         }
         
         container.register(LoginStorage.self) { _ in
-            LoginStorageInKeychain()
+            LoginStorageInUserDefaults()
         }
         
         container.register(AuthenticatedSession.self) { resolver in

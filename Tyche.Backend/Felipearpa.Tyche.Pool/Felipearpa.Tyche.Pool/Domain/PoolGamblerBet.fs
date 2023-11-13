@@ -15,4 +15,5 @@ type PoolGamblerBet =
       MatchScore: TeamScore<int> option
       BetScore: TeamScore<BetScore> option
       Score: int option
-      MatchDateTime: DateTime }
+      MatchDateTime: DateTime
+      isLocked: bool }

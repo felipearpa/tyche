@@ -1,5 +1,5 @@
 public protocol LoginStorage {
-    func store(loginProfile: LoginProfile) throws
+    func store(loginProfile: LoginProfile) async throws
     
-    func get() throws -> LoginProfile?
+    func get() async throws -> LoginProfile?
 }

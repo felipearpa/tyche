@@ -3,7 +3,6 @@ import Core
 import User
 
 public class PoolAssembly : Assembly {
-
     public init() {}
     
     public func assemble(container: Container) {
@@ -31,6 +30,10 @@ public class PoolAssembly : Assembly {
             GetPoolGamblerScoresByPoolUseCase(
                 poolGamblerScoreRepository: resolver.resolve(PoolGamblerScoreRepository.self)!
             )
+        }
+        
+        container.register(PoolStorage.self) { _ in
+            PoolStorageInUserDefaults()
         }
     }
 }

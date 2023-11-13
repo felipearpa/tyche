@@ -16,6 +16,7 @@ let package = Package(
     dependencies: [
         // Dependencies declare other packages that this package depends on.
         // .package(url: /* package url */, from: "1.0.0"),
+        .package(url: "https://github.com/markiv/SwiftUI-Shimmer.git", from: "1.4.0"),
         .package(path: "../Core"),
     ],
     targets: [
@@ -23,11 +24,13 @@ let package = Package(
         // Targets can depend on other targets in this package, and on products in packages this package depends on.
         .target(
             name: "UI",
-            dependencies: ["Core"],
+            dependencies: [
+                .product(name: "Shimmer", package: "SwiftUI-Shimmer"),
+                "Core",
+            ],
             resources: [
-                .process("Localizable/en.lproj/Localizable.strings"),
-                .process("Localizable/es-CO.lproj/Localizable.strings"),
-                .process("Resource/Assets.xcassets"),
+                .process("Localizable/Localizable.xcstrings"),
+                .process("Assets/Assets.xcassets"),
             ]),
         .testTarget(
             name: "UITests",

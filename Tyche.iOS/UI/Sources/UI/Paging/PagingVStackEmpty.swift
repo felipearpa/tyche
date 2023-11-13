@@ -5,8 +5,8 @@ public struct PagingVStackEmpty: View {
     
     public var body: some View {
         MessageView(
-            icon: ResourceScheme.search.image,
-            message: StringScheme.emptyListMessage.localizedString
+            icon: Image(.search),
+            message: String(.emptyListMessage)
         )
     }
 }

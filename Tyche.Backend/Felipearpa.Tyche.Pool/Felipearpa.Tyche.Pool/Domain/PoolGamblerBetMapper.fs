@@ -1,5 +1,6 @@
 namespace Felipearpa.Tyche.Pool.Domain
 
+open System
 open Felipearpa.Tyche.Pool.Type
 open Felipearpa.Tyche.Pool.Data
 open Felipearpa.Type
@@ -35,4 +36,5 @@ module PoolGamblerBetMapper =
             else
                 None
           Score = poolGamblerBetEntity.BetScore |> Option.ofNullable
-          MatchDateTime = poolGamblerBetEntity.MatchDateTime }
+          MatchDateTime = poolGamblerBetEntity.MatchDateTime
+          isLocked = DateTime.Now >= poolGamblerBetEntity.MatchDateTime }

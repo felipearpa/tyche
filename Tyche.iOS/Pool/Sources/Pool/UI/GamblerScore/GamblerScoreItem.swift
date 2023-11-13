@@ -14,11 +14,8 @@ struct GamblerScoreItem: View {
                     Text(String(currentPosition))
                 }
                 .frame(width: indicatorSize, height: indicatorSize)
-                .background(isLoggedIn ?
-                            UI.ColorScheme.primaryContainer.color :
-                                UI.ColorScheme.secondaryContainer.color)
-                .foregroundColor(isLoggedIn ?
-                                 UI.ColorScheme.onPrimaryContainer.color : UI.ColorScheme.onSecondaryContainer.color)
+                .background(isLoggedIn ? Color(sharedResource: .primaryContainer) : Color(sharedResource: .secondaryContainer))
+                .foregroundColor(isLoggedIn ? Color(sharedResource: .onPrimaryContainter) : Color(sharedResource: .onSecondaryContainer))
                 .clipShape(Circle())
             } else {
                 Text("")

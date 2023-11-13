@@ -6,14 +6,14 @@ enum LoginLocalizedError : LocalizedError {
     public var errorDescription: String? {
         switch self {
         case .invalidCredentials:
-            return StringScheme.invalidCredentialFailureTitle.localizedString
+            return String(.invalidCredentialFailureTitle)
         }
     }
     
     public var failureReason: String? {
         switch self {
         case .invalidCredentials:
-            return StringScheme.invalidCredentialFailureMessage.localizedString
+            return String(.invalidCredentialFailureMessage)
         }
     }
 }

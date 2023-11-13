@@ -14,8 +14,17 @@ public class AuthenticatedSession {
     
     public func request<Parameters: Encodable>(
         _ url: URL,
-        parameters: Parameters? = nil
+        method: HTTPMethod = .get,
+        parameters: Parameters? = nil,
+        encoder: ParameterEncoder = URLEncodedFormParameterEncoder.default,
+        headers: HTTPHeaders? = nil
     ) -> DataRequest {
-        return session.request(url, parameters: parameters)
+        return session.request(
+            url,
+            method: method,
+            parameters: parameters,
+            encoder: encoder,
+            headers: headers
+        )
     }
 }

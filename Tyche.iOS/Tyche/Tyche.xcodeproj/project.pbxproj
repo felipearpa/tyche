@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 56;
+	objectVersion = 60;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -15,11 +15,14 @@
 		D2127F4F2A2C2F270047DED7 /* TycheTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2127F4E2A2C2F270047DED7 /* TycheTests.swift */; };
 		D2127F592A2C2F270047DED7 /* TycheUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2127F582A2C2F270047DED7 /* TycheUITests.swift */; };
 		D2127F5B2A2C2F270047DED7 /* TycheUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2127F5A2A2C2F270047DED7 /* TycheUITestsLaunchTests.swift */; };
-		D2127F6C2A2C305D0047DED7 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = D2127F6E2A2C305D0047DED7 /* Localizable.strings */; };
-		D2127F732A2C31FF0047DED7 /* ResourceScheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2127F722A2C31FF0047DED7 /* ResourceScheme.swift */; };
-		D2127F752A2C33210047DED7 /* StringScheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2127F742A2C33210047DED7 /* StringScheme.swift */; };
+		D2127F752A2C33210047DED7 /* StringResource.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2127F742A2C33210047DED7 /* StringResource.swift */; };
 		D2127F782A2C335E0047DED7 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2127F772A2C335E0047DED7 /* HomeView.swift */; };
-		D2127F7A2A2C33920047DED7 /* RouterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2127F792A2C33920047DED7 /* RouterView.swift */; };
+		D2127F7A2A2C33920047DED7 /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2127F792A2C33920047DED7 /* MainView.swift */; };
+		D21495EC2ABFD65E00C18C71 /* HomeRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = D21495EB2ABFD65E00C18C71 /* HomeRouter.swift */; };
+		D21495EE2ABFDDFD00C18C71 /* PoolHomeRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = D21495ED2ABFDDFD00C18C71 /* PoolHomeRouter.swift */; };
+		D21495F02ABFE1D500C18C71 /* PoolScoreListRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = D21495EF2ABFE1D500C18C71 /* PoolScoreListRouter.swift */; };
+		D29956132A74215600F8878E /* Bet in Frameworks */ = {isa = PBXBuildFile; productRef = D29956122A74215600F8878E /* Bet */; };
+		D2A7804D2AC8BB1A00F01A02 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = D2A7804C2AC8BB1A00F01A02 /* Localizable.xcstrings */; };
 		D2BB75112A5B65D500C7AE04 /* Pool in Frameworks */ = {isa = PBXBuildFile; productRef = D2BB75102A5B65D500C7AE04 /* Pool */; };
 		D2C23D612A3E428D003CC860 /* UI in Frameworks */ = {isa = PBXBuildFile; productRef = D2C23D602A3E428D003CC860 /* UI */; };
 		D2C23D632A3E4290003CC860 /* Core in Frameworks */ = {isa = PBXBuildFile; productRef = D2C23D622A3E4290003CC860 /* Core */; };
@@ -56,13 +59,13 @@
 		D2127F542A2C2F270047DED7 /* TycheUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TycheUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		D2127F582A2C2F270047DED7 /* TycheUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TycheUITests.swift; sourceTree = "<group>"; };
 		D2127F5A2A2C2F270047DED7 /* TycheUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TycheUITestsLaunchTests.swift; sourceTree = "<group>"; };
-		D2127F6D2A2C305D0047DED7 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
-		D2127F6F2A2C30800047DED7 /* es-CO */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "es-CO"; path = "es-CO.lproj/Localizable.strings"; sourceTree = "<group>"; };
-		D2127F722A2C31FF0047DED7 /* ResourceScheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResourceScheme.swift; sourceTree = "<group>"; };
-		D2127F742A2C33210047DED7 /* StringScheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringScheme.swift; sourceTree = "<group>"; };
+		D2127F742A2C33210047DED7 /* StringResource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringResource.swift; sourceTree = "<group>"; };
 		D2127F772A2C335E0047DED7 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
-		D2127F792A2C33920047DED7 /* RouterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouterView.swift; sourceTree = "<group>"; };
-		D23350B92A2D2E6300391B16 /* UI */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = UI; path = ../UI; sourceTree = "<group>"; };
+		D2127F792A2C33920047DED7 /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
+		D21495EB2ABFD65E00C18C71 /* HomeRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeRouter.swift; sourceTree = "<group>"; };
+		D21495ED2ABFDDFD00C18C71 /* PoolHomeRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PoolHomeRouter.swift; sourceTree = "<group>"; };
+		D21495EF2ABFE1D500C18C71 /* PoolScoreListRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PoolScoreListRouter.swift; sourceTree = "<group>"; };
+		D2A7804C2AC8BB1A00F01A02 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 		D2DAB7972A6DB78D00ED29AC /* PoolHomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PoolHomeView.swift; sourceTree = "<group>"; };
 		D2DAB7992A6DB7B400ED29AC /* PoolHomeRoute.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PoolHomeRoute.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -76,6 +79,7 @@
 				D204461C2A367F2300390319 /* User in Frameworks */,
 				D2BB75112A5B65D500C7AE04 /* Pool in Frameworks */,
 				D2C23D632A3E4290003CC860 /* Core in Frameworks */,
+				D29956132A74215600F8878E /* Bet in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -99,7 +103,6 @@
 		D2127F2C2A2C2F240047DED7 = {
 			isa = PBXGroup;
 			children = (
-				D23350B82A2D2E6300391B16 /* Packages */,
 				D2127F372A2C2F240047DED7 /* Tyche */,
 				D2127F4D2A2C2F270047DED7 /* TycheTests */,
 				D2127F572A2C2F270047DED7 /* TycheUITests */,
@@ -121,15 +124,13 @@
 		D2127F372A2C2F240047DED7 /* Tyche */ = {
 			isa = PBXGroup;
 			children = (
+				D2A7804E2AC8BBD700F01A02 /* Localizable */,
 				D204461A2A367F1400390319 /* Info.plist */,
 				D2127F762A2C33340047DED7 /* UI */,
 				D2127F382A2C2F240047DED7 /* TycheApp.swift */,
 				D2127F3C2A2C2F260047DED7 /* Assets.xcassets */,
 				D2127F432A2C2F260047DED7 /* Tyche.xcdatamodeld */,
 				D2127F3E2A2C2F260047DED7 /* Preview Content */,
-				D2127F6E2A2C305D0047DED7 /* Localizable.strings */,
-				D2127F722A2C31FF0047DED7 /* ResourceScheme.swift */,
-				D2127F742A2C33210047DED7 /* StringScheme.swift */,
 			);
 			path = Tyche;
 			sourceTree = "<group>";
@@ -170,19 +171,23 @@
 			isa = PBXGroup;
 			children = (
 				D2127F772A2C335E0047DED7 /* HomeView.swift */,
-				D2127F792A2C33920047DED7 /* RouterView.swift */,
+				D2127F792A2C33920047DED7 /* MainView.swift */,
 				D2DAB7972A6DB78D00ED29AC /* PoolHomeView.swift */,
 				D2DAB7992A6DB7B400ED29AC /* PoolHomeRoute.swift */,
+				D21495EB2ABFD65E00C18C71 /* HomeRouter.swift */,
+				D21495ED2ABFDDFD00C18C71 /* PoolHomeRouter.swift */,
+				D21495EF2ABFE1D500C18C71 /* PoolScoreListRouter.swift */,
 			);
 			path = UI;
 			sourceTree = "<group>";
 		};
-		D23350B82A2D2E6300391B16 /* Packages */ = {
+		D2A7804E2AC8BBD700F01A02 /* Localizable */ = {
 			isa = PBXGroup;
 			children = (
-				D23350B92A2D2E6300391B16 /* UI */,
+				D2A7804C2AC8BB1A00F01A02 /* Localizable.xcstrings */,
+				D2127F742A2C33210047DED7 /* StringResource.swift */,
 			);
-			name = Packages;
+			path = Localizable;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -206,6 +211,7 @@
 				D2C23D602A3E428D003CC860 /* UI */,
 				D2C23D622A3E4290003CC860 /* Core */,
 				D2BB75102A5B65D500C7AE04 /* Pool */,
+				D29956122A74215600F8878E /* Bet */,
 			);
 			productName = Tyche;
 			productReference = D2127F352A2C2F240047DED7 /* Tyche.app */;
@@ -255,7 +261,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1430;
-				LastUpgradeCheck = 1430;
+				LastUpgradeCheck = 1500;
 				TargetAttributes = {
 					D2127F342A2C2F240047DED7 = {
 						CreatedOnToolsVersion = 14.3.1;
@@ -271,12 +277,13 @@
 				};
 			};
 			buildConfigurationList = D2127F302A2C2F240047DED7 /* Build configuration list for PBXProject "Tyche" */;
-			compatibilityVersion = "Xcode 14.0";
+			compatibilityVersion = "Xcode 15.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
 				"es-CO",
+				Base,
 			);
 			mainGroup = D2127F2C2A2C2F240047DED7;
 			productRefGroup = D2127F362A2C2F240047DED7 /* Products */;
@@ -296,7 +303,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				D2127F402A2C2F260047DED7 /* Preview Assets.xcassets in Resources */,
-				D2127F6C2A2C305D0047DED7 /* Localizable.strings in Resources */,
+				D2A7804D2AC8BB1A00F01A02 /* Localizable.xcstrings in Resources */,
 				D2127F3D2A2C2F260047DED7 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -323,12 +330,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				D2DAB79A2A6DB7B400ED29AC /* PoolHomeRoute.swift in Sources */,
-				D2127F7A2A2C33920047DED7 /* RouterView.swift in Sources */,
+				D2127F7A2A2C33920047DED7 /* MainView.swift in Sources */,
+				D21495F02ABFE1D500C18C71 /* PoolScoreListRouter.swift in Sources */,
 				D2DAB7982A6DB78D00ED29AC /* PoolHomeView.swift in Sources */,
-				D2127F752A2C33210047DED7 /* StringScheme.swift in Sources */,
+				D21495EE2ABFDDFD00C18C71 /* PoolHomeRouter.swift in Sources */,
+				D2127F752A2C33210047DED7 /* StringResource.swift in Sources */,
 				D2127F392A2C2F240047DED7 /* TycheApp.swift in Sources */,
 				D2127F782A2C335E0047DED7 /* HomeView.swift in Sources */,
-				D2127F732A2C31FF0047DED7 /* ResourceScheme.swift in Sources */,
+				D21495EC2ABFD65E00C18C71 /* HomeRouter.swift in Sources */,
 				D2127F452A2C2F260047DED7 /* Tyche.xcdatamodeld in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -365,23 +374,13 @@
 		};
 /* End PBXTargetDependency section */
 
-/* Begin PBXVariantGroup section */
-		D2127F6E2A2C305D0047DED7 /* Localizable.strings */ = {
-			isa = PBXVariantGroup;
-			children = (
-				D2127F6D2A2C305D0047DED7 /* en */,
-				D2127F6F2A2C30800047DED7 /* es-CO */,
-			);
-			name = Localizable.strings;
-			sourceTree = "<group>";
-		};
-/* End PBXVariantGroup section */
-
 /* Begin XCBuildConfiguration section */
 		D2127F5C2A2C2F270047DED7 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_ASSET_SYMBOLS = YES;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
@@ -415,6 +414,7 @@
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -443,6 +443,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_ASSET_SYMBOLS = YES;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
@@ -476,6 +478,7 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -677,6 +680,10 @@
 		D204461B2A367F2300390319 /* User */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = User;
+		};
+		D29956122A74215600F8878E /* Bet */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Bet;
 		};
 		D2BB75102A5B65D500C7AE04 /* Pool */ = {
 			isa = XCSwiftPackageProductDependency;

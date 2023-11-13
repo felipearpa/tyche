@@ -37,26 +37,29 @@ public struct PagingVStack
     }
     
     public var body: some View {
-        ZStack {
-            switch lazyPager.loadState.refresh {
-            case .loading:
-                loadingContent()
-                    .allowsHitTesting(false)
-            case .notLoading(endOfPaginationReached: let endOfPaginationReached):
-                ListContent(
-                    lazyPager: lazyPager,
-                    endOfPaginationReached: endOfPaginationReached,
-                    emptyContent: emptyContent,
-                    loadingContentOnAppend: loadingContentOnConcatenate,
-                    errorContentOnAppend: errorContentOnConcatenate,
-                    itemContent: itemContent
-                )
-            case .failure(let error):
-                errorContent(error)
+        let _ = Self._printChanges()
+        
+        GeometryReader { geometry in
+            ScrollView {
+                switch lazyPager.loadState.refresh {
+                case .loading:
+                    loadingContent()
+                        .withDisableGestures()
+                case .notLoading(endOfPaginationReached: let endOfPaginationReached):
+                    ListContent(
+                        lazyPager: lazyPager,
+                        endOfPaginationReached: endOfPaginationReached,
+                        emptyContent: emptyContent,
+                        loadingContentOnAppend: loadingContentOnConcatenate,
+                        errorContentOnAppend: errorContentOnConcatenate,
+                        itemContent: itemContent,
+                        geometry: geometry
+                    )
+                case .failure(let error):
+                    errorContent(error)
+                        .withFullSize(geometry: geometry)
+                }
             }
-        }
-        .onAppear {
-            lazyPager.refresh()
         }
     }
 }
@@ -75,26 +78,26 @@ private struct ListContent
     let loadingContentOnAppend: () -> LoadingContentOnConcatenate
     let errorContentOnAppend: (Error) -> ErrorContentOnConcatenate
     let itemContent: (Item) -> ItemContent
+    let geometry: GeometryProxy
     
     public var body: some View {
         if endOfPaginationReached && lazyPager.isEmpty() {
             emptyContent()
+                .withFullSize(geometry: geometry)
         } else {
-            ScrollView {
-                LazyVStack(spacing: 8) {
-                    ForEach(Array(lazyPager.enumerated()), id: \.element) { index, item in
-                        itemContent(item)
-                            .onAppearOnce {
-                                lazyPager.appendIfNeeded(currentIndex: index)
-                            }
-                    }
-                    
-                    if case .loading = lazyPager.loadState.append {
-                        loadingContentOnAppend()
-                            .allowsHitTesting(false)
-                    } else if case .failure(let error) = lazyPager.loadState.append {
-                        errorContentOnAppend(error)
-                    }
+            LazyVStack(spacing: 8) {
+                ForEach(Array(lazyPager.enumerated()), id: \.element) { index, item in
+                    itemContent(item)
+                        .onAppearOnce {
+                            lazyPager.appendIfNeeded(currentIndex: index)
+                        }
+                }
+                
+                if case .loading = lazyPager.loadState.append {
+                    loadingContentOnAppend()
+                        .withDisableGestures()
+                } else if case .failure(let error) = lazyPager.loadState.append {
+                    errorContentOnAppend(error)
                 }
             }
         }
@@ -116,17 +119,29 @@ where EmptyContent == PagingVStackEmpty,
             loadingContent: loadingContent,
             emptyContent: { PagingVStackEmpty() },
             errorContent: { error in
-                PagingVStackError(localizedError: error.localizedErrorWrapperOrNull()!)
+                PagingVStackError(localizedError: error.localizedErrorOrNull()!)
             },
             loadingContentOnConcatenate: loadingContentOnConcatenate,
             errorContentOnConcatenate: { error in
                 PaginVStackRetryableError(
-                    localizedError: error.localizedErrorWrapperOrNull()!,
+                    localizedError: error.localizedErrorOrNull()!,
                     retryAction: { lazyPager.retry() }
                 )
             },
             itemContent: itemContent
         )
+    }
+}
+
+private extension View {
+    func withDisableGestures() -> some View {
+        self.allowsHitTesting(false)
+    }
+    
+    func withFullSize(geometry: GeometryProxy) -> some View {
+        self
+            .frame(width: geometry.size.width)
+            .frame(minHeight: geometry.size.height)
     }
 }
 
