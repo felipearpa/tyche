@@ -48,15 +48,12 @@ struct PoolGamblerBetItemView: View {
         }.onReceive(viewModel.$state) { state in
             switch state {
             case .initial(let poolGamblerBet):
-                viewState = viewState.copy { newViewState in
-                    newViewState.homeTeamBet = poolGamblerBet.homeTeamBetRawValue()
-                    newViewState.awayTeamBet = poolGamblerBet.awayTeamBetRawValue()
-                    newViewState.isEditable = false
+                viewState = viewState.copyLocked { targetViewState in
+                    targetViewState.homeTeamBet = poolGamblerBet.homeTeamBetRawValue()
+                    targetViewState.awayTeamBet = poolGamblerBet.awayTeamBetRawValue()
                 }
             case .loading, .success, .failure:
-                viewState = viewState.copy { targetViewState in
-                    targetViewState.isEditable = false
-                }
+                viewState.lock()
             }
         }
     }
@@ -121,11 +118,7 @@ private struct NonEditableDefaultActionBar: View {
         
         Spacer()
         
-        Button(action: {
-            viewState = viewState.copy { originalViewState in
-                originalViewState.isEditable = true
-            }
-        }) {
+        Button(action: { viewState.unlock() }) {
             Text(String(sharedResource: .editAction))
         }
     }

@@ -1,14 +1,14 @@
 struct PoolGamblerBetItemViewState {
     var homeTeamBet: String
     var awayTeamBet: String
-    var isEditable: Bool
+    fileprivate(set) var isEditable: Bool
 }
 
 extension PoolGamblerBetItemViewState {
     struct Builder {
         var homeTeamBet: String
         var awayTeamBet: String
-        var isEditable: Bool
+        fileprivate var isEditable: Bool
         
         fileprivate init(original: PoolGamblerBetItemViewState) {
             self.homeTeamBet = original.homeTeamBet
@@ -28,6 +28,28 @@ extension PoolGamblerBetItemViewState {
         var builder = Builder(original: self)
         build(&builder)
         return builder.build()
+    }
+    
+    func copyUnlocked(_ build: (inout Builder) -> Void) -> PoolGamblerBetItemViewState {
+        var builder = Builder(original: self)
+        build(&builder)
+        builder.isEditable = true
+        return builder.build()
+    }
+    
+    func copyLocked(_ build: (inout Builder) -> Void) -> PoolGamblerBetItemViewState {
+        var builder = Builder(original: self)
+        build(&builder)
+        builder.isEditable = false
+        return builder.build()
+    }
+    
+    mutating func lock() {
+        self.isEditable = false
+    }
+    
+    mutating func unlock() {
+        self.isEditable = true
     }
     
     func isBetScoreEqual(toPoolGamblerBetScore poolGamblerBet: PoolGamblerBetModel) -> Bool {
