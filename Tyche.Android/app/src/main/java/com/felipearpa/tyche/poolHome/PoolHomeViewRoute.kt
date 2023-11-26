@@ -1,17 +1,16 @@
 package com.felipearpa.tyche.poolHome
 
 object PoolHomeViewRoute {
-
-    enum class Params(val identifier: String) {
+    enum class Param(val id: String) {
         POOL_ID("poolId"),
         GAMBLER_ID("gamblerId")
     }
 
     val route: String =
-        "pool/{${Params.POOL_ID.identifier}}/gambler/{${Params.GAMBLER_ID.identifier}}/home"
+        "pool/{${Param.POOL_ID.id}}/gambler/{${Param.GAMBLER_ID.id}}/home"
 
     fun route(poolId: String, gamblerId: String) =
         route
-            .replace("{${Params.POOL_ID.identifier}}", poolId)
-            .replace("{${Params.GAMBLER_ID.identifier}}", gamblerId)
+            .replace("{${Param.POOL_ID.id}}", poolId)
+            .replace("{${Param.GAMBLER_ID.id}}", gamblerId)
 }

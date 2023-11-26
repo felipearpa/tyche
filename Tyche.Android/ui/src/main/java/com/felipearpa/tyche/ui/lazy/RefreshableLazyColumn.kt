@@ -14,8 +14,8 @@ import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 fun <T : Any> RefreshableLazyColumn(
     modifier: Modifier = Modifier,
     lazyItems: LazyPagingItems<T>,
-    topContent: (LazyListScope.() -> Unit)? = null,
-    loadingContent: (LazyListScope.() -> Unit)? = null,
+    topContent: (LazyListScope.() -> Unit) = {},
+    loadingContent: (LazyListScope.() -> Unit) = {},
     itemContent: LazyListScope.() -> Unit
 ) = RefreshableLazyColumn(
     modifier = modifier,
@@ -37,12 +37,12 @@ fun <T : Any> RefreshableLazyColumn(
     lazyItems: LazyPagingItems<T>,
     contentPadding: PaddingValues = PaddingValues(0.dp),
     verticalArrangement: Arrangement.Vertical = Arrangement.Bottom,
-    topContent: (LazyListScope.() -> Unit)? = null,
-    loadingContent: (LazyListScope.() -> Unit)? = null,
-    loadingContentOnConcatenate: (LazyListScope.() -> Unit)? = null,
-    errorContentOnConcatenate: (LazyListScope.() -> Unit)? = null,
-    errorContent: (LazyListScope.(Throwable) -> Unit)? = null,
-    emptyContent: (LazyListScope.() -> Unit)? = null,
+    topContent: (LazyListScope.() -> Unit) = {},
+    loadingContent: (LazyListScope.() -> Unit) = {},
+    loadingContentOnConcatenate: (LazyListScope.() -> Unit) = {},
+    errorContentOnConcatenate: (LazyListScope.() -> Unit) = {},
+    errorContent: (LazyListScope.(Throwable) -> Unit) = {},
+    emptyContent: (LazyListScope.() -> Unit) = {},
     itemContent: LazyListScope.() -> Unit
 ) {
     val swipeRefreshState = rememberSwipeRefreshState(false)

@@ -13,9 +13,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.felipearpa.tyche.core.emptyString
-import com.felipearpa.tyche.ui.theme.negative
-import com.felipearpa.tyche.ui.theme.neutral
-import com.felipearpa.tyche.ui.theme.positive
+import com.felipearpa.tyche.ui.theme.negativeColor
+import com.felipearpa.tyche.ui.theme.neutralColor
+import com.felipearpa.tyche.ui.theme.positiveColor
 import kotlin.math.abs
 
 @Composable
@@ -30,7 +30,7 @@ private fun StableProgressIndicator(
                 .testTag("stableProgressIndicator"),
             painter = painterResource(id = R.drawable.ic_horizontal_rule),
             contentDescription = emptyString(),
-            tint = MaterialTheme.colorScheme.neutral
+            tint = neutralColor
         )
     }
 }
@@ -46,12 +46,12 @@ private fun UpProgressIndicator(
             modifier = shimmerModifier.size(24.dp, 24.dp),
             painter = painterResource(id = R.drawable.ic_arrow_upward),
             contentDescription = emptyString(),
-            tint = MaterialTheme.colorScheme.positive
+            tint = positiveColor
         )
         Text(
             text = abs(progress).toString(),
             style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.positive,
+            color = positiveColor,
             modifier = shimmerModifier
         )
     }
@@ -68,12 +68,12 @@ private fun DownProgressIndicator(
             modifier = shimmerModifier.size(24.dp, 24.dp),
             painter = painterResource(id = R.drawable.ic_arrow_downward),
             contentDescription = emptyString(),
-            tint = MaterialTheme.colorScheme.negative
+            tint = negativeColor
         )
         Text(
             text = abs(progress).toString(),
             style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.negative,
+            color = negativeColor,
             modifier = shimmerModifier
         )
     }

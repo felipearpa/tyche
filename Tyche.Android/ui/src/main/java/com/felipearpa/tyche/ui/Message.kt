@@ -47,6 +47,6 @@ fun Message(@DrawableRes iconResourceId: Int, message: String) {
 fun MessagePreview() {
     Message(
         iconResourceId = R.drawable.ic_sentiment_sad,
-        messageResourceId = R.string.unknown_failure_message
+        messageResourceId = R.string.unknown_failure_reason
     )
 }

@@ -2,8 +2,9 @@ package com.felipearpa.tyche.ui.paging
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
+import com.felipearpa.tyche.core.paging.CursorPage
 
-typealias CursorPagingQuery<T> = suspend (String?) -> Result<com.felipearpa.tyche.core.paging.CursorPage<T>>
+typealias CursorPagingQuery<T> = suspend (String?) -> Result<CursorPage<T>>
 
 open class CursorPagingSource<T : Any>(private val pagingQuery: CursorPagingQuery<T>) :
     PagingSource<String, T>() {

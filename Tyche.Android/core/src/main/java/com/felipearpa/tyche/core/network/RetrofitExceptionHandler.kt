@@ -6,7 +6,6 @@ import java.net.UnknownHostException
 import javax.inject.Inject
 
 class RetrofitExceptionHandler @Inject constructor() : NetworkExceptionHandler {
-
     override suspend fun <T> handle(block: suspend () -> T): Result<T> {
         return try {
             Result.success(block())

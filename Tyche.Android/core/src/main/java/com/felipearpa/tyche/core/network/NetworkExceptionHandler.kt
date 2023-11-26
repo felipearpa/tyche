@@ -1,6 +1,5 @@
 package com.felipearpa.tyche.core.network
 
 interface NetworkExceptionHandler {
-
-    suspend fun <T> handle(block: suspend () -> T): Result<T>
+    suspend fun <Value> handle(block: suspend () -> Value): Result<Value>
 }

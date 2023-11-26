@@ -11,15 +11,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
-import com.felipearpa.tyche.core.ifNotNull
 import com.felipearpa.tyche.ui.disabledGestures
 
 @Composable
-fun <T : Any> LazyColumn(
+fun <Value : Any> LazyColumn(
     modifier: Modifier = Modifier,
-    lazyItems: LazyPagingItems<T>,
-    topContent: (LazyListScope.() -> Unit)? = null,
-    loadingContent: (LazyListScope.() -> Unit)? = null,
+    lazyItems: LazyPagingItems<Value>,
+    topContent: (LazyListScope.() -> Unit) = {},
+    loadingContent: (LazyListScope.() -> Unit) = {},
     itemContent: LazyListScope.() -> Unit
 ) = LazyColumn(
     modifier = modifier,
@@ -45,7 +44,7 @@ fun LazyListScope.contentOnConcatenating() {
     }
 }
 
-fun <T : Any> LazyListScope.contentOnConcatenateError(lazyItems: LazyPagingItems<T>) {
+fun <Value : Any> LazyListScope.contentOnConcatenateError(lazyItems: LazyPagingItems<Value>) {
     item {
         Retry(
             modifier = Modifier
@@ -55,7 +54,7 @@ fun <T : Any> LazyListScope.contentOnConcatenateError(lazyItems: LazyPagingItems
     }
 }
 
-fun <T : Any> LazyListScope.contentOnError(lazyItems: LazyPagingItems<T>) {
+fun <Value : Any> LazyListScope.contentOnError(lazyItems: LazyPagingItems<Value>) {
     item {
         Failure(modifier = Modifier.fillMaxWidth()) {
             lazyItems.retry()
@@ -70,17 +69,17 @@ fun LazyListScope.contentOnEmpty() {
 }
 
 @Composable
-fun <T : Any> LazyColumn(
+fun <Value : Any> LazyColumn(
     modifier: Modifier = Modifier,
-    lazyItems: LazyPagingItems<T>,
+    lazyItems: LazyPagingItems<Value>,
     contentPadding: PaddingValues = PaddingValues(0.dp),
     verticalArrangement: Arrangement.Vertical = Arrangement.Bottom,
-    topContent: (LazyListScope.() -> Unit)? = null,
-    loadingContent: (LazyListScope.() -> Unit)? = null,
-    loadingContentOnConcatenate: (LazyListScope.() -> Unit)? = null,
-    errorContentOnConcatenate: (LazyListScope.() -> Unit)? = null,
-    errorContent: (LazyListScope.(Throwable) -> Unit)? = null,
-    emptyContent: (LazyListScope.() -> Unit)? = null,
+    topContent: (LazyListScope.() -> Unit) = {},
+    loadingContent: (LazyListScope.() -> Unit) = {},
+    loadingContentOnConcatenate: (LazyListScope.() -> Unit) = {},
+    errorContentOnConcatenate: (LazyListScope.() -> Unit) = {},
+    errorContent: (LazyListScope.(Throwable) -> Unit) = {},
+    emptyContent: (LazyListScope.() -> Unit) = {},
     itemContent: LazyListScope.() -> Unit
 ) {
     LazyColumn(
@@ -88,9 +87,7 @@ fun <T : Any> LazyColumn(
         contentPadding = contentPadding,
         verticalArrangement = verticalArrangement
     ) {
-        topContent.ifNotNull { nonNullableTopContent ->
-            nonNullableTopContent()
-        }
+        topContent()
 
         prependContent(
             lazyItems = lazyItems,
@@ -114,66 +111,54 @@ fun <T : Any> LazyColumn(
     }
 }
 
-private fun <T : Any> LazyPagingItems<T>.hasItems() =
+private fun <Value : Any> LazyPagingItems<Value>.hasItems() =
     this.itemCount > 0
             || !this.loadState.prepend.endOfPaginationReached
             || !this.loadState.append.endOfPaginationReached
 
-private fun <T : Any> LazyListScope.prependContent(
-    lazyItems: LazyPagingItems<T>,
-    loadingContentOnConcatenate: (LazyListScope.() -> Unit)? = null,
-    errorContentOnConcatenate: (LazyListScope.() -> Unit)? = null,
+private fun <Value : Any> LazyListScope.prependContent(
+    lazyItems: LazyPagingItems<Value>,
+    loadingContentOnConcatenate: (LazyListScope.() -> Unit) = {},
+    errorContentOnConcatenate: (LazyListScope.() -> Unit) = {},
 ) {
     if (lazyItems.loadState.prepend is LoadState.Loading) {
-        loadingContentOnConcatenate.ifNotNull { nonNullableLoadingContentOnConcatenate ->
-            nonNullableLoadingContentOnConcatenate()
-        }
+        loadingContentOnConcatenate()
     } else if (lazyItems.loadState.prepend is LoadState.Error) {
-        errorContentOnConcatenate.ifNotNull { nonNullableErrorContentOnConcatenate ->
-            nonNullableErrorContentOnConcatenate()
-        }
+        errorContentOnConcatenate()
     }
 }
 
-private fun <T : Any> LazyListScope.mainContent(
-    lazyItems: LazyPagingItems<T>,
-    loadingContent: (LazyListScope.() -> Unit)? = null,
-    errorContent: (LazyListScope.(Throwable) -> Unit)? = null,
-    emptyContent: (LazyListScope.() -> Unit)? = null,
+private fun <Value : Any> LazyListScope.mainContent(
+    lazyItems: LazyPagingItems<Value>,
+    loadingContent: (LazyListScope.() -> Unit) = {},
+    errorContent: (LazyListScope.(Throwable) -> Unit) = {},
+    emptyContent: (LazyListScope.() -> Unit) = {},
     itemContent: LazyListScope.() -> Unit
 ) {
     when (lazyItems.loadState.refresh) {
         is LoadState.NotLoading -> if (!lazyItems.hasItems()) {
-            emptyContent.ifNotNull { nonNullableEmptyContent ->
-                nonNullableEmptyContent()
-            }
+            emptyContent()
         } else {
             itemContent()
         }
 
-        LoadState.Loading -> loadingContent.ifNotNull { nonNullableLoadingContent ->
-            nonNullableLoadingContent()
-        }
+        LoadState.Loading -> loadingContent()
 
-        else -> errorContent.ifNotNull { nonNullableErrorContent ->
-            val exception = lazyItems.loadState.refresh as LoadState.Error
-            nonNullableErrorContent(exception.error)
+        else -> {
+            val errorLoadState = lazyItems.loadState.refresh as LoadState.Error
+            errorContent(errorLoadState.error)
         }
     }
 }
 
-private fun <T : Any> LazyListScope.appendContent(
-    lazyItems: LazyPagingItems<T>,
-    loadingContentOnConcatenate: (LazyListScope.() -> Unit)? = null,
-    errorContentOnConcatenate: (LazyListScope.() -> Unit)? = null,
+private fun <Value : Any> LazyListScope.appendContent(
+    lazyItems: LazyPagingItems<Value>,
+    loadingContentOnConcatenate: (LazyListScope.() -> Unit) = {},
+    errorContentOnConcatenate: (LazyListScope.() -> Unit) = {},
 ) {
     if (lazyItems.loadState.append is LoadState.Loading) {
-        loadingContentOnConcatenate.ifNotNull { nonNullableLoadingContentOnConcatenate ->
-            nonNullableLoadingContentOnConcatenate()
-        }
+        loadingContentOnConcatenate()
     } else if (lazyItems.loadState.append is LoadState.Error) {
-        errorContentOnConcatenate.ifNotNull { nonNullableErrorContentOnConcatenate ->
-            nonNullableErrorContentOnConcatenate()
-        }
+        errorContentOnConcatenate()
     }
 }

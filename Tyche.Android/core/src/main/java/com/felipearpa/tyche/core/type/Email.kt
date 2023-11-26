@@ -1,6 +1,5 @@
 package com.felipearpa.tyche.core.type
 
-
 // ^ and $ are the start and end anchors, respectively, to match the entire string from start to end.
 // [A-Za-z0-9._%+-]+ matches one or more of the following characters: uppercase letters, lowercase letters, digits, period (.), underscore (_), percent sign (%), plus sign (+), or hyphen/minus sign (-). This corresponds to the local part of the email address before the @ symbol.
 // @ matches the literal @ symbol.
@@ -11,7 +10,6 @@ private const val PATTERN = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}\$"
 
 @JvmInline
 value class Email(val value: String) {
-
     init {
         checkEmpty()
         checkEmailPattern()

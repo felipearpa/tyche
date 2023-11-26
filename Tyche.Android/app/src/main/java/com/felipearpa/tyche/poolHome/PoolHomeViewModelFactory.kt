@@ -7,7 +7,6 @@ import dagger.assisted.AssistedFactory
 
 @AssistedFactory
 interface PoolHomeViewModelFactory {
-
     fun create(
         @Assisted("poolId") poolId: String,
         @Assisted("gamblerId") gamblerId: String
@@ -20,7 +19,6 @@ fun providePoolHomeViewModelFactory(
     gamblerId: String
 ): ViewModelProvider.Factory =
     object : ViewModelProvider.Factory {
-
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return assistedFactory.create(poolId = poolId, gamblerId = gamblerId) as T

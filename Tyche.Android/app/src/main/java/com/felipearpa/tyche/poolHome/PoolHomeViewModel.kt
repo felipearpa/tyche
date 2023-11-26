@@ -2,12 +2,12 @@ package com.felipearpa.tyche.poolHome
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.felipearpa.data.pool.application.GetPoolUseCase
 import com.felipearpa.tyche.core.network.NetworkException
-import com.felipearpa.tyche.pool.application.GetPoolUseCase
-import com.felipearpa.tyche.pool.ui.PoolModel
-import com.felipearpa.tyche.pool.ui.toPoolModel
+import com.felipearpa.tyche.pool.PoolModel
+import com.felipearpa.tyche.pool.toPoolModel
 import com.felipearpa.tyche.ui.UnknownLocalizedException
-import com.felipearpa.tyche.ui.ViewState
+import com.felipearpa.tyche.ui.LoadableViewState
 import com.felipearpa.tyche.ui.network.toNetworkLocalizedException
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
@@ -23,19 +23,19 @@ class PoolHomeViewModel @AssistedInject constructor(
 ) :
     ViewModel() {
 
-    private val _state = MutableStateFlow<ViewState<PoolModel>>(ViewState.Initial)
-    val state: StateFlow<ViewState<PoolModel>>
+    private val _state = MutableStateFlow<LoadableViewState<PoolModel>>(LoadableViewState.Initial)
+    val state: StateFlow<LoadableViewState<PoolModel>>
         get() = _state.asStateFlow()
 
     init {
         viewModelScope.launch {
-            _state.emit(ViewState.Loading)
+            _state.emit(LoadableViewState.Loading)
 
             val maybePool = getPoolUseCase.execute(poolId = poolId)
             maybePool.onSuccess { pool ->
-                _state.emit(ViewState.Success(pool.toPoolModel()))
+                _state.emit(LoadableViewState.Success(pool.toPoolModel()))
             }.onFailure { exception ->
-                _state.emit(ViewState.Failure(exception.toLocalizedException()))
+                _state.emit(LoadableViewState.Failure(exception.toLocalizedException()))
             }
         }
     }

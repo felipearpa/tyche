@@ -1,6 +1,6 @@
 package com.felipearpa.tyche.di
 
-import com.felipearpa.tyche.user.AuthInterceptor
+import com.felipearpa.data.account.AuthInterceptor
 import com.google.gson.*
 import dagger.Module
 import dagger.Provides
@@ -53,7 +53,7 @@ object NetworkProvider {
     @Singleton
     fun provideRetrofit(gson: Gson, okHttpClient: OkHttpClient): Retrofit =
         Retrofit.Builder().apply {
-            baseUrl("https://6f7f-181-59-233-121.ngrok-free.app")
+            baseUrl("https://guiding-terminally-cicada.ngrok-free.app")
             addConverterFactory(GsonConverterFactory.create(gson))
             client(okHttpClient)
         }.build()

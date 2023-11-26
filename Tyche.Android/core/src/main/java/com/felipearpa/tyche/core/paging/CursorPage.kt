@@ -2,20 +2,19 @@ package com.felipearpa.tyche.core.paging
 
 typealias MapFunc<TA, TB> = (TA) -> TB
 
-data class CursorPage<TModel : Any>(
-    val items: List<TModel>,
+data class CursorPage<Value : Any>(
+    val items: List<Value>,
     val next: String?
 ) {
-
-    fun <TOut : Any> map(mapFunc: MapFunc<TModel, TOut>): CursorPage<TOut> {
+    fun <Target : Any> map(transform: MapFunc<Value, Target>): CursorPage<Target> {
         return CursorPage(
-            items = this.items.map(mapFunc),
+            items = this.items.map(transform),
             next = this.next
         )
     }
 }
 
-fun <T : Any> emptyCursorPage() = CursorPage(
-    items = emptyList<T>(),
+fun <Value : Any> emptyCursorPage() = CursorPage(
+    items = emptyList<Value>(),
     next = null
 )

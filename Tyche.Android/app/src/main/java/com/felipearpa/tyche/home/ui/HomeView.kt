@@ -38,45 +38,45 @@ import com.felipearpa.tyche.ui.theme.TycheTheme
 fun HomeView(
     viewModel: HomeViewModel,
     onLoginRequested: () -> Unit,
-    onAccountCreationRequested: () -> Unit
+    onNewAccountRequested: () -> Unit
 ) {
     HomeView(
-        onLoginClick = onLoginRequested,
-        onCreateAccountClick = onAccountCreationRequested,
+        onLoginRequested = onLoginRequested,
+        onNewAccountRequested = onNewAccountRequested,
         modifier = Modifier.padding(all = 8.dp)
     )
 }
 
 @Composable
 private fun HomeView(
-    onCreateAccountClick: () -> Unit,
-    onLoginClick: () -> Unit,
+    onNewAccountRequested: () -> Unit,
+    onLoginRequested: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     ConstraintLayout(modifier = modifier.fillMaxSize()) {
         val (titleView, descriptionView, creationAccountView, loginView) = createRefs()
 
-        Title(viewRef = titleView)
+        HeaderSection(viewRef = titleView)
 
-        Description(
+        InformationSection(
             viewRef = descriptionView,
             titleView = titleView,
             creationAccountView = creationAccountView
         )
 
-        CreationAccount(
-            onCreateAccountClick = onCreateAccountClick,
+        CreationSection(
+            onNewAccountRequested = onNewAccountRequested,
             viewRef = creationAccountView,
             descriptionView = descriptionView,
             loginView = loginView
         )
 
-        LoginView(onLoginClick = onLoginClick, viewRef = loginView)
+        LoginSection(onLoginRequested = onLoginRequested, viewRef = loginView)
     }
 }
 
 @Composable
-private fun ConstraintLayoutScope.Title(viewRef: ConstrainedLayoutReference) {
+private fun ConstraintLayoutScope.HeaderSection(viewRef: ConstrainedLayoutReference) {
     Row(
         horizontalArrangement = Arrangement.Center,
         modifier = Modifier.constrainAs(ref = viewRef) {
@@ -108,7 +108,7 @@ private fun ConstraintLayoutScope.Title(viewRef: ConstrainedLayoutReference) {
 }
 
 @Composable
-private fun ConstraintLayoutScope.Description(
+private fun ConstraintLayoutScope.InformationSection(
     viewRef: ConstrainedLayoutReference,
     titleView: ConstrainedLayoutReference,
     creationAccountView: ConstrainedLayoutReference
@@ -126,8 +126,8 @@ private fun ConstraintLayoutScope.Description(
 }
 
 @Composable
-private fun ConstraintLayoutScope.CreationAccount(
-    onCreateAccountClick: () -> Unit,
+private fun ConstraintLayoutScope.CreationSection(
+    onNewAccountRequested: () -> Unit,
     viewRef: ConstrainedLayoutReference,
     descriptionView: ConstrainedLayoutReference,
     loginView: ConstrainedLayoutReference
@@ -141,15 +141,15 @@ private fun ConstraintLayoutScope.CreationAccount(
         },
         contentAlignment = Alignment.Center
     ) {
-        Button(onClick = onCreateAccountClick) {
+        Button(onClick = onNewAccountRequested) {
             Text(text = stringResource(id = R.string.create_account_action))
         }
     }
 }
 
 @Composable
-private fun ConstraintLayoutScope.LoginView(
-    onLoginClick: () -> Unit,
+private fun ConstraintLayoutScope.LoginSection(
+    onLoginRequested: () -> Unit,
     viewRef: ConstrainedLayoutReference
 ) {
     Row(modifier = Modifier.constrainAs(viewRef) {
@@ -169,7 +169,7 @@ private fun ConstraintLayoutScope.LoginView(
                     append(stringResource(id = R.string.log_in_action))
                 }
             },
-            modifier = Modifier.clickable { onLoginClick() }
+            modifier = Modifier.clickable { onLoginRequested() }
         )
     }
 }
@@ -181,8 +181,8 @@ fun HomeViewPreview() {
         Surface {
             HomeView(
                 modifier = Modifier.padding(all = 8.dp),
-                onLoginClick = {},
-                onCreateAccountClick = {}
+                onLoginRequested = {},
+                onNewAccountRequested = {}
             )
         }
     }
@@ -192,10 +192,12 @@ fun HomeViewPreview() {
 @Composable
 fun HomeViewDarkPreview() {
     TycheTheme(dynamicColor = false) {
-        HomeView(
-            modifier = Modifier.padding(all = 8.dp),
-            onLoginClick = {},
-            onCreateAccountClick = {}
-        )
+        Surface {
+            HomeView(
+                modifier = Modifier.padding(all = 8.dp),
+                onLoginRequested = {},
+                onNewAccountRequested = {}
+            )
+        }
     }
 }

@@ -18,31 +18,35 @@ import androidx.core.view.WindowCompat
 
 private val LightColorScheme = lightColorScheme(
     primary = Color(0xFF4CAF50),
-    primaryContainer = Color(0xFF3D8F44),
-    secondary = Color(0xFFFFC107),
-    secondaryContainer = Color(0xFFE6A200),
-    background = Color(0xFFFFFFFF),
-    surface = Color(0xFFFFFFFF),
-    error = Color(0xFFB00020),
     onPrimary = Color(0xFFFFFFFF),
+    primaryContainer = Color(0xFF3D8F44),
+    onPrimaryContainer = Color(0xFFFFFFFF),
+    secondary = Color(0xFFFFC107),
     onSecondary = Color(0xFF000000),
+    secondaryContainer = Color(0xFFE6A200),
+    onSecondaryContainer = Color(0xFF000000),
+    background = Color(0xFFFFFFFF),
     onBackground = Color(0xFF000000),
+    surface = Color(0xFFFFFFFF),
     onSurface = Color(0xFF000000),
+    error = Color(0xFFB00020),
     onError = Color(0xFFFFFFFF)
 )
 
 private val DarkColorScheme = darkColorScheme(
     primary = Color(0xFF4CAF50),
-    primaryContainer = Color(0xFF3D8F44),
-    secondary = Color(0xFFFFC107),
-    secondaryContainer = Color(0xFFE6A200),
-    background = Color(0xFF121212),
-    surface = Color(0xFF1E1E1E),
-    error = Color(0xFFCF6679),
     onPrimary = Color(0xFFFFFFFF),
+    primaryContainer = Color(0xFF3D8F44),
+    onPrimaryContainer = Color(0xFFFFFFFF),
+    secondary = Color(0xFFFFC107),
     onSecondary = Color(0xFF000000),
+    secondaryContainer = Color(0xFFE6A200),
+    onSecondaryContainer = Color(0xFF000000),
+    background = Color(0xFF121212),
     onBackground = Color(0xFFFFFFFF),
+    surface = Color(0xFF1E1E1E),
     onSurface = Color(0xFFFFFFFF),
+    error = Color(0xFFCF6679),
     onError = Color(0xFFFFFFFF)
 )
 
@@ -50,7 +54,7 @@ private val DarkColorScheme = darkColorScheme(
 fun TycheTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = true,
+    dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {

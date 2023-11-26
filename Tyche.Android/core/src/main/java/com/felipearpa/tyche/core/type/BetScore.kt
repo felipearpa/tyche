@@ -2,7 +2,6 @@ package com.felipearpa.tyche.core.type
 
 @JvmInline
 value class BetScore(val value: Int) {
-
     init {
         checkRange()
     }
@@ -14,7 +13,6 @@ value class BetScore(val value: Int) {
     override fun toString(): String = value.toString()
 
     companion object {
-
         fun isValid(value: Int) = value in 0..999
     }
 }

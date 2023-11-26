@@ -1,15 +1,15 @@
 package com.felipearpa.tyche.bet.infrastructure
 
-import com.felipearpa.tyche.bet.domain.Bet
-import com.felipearpa.tyche.bet.domain.BetException
-import com.felipearpa.tyche.bet.domain.PoolGamblerBetRemoteDataSource
-import com.felipearpa.tyche.bet.domain.PoolGamblerBetResponse
+import com.felipearpa.data.bet.domain.Bet
+import com.felipearpa.data.bet.domain.BetException
+import com.felipearpa.data.bet.domain.PoolGamblerBetRemoteDataSource
+import com.felipearpa.data.bet.domain.PoolGamblerBetResponse
+import com.felipearpa.data.bet.infrastructure.PoolGamblerBetRemoteRepository
 import com.felipearpa.tyche.core.network.HttpStatusCode
 import com.felipearpa.tyche.core.network.NetworkException
 import com.felipearpa.tyche.core.network.NetworkExceptionHandler
 import com.felipearpa.tyche.core.paging.CursorPage
 import com.felipearpa.tyche.core.type.BetScore
-import com.felipearpa.tyche.core.type.Ulid
 import io.mockk.clearAllMocks
 import io.mockk.coEvery
 import io.mockk.mockk
@@ -48,9 +48,9 @@ class PoolGamblerBetRepositoryTest {
 
             val result = poolGamblerBetRemoteRepository.bet(
                 bet = Bet(
-                    poolId = Ulid.randomUlid(),
-                    gamblerId = Ulid.randomUlid(),
-                    matchId = Ulid.randomUlid(),
+                    poolId = "X".repeat(15),
+                    gamblerId = "X".repeat(15),
+                    matchId = "X".repeat(15),
                     homeTeamBet = BetScore(0),
                     awayTeamBet = BetScore(0)
                 )

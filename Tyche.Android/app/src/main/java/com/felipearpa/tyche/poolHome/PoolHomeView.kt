@@ -32,16 +32,14 @@ import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import com.felipearpa.tyche.R
+import com.felipearpa.tyche.bet.PoolGamblerBetListView
 import com.felipearpa.tyche.bet.poolGamblerBetListViewModel
-import com.felipearpa.tyche.bet.ui.PoolGamblerBetListView
-import com.felipearpa.tyche.bet.ui.PoolGamblerBetListViewModel
 import com.felipearpa.tyche.core.emptyString
-import com.felipearpa.tyche.pool.gamblerScoreListViewModel
-import com.felipearpa.tyche.pool.ui.gamblerscore.GamblerScoreListView
-import com.felipearpa.tyche.pool.ui.gamblerscore.GamblerScoreListViewModel
+import com.felipearpa.tyche.pool.gamblerscore.GamblerScoreListView
+import com.felipearpa.tyche.pool.gamblerscore.gamblerScoreListViewModel
+import com.felipearpa.tyche.ui.LoadableViewState
 import com.felipearpa.tyche.ui.LocalizedException
 import com.felipearpa.tyche.ui.Message
-import com.felipearpa.tyche.ui.ViewState
 import com.felipearpa.tyche.ui.onLoading
 import com.felipearpa.tyche.ui.onSuccess
 import com.felipearpa.tyche.ui.shimmer
@@ -51,37 +49,13 @@ enum class Tab {
     BET_EDITOR
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun AppTopBar(
-    title: String,
-    modifier: Modifier = Modifier,
-    shimmerModifier: Modifier = Modifier,
-    poolScoreListRequested: () -> Unit
-) {
-    TopAppBar(
-        title = {
-            Text(
-                text = title,
-                color = MaterialTheme.colorScheme.primary,
-                textDecoration = TextDecoration.Underline,
-                modifier = Modifier
-                    .clickable { poolScoreListRequested() }
-                    .then(shimmerModifier)
-            )
-        },
-        modifier = modifier
-    )
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PoolHomeView(viewModel: PoolHomeViewModel, onPoolScoreListRequested: () -> Unit) {
     val state by viewModel.state.collectAsState()
 
     when (state) {
-        is ViewState.Failure -> {
-            val exception = (state as ViewState.Failure).invoke()
+        is LoadableViewState.Failure -> {
+            val exception = (state as LoadableViewState.Failure).invoke()
             Message(
                 iconResourceId = R.drawable.ic_sentiment_sad,
                 message = (exception as LocalizedException).failureReason ?: emptyString()
@@ -97,7 +71,7 @@ fun PoolHomeView(viewModel: PoolHomeViewModel, onPoolScoreListRequested: () -> U
                     )
                 }.onLoading {
                     AppTopBar(
-                        title = "XXXXXXXXXXXXXXXXXXXX",
+                        title = "X".repeat(25),
                         poolScoreListRequested = {},
                         shimmerModifier = Modifier.shimmer()
                     )
@@ -105,14 +79,8 @@ fun PoolHomeView(viewModel: PoolHomeViewModel, onPoolScoreListRequested: () -> U
             }
         ) { paddingValues ->
             Content(
-                gamblerScoreListViewModel = gamblerScoreListViewModel(
-                    poolId = viewModel.poolId,
-                    gamblerId = viewModel.gamblerId
-                ),
-                poolGamblerBetListViewModel = poolGamblerBetListViewModel(
-                    poolId = viewModel.poolId,
-                    gamblerId = viewModel.gamblerId
-                ),
+                poolId = viewModel.poolId,
+                gamblerId = viewModel.gamblerId,
                 modifier = Modifier
                     .padding(paddingValues = paddingValues)
                     .fillMaxSize()
@@ -123,8 +91,8 @@ fun PoolHomeView(viewModel: PoolHomeViewModel, onPoolScoreListRequested: () -> U
 
 @Composable
 private fun Content(
-    gamblerScoreListViewModel: GamblerScoreListViewModel,
-    poolGamblerBetListViewModel: PoolGamblerBetListViewModel,
+    poolId: String,
+    gamblerId: String,
     modifier: Modifier = Modifier
 ) {
     var selectedTabIndex by remember { mutableStateOf(Tab.GAMBLER_SCORE) }
@@ -139,9 +107,19 @@ private fun Content(
             height = Dimension.matchParent
         }) {
             when (selectedTabIndex) {
-                Tab.GAMBLER_SCORE -> GamblerScoreListView(viewModel = gamblerScoreListViewModel)
+                Tab.GAMBLER_SCORE -> GamblerScoreListView(
+                    viewModel = gamblerScoreListViewModel(
+                        poolId = poolId,
+                        gamblerId = gamblerId
+                    )
+                )
 
-                Tab.BET_EDITOR -> PoolGamblerBetListView(viewModel = poolGamblerBetListViewModel)
+                Tab.BET_EDITOR -> PoolGamblerBetListView(
+                    viewModel = poolGamblerBetListViewModel(
+                        poolId = poolId,
+                        gamblerId = gamblerId
+                    )
+                )
             }
         }
 
@@ -200,6 +178,29 @@ private fun Content(
             }
         }
     }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun AppTopBar(
+    title: String,
+    modifier: Modifier = Modifier,
+    shimmerModifier: Modifier = Modifier,
+    poolScoreListRequested: () -> Unit = {}
+) {
+    TopAppBar(
+        title = {
+            Text(
+                text = title,
+                color = MaterialTheme.colorScheme.primary,
+                textDecoration = TextDecoration.Underline,
+                modifier = Modifier
+                    .clickable { poolScoreListRequested() }
+                    .then(shimmerModifier)
+            )
+        },
+        modifier = modifier
+    )
 }
 
 @Preview(showBackground = true)

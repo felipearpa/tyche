@@ -10,9 +10,8 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-interface RepositoryProvider {
-
+interface CoreProvider {
     @Binds
     @Singleton
-    fun provideShippableProductRepository(impl: RetrofitExceptionHandler): NetworkExceptionHandler
+    fun provideNetworkExceptionHandler(impl: RetrofitExceptionHandler): NetworkExceptionHandler
 }
