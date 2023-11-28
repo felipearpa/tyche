@@ -12,27 +12,21 @@ public struct PoolGamblerBetListView: View {
         
         PoolGamblerBetList(lazyPager: viewModel.lazyPager)
             .padding(8)
-            .refreshable {
-                viewModel.lazyPager.refresh()
-            }
-            .onAppearOnce {
-                viewModel.lazyPager.refresh()
-            }
+            .refreshable { viewModel.refresh() }
+            .onAppearOnce { viewModel.load() }
     }
 }
 
-struct PoolGamblerBetListView_Previews: PreviewProvider {
-    static var previews: some View {
-        NavigationStack {
-            PoolGamblerBetListView(
-                viewModel: PoolGamblerBetListViewModel(
-                    getPoolGamblerBetsUseCase: GetPoolGamblerBetsUseCase(
-                        poolGamblerBetRepository: PoolGamblerBetFakeRepository()
-                    ),
-                    gamblerId: "gambler-id",
-                    poolId: "pool-id"
-                )
+#Preview {
+    NavigationStack {
+        PoolGamblerBetListView(
+            viewModel: PoolGamblerBetListViewModel(
+                getPoolGamblerBetsUseCase: GetPoolGamblerBetsUseCase(
+                    poolGamblerBetRepository: PoolGamblerBetFakeRepository()
+                ),
+                gamblerId: "gambler-id",
+                poolId: "pool-id"
             )
-        }
-    }
+        )
+    }.environmentObject(diFakeResolver())
 }

@@ -86,6 +86,10 @@ public class LazyPager<Key, Item>: ObservableObject, Sequence {
         }
     }
     
+    public func load() {
+        fetch(key: pagingData.initialKey)
+    }
+    
     public func refresh() {
         fetch(key: pagingData.initialKey)
     }

@@ -14,8 +14,7 @@ struct PoolGamblerBetList: View {
             lazyPager: lazyPager,
             loadingContent: { PoolGamblerBetFakeList() },
             loadingContentOnConcatenate: {
-                PoolGamblerBetItem(poolGamblerBet: fakePoolGamblerBetModel())
-                    .shimmer()
+                PoolGamblerBetFakeItem()
                 Divider()
             }
         ) { poolGamblerBet in
@@ -31,34 +30,27 @@ struct PoolGamblerBetList: View {
 }
 
 struct PoolGamblerBetFakeList : View {
-    private let poolGamblerBets: [PoolGamblerBetModel] = (1...50).lazy.map { _ in
-        fakePoolGamblerBetModel()
-    }
-    
     var body: some View {
         LazyVStack(spacing: 8) {
-            ForEach(poolGamblerBets) { poolGamblerBet in
-                PoolGamblerBetItem(poolGamblerBet: poolGamblerBet)
-                    .shimmer()
+            ForEach(1...50, id: \.self) { _ in
+                PoolGamblerBetFakeItem()
                 Divider()
             }
         }
     }
 }
 
-struct PoolGamblerBetList_Previews: PreviewProvider {
-    static var previews: some View {
-        PoolGamblerBetList(
-            lazyPager: LazyPager(
-                pagingData: PagingData(
-                    pagingConfig: PagingConfig(prefetchDistance: 5),
-                    pagingSourceFactory: PoolGamblerBetPagingSource(
-                        pagingQuery: { _ in .
-                            success(CursorPage(items: poolGamblerBetModels(), next: nil))
-                        }
-                    )
+#Preview {
+    PoolGamblerBetList(
+        lazyPager: LazyPager(
+            pagingData: PagingData(
+                pagingConfig: PagingConfig(prefetchDistance: 5),
+                pagingSourceFactory: PoolGamblerBetPagingSource(
+                    pagingQuery: { _ in .
+                        success(CursorPage(items: poolGamblerBetDummyModels(), next: nil))
+                    }
                 )
             )
         )
-    }
+    )
 }

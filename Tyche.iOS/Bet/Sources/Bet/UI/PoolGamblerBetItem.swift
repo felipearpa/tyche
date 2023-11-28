@@ -3,58 +3,79 @@ import UI
 import Core
 
 struct PoolGamblerBetItem: View {
-    private var poolGamblerBet: PoolGamblerBetModel
-    @Binding private var homeTeamBet: String
-    @Binding private var awayTeamBet: String
-    private var isEditable: Bool = false
+    private let poolGamblerBet: PoolGamblerBetModel
+    @Binding private var viewState: PoolGamblerBetItemViewState
     
     init(
         poolGamblerBet: PoolGamblerBetModel,
-        homeTeamBet: Binding<String> = .constant(""),
-        awayTeamBet: Binding<String> = .constant(""),
-        isEditable: Bool = false
+        viewState: Binding<PoolGamblerBetItemViewState>
     ) {
         self.poolGamblerBet = poolGamblerBet
-        self._homeTeamBet = homeTeamBet
-        self._awayTeamBet = awayTeamBet
-        self.isEditable = isEditable
+        self._viewState = viewState
     }
     
     var body: some View {
-        let _ = Self._printChanges()
-        
-        VStack(spacing: isEditable ? 0 : 8) {
+        switch viewState {
+        case .visualization:
+            NonEditablePoolGamblerBetItem(
+                poolGamblerBet: poolGamblerBet,
+                partialPoolGamblerBet: viewState.value
+            )
+        case .edition:
+            EditablePoolGamblerBetItem(
+                poolGamblerBet: poolGamblerBet,
+                partialPoolGamblerBet: $viewState.value
+            )
+        }
+    }
+}
+
+private struct NonEditablePoolGamblerBetItem: View {
+    let poolGamblerBet: PoolGamblerBetModel
+    let partialPoolGamblerBet: PartialPoolGamblerBetModel
+    
+    var body: some View {
+        VStack(spacing: 8) {
             HStack {
                 Text(poolGamblerBet.homeTeamName)
-                
-                Spacer()
-
-                if poolGamblerBet.isLocked || !isEditable {
-                    Text(homeTeamBet)
-                } else {
-                    BetTextField(value: $homeTeamBet)
-                        .betStyle()
-                }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                Text(partialPoolGamblerBet.homeTeamBet)
             }
             
             HStack {
                 Text(poolGamblerBet.awayTeamName)
-                
-                Spacer()
-
-                if poolGamblerBet.isLocked || !isEditable {
-                    Text(awayTeamBet)
-                } else {
-                    BetTextField(value: $awayTeamBet)
-                        .betStyle()
-                }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                Text(partialPoolGamblerBet.awayTeamBet)
             }
             
             HStack {
                 Text(poolGamblerBet.matchDateTime.toShortDateTimeString())
                     .font(.footnote)
-                
+                    .padding(.leading, 8)
                 Spacer()
+            }
+        }
+    }
+}
+
+private struct EditablePoolGamblerBetItem: View {
+    let poolGamblerBet: PoolGamblerBetModel
+    @Binding var partialPoolGamblerBet: PartialPoolGamblerBetModel
+    
+    var body: some View {
+        VStack(spacing: 8) {
+            HStack {
+                Text(poolGamblerBet.homeTeamName)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                BetTextField(value: $partialPoolGamblerBet.homeTeamBet)
+                    .betStyle()
+            }
+            
+            HStack {
+                Text(poolGamblerBet.awayTeamName)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                BetTextField(value: $partialPoolGamblerBet.awayTeamBet)
+                    .betStyle()
             }
         }
     }
@@ -69,6 +90,16 @@ private extension View {
     }
 }
 
-//#Preview {
-//    PoolGamblerBetItem(poolGamblerBet: poolGamblerBetModel(), onBet: { _, _ in })
-//}
+#Preview("Non Editable PoolGamblerBetItem") {
+    NonEditablePoolGamblerBetItem(
+        poolGamblerBet: poolGamblerBetDummyModel(),
+        partialPoolGamblerBet: partialPoolGamblerBetDummyModel()
+    )
+}
+
+#Preview("Editable PoolGamblerBetItem") {
+    EditablePoolGamblerBetItem(
+        poolGamblerBet: poolGamblerBetDummyModel(),
+        partialPoolGamblerBet: .constant(partialPoolGamblerBetDummyModel())
+    )
+}

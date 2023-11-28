@@ -15,10 +15,9 @@ class PoolGamblerBetItemViewModel: ObservableObject {
     
     @MainActor
     func retryBet() {
-        if case .failure(_, failed: let poolGamblerBet, _) = state {
-            guard let betScore = poolGamblerBet.betScore else { return }
-            bet(betScore: betScore)
-        }
+        guard case .failure(_, failed: let poolGamblerBet, _) = state else { return }
+        guard let betScore = poolGamblerBet.betScore else { return }
+        bet(betScore: betScore)
     }
     
     @MainActor
@@ -26,16 +25,16 @@ class PoolGamblerBetItemViewModel: ObservableObject {
         Task { [self] in
             var currentPoolGamblerBet = state.value()
             
-            let prePoolGamblerBet = currentPoolGamblerBet.copy { builder in
+            let targetPoolGamblerBet = currentPoolGamblerBet.copy { builder in
                 builder.betScore = betScore
             }
             
-            state = .loading(current: currentPoolGamblerBet, target: prePoolGamblerBet)
+            state = .loading(current: currentPoolGamblerBet, target: targetPoolGamblerBet)
             
             let bet = Bet(
-                poolId: prePoolGamblerBet.poolId,
-                gamblerId: prePoolGamblerBet.gamblerId,
-                matchId: prePoolGamblerBet.matchId,
+                poolId: targetPoolGamblerBet.poolId,
+                gamblerId: targetPoolGamblerBet.gamblerId,
+                matchId: targetPoolGamblerBet.matchId,
                 homeTeamBet: BetScore(betScore.homeTeamValue)!,
                 awayTeamBet: BetScore(betScore.awayTeamValue)!
             )
@@ -43,7 +42,7 @@ class PoolGamblerBetItemViewModel: ObservableObject {
             
             switch result {
             case .success(let updatedPoolGamblerBet):
-                state = .success(current: currentPoolGamblerBet, succeeded: updatedPoolGamblerBet.toPoolGamblerBetModel())
+                state = .success(old: currentPoolGamblerBet, succeeded: updatedPoolGamblerBet.toPoolGamblerBetModel())
             case .failure(let error):
                 if case BetError.forbidden = error {
                     currentPoolGamblerBet.lock()
@@ -51,7 +50,7 @@ class PoolGamblerBetItemViewModel: ObservableObject {
                 } else {
                     state = .failure(
                         current: currentPoolGamblerBet,
-                        failed: prePoolGamblerBet,
+                        failed: targetPoolGamblerBet,
                         error: error.toLocalizedError(transformer: { error in error.toBetLocalizedError() }))
                 }
             }

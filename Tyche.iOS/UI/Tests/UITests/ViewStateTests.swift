@@ -43,7 +43,7 @@ final class ViewStateTests: XCTestCase {
     func testGivenAFailureViewStateWhenErrorOrNullIsPerformedThenTheErrorIsReturned() throws {
         let viewState = LodableViewState<String>.failure(CustomError())
         
-        let error = viewState.errorOrNull()
+        let error = viewState.errorOrNil()
         
         XCTAssertTrue(error is CustomError)
     }
@@ -55,7 +55,7 @@ final class ViewStateTests: XCTestCase {
     }
     
     func givenANotFailureViewStateWhenErrorOrNullIsPerformedThenNullIsReturned(viewState: LodableViewState<String>) throws {
-        let error = viewState.errorOrNull()
+        let error = viewState.errorOrNil()
         XCTAssertTrue(error == nil)
     }
     

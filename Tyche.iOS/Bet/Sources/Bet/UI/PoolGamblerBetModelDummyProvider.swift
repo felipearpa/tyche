@@ -1,6 +1,23 @@
 import Foundation
 import Core
 
+func poolGamblerBetFakeModel() -> PoolGamblerBetModel {
+    PoolGamblerBetModel(
+        poolId: String(repeating: "X", count: 15),
+        gamblerId: String(repeating: "X", count: 15),
+        matchId: String(repeating: "X", count: 15),
+        homeTeamId: String(repeating: "X", count: 15),
+        homeTeamName: String(repeating: "X", count: 25),
+        awayTeamId: String(repeating: "X", count: 15),
+        awayTeamName: String(repeating: "X", count: 25),
+        matchScore: TeamScore(homeTeamValue: 100, awayTeamValue: 100),
+        betScore: TeamScore(homeTeamValue: 100, awayTeamValue: 100),
+        score: 10,
+        matchDateTime: Date(),
+        isLocked: true
+    )
+}
+
 func poolGamblerBet() -> PoolGamblerBet {
     return PoolGamblerBet(
         poolId: "pool123",
@@ -79,7 +96,7 @@ func poolGamblerBets() -> [PoolGamblerBet] {
     ]
 }
 
-func poolGamblerBetModel() -> PoolGamblerBetModel {
+func poolGamblerBetDummyModel() -> PoolGamblerBetModel {
     return PoolGamblerBetModel(
         poolId: "pool123",
         gamblerId: "gambler456",
@@ -96,25 +113,8 @@ func poolGamblerBetModel() -> PoolGamblerBetModel {
     )
 }
 
-func poolGamblerBetModels() -> [PoolGamblerBetModel] {
+func poolGamblerBetDummyModels() -> [PoolGamblerBetModel] {
     return poolGamblerBets().map { poolGamblerBet in
         poolGamblerBet.toPoolGamblerBetModel()
     }
-}
-
-func fakePoolGamblerBetModel() -> PoolGamblerBetModel {
-    return PoolGamblerBetModel(
-        poolId: UUID().uuidString,
-        gamblerId: UUID().uuidString,
-        matchId: UUID().uuidString,
-        homeTeamId: UUID().uuidString,
-        homeTeamName: String(repeating: "X", count: 25),
-        awayTeamId: UUID().uuidString,
-        awayTeamName: String(repeating: "X", count: 25),
-        matchScore: TeamScore(homeTeamValue: 3, awayTeamValue: 2),
-        betScore: TeamScore(homeTeamValue: 2, awayTeamValue: 2),
-        score: 10,
-        matchDateTime: Date(),
-        isLocked: false
-    )
 }

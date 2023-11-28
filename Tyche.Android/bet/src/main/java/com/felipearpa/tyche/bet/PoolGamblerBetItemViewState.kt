@@ -1,7 +1,5 @@
 package com.felipearpa.tyche.bet
 
-import com.felipearpa.tyche.core.emptyString
-
 sealed class PoolGamblerBetItemViewState(open val value: PartialPoolGamblerBetModel) {
     data class Visualization(override val value: PartialPoolGamblerBetModel) :
         PoolGamblerBetItemViewState(value)
@@ -13,9 +11,7 @@ sealed class PoolGamblerBetItemViewState(open val value: PartialPoolGamblerBetMo
 }
 
 fun PoolGamblerBetItemViewState.Companion.emptyVisualization(): PoolGamblerBetItemViewState {
-    return PoolGamblerBetItemViewState.Visualization(
-        PartialPoolGamblerBetModel(homeTeamBet = emptyString(), awayTeamBet = emptyString())
-    )
+    return PoolGamblerBetItemViewState.Visualization(emptyPartialPoolGamblerBetModel())
 }
 
 fun PoolGamblerBetItemViewState.copy(value: PartialPoolGamblerBetModel): PoolGamblerBetItemViewState {

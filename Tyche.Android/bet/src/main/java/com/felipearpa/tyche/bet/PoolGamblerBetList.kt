@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.material3.Divider
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -103,7 +104,7 @@ private fun LazyListScope.loadingContent(count: Int) {
     }
 }
 
-@Preview(showBackground = true)
+@Preview
 @Composable
 fun PoolGamblerBetListPreview() {
     val items = flowOf(
@@ -126,10 +127,12 @@ fun PoolGamblerBetListPreview() {
             )
         )
     ).collectAsLazyPagingItems()
-    PoolGamblerBetList(
-        lazyPoolGamblerBets = items,
-        filterText = emptyString(),
-        onFilterChange = {},
-        onFilterDelayedChange = {}
-    )
+    Surface {
+        PoolGamblerBetList(
+            lazyPoolGamblerBets = items,
+            filterText = emptyString(),
+            onFilterChange = {},
+            onFilterDelayedChange = {}
+        )
+    }
 }

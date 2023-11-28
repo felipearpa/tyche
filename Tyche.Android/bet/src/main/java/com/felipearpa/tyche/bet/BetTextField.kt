@@ -1,6 +1,5 @@
 package com.felipearpa.tyche.bet
 
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.OutlinedTextField
@@ -14,8 +13,6 @@ import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 
 @Composable
 fun BetTextField(
@@ -33,14 +30,9 @@ fun BetTextField(
         onValueChange = { newTextFieldValue ->
             var newValue = newTextFieldValue.text.ifEmpty { "0" }
 
-            if (isValid(newValue)) {
-                newValue = newValue.toInt().toString()
-
-                textFieldValue = if (newTextFieldValue.text.isEmpty()) newTextFieldValue.copy(
-                    text = newValue,
-                    selection = TextRange(index = newValue.length)
-                ) else newTextFieldValue.copy(text = newValue)
-
+            if (newValue.isValid()) {
+                newValue = newValue.normalize()
+                textFieldValue = newTextFieldValue.apply(value = newValue)
                 if (newValue != value) {
                     onValueChange(newValue)
                 }
@@ -50,15 +42,15 @@ fun BetTextField(
     )
 }
 
-private fun isValid(value: String) =
-    value.length in 1..3 && value.all { char -> char.isDigit() }
+private fun String.normalize() =
+    this.toInt().toString()
 
-@Preview(showBackground = true)
-@Composable
-fun BetTextFieldPreview() {
-    BetTextField(
-        value = "10",
-        onValueChange = { },
-        modifier = Modifier.width(64.dp)
-    )
+private fun TextFieldValue.apply(value: String): TextFieldValue {
+    return if (this.text.isEmpty()) this.copy(
+        text = value,
+        selection = TextRange(index = value.length)
+    ) else this.copy(text = value)
 }
+
+private fun String.isValid() =
+    this.length in 1..3 && this.all { char -> char.isDigit() }

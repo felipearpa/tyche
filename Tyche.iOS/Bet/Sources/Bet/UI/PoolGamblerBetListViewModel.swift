@@ -46,9 +46,17 @@ public class PoolGamblerBetListViewModel: ObservableObject {
         self.pagingSource = pagingSource
     }
     
-    func search(_ newSearchText: String) {
-        searchText = newSearchText
+    func search(_ text: String) {
+        searchText = text
         pagingSource.invalidate()
+    }
+    
+    func load() {
+        lazyPager.load()
+    }
+    
+    func refresh() {
+        lazyPager.refresh()
     }
 }
 

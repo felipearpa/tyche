@@ -1,7 +1,7 @@
 public enum EditableViewState<Value> {
     case initial(Value)
     case loading(current: Value, target: Value)
-    case success(current: Value, succeeded: Value)
+    case success(old: Value, succeeded: Value)
     case failure(current: Value, failed: Value, error: Error)
 }
 
@@ -41,23 +41,16 @@ public extension EditableViewState {
     @inlinable
     func value() -> Value {
         return switch self {
-        case .initial(let value), .loading(current: let value, _), .success(_, succeeded: let value), .failure(current: let value, _, _):
+        case .initial(let value),
+                .loading(current: let value, _),
+                .success(_, succeeded: let value),
+                .failure(current: let value, _, _):
             value
         }
     }
     
     @inlinable
-    func valueOrNull() -> Value? {
-        return switch self {
-        case .initial(let value), .loading(current: let value, _), .success(_, succeeded: let value):
-            value
-        default:
-            nil
-        }
-    }
-    
-    @inlinable
-    func errorOrNull() -> Error? {
+    func errorOrNil() -> Error? {
         if case .failure(_, _, let error) = self {
             return error
         }

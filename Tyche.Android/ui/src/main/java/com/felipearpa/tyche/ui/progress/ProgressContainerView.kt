@@ -16,7 +16,7 @@ import com.skydoves.cloudy.Cloudy
 fun ProgressContainerView(content: @Composable () -> Unit) {
     Box {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
-            Cloudy(modifier = Modifier.fillMaxSize()) {
+            Cloudy(modifier = Modifier.fillMaxSize(), radius = 5) {
                 content()
             }
         } else {

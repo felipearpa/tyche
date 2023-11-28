@@ -28,6 +28,7 @@ import com.felipearpa.tyche.core.emptyString
 import com.felipearpa.tyche.core.type.TeamScore
 import com.felipearpa.tyche.ui.exception.UnknownLocalizedException
 import com.felipearpa.tyche.ui.state.EditableViewState
+import com.felipearpa.tyche.ui.state.currentValue
 import com.felipearpa.tyche.ui.R as SharedR
 
 @Composable
@@ -53,9 +54,9 @@ fun PoolGamblerBetItemView(viewModel: PoolGamblerBetItemViewModel) {
     )
 
     LaunchedEffect(viewModelState) {
-        viewState = when (val state = viewModelState) {
+        viewState = when (val localViewModelState = viewModelState) {
             is EditableViewState.Initial -> {
-                val poolGamblerBet = state.value
+                val poolGamblerBet = localViewModelState.value
                 PoolGamblerBetItemViewState.Visualization(
                     PartialPoolGamblerBetModel(
                         homeTeamBet = poolGamblerBet.homeTeamBetRawValue(),
@@ -73,11 +74,11 @@ fun PoolGamblerBetItemView(viewModel: PoolGamblerBetItemViewModel) {
 private fun PoolGamblerBetItemView(
     viewModelState: EditableViewState<PoolGamblerBetModel>,
     viewState: PoolGamblerBetItemViewState,
-    onViewStateChanged: (PoolGamblerBetItemViewState) -> Unit,
-    bet: () -> Unit,
-    reset: () -> Unit,
-    retryBet: () -> Unit,
-    edit: () -> Unit
+    onViewStateChanged: (PoolGamblerBetItemViewState) -> Unit = {},
+    bet: () -> Unit = {},
+    reset: () -> Unit = {},
+    retryBet: () -> Unit = {},
+    edit: () -> Unit = {}
 ) {
     Column(
         modifier = Modifier.fillMaxWidth(),
@@ -176,22 +177,27 @@ private fun EditableDefaultActionBar(
     reset: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val poolGamblerBet = viewModelState.currentValue()
+
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
     ) {
-        StateIndicator(
-            viewModelState = viewModelState,
-            isEditable = viewState is PoolGamblerBetItemViewState.Edition
-        )
+        StateIndicator(viewModelState = viewModelState, isEditable = true)
 
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             OutlinedButton(onClick = reset) {
                 Text(text = stringResource(id = SharedR.string.cancel_action))
             }
 
-            Button(onClick = bet) {
+            Button(
+                onClick = bet,
+                enabled = viewState.value != PartialPoolGamblerBetModel(
+                    homeTeamBet = poolGamblerBet.homeTeamBetRawValue(),
+                    awayTeamBet = poolGamblerBet.awayTeamBetRawValue()
+                )
+            ) {
                 Text(text = stringResource(id = SharedR.string.save_action))
             }
         }
@@ -314,12 +320,7 @@ private fun NonEditableInitialPoolGamblerBetItemViewPreview() {
                 viewModelState = EditableViewState.Initial(poolGamblerBetDummyModel()),
                 viewState = PoolGamblerBetItemViewState.Visualization(
                     partialPoolGamblerBetDummyModel()
-                ),
-                onViewStateChanged = {},
-                bet = {},
-                reset = {},
-                retryBet = {},
-                edit = {}
+                )
             )
         }
     }
@@ -332,12 +333,7 @@ private fun EditableInitialPoolGamblerBetItemViewPreview() {
         Surface {
             PoolGamblerBetItemView(
                 viewModelState = EditableViewState.Initial(poolGamblerBetDummyModel()),
-                viewState = PoolGamblerBetItemViewState.Edition(partialPoolGamblerBetDummyModel()),
-                onViewStateChanged = {},
-                bet = {},
-                reset = {},
-                retryBet = {},
-                edit = {}
+                viewState = PoolGamblerBetItemViewState.Edition(partialPoolGamblerBetDummyModel())
             )
         }
     }
@@ -355,12 +351,7 @@ private fun NonEditableLoadingPoolGamblerBetItemViewPreview() {
                 ),
                 viewState = PoolGamblerBetItemViewState.Visualization(
                     partialPoolGamblerBetDummyModel()
-                ),
-                onViewStateChanged = {},
-                bet = {},
-                reset = {},
-                retryBet = {},
-                edit = {}
+                )
             )
         }
     }
@@ -376,12 +367,7 @@ private fun EditableLoadingPoolGamblerBetItemViewPreview() {
                     current = poolGamblerBetDummyModel(),
                     target = poolGamblerBetDummyModel()
                 ),
-                viewState = PoolGamblerBetItemViewState.Edition(partialPoolGamblerBetDummyModel()),
-                onViewStateChanged = {},
-                bet = {},
-                reset = {},
-                retryBet = {},
-                edit = {}
+                viewState = PoolGamblerBetItemViewState.Edition(partialPoolGamblerBetDummyModel())
             )
         }
     }

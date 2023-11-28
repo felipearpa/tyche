@@ -39,7 +39,7 @@ public extension LodableViewState {
     }
     
     @inlinable
-    func valueOrNull() -> Value? {
+    func valueOrNil() -> Value? {
         if case .success(let value) = self {
             return value
         }
@@ -47,7 +47,7 @@ public extension LodableViewState {
     }
     
     @inlinable
-    func errorOrNull() -> Error? {
+    func errorOrNil() -> Error? {
         if case .failure(let error) = self {
             return error
         }
