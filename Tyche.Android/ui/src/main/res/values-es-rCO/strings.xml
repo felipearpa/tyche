@@ -8,4 +8,7 @@
     <string name="searching_label">Escriba para buscar</string>
     <string name="retry_action">Reintentar</string>
     <string name="empty_list_message">Nada para mostrar</string>
+    <string name="cancel_action">Cancelar</string>
+    <string name="save_action">Guardar</string>
+    <string name="edit_action">Editar</string>
 </resources>

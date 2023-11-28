@@ -6,8 +6,8 @@ import com.felipearpa.data.pool.application.GetPoolUseCase
 import com.felipearpa.tyche.core.network.NetworkException
 import com.felipearpa.tyche.pool.PoolModel
 import com.felipearpa.tyche.pool.toPoolModel
-import com.felipearpa.tyche.ui.UnknownLocalizedException
-import com.felipearpa.tyche.ui.LoadableViewState
+import com.felipearpa.tyche.ui.exception.UnknownLocalizedException
+import com.felipearpa.tyche.ui.state.LoadableViewState
 import com.felipearpa.tyche.ui.network.toNetworkLocalizedException
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject

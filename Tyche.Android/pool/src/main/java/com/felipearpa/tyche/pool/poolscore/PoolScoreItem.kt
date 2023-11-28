@@ -17,8 +17,9 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import com.felipearpa.tyche.pool.PoolGamblerScoreModel
 import com.felipearpa.tyche.pool.R
+import com.felipearpa.tyche.pool.difference
 import com.felipearpa.tyche.pool.poolGamblerScoreDummyModel
-import com.felipearpa.tyche.ui.ProgressIndicator
+import com.felipearpa.tyche.ui.progress.ProgressIndicator
 
 @Composable
 fun PoolScoreItem(
@@ -40,38 +41,32 @@ fun PoolScoreItem(
                 }
         ) {
             Text(text = poolGamblerScore.poolName, modifier = shimmerModifier)
-            Position(
-                currentPosition = poolGamblerScore.currentPosition,
-                shimmerModifier = shimmerModifier
-            )
+            poolGamblerScore.currentPosition?.let { nonNullCurrentPosition ->
+                Text(
+                    text = stringResource(R.string.position_label, nonNullCurrentPosition),
+                    modifier = shimmerModifier,
+                    style = MaterialTheme.typography.labelSmall
+                )
+            }
         }
 
-        Box(
-            modifier = Modifier
-                .width(32.dp)
-                .constrainAs(progressView) {
-                    top.linkTo(parent.top)
-                    bottom.linkTo(parent.bottom)
-                    start.linkTo(dataView.end)
-                    end.linkTo(parent.end)
-                }, contentAlignment = Alignment.Center
-        ) {
-            ProgressIndicator(
-                shimmerModifier = shimmerModifier,
-                difference = poolGamblerScore.difference()
-            )
+        poolGamblerScore.difference()?.let { nonNullDifference ->
+            Box(
+                modifier = Modifier
+                    .width(32.dp)
+                    .constrainAs(progressView) {
+                        top.linkTo(parent.top)
+                        bottom.linkTo(parent.bottom)
+                        start.linkTo(dataView.end)
+                        end.linkTo(parent.end)
+                    }, contentAlignment = Alignment.Center
+            ) {
+                ProgressIndicator(
+                    shimmerModifier = shimmerModifier,
+                    difference = nonNullDifference
+                )
+            }
         }
-    }
-}
-
-@Composable
-private fun Position(currentPosition: Int?, shimmerModifier: Modifier = Modifier) {
-    currentPosition?.let { nonNullableCurrentPosition ->
-        Text(
-            text = stringResource(R.string.position_label, nonNullableCurrentPosition),
-            modifier = shimmerModifier,
-            style = MaterialTheme.typography.labelSmall
-        )
     }
 }
 

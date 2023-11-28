@@ -10,44 +10,43 @@ import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
-private val LightColorScheme = lightColorScheme(
-    primary = Color(0xFF4CAF50),
-    onPrimary = Color(0xFFFFFFFF),
-    primaryContainer = Color(0xFF3D8F44),
-    onPrimaryContainer = Color(0xFFFFFFFF),
-    secondary = Color(0xFFFFC107),
-    onSecondary = Color(0xFF000000),
-    secondaryContainer = Color(0xFFE6A200),
-    onSecondaryContainer = Color(0xFF000000),
-    background = Color(0xFFFFFFFF),
-    onBackground = Color(0xFF000000),
-    surface = Color(0xFFFFFFFF),
-    onSurface = Color(0xFF000000),
-    error = Color(0xFFB00020),
-    onError = Color(0xFFFFFFFF)
+private val lightColorScheme = lightColorScheme(
+    primary = lightPrimaryColor,
+    onPrimary = lightOnPrimaryColor,
+    primaryContainer = lightPrimaryContainer,
+    onPrimaryContainer = lightOnPrimaryContainer,
+    secondary = lightSecondaryColor,
+    onSecondary = lightOnSecondaryColor,
+    secondaryContainer = lightSecondaryContainer,
+    onSecondaryContainer = lightOnSecondaryContainer,
+    background = lightBackgroundColor,
+    onBackground = lightOnBackgroundColor,
+    surface = lightSurfaceColor,
+    onSurface = lightOnSurfaceColor,
+    error = lightErrorColor,
+    onError = lightOnErrorColor
 )
 
-private val DarkColorScheme = darkColorScheme(
-    primary = Color(0xFF4CAF50),
-    onPrimary = Color(0xFFFFFFFF),
-    primaryContainer = Color(0xFF3D8F44),
-    onPrimaryContainer = Color(0xFFFFFFFF),
-    secondary = Color(0xFFFFC107),
-    onSecondary = Color(0xFF000000),
-    secondaryContainer = Color(0xFFE6A200),
-    onSecondaryContainer = Color(0xFF000000),
-    background = Color(0xFF121212),
-    onBackground = Color(0xFFFFFFFF),
-    surface = Color(0xFF1E1E1E),
-    onSurface = Color(0xFFFFFFFF),
-    error = Color(0xFFCF6679),
-    onError = Color(0xFFFFFFFF)
+private val darkColorScheme = darkColorScheme(
+    primary = darkPrimaryColor,
+    onPrimary = darkOnPrimaryColor,
+    primaryContainer = darkPrimaryContainer,
+    onPrimaryContainer = darkOnPrimaryContainer,
+    secondary = darkSecondaryColor,
+    onSecondary = darkOnSecondaryColor,
+    secondaryContainer = darkSecondaryContainer,
+    onSecondaryContainer = darkOnSecondaryContainer,
+    background = darkBackgroundColor,
+    onBackground = darkOnBackgroundColor,
+    surface = darkSurfaceColor,
+    onSurface = darkOnSurfaceColor,
+    error = darkErrorColor,
+    onError = darkOnErrorColor
 )
 
 @Composable
@@ -63,9 +62,10 @@ fun TycheTheme(
             if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
         }
 
-        darkTheme -> DarkColorScheme
-        else -> LightColorScheme
+        darkTheme -> darkColorScheme
+        else -> lightColorScheme
     }
+    
     val view = LocalView.current
     if (!view.isInEditMode) {
         SideEffect {

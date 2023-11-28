@@ -1,4 +1,4 @@
-package com.felipearpa.tyche.ui
+package com.felipearpa.tyche.ui.progress
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -13,9 +13,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.felipearpa.tyche.core.emptyString
-import com.felipearpa.tyche.ui.theme.negativeColor
-import com.felipearpa.tyche.ui.theme.neutralColor
-import com.felipearpa.tyche.ui.theme.positiveColor
+import com.felipearpa.tyche.ui.R
+import com.felipearpa.tyche.ui.theme.negative
+import com.felipearpa.tyche.ui.theme.neutral
+import com.felipearpa.tyche.ui.theme.positive
 import kotlin.math.abs
 
 @Composable
@@ -30,7 +31,7 @@ private fun StableProgressIndicator(
                 .testTag("stableProgressIndicator"),
             painter = painterResource(id = R.drawable.ic_horizontal_rule),
             contentDescription = emptyString(),
-            tint = neutralColor
+            tint = MaterialTheme.colorScheme.neutral
         )
     }
 }
@@ -46,12 +47,12 @@ private fun UpProgressIndicator(
             modifier = shimmerModifier.size(24.dp, 24.dp),
             painter = painterResource(id = R.drawable.ic_arrow_upward),
             contentDescription = emptyString(),
-            tint = positiveColor
+            tint = MaterialTheme.colorScheme.positive
         )
         Text(
             text = abs(progress).toString(),
             style = MaterialTheme.typography.labelSmall,
-            color = positiveColor,
+            color = MaterialTheme.colorScheme.positive,
             modifier = shimmerModifier
         )
     }
@@ -68,12 +69,12 @@ private fun DownProgressIndicator(
             modifier = shimmerModifier.size(24.dp, 24.dp),
             painter = painterResource(id = R.drawable.ic_arrow_downward),
             contentDescription = emptyString(),
-            tint = negativeColor
+            tint = MaterialTheme.colorScheme.negative
         )
         Text(
             text = abs(progress).toString(),
             style = MaterialTheme.typography.labelSmall,
-            color = negativeColor,
+            color = MaterialTheme.colorScheme.negative,
             modifier = shimmerModifier
         )
     }
@@ -83,47 +84,39 @@ private fun DownProgressIndicator(
 fun ProgressIndicator(
     modifier: Modifier = Modifier,
     shimmerModifier: Modifier = Modifier,
-    difference: Int?
+    difference: Int
 ) {
-    difference?.let { differenceValue ->
-        when {
-            differenceValue > 0 -> UpProgressIndicator(
-                modifier = modifier,
-                shimmerModifier = shimmerModifier,
-                progress = differenceValue
-            )
+    when {
+        difference > 0 -> UpProgressIndicator(
+            modifier = modifier,
+            shimmerModifier = shimmerModifier,
+            progress = difference
+        )
 
-            differenceValue < 0 -> DownProgressIndicator(
-                modifier = modifier,
-                shimmerModifier = shimmerModifier,
-                progress = differenceValue
-            )
+        difference < 0 -> DownProgressIndicator(
+            modifier = modifier,
+            shimmerModifier = shimmerModifier,
+            progress = difference
+        )
 
-            else -> StableProgressIndicator(modifier = modifier, shimmerModifier = shimmerModifier)
-        }
+        else -> StableProgressIndicator(modifier = modifier, shimmerModifier = shimmerModifier)
     }
 }
 
 @Preview(showBackground = true)
 @Composable
 private fun StableProgressIndicatorPreview() {
-    MaterialTheme {
-        StableProgressIndicator()
-    }
+    StableProgressIndicator()
 }
 
 @Preview(showBackground = true)
 @Composable
 private fun UpProgressIndicatorPreview() {
-    MaterialTheme {
-        UpProgressIndicator(progress = 1)
-    }
+    UpProgressIndicator(progress = 1)
 }
 
 @Preview(showBackground = true)
 @Composable
 private fun DownProgressIndicatorPreview() {
-    MaterialTheme {
-        DownProgressIndicator(progress = 1)
-    }
+    DownProgressIndicator(progress = 1)
 }

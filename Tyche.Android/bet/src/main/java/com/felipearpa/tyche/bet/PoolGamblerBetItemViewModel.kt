@@ -7,84 +7,92 @@ import com.felipearpa.data.bet.domain.Bet
 import com.felipearpa.data.bet.domain.BetException
 import com.felipearpa.tyche.core.type.BetScore
 import com.felipearpa.tyche.core.type.TeamScore
-import com.felipearpa.tyche.ui.UnknownLocalizedException
-import com.felipearpa.tyche.ui.LoadableViewState
-import com.felipearpa.tyche.ui.isFailure
+import com.felipearpa.tyche.ui.exception.toLocalizedException
+import com.felipearpa.tyche.ui.state.EditableViewState
+import com.felipearpa.tyche.ui.state.currentValue
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.updateAndGet
 import kotlinx.coroutines.launch
+import java.util.UUID
 
 class PoolGamblerBetItemViewModel @AssistedInject constructor(
-    @Assisted val poolGamblerBet: PoolGamblerBetModel,
+    @Assisted poolGamblerBet: PoolGamblerBetModel,
     private val betUseCase: BetUseCase
 ) :
     ViewModel() {
 
     private val _state =
-        MutableStateFlow<LoadableViewState<PoolGamblerBetModel>>(LoadableViewState.Success(poolGamblerBet))
-    val state: StateFlow<LoadableViewState<PoolGamblerBetModel>>
-        get() = _state.asStateFlow()
+        MutableStateFlow<EditableViewState<PoolGamblerBetModel>>(
+            EditableViewState.Initial(poolGamblerBet)
+        )
+    val state = _state.asStateFlow()
 
-    private var lastSuccessBetScore: TeamScore<Int>? = null
-
-    private var lastFailedBetScore: TeamScore<Int>? = null
+    fun retryBet() {
+        val poolGamblerBet = when (val stateValue = this.state.value) {
+            is EditableViewState.Failure -> stateValue.failed
+            else -> return
+        }
+        val betScore = poolGamblerBet.betScore ?: return
+        bet(betScore = betScore)
+    }
 
     fun bet(betScore: TeamScore<Int>) {
         viewModelScope.launch {
-            _state.emit(LoadableViewState.Loading)
-
-            lastSuccessBetScore = poolGamblerBet.betScore
-            lastFailedBetScore = betScore
-            poolGamblerBet.betScore = betScore
-
-            betUseCase.execute(
-                Bet(
-                    poolId = poolGamblerBet.poolId,
-                    gamblerId = poolGamblerBet.gamblerId,
-                    matchId = poolGamblerBet.matchId,
-                    homeTeamBet = BetScore(betScore.homeTeamValue),
-                    awayTeamBet = BetScore(betScore.awayTeamValue)
+            val (currentPoolGamblerBet, targetPoolGamblerBet) = _state.updateAndGet { currentState ->
+                val currentPoolGamblerBet = currentState.currentValue()
+                val targetPoolGamblerBet = currentPoolGamblerBet.copy(betScore = betScore)
+                EditableViewState.Loading(
+                    current = currentPoolGamblerBet,
+                    target = targetPoolGamblerBet
                 )
-            ).onSuccess {
-                lastSuccessBetScore = null
-                lastFailedBetScore = null
+            } as EditableViewState.Loading
 
-                _state.emit(LoadableViewState.Success(poolGamblerBet))
-            }.onFailure { exception ->
-                if (exception is BetException.Forbidden) {
-                    poolGamblerBet.isLockEnforced = true
+            val bet = Bet(
+                poolId = currentPoolGamblerBet.poolId,
+                gamblerId = currentPoolGamblerBet.gamblerId,
+                matchId = currentPoolGamblerBet.matchId,
+                homeTeamBet = BetScore(betScore.homeTeamValue),
+                awayTeamBet = BetScore(betScore.awayTeamValue)
+            )
+
+            betUseCase.execute(bet = bet)
+                .onSuccess { updatedPoolGamblerBet ->
+                    _state.emit(
+                        EditableViewState.Success(
+                            old = currentPoolGamblerBet,
+                            succeeded = updatedPoolGamblerBet.toPoolGamblerBetModel()
+                        )
+                    )
+                }.onFailure { exception ->
+                    if (exception is BetException.Forbidden) {
+                        _state.emit(EditableViewState.Initial(currentPoolGamblerBet.copy(isLocked = true)))
+                    } else {
+                        _state.emit(
+                            EditableViewState.Failure(
+                                current = currentPoolGamblerBet,
+                                failed = targetPoolGamblerBet,
+                                exception = exception
+                                    .toBetLocalizedExceptionOnMatch()
+                                    .toLocalizedException()
+                            )
+                        )
+                    }
                 }
-                _state.emit(LoadableViewState.Failure(exception.toLocalizedException()))
-            }
         }
     }
 
-    fun retryBet() {
-        if (!_state.value.isFailure()) {
-            return
+    fun reset() {
+        _state.update { currentState ->
+            val poolGamblerBet = currentState.currentValue()
+            EditableViewState.Initial(
+                poolGamblerBet.copy(
+                    instanceId = UUID.randomUUID().toString()
+                )
+            )
         }
-
-        lastFailedBetScore?.let { nonNullableLastFailedBetScore ->
-            bet(betScore = nonNullableLastFailedBetScore)
-        }
-    }
-
-    fun restoreBet() {
-        if (!_state.value.isFailure()) {
-            return
-        }
-
-        poolGamblerBet.betScore = lastSuccessBetScore
-
-        _state.value = LoadableViewState.Success(poolGamblerBet)
     }
 }
-
-private fun Throwable.toLocalizedException() =
-    when (this) {
-        is BetException.Forbidden -> BetLocalizedException.Forbidden
-        else -> UnknownLocalizedException()
-    }

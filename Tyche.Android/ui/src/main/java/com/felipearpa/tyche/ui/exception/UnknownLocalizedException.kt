@@ -1,7 +1,8 @@
-package com.felipearpa.tyche.ui
+package com.felipearpa.tyche.ui.exception
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
+import com.felipearpa.tyche.ui.R
 
 class UnknownLocalizedException : LocalizedException() {
     override val errorDescription: String?

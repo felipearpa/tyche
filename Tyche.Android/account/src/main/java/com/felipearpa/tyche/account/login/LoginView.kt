@@ -27,13 +27,13 @@ import com.felipearpa.tyche.account.PasswordTextField
 import com.felipearpa.tyche.account.R
 import com.felipearpa.tyche.account.UsernameTextField
 import com.felipearpa.tyche.core.emptyString
-import com.felipearpa.tyche.ui.FailureAlertDialog
-import com.felipearpa.tyche.ui.LoadableViewState
-import com.felipearpa.tyche.ui.ProgressContainerView
-import com.felipearpa.tyche.ui.exceptionOrNull
-import com.felipearpa.tyche.ui.isSuccess
-import com.felipearpa.tyche.ui.localizedExceptionOrNull
-import com.felipearpa.tyche.ui.valueOrNull
+import com.felipearpa.tyche.ui.exception.FailureAlertDialog
+import com.felipearpa.tyche.ui.state.LoadableViewState
+import com.felipearpa.tyche.ui.progress.ProgressContainerView
+import com.felipearpa.tyche.ui.state.exceptionOrNull
+import com.felipearpa.tyche.ui.state.isSuccess
+import com.felipearpa.tyche.ui.exception.localizedExceptionOrNull
+import com.felipearpa.tyche.ui.state.valueOrNull
 
 @Composable
 fun LoginView(

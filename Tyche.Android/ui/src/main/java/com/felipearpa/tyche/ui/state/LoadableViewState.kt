@@ -1,16 +1,16 @@
-package com.felipearpa.tyche.ui
+package com.felipearpa.tyche.ui.state
 
 sealed class LoadableViewState<out Value : Any> {
     data object Initial : LoadableViewState<Nothing>()
 
     data object Loading : LoadableViewState<Nothing>()
 
-    data class Success<T : Any>(private val value: T) : LoadableViewState<T>() {
-        operator fun invoke(): T = value
+    data class Success<Value : Any>(val value: Value) : LoadableViewState<Value>() {
+        operator fun invoke(): Value = value
     }
 
-    data class Failure(private val throwable: Throwable) : LoadableViewState<Nothing>() {
-        operator fun invoke(): Throwable = throwable
+    data class Failure(val exception: Throwable) : LoadableViewState<Nothing>() {
+        operator fun invoke(): Throwable = exception
     }
 }
 

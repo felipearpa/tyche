@@ -68,10 +68,7 @@ fun PoolGamblerBetList(
             }
 
             item {
-                PoolGamblerBetItemView(
-                    viewModel = poolGamblerBetViewModel(poolGamblerBet = poolGamblerBet),
-                    modifier = Modifier.fillMaxWidth()
-                )
+                PoolGamblerBetItemView(viewModel = poolGamblerBetViewModel(poolGamblerBet = poolGamblerBet))
                 Divider(modifier = Modifier.padding(top = 8.dp))
             }
         }
@@ -123,7 +120,8 @@ fun PoolGamblerBetListPreview() {
                     awayTeamId = "X".repeat(15),
                     awayTeamName = "Argentina",
                     score = 10,
-                    matchDateTime = LocalDateTime.now().minusDays(1)
+                    matchDateTime = LocalDateTime.now().minusDays(1),
+                    isLocked = false
                 )
             )
         )

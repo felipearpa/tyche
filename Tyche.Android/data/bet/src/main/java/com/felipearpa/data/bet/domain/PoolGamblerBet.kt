@@ -15,5 +15,6 @@ data class PoolGamblerBet(
     val matchScore: TeamScore<Int>?,
     val betScore: TeamScore<Int>?,
     val score: Int?,
-    val matchDateTime: LocalDateTime
+    val matchDateTime: LocalDateTime,
+    val isLocked: Boolean
 )

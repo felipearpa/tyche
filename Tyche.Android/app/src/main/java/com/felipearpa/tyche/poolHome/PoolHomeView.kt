@@ -37,11 +37,11 @@ import com.felipearpa.tyche.bet.poolGamblerBetListViewModel
 import com.felipearpa.tyche.core.emptyString
 import com.felipearpa.tyche.pool.gamblerscore.GamblerScoreListView
 import com.felipearpa.tyche.pool.gamblerscore.gamblerScoreListViewModel
-import com.felipearpa.tyche.ui.LoadableViewState
-import com.felipearpa.tyche.ui.LocalizedException
+import com.felipearpa.tyche.ui.state.LoadableViewState
+import com.felipearpa.tyche.ui.exception.LocalizedException
 import com.felipearpa.tyche.ui.Message
-import com.felipearpa.tyche.ui.onLoading
-import com.felipearpa.tyche.ui.onSuccess
+import com.felipearpa.tyche.ui.state.onLoading
+import com.felipearpa.tyche.ui.state.onSuccess
 import com.felipearpa.tyche.ui.shimmer
 
 enum class Tab {

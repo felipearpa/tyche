@@ -21,8 +21,9 @@ import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import com.felipearpa.tyche.pool.PoolGamblerScoreModel
+import com.felipearpa.tyche.pool.difference
 import com.felipearpa.tyche.pool.poolGamblerScoreDummyModel
-import com.felipearpa.tyche.ui.ProgressIndicator
+import com.felipearpa.tyche.ui.progress.ProgressIndicator
 
 @Composable
 fun GamblerScoreItem(
@@ -69,11 +70,13 @@ fun GamblerScoreItem(
                 Text(text = score.toString(), modifier = shimmerModifier)
             }
 
-            Box(modifier = Modifier.width(32.dp), contentAlignment = Alignment.Center) {
-                ProgressIndicator(
-                    difference = poolGamblerScore.difference(),
-                    shimmerModifier = shimmerModifier
-                )
+            poolGamblerScore.difference()?.let { nonNullDifference ->
+                Box(modifier = Modifier.width(32.dp), contentAlignment = Alignment.Center) {
+                    ProgressIndicator(
+                        difference = nonNullDifference,
+                        shimmerModifier = shimmerModifier
+                    )
+                }
             }
         }
     }

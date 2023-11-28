@@ -15,5 +15,6 @@ internal data class PoolGamblerBetResponse(
     val awayTeamScore: Int?,
     val awayTeamBet: Int?,
     val score: Int?,
-    val matchDateTime: LocalDateTime
+    val matchDateTime: LocalDateTime,
+    val isLocked: Boolean
 )

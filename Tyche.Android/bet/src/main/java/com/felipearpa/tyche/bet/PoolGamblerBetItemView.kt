@@ -1,264 +1,434 @@
 package com.felipearpa.tyche.bet
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.LinearProgressIndicator
-import androidx.compose.material3.LocalTextStyle
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.tooling.preview.PreviewParameter
-import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.times
-import androidx.constraintlayout.compose.ConstraintLayout
-import androidx.constraintlayout.compose.Dimension
 import com.felipearpa.tyche.core.emptyString
 import com.felipearpa.tyche.core.type.TeamScore
-import com.felipearpa.tyche.ui.LocalizedException
-import com.felipearpa.tyche.ui.onFailure
-import com.felipearpa.tyche.ui.onLoading
-import kotlinx.coroutines.launch
-import java.time.LocalDateTime
+import com.felipearpa.tyche.ui.exception.UnknownLocalizedException
+import com.felipearpa.tyche.ui.state.EditableViewState
+import com.felipearpa.tyche.ui.R as SharedR
 
 @Composable
-fun PoolGamblerBetItemView(
-    viewModel: PoolGamblerBetItemViewModel,
-    modifier: Modifier = Modifier
+fun PoolGamblerBetItemView(viewModel: PoolGamblerBetItemViewModel) {
+    val viewModelState by viewModel.state.collectAsState()
+    var viewState by remember { mutableStateOf(PoolGamblerBetItemViewState.emptyVisualization()) }
+
+    PoolGamblerBetItemView(
+        viewModelState = viewModelState,
+        viewState = viewState,
+        onViewStateChanged = { newViewState -> viewState = newViewState },
+        bet = {
+            viewModel.bet(
+                TeamScore(
+                    homeTeamValue = viewState.value.homeTeamBet.toInt(),
+                    awayTeamValue = viewState.value.awayTeamBet.toInt()
+                )
+            )
+        },
+        reset = viewModel::reset,
+        retryBet = viewModel::retryBet,
+        edit = { viewState = PoolGamblerBetItemViewState.Edition(viewState.value) }
+    )
+
+    LaunchedEffect(viewModelState) {
+        viewState = when (val state = viewModelState) {
+            is EditableViewState.Initial -> {
+                val poolGamblerBet = state.value
+                PoolGamblerBetItemViewState.Visualization(
+                    PartialPoolGamblerBetModel(
+                        homeTeamBet = poolGamblerBet.homeTeamBetRawValue(),
+                        awayTeamBet = poolGamblerBet.awayTeamBetRawValue()
+                    )
+                )
+            }
+
+            else -> PoolGamblerBetItemViewState.Visualization(viewState.value)
+        }
+    }
+}
+
+@Composable
+private fun PoolGamblerBetItemView(
+    viewModelState: EditableViewState<PoolGamblerBetModel>,
+    viewState: PoolGamblerBetItemViewState,
+    onViewStateChanged: (PoolGamblerBetItemViewState) -> Unit,
+    bet: () -> Unit,
+    reset: () -> Unit,
+    retryBet: () -> Unit,
+    edit: () -> Unit
 ) {
-    val state by viewModel.state.collectAsState()
-
-    val coroutineScope = rememberCoroutineScope()
-    val focusManager = LocalFocusManager.current
-
-    Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        PoolGamblerBetItem(
-            poolGamblerBet = viewModel.poolGamblerBet,
-            bet = viewModel::bet,
-            modifier = modifier
-        )
-
-        state.onFailure { exception ->
-            if (exception !is BetLocalizedException.Forbidden) {
-                Text(
-                    text = (exception as LocalizedException).failureReason ?: emptyString(),
-                    color = MaterialTheme.colorScheme.error,
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        when (viewModelState) {
+            is EditableViewState.Initial, is EditableViewState.Success -> {
+                val poolGamblerBet = when (viewModelState) {
+                    is EditableViewState.Initial -> viewModelState.value
+                    is EditableViewState.Success -> viewModelState.succeeded
+                    else -> return
+                }
+                PoolGamblerBetItem(
+                    poolGamblerBet = poolGamblerBet,
+                    viewState = viewState,
+                    onBetChanged = { newPartialPoolGamblerBet ->
+                        onViewStateChanged(
+                            viewState.copy(
+                                newPartialPoolGamblerBet
+                            )
+                        )
+                    },
                     modifier = Modifier.fillMaxWidth()
                 )
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    Button(onClick = {
-                        viewModel.retryBet()
-                        coroutineScope.launch {
-                            focusManager.clearFocus()
-                        }
-                    }) {
-                        Text(text = stringResource(id = R.string.retry_action))
-                    }
-
-                    Button(
-                        onClick = {
-                            viewModel.restoreBet()
-                            coroutineScope.launch {
-                                focusManager.clearFocus()
-                            }
-                        },
-                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary)
-                    ) {
-                        Text(
-                            text = stringResource(id = R.string.cancel_action),
-                            color = MaterialTheme.colorScheme.onSecondary
-                        )
-                    }
-                }
-            }
-        }.onLoading {
-            LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
-        }
-    }
-}
-
-@Composable
-fun PoolGamblerBetItem(
-    poolGamblerBet: PoolGamblerBetModel,
-    bet: (TeamScore<Int>) -> Unit,
-    modifier: Modifier = Modifier,
-    shimmerModifier: Modifier = Modifier
-) {
-    var homeTeamBet by remember(poolGamblerBet.betScore?.homeTeamValue) {
-        mutableStateOf(
-            (poolGamblerBet.betScore?.homeTeamValue ?: emptyString()).toString()
-        )
-    }
-    var awayTeamBet by remember(poolGamblerBet.betScore?.awayTeamValue) {
-        mutableStateOf(
-            (poolGamblerBet.betScore?.awayTeamValue ?: emptyString()).toString()
-        )
-    }
-
-    Column(modifier = modifier) {
-        ConstraintLayout(modifier = Modifier.fillMaxWidth()) {
-            val (teamView, betView) = createRefs()
-
-            Column(modifier = Modifier.constrainAs(teamView) {
-                top.linkTo(parent.top)
-                bottom.linkTo(parent.bottom)
-                start.linkTo(parent.start)
-                width = Dimension.fillToConstraints
-            }) {
-                Text(text = poolGamblerBet.homeTeamName, modifier = shimmerModifier)
-                Text(text = poolGamblerBet.awayTeamName, modifier = shimmerModifier)
+                DefaultActionBar(
+                    viewModelState = viewModelState,
+                    viewState = viewState,
+                    bet = bet,
+                    reset = reset,
+                    edit = edit,
+                    modifier = Modifier.fillMaxWidth()
+                )
             }
 
-            Box(modifier = Modifier.constrainAs(betView) {
-                top.linkTo(parent.top)
-                bottom.linkTo(parent.bottom)
-                end.linkTo(parent.end)
-            }) {
-                if (poolGamblerBet.isLocked()) {
-                    NonEditableBetScore(
-                        homeTeamBet = homeTeamBet,
-                        awayTeamBet = awayTeamBet,
-                        shimmerModifier = shimmerModifier
-                    )
-                } else {
-                    EditableBetScore(
-                        homeTeamBet = homeTeamBet,
-                        awayTeamBet = awayTeamBet,
-                        onBetValueChange = { newHomeTeamBet, newAwayTeamBet ->
-                            homeTeamBet = newHomeTeamBet
-                            awayTeamBet = newAwayTeamBet
-                        },
-                        onBetValueAsyncChange = { newHomeTeamBet, newAwayTeamBet ->
-                            bet(
-                                TeamScore(
-                                    homeTeamValue = newHomeTeamBet.toInt(),
-                                    awayTeamValue = newAwayTeamBet.toInt()
-                                )
-                            )
-                        },
-                        shimmerModifier = shimmerModifier
-                    )
-                }
+            is EditableViewState.Loading -> {
+                PoolGamblerBetItem(
+                    poolGamblerBet = viewModelState.target,
+                    viewState = PoolGamblerBetItemViewState.Visualization(viewState.value),
+                    modifier = Modifier.fillMaxWidth()
+                )
+                LoadingActionBar(
+                    viewModelState = viewModelState,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+
+            is EditableViewState.Failure -> {
+                PoolGamblerBetItem(
+                    poolGamblerBet = viewModelState.failed,
+                    viewState = PoolGamblerBetItemViewState.Visualization(viewState.value),
+                    modifier = Modifier.fillMaxWidth()
+                )
+                FailureActionBar(
+                    viewModelState = viewModelState,
+                    retryBet = retryBet,
+                    reset = reset,
+                    modifier = Modifier.fillMaxWidth()
+                )
             }
         }
     }
 }
 
 @Composable
-fun EditableBetScore(
-    homeTeamBet: String,
-    awayTeamBet: String,
-    onBetValueChange: (String, String) -> Unit,
-    onBetValueAsyncChange: (String, String) -> Unit,
-    shimmerModifier: Modifier = Modifier
+private fun DefaultActionBar(
+    viewModelState: EditableViewState<PoolGamblerBetModel>,
+    viewState: PoolGamblerBetItemViewState,
+    bet: () -> Unit,
+    reset: () -> Unit,
+    edit: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
-    Column {
-        BetTextField(
-            value = homeTeamBet,
-            onValueChange = { newBet -> onBetValueChange(newBet, awayTeamBet) },
-            onDelayedValueChange = { newBet -> onBetValueAsyncChange(newBet, awayTeamBet) },
-            modifier = Modifier
-                .width(3 * with(LocalDensity.current) { LocalTextStyle.current.fontSize.toDp() })
-                .then(shimmerModifier)
+    if (viewState is PoolGamblerBetItemViewState.Edition) {
+        EditableDefaultActionBar(
+            viewModelState = viewModelState,
+            viewState = viewState,
+            bet = bet,
+            reset = reset,
+            modifier = modifier
         )
-        BetTextField(
-            value = awayTeamBet,
-            onValueChange = { newBet -> onBetValueChange(homeTeamBet, newBet) },
-            onDelayedValueChange = { newBet -> onBetValueAsyncChange(homeTeamBet, newBet) },
-            modifier = Modifier
-                .width(3 * with(LocalDensity.current) { LocalTextStyle.current.fontSize.toDp() })
-                .then(shimmerModifier)
+    } else {
+        NonEditableDefaultActionBar(
+            viewModelState = viewModelState,
+            viewState = viewState,
+            edit = edit,
+            modifier = modifier
         )
     }
 }
 
 @Composable
-fun NonEditableBetScore(
-    homeTeamBet: String,
-    awayTeamBet: String,
-    shimmerModifier: Modifier = Modifier
+private fun EditableDefaultActionBar(
+    viewModelState: EditableViewState<PoolGamblerBetModel>,
+    viewState: PoolGamblerBetItemViewState,
+    bet: () -> Unit,
+    reset: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
-    Column {
-        Text(
-            text = homeTeamBet,
-            textAlign = TextAlign.Center,
-            modifier = Modifier
-                .width(3 * with(LocalDensity.current) { LocalTextStyle.current.fontSize.toDp() })
-                .then(shimmerModifier)
+    Row(
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier
+    ) {
+        StateIndicator(
+            viewModelState = viewModelState,
+            isEditable = viewState is PoolGamblerBetItemViewState.Edition
         )
-        Text(
-            text = awayTeamBet,
-            textAlign = TextAlign.Center,
-            modifier = Modifier
-                .width(3 * with(LocalDensity.current) { LocalTextStyle.current.fontSize.toDp() })
-                .then(shimmerModifier)
+
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            OutlinedButton(onClick = reset) {
+                Text(text = stringResource(id = SharedR.string.cancel_action))
+            }
+
+            Button(onClick = bet) {
+                Text(text = stringResource(id = SharedR.string.save_action))
+            }
+        }
+    }
+}
+
+@Composable
+private fun NonEditableDefaultActionBar(
+    viewModelState: EditableViewState<PoolGamblerBetModel>,
+    viewState: PoolGamblerBetItemViewState,
+    edit: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier
+    ) {
+        StateIndicator(
+            viewModelState = viewModelState,
+            isEditable = viewState is PoolGamblerBetItemViewState.Edition
+        )
+
+        OutlinedButton(onClick = edit) {
+            Text(text = stringResource(id = SharedR.string.edit_action))
+        }
+    }
+}
+
+@Composable
+private fun LoadingActionBar(
+    viewModelState: EditableViewState<PoolGamblerBetModel>,
+    modifier: Modifier = Modifier
+) {
+    Row(modifier = modifier) {
+        StateIndicator(viewModelState = viewModelState)
+    }
+}
+
+@Composable
+private fun FailureActionBar(
+    viewModelState: EditableViewState<PoolGamblerBetModel>,
+    retryBet: () -> Unit,
+    reset: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        StateIndicator(viewModelState = viewModelState)
+
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            OutlinedButton(onClick = reset) {
+                Text(text = stringResource(id = SharedR.string.cancel_action))
+            }
+
+            Button(onClick = retryBet) {
+                Text(text = stringResource(id = SharedR.string.retry_action))
+            }
+        }
+    }
+}
+
+@Composable
+private fun StateIndicator(
+    viewModelState: EditableViewState<PoolGamblerBetModel>,
+    isEditable: Boolean = false
+) {
+    if (isEditable) {
+        Icon(
+            painter = painterResource(id = SharedR.drawable.pending),
+            contentDescription = emptyString()
+        )
+    } else {
+        when (viewModelState) {
+            is EditableViewState.Failure ->
+                Icon(
+                    painter = painterResource(id = SharedR.drawable.error),
+                    contentDescription = emptyString(),
+                    tint = MaterialTheme.colorScheme.error
+                )
+
+            is EditableViewState.Loading -> CircularProgressIndicator()
+
+            is EditableViewState.Initial, is EditableViewState.Success -> {
+                val poolGamblerBet = when (viewModelState) {
+                    is EditableViewState.Initial -> viewModelState.value
+                    is EditableViewState.Success -> viewModelState.succeeded
+                    else -> return
+                }
+                ContentIndicator(poolGamblerBet = poolGamblerBet)
+            }
+        }
+    }
+}
+
+@Composable
+private fun ContentIndicator(poolGamblerBet: PoolGamblerBetModel) {
+    if (poolGamblerBet.isLocked) {
+        Icon(
+            painter = painterResource(id = SharedR.drawable.pending),
+            contentDescription = emptyString()
+        )
+    } else {
+        Icon(
+            painter = painterResource(id = SharedR.drawable.done),
+            contentDescription = emptyString()
         )
     }
 }
 
-class PoolGamblerBetItemParameterProvider : PreviewParameterProvider<PoolGamblerBetModel> {
-    override val values = sequenceOf(
-        PoolGamblerBetModel(
-            poolId = "X".repeat(15),
-            gamblerId = "X".repeat(15),
-            matchId = "X".repeat(15),
-            homeTeamId = "X".repeat(15),
-            homeTeamName = "Colombia",
-            matchScore = TeamScore(2, 1),
-            betScore = TeamScore(2, 1),
-            awayTeamId = "X".repeat(15),
-            awayTeamName = "Argentina",
-            score = 10,
-            matchDateTime = LocalDateTime.now().minusDays(1)
-        ),
-        PoolGamblerBetModel(
-            poolId = "X".repeat(15),
-            gamblerId = "X".repeat(15),
-            matchId = "X".repeat(15),
-            homeTeamId = "X".repeat(15),
-            homeTeamName = "Colombia",
-            matchScore = null,
-            betScore = TeamScore(2, 1),
-            awayTeamId = "X".repeat(15),
-            awayTeamName = "Argentina",
-            score = null,
-            matchDateTime = LocalDateTime.now().plusDays(1)
-        )
-    )
-}
-
-@Preview(showBackground = true)
+@Preview
 @Composable
-private fun PoolGamblerBetItemPreview(
-    @PreviewParameter(PoolGamblerBetItemParameterProvider::class) poolGamblerBet: PoolGamblerBetModel
-) {
+private fun NonEditableInitialPoolGamblerBetItemViewPreview() {
     MaterialTheme {
-        PoolGamblerBetItem(
-            poolGamblerBet = poolGamblerBet,
-            bet = {},
-            modifier = Modifier.fillMaxWidth()
-        )
+        Surface {
+            PoolGamblerBetItemView(
+                viewModelState = EditableViewState.Initial(poolGamblerBetDummyModel()),
+                viewState = PoolGamblerBetItemViewState.Visualization(
+                    partialPoolGamblerBetDummyModel()
+                ),
+                onViewStateChanged = {},
+                bet = {},
+                reset = {},
+                retryBet = {},
+                edit = {}
+            )
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun EditableInitialPoolGamblerBetItemViewPreview() {
+    MaterialTheme {
+        Surface {
+            PoolGamblerBetItemView(
+                viewModelState = EditableViewState.Initial(poolGamblerBetDummyModel()),
+                viewState = PoolGamblerBetItemViewState.Edition(partialPoolGamblerBetDummyModel()),
+                onViewStateChanged = {},
+                bet = {},
+                reset = {},
+                retryBet = {},
+                edit = {}
+            )
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun NonEditableLoadingPoolGamblerBetItemViewPreview() {
+    MaterialTheme {
+        Surface {
+            PoolGamblerBetItemView(
+                viewModelState = EditableViewState.Loading(
+                    current = poolGamblerBetDummyModel(),
+                    target = poolGamblerBetDummyModel()
+                ),
+                viewState = PoolGamblerBetItemViewState.Visualization(
+                    partialPoolGamblerBetDummyModel()
+                ),
+                onViewStateChanged = {},
+                bet = {},
+                reset = {},
+                retryBet = {},
+                edit = {}
+            )
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun EditableLoadingPoolGamblerBetItemViewPreview() {
+    MaterialTheme {
+        Surface {
+            PoolGamblerBetItemView(
+                viewModelState = EditableViewState.Loading(
+                    current = poolGamblerBetDummyModel(),
+                    target = poolGamblerBetDummyModel()
+                ),
+                viewState = PoolGamblerBetItemViewState.Edition(partialPoolGamblerBetDummyModel()),
+                onViewStateChanged = {},
+                bet = {},
+                reset = {},
+                retryBet = {},
+                edit = {}
+            )
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun NonEditableFailurePoolGamblerBetItemViewPreview() {
+    MaterialTheme {
+        Surface {
+            PoolGamblerBetItemView(
+                viewModelState = EditableViewState.Failure(
+                    current = poolGamblerBetDummyModel(),
+                    failed = poolGamblerBetDummyModel(),
+                    exception = UnknownLocalizedException()
+                ),
+                viewState = PoolGamblerBetItemViewState.Visualization(
+                    partialPoolGamblerBetDummyModel()
+                ),
+                onViewStateChanged = {},
+                bet = {},
+                reset = {},
+                retryBet = {},
+                edit = {}
+            )
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun EditableFailurePoolGamblerBetItemViewPreview() {
+    MaterialTheme {
+        Surface {
+            PoolGamblerBetItemView(
+                viewModelState = EditableViewState.Failure(
+                    current = poolGamblerBetDummyModel(),
+                    failed = poolGamblerBetDummyModel(),
+                    exception = UnknownLocalizedException()
+                ),
+                viewState = PoolGamblerBetItemViewState.Edition(partialPoolGamblerBetDummyModel()),
+                onViewStateChanged = {},
+                bet = {},
+                reset = {},
+                retryBet = {},
+                edit = {}
+            )
+        }
     }
 }

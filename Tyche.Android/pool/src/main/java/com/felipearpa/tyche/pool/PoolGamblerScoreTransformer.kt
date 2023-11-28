@@ -9,6 +9,6 @@ fun PoolGamblerScore.toPoolGamblerScoreModel() =
         gamblerId = this.gamblerId,
         gamblerUsername = this.gamblerUsername,
         currentPosition = this.currentPosition,
-        beforePosition = this.currentPosition,
+        beforePosition = this.beforePosition,
         score = this.score
     )

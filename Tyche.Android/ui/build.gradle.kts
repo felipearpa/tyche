@@ -68,6 +68,7 @@ dependencies {
     implementation(libs.gson)
 
     implementation(libs.pull.placeholder)
+    implementation(libs.cloudy)
 
     testImplementation(libs.junit)
     testImplementation(libs.kotlin.test)

@@ -4,8 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.felipearpa.data.account.AccountBundle
 import com.felipearpa.data.account.managment.application.CreateAccountUseCase
-import com.felipearpa.tyche.ui.LoadableViewState
-import com.felipearpa.tyche.ui.toLocalizedException
+import com.felipearpa.tyche.ui.state.LoadableViewState
+import com.felipearpa.tyche.ui.exception.toLocalizedException
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow

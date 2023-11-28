@@ -3,7 +3,7 @@ package com.felipearpa.tyche.ui.network
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import com.felipearpa.tyche.core.network.NetworkException
-import com.felipearpa.tyche.ui.LocalizedException
+import com.felipearpa.tyche.ui.exception.LocalizedException
 import com.felipearpa.tyche.ui.R
 
 sealed class NetworkLocalizedException : LocalizedException() {

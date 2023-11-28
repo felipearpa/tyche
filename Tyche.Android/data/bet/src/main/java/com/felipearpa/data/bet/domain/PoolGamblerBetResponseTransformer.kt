@@ -21,5 +21,6 @@ internal fun PoolGamblerBetResponse.toPoolGamblerBet() =
             awayTeamValue = this.awayTeamBet
         ),
         score = this.score,
-        matchDateTime = this.matchDateTime
+        matchDateTime = this.matchDateTime,
+        isLocked = this.isLocked
     )

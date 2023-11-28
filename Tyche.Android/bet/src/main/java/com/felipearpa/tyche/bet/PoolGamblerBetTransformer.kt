@@ -14,5 +14,6 @@ fun PoolGamblerBet.toPoolGamblerBetModel() =
         matchScore = this.matchScore,
         betScore = this.betScore,
         score = this.score,
-        matchDateTime = this.matchDateTime
+        matchDateTime = this.matchDateTime,
+        isLocked = this.isLocked
     )

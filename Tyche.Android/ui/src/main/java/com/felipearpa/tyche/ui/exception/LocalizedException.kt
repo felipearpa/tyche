@@ -1,4 +1,4 @@
-package com.felipearpa.tyche.ui
+package com.felipearpa.tyche.ui.exception
 
 import androidx.compose.runtime.Composable
 

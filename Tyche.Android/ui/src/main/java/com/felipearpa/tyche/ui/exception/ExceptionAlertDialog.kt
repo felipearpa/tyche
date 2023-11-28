@@ -1,4 +1,4 @@
-package com.felipearpa.tyche.ui
+package com.felipearpa.tyche.ui.exception
 
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.AlertDialog
@@ -13,17 +13,18 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.felipearpa.tyche.core.emptyString
+import com.felipearpa.tyche.ui.R
 
 @Composable
-fun FailureAlertDialog(exception: LocalizedException, onDismiss: () -> Unit) {
+fun ExceptionAlertDialog(failure: LocalizedException, onDismissClick: () -> Unit) {
     AlertDialog(
-        onDismissRequest = onDismiss,
+        onDismissRequest = onDismissClick,
         confirmButton = {
-            TextButton(onClick = onDismiss)
+            TextButton(onClick = onDismissClick)
             { Text(text = stringResource(id = R.string.done_action)) }
         },
-        title = { Text(text = exception.errorDescription ?: emptyString()) },
-        text = { Text(text = exception.failureReason ?: emptyString()) },
+        title = { Text(text = failure.failureReason ?: emptyString()) },
+        text = { Text(text = failure.errorDescription ?: emptyString()) },
         icon = {
             Icon(
                 painter = painterResource(id = R.drawable.ic_sentiment_sad),
@@ -37,6 +38,6 @@ fun FailureAlertDialog(exception: LocalizedException, onDismiss: () -> Unit) {
 
 @Composable
 @Preview
-private fun FailureAlertDialogPreview() {
-    FailureAlertDialog(exception = UnknownLocalizedException(), onDismiss = {})
+private fun ExceptionAlertDialogPreview() {
+    ExceptionAlertDialog(failure = UnknownLocalizedException(), onDismissClick = {})
 }
