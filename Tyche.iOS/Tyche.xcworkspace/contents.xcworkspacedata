@@ -2,6 +2,18 @@
 <Workspace
    version = "1.0">
    <FileRef
+      location = "group:Session">
+   </FileRef>
+   <FileRef
+      location = "group:DataBet">
+   </FileRef>
+   <FileRef
+      location = "group:DataPool">
+   </FileRef>
+   <FileRef
+      location = "group:Account">
+   </FileRef>
+   <FileRef
       location = "group:Bet">
    </FileRef>
    <FileRef
@@ -12,9 +24,6 @@
    </FileRef>
    <FileRef
       location = "group:UI">
-   </FileRef>
-   <FileRef
-      location = "group:User">
    </FileRef>
    <FileRef
       location = "group:Tyche/Tyche.xcodeproj">

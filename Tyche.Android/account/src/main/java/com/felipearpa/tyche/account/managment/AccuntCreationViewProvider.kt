@@ -2,7 +2,7 @@ package com.felipearpa.tyche.account.managment
 
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
-import com.felipearpa.data.account.AccountBundle
+import com.felipearpa.session.AccountBundle
 
 fun NavGraphBuilder.accountCreationView(
     onAccountCreated: (AccountBundle) -> Unit,

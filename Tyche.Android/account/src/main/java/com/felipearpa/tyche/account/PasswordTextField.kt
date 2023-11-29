@@ -23,8 +23,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import com.felipearpa.tyche.core.emptyString
-import com.felipearpa.tyche.account.R
-import com.felipearpa.data.account.type.Password
+import com.felipearpa.session.type.Password
 
 @Composable
 fun PasswordTextField(

@@ -1,12 +1,13 @@
 import SwiftUI
 import Swinject
 import Core
-import User
+import Session
+import DataPool
 import Pool
 
 struct PoolScoreListRouter: View {
     let diResolver: DIResolver
-    let user: UserProfile
+    let user: AccountBundle
     let onPoolSelected: (PoolProfile) -> Void
     
     @State private var path = NavigationPath()
@@ -31,7 +32,7 @@ struct PoolScoreListRouter: View {
 #Preview {
     PoolScoreListRouter(
         diResolver: DIResolver(resolver:Assembler([]).resolver),
-        user: UserProfile(userId: "userId", username: "username"),
+        user: AccountBundle(userId: "userId", username: "username"),
         onPoolSelected: { _ in }
     )
 }

@@ -7,7 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		D204461C2A367F2300390319 /* User in Frameworks */ = {isa = PBXBuildFile; productRef = D204461B2A367F2300390319 /* User */; };
+		550F21DD2B16C7EF004D5A51 /* DataBet in Frameworks */ = {isa = PBXBuildFile; productRef = 550F21DC2B16C7EF004D5A51 /* DataBet */; };
+		556EBA612B16CB8F008D4ABD /* Session in Frameworks */ = {isa = PBXBuildFile; productRef = 556EBA602B16CB8F008D4ABD /* Session */; };
+		55905C322B168C9F003EB79F /* Account in Frameworks */ = {isa = PBXBuildFile; productRef = 55905C312B168C9F003EB79F /* Account */; };
+		55905C362B16C23E003EB79F /* DataPool in Frameworks */ = {isa = PBXBuildFile; productRef = 55905C352B16C23E003EB79F /* DataPool */; };
 		D2127F392A2C2F240047DED7 /* TycheApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2127F382A2C2F240047DED7 /* TycheApp.swift */; };
 		D2127F3D2A2C2F260047DED7 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D2127F3C2A2C2F260047DED7 /* Assets.xcassets */; };
 		D2127F402A2C2F260047DED7 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D2127F3F2A2C2F260047DED7 /* Preview Assets.xcassets */; };
@@ -76,10 +79,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				D2C23D612A3E428D003CC860 /* UI in Frameworks */,
-				D204461C2A367F2300390319 /* User in Frameworks */,
+				55905C322B168C9F003EB79F /* Account in Frameworks */,
 				D2BB75112A5B65D500C7AE04 /* Pool in Frameworks */,
+				556EBA612B16CB8F008D4ABD /* Session in Frameworks */,
+				550F21DD2B16C7EF004D5A51 /* DataBet in Frameworks */,
 				D2C23D632A3E4290003CC860 /* Core in Frameworks */,
 				D29956132A74215600F8878E /* Bet in Frameworks */,
+				55905C362B16C23E003EB79F /* DataPool in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -207,11 +213,14 @@
 			);
 			name = Tyche;
 			packageProductDependencies = (
-				D204461B2A367F2300390319 /* User */,
 				D2C23D602A3E428D003CC860 /* UI */,
 				D2C23D622A3E4290003CC860 /* Core */,
 				D2BB75102A5B65D500C7AE04 /* Pool */,
 				D29956122A74215600F8878E /* Bet */,
+				55905C312B168C9F003EB79F /* Account */,
+				55905C352B16C23E003EB79F /* DataPool */,
+				550F21DC2B16C7EF004D5A51 /* DataBet */,
+				556EBA602B16CB8F008D4ABD /* Session */,
 			);
 			productName = Tyche;
 			productReference = D2127F352A2C2F240047DED7 /* Tyche.app */;
@@ -677,9 +686,21 @@
 /* End XCConfigurationList section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		D204461B2A367F2300390319 /* User */ = {
+		550F21DC2B16C7EF004D5A51 /* DataBet */ = {
 			isa = XCSwiftPackageProductDependency;
-			productName = User;
+			productName = DataBet;
+		};
+		556EBA602B16CB8F008D4ABD /* Session */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Session;
+		};
+		55905C312B168C9F003EB79F /* Account */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Account;
+		};
+		55905C352B16C23E003EB79F /* DataPool */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = DataPool;
 		};
 		D29956122A74215600F8878E /* Bet */ = {
 			isa = XCSwiftPackageProductDependency;

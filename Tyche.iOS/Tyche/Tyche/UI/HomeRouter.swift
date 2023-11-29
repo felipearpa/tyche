@@ -1,13 +1,14 @@
 import SwiftUI
 import Swinject
 import Core
-import User
-import Pool
+import Session
+import Account
+import DataPool
 
 struct HomeRouter: View {
     let diResolver: DIResolver
     
-    @State private var loggedInUser: UserProfile? = nil
+    @State private var loggedInUser: AccountBundle? = nil
     
     var body: some View {
         let _ = Self._printChanges()
@@ -25,7 +26,7 @@ struct HomeRouter: View {
 
 private struct HomeContent: View {
     let diResolver: DIResolver
-    let onUserLoggedIn: (UserProfile) -> Void
+    let onUserLoggedIn: (AccountBundle) -> Void
     
     @State private var path = NavigationPath()
     
@@ -37,7 +38,8 @@ private struct HomeContent: View {
                         viewModel: LoginViewModel(
                             loginUseCase: LoginUseCase(
                                 loginRepository: diResolver.resolve(LoginRepository.self)!,
-                                loginStorage: diResolver.resolve(LoginStorage.self)!
+                                authStorage: diResolver.resolve(AuthStorage.self)!,
+                                accountStorage: diResolver.resolve(AccountStorage.self)!
                             )
                         ),
                         onLogin: { loggedInUser in onUserLoggedIn(loggedInUser) }
@@ -45,8 +47,8 @@ private struct HomeContent: View {
                 }
         }
         .task {
-            let loginStorage = diResolver.resolve(LoginStorage.self)!
-            if let loggedInUser = try? await loginStorage.get()?.user {
+            let loginStorage = diResolver.resolve(AccountStorage.self)!
+            if let loggedInUser = try? await loginStorage.retrieve() {
                 onUserLoggedIn(loggedInUser)
             }
         }
@@ -55,7 +57,7 @@ private struct HomeContent: View {
 
 private struct PoolContent: View {
     let diResolver: DIResolver
-    let user: UserProfile
+    let user: AccountBundle
     
     @State private var activePool: PoolProfile? = nil
     

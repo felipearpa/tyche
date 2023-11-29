@@ -8,8 +8,8 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
-import com.felipearpa.data.account.AccountBundle
-import com.felipearpa.data.account.AccountStorage
+import com.felipearpa.session.AccountBundle
+import com.felipearpa.session.AccountStorage
 import com.felipearpa.tyche.home.ui.HomeRoute
 import com.felipearpa.tyche.pool.poolscore.PoolScoreListRoute
 import com.felipearpa.tyche.ui.theme.TycheTheme

@@ -105,7 +105,7 @@ dependencies {
     implementation(project(":bet"))
     implementation(project(":core"))
     implementation(project(":ui"))
-    implementation(project(":data:account"))
+    implementation(project(":session"))
     implementation(project(":data:pool"))
     implementation(project(":data:bet"))
 }

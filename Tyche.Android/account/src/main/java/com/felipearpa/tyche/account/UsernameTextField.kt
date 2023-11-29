@@ -15,8 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import com.felipearpa.tyche.account.R
-import com.felipearpa.data.account.type.Username
+import com.felipearpa.session.type.Username
 
 @Composable
 fun UsernameTextField(

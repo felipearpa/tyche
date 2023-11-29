@@ -1,12 +1,12 @@
 import SwiftUI
 import Swinject
 import Core
-import User
-import Pool
+import Session
+import DataPool
 
 struct PoolHomeRouter: View {
     let diResolver: DIResolver
-    let user: UserProfile
+    let user: AccountBundle
     let pool: PoolProfile
     
     @State private var path = NavigationPath()
@@ -25,7 +25,7 @@ struct PoolHomeRouter: View {
 #Preview {
     PoolHomeRouter(
         diResolver: DIResolver(resolver:Assembler([]).resolver),
-        user: UserProfile(userId: "userId", username: "username"),
+        user: AccountBundle(userId: "userId", username: "username"),
         pool: PoolProfile(poolId: "poolId")
     )
 }

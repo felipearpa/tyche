@@ -96,7 +96,7 @@ dependencies {
 dependencies {
     implementation(project(":core"))
     implementation(project(":ui"))
-    implementation(project(":data:account"))
+    implementation(project(":session"))
 }
 
 kapt {

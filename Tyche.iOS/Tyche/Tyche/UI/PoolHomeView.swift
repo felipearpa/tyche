@@ -2,7 +2,9 @@ import SwiftUI
 import Swinject
 import Core
 import UI
+import DataPool
 import Pool
+import DataBet
 import Bet
 
 private let defaultDebounceTimeInMilliseconds = 700

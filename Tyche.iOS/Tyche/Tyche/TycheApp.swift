@@ -1,9 +1,9 @@
 import SwiftUI
 import Swinject
 import Core
-import User
-import Pool
-import Bet
+import Session
+import DataPool
+import DataBet
 
 @main
 struct TycheApp: App {

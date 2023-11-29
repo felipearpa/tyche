@@ -1,6 +1,6 @@
 package com.felipearpa.tyche.di
 
-import com.felipearpa.data.account.AuthInterceptor
+import com.felipearpa.session.AuthInterceptor
 import com.google.gson.*
 import dagger.Module
 import dagger.Provides

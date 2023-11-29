@@ -2,8 +2,8 @@ package com.felipearpa.tyche.account.login
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.felipearpa.data.account.AccountBundle
-import com.felipearpa.data.account.login.application.LoginUseCase
+import com.felipearpa.session.AccountBundle
+import com.felipearpa.session.login.application.LoginUseCase
 import com.felipearpa.tyche.ui.state.LoadableViewState
 import com.felipearpa.tyche.ui.exception.toLocalizedException
 import dagger.hilt.android.lifecycle.HiltViewModel

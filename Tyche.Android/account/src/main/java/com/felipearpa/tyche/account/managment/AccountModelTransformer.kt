@@ -1,8 +1,8 @@
 package com.felipearpa.tyche.account.managment
 
-import com.felipearpa.data.account.managment.domain.Account
-import com.felipearpa.data.account.type.Password
-import com.felipearpa.data.account.type.Username
+import com.felipearpa.session.managment.domain.Account
+import com.felipearpa.session.type.Password
+import com.felipearpa.session.type.Username
 
 fun AccountModel.toAccount() =
     Account(

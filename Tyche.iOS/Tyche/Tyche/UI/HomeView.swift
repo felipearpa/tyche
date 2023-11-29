@@ -1,6 +1,6 @@
 import SwiftUI
 import UI
-import User
+import Account
 
 struct HomeView: View {
     let onLoginRequested: () -> Void

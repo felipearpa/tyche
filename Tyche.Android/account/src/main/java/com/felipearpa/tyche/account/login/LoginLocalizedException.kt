@@ -2,7 +2,7 @@ package com.felipearpa.tyche.account.login
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
-import com.felipearpa.data.account.login.domain.LoginException
+import com.felipearpa.session.login.domain.LoginException
 import com.felipearpa.tyche.account.R
 import com.felipearpa.tyche.ui.exception.LocalizedException
 

@@ -1,6 +1,6 @@
 package com.felipearpa.tyche.account.type
 
-import com.felipearpa.data.account.type.Password
+import com.felipearpa.session.type.Password
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertThrows
 import org.junit.Test

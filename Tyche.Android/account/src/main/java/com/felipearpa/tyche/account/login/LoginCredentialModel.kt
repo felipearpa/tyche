@@ -1,7 +1,7 @@
 package com.felipearpa.tyche.account.login
 
-import com.felipearpa.data.account.type.Password
-import com.felipearpa.data.account.type.Username
+import com.felipearpa.session.type.Password
+import com.felipearpa.session.type.Username
 
 data class LoginCredentialModel(
     val username: String,
