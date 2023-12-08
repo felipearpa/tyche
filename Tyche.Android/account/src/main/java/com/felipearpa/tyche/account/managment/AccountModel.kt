@@ -1,13 +1,11 @@
 package com.felipearpa.tyche.account.managment
 
-import com.felipearpa.session.type.Password
-import com.felipearpa.session.type.Username
+import com.felipearpa.tyche.session.type.Password
+import com.felipearpa.tyche.core.type.Email
 
 data class AccountModel(
-    val username: String,
+    val email: String,
     val password: String
 )
 
-fun AccountModel.hasErrors(): Boolean {
-    return !(Username.isValid(this.username) && Password.isValid(this.password))
-}
+fun AccountModel.isValid() = Email.isValid(this.email) && Password.isValid(this.password)

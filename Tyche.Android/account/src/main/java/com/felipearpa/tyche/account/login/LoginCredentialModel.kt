@@ -1,13 +1,11 @@
 package com.felipearpa.tyche.account.login
 
-import com.felipearpa.session.type.Password
-import com.felipearpa.session.type.Username
+import com.felipearpa.tyche.session.type.Password
+import com.felipearpa.tyche.core.type.Email
 
 data class LoginCredentialModel(
-    val username: String,
+    val email: String,
     val password: String
 )
 
-fun LoginCredentialModel.hasErrors(): Boolean {
-    return !(Username.isValid(this.username) && Password.isValid(this.password))
-}
+fun LoginCredentialModel.isValid() = Email.isValid(this.email) && Password.isValid(this.password)

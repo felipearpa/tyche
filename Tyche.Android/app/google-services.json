@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "201372633982",
+    "project_id": "tyche-588ce",
+    "storage_bucket": "tyche-588ce.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:201372633982:android:701168b1c141e98d83412f",
+        "android_client_info": {
+          "package_name": "com.felipearpa.tyche"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAoSNbacD0KaQATsmzbj9yE2FhAxAov2Cg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

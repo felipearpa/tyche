@@ -1,3 +1,3 @@
 namespace Felipearpa.User.Application
 
-type UserViewModel = { UserId: string; Username: string }
+type UserViewModel = { UserId: string; Email: string }

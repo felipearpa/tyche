@@ -7,7 +7,7 @@ import com.felipearpa.data.bet.domain.Bet
 import com.felipearpa.data.bet.domain.BetException
 import com.felipearpa.tyche.core.type.BetScore
 import com.felipearpa.tyche.core.type.TeamScore
-import com.felipearpa.tyche.ui.exception.toLocalizedException
+import com.felipearpa.tyche.ui.exception.orLocalizedException
 import com.felipearpa.tyche.ui.state.EditableViewState
 import com.felipearpa.tyche.ui.state.currentValue
 import dagger.assisted.Assisted
@@ -77,7 +77,7 @@ class PoolGamblerBetItemViewModel @AssistedInject constructor(
                                 failed = targetPoolGamblerBet,
                                 exception = exception
                                     .toBetLocalizedExceptionOnMatch()
-                                    .toLocalizedException()
+                                    .orLocalizedException()
                             )
                         )
                     }

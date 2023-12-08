@@ -1,11 +1,11 @@
 package com.felipearpa.tyche.account.managment
 
-import com.felipearpa.session.managment.domain.Account
-import com.felipearpa.session.type.Password
-import com.felipearpa.session.type.Username
+import com.felipearpa.tyche.session.managment.domain.Account
+import com.felipearpa.tyche.session.type.Password
+import com.felipearpa.tyche.core.type.Email
 
 fun AccountModel.toAccount() =
     Account(
-        username = Username(this.username),
+        email = Email(this.email),
         password = Password(this.password)
     )

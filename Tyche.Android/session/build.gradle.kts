@@ -8,15 +8,15 @@ plugins {
     alias(libs.plugins.com.google.dagger.hilt.android)
     alias(libs.plugins.org.jetbrains.kotlinx.serialization)
     alias(libs.plugins.org.jetbrains.kotlin.kapt)
+    alias(libs.plugins.google.services)
 }
 
 android {
-    namespace = "com.felipearpa.session"
+    namespace = "com.felipearpa.tyche.session"
     compileSdk = projectCompileSdk.toInt()
 
     defaultConfig {
         minSdk = projectMinSdk.toInt()
-
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
     }
@@ -24,10 +24,7 @@ android {
     buildTypes {
         release {
             isMinifyEnabled = false
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
-            )
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
     }
 
@@ -58,6 +55,9 @@ dependencies {
     kapt(libs.dagger.hilt.compiler)
 
     implementation(libs.kotlinx.serialization)
+
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.auth)
 
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)

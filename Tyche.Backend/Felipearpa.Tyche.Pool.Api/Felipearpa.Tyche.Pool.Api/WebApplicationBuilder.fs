@@ -1,7 +1,5 @@
 namespace Felipearpa.Tyche.Pool.Api
 
-open System
-open System.Text
 open Amazon.DynamoDBv2
 open Felipearpa.Core
 open Felipearpa.Core.Json
@@ -51,16 +49,15 @@ module WebApplicationBuilder =
         app.Services
             .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(fun options ->
-                options.RequireHttpsMetadata <- false
-                options.SaveToken <- true
+                options.Authority <- jwtSettings.Authority
 
                 options.TokenValidationParameters <-
                     TokenValidationParameters(
-                        ValidateIssuerSigningKey = true,
-                        IssuerSigningKey = SymmetricSecurityKey(Encoding.ASCII.GetBytes(jwtSettings.Key)),
-                        ValidateIssuer = false,
-                        ValidateAudience = false,
-                        ClockSkew = TimeSpan.Zero
+                        ValidateIssuer = true,
+                        ValidIssuer = jwtSettings.Issuer,
+                        ValidateAudience = true,
+                        ValidAudience = jwtSettings.Audience,
+                        ValidateLifetime = true
                     ))
         |> ignore
 

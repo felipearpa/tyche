@@ -5,14 +5,16 @@
     <string name="done_action">Hecho</string>
     <string name="create_action">Crear</string>
     <string name="login_action">Iniciar</string>
-    <string name="username_text">Nombre de usuario</string>
-    <string name="username_validation_failure_message">El nombre de usuario debe tener entre 3 y 16 caracteres y solo puede contener letras, números, guiones bajos y guiones</string>
+    <string name="email_text">Correo electrónico</string>
+    <string name="email_validation_failure_message">Debe ser un correo electrónico válido</string>
     <string name="password_text">Contraseña</string>
     <string name="password_validation_failure_message">La contraseña debe tener entre 8 y 16 caracteres e incluir al menos una letra mayúscula, una letra minúscula, un número y un carácter especial</string>
-    <string name="invalid_credential_failure_title">Inicio de sesión fallido</string>
-    <string name="invalid_credential_failure_message">Nombre de usuario o contraseña iconrrectos</string>
+    <string name="invalid_credential_failure_description">Inicio de sesión fallido</string>
+    <string name="invalid_credential_failure_reason">Nombre de usuario o contraseña iconrrectos</string>
+    <string name="invalid_credential_recovery_suggestion">Por favor, verifica tu nombre de usuario y contraseña y vuelve a intentarlo. Si has olvidado tu contraseña, puedes restablecerla utilizando el enlace \'¿Olvidaste tu contraseña?\'</string>
     <string name="user_creation_title">Creación</string>
-    <string name="user_already_registered_failure_title">Nombre de usuario ya en uso</string>
-    <string name="user_already_registered_failure_message">Este nombre de usuario ya está en uso. Por favor, elija otro</string>
+    <string name="account_already_registered_failure_description">Correo electrónico ya en uso</string>
+    <string name="account_already_registered_failure_reason">Parece que ya hay una cuenta asociada con esta dirección de correo electrónico</string>
     <string name="user_success_login_message">¡Felicidades! Has iniciado sesión correctamente y estás listo para hacer tu apuesta. ¡Que empiece la diversión!</string>
+    <string name="account_already_registered_failure_recovery_suggestion">Si esta es tu dirección de correo electrónico, intenta iniciar sesión</string>
 </resources>

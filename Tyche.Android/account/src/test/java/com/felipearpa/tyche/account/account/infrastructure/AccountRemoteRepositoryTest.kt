@@ -3,13 +3,13 @@ package com.felipearpa.tyche.account.account.infrastructure
 import com.felipearpa.tyche.core.network.HttpStatusCode
 import com.felipearpa.tyche.core.network.NetworkException
 import com.felipearpa.tyche.core.network.NetworkExceptionHandler
-import com.felipearpa.session.login.domain.LoginResponse
-import com.felipearpa.session.managment.domain.Account
-import com.felipearpa.session.managment.domain.AccountRemoteDataSource
-import com.felipearpa.session.managment.infrastructure.AccountRemoteRepository
-import com.felipearpa.session.login.domain.LoginException
-import com.felipearpa.session.type.Password
-import com.felipearpa.session.type.Username
+import com.felipearpa.tyche.session.authentication.domain.LoginResponse
+import com.felipearpa.tyche.session.managment.domain.Account
+import com.felipearpa.tyche.session.managment.domain.AccountRemoteDataSource
+import com.felipearpa.tyche.session.managment.infrastructure.AccountRemoteRepository
+import com.felipearpa.tyche.session.authentication.domain.LoginException
+import com.felipearpa.tyche.session.type.Password
+import com.felipearpa.tyche.session.type.Username
 import io.mockk.clearAllMocks
 import io.mockk.coEvery
 import io.mockk.mockk
@@ -48,7 +48,7 @@ class AccountRemoteRepositoryTest {
 
             val result = accountRemoteRepository.create(
                 account = Account(
-                    username = Username("tyche-user"),
+                    email = Username("tyche-user"),
                     password = Password("$1Pass1$")
                 )
             )

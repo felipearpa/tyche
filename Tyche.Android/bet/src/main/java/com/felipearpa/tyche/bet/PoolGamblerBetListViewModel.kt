@@ -6,56 +6,61 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
-import com.felipearpa.data.bet.application.BetUseCase
 import com.felipearpa.data.bet.application.GetPoolGamblerBetsUseCase
+import com.felipearpa.tyche.core.emptyString
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
-import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.stateIn
 
 private const val PAGE_SIZE = 50
 private const val PREFETCH_DISTANCE = 5
 
 class PoolGamblerBetListViewModel @AssistedInject constructor(
     @Assisted("poolId") private val poolId: String,
-    @Assisted("gamblerId") public val gamblerId: String,
-    private val getPoolGamblerBetsUseCase: GetPoolGamblerBetsUseCase,
-    private val betUseCase: BetUseCase
+    @Assisted("gamblerId") val gamblerId: String,
+    private val getPoolGamblerBetsUseCase: GetPoolGamblerBetsUseCase
 ) :
     ViewModel() {
 
     val pageSize = PAGE_SIZE
+    private var _searchText = MutableStateFlow(emptyString())
 
-    private lateinit var poolGamblerBetPagingSource: PoolGamblerBetPagingSource
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val poolGamblerBets = _searchText.flatMapLatest { newSearchText ->
+        buildPager(searchText = newSearchText).flow.cachedIn(scope = viewModelScope)
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.Lazily,
+        initialValue = PagingData.empty()
+    )
 
-    private var _searchText: String? = null
-
-    private var _poolGamblerBets = Pager(
-        config = PagingConfig(
-            pageSize = pageSize,
-            prefetchDistance = PREFETCH_DISTANCE,
-            enablePlaceholders = true
-        ),
-        pagingSourceFactory = {
-            PoolGamblerBetPagingSource(
-                pagingQuery = { next ->
-                    getPoolGamblerBetsPagingQuery(
-                        next = next,
-                        poolId = poolId,
-                        gamblerId = gamblerId,
-                        search = { _searchText },
-                        getPoolGamblerBetsUseCase = getPoolGamblerBetsUseCase
-                    )
-                }
-            ).also { poolPagingSource ->
-                this.poolGamblerBetPagingSource = poolPagingSource
+    private fun buildPager(searchText: String) =
+        Pager(
+            config = PagingConfig(
+                pageSize = pageSize,
+                prefetchDistance = PREFETCH_DISTANCE,
+                enablePlaceholders = true
+            ),
+            pagingSourceFactory = {
+                PoolGamblerBetPagingSource(
+                    pagingQuery = { next ->
+                        getPoolGamblerBetsPagingQuery(
+                            next = next,
+                            poolId = poolId,
+                            gamblerId = gamblerId,
+                            search = { searchText.ifEmpty { null } },
+                            getPoolGamblerBetsUseCase = getPoolGamblerBetsUseCase
+                        )
+                    }
+                )
             }
-        }
-    ).flow.cachedIn(scope = viewModelScope)
-    val poolGamblerBets: Flow<PagingData<PoolGamblerBetModel>>
-        get() = _poolGamblerBets
+        )
 
     fun search(searchText: String) {
-        _searchText = searchText.trim().ifEmpty { null }
-        poolGamblerBetPagingSource.invalidate()
+        _searchText.value = searchText.trim()
     }
 }

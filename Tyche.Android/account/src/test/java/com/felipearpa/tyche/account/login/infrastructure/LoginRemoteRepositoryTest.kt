@@ -3,13 +3,13 @@ package com.felipearpa.tyche.account.login.infrastructure
 import com.felipearpa.tyche.core.network.HttpStatusCode
 import com.felipearpa.tyche.core.network.NetworkException
 import com.felipearpa.tyche.core.network.NetworkExceptionHandler
-import com.felipearpa.session.login.domain.LoginResponse
-import com.felipearpa.session.managment.domain.Account
-import com.felipearpa.session.login.domain.LoginException
-import com.felipearpa.session.login.domain.LoginRemoteDataSource
-import com.felipearpa.session.login.infrastructure.LoginRemoteRepository
-import com.felipearpa.session.type.Password
-import com.felipearpa.session.type.Username
+import com.felipearpa.tyche.session.authentication.domain.LoginResponse
+import com.felipearpa.tyche.session.managment.domain.Account
+import com.felipearpa.tyche.session.authentication.domain.LoginException
+import com.felipearpa.tyche.session.authentication.domain.AuthenticationRemoteDataSource
+import com.felipearpa.tyche.session.authentication.infrastructure.AuthenticationRemoteRepository
+import com.felipearpa.tyche.session.type.Password
+import com.felipearpa.tyche.session.type.Username
 import io.mockk.clearAllMocks
 import io.mockk.coEvery
 import io.mockk.mockk
@@ -21,12 +21,12 @@ import org.junit.Test
 
 class LoginRemoteRepositoryTest {
 
-    private val loginRemoteDataSource = mockk<LoginRemoteDataSource>()
+    private val authenticationRemoteDataSource = mockk<AuthenticationRemoteDataSource>()
 
     private val networkExceptionHandler = mockk<NetworkExceptionHandler>()
 
-    private val loginRemoteRepository = LoginRemoteRepository(
-        loginRemoteDataSource = loginRemoteDataSource,
+    private val loginRemoteRepository = AuthenticationRemoteRepository(
+        authenticationRemoteDataSource = authenticationRemoteDataSource,
         networkExceptionHandler = networkExceptionHandler
     )
 
@@ -48,7 +48,7 @@ class LoginRemoteRepositoryTest {
 
             val result = loginRemoteRepository.login(
                 user = Account(
-                    username = Username("tyche-user"),
+                    email = Username("tyche-user"),
                     password = Password("$1Pass1$")
                 )
             )

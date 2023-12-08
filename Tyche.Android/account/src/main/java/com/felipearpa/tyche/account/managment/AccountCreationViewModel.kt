@@ -2,10 +2,10 @@ package com.felipearpa.tyche.account.managment
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.felipearpa.session.AccountBundle
-import com.felipearpa.session.managment.application.CreateAccountUseCase
+import com.felipearpa.tyche.session.AccountBundle
+import com.felipearpa.tyche.session.managment.application.CreateAccountUseCase
+import com.felipearpa.tyche.ui.exception.orLocalizedException
 import com.felipearpa.tyche.ui.state.LoadableViewState
-import com.felipearpa.tyche.ui.exception.toLocalizedException
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -37,8 +37,7 @@ class AccountCreationViewModel @Inject constructor(
                 .onFailure { exception ->
                     _state.emit(
                         LoadableViewState.Failure(
-                            exception.toAccountCreationLocalizedExceptionOnMatch()
-                                .toLocalizedException()
+                            exception.toAccountCreationLocalizedException().orLocalizedException()
                         )
                     )
                 }

@@ -6,6 +6,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -19,21 +21,23 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.felipearpa.session.AccountBundle
+import com.felipearpa.tyche.session.AccountBundle
+import com.felipearpa.tyche.account.EmailTextField
 import com.felipearpa.tyche.account.PasswordTextField
 import com.felipearpa.tyche.account.R
-import com.felipearpa.tyche.account.UsernameTextField
 import com.felipearpa.tyche.core.emptyString
-import com.felipearpa.tyche.ui.exception.FailureAlertDialog
-import com.felipearpa.tyche.ui.state.LoadableViewState
+import com.felipearpa.tyche.ui.exception.ExceptionAlertDialog
+import com.felipearpa.tyche.ui.exception.localizedExceptionOrNull
 import com.felipearpa.tyche.ui.progress.ProgressContainerView
+import com.felipearpa.tyche.ui.state.LoadableViewState
 import com.felipearpa.tyche.ui.state.exceptionOrNull
 import com.felipearpa.tyche.ui.state.isSuccess
-import com.felipearpa.tyche.ui.exception.localizedExceptionOrNull
 import com.felipearpa.tyche.ui.state.valueOrNull
+import com.felipearpa.tyche.ui.R as SharedR
 
 @Composable
 fun AccountCreationView(
@@ -62,17 +66,17 @@ private fun AccountCreationView(
     var account by remember {
         mutableStateOf(
             AccountModel(
-                username = emptyString(),
+                email = emptyString(),
                 password = emptyString()
             )
         )
     }
 
-    var hasErrors by remember { mutableStateOf(true) }
+    var isValid by remember { mutableStateOf(false) }
 
     val onEdited: (AccountModel) -> Unit = { newAccount ->
         account = newAccount
-        hasErrors = account.hasErrors()
+        isValid = account.isValid()
     }
 
     LaunchedEffect(viewState) {
@@ -83,7 +87,7 @@ private fun AccountCreationView(
     Scaffold(topBar = {
         AppTopBar(
             back = onBackRequested,
-            create = if (viewState is LoadableViewState.Loading || hasErrors) null else {
+            create = if (viewState is LoadableViewState.Loading || !isValid) null else {
                 { create(account) }
             }
         )
@@ -91,7 +95,7 @@ private fun AccountCreationView(
         Box(
             modifier = Modifier
                 .padding(paddingValues = paddingValues)
-                .padding(all = 8.dp)
+                .padding(start = 8.dp, end = 8.dp)
         ) {
             when (viewState) {
                 LoadableViewState.Initial -> AccountCreationView(
@@ -105,7 +109,7 @@ private fun AccountCreationView(
 
                 is LoadableViewState.Failure -> Column(modifier = Modifier.fillMaxWidth()) {
                     AccountCreationView(account = account)
-                    FailureAlertDialog(
+                    ExceptionAlertDialog(
                         exception = viewState.exceptionOrNull()!!.localizedExceptionOrNull()!!,
                         onDismiss = { reset() }
                     )
@@ -120,8 +124,11 @@ private fun AccountCreationView(
 private fun AppTopBar(back: (() -> Unit)?, create: (() -> Unit)?) {
     TopAppBar(title = { Text(text = stringResource(id = R.string.user_creation_title)) },
         navigationIcon = {
-            TextButton(onClick = back ?: {}, enabled = back != null) {
-                Text(text = stringResource(id = R.string.back_action))
+            IconButton(onClick = back ?: {}, enabled = back != null) {
+                Icon(
+                    painter = painterResource(id = SharedR.drawable.arrow_back),
+                    contentDescription = emptyString()
+                )
             }
         },
         actions = {
@@ -138,9 +145,9 @@ private fun AccountCreationView(
     onEdited: (AccountModel) -> Unit = {}
 ) {
     Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        UsernameTextField(
-            value = account.username,
-            onValueChanged = { newUsername -> onEdited(account.copy(username = newUsername)) },
+        EmailTextField(
+            value = account.email,
+            onValueChanged = { newUsername -> onEdited(account.copy(email = newUsername)) },
             modifier = Modifier.fillMaxWidth()
         )
 

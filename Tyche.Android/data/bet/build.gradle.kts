@@ -67,6 +67,7 @@ dependencies {
 
 dependencies {
     implementation(project(":core"))
+    implementation(project(":session"))
 }
 
 kapt {

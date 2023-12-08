@@ -7,21 +7,19 @@ open Amazon.DynamoDBv2
 open Amazon.DynamoDBv2.DataModel
 open Amazon.DynamoDBv2.DocumentModel
 open Amazon.DynamoDBv2.Model
-open Felipearpa.Crypto
+open Felipearpa.Type
 open Felipearpa.User.Domain
-open Felipearpa.User.Type
 open Microsoft.FSharp.Core
 
-type UserDynamoDbRepository(client: IAmazonDynamoDB, hasher: IHasher) =
+type UserDynamoDbRepository(client: IAmazonDynamoDB) =
+    [<Literal>]
+    let tableName = "Account"
 
     [<Literal>]
-    let tableName = "User"
+    let emailIndex = "email-index"
 
     [<Literal>]
-    let usernameIndex = "username-index"
-
-    [<Literal>]
-    let userNameText = "USERNAME"
+    let userNameText = "EMAIL"
 
     let context = new DynamoDBContext(client)
 
@@ -33,12 +31,11 @@ type UserDynamoDbRepository(client: IAmazonDynamoDB, hasher: IHasher) =
 
         dict
             [ "pk", AttributeValue(userEntity.Pk)
-              "userId", AttributeValue(userEntity.UserId)
-              "username", AttributeValue(userEntity.Username)
-              "hash", AttributeValue(userEntity.Hash) ]
+              "accountId", AttributeValue(userEntity.AccountId)
+              "email", AttributeValue(userEntity.Email) ]
 
     let buildUserUniqueAttributesMap user =
-        dict [ "pk", AttributeValue($"{userNameText}#{user.Username |> Username.value}") ]
+        dict [ "pk", AttributeValue($"{userNameText}#{user.Email |> Email.value}") ]
 
     let createUserInDbAsync createUserTransaction =
         async {
@@ -50,15 +47,15 @@ type UserDynamoDbRepository(client: IAmazonDynamoDB, hasher: IHasher) =
                 return Error UserCreationFailure.UserAlreadyRegistered
         }
 
-    let buildGetUserRequest (username: Username) =
-        let mutable keyConditionExpression = "#username = :username"
+    let buildGetUserRequest (email: Email) =
+        let mutable keyConditionExpression = "#email = :email"
 
         let mutable defaultAttributeValues =
-            dict [ ":username", AttributeValue(username |> Username.value) ]
+            dict [ ":email", AttributeValue(email |> Email.value) ]
 
-        let mutable defaultAttributeNames = dict [ "#username", "username" ]
+        let mutable defaultAttributeNames = dict [ "#email", "email" ]
 
-        let request = QueryRequest(TableName = tableName, IndexName = usernameIndex)
+        let request = QueryRequest(TableName = tableName, IndexName = emailIndex)
 
         request.KeyConditionExpression <- keyConditionExpression
         request.ExpressionAttributeValues <- Dictionary(defaultAttributeValues)
@@ -95,9 +92,9 @@ type UserDynamoDbRepository(client: IAmazonDynamoDB, hasher: IHasher) =
                 return result |> Result.map (fun _ -> user)
             }
 
-        member this.LoginAsync(username, password) =
+        member this.LoginAsync(email) =
             async {
-                let request = buildGetUserRequest username
+                let request = buildGetUserRequest email
 
                 let! response = client.QueryAsync(request) |> Async.AwaitTask
 
@@ -108,9 +105,6 @@ type UserDynamoDbRepository(client: IAmazonDynamoDB, hasher: IHasher) =
 
                 return
                     match maybeUser with
-                    | Some user ->
-                        match hasher.Verify(password, user.Hash) with
-                        | true -> user |> Ok
-                        | _ -> Error LoginFailure.InvalidPassword
+                    | Some user -> user |> Ok
                     | _ -> Error LoginFailure.UserNotFound
             }

@@ -18,7 +18,7 @@ let fakeUserRepository () =
         .Returns(
             Task.FromResult(
                 { User.UserId = Ulid.random ()
-                  Username = "felipearpa" |> Username.newOf
+                  Email = "felipearpa" |> Username.newOf
                   Hash = "hash" }
                 |> Ok
             )
@@ -45,7 +45,7 @@ let ``given an username and password when a command to login the user is perform
 
     let _ =
         loginCommandHandler.ExecuteAsync(
-            { LoginCommand.Username = "username" |> Username.newOf
+            { LoginCommand.Email = "username" |> Username.newOf
               Password = "#1Password1#" |> Password.newOf }
         )
         |> Async.RunSynchronously

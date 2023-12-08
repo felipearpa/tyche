@@ -8,10 +8,10 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
-import com.felipearpa.session.AccountBundle
-import com.felipearpa.session.AccountStorage
 import com.felipearpa.tyche.home.ui.HomeRoute
 import com.felipearpa.tyche.pool.poolscore.PoolScoreListRoute
+import com.felipearpa.tyche.session.AccountBundle
+import com.felipearpa.tyche.session.AccountStorage
 import com.felipearpa.tyche.ui.theme.TycheTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.runBlocking
@@ -51,7 +51,11 @@ fun Outlet(accountBundle: AccountBundle?) {
         homeView(navController = navController)
         loginView(navController = navController, initialRoute = initialRoute)
         accountCreationView(navController = navController, initialRoute = initialRoute)
-        poolScoreListView(navController = navController, loggedInGamblerId = accountBundle?.userId)
-        poolHomeView(navController = navController)
+        poolScoreListView(
+            navController = navController,
+            initialRoute = initialRoute,
+            loggedInGamblerId = accountBundle?.userId
+        )
+        poolHomeView(navController = navController, initialRoute = initialRoute)
     }
 }

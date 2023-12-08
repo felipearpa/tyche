@@ -11,7 +11,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -20,119 +19,80 @@ import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.felipearpa.tyche.core.emptyString
 import com.felipearpa.tyche.core.toLocalDateString
-import com.felipearpa.tyche.core.type.TeamScore
-import com.felipearpa.tyche.ui.DelayedTextField
-import com.felipearpa.tyche.ui.R
+import com.felipearpa.tyche.ui.CollapsableContainer
+import com.felipearpa.tyche.ui.SearchBar
 import com.felipearpa.tyche.ui.lazy.RefreshableLazyColumn
 import kotlinx.coroutines.flow.flowOf
 import java.time.LocalDate
-import java.time.LocalDateTime
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun PoolGamblerBetList(
     lazyPoolGamblerBets: LazyPagingItems<PoolGamblerBetModel>,
     filterText: String,
-    onFilterChange: (String) -> Unit,
-    onFilterDelayedChange: (String) -> Unit,
+    onFilterValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
-    fakeItemCount: Int? = null
+    fakeItemCount: Int = 0
 ) {
     val poolGamblerBetsCount = lazyPoolGamblerBets.itemCount
     var lastMatchDate: LocalDate? = null
 
-    RefreshableLazyColumn(
+    CollapsableContainer(
         modifier = modifier,
-        lazyItems = lazyPoolGamblerBets,
-        topContent = {
-            topContent(
+        collapsableTop = {
+            SearchBar(
                 filterValue = filterText,
-                onFilterValueChange = onFilterChange,
-                onFilterValueDelayedChange = onFilterDelayedChange
+                onFilterValueChange = onFilterValueChange,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 8.dp)
             )
-        },
-        loadingContent = fakeItemCount?.let { count ->
-            { loadingContent(count = count) }
-        } ?: {}
+        }
     ) {
-        for (index in 0 until poolGamblerBetsCount) {
-            val poolGamblerBet = lazyPoolGamblerBets.peek(index)!!
-            if (lastMatchDate != poolGamblerBet.matchDateTime.toLocalDate()) {
-                stickyHeader {
-                    Text(
-                        text = poolGamblerBet.matchDateTime.toLocalDateString(),
-                        fontWeight = FontWeight.Bold
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                }
-                lastMatchDate = poolGamblerBet.matchDateTime.toLocalDate()
-            }
-
-            item {
-                PoolGamblerBetItemView(viewModel = poolGamblerBetViewModel(poolGamblerBet = poolGamblerBet))
-                Divider(modifier = Modifier.padding(top = 8.dp))
-            }
-        }
-    }
-}
-
-private fun LazyListScope.topContent(
-    filterValue: String,
-    onFilterValueChange: (String) -> Unit,
-    onFilterValueDelayedChange: (String) -> Unit
-) {
-    item {
-        DelayedTextField(
+        RefreshableLazyColumn(
             modifier = Modifier.fillMaxWidth(),
-            value = filterValue,
-            onValueChange = onFilterValueChange,
-            onDelayedValueChange = onFilterValueDelayedChange
+            lazyItems = lazyPoolGamblerBets,
+            loadingContent = { PoolGamblerBetFakeList(count = fakeItemCount) },
+            loadingContentOnConcatenate = { poolGamblerBetFakeItem() }
         ) {
-            Text(text = stringResource(id = R.string.searching_label))
-        }
+            for (index in 0 until poolGamblerBetsCount) {
+                val poolGamblerBet = lazyPoolGamblerBets.peek(index)!!
+                if (lastMatchDate != poolGamblerBet.matchDateTime.toLocalDate()) {
+                    stickyHeader {
+                        Text(
+                            text = poolGamblerBet.matchDateTime.toLocalDateString(),
+                            fontWeight = FontWeight.Bold
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                    }
+                    lastMatchDate = poolGamblerBet.matchDateTime.toLocalDate()
+                }
 
-        Spacer(modifier = Modifier.height(8.dp))
+                item {
+                    PoolGamblerBetItemView(viewModel = poolGamblerBetViewModel(poolGamblerBet = poolGamblerBet))
+                    Divider(modifier = Modifier.padding(top = 8.dp))
+                }
+            }
+        }
     }
 }
 
-private fun LazyListScope.loadingContent(count: Int) {
-    for (i in 1..count) {
-        item {
-            PoolGamblerBetFakeItem(modifier = Modifier.fillMaxWidth())
-            Divider(modifier = Modifier.padding(top = 8.dp))
-        }
+private fun LazyListScope.poolGamblerBetFakeItem() {
+    item {
+        PoolGamblerBetFakeItem(modifier = Modifier.fillMaxWidth())
+        Divider(modifier = Modifier.padding(top = 8.dp))
     }
 }
 
 @Preview
 @Composable
 fun PoolGamblerBetListPreview() {
-    val items = flowOf(
-        PagingData.from(
-            listOf(
-                PoolGamblerBetModel(
-                    poolId = "X".repeat(15),
-                    gamblerId = "X".repeat(15),
-                    matchId = "X".repeat(15),
-                    homeTeamId = "X".repeat(15),
-                    homeTeamName = "Colombia",
-                    matchScore = TeamScore(2, 1),
-                    betScore = TeamScore(2, 1),
-                    awayTeamId = "X".repeat(15),
-                    awayTeamName = "Argentina",
-                    score = 10,
-                    matchDateTime = LocalDateTime.now().minusDays(1),
-                    isLocked = false
-                )
-            )
-        )
-    ).collectAsLazyPagingItems()
+    val items = flowOf(PagingData.from(poolGamblerBetDummyModels())).collectAsLazyPagingItems()
     Surface {
         PoolGamblerBetList(
             lazyPoolGamblerBets = items,
             filterText = emptyString(),
-            onFilterChange = {},
-            onFilterDelayedChange = {}
+            onFilterValueChange = {}
         )
     }
 }

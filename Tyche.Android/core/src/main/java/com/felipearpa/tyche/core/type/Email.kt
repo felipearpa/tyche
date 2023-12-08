@@ -11,18 +11,29 @@ private const val PATTERN = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}\$"
 @JvmInline
 value class Email(val value: String) {
     init {
-        checkEmpty()
-        checkEmailPattern()
-    }
-
-    private fun checkEmpty() {
-        require(value.isNotEmpty()) { "Value must be not empty" }
-    }
-
-    private fun checkEmailPattern() {
-        val pattern = Regex(PATTERN)
-        require(pattern.containsMatchIn(value)) { "Value must be a valid email" }
+        isValid(value)
     }
 
     override fun toString(): String = value
+
+    companion object {
+        fun isValid(value: String): Boolean {
+            return try {
+                checkEmpty(value)
+                checkEmailPattern(value)
+                true
+            } catch (ignored: IllegalArgumentException) {
+                false
+            }
+        }
+
+        private fun checkEmpty(value: String) {
+            require(value.isNotEmpty()) { "Value must be not empty" }
+        }
+
+        private fun checkEmailPattern(value: String) {
+            val pattern = Regex(PATTERN)
+            require(pattern.containsMatchIn(value)) { "Value must be a valid email" }
+        }
+    }
 }

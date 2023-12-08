@@ -23,7 +23,7 @@ let fakeUserRepository () =
         .Returns(
             Task.FromResult(
                 { User.UserId = Ulid.random ()
-                  Username = "username" |> Username.newOf
+                  Email = "username" |> Username.newOf
                   Hash = "hash" }
                 |> Ok
             )
@@ -64,7 +64,7 @@ let ``given a valid request to create an user when the request is performed then
 
     request.Content <-
         JsonContent.Create(
-            { CreateUserRequest.Username = "felipearpa"
+            { CreateUserRequest.Email = "felipearpa"
               Password = "#1Password1#" }
         )
 

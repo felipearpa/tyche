@@ -1,7 +1,5 @@
 namespace Felipearpa.User.Application.Login
 
-open Felipearpa.User.Type
+open Felipearpa.Type
 
-type LoginCommand =
-    { Username: Username
-      Password: Password }
+type LoginCommand = { Email: Email }

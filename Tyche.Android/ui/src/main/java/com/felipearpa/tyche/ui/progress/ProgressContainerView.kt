@@ -12,18 +12,20 @@ import androidx.compose.ui.draw.blur
 import androidx.compose.ui.unit.dp
 import com.skydoves.cloudy.Cloudy
 
+private const val BLUR_RADIUS = 5
+
 @Composable
 fun ProgressContainerView(content: @Composable () -> Unit) {
     Box {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
-            Cloudy(modifier = Modifier.fillMaxSize(), radius = 5) {
+            Cloudy(modifier = Modifier.fillMaxSize(), radius = BLUR_RADIUS) {
                 content()
             }
         } else {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .blur(radius = 5.dp)
+                    .blur(radius = BLUR_RADIUS.dp)
             ) {
                 content()
             }

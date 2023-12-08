@@ -5,14 +5,16 @@
     <string name="done_action">Done</string>
     <string name="create_action">Create</string>
     <string name="login_action">Login</string>
-    <string name="username_text">Username</string>
-    <string name="username_validation_failure_message">Username must be between 3–16 characters and can only contain letters, numbers, underscores, and hyphens</string>
+    <string name="email_text">Email</string>
+    <string name="email_validation_failure_message">Must be a valid email</string>
     <string name="password_text">Password</string>
     <string name="password_validation_failure_message">Password must be between 8–16 characters and include at least one uppercase letter, one lowercase letter, one number, and one special character</string>
-    <string name="invalid_credential_failure_title">Login failed</string>
-    <string name="invalid_credential_failure_message">Incorrect username or password</string>
+    <string name="invalid_credential_failure_description">Login failed</string>
+    <string name="invalid_credential_failure_reason">Incorrect username or password</string>
+    <string name="invalid_credential_recovery_suggestion">Please check your username and password and try again. If you\'ve forgotten your password, you can reset it using the \'Forgot Password\' link</string>
     <string name="user_creation_title">Creation</string>
-    <string name="user_already_registered_failure_title">Username is already in use</string>
-    <string name="user_already_registered_failure_message">This username is already in use. Please choose another one</string>
+    <string name="account_already_registered_failure_description">Email is already in use</string>
+    <string name="account_already_registered_failure_reason">It looks like there\'s already an account associated with this email address</string>
     <string name="user_success_login_message">Congratulations! You\'re in the game and ready to place your bet. Let the fun begin!</string>
+    <string name="account_already_registered_failure_recovery_suggestion">If this is your email address, please try logging in</string>
 </resources>

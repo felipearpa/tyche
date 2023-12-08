@@ -1,6 +1,6 @@
 package com.felipearpa.tyche.di
 
-import com.felipearpa.session.AuthInterceptor
+import com.felipearpa.tyche.session.AuthInterceptor
 import com.google.gson.*
 import dagger.Module
 import dagger.Provides
@@ -18,7 +18,6 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object NetworkProvider {
-
     @Provides
     @Singleton
     fun provideHttpLoggingInterceptor(): HttpLoggingInterceptor =

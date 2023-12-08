@@ -1,14 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="done_action">Hecho</string>
-    <string name="remote_communication_failure_title">Error de red</string>
-    <string name="remote_communication_failure_message">¡Vaya! En este momento tenemos problemas para conectarnos a nuestros servidores. Por favor, revise su conexión a Internet y vuelva a intentarlo más tarde. Si el problema persiste, nuestro equipo siempre está aquí para ayudarle</string>
+    <string name="remote_communication_failure_description">Error de red</string>
+    <string name="remote_communication_failure_reason">En este momento tenemos problemas para conectarnos a nuestros servidores</string>
     <string name="unknown_failure_description">Error inesperado</string>
-    <string name="unknown_failure_reason">¡Vaya! Algo ha salido mal y no estamos seguros de qué es. Por favor, inténtelo de nuevo más tarde o póngase en contacto con nuestro amable equipo de atención al cliente para obtener ayuda</string>
+    <string name="unknown_failure_reason">Algo ha salido mal y no estamos seguros de qué es</string>
     <string name="searching_label">Escriba para buscar</string>
     <string name="retry_action">Reintentar</string>
     <string name="empty_list_message">Nada para mostrar</string>
+    <string name="empty_list_recovery_message">Intenta ajustar la configuración de los filtros o restablecerlos para ver más elementos</string>
     <string name="cancel_action">Cancelar</string>
     <string name="save_action">Guardar</string>
     <string name="edit_action">Editar</string>
+    <string name="unknown_failure_recovery_suggestion">Si el problema persiste, contacta a nuestro equipo de soporte para obtener ayuda</string>
+    <string name="remote_communication_failure_recovery_suggestion">Por favor, revise su conexión a Internet y vuelva a intentarlo más tarde. Si el problema persiste, contacta a nuestro equipo de soporte para obtener ayuda</string>
 </resources>

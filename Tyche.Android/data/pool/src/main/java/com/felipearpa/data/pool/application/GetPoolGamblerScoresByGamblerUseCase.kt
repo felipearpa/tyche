@@ -3,8 +3,7 @@ package com.felipearpa.data.pool.application
 import com.felipearpa.data.pool.domain.PoolGamblerScoreRepository
 import javax.inject.Inject
 
-class GetPoolGamblerScoresByGamblerUseCase
-@Inject constructor(private val poolGamblerScoreRepository: PoolGamblerScoreRepository) {
+class GetPoolGamblerScoresByGamblerUseCase @Inject constructor(private val poolGamblerScoreRepository: PoolGamblerScoreRepository) {
     suspend fun execute(gamblerId: String, next: String? = null, searchText: String? = null) =
         poolGamblerScoreRepository.getPoolGamblerScoresByGambler(
             gamblerId = gamblerId,

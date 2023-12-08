@@ -18,8 +18,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.constraintlayout.compose.ConstraintLayout
-import androidx.constraintlayout.compose.Dimension
 import com.felipearpa.tyche.pool.PoolGamblerScoreModel
 import com.felipearpa.tyche.pool.difference
 import com.felipearpa.tyche.pool.poolGamblerScoreDummyModel
@@ -32,23 +30,18 @@ fun GamblerScoreItem(
     modifier: Modifier = Modifier,
     shimmerModifier: Modifier = Modifier
 ) {
-    ConstraintLayout(modifier = modifier) {
-        val (dataView, progressView) = createRefs()
-
+    Row(
+        modifier = modifier,
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
         Row(
-            modifier = Modifier.constrainAs(dataView) {
-                top.linkTo(parent.top)
-                bottom.linkTo(parent.bottom)
-                start.linkTo(parent.start)
-                end.linkTo(progressView.start)
-                width = Dimension.fillToConstraints
-            },
-            horizontalArrangement = Arrangement.spacedBy(4.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            poolGamblerScore.currentPosition?.let { currentPosition ->
+            poolGamblerScore.currentPosition?.let { nonNullCurrentPosition ->
                 Position(
-                    position = currentPosition,
+                    position = nonNullCurrentPosition,
                     isActiveGambler = isLoggedIn,
                     shimmerModifier = shimmerModifier
                 )
@@ -56,16 +49,7 @@ fun GamblerScoreItem(
             Text(text = poolGamblerScore.gamblerUsername, modifier = shimmerModifier)
         }
 
-        Row(
-            modifier = Modifier.constrainAs(progressView) {
-                top.linkTo(parent.top)
-                bottom.linkTo(parent.bottom)
-                start.linkTo(dataView.end)
-                end.linkTo(parent.end)
-            },
-            horizontalArrangement = Arrangement.spacedBy(4.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
+        Row {
             poolGamblerScore.score?.let { score ->
                 Text(text = score.toString(), modifier = shimmerModifier)
             }
@@ -86,10 +70,11 @@ fun GamblerScoreItem(
 fun Position(
     position: Int,
     isActiveGambler: Boolean,
+    modifier: Modifier = Modifier,
     shimmerModifier: Modifier = Modifier
 ) {
     Box(
-        modifier = Modifier
+        modifier = modifier
             .size(32.dp)
             .clip(CircleShape)
             .background(color = if (isActiveGambler) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.secondaryContainer)

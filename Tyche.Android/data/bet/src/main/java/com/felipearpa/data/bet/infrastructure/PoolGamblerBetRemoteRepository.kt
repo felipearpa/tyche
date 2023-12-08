@@ -10,7 +10,6 @@ import com.felipearpa.data.bet.domain.toPoolGamblerBet
 import com.felipearpa.tyche.core.network.HttpStatusCode
 import com.felipearpa.tyche.core.network.NetworkExceptionHandler
 import com.felipearpa.tyche.core.network.recoverHttpException
-import com.felipearpa.tyche.core.network.recoverNetworkException
 import com.felipearpa.tyche.core.paging.CursorPage
 import javax.inject.Inject
 
@@ -31,8 +30,6 @@ internal class PoolGamblerBetRemoteRepository @Inject constructor(
                 next = next,
                 searchText = searchText
             ).map { poolGamblerBetResponse -> poolGamblerBetResponse.toPoolGamblerBet() }
-        }.recoverNetworkException { exception ->
-            return Result.failure(exception)
         }
     }
 
@@ -40,9 +37,9 @@ internal class PoolGamblerBetRemoteRepository @Inject constructor(
         return networkExceptionHandler.handle {
             poolGamblerBetRemoteDataSource.bet(betRequest = bet.toBetRequest()).toPoolGamblerBet()
         }.recoverHttpException { exception ->
-            return when (exception.httpStatusCode) {
-                HttpStatusCode.FORBIDDEN -> Result.failure(BetException.Forbidden)
-                else -> Result.failure(exception)
+            when (exception.httpStatusCode) {
+                HttpStatusCode.FORBIDDEN -> BetException.Forbidden
+                else -> exception
             }
         }
     }

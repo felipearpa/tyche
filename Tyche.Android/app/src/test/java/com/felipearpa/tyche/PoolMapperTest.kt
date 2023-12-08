@@ -3,7 +3,7 @@ package com.felipearpa.tyche
 import com.felipearpa.core.type.NonEmptyString
 import com.felipearpa.core.type.Ulid
 import com.quamto.gamblerPool.domain.PoolResponse
-import com.felipearpa.tyche.poolHome.mapper.PoolMapper
+import com.felipearpa.tyche.poolhome.mapper.PoolMapper
 import org.junit.Assert.assertEquals
 import org.junit.Test
 

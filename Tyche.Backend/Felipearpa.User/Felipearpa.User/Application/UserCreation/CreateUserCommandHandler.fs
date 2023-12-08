@@ -4,7 +4,6 @@ open Felipearpa.Crypto
 open Felipearpa.Type
 open Felipearpa.User.Application
 open Felipearpa.User.Domain
-open Felipearpa.User.Type
 
 type CreateUserCommandHandler(userRepository: IUserRepository, hasher: IHasher) =
 
@@ -12,8 +11,7 @@ type CreateUserCommandHandler(userRepository: IUserRepository, hasher: IHasher) 
         async {
             let user =
                 { User.UserId = Ulid.random ()
-                  Username = userCommand.Username
-                  Hash = userCommand.Password |> Password.value |> hasher.Hash }
+                  Email = userCommand.Email }
 
             let! result = userRepository.CreateAsync user
 

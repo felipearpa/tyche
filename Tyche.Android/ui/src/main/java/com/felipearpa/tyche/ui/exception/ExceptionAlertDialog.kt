@@ -1,5 +1,8 @@
 package com.felipearpa.tyche.ui.exception
 
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
@@ -10,21 +13,46 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.felipearpa.tyche.core.emptyString
 import com.felipearpa.tyche.ui.R
 
 @Composable
-fun ExceptionAlertDialog(failure: LocalizedException, onDismissClick: () -> Unit) {
+fun ExceptionAlertDialog(exception: LocalizedException, onDismiss: () -> Unit) {
     AlertDialog(
-        onDismissRequest = onDismissClick,
+        onDismissRequest = onDismiss,
         confirmButton = {
-            TextButton(onClick = onDismissClick)
+            TextButton(onClick = onDismiss)
             { Text(text = stringResource(id = R.string.done_action)) }
         },
-        title = { Text(text = failure.failureReason ?: emptyString()) },
-        text = { Text(text = failure.errorDescription ?: emptyString()) },
+        title = {
+            exception.errorDescription?.let { errorDescription ->
+                Text(text = errorDescription)
+            }
+        },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                exception.failureReason?.let { failureReason ->
+                    Text(
+                        text = failureReason,
+                        style = MaterialTheme.typography.failureReason,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+
+                exception.recoverySuggestion?.let { nonNullRecoverySuggestion ->
+                    Text(
+                        text = nonNullRecoverySuggestion,
+                        style = MaterialTheme.typography.recoverySuggestion,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+            }
+        },
         icon = {
             Icon(
                 painter = painterResource(id = R.drawable.ic_sentiment_sad),
@@ -39,5 +67,5 @@ fun ExceptionAlertDialog(failure: LocalizedException, onDismissClick: () -> Unit
 @Composable
 @Preview
 private fun ExceptionAlertDialogPreview() {
-    ExceptionAlertDialog(failure = UnknownLocalizedException(), onDismissClick = {})
+    ExceptionAlertDialog(exception = UnknownLocalizedException(), onDismiss = {})
 }

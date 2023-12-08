@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -18,6 +19,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.felipearpa.tyche.core.emptyString
 import com.felipearpa.tyche.ui.R
+import com.felipearpa.tyche.ui.exception.errorDescription
 
 @Composable
 fun Failure(modifier: Modifier = Modifier, onRetryClick: () -> Unit) {
@@ -37,15 +39,30 @@ fun Failure(modifier: Modifier = Modifier, onRetryClick: () -> Unit) {
             modifier = Modifier.fillMaxWidth()
         ) {
             Text(
-                text = stringResource(id = R.string.remote_communication_failure_message),
-                textAlign = TextAlign.Start,
-                softWrap = true
+                modifier = Modifier.fillMaxWidth(),
+                text = stringResource(id = R.string.remote_communication_failure_description),
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.errorDescription
+            )
+
+            Text(
+                modifier = Modifier.fillMaxWidth(),
+                text = stringResource(id = R.string.remote_communication_failure_reason),
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.bodyMedium
+            )
+
+            Text(
+                modifier = Modifier.fillMaxWidth(),
+                text = stringResource(id = R.string.remote_communication_failure_recovery_suggestion),
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.bodySmall
             )
         }
 
 
         Box(
-            contentAlignment = Alignment.BottomEnd,
+            contentAlignment = Alignment.Center,
             modifier = Modifier.fillMaxWidth()
         ) {
             OutlinedButton(onClick = onRetryClick) {

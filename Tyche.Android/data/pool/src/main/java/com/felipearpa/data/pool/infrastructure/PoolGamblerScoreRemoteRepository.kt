@@ -5,7 +5,6 @@ import com.felipearpa.data.pool.domain.PoolGamblerScoreRemoteDataSource
 import com.felipearpa.data.pool.domain.PoolGamblerScoreRepository
 import com.felipearpa.data.pool.domain.toPoolGamblerScore
 import com.felipearpa.tyche.core.network.NetworkExceptionHandler
-import com.felipearpa.tyche.core.network.recoverNetworkException
 import com.felipearpa.tyche.core.paging.CursorPage
 import javax.inject.Inject
 
@@ -26,8 +25,6 @@ internal class PoolGamblerScoreRemoteRepository @Inject constructor(
                 next = next,
                 searchText = searchText
             ).map { gamblerPoolResponse -> gamblerPoolResponse.toPoolGamblerScore() }
-        }.recoverNetworkException { exception ->
-            return Result.failure(exception)
         }
     }
 
@@ -42,8 +39,6 @@ internal class PoolGamblerScoreRemoteRepository @Inject constructor(
                 next = next,
                 searchText = searchText
             ).map { gamblerPoolResponse -> gamblerPoolResponse.toPoolGamblerScore() }
-        }.recoverNetworkException { exception ->
-            return Result.failure(exception)
         }
     }
 }

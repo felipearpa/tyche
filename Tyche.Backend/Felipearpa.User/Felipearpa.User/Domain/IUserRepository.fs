@@ -1,6 +1,6 @@
 namespace Felipearpa.User.Domain
 
-open Felipearpa.User.Type
+open Felipearpa.Type
 
 type UserCreationFailure = | UserAlreadyRegistered
 
@@ -12,4 +12,4 @@ type IUserRepository =
 
     abstract CreateAsync: User -> Result<User, UserCreationFailure> Async
 
-    abstract LoginAsync: Username * string -> Result<User, LoginFailure> Async
+    abstract LoginAsync: Email -> Result<User, LoginFailure> Async

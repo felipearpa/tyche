@@ -11,23 +11,24 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.felipearpa.tyche.core.emptyString
+import com.felipearpa.tyche.ui.useDebounce
 
 @Composable
 fun PoolGamblerBetListView(viewModel: PoolGamblerBetListViewModel) {
     var filterText by remember { mutableStateOf(emptyString()) }
     val lazyItems = viewModel.poolGamblerBets.collectAsLazyPagingItems()
     val onFilterChange = { newFilterText: String -> filterText = newFilterText }
-    val onAsyncFilterChange = viewModel::search
     val pageSize = viewModel.pageSize
+
+    filterText.useDebounce { newFilterText -> viewModel.search(newFilterText) }
 
     PoolGamblerBetList(
         lazyPoolGamblerBets = lazyItems,
         filterText = filterText,
-        onFilterChange = onFilterChange,
-        onFilterDelayedChange = onAsyncFilterChange,
+        onFilterValueChange = onFilterChange,
         fakeItemCount = pageSize,
         modifier = Modifier
-            .padding(start = 8.dp, end = 8.dp, bottom = 8.dp)
+            .padding(horizontal = 8.dp)
             .fillMaxWidth()
     )
 }

@@ -2,5 +2,4 @@
 <resources>
     <string name="position_label">Posición %d</string>
     <string name="gambler_pool_list_title">Mis pollas</string>
-    <string name="searching_label">Escriba para buscar</string>
 </resources>

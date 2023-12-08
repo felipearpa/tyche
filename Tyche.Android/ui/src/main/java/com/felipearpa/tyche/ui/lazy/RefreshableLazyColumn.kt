@@ -2,7 +2,10 @@ package com.felipearpa.tyche.ui.lazy
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -14,20 +17,21 @@ import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 fun <T : Any> RefreshableLazyColumn(
     modifier: Modifier = Modifier,
     lazyItems: LazyPagingItems<T>,
-    topContent: (LazyListScope.() -> Unit) = {},
-    loadingContent: (LazyListScope.() -> Unit) = {},
+    state: LazyListState = rememberLazyListState(),
+    loadingContent: @Composable () -> Unit = {},
+    loadingContentOnConcatenate: (LazyListScope.() -> Unit) = {},
     itemContent: LazyListScope.() -> Unit
 ) = RefreshableLazyColumn(
     modifier = modifier,
     lazyItems = lazyItems,
+    state = state,
     contentPadding = PaddingValues(8.dp),
     verticalArrangement = Arrangement.spacedBy(8.dp),
-    topContent = topContent,
     loadingContent = loadingContent,
-    loadingContentOnConcatenate = { contentOnConcatenating() },
+    loadingContentOnConcatenate = loadingContentOnConcatenate,
     errorContentOnConcatenate = { contentOnConcatenateError(lazyItems = lazyItems) },
-    errorContent = { contentOnError(lazyItems = lazyItems) },
-    emptyContent = { contentOnEmpty() },
+    errorContent = { ContentOnError(lazyItems = lazyItems) },
+    emptyContent = { ContentOnEmpty() },
     itemContent = itemContent
 )
 
@@ -35,18 +39,20 @@ fun <T : Any> RefreshableLazyColumn(
 fun <T : Any> RefreshableLazyColumn(
     modifier: Modifier = Modifier,
     lazyItems: LazyPagingItems<T>,
+    state: LazyListState = rememberLazyListState(),
     contentPadding: PaddingValues = PaddingValues(0.dp),
     verticalArrangement: Arrangement.Vertical = Arrangement.Bottom,
-    topContent: (LazyListScope.() -> Unit) = {},
-    loadingContent: (LazyListScope.() -> Unit) = {},
+    loadingContent: @Composable () -> Unit = {},
     loadingContentOnConcatenate: (LazyListScope.() -> Unit) = {},
     errorContentOnConcatenate: (LazyListScope.() -> Unit) = {},
-    errorContent: (LazyListScope.(Throwable) -> Unit) = {},
-    emptyContent: (LazyListScope.() -> Unit) = {},
+    errorContent: @Composable (Throwable) -> Unit = {},
+    emptyContent: @Composable () -> Unit = {},
     itemContent: LazyListScope.() -> Unit
 ) {
     val swipeRefreshState = rememberSwipeRefreshState(false)
+
     SwipeRefresh(
+        modifier = modifier,
         state = swipeRefreshState,
         onRefresh = {
             swipeRefreshState.isRefreshing = false
@@ -54,9 +60,9 @@ fun <T : Any> RefreshableLazyColumn(
         }
     ) {
         LazyColumn(
-            modifier = modifier,
+            modifier = Modifier.fillMaxWidth(),
             lazyItems = lazyItems,
-            topContent = topContent,
+            state = state,
             contentPadding = contentPadding,
             verticalArrangement = verticalArrangement,
             loadingContent = loadingContent,

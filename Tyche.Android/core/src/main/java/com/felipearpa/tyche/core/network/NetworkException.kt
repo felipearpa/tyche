@@ -5,16 +5,16 @@ sealed class NetworkException : Throwable() {
     data object RemoteCommunication : NetworkException()
 }
 
-inline fun <Target, Value : Target> Result<Value>.recoverNetworkException(transform: (exception: NetworkException) -> Target): Result<Target> {
+fun <Value> Result<Value>.recoverNetworkException(transform: (exception: NetworkException) -> Throwable): Result<Value> {
     return when (val exception = this.exceptionOrNull()) {
-        is NetworkException -> Result.success(transform(exception))
+        is NetworkException -> Result.failure(transform(exception))
         else -> this
     }
 }
 
-inline fun <Target, Value : Target> Result<Value>.recoverHttpException(transform: (exception: NetworkException.Http) -> Target): Result<Target> {
+fun <Value> Result<Value>.recoverHttpException(transform: (exception: NetworkException.Http) -> Throwable): Result<Value> {
     return when (val exception = this.exceptionOrNull()) {
-        is NetworkException.Http -> Result.success(transform(exception))
+        is NetworkException.Http -> Result.failure(transform(exception))
         else -> this
     }
 }

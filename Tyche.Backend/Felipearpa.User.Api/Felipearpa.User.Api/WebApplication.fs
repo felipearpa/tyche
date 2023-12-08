@@ -48,7 +48,7 @@ module WebApplication =
                                            Token =
                                             jwtGenerator.GenerateToken(
                                                 { JwtSubject.NameIdentifier = userViewModel.UserId
-                                                  Name = userViewModel.Username }
+                                                  Name = userViewModel.Email }
                                             ) |}
                                     )
                                 | Error failure -> Results.Conflict(failure)
@@ -75,7 +75,7 @@ module WebApplication =
                                            Token =
                                             jwtGenerator.GenerateToken(
                                                 { JwtSubject.NameIdentifier = userViewModel.UserId
-                                                  Name = userViewModel.Username }
+                                                  Name = userViewModel.Email }
                                             ) |}
                                     )
                                 | Error _ -> Results.Unauthorized()

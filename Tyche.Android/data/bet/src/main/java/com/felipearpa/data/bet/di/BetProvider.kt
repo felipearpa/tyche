@@ -4,6 +4,7 @@ import com.felipearpa.data.bet.application.GetPoolGamblerBetsUseCase
 import com.felipearpa.data.bet.domain.PoolGamblerBetRemoteDataSource
 import com.felipearpa.data.bet.domain.PoolGamblerBetRepository
 import com.felipearpa.data.bet.infrastructure.PoolGamblerBetRemoteRepository
+import com.felipearpa.tyche.session.Auth
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -30,6 +31,6 @@ internal interface PoolRepositoryProvider {
 @InstallIn(SingletonComponent::class)
 internal object PoolDataSourceProvider {
     @Provides
-    fun providePoolGamblerScoreRemoteDataSource(retrofit: Retrofit): PoolGamblerBetRemoteDataSource =
+    fun providePoolGamblerScoreRemoteDataSource(@Auth retrofit: Retrofit): PoolGamblerBetRemoteDataSource =
         retrofit.create(PoolGamblerBetRemoteDataSource::class.java)
 }

@@ -2,10 +2,10 @@ package com.felipearpa.tyche.account.login
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.felipearpa.session.AccountBundle
-import com.felipearpa.session.login.application.LoginUseCase
+import com.felipearpa.tyche.session.AccountBundle
+import com.felipearpa.tyche.session.authentication.application.LoginUseCase
+import com.felipearpa.tyche.ui.exception.orLocalizedException
 import com.felipearpa.tyche.ui.state.LoadableViewState
-import com.felipearpa.tyche.ui.exception.toLocalizedException
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,9 +21,7 @@ class LoginViewModel @Inject constructor(private val loginUseCase: LoginUseCase)
         get() = _state.asStateFlow()
 
     fun reset() {
-        viewModelScope.launch {
-            _state.emit(LoadableViewState.Initial)
-        }
+        _state.value = LoadableViewState.Initial
     }
 
     fun login(loginCredential: LoginCredentialModel) {
@@ -34,7 +32,7 @@ class LoginViewModel @Inject constructor(private val loginUseCase: LoginUseCase)
                 .onFailure { exception ->
                     _state.emit(
                         LoadableViewState.Failure(
-                            exception.toLoginLocalizedExceptionOnMatch().toLocalizedException()
+                            exception.toLoginLocalizedException().orLocalizedException()
                         )
                     )
                 }
