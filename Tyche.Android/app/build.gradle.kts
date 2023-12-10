@@ -1,6 +1,9 @@
 val composeCompilerVersion: String by rootProject.extra
+
 val projectCompileSdk: String by project
 val projectMinSdk: String by project
+
+val urlBasePath: String by project
 
 @Suppress("DSL_SCOPE_VIOLATION")
 plugins {
@@ -27,9 +30,15 @@ android {
     }
 
     buildTypes {
-        getByName("release") {
+        release {
             isMinifyEnabled = false
-            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+        }
+        all {
+            buildConfigField(type = "String", name = "URL_BASE_BATH", value = """"$urlBasePath"""")
         }
     }
 
@@ -55,7 +64,13 @@ android {
             excludes.add("/META-INF/{AL2.0,LGPL2.1}")
         }
         resources {
-            excludes.addAll(listOf("/META-INF/{AL2.0,LGPL2.1}", "/META-INF/LICENSE.md", "/META-INF/LICENSE-notice.md"))
+            excludes.addAll(
+                listOf(
+                    "/META-INF/{AL2.0,LGPL2.1}",
+                    "/META-INF/LICENSE.md",
+                    "/META-INF/LICENSE-notice.md"
+                )
+            )
         }
     }
 }

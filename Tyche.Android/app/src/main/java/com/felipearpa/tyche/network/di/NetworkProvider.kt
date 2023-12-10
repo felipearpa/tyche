@@ -1,6 +1,7 @@
-package com.felipearpa.tyche.di
+package com.felipearpa.tyche.network.di
 
-import com.felipearpa.tyche.session.AuthInterceptor
+import com.felipearpa.tyche.core.network.UrlBasePathProvider
+import com.felipearpa.tyche.network.LocalUrlBasePathProvider
 import com.google.gson.*
 import dagger.Module
 import dagger.Provides
@@ -25,13 +26,9 @@ object NetworkProvider {
 
     @Provides
     @Singleton
-    fun provideOkHttpClient(
-        httpLoggingInterceptor: HttpLoggingInterceptor,
-        authInterceptor: AuthInterceptor
-    ): OkHttpClient =
+    fun provideOkHttpClient(httpLoggingInterceptor: HttpLoggingInterceptor): OkHttpClient =
         OkHttpClient.Builder().apply {
             interceptors().add(httpLoggingInterceptor)
-            interceptors().add(authInterceptor)
         }.build()
 
     @Provides
@@ -50,9 +47,17 @@ object NetworkProvider {
 
     @Provides
     @Singleton
-    fun provideRetrofit(gson: Gson, okHttpClient: OkHttpClient): Retrofit =
+    fun provideUrlBasePathProvider(): UrlBasePathProvider = LocalUrlBasePathProvider()
+
+    @Provides
+    @Singleton
+    fun provideRetrofit(
+        urlBasePathProvider: UrlBasePathProvider,
+        gson: Gson,
+        okHttpClient: OkHttpClient
+    ): Retrofit =
         Retrofit.Builder().apply {
-            baseUrl("https://guiding-terminally-cicada.ngrok-free.app")
+            baseUrl(urlBasePathProvider.basePath)
             addConverterFactory(GsonConverterFactory.create(gson))
             client(okHttpClient)
         }.build()
