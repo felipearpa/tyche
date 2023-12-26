@@ -24,3 +24,8 @@ val ColorScheme.shimmer
     @Composable
     @ReadOnlyComposable
     get() = if (!isSystemInDarkTheme()) lightShimmerColor else darkShimmerColor
+
+val ColorScheme.progressBackground
+    @Composable
+    @ReadOnlyComposable
+    get() = if (!isSystemInDarkTheme()) lightProgressBackgroundColor else darkProgressBackgroundColor

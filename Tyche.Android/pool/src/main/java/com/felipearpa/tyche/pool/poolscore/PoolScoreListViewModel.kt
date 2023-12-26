@@ -21,7 +21,7 @@ private const val PAGE_SIZE = 50
 private const val PREFETCH_DISTANCE = 5
 
 class PoolScoreListViewModel @AssistedInject constructor(
-    @Assisted private val gamblerId: String,
+    @Assisted val gamblerId: String,
     private val getPoolGamblerScoresByGamblerUseCase: GetPoolGamblerScoresByGamblerUseCase
 ) :
     ViewModel() {
@@ -50,7 +50,7 @@ class PoolScoreListViewModel @AssistedInject constructor(
                     pagingQuery = { next ->
                         getPoolGamblerScoresByGamblerPagingQuery(
                             next = next,
-                            gamblerId = gamblerId,
+                            gamblerId = "01H1CMCDHH99FH8FDY36S0YH3A",
                             search = { searchText.ifEmpty { null } },
                             getPoolGamblerScoresByGamblerUseCase = getPoolGamblerScoresByGamblerUseCase
                         )

@@ -18,35 +18,13 @@ fun <T : Any> RefreshableLazyColumn(
     modifier: Modifier = Modifier,
     lazyItems: LazyPagingItems<T>,
     state: LazyListState = rememberLazyListState(),
-    loadingContent: @Composable () -> Unit = {},
-    loadingContentOnConcatenate: (LazyListScope.() -> Unit) = {},
-    itemContent: LazyListScope.() -> Unit
-) = RefreshableLazyColumn(
-    modifier = modifier,
-    lazyItems = lazyItems,
-    state = state,
-    contentPadding = PaddingValues(8.dp),
-    verticalArrangement = Arrangement.spacedBy(8.dp),
-    loadingContent = loadingContent,
-    loadingContentOnConcatenate = loadingContentOnConcatenate,
-    errorContentOnConcatenate = { contentOnConcatenateError(lazyItems = lazyItems) },
-    errorContent = { ContentOnError(lazyItems = lazyItems) },
-    emptyContent = { ContentOnEmpty() },
-    itemContent = itemContent
-)
-
-@Composable
-fun <T : Any> RefreshableLazyColumn(
-    modifier: Modifier = Modifier,
-    lazyItems: LazyPagingItems<T>,
-    state: LazyListState = rememberLazyListState(),
     contentPadding: PaddingValues = PaddingValues(0.dp),
     verticalArrangement: Arrangement.Vertical = Arrangement.Bottom,
     loadingContent: @Composable () -> Unit = {},
     loadingContentOnConcatenate: (LazyListScope.() -> Unit) = {},
     errorContentOnConcatenate: (LazyListScope.() -> Unit) = {},
-    errorContent: @Composable (Throwable) -> Unit = {},
-    emptyContent: @Composable () -> Unit = {},
+    errorContent: @Composable (Throwable) -> Unit = { ContentOnError(lazyItems = lazyItems) },
+    emptyContent: @Composable () -> Unit = { ContentOnEmpty() },
     itemContent: LazyListScope.() -> Unit
 ) {
     val swipeRefreshState = rememberSwipeRefreshState(false)

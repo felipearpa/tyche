@@ -19,7 +19,10 @@ import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.material3.rememberDrawerState
+import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -71,6 +74,7 @@ fun PoolHomeView(
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun PoolHomeView(
     state: LoadableViewState<PoolModel>,
@@ -82,6 +86,7 @@ private fun PoolHomeView(
     var selectedTabIndex by remember { mutableStateOf(Tab.GAMBLER_SCORE) }
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val coroutineScope = rememberCoroutineScope()
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
 
     when (state) {
         is LoadableViewState.Failure -> ExceptionView(exception = state() as LocalizedException)
@@ -110,7 +115,8 @@ private fun PoolHomeView(
                                     }
                                 }
                             },
-                            poolScoreListRequested = onPoolScoreListRequested
+                            poolScoreListRequested = onPoolScoreListRequested,
+                            scrollBehavior = scrollBehavior
                         )
                     } else if (state is LoadableViewState.Loading) {
                         AppFakeTopBar()
@@ -191,6 +197,7 @@ private fun PoolHomeView(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun AppFakeTopBar() {
     AppTopBar(
@@ -198,7 +205,8 @@ private fun AppFakeTopBar() {
         onAccountRequested = {},
         poolScoreListRequested = {},
         modifier = Modifier.fillMaxWidth(),
-        shimmerModifier = Modifier.shimmer()
+        shimmerModifier = Modifier.shimmer(),
+        scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
     )
 }
 
@@ -209,7 +217,8 @@ private fun AppTopBar(
     onAccountRequested: () -> Unit,
     modifier: Modifier = Modifier,
     shimmerModifier: Modifier = Modifier,
-    poolScoreListRequested: () -> Unit = {}
+    poolScoreListRequested: () -> Unit = {},
+    scrollBehavior: TopAppBarScrollBehavior
 ) {
     TopAppBar(
         title = {
@@ -230,6 +239,7 @@ private fun AppTopBar(
                 )
             }
         },
-        modifier = modifier
+        modifier = modifier,
+        scrollBehavior = scrollBehavior
     )
 }

@@ -1,122 +1,51 @@
 package com.felipearpa.tyche.ui.progress
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.felipearpa.tyche.core.emptyString
 import com.felipearpa.tyche.ui.R
-import com.felipearpa.tyche.ui.theme.negative
-import com.felipearpa.tyche.ui.theme.neutral
-import com.felipearpa.tyche.ui.theme.positive
-import kotlin.math.abs
+
+private const val LABEL_ANIMATION = "ProgressIndicator"
 
 @Composable
-private fun StableProgressIndicator(
-    modifier: Modifier = Modifier,
-    shimmerModifier: Modifier = Modifier
-) {
-    Box(modifier = modifier) {
-        Icon(
-            modifier = shimmerModifier
-                .size(24.dp, 24.dp)
-                .testTag("stableProgressIndicator"),
-            painter = painterResource(id = R.drawable.ic_horizontal_rule),
-            contentDescription = emptyString(),
-            tint = MaterialTheme.colorScheme.neutral
-        )
-    }
+fun ProgressIndicator(modifier: Modifier = Modifier) {
+    val infiniteTransition = rememberInfiniteTransition(label = LABEL_ANIMATION)
+    val angle by infiniteTransition.animateFloat(
+        initialValue = 0f,
+        targetValue = 360f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(2000, easing = LinearEasing),
+            repeatMode = RepeatMode.Restart
+        ),
+        label = LABEL_ANIMATION
+    )
+
+    Icon(
+        painter = painterResource(id = R.drawable.tyche_logo),
+        contentDescription = emptyString(),
+        tint = MaterialTheme.colorScheme.primary,
+        modifier = modifier
+            .size(width = 64.dp, height = 64.dp)
+            .rotate(angle)
+    )
 }
 
+@Preview
 @Composable
-private fun UpProgressIndicator(
-    modifier: Modifier = Modifier,
-    shimmerModifier: Modifier = Modifier,
-    progress: Int
-) {
-    Row(modifier = modifier.testTag("upProgressIndicator")) {
-        Icon(
-            modifier = shimmerModifier.size(24.dp, 24.dp),
-            painter = painterResource(id = R.drawable.ic_arrow_upward),
-            contentDescription = emptyString(),
-            tint = MaterialTheme.colorScheme.positive
-        )
-        Text(
-            text = abs(progress).toString(),
-            style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.positive,
-            modifier = shimmerModifier
-        )
-    }
-}
-
-@Composable
-private fun DownProgressIndicator(
-    modifier: Modifier = Modifier,
-    shimmerModifier: Modifier = Modifier,
-    progress: Int
-) {
-    Row(modifier = modifier.testTag("downProgressIndicator")) {
-        Icon(
-            modifier = shimmerModifier.size(24.dp, 24.dp),
-            painter = painterResource(id = R.drawable.ic_arrow_downward),
-            contentDescription = emptyString(),
-            tint = MaterialTheme.colorScheme.negative
-        )
-        Text(
-            text = abs(progress).toString(),
-            style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.negative,
-            modifier = shimmerModifier
-        )
-    }
-}
-
-@Composable
-fun ProgressIndicator(
-    modifier: Modifier = Modifier,
-    shimmerModifier: Modifier = Modifier,
-    difference: Int
-) {
-    when {
-        difference > 0 -> UpProgressIndicator(
-            modifier = modifier,
-            shimmerModifier = shimmerModifier,
-            progress = difference
-        )
-
-        difference < 0 -> DownProgressIndicator(
-            modifier = modifier,
-            shimmerModifier = shimmerModifier,
-            progress = difference
-        )
-
-        else -> StableProgressIndicator(modifier = modifier, shimmerModifier = shimmerModifier)
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun StableProgressIndicatorPreview() {
-    StableProgressIndicator()
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun UpProgressIndicatorPreview() {
-    UpProgressIndicator(progress = 1)
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun DownProgressIndicatorPreview() {
-    DownProgressIndicator(progress = 1)
+private fun ProgressIndicatorPreview() {
+    ProgressIndicator()
 }

@@ -10,6 +10,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -61,7 +63,12 @@ fun <Value : Any> LazyListScope.contentOnConcatenateError(lazyItems: LazyPagingI
 
 @Composable
 fun <Value : Any> ContentOnError(lazyItems: LazyPagingItems<Value>) {
-    Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+    ) {
         Failure(modifier = Modifier.fillMaxWidth()) {
             lazyItems.retry()
         }
@@ -70,7 +77,12 @@ fun <Value : Any> ContentOnError(lazyItems: LazyPagingItems<Value>) {
 
 @Composable
 fun ContentOnEmpty() {
-    Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+    ) {
         Empty(modifier = Modifier.fillMaxWidth())
     }
 }

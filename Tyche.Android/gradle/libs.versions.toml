@@ -6,7 +6,7 @@ junit = "4.13.2"
 androidx-test-ext-junit = "1.1.5"
 espresso-core = "3.5.1"
 lifecycle-runtime-ktx = "2.6.2"
-activity-compose = "1.8.1"
+activity-compose = "1.8.2"
 compose-bom = "2023.10.01"
 dagger-hilt = "2.48.1"
 paging-compose = "3.2.1"
@@ -17,7 +17,7 @@ pull-refresh = "0.30.1"
 pull-placeholder = "0.30.1"
 pager = "0.26.5-rc"
 coil = "2.2.2"
-navigation-compose = "2.7.5"
+navigation-compose = "2.7.6"
 hilt-navigation-compose = "1.1.0"
 constraint-layout-compose = "1.0.1"
 io-mockk = "1.13.5"
@@ -25,9 +25,8 @@ kotlinx-coroutines-test = "1.7.1"
 kotlin-test = "1.9.20"
 androidx-security-crypto = "1.0.0"
 appcompat = "1.6.1"
-material = "1.10.0"
+material = "1.11.0"
 kotlinx-serialization = "1.6.0"
-cloudy = "0.1.2"
 google-services = "4.4.0"
 firebase-bom = "32.7.0"
 
@@ -70,7 +69,6 @@ kotlin-test = { group = "org.jetbrains.kotlin", name = "kotlin-test", version.re
 appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 kotlinx-serialization = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
-cloudy = { group = "com.github.skydoves", name = "cloudy", version.ref = "cloudy" }
 firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebase-bom" }
 firebase-auth = { group = "com.google.firebase", name = "firebase-auth" }
 

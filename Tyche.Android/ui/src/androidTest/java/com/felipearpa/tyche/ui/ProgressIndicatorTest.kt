@@ -3,7 +3,6 @@ package com.felipearpa.tyche.ui
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
-import com.felipearpa.tyche.ui.progress.ProgressIndicator
 import org.junit.Rule
 import org.junit.Test
 

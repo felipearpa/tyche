@@ -4,8 +4,8 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -27,12 +27,16 @@ import androidx.compose.ui.unit.dp
 import com.felipearpa.tyche.core.emptyString
 import com.felipearpa.tyche.core.type.TeamScore
 import com.felipearpa.tyche.ui.exception.UnknownLocalizedException
+import com.felipearpa.tyche.ui.progress.ProgressIndicator
 import com.felipearpa.tyche.ui.state.EditableViewState
 import com.felipearpa.tyche.ui.state.currentValue
+import com.felipearpa.tyche.ui.theme.boxSpacing
 import com.felipearpa.tyche.ui.R as SharedR
 
+private val iconSize = 24.dp
+
 @Composable
-fun PoolGamblerBetItemView(viewModel: PoolGamblerBetItemViewModel) {
+fun PoolGamblerBetItemView(viewModel: PoolGamblerBetItemViewModel, modifier: Modifier = Modifier) {
     val viewModelState by viewModel.state.collectAsState()
     var viewState by remember { mutableStateOf(PoolGamblerBetItemViewState.emptyVisualization()) }
 
@@ -50,7 +54,8 @@ fun PoolGamblerBetItemView(viewModel: PoolGamblerBetItemViewModel) {
         },
         reset = viewModel::reset,
         retryBet = viewModel::retryBet,
-        edit = { viewState = PoolGamblerBetItemViewState.Edition(viewState.value) }
+        edit = { viewState = PoolGamblerBetItemViewState.Edition(viewState.value) },
+        modifier = modifier
     )
 
     LaunchedEffect(viewModelState) {
@@ -72,6 +77,7 @@ fun PoolGamblerBetItemView(viewModel: PoolGamblerBetItemViewModel) {
 
 @Composable
 private fun PoolGamblerBetItemView(
+    modifier: Modifier = Modifier,
     viewModelState: EditableViewState<PoolGamblerBetModel>,
     viewState: PoolGamblerBetItemViewState,
     onViewStateChanged: (PoolGamblerBetItemViewState) -> Unit = {},
@@ -81,8 +87,8 @@ private fun PoolGamblerBetItemView(
     edit: () -> Unit = {}
 ) {
     Column(
-        modifier = Modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(MaterialTheme.boxSpacing.medium)
     ) {
         when (viewModelState) {
             is EditableViewState.Initial, is EditableViewState.Success -> {
@@ -186,7 +192,7 @@ private fun EditableDefaultActionBar(
     ) {
         StateIndicator(viewModelState = viewModelState, isEditable = true)
 
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        Row(horizontalArrangement = Arrangement.spacedBy(MaterialTheme.boxSpacing.medium)) {
             OutlinedButton(onClick = reset) {
                 Text(text = stringResource(id = SharedR.string.cancel_action))
             }
@@ -251,7 +257,7 @@ private fun FailureActionBar(
     ) {
         StateIndicator(viewModelState = viewModelState)
 
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        Row(horizontalArrangement = Arrangement.spacedBy(MaterialTheme.boxSpacing.medium)) {
             OutlinedButton(onClick = reset) {
                 Text(text = stringResource(id = SharedR.string.cancel_action))
             }
@@ -282,7 +288,9 @@ private fun StateIndicator(
                     tint = MaterialTheme.colorScheme.error
                 )
 
-            is EditableViewState.Loading -> CircularProgressIndicator()
+            is EditableViewState.Loading -> ProgressIndicator(
+                modifier = Modifier.size(width = iconSize, height = iconSize)
+            )
 
             is EditableViewState.Initial, is EditableViewState.Success -> {
                 val poolGamblerBet = when (viewModelState) {

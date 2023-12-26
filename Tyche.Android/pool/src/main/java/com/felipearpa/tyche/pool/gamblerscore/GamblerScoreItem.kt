@@ -21,7 +21,7 @@ import androidx.compose.ui.unit.dp
 import com.felipearpa.tyche.pool.PoolGamblerScoreModel
 import com.felipearpa.tyche.pool.difference
 import com.felipearpa.tyche.pool.poolGamblerScoreDummyModel
-import com.felipearpa.tyche.ui.progress.ProgressIndicator
+import com.felipearpa.tyche.ui.ProgressIndicator
 
 @Composable
 fun GamblerScoreItem(

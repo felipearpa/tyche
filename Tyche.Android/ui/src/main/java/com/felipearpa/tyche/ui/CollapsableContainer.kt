@@ -71,9 +71,9 @@ fun CollapsableContainer(
         )
         Box(
             modifier = Modifier
-                .padding(top = with(LocalDensity.current) {
-                    (collapsableTopHeight + offset).roundToInt().toDp()
-                })
+                .offset {
+                    IntOffset(x = 0, (collapsableTopHeight + offset).roundToInt())
+                }
         ) {
             if (isCollapsableTopHeightGotten)
                 mainContent()

@@ -17,4 +17,15 @@
     <string name="account_already_registered_failure_reason">Parece que ya hay una cuenta asociada con esta dirección de correo electrónico</string>
     <string name="user_success_login_message">¡Felicidades! Has iniciado sesión correctamente y estás listo para hacer tu apuesta. ¡Que empiece la diversión!</string>
     <string name="account_already_registered_failure_recovery_suggestion">Si esta es tu dirección de correo electrónico, intenta iniciar sesión</string>
+    <string name="account_verified_title">Correo Electrónico Verificado: ¡Que Comiencen los Juegos!</string>
+    <string name="account_verified_description">¡Felicidades, la verificación de tu correo electrónico está completa! Estás totalmente preparado para embarcarte en un emocionante viaje en el mundo de los juegos de apuestas</string>
+    <string name="start_action">Iniciar</string>
+    <string name="sign_in_with_email_link_authentication_failure_description">Fallo en la validación del enlace</string>
+    <string name="sign_in_with_email_link_authentication_failure_reason">El enlace que has utilizado es inválido o ha expirado</string>
+    <string name="sign_in_with_email_link_authentication_failure_recovery_suggestion">Por favor, solicita un nuevo enlace de verificación. Si sigues teniendo problemas, contacta a nuestro equipo de soporte para obtener ayuda</string>
+    <string name="verification_email_sent_title">Enlace de Verificación Enviado</string>
+    <string name="verification_email_sent_description">Se ha enviado un enlace de verificación a tu correo electrónico. Por favor, revisa tu bandeja de entrada y abre el enlace en el mismo dispositivo para completar el proceso, ya que es necesario para la verificación</string>
+    <string name="sign_in_with_email_link_invalid_link_failure_description">Enlace de inicio de sesión inválido</string>
+    <string name="sign_in_with_email_link_invalid_link_failure_reason">El enlace de inicio de sesión en el que hiciste clic es inválido o ha expirado</string>
+    <string name="sign_in_with_email_link_invalid_link_failure_recovery_suggestion">Por favor, solicita un nuevo enlace de inicio de sesión. Si este problema se repite, contacta a nuestro equipo de soporte para obtener más ayuda</string>
 </resources>

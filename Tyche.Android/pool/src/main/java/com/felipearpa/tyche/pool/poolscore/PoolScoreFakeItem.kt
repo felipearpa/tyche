@@ -1,7 +1,6 @@
 package com.felipearpa.tyche.pool.poolscore
 
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -17,10 +16,8 @@ fun PoolScoreFakeItem(modifier: Modifier = Modifier) {
     )
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 private fun PoolScoreFakeItemPreview() {
-    Surface {
-        PoolScoreFakeItem(modifier = Modifier.fillMaxWidth())
-    }
+    PoolScoreFakeItem(modifier = Modifier.fillMaxWidth())
 }

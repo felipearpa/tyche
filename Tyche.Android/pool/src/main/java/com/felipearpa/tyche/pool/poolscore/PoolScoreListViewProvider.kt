@@ -27,7 +27,7 @@ fun NavGraphBuilder.poolScoreListView(
             navBackStackEntry.arguments?.getString(PoolScoreListRoute.Param.GAMBLER_ID.id)!!
         PoolScoreListView(
             viewModel = poolScoreListViewModel(gamblerId = gamblerId),
-            settingsView = settingsView,
+            drawerView = settingsView,
             onDetailRequested = onDetailRequested
         )
     }

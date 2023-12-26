@@ -1,0 +1,21 @@
+package com.felipearpa.tyche
+
+import androidx.navigation.NavController
+import androidx.navigation.NavGraphBuilder
+import com.felipearpa.tyche.account.authentication.signInWithEmailLinkView
+import com.felipearpa.tyche.pool.poolscore.PoolScoreListRoute
+
+fun NavGraphBuilder.signInWithEmailLinkNavView(
+    navController: NavController,
+    initialRoute: String,
+    emailLink: String
+) {
+    signInWithEmailLinkView(
+        emailLink = emailLink,
+        onStartRequested = { accountBundle ->
+            navController.navigate(route = PoolScoreListRoute.route(gamblerId = accountBundle.accountId)) {
+                popUpTo(route = initialRoute) { inclusive = true }
+            }
+        }
+    )
+}

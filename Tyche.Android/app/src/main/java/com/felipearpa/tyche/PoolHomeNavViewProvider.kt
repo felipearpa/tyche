@@ -5,7 +5,7 @@ import androidx.navigation.NavGraphBuilder
 import com.felipearpa.tyche.home.ui.HomeRoute
 import com.felipearpa.tyche.poolhome.poolHomeView
 
-fun NavGraphBuilder.poolHomeView(navController: NavController, initialRoute: String) {
+fun NavGraphBuilder.poolHomeNavView(navController: NavController, initialRoute: String) {
     poolHomeView(
         onPoolScoreListRequested = { navController.navigateUp() },
         onLogout = {

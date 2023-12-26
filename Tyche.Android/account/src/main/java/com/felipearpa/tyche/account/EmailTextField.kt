@@ -1,5 +1,6 @@
 package com.felipearpa.tyche.account
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.text.KeyboardActions
@@ -54,7 +55,7 @@ fun EmailTextField(
             modifier = modifier
         )
 
-        if (!isValid) {
+        AnimatedVisibility(visible = !isValid) {
             Text(
                 text = stringResource(id = R.string.email_validation_failure_message),
                 color = MaterialTheme.colorScheme.error,

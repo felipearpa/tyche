@@ -4,7 +4,7 @@
     <string name="back_action">Back</string>
     <string name="done_action">Done</string>
     <string name="create_action">Create</string>
-    <string name="login_action">Login</string>
+    <string name="login_action">Log in</string>
     <string name="email_text">Email</string>
     <string name="email_validation_failure_message">Must be a valid email</string>
     <string name="password_text">Password</string>
@@ -17,4 +17,15 @@
     <string name="account_already_registered_failure_reason">It looks like there\'s already an account associated with this email address</string>
     <string name="user_success_login_message">Congratulations! You\'re in the game and ready to place your bet. Let the fun begin!</string>
     <string name="account_already_registered_failure_recovery_suggestion">If this is your email address, please try logging in</string>
+    <string name="account_verified_title">Email Verified: Let the Games Begin!</string>
+    <string name="account_verified_description">Congratulations, your email verification is complete! You\'re all set to embark on an exciting journey in the world of betting games</string>
+    <string name="start_action">Get started</string>
+    <string name="sign_in_with_email_link_authentication_failure_description">Link validation failed</string>
+    <string name="sign_in_with_email_link_authentication_failure_reason">The link you\'ve used is either invalid or has expired</string>
+    <string name="sign_in_with_email_link_authentication_failure_recovery_suggestion">Please request a new verification link. If you continue to experience issues, contact our support team for assistance</string>
+    <string name="verification_email_sent_title">Verification Link Sent</string>
+    <string name="verification_email_sent_description">A verification link has been sent to your email. Please check your inbox and open the link on the same device to complete the process, as it\'s necessary for verification</string>
+    <string name="sign_in_with_email_link_invalid_link_failure_description">Invalid sign-in link</string>
+    <string name="sign_in_with_email_link_invalid_link_failure_reason">The sign-in link you clicked is either invalid or has expired</string>
+    <string name="sign_in_with_email_link_invalid_link_failure_recovery_suggestion">Please request a new sign-in link. If you\'re experiencing issues repeatedly, contact our support team for further assistance</string>
 </resources>

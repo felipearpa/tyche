@@ -65,7 +65,7 @@ fun TycheTheme(
         darkTheme -> darkColorScheme
         else -> lightColorScheme
     }
-    
+
     val view = LocalView.current
     if (!view.isInEditMode) {
         SideEffect {

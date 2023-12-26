@@ -1,66 +1,55 @@
 package com.felipearpa.tyche.session.authentication.infrastructure
 
+import com.felipearpa.tyche.core.network.NetworkExceptionHandler
 import com.felipearpa.tyche.session.AccountBundle
-import com.felipearpa.tyche.session.AuthBundle
-import com.felipearpa.tyche.session.LoginBundle
+import com.felipearpa.tyche.session.authentication.domain.AccountLink
+import com.felipearpa.tyche.session.authentication.domain.AuthenticationExternalDataSource
 import com.felipearpa.tyche.session.authentication.domain.AuthenticationRemoteDataSource
 import com.felipearpa.tyche.session.authentication.domain.AuthenticationRepository
-import com.felipearpa.tyche.session.authentication.domain.LoginCredential
-import com.felipearpa.tyche.session.authentication.domain.LoginResponse
-import com.felipearpa.tyche.session.authentication.domain.toFirebaseLoginRequest
-import com.felipearpa.tyche.session.authentication.domain.toLoginRequest
-import com.felipearpa.tyche.core.network.NetworkExceptionHandler
+import com.felipearpa.tyche.session.authentication.domain.ExternalAccountId
+import com.felipearpa.tyche.session.authentication.domain.SignInWithEmailLinkException
+import com.felipearpa.tyche.session.authentication.domain.toLinkAccountRequest
 import javax.inject.Inject
 
 internal class AuthenticationRemoteRepository @Inject constructor(
+    private val authenticationExternalDataSource: AuthenticationExternalDataSource,
     private val authenticationRemoteDataSource: AuthenticationRemoteDataSource,
-    private val authenticationFirebaseDataSource: AuthenticationFirebaseDataSource,
     private val networkExceptionHandler: NetworkExceptionHandler
-) :
-    AuthenticationRepository {
+) : AuthenticationRepository {
+    override suspend fun sendSignInLinkToEmail(email: String) =
+        handleFirebaseSignInWithEmail {
+            authenticationExternalDataSource.sendSignInLinkToEmail(email = email)
+        }
 
-    override suspend fun login(loginCredential: LoginCredential): Result<LoginBundle> {
-        val firebaseLoginResult = loginFirebase(loginCredential)
-        if (firebaseLoginResult.isFailure)
-            return Result.failure(firebaseLoginResult.exceptionOrNull()!!)
+    override suspend fun signInWithEmailLink(
+        email: String,
+        emailLink: String
+    ): Result<ExternalAccountId> {
+        if (!authenticationExternalDataSource.isSignInWithEmailLink(emailLink = emailLink))
+            return Result.failure(SignInWithEmailLinkException.InvalidEmailLink)
 
-        val remoteLoginResult = loginRemote(loginCredential)
-        if (remoteLoginResult.isFailure)
-            return Result.failure(remoteLoginResult.exceptionOrNull()!!)
-
-        return buildResult(
-            firebaseLoginResult = firebaseLoginResult,
-            remoteLoginResult = remoteLoginResult
-        )
+        val externalAccountId = handleFirebaseSignInWithEmailLink {
+            authenticationExternalDataSource.signInWithEmailLink(
+                email = email,
+                emailLink = emailLink
+            )
+        }
+        return externalAccountId
     }
 
     override suspend fun logout(): Result<Unit> {
-        authenticationFirebaseDataSource.logout()
+        authenticationExternalDataSource.logout()
         return Result.success(Unit)
     }
 
-    private suspend fun loginFirebase(loginCredential: LoginCredential): Result<String> =
-        handleFirebaseLogin {
-            authenticationFirebaseDataSource.login(loginCredential.toFirebaseLoginRequest())
+    override suspend fun linkAccount(accountLink: AccountLink): Result<AccountBundle> =
+        networkExceptionHandler.handle {
+            authenticationRemoteDataSource.linkAccount(request = accountLink.toLinkAccountRequest())
+                .run {
+                    AccountBundle(
+                        accountId = this.accountId,
+                        externalAccountId = accountLink.externalAccountId
+                    )
+                }
         }
-
-    private suspend fun loginRemote(loginCredential: LoginCredential) =
-        networkExceptionHandler.handleRemoteLogin {
-            authenticationRemoteDataSource.login(loginRequest = loginCredential.toLoginRequest())
-        }
-
-    private suspend fun buildResult(
-        firebaseLoginResult: Result<String>,
-        remoteLoginResult: Result<LoginResponse>
-    ): Result<LoginBundle> {
-        val authToken = firebaseLoginResult.getOrNull()!!
-        val userId = remoteLoginResult.getOrNull()!!.user.userId
-
-        return Result.success(
-            LoginBundle(
-                authBundle = AuthBundle(authToken = authToken),
-                accountBundle = AccountBundle(userId = userId)
-            )
-        )
-    }
 }

@@ -3,11 +3,10 @@ package com.felipearpa.tyche.account.account.infrastructure
 import com.felipearpa.tyche.core.network.HttpStatusCode
 import com.felipearpa.tyche.core.network.NetworkException
 import com.felipearpa.tyche.core.network.NetworkExceptionHandler
-import com.felipearpa.tyche.session.authentication.domain.LoginResponse
+import com.felipearpa.tyche.session.authentication.domain.LinkAccountResponse
 import com.felipearpa.tyche.session.managment.domain.Account
 import com.felipearpa.tyche.session.managment.domain.AccountRemoteDataSource
 import com.felipearpa.tyche.session.managment.infrastructure.AccountRemoteRepository
-import com.felipearpa.tyche.session.authentication.domain.LoginException
 import com.felipearpa.tyche.session.type.Password
 import com.felipearpa.tyche.session.type.Username
 import io.mockk.clearAllMocks
@@ -41,7 +40,7 @@ class AccountRemoteRepositoryTest {
             val httpException =
                 NetworkException.Http(httpStatusCode = HttpStatusCode.BAD_REQUEST)
 
-            coEvery { networkExceptionHandler.handle<LoginResponse>(block = any()) } returns
+            coEvery { networkExceptionHandler.handle<LinkAccountResponse>(block = any()) } returns
                     Result.failure(
                         httpException
                     )

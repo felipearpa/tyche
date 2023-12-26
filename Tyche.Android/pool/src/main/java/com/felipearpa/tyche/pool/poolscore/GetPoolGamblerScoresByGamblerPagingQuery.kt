@@ -12,4 +12,4 @@ suspend fun getPoolGamblerScoresByGamblerPagingQuery(
     gamblerId = gamblerId,
     next = next,
     searchText = search()
-).map { page -> page.map { gamblerPool -> gamblerPool.toPoolGamblerScoreModel() } }
+).map { page -> page.map { poolGamblerScore -> poolGamblerScore.toPoolGamblerScoreModel() } }

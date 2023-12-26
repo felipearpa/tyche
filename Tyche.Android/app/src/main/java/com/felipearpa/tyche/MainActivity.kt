@@ -8,6 +8,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
+import com.felipearpa.tyche.core.emptyString
 import com.felipearpa.tyche.home.ui.HomeRoute
 import com.felipearpa.tyche.pool.poolscore.PoolScoreListRoute
 import com.felipearpa.tyche.session.AccountBundle
@@ -25,12 +26,13 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        val intentData = intent.data?.toString()
         val accountBundle = runBlocking { accountStorage.retrieve() }
 
         setContent {
             TycheTheme {
                 Surface(color = MaterialTheme.colorScheme.background) {
-                    Content(accountBundle = accountBundle)
+                    Content(accountBundle = accountBundle, intentData = intentData)
                 }
             }
         }
@@ -38,24 +40,30 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun Content(accountBundle: AccountBundle?) {
-    Outlet(accountBundle = accountBundle)
+fun Content(accountBundle: AccountBundle?, intentData: String?) {
+    Outlet(accountBundle = accountBundle, intentData = intentData)
 }
 
 @Composable
-fun Outlet(accountBundle: AccountBundle?) {
+fun Outlet(accountBundle: AccountBundle?, intentData: String?) {
     val initialRoute = if (accountBundle == null) HomeRoute.route else PoolScoreListRoute.route
 
     val navController = rememberNavController()
     NavHost(navController = navController, startDestination = initialRoute) {
-        homeView(navController = navController)
-        loginView(navController = navController, initialRoute = initialRoute)
-        accountCreationView(navController = navController, initialRoute = initialRoute)
-        poolScoreListView(
+        homeNavView(navController = navController)
+
+        loginWithEmailNavView(navController = navController)
+        signInWithEmailLinkNavView(
             navController = navController,
             initialRoute = initialRoute,
-            loggedInGamblerId = accountBundle?.userId
+            emailLink = intentData ?: emptyString()
         )
-        poolHomeView(navController = navController, initialRoute = initialRoute)
+
+        poolScoreListNavView(
+            navController = navController,
+            initialRoute = initialRoute,
+            loggedInGamblerId = accountBundle?.accountId
+        )
+        poolHomeNavView(navController = navController, initialRoute = initialRoute)
     }
 }

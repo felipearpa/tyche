@@ -2,8 +2,10 @@ package com.felipearpa.tyche.session.authentication.di
 
 import com.felipearpa.tyche.session.AccountStorage
 import com.felipearpa.tyche.session.Auth
-import com.felipearpa.tyche.session.authentication.application.LoginUseCase
 import com.felipearpa.tyche.session.authentication.application.LogoutUseCase
+import com.felipearpa.tyche.session.authentication.application.SendSignInLinkToEmailUseCase
+import com.felipearpa.tyche.session.authentication.application.SignInWithEmailLinkUseCase
+import com.felipearpa.tyche.session.authentication.domain.AuthenticationExternalDataSource
 import com.felipearpa.tyche.session.authentication.domain.AuthenticationRemoteDataSource
 import com.felipearpa.tyche.session.authentication.domain.AuthenticationRepository
 import com.felipearpa.tyche.session.authentication.infrastructure.AuthenticationFirebaseDataSource
@@ -22,11 +24,16 @@ import javax.inject.Singleton
 internal object AuthenticationUseCaseProvider {
     @Provides
     @Singleton
-    fun provideLoginUseCase(
+    fun provideSendSignInLinkToEmailUseCase(authenticationRepository: AuthenticationRepository) =
+        SendSignInLinkToEmailUseCase(authenticationRepository = authenticationRepository)
+
+    @Provides
+    @Singleton
+    fun provideSignInWithEmailLinkUseCase(
         authenticationRepository: AuthenticationRepository,
         accountStorage: AccountStorage
-    ): LoginUseCase =
-        LoginUseCase(
+    ) =
+        SignInWithEmailLinkUseCase(
             authenticationRepository = authenticationRepository,
             accountStorage = accountStorage
         )
@@ -36,11 +43,10 @@ internal object AuthenticationUseCaseProvider {
     fun provideLogoutUseCase(
         authenticationRepository: AuthenticationRepository,
         accountStorage: AccountStorage
-    ): LogoutUseCase =
-        LogoutUseCase(
-            authenticationRepository = authenticationRepository,
-            accountStorage = accountStorage
-        )
+    ) = LogoutUseCase(
+        authenticationRepository = authenticationRepository,
+        accountStorage = accountStorage
+    )
 }
 
 @Module
@@ -61,6 +67,6 @@ internal object LoginDataSourceProvider {
 
     @Provides
     @Singleton
-    fun provideAuthenticationFirebaseDataSource(firebaseAuth: FirebaseAuth) =
+    fun provideAuthenticationExternalDataSource(firebaseAuth: FirebaseAuth): AuthenticationExternalDataSource =
         AuthenticationFirebaseDataSource(firebaseAuth = firebaseAuth)
 }

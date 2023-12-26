@@ -1,7 +1,7 @@
 {
   "Routes": [
     {
-      "DownstreamPathTemplate": "/user",
+      "DownstreamPathTemplate": "/account/link",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
         {
@@ -9,21 +9,7 @@
           "Port": 5000
         }
       ],
-      "UpstreamPathTemplate": "/user",
-      "UpstreamHttpMethod": [
-        "POST"
-      ]
-    },
-    {
-      "DownstreamPathTemplate": "/user/login",
-      "DownstreamScheme": "https",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "localhost",
-          "Port": 5000
-        }
-      ],
-      "UpstreamPathTemplate": "/user/login",
+      "UpstreamPathTemplate": "/account/link",
       "UpstreamHttpMethod": [
         "POST"
       ]

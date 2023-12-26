@@ -1,5 +1,6 @@
 package com.felipearpa.tyche.account
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
@@ -24,8 +25,8 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.felipearpa.tyche.session.type.Password
 import com.felipearpa.tyche.core.emptyString
+import com.felipearpa.tyche.session.type.Password
 
 @Composable
 fun PasswordTextField(
@@ -69,7 +70,7 @@ fun PasswordTextField(
             modifier = modifier
         )
 
-        if (!isValid) {
+        AnimatedVisibility(visible = !isValid) {
             Text(
                 text = stringResource(id = R.string.password_validation_failure_message),
                 color = MaterialTheme.colorScheme.error,

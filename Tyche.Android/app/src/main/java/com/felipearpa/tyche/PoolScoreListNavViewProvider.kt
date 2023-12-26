@@ -8,7 +8,7 @@ import com.felipearpa.tyche.poolhome.PoolHomeViewRoute
 import com.felipearpa.tyche.settings.SettingsView
 import com.felipearpa.tyche.settings.settingsViewModel
 
-fun NavGraphBuilder.poolScoreListView(
+fun NavGraphBuilder.poolScoreListNavView(
     navController: NavController,
     initialRoute: String,
     loggedInGamblerId: String?
