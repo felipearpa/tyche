@@ -6,7 +6,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
-import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -53,7 +53,7 @@ fun GamblerScoreList(
                 isLoggedIn = item.gamblerId == loggedInGamblerId,
                 modifier = Modifier.gamblerScoreItem()
             )
-            Divider()
+            HorizontalDivider()
         }
     }
 }
@@ -67,7 +67,7 @@ private fun GamblerScoreFakeList(count: Int) {
         repeat(count) {
             item {
                 GamblerScoreFakeItem(modifier = Modifier.gamblerScoreItem())
-                Divider()
+                HorizontalDivider()
             }
         }
     }
@@ -76,12 +76,12 @@ private fun GamblerScoreFakeList(count: Int) {
 private fun LazyListScope.gamblerScoreFakeItem() {
     item {
         GamblerScoreFakeItem(modifier = Modifier.gamblerScoreItem())
-        Divider()
+        HorizontalDivider()
     }
 }
 
 private fun Modifier.gamblerScoreItem() = composed {
-    Modifier
+    this
         .fillMaxWidth()
         .padding(horizontal = MaterialTheme.boxSpacing.medium)
         .padding(vertical = MaterialTheme.boxSpacing.small)

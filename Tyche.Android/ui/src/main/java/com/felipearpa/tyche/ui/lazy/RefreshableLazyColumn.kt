@@ -1,18 +1,24 @@
 package com.felipearpa.tyche.ui.lazy
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.pulltorefresh.PullToRefreshContainer
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
 import androidx.paging.compose.LazyPagingItems
-import com.google.accompanist.swiperefresh.SwipeRefresh
-import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun <T : Any> RefreshableLazyColumn(
     modifier: Modifier = Modifier,
@@ -27,18 +33,17 @@ fun <T : Any> RefreshableLazyColumn(
     emptyContent: @Composable () -> Unit = { ContentOnEmpty() },
     itemContent: LazyListScope.() -> Unit
 ) {
-    val swipeRefreshState = rememberSwipeRefreshState(false)
-
-    SwipeRefresh(
-        modifier = modifier,
-        state = swipeRefreshState,
-        onRefresh = {
-            swipeRefreshState.isRefreshing = false
+    val pullToRefreshState = rememberPullToRefreshState()
+    if (pullToRefreshState.isRefreshing) {
+        LaunchedEffect(true) {
+            pullToRefreshState.endRefresh()
             lazyItems.refresh()
         }
-    ) {
+    }
+
+    Box(modifier = modifier.nestedScroll(pullToRefreshState.nestedScrollConnection)) {
         LazyColumn(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxSize(),
             lazyItems = lazyItems,
             state = state,
             contentPadding = contentPadding,
@@ -49,6 +54,11 @@ fun <T : Any> RefreshableLazyColumn(
             errorContent = errorContent,
             emptyContent = emptyContent,
             itemContent = itemContent
+        )
+
+        PullToRefreshContainer(
+            modifier = Modifier.align(Alignment.TopCenter),
+            state = pullToRefreshState,
         )
     }
 }

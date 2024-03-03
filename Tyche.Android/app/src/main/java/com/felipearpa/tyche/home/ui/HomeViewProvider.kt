@@ -5,9 +5,6 @@ import androidx.navigation.compose.composable
 
 fun NavGraphBuilder.homeView(onLoginRequested: () -> Unit) {
     composable(route = HomeRoute.route) {
-        HomeView(
-            viewModel = homeViewModel(),
-            onSignInRequested = onLoginRequested
-        )
+        HomeView(onSignInRequested = onLoginRequested)
     }
 }

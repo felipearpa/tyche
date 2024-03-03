@@ -31,10 +31,7 @@ import com.felipearpa.tyche.ui.theme.boxSpacing
 private val titleIconSize = 64.dp
 
 @Composable
-fun HomeView(
-    viewModel: HomeViewModel,
-    onSignInRequested: () -> Unit
-) {
+fun HomeView(onSignInRequested: () -> Unit) {
     HomeView(
         onSignInRequested = onSignInRequested,
         modifier = Modifier.padding(all = 8.dp)

@@ -6,10 +6,7 @@ import androidx.compose.ui.test.performTextClearance
 import androidx.compose.ui.test.performTextInput
 import com.felipearpa.tyche.bet.BetTextField
 import com.felipearpa.tyche.core.emptyString
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Rule
 import org.junit.Test
@@ -29,8 +26,7 @@ class BetTextFieldTest {
                 value = emptyString(),
                 onValueChange = { value ->
                     newValue = value
-                },
-                onDelayedValueChange = {}
+                }
             )
         }
 
@@ -48,8 +44,7 @@ class BetTextFieldTest {
                 value = "1",
                 onValueChange = { value ->
                     newValue = value
-                },
-                onDelayedValueChange = {}
+                }
             )
         }
 
@@ -68,8 +63,7 @@ class BetTextFieldTest {
                 value = emptyString(),
                 onValueChange = { value ->
                     newValue = value
-                },
-                onDelayedValueChange = {}
+                }
             )
         }
 
@@ -77,68 +71,4 @@ class BetTextFieldTest {
 
         assertNull(newValue)
     }
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    @Test
-    fun given_a_valid_value_when_is_typed_then_onValueDelayedChange_is_called_after_a_delay_time() =
-        runTest {
-            val touchTypedText = "1"
-            var delayedNewValue: String? = null
-            val startTime: Long = System.currentTimeMillis()
-            var endTime: Long? = null
-
-            composeTestRule.setContent {
-                BetTextField(
-                    value = emptyString(),
-                    onValueChange = {
-
-                    },
-                    onDelayedValueChange = { newValue ->
-                        endTime = System.currentTimeMillis()
-                        delayedNewValue = newValue
-                    }
-                )
-            }
-
-            composeTestRule.onNodeWithTag(testTag = "textField")
-                .performTextInput(text = touchTypedText)
-
-            composeTestRule.waitUntil(timeoutMillis = 700) {
-                endTime != null
-            }
-
-            assertNotNull(endTime)
-            assert(endTime!! >= startTime + 700)
-
-            assertEquals(touchTypedText, delayedNewValue)
-        }
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    @Test
-    fun given_a_invalid_value_when_is_typed_then_onValueDelayedChange_is_not_called_after_a_delay_time() =
-        runTest {
-            val touchTypedText = "hello"
-            var endTime: Long? = null
-
-            composeTestRule.setContent {
-                BetTextField(
-                    value = emptyString(),
-                    onValueChange = {
-
-                    },
-                    onDelayedValueChange = {
-                        endTime = System.currentTimeMillis()
-                    }
-                )
-            }
-
-            composeTestRule.onNodeWithTag(testTag = "textField")
-                .performTextInput(text = touchTypedText)
-
-            composeTestRule.waitUntil(timeoutMillis = 700) {
-                endTime == null
-            }
-
-            assertNull(endTime)
-        }
 }

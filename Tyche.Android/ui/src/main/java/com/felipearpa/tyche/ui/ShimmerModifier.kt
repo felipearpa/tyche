@@ -9,7 +9,7 @@ import com.google.accompanist.placeholder.material.placeholder
 import com.google.accompanist.placeholder.material.shimmer
 
 fun Modifier.shimmer() = composed {
-    placeholder(
+    this.placeholder(
         visible = true,
         highlight = PlaceholderHighlight.shimmer(),
         color = MaterialTheme.colorScheme.shimmer

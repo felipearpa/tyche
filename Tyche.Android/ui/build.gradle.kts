@@ -2,10 +2,9 @@ val composeCompilerVersion: String by rootProject.extra
 val projectCompileSdk: String by project
 val projectMinSdk: String by project
 
-@Suppress("DSL_SCOPE_VIOLATION")
 plugins {
-    alias(libs.plugins.com.android.library)
-    alias(libs.plugins.org.jetbrains.kotlin.android)
+    alias(libs.plugins.androidLibrary)
+    alias(libs.plugins.jetbrainsKotlinAndroid)
 }
 
 android {
@@ -54,35 +53,28 @@ android {
 
 dependencies {
     implementation(libs.core.ktx)
-
     implementation(platform(libs.compose.bom))
     implementation(libs.bundles.compose)
     implementation(libs.material3)
-
     implementation(libs.paging.compose)
-    implementation(libs.pull.refresh)
-
     implementation(libs.navigation.compose)
-
     implementation(libs.bundles.retrofit)
     implementation(libs.gson)
-
-    implementation(libs.pull.placeholder)
+    implementation(libs.google.accompanist.placeholder)
 
     testImplementation(libs.junit)
     testImplementation(libs.kotlin.test)
-    androidTestImplementation(libs.kotlin.test)
-    androidTestImplementation(libs.androidx.test.ext.junit)
-    androidTestImplementation(libs.espresso.core)
-
-    androidTestImplementation(platform(libs.compose.bom))
-    androidTestImplementation(libs.bundles.compose.test)
-    debugImplementation(libs.bundles.compose.debug.test)
-
     testImplementation(libs.kotlinx.coroutines.test)
-
     testImplementation(libs.io.mockk)
+
+    androidTestImplementation(libs.kotlin.test)
+    androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation(libs.espresso.core)
+    androidTestImplementation(platform(libs.compose.bom))
+    androidTestImplementation(libs.ui.test.junit4)
     androidTestImplementation(libs.io.mockk.android)
+
+    debugImplementation(libs.bundles.compose.debug.test)
 }
 
 dependencies {

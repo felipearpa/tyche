@@ -10,7 +10,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -68,7 +68,7 @@ fun PoolScoreList(
                     poolGamblerScore = poolGamblerScore,
                     modifier = Modifier.poolScoreItem()
                 )
-                Divider()
+                HorizontalDivider()
             }
         }
     }
@@ -83,7 +83,7 @@ fun PoolScoreFakeList(count: Int) {
         repeat(count) {
             item {
                 PoolScoreFakeItem(modifier = Modifier.poolScoreItem())
-                Divider()
+                HorizontalDivider()
             }
         }
     }
@@ -92,12 +92,13 @@ fun PoolScoreFakeList(count: Int) {
 private fun LazyListScope.poolScoreFakeItem() {
     item {
         PoolScoreFakeItem(modifier = Modifier.poolScoreItem())
-        Divider()
+        HorizontalDivider()
     }
 }
 
 private fun Modifier.poolScoreItem() = composed {
-    fillMaxWidth()
+    this
+        .fillMaxWidth()
         .padding(horizontal = MaterialTheme.boxSpacing.medium)
         .padding(vertical = MaterialTheme.boxSpacing.small)
 }

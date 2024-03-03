@@ -1,14 +1,12 @@
 buildscript {
-    val composeCompilerVersion by extra { "1.5.3" }
+    val composeCompilerVersion by extra { "1.5.10" }
 }
 
-@Suppress("DSL_SCOPE_VIOLATION")
 plugins {
-    alias(libs.plugins.com.android.application) apply false
-    alias(libs.plugins.com.android.library) apply false
-    alias(libs.plugins.org.jetbrains.kotlin.android) apply false
-    alias(libs.plugins.org.jetbrains.kotlin.kapt) apply false
-    alias(libs.plugins.com.google.dagger.hilt.android) apply false
-    alias(libs.plugins.org.jetbrains.kotlinx.serialization) apply false
+    alias(libs.plugins.androidApplication) apply false
+    alias(libs.plugins.androidLibrary) apply false
+    alias(libs.plugins.jetbrainsKotlinAndroid) apply false
+    alias(libs.plugins.jetbrainsKotlinxSerialization) apply false
+    alias(libs.plugins.jetbrainsKotlinKapt) apply false
+    alias(libs.plugins.googleDaggerHiltAndroid) apply false
 }
-true
