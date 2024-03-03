@@ -3,7 +3,9 @@ import UI
 import Account
 
 struct HomeView: View {
-    let onLoginRequested: () -> Void
+    let onSignInRequested: () -> Void
+    
+    @Environment(\.boxSpacing) var boxSpacing
     
     var body: some View {
         VStack {
@@ -23,30 +25,25 @@ struct HomeView: View {
             
             Text(String(.playPoolText))
                 .font(.largeTitle)
+                .multilineTextAlignment(.center)
             
             Spacer()
             
-            Button(action: {}) {
-                Text(String(.createAccountAction))
+            Button(action: onSignInRequested) {
+                Text(String(.signInWithEmailAction))
+                    .frame(maxWidth:.infinity)
             }
-            
-            Spacer()
-            
-            HStack {
-                Text(String(.accountExistsText))
-                
-                Button(action: { onLoginRequested() }) {
-                    Text(String(.logInAction))
-                }
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
+            .buttonStyle(.borderedProminent)
         }
-        .padding()
+        .padding(boxSpacing.large)
     }
 }
 
-struct HomeView_Previews: PreviewProvider {
-    static var previews: some View {
-        HomeView(onLoginRequested: {})
-    }
+#Preview {
+    HomeView(onSignInRequested: {})
+}
+
+#Preview {
+    HomeView(onSignInRequested: {})
+        .preferredColorScheme(.dark)
 }

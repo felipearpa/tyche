@@ -27,7 +27,7 @@ import androidx.compose.ui.unit.dp
 import com.felipearpa.tyche.core.emptyString
 import com.felipearpa.tyche.core.type.TeamScore
 import com.felipearpa.tyche.ui.exception.UnknownLocalizedException
-import com.felipearpa.tyche.ui.progress.ProgressIndicator
+import com.felipearpa.tyche.ui.progress.BallSpinner
 import com.felipearpa.tyche.ui.state.EditableViewState
 import com.felipearpa.tyche.ui.state.currentValue
 import com.felipearpa.tyche.ui.theme.boxSpacing
@@ -288,8 +288,8 @@ private fun StateIndicator(
                     tint = MaterialTheme.colorScheme.error
                 )
 
-            is EditableViewState.Loading -> ProgressIndicator(
-                modifier = Modifier.size(width = iconSize, height = iconSize)
+            is EditableViewState.Loading -> BallSpinner(
+                modifier = Modifier.size(iconSize)
             )
 
             is EditableViewState.Initial, is EditableViewState.Success -> {

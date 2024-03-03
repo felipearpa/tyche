@@ -9,4 +9,4 @@ module AccountTransformer =
         member this.ToAccountViewModel() =
             { AccountViewModel.AccountId = this.AccountId |> Ulid.value
               Email = this.Email |> Email.value
-              ExternalAccountId = this.ExternalAccountId }
+              ExternalAccountId = this.ExternalAccountId |> NonEmptyString.value }

@@ -1,6 +1,40 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "account_verified_description" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Congratulations, your email verification is complete! You're all set to embark on an exciting journey in the world of betting games"
+          }
+        },
+        "es-CO" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "¡Felicidades, la verificación de tu correo electrónico está completa! Estás totalmente preparado para embarcarte en un emocionante viaje en el mundo de los juegos de apuestas"
+          }
+        }
+      }
+    },
+    "account_verified_title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Email verified: Let the games begin!"
+          }
+        },
+        "es-CO" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Correo electrónico verificado: ¡Que comiencen los juegos!"
+          }
+        }
+      }
+    },
     "continue_action" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -14,6 +48,40 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Continuar"
+          }
+        }
+      }
+    },
+    "email_text" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Email"
+          }
+        },
+        "es-CO" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Correo electrónico"
+          }
+        }
+      }
+    },
+    "email_validation_failure_message" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Must be a valid email"
+          }
+        },
+        "es-CO" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Debe ser un correo electrónico válido"
           }
         }
       }
@@ -52,36 +120,50 @@
         }
       }
     },
-    "login_action" : {
-      "extractionState" : "manual",
+    "invalid_email_link_sign_in_failure_description" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Login"
+            "value" : "Invalid sign-in link"
           }
         },
         "es-CO" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Iniciar sesión"
+            "value" : "Enlace de inicio de sesión inválido"
           }
         }
       }
     },
-    "login_title" : {
-      "extractionState" : "manual",
+    "invalid_email_link_sign_in_failure_reason" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Login"
+            "value" : "The sign-in link you clicked is either invalid or has expired"
           }
         },
         "es-CO" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Iniciar sesión"
+            "value" : "El enlace de inicio de sesión en el que hiciste clic es inválido o ha expirado"
+          }
+        }
+      }
+    },
+    "invalid_email_link_sign_in_failure_recovery_suggestion" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Please request a new sign-in link. If you're experiencing issues repeatedly, contact our support team for further assistance"
+          }
+        },
+        "es-CO" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Por favor, solicita un nuevo enlace de inicio de sesión. Si este problema se repite, contacta a nuestro equipo de soporte para obtener más ayuda"
           }
         }
       }
@@ -120,6 +202,57 @@
         }
       }
     },
+    "sign_in_action" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sign in"
+          }
+        },
+        "es-CO" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Iniciar sesión"
+          }
+        }
+      }
+    },
+    "sign_in_title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Login"
+          }
+        },
+        "es-CO" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Iniciar sesión"
+          }
+        }
+      }
+    },
+    "start_action" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Get started"
+          }
+        },
+        "es-CO" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Iniciar"
+          }
+        }
+      }
+    },
     "success_login_message" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -137,36 +270,36 @@
         }
       }
     },
-    "username_text" : {
+    "verification_email_sent_description" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Username"
+            "value" : "A verification link has been sent to your email. Please check your inbox and open the link on the same device to complete the process, as it's necessary for verification"
           }
         },
         "es-CO" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Nombre de usuario"
+            "value" : "Se ha enviado un enlace de verificación a tu correo electrónico. Por favor, revisa tu bandeja de entrada y abre el enlace en el mismo dispositivo para completar el proceso, ya que es necesario para la verificación"
           }
         }
       }
     },
-    "username_validation_failure_message" : {
+    "verification_email_sent_title" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Username must be between 3–16 characters and can only contain letters, numbers, underscores, and hyphens"
+            "value" : "Verification link sent"
           }
         },
         "es-CO" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "El nombre de usuario debe tener entre 3 y 16 caracteres y solo puede contener letras, números, guiones bajos y guiones"
+            "value" : "Enlace de verificación enviado"
           }
         }
       }

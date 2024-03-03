@@ -3,11 +3,9 @@ package com.felipearpa.tyche.poolhome
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.felipearpa.data.pool.application.GetPoolUseCase
-import com.felipearpa.tyche.core.network.NetworkException
 import com.felipearpa.tyche.pool.PoolModel
 import com.felipearpa.tyche.pool.toPoolModel
-import com.felipearpa.tyche.ui.exception.UnknownLocalizedException
-import com.felipearpa.tyche.ui.network.toNetworkLocalizedException
+import com.felipearpa.tyche.ui.exception.orLocalizedException
 import com.felipearpa.tyche.ui.state.LoadableViewState
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
@@ -29,18 +27,12 @@ class PoolHomeViewModel @AssistedInject constructor(
         viewModelScope.launch {
             _state.emit(LoadableViewState.Loading)
 
-            val maybePool = getPoolUseCase.execute(poolId = poolId)
-            maybePool.onSuccess { pool ->
+            val poolResult = getPoolUseCase.execute(poolId = poolId)
+            poolResult.onSuccess { pool ->
                 _state.emit(LoadableViewState.Success(pool.toPoolModel()))
             }.onFailure { exception ->
-                _state.emit(LoadableViewState.Failure(exception.toLocalizedException()))
+                _state.emit(LoadableViewState.Failure(exception.orLocalizedException()))
             }
         }
     }
 }
-
-private fun Throwable.toLocalizedException() =
-    when (this) {
-        is NetworkException -> this.toNetworkLocalizedException()
-        else -> UnknownLocalizedException()
-    }

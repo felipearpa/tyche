@@ -1,15 +1,20 @@
 import SwiftUI
 import Swinject
 import Core
+import Session
+import Account
 
 struct MainView: View {
-    let diResolver: DIResolver
+    @State var universalLink: URL? = nil
     
     var body: some View {
-        HomeRouter(diResolver: diResolver)
+        if let emailSignInUniversalLink = universalLink {
+            EmailLinkSignInRouter(emailSignInURLProcessor: EmailSignInURLProcessor(link: emailSignInUniversalLink))
+        } else {
+            HomeRouter()
+                .onOpenURL { url in
+                    universalLink = url
+                }
+        }
     }
-}
-
-#Preview {
-    MainView(diResolver: DIResolver(resolver:Assembler([]).resolver))
 }

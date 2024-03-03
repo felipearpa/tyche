@@ -1,6 +1,9 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "" : {
+
+    },
     "cancel_action" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -17,6 +20,9 @@
           }
         }
       }
+    },
+    "Content" : {
+
     },
     "done_action" : {
       "extractionState" : "manual",
@@ -131,7 +137,7 @@
         },
         "es-CO" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Guardar"
           }
         }
@@ -154,36 +160,53 @@
         }
       }
     },
-    "unknown_failure_message" : {
+    "unknown_failure_description" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Oops! Something went wrong and we\\'re not sure what. Please give it another try later"
-          }
-        },
-        "es-CO" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "¡Vaya! Algo ha salido mal y no estamos seguros de qué es. Por favor, inténtelo de nuevo más tarde"
-          }
-        }
-      }
-    },
-    "unknown_failure_title" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Unexpected Error"
+            "value" : "Unexpected error"
           }
         },
         "es-CO" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Error inesperado"
+          }
+        }
+      }
+    },
+    "unknown_failure_reason" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Something went wrong and we're not sure what"
+          }
+        },
+        "es-CO" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Algo ha salido mal y no estamos seguros de qué es"
+          }
+        }
+      }
+    },
+    "unknown_failure_recovery_suggestion" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Please try again. If the problem continues, please contact our support team for assistance"
+          }
+        },
+        "es-CO" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Si el problema persiste, contacta a nuestro equipo de soporte para obtener ayuda"
           }
         }
       }

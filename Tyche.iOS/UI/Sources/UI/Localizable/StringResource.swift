@@ -14,8 +14,9 @@ struct StringResource {
 extension StringResource {
     static let remoteCommunicationFailureTitle = StringResource(name: "remote_communication_failure_title", bundle: Bundle.module)
     static let remoteCommunicationFailureMessage = StringResource(name: "remote_communication_failure_message", bundle: Bundle.module)
-    static let unknownFailureTitle = StringResource(name: "unknown_failure_title", bundle: Bundle.module)
-    static let unknownFailureMessage = StringResource(name: "unknown_failure_message", bundle: Bundle.module)
+    static let unknownFailureDescription = StringResource(name: "unknown_failure_description", bundle: Bundle.module)
+    static let unknownFailureReason = StringResource(name: "unknown_failure_reason", bundle: Bundle.module)
+    static let unknownFailureRecoverySuggestion = StringResource(name: "unknown_failure_recovery_suggestion", bundle: Bundle.module)
     static let doneAction = StringResource(name: "done_action", bundle: Bundle.module)
     static let emptyListMessage = StringResource(name: "empty_list_message", bundle: Bundle.module)
     static let retryAction = StringResource(name: "retry_action", bundle: Bundle.module)

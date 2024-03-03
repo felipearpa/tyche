@@ -105,6 +105,23 @@
           }
         }
       }
+    },
+    "sign_in_with_email_action" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sign in with email"
+          }
+        },
+        "es-CO" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ingresar con correo electrónico"
+          }
+        }
+      }
     }
   },
   "version" : "1.0"

@@ -15,7 +15,7 @@ public struct LocalizedErrorWrapper: LocalizedError {
 
 public extension Error {
     @inlinable
-    func localizedErrorOrNull() -> LocalizedErrorWrapper? {
+    func localizedErrorOrNil() -> LocalizedErrorWrapper? {
         if let localizedError = self as? LocalizedError {
             return LocalizedErrorWrapper(underlyingError: localizedError)
         }
@@ -25,7 +25,7 @@ public extension Error {
 
 public extension LodableViewState {
     @inlinable
-    func localizedErrorOrNull() -> LocalizedErrorWrapper? {
+    func localizedErrorOrNil() -> LocalizedErrorWrapper? {
         if case .failure(let error) = self {
             if let localizedError = error as? LocalizedError {
                 return LocalizedErrorWrapper(underlyingError: localizedError)

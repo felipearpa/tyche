@@ -44,7 +44,7 @@ android {
         kotlinCompilerExtensionVersion = composeCompilerVersion
     }
 
-    packagingOptions {
+    packaging {
         jniLibs {
             excludes.add("META-INF/*")
         }

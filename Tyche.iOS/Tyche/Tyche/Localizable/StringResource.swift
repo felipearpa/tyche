@@ -10,16 +10,12 @@ struct StringResource {
 
 extension StringResource {
     static let playPoolText = StringResource(name: "play_pool_text")
-    
     static let createAccountAction = StringResource(name: "create_account_action")
-    
     static let accountExistsText = StringResource(name: "account_exists_text")
-    
     static let logInAction = StringResource(name: "log_in_action")
-    
     static let scoreTab = StringResource(name: "score_tab")
-    
     static let betTab = StringResource(name: "bet_tab")
+    static let signInWithEmailAction = StringResource(name: "sign_in_with_email_action")
 }
 
 extension String {

@@ -7,23 +7,19 @@ import Pool
 import DataBet
 import Bet
 
-private let defaultDebounceTimeInMilliseconds = 700
-
 private enum Tab: Int {
     case gamblerScores
     case bets
 }
 
 struct PoolHomeView: View {
-    let diResolver: DIResolver
     let gamblerId: String
     let poolId: String
     
-    @StateObject private var searchDebounceText = DebounceString(dueTime: .milliseconds(defaultDebounceTimeInMilliseconds))
+    @Environment(\.diResolver) var diResolver: DIResolver
     @State private var selectedTab = Tab.gamblerScores
     
-    init(diResolver: DIResolver, gamblerId: String, poolId: String) {
-        self.diResolver = diResolver
+    init(gamblerId: String, poolId: String) {
         self.gamblerId = gamblerId
         self.poolId = poolId
     }
@@ -67,11 +63,6 @@ struct PoolHomeView: View {
             }
         }
         .navigationTitle("Pool")
-        .searchable(
-            text: $searchDebounceText.text,
-            placement: .navigationBarDrawer(displayMode: .automatic),
-            prompt: String(sharedResource: .searchingLabel)
-        )
     }
 }
 
@@ -86,9 +77,6 @@ struct PoolHomeView_Previews: PreviewProvider {
     
     static var previews: some View {
         PoolHomeView(
-            diResolver: DIResolver(
-                resolver: Assembler([PoolHomeAssembler()]).resolver
-            ),
             gamblerId: "gambler-id",
             poolId: "pool-id"
         )

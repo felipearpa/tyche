@@ -8,7 +8,7 @@ public struct PagingVStack
  ErrorContent: View,
  LoadingContentOnConcatenate: View,
  ErrorContentOnConcatenate: View,
- ItemContent: View>: View
+ ItemView: View>: View
 {
     @ObservedObject var lazyPager: LazyPager<Key, Item>
     let loadingContent: () -> LoadingContent
@@ -16,7 +16,7 @@ public struct PagingVStack
     let errorContent: (Error) -> ErrorContent
     let loadingContentOnConcatenate: () -> LoadingContentOnConcatenate
     let errorContentOnConcatenate: (Error) -> ErrorContentOnConcatenate
-    let itemContent: (Item) -> ItemContent
+    let itemContent: (Item) -> ItemView
     
     public init(
         lazyPager: LazyPager<Key, Item>,
@@ -25,7 +25,7 @@ public struct PagingVStack
         @ViewBuilder errorContent: @escaping (Error) -> ErrorContent,
         @ViewBuilder loadingContentOnConcatenate: @escaping () -> LoadingContentOnConcatenate,
         @ViewBuilder errorContentOnConcatenate: @escaping (Error) -> ErrorContentOnConcatenate,
-        @ViewBuilder itemContent: @escaping (Item) -> ItemContent
+        @ViewBuilder itemContent: @escaping (Item) -> ItemView
     ) {
         self.lazyPager = lazyPager
         self.loadingContent = loadingContent
@@ -39,66 +39,94 @@ public struct PagingVStack
     public var body: some View {
         let _ = Self._printChanges()
         
-        GeometryReader { geometry in
-            ScrollView {
-                switch lazyPager.loadState.refresh {
-                case .loading:
-                    loadingContent()
-                        .withDisableGestures()
-                case .notLoading(endOfPaginationReached: let endOfPaginationReached):
-                    ListContent(
-                        lazyPager: lazyPager,
-                        endOfPaginationReached: endOfPaginationReached,
-                        emptyContent: emptyContent,
-                        loadingContentOnAppend: loadingContentOnConcatenate,
-                        errorContentOnAppend: errorContentOnConcatenate,
-                        itemContent: itemContent,
-                        geometry: geometry
-                    )
-                case .failure(let error):
-                    errorContent(error)
-                        .withFullSize(geometry: geometry)
-                }
-            }
+        switch lazyPager.loadState.refresh {
+        case .loading:
+            LoadingContentWrapper(loadingContent: loadingContent)
+        case .notLoading(endOfPaginationReached: let endOfPaginationReached):
+            ContentWrapper(
+                lazyPager: lazyPager,
+                endOfPaginationReached: endOfPaginationReached,
+                emptyContent: emptyContent,
+                loadingContentOnAppend: loadingContentOnConcatenate,
+                errorContentOnAppend: errorContentOnConcatenate,
+                itemContent: itemContent
+            )
+        case .failure(let error):
+            ErrorContentWrapper(errorContent: { errorContent(error) })
         }
     }
 }
 
-private struct ListContent
+private struct ContentWrapper
 <Key,
  Item: Identifiable & Hashable,
  EmptyContent: View,
  LoadingContentOnConcatenate: View,
  ErrorContentOnConcatenate: View,
- ItemContent: View>: View
+ ItemView: View>: View
 {
     @ObservedObject var lazyPager: LazyPager<Key, Item>
     let endOfPaginationReached: Bool
     let emptyContent: () -> EmptyContent
     let loadingContentOnAppend: () -> LoadingContentOnConcatenate
     let errorContentOnAppend: (Error) -> ErrorContentOnConcatenate
-    let itemContent: (Item) -> ItemContent
-    let geometry: GeometryProxy
+    let itemContent: (Item) -> ItemView
     
-    public var body: some View {
+    var body: some View {
         if endOfPaginationReached && lazyPager.isEmpty() {
-            emptyContent()
-                .withFullSize(geometry: geometry)
+            EmptyContentWrapper(emptyContent: emptyContent)
         } else {
-            LazyVStack(spacing: 8) {
-                ForEach(Array(lazyPager.enumerated()), id: \.element) { index, item in
-                    itemContent(item)
-                        .onAppearOnce {
-                            lazyPager.appendIfNeeded(currentIndex: index)
-                        }
+            ScrollView {
+                LazyVStack(spacing: 8) {
+                    ForEach(Array(lazyPager.enumerated()), id: \.element) { index, item in
+                        itemContent(item)
+                            .onAppearOnce {
+                                lazyPager.appendIfNeeded(currentIndex: index)
+                            }
+                    }
+                    
+                    if case .loading = lazyPager.loadState.append {
+                        loadingContentOnAppend()
+                            .withDisableGestures()
+                    } else if case .failure(let error) = lazyPager.loadState.append {
+                        errorContentOnAppend(error)
+                    }
                 }
-                
-                if case .loading = lazyPager.loadState.append {
-                    loadingContentOnAppend()
-                        .withDisableGestures()
-                } else if case .failure(let error) = lazyPager.loadState.append {
-                    errorContentOnAppend(error)
-                }
+            }
+        }
+    }
+}
+
+private struct LoadingContentWrapper<LoadingContent: View>: View {
+    let loadingContent: () -> LoadingContent
+    
+    var body: some View {
+        loadingContent()
+            .withDisableGestures()
+    }
+}
+
+private struct EmptyContentWrapper<EmptyContent: View>: View {
+    let emptyContent: () -> EmptyContent
+    
+    var body: some View {
+        GeometryReader { geometry in
+            ScrollView {
+                emptyContent()
+                    .withFullSize(geometry: geometry)
+            }
+        }
+    }
+}
+
+private struct ErrorContentWrapper<ErrorContent: View>: View {
+    let errorContent: () -> ErrorContent
+    
+    var body: some View {
+        GeometryReader { geometry in
+            ScrollView {
+                errorContent()
+                    .withFullSize(geometry: geometry)
             }
         }
     }
@@ -112,19 +140,19 @@ where EmptyContent == PagingVStackEmpty,
         lazyPager: LazyPager<Key, Item>,
         @ViewBuilder loadingContent: @escaping () -> LoadingContent,
         @ViewBuilder loadingContentOnConcatenate: @escaping () -> LoadingContentOnConcatenate,
-        @ViewBuilder itemContent: @escaping (Item) -> ItemContent
+        @ViewBuilder itemContent: @escaping (Item) -> ItemView
     ) {
         self.init(
             lazyPager: lazyPager,
             loadingContent: loadingContent,
             emptyContent: { PagingVStackEmpty() },
             errorContent: { error in
-                PagingVStackError(localizedError: error.localizedErrorOrNull()!)
+                PagingVStackError(localizedError: error.localizedErrorOrNil()!)
             },
             loadingContentOnConcatenate: loadingContentOnConcatenate,
             errorContentOnConcatenate: { error in
                 PaginVStackRetryableError(
-                    localizedError: error.localizedErrorOrNull()!,
+                    localizedError: error.localizedErrorOrNil()!,
                     retryAction: { lazyPager.retry() }
                 )
             },

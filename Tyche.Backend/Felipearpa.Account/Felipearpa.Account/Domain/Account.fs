@@ -5,4 +5,4 @@ open Felipearpa.Type
 type Account =
     { AccountId: Ulid
       Email: Email
-      ExternalAccountId: string }
+      ExternalAccountId: NonEmptyString }

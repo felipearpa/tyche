@@ -12,7 +12,6 @@ public struct PoolGamblerBetListView: View {
         let _ = Self._printChanges()
         
         PoolGamblerBetList(lazyPager: viewModel.lazyPager)
-            .padding(8)
             .refreshable { viewModel.refresh() }
             .onAppearOnce { viewModel.load() }
     }
@@ -29,5 +28,5 @@ public struct PoolGamblerBetListView: View {
                 poolId: "pool-id"
             )
         )
-    }.environmentObject(diFakeResolver())
+    }
 }

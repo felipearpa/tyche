@@ -97,8 +97,7 @@ private fun LazyListScope.poolScoreFakeItem() {
 }
 
 private fun Modifier.poolScoreItem() = composed {
-    Modifier
-        .fillMaxWidth()
+    fillMaxWidth()
         .padding(horizontal = MaterialTheme.boxSpacing.medium)
         .padding(vertical = MaterialTheme.boxSpacing.small)
 }

@@ -2,10 +2,10 @@ import Foundation
 import Alamofire
 
 class AuthInterceptor: RequestInterceptor {
-    private let authStorage: AuthStorage
+    private let authTokenRetriever: AuthTokenRetriever
     
-    init(authStorage: AuthStorage) {
-        self.authStorage = authStorage
+    init(authTokenRetriever: AuthTokenRetriever) {
+        self.authTokenRetriever = authTokenRetriever
     }
     
     func adapt(
@@ -14,13 +14,13 @@ class AuthInterceptor: RequestInterceptor {
         completion: @escaping (Result<URLRequest, Error>) -> Void
     ) {
         Task {
-            guard let loginProfile = try? await authStorage.retrieve() else {
+            guard let token = await authTokenRetriever.authToken() else {
                 completion(.success(urlRequest))
                 return
             }
             
             var newUrlRequest = urlRequest
-            newUrlRequest.setValue("Bearer \(loginProfile.token)", forHTTPHeaderField: "Authorization")
+            newUrlRequest.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
             completion(.success(newUrlRequest))
         }
     }

@@ -3,23 +3,27 @@ import SwiftUI
 public struct ErrorView: View {
     private let localizedError: LocalizedError
     
+    @Environment(\.boxSpacing) private var boxSpacing
+    
     public init(localizedError: LocalizedError) {
         self.localizedError = localizedError
     }
     
     public var body: some View {
-        VStack(spacing: 8) {
+        VStack(spacing: boxSpacing.large) {
             Image(.sentimentDissatisfied)
                 .resizable()
                 .frame(width: 40, height: 40)
+                .foregroundStyle(Color(.error))
             
-            if let errorDescription = localizedError.errorDescription {
-                Text(errorDescription)
+            VStack(spacing: boxSpacing.medium) {
+                Text(localizedError.errorDescription ?? "")
                     .font(.title)
-            }
-            
-            if let failureReason = localizedError.failureReason {
-                Text(failureReason)
+                
+                Text([localizedError.failureReason, localizedError.recoverySuggestion]
+                    .compactMap { string in string }.joined(separator: ". ")
+                )
+                .multilineTextAlignment(.center)
             }
         }
     }

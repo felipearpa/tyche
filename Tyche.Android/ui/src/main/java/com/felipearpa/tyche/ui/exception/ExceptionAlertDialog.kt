@@ -1,7 +1,5 @@
 package com.felipearpa.tyche.ui.exception
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.AlertDialog
@@ -33,25 +31,14 @@ fun ExceptionAlertDialog(exception: LocalizedException, onDismiss: () -> Unit) {
             }
         },
         text = {
-            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                exception.failureReason?.let { failureReason ->
-                    Text(
-                        text = failureReason,
-                        style = MaterialTheme.typography.failureReason,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                }
-
-                exception.recoverySuggestion?.let { nonNullRecoverySuggestion ->
-                    Text(
-                        text = nonNullRecoverySuggestion,
-                        style = MaterialTheme.typography.recoverySuggestion,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                }
-            }
+            Text(
+                text = listOfNotNull(
+                    exception.failureReason,
+                    exception.recoverySuggestion
+                ).joinToString(separator = ". "),
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth()
+            )
         },
         icon = {
             Icon(

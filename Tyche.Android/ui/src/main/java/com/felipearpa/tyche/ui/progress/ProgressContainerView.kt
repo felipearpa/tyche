@@ -25,7 +25,7 @@ private const val BLUR_RADIUS = 2
 
 @Composable
 fun ProgressContainerView(content: @Composable () -> Unit) {
-    val backgroundAlpha = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) 0.9f else 0.5f
+    val backgroundAlpha = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) 0.5f else 0f
 
     Box(modifier = Modifier.fillMaxSize()) {
         Box(
@@ -42,8 +42,9 @@ fun ProgressContainerView(content: @Composable () -> Unit) {
                 .fillMaxSize()
                 .background(MaterialTheme.colorScheme.progressBackground.copy(alpha = backgroundAlpha))
         ) {
-            ProgressIndicator()
+            BallSpinner()
         }
+
     }
 }
 

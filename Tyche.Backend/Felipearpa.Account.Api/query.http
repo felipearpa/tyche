@@ -1,17 +1,8 @@
-### Create a new user
-POST https://localhost:7289/user HTTP/1.1
+### Link an account
+POST https://localhost:5000/account/link HTTP/1.1
 content-type: application/json
 
 {
-    "username": "felipearpa",
-    "password": "#Fearpa1332#"
-}
-
-### Login an user
-POST https://localhost:7289/user/login HTTP/1.1
-content-type: application/json
-
-{
-    "username": "felipearpa",
-    "password": "#Fearpa1332#"
+    "email": "felipearcila@gmail.com",
+    "externalAccountId": "ZaGjvMlgGxbhW0yK5mYK0Lg6Wl93"
 }

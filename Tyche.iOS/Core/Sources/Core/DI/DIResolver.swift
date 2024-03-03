@@ -1,7 +1,7 @@
 import Foundation
 import Swinject
 
-public class DIResolver : ObservableObject {
+public class DIResolver {
     let resolver: Resolver
     
     public init(resolver: Resolver) {

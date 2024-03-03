@@ -24,7 +24,7 @@ internal class AuthenticationFirebaseDataSource(private val firebaseAuth: Fireba
     override suspend fun isSignInWithEmailLink(emailLink: String): Boolean =
         firebaseAuth.isSignInWithEmailLink(emailLink)
 
-    override suspend fun logout() {
+    override suspend fun signOut() {
         firebaseAuth.signOut()
     }
 }

@@ -3,7 +3,7 @@
     <string name="done_action">Done</string>
     <string name="remote_communication_failure_description">Network error</string>
     <string name="remote_communication_failure_reason">We\'re having trouble connecting to our servers right now</string>
-    <string name="unknown_failure_description">Unexpected Error</string>
+    <string name="unknown_failure_description">Unexpected error</string>
     <string name="unknown_failure_reason">Something went wrong and we\'re not sure what</string>
     <string name="searching_label">Type to search</string>
     <string name="retry_action">Retry</string>

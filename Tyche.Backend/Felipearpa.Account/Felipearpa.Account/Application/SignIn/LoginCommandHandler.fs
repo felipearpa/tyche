@@ -9,7 +9,7 @@ type LoginCommandHandler(userRepository: IAccountRepository) =
 
     member this.ExecuteAsync(loginCommand: LinkAccountCommand) : Result<AccountViewModel, unit> Async =
         async {
-            let! result = userRepository.RegisterAsync(loginCommand.ToAccountLink())
+            let! result = userRepository.LinkAsync(loginCommand.ToAccountLink())
 
             return result |> Result.map (fun account -> account.ToAccountViewModel())
         }

@@ -6,10 +6,9 @@ import DataPool
 import Pool
 
 struct PoolScoreListRouter: View {
-    let diResolver: DIResolver
     let user: AccountBundle
     let onPoolSelected: (PoolProfile) -> Void
-    
+    @Environment(\.diResolver) private var diResolver: DIResolver
     @State private var path = NavigationPath()
     
     var body: some View {
@@ -21,18 +20,10 @@ struct PoolScoreListRouter: View {
                     getPoolGamblerScoresByGamblerUseCase: GetPoolGamblerScoresByGamblerUseCase(
                         poolGamblerScoreRepository: diResolver.resolve(PoolGamblerScoreRepository.self)!
                     ),
-                    gamblerId: user.userId
+                    gamblerId: user.accountId
                 ),
                 onPoolDetailRequested: { pool in onPoolSelected(pool) }
             )
         }
     }
-}
-
-#Preview {
-    PoolScoreListRouter(
-        diResolver: DIResolver(resolver:Assembler([]).resolver),
-        user: AccountBundle(userId: "userId", username: "username"),
-        onPoolSelected: { _ in }
-    )
 }

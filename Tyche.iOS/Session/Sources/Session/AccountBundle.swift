@@ -1,9 +1,9 @@
 public struct AccountBundle: Codable {
-    public let userId: String
-    public let username: String
+    public let accountId: String
+    public let externalAccountId: String
     
-    public init(userId: String, username: String) {
-        self.userId = userId
-        self.username = username
+    public init(accountId: String, externalAccountId: String) {
+        self.accountId = accountId
+        self.externalAccountId = externalAccountId
     }
 }

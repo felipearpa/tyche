@@ -45,7 +45,7 @@ module WebApplication =
                             }
                             |> Async.StartAsTask)
                 )
-                .RequireAuthorization()
+                // .RequireAuthorization()
             |> ignore
 
             this

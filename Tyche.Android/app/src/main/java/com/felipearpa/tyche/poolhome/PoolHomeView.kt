@@ -47,13 +47,16 @@ import com.felipearpa.tyche.pool.gamblerscore.gamblerScoreListViewModel
 import com.felipearpa.tyche.settings.SettingsView
 import com.felipearpa.tyche.settings.settingsViewModel
 import com.felipearpa.tyche.ui.exception.ExceptionView
-import com.felipearpa.tyche.ui.exception.LocalizedException
+import com.felipearpa.tyche.ui.exception.localizedExceptionOrNull
 import com.felipearpa.tyche.ui.shimmer
 import com.felipearpa.tyche.ui.state.LoadableViewState
+import com.felipearpa.tyche.ui.theme.boxSpacing
 import kotlinx.coroutines.launch
 import com.felipearpa.tyche.ui.R as SharedR
 
-enum class Tab {
+private val iconSize = 24.dp
+
+private enum class Tab {
     GAMBLER_SCORE,
     BET_EDITOR
 }
@@ -89,7 +92,9 @@ private fun PoolHomeView(
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
 
     when (state) {
-        is LoadableViewState.Failure -> ExceptionView(exception = state() as LocalizedException)
+        is LoadableViewState.Failure -> ExceptionView(
+            exception = state().localizedExceptionOrNull()!!
+        )
 
         else -> ModalNavigationDrawer(
             drawerState = drawerState,
@@ -134,12 +139,12 @@ private fun PoolHomeView(
                             Column(
                                 horizontalAlignment = Alignment.CenterHorizontally,
                                 verticalArrangement = Arrangement.SpaceEvenly,
-                                modifier = Modifier.padding(top = 8.dp, bottom = 8.dp)
+                                modifier = Modifier.padding(vertical = MaterialTheme.boxSpacing.medium)
                             ) {
                                 Icon(
                                     painter = painterResource(id = R.drawable.ic_sport_score),
                                     contentDescription = emptyString(),
-                                    modifier = Modifier.size(24.dp)
+                                    modifier = Modifier.size(iconSize)
                                 )
                                 Text(
                                     text = stringResource(id = R.string.score_tab),
@@ -157,12 +162,12 @@ private fun PoolHomeView(
                             Column(
                                 horizontalAlignment = Alignment.CenterHorizontally,
                                 verticalArrangement = Arrangement.SpaceEvenly,
-                                modifier = Modifier.padding(top = 8.dp, bottom = 8.dp)
+                                modifier = Modifier.padding(vertical = MaterialTheme.boxSpacing.medium)
                             ) {
                                 Icon(
                                     painter = painterResource(id = R.drawable.ic_money),
                                     contentDescription = emptyString(),
-                                    modifier = Modifier.size(24.dp)
+                                    modifier = Modifier.size(iconSize)
                                 )
                                 Text(
                                     text = stringResource(id = R.string.bet_tab),

@@ -16,41 +16,39 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.felipearpa.tyche.core.emptyString
 import com.felipearpa.tyche.ui.R
+import com.felipearpa.tyche.ui.theme.boxSpacing
 
 @Composable
 fun ExceptionView(exception: LocalizedException) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = Arrangement.spacedBy(MaterialTheme.boxSpacing.large),
         modifier = Modifier.fillMaxWidth()
     ) {
         Icon(
             painter = painterResource(id = R.drawable.ic_sentiment_sad),
             contentDescription = emptyString(),
-            modifier = Modifier.size(40.dp, 40.dp),
+            modifier = Modifier.size(64.dp),
             tint = MaterialTheme.colorScheme.error
         )
 
-        exception.errorDescription?.let { nonNullErrorDescription ->
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(MaterialTheme.boxSpacing.medium),
+            modifier = Modifier.fillMaxWidth()
+        ) {
             Text(
-                text = nonNullErrorDescription,
+                text = exception.errorDescription ?: emptyString(),
                 style = MaterialTheme.typography.errorDescription,
                 textAlign = TextAlign.Center
             )
-        }
 
-        exception.failureReason?.let { nonNullFailureReason ->
             Text(
-                text = nonNullFailureReason,
+                text = listOfNotNull(
+                    exception.failureReason,
+                    exception.recoverySuggestion
+                ).joinToString(separator = "."),
                 style = MaterialTheme.typography.failureReason,
-                textAlign = TextAlign.Center
-            )
-        }
-
-        exception.recoverySuggestion?.let { nonNullRecoverySuggestion ->
-            Text(
-                text = nonNullRecoverySuggestion,
-                style = MaterialTheme.typography.recoverySuggestion,
                 textAlign = TextAlign.Center
             )
         }

@@ -5,17 +5,14 @@ import Session
 import DataPool
 
 struct PoolHomeRouter: View {
-    let diResolver: DIResolver
     let user: AccountBundle
     let pool: PoolProfile
-    
     @State private var path = NavigationPath()
 
     var body: some View {
         NavigationStack(path: $path) {
             PoolHomeView(
-                diResolver: diResolver,
-                gamblerId: user.userId,
+                gamblerId: user.accountId,
                 poolId: pool.poolId
             )
         }
@@ -24,8 +21,7 @@ struct PoolHomeRouter: View {
 
 #Preview {
     PoolHomeRouter(
-        diResolver: DIResolver(resolver:Assembler([]).resolver),
-        user: AccountBundle(userId: "userId", username: "username"),
+        user: AccountBundle(accountId: "id", externalAccountId: "id"),
         pool: PoolProfile(poolId: "poolId")
     )
 }

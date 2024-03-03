@@ -1,5 +1,6 @@
 import SwiftUI
 import Swinject
+import FirebaseCore
 import Core
 import Session
 import DataPool
@@ -7,6 +8,10 @@ import DataBet
 
 @main
 struct TycheApp: App {
+    init() {
+        FirebaseApp.configure()
+    }
+
     var diResolver = DIResolver(
         resolver:Assembler([
             CoreAssembly(),
@@ -17,8 +22,8 @@ struct TycheApp: App {
     
     var body: some Scene {
         WindowGroup {
-            MainView(diResolver: diResolver)
-                .environmentObject(diResolver)
+            MainView()
+                .environment(\.diResolver, diResolver)
         }
     }
 }

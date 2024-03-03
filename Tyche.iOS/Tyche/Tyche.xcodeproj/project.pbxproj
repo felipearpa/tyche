@@ -9,8 +9,12 @@
 /* Begin PBXBuildFile section */
 		550F21DD2B16C7EF004D5A51 /* DataBet in Frameworks */ = {isa = PBXBuildFile; productRef = 550F21DC2B16C7EF004D5A51 /* DataBet */; };
 		556EBA612B16CB8F008D4ABD /* Session in Frameworks */ = {isa = PBXBuildFile; productRef = 556EBA602B16CB8F008D4ABD /* Session */; };
+		557D1EAA2B40AD2B000FF9F9 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 557D1EA92B40AD2B000FF9F9 /* GoogleService-Info.plist */; };
+		558C522E2B40A046004AF956 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 558C522D2B40A046004AF956 /* FirebaseAuth */; };
 		55905C322B168C9F003EB79F /* Account in Frameworks */ = {isa = PBXBuildFile; productRef = 55905C312B168C9F003EB79F /* Account */; };
 		55905C362B16C23E003EB79F /* DataPool in Frameworks */ = {isa = PBXBuildFile; productRef = 55905C352B16C23E003EB79F /* DataPool */; };
+		55A869FC2B9000C80055B421 /* EmailSignInURLProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55A869FB2B9000C80055B421 /* EmailSignInURLProcessor.swift */; };
+		55F9FDCA2B56EAD500066BBA /* EmailLinkSignInRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55F9FDC92B56EAD500066BBA /* EmailLinkSignInRouter.swift */; };
 		D2127F392A2C2F240047DED7 /* TycheApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2127F382A2C2F240047DED7 /* TycheApp.swift */; };
 		D2127F3D2A2C2F260047DED7 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D2127F3C2A2C2F260047DED7 /* Assets.xcassets */; };
 		D2127F402A2C2F260047DED7 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D2127F3F2A2C2F260047DED7 /* Preview Assets.xcassets */; };
@@ -51,6 +55,10 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		557942532B4C413400B1B3DA /* Tyche.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Tyche.entitlements; sourceTree = "<group>"; };
+		557D1EA92B40AD2B000FF9F9 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		55A869FB2B9000C80055B421 /* EmailSignInURLProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmailSignInURLProcessor.swift; sourceTree = "<group>"; };
+		55F9FDC92B56EAD500066BBA /* EmailLinkSignInRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmailLinkSignInRouter.swift; sourceTree = "<group>"; };
 		D204461A2A367F1400390319 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		D2127F352A2C2F240047DED7 /* Tyche.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Tyche.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D2127F382A2C2F240047DED7 /* TycheApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TycheApp.swift; sourceTree = "<group>"; };
@@ -82,6 +90,7 @@
 				55905C322B168C9F003EB79F /* Account in Frameworks */,
 				D2BB75112A5B65D500C7AE04 /* Pool in Frameworks */,
 				556EBA612B16CB8F008D4ABD /* Session in Frameworks */,
+				558C522E2B40A046004AF956 /* FirebaseAuth in Frameworks */,
 				550F21DD2B16C7EF004D5A51 /* DataBet in Frameworks */,
 				D2C23D632A3E4290003CC860 /* Core in Frameworks */,
 				D29956132A74215600F8878E /* Bet in Frameworks */,
@@ -130,10 +139,13 @@
 		D2127F372A2C2F240047DED7 /* Tyche */ = {
 			isa = PBXGroup;
 			children = (
-				D2A7804E2AC8BBD700F01A02 /* Localizable */,
+				557942532B4C413400B1B3DA /* Tyche.entitlements */,
 				D204461A2A367F1400390319 /* Info.plist */,
+				557D1EA92B40AD2B000FF9F9 /* GoogleService-Info.plist */,
+				D2A7804E2AC8BBD700F01A02 /* Localizable */,
 				D2127F762A2C33340047DED7 /* UI */,
 				D2127F382A2C2F240047DED7 /* TycheApp.swift */,
+				55A869FB2B9000C80055B421 /* EmailSignInURLProcessor.swift */,
 				D2127F3C2A2C2F260047DED7 /* Assets.xcassets */,
 				D2127F432A2C2F260047DED7 /* Tyche.xcdatamodeld */,
 				D2127F3E2A2C2F260047DED7 /* Preview Content */,
@@ -183,6 +195,7 @@
 				D21495EB2ABFD65E00C18C71 /* HomeRouter.swift */,
 				D21495ED2ABFDDFD00C18C71 /* PoolHomeRouter.swift */,
 				D21495EF2ABFE1D500C18C71 /* PoolScoreListRouter.swift */,
+				55F9FDC92B56EAD500066BBA /* EmailLinkSignInRouter.swift */,
 			);
 			path = UI;
 			sourceTree = "<group>";
@@ -221,6 +234,7 @@
 				55905C352B16C23E003EB79F /* DataPool */,
 				550F21DC2B16C7EF004D5A51 /* DataBet */,
 				556EBA602B16CB8F008D4ABD /* Session */,
+				558C522D2B40A046004AF956 /* FirebaseAuth */,
 			);
 			productName = Tyche;
 			productReference = D2127F352A2C2F240047DED7 /* Tyche.app */;
@@ -295,6 +309,9 @@
 				Base,
 			);
 			mainGroup = D2127F2C2A2C2F240047DED7;
+			packageReferences = (
+				558C522C2B40A046004AF956 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+			);
 			productRefGroup = D2127F362A2C2F240047DED7 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -312,6 +329,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				D2127F402A2C2F260047DED7 /* Preview Assets.xcassets in Resources */,
+				557D1EAA2B40AD2B000FF9F9 /* GoogleService-Info.plist in Resources */,
 				D2A7804D2AC8BB1A00F01A02 /* Localizable.xcstrings in Resources */,
 				D2127F3D2A2C2F260047DED7 /* Assets.xcassets in Resources */,
 			);
@@ -339,8 +357,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				D2DAB79A2A6DB7B400ED29AC /* PoolHomeRoute.swift in Sources */,
+				55F9FDCA2B56EAD500066BBA /* EmailLinkSignInRouter.swift in Sources */,
 				D2127F7A2A2C33920047DED7 /* MainView.swift in Sources */,
 				D21495F02ABFE1D500C18C71 /* PoolScoreListRouter.swift in Sources */,
+				55A869FC2B9000C80055B421 /* EmailSignInURLProcessor.swift in Sources */,
 				D2DAB7982A6DB78D00ED29AC /* PoolHomeView.swift in Sources */,
 				D21495EE2ABFDDFD00C18C71 /* PoolHomeRouter.swift in Sources */,
 				D2127F752A2C33210047DED7 /* StringResource.swift in Sources */,
@@ -511,6 +531,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = Tyche/Tyche.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Tyche/Preview Content\"";
@@ -529,7 +550,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.felipearpa.Tyche;
+				PRODUCT_BUNDLE_IDENTIFIER = com.felipearpa.tyche;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -542,6 +563,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = Tyche/Tyche.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Tyche/Preview Content\"";
@@ -560,7 +582,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.felipearpa.Tyche;
+				PRODUCT_BUNDLE_IDENTIFIER = com.felipearpa.tyche;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -685,6 +707,17 @@
 		};
 /* End XCConfigurationList section */
 
+/* Begin XCRemoteSwiftPackageReference section */
+		558C522C2B40A046004AF956 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
+			requirement = {
+				kind = exactVersion;
+				version = 10.21.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
 /* Begin XCSwiftPackageProductDependency section */
 		550F21DC2B16C7EF004D5A51 /* DataBet */ = {
 			isa = XCSwiftPackageProductDependency;
@@ -693,6 +726,11 @@
 		556EBA602B16CB8F008D4ABD /* Session */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = Session;
+		};
+		558C522D2B40A046004AF956 /* FirebaseAuth */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 558C522C2B40A046004AF956 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAuth;
 		};
 		55905C312B168C9F003EB79F /* Account */ = {
 			isa = XCSwiftPackageProductDependency;

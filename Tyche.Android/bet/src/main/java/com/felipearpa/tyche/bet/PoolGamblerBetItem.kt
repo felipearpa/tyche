@@ -16,8 +16,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import com.felipearpa.tyche.core.toLocalDateTimeString
+import com.felipearpa.tyche.ui.theme.boxSpacing
 
 @Composable
 fun PoolGamblerBetItem(
@@ -55,7 +55,7 @@ fun NonEditablePoolGamblerBetItem(
     partialPoolGamblerBet: PartialPoolGamblerBetModel
 ) {
     Column(
-        verticalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = Arrangement.spacedBy(MaterialTheme.boxSpacing.medium),
         modifier = modifier
     ) {
         Row(
@@ -80,7 +80,7 @@ fun NonEditablePoolGamblerBetItem(
             text = poolGamblerBet.matchDateTime.toLocalDateTimeString(),
             style = MaterialTheme.typography.bodySmall,
             modifier = Modifier
-                .padding(start = 8.dp)
+                .padding(start = MaterialTheme.boxSpacing.medium)
                 .then(shimmerModifier)
         )
     }
@@ -95,7 +95,7 @@ fun EditablePoolGamblerBetItem(
     onBetChanged: (PartialPoolGamblerBetModel) -> Unit = {}
 ) {
     Column(
-        verticalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = Arrangement.spacedBy(MaterialTheme.boxSpacing.medium),
         modifier = modifier
     ) {
         Row(

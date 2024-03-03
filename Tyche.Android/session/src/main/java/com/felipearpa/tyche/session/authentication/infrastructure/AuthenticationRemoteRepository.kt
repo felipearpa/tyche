@@ -28,18 +28,21 @@ internal class AuthenticationRemoteRepository @Inject constructor(
         if (!authenticationExternalDataSource.isSignInWithEmailLink(emailLink = emailLink))
             return Result.failure(SignInWithEmailLinkException.InvalidEmailLink)
 
-        val externalAccountId = handleFirebaseSignInWithEmailLink {
+        return handleFirebaseSignInWithEmailLink {
             authenticationExternalDataSource.signInWithEmailLink(
                 email = email,
                 emailLink = emailLink
             )
         }
-        return externalAccountId
     }
 
     override suspend fun logout(): Result<Unit> {
-        authenticationExternalDataSource.logout()
-        return Result.success(Unit)
+        return try {
+            authenticationExternalDataSource.signOut()
+            Result.success(Unit)
+        } catch (exception: Exception) {
+            Result.failure(exception)
+        }
     }
 
     override suspend fun linkAccount(accountLink: AccountLink): Result<AccountBundle> =

@@ -4,11 +4,11 @@ import Alamofire
 public class AuthenticatedSession {
     private let session: Session
     
-    public init(authStorage: AuthStorage) {
+    public init(authTokenRetriever: AuthTokenRetriever) {
         let configuration = URLSessionConfiguration.af.default
         session = Session(
             configuration: configuration,
-            interceptor: AuthInterceptor(authStorage: authStorage)
+            interceptor: AuthInterceptor(authTokenRetriever: authTokenRetriever)
         )
     }
     

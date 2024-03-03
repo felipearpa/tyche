@@ -2,7 +2,7 @@ package com.felipearpa.tyche.session.authentication.di
 
 import com.felipearpa.tyche.session.AccountStorage
 import com.felipearpa.tyche.session.Auth
-import com.felipearpa.tyche.session.authentication.application.LogoutUseCase
+import com.felipearpa.tyche.session.authentication.application.LogOutUseCase
 import com.felipearpa.tyche.session.authentication.application.SendSignInLinkToEmailUseCase
 import com.felipearpa.tyche.session.authentication.application.SignInWithEmailLinkUseCase
 import com.felipearpa.tyche.session.authentication.domain.AuthenticationExternalDataSource
@@ -43,7 +43,7 @@ internal object AuthenticationUseCaseProvider {
     fun provideLogoutUseCase(
         authenticationRepository: AuthenticationRepository,
         accountStorage: AccountStorage
-    ) = LogoutUseCase(
+    ) = LogOutUseCase(
         authenticationRepository = authenticationRepository,
         accountStorage = accountStorage
     )

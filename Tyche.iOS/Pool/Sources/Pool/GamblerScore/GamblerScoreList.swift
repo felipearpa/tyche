@@ -6,6 +6,8 @@ struct GamblerScoreList: View {
     var lazyPager: LazyPager<String, PoolGamblerScoreModel>
     let loggedInGamblerId: String?
     
+    @Environment(\.boxSpacing) private var boxSpacing
+    
     var body: some View {
         let _ = Self._printChanges()
         
@@ -22,27 +24,33 @@ struct GamblerScoreList: View {
                 poolGamblerScore: poolGamblerScore,
                 isLoggedIn: loggedInGamblerId != nil ? loggedInGamblerId == poolGamblerScore.gamblerId : false
             )
-            
+            .padding([.horizontal], boxSpacing.medium)
+            .padding([.vertical], boxSpacing.small)
+
             Divider()
         }
     }
 }
 
 struct GamblerScoreFakeList : View {
+    @Environment(\.boxSpacing) private var boxSpacing
+    
     private let poolGamblerScores: [PoolGamblerScoreModel] = (1...50).lazy.map { _ in
         fakePoolGamblerScoreModel()
     }
     
     var body: some View {
-        LazyVStack(spacing: 8) {
-            ForEach(poolGamblerScores) { poolGamblerScore in
-                GamblerScoreItem(
-                    poolGamblerScore: poolGamblerScore,
-                    isLoggedIn: false
-                )
-                .shimmer()
-                
-                Divider()
+        ScrollView {
+            LazyVStack(spacing: boxSpacing.medium) {
+                ForEach(poolGamblerScores) { poolGamblerScore in
+                    GamblerScoreItem(
+                        poolGamblerScore: poolGamblerScore,
+                        isLoggedIn: false
+                    )
+                    .shimmer()
+                    
+                    Divider()
+                }
             }
         }
     }

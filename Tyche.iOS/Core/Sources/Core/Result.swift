@@ -11,4 +11,12 @@ public extension Result {
             return onFailure(error)
         }
     }
+    
+    @inlinable
+    func errorOrNil() -> Error? {
+        guard case .failure(let error) = self else {
+            return nil
+        }
+        return error
+    }
 }

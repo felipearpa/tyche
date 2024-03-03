@@ -2,19 +2,18 @@ package com.felipearpa.tyche.core.network
 
 import io.mockk.clearAllMocks
 import kotlinx.coroutines.test.runTest
-import okhttp3.MediaType
-import okhttp3.ResponseBody
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.ResponseBody.Companion.toResponseBody
 import org.junit.Before
 import org.junit.Test
 import retrofit2.HttpException
 import retrofit2.Response
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 class RetrofitExceptionHandlerTest {
-
     private val retrofitExceptionHandler = RetrofitExceptionHandler()
 
     @Before
@@ -30,8 +29,8 @@ class RetrofitExceptionHandlerTest {
 
             val result = retrofitExceptionHandler.handle(block)
 
-            assertTrue(result.isSuccess)
-            assertEquals(expectedResult, result.getOrNull())
+            assertTrue(actual = result.isSuccess)
+            assertEquals(expected = expectedResult, actual = result.getOrNull())
         }
 
     @Test
@@ -53,9 +52,8 @@ class RetrofitExceptionHandlerTest {
             throw HttpException(
                 Response.error<String>(
                     httpStatusCode,
-                    ResponseBody.create(
-                        MediaType.get("plain/text"), ""
-                    )
+                    ""
+                        .toResponseBody("plain/text".toMediaType())
                 )
             )
         }

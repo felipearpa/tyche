@@ -88,7 +88,7 @@ private fun InformationSection() {
     Box {
         Text(
             text = stringResource(id = R.string.play_pool_text),
-            style = MaterialTheme.typography.displaySmall,
+            style = MaterialTheme.typography.headlineLarge,
             textAlign = TextAlign.Center
         )
     }

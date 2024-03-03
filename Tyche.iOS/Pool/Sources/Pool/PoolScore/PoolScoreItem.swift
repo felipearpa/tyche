@@ -4,6 +4,8 @@ import UI
 struct PoolScoreItem: View {
     let poolGamblerScore: PoolGamblerScoreModel
     
+    @Environment(\.boxSpacing) private var boxSpacing
+    
     var body: some View {
         HStack {
             VStack(alignment:.leading) {

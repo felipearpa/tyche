@@ -17,7 +17,6 @@ public struct GamblerScoreListView: View {
             lazyPager: viewModel.lazyPager,
             loggedInGamblerId: viewModel.gamblerId
         )
-        .padding(8)
         .refreshable {
             viewModel.lazyPager.refresh()
         }
