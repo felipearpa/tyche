@@ -27,12 +27,12 @@ public struct EmailSignInView: View {
 }
 
 private struct EmailSignInStateView: View {
-    let viewState: LodableViewState<Void>
+    let viewState: LoadableViewState<Void>
     let signInWithEmail: (String) -> Void
     let reset: () -> Void
     
     init(
-        viewState: LodableViewState<Void>,
+        viewState: LoadableViewState<Void>,
         signInWithEmail: @escaping (String) -> Void = { _ in },
         reset: @escaping () -> Void = {}
     ) {

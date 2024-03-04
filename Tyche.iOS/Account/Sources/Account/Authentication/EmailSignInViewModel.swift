@@ -4,7 +4,7 @@ import UI
 import Session
 
 public class EmailSignInViewModel: ObservableObject {
-    @Published @MainActor private(set) var state: LodableViewState<Void> = .initial
+    @Published @MainActor private(set) var state: LoadableViewState<Void> = .initial
     
     private let sendSignInLinkToEmailUseCase: SendSignInLinkToEmailUseCase
     

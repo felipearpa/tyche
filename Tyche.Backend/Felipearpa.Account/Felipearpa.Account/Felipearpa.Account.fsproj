@@ -6,14 +6,17 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Compile Include="Type\Username.fs" />
-        <Compile Include="Type\Password.fs" />
         <Compile Include="Domain\AccountEntity.fs" />
         <Compile Include="Domain\Account.fs" />
         <Compile Include="Domain\AccountLink.fs" />
         <Compile Include="Domain\IAccountRepository.fs" />
         <Compile Include="Domain\AccountLinkTransformer.fs" />
         <Compile Include="Domain\AccountEntityTransformer.fs" />
+        <Compile Include="Domain\AccountTransformer.fs" />
+        <Compile Include="Domain\AccountDictionaryTransformer.fs" />
+        <Compile Include="Infrastructure\UpdateLinkRequestBuilder.fs" />
+        <Compile Include="Infrastructure\LinkRequestBuilder.fs" />
+        <Compile Include="Infrastructure\GetByEmailRequestBuilder.fs" />
         <Compile Include="Infrastructure\AccountDynamoDbRepository.fs" />
         <Compile Include="Application\AccountViewModel.fs" />
         <Compile Include="Application\AccountTransformer.fs" />

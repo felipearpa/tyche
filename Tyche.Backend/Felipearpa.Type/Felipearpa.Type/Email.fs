@@ -20,6 +20,10 @@ type Email =
     private
     | Email of string
 
+    member this.Value =
+        match this with
+        | Email value -> value
+
     override this.ToString() =
         match this with
         | Email value -> value
@@ -43,6 +47,6 @@ module Email =
         | Ok value -> value
         | Error message -> raise <| ArgumentException(message)
 
-    let value (Email element) = element
+    let value (Email value) = value
 
     let toString (element: Email) = element.ToString()

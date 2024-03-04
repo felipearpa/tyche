@@ -9,7 +9,7 @@ private let ERROR_HTTP_CODE = 500
 final class AlamofireNetworkErrorHandlerTests: XCTestCase {
     private var networkErrorHandler = AlamofireErrorHandler()
     
-    func testGivenASuccessValueWhenTheExecutionIsHandledThenASuccessResultIsReturned() async throws {
+    func testGivenASuccessFunctionWhenTheExecutionIsHandledThenASuccessResultIsReturned() async throws {
         let successPerform = successPerform()
         
         let result = await networkErrorHandler.handle(successPerform)

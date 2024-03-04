@@ -5,7 +5,7 @@ public enum NetworkError: Error {
 
 public extension Result {
     @inlinable
-    func mapNetworkError<NewFailure>(
+    func recoverNetworkError<NewFailure>(
         _ transform: (NetworkError) -> NewFailure
     ) -> Result<Success, NewFailure> where NewFailure : Error {
         return mapError { error in

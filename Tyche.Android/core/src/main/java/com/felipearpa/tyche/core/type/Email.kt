@@ -11,7 +11,7 @@ private const val PATTERN = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}\$"
 @JvmInline
 value class Email(val value: String) {
     init {
-        isValid(value)
+        check(value)
     }
 
     override fun toString(): String = value
@@ -19,12 +19,16 @@ value class Email(val value: String) {
     companion object {
         fun isValid(value: String): Boolean {
             return try {
-                checkEmpty(value)
-                checkEmailPattern(value)
+                check(value = value)
                 true
             } catch (ignored: IllegalArgumentException) {
                 false
             }
+        }
+
+        private fun check(value: String) {
+            checkEmpty(value)
+            checkEmailPattern(value)
         }
 
         private fun checkEmpty(value: String) {

@@ -1,75 +1,37 @@
 package com.felipearpa.tyche.core.network
 
-import io.mockk.clearAllMocks
+import com.felipearpa.tyche.core.emptyString
+import io.kotest.matchers.booleans.shouldBeTrue
+import io.kotest.matchers.nulls.shouldNotBeNull
+import io.kotest.matchers.shouldBe
+import io.kotest.matchers.types.shouldBeTypeOf
 import kotlinx.coroutines.test.runTest
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.ResponseBody.Companion.toResponseBody
-import org.junit.Before
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import retrofit2.HttpException
 import retrofit2.Response
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
-import kotlin.test.assertEquals
-import kotlin.test.assertTrue
 
 class RetrofitExceptionHandlerTest {
     private val retrofitExceptionHandler = RetrofitExceptionHandler()
 
-    @Before
-    fun setUp() {
-        clearAllMocks()
-    }
-
     @Test
-    fun `given a success function when is handled then a success result is returned`() =
+    fun `given a function when is handled then a success result is returned`() =
         runTest {
-            val expectedResult = "expectedResult"
-            val block: suspend () -> String = { expectedResult }
-
+            val block: suspend () -> String = { BLOCK_VALUE }
             val result = retrofitExceptionHandler.handle(block)
-
-            assertTrue(actual = result.isSuccess)
-            assertEquals(expected = expectedResult, actual = result.getOrNull())
+            `verify if the result is success`(result = result)
         }
 
     @Test
     fun `given a HttpException failure function when is handled then a http failure result is returned`() =
         runTest {
-            val expectedHttpStatusCode = 500
-            val block = `http failure function`(httpStatusCode = expectedHttpStatusCode)
-
+            val block = `http failure function`()
             val result = retrofitExceptionHandler.handle(block)
-
-            `assert failure is http`(
-                result = result,
-                expectedHttpStatusCode = expectedHttpStatusCode
-            )
+            `verify failure is http`(result = result)
         }
-
-    private fun `http failure function`(httpStatusCode: Int): suspend () -> String {
-        val block: suspend () -> String = {
-            throw HttpException(
-                Response.error<String>(
-                    httpStatusCode,
-                    ""
-                        .toResponseBody("plain/text".toMediaType())
-                )
-            )
-        }
-        return block
-    }
-
-    private fun `assert failure is http`(result: Result<String>, expectedHttpStatusCode: Int) {
-        assertTrue(result.isFailure)
-
-        assertTrue(result.exceptionOrNull() is NetworkException.Http)
-
-        assertEquals(
-            expectedHttpStatusCode,
-            (result.exceptionOrNull() as NetworkException.Http).httpStatusCode.value
-        )
-    }
 
     @Test
     fun `given a UnknownHostException failure function when is handled then a remote communication failure result is returned`() =
@@ -91,11 +53,6 @@ class RetrofitExceptionHandlerTest {
             `assert failure is remote communication`(result = result)
         }
 
-    private fun `assert failure is remote communication`(result: Result<String>) {
-        assertTrue(result.isFailure)
-        assertTrue(result.exceptionOrNull() is NetworkException.RemoteCommunication)
-    }
-
     @Test
     fun `given a RuntimeException failure function when is handled then the same exception is returned`() =
         runTest {
@@ -106,8 +63,44 @@ class RetrofitExceptionHandlerTest {
             `assert failure is a runtime exception`(result = result)
         }
 
+    private fun `verify if the result is success`(result: Result<String>) {
+        result.isSuccess.shouldBeTrue()
+
+        val actualValue = result.getOrNull()
+        actualValue.shouldNotBeNull()
+        actualValue shouldBe BLOCK_VALUE
+    }
+
+    private fun `http failure function`(): suspend () -> String {
+        val block: suspend () -> String = {
+            throw HttpException(
+                Response.error<String>(
+                    FAILED_STATUS_CODE,
+                    emptyString().toResponseBody("plain/text".toMediaType())
+                )
+            )
+        }
+        return block
+    }
+
+    private fun `verify failure is http`(result: Result<String>) {
+        result.isFailure.shouldBeTrue()
+        result.exceptionOrNull()!!.shouldBeTypeOf<NetworkException.Http>()
+        (result.exceptionOrNull() as NetworkException.Http).httpStatusCode.value shouldBe FAILED_STATUS_CODE
+    }
+
     private fun `assert failure is a runtime exception`(result: Result<String>) {
-        assertTrue(result.isFailure)
-        assertTrue(result.exceptionOrNull() is RuntimeException)
+        result.isFailure.shouldBeTrue()
+        result.exceptionOrNull()!!.shouldBeTypeOf<RuntimeException>()
+    }
+
+    private fun `assert failure is remote communication`(result: Result<String>) {
+        result.isFailure.shouldBeTrue()
+        result.exceptionOrNull()!!.shouldBeTypeOf<NetworkException.RemoteCommunication>()
+    }
+
+    companion object {
+        const val BLOCK_VALUE = "result"
+        const val FAILED_STATUS_CODE = 500
     }
 }

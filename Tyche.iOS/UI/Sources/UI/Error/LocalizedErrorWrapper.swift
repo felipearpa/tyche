@@ -23,7 +23,7 @@ public extension Error {
     }
 }
 
-public extension LodableViewState {
+public extension LoadableViewState {
     @inlinable
     func localizedErrorOrNil() -> LocalizedErrorWrapper? {
         if case .failure(let error) = self {

@@ -68,11 +68,9 @@ dependencies {
     implementation(libs.google.accompanist.placeholder)
 
     testImplementation(libs.junit)
-    testImplementation(libs.kotlin.test)
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.io.mockk)
 
-    androidTestImplementation(libs.kotlin.test)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.espresso.core)
     androidTestImplementation(platform(libs.compose.bom))

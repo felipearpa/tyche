@@ -4,37 +4,16 @@ open System
 open System.Collections.Generic
 open System.Linq
 open Amazon.DynamoDBv2
-open Amazon.DynamoDBv2.DataModel
-open Amazon.DynamoDBv2.DocumentModel
 open Amazon.DynamoDBv2.Model
 open Microsoft.FSharp.Core
 open Felipearpa.Type
 open Felipearpa.Account.Domain
-open Felipearpa.Account.Domain.AccountLinkTransformer
+open Felipearpa.Account.Domain.AccountDictionaryTransformer
 open Felipearpa.Account.Domain.AccountEntityTransformer
+open Felipearpa.Account.Domain.AccountLinkTransformer
+open Felipearpa.Account.Domain.AccountTransformer
 
 type AccountDynamoDbRepository(client: IAmazonDynamoDB) =
-    [<Literal>]
-    let tableName = "Account"
-
-    [<Literal>]
-    let userNameText = "EMAIL"
-
-    let context = new DynamoDBContext(client)
-
-    let map (dictionary: IDictionary<string, AttributeValue>) =
-        context.FromDocument<AccountEntity>(Document.FromAttributeMap(Dictionary(dictionary)))
-
-    let buildAccountMap (accountEntity: AccountEntity) =
-        dict
-            [ "pk", AttributeValue(accountEntity.Pk)
-              "accountId", AttributeValue(accountEntity.AccountId)
-              "email", AttributeValue(accountEntity.Email)
-              "externalAccountId", AttributeValue(accountEntity.ExternalAccountId) ]
-
-    let buildUniqueEmailMap (accountEntity: AccountEntity) =
-        dict [ "pk", AttributeValue($"{userNameText}#{accountEntity.Email}") ]
-
     let createAccountInDbAsync createUserTransaction =
         async {
             try
@@ -49,18 +28,10 @@ type AccountDynamoDbRepository(client: IAmazonDynamoDB) =
     let linkAsync (accountLink: AccountLink) =
         async {
             let accountEntity = accountLink.ToAccountEntity()
-            let accountMap = buildAccountMap accountEntity
-            let uniqueEmailMap = buildUniqueEmailMap accountEntity
 
-            let createAccountRequest =
-                Put(TableName = tableName, Item = (accountMap |> Dictionary))
+            let createAccountRequest = LinkRequestBuilder.build accountEntity
 
-            let createUniqueEmailRequest =
-                Put(
-                    TableName = tableName,
-                    Item = (uniqueEmailMap |> Dictionary),
-                    ConditionExpression = "attribute_not_exists(pk)"
-                )
+            let createUniqueEmailRequest = LinkRequestBuilder.buildUniqueEmail accountEntity
 
             let requests =
                 [ TransactWriteItem(Put = createAccountRequest)
@@ -69,34 +40,44 @@ type AccountDynamoDbRepository(client: IAmazonDynamoDB) =
             let createUserTransaction =
                 TransactWriteItemsRequest(TransactItems = (requests |> List))
 
-            let! result = createAccountInDbAsync createUserTransaction
+            let! response = createAccountInDbAsync createUserTransaction
 
             return
-                result
-                |> Result.map (fun _ ->
+                match response with
+                | Ok _ ->
                     { Account.Email = accountLink.Email
                       AccountId = Ulid.newOf accountEntity.AccountId
-                      ExternalAccountId = NonEmptyString.newOf accountLink.ExternalAccountId })
+                      ExternalAccountId = NonEmptyString.newOf accountLink.ExternalAccountId }
+                    |> Ok
+                | Error _ -> () |> Error
+        }
+
+    let updateLink (account: Account) (accountLink: AccountLink) =
+        async {
+            let accountEntity = account.ToAccountEntity()
+
+            let updateAccountLinkRequest =
+                UpdateLinkRequestBuilder.build accountEntity accountLink
+
+            return!
+                async {
+                    try
+                        let! _ = client.UpdateItemAsync updateAccountLinkRequest |> Async.AwaitTask
+
+                        return
+                            { Account.Email = accountLink.Email
+                              AccountId = Ulid.newOf accountEntity.AccountId
+                              ExternalAccountId = NonEmptyString.newOf accountLink.ExternalAccountId }
+                            |> Ok
+                    with _ ->
+                        return () |> Error
+                }
         }
 
     interface IAccountRepository with
         member this.GetByEmailAsync(email) =
             async {
-                let keyConditionExpression = "#email = :email"
-
-                let mutable attributeValues =
-                    dict [ ":email", AttributeValue(email |> Email.value) ]
-
-                let mutable attributeNames = dict [ "#email", "email" ]
-
-                let request =
-                    QueryRequest(
-                        TableName = tableName,
-                        IndexName = "email-index",
-                        KeyConditionExpression = keyConditionExpression,
-                        ExpressionAttributeNames = Dictionary attributeNames,
-                        ExpressionAttributeValues = Dictionary attributeValues
-                    )
+                let request = GetByEmailRequestBuilder.build (email |> Email.value)
 
                 let! queryResponse =
                     async {
@@ -112,7 +93,7 @@ type AccountDynamoDbRepository(client: IAmazonDynamoDB) =
                     | Ok response ->
                         match response.Items.FirstOrDefault() with
                         | null -> None |> Ok
-                        | valuesMap -> (valuesMap |> map).ToAccount() |> Some |> Ok
+                        | valuesMap -> valuesMap.ToAccountEntity().ToAccount() |> Some |> Ok
                     | Error _ -> () |> Error
             }
 
@@ -125,7 +106,7 @@ type AccountDynamoDbRepository(client: IAmazonDynamoDB) =
                         match accountResult with
                         | Ok maybeAccount ->
                             match maybeAccount with
-                            | Some account -> return account |> Ok
+                            | Some account -> return! updateLink account accountLink
                             | None -> return! linkAsync accountLink
                         | Error _ -> return () |> Error
                     }

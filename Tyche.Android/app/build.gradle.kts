@@ -89,7 +89,6 @@ dependencies {
     implementation(libs.firebase.auth)
 
     testImplementation(libs.junit)
-    testImplementation(libs.kotlin.test)
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.io.mockk)
 

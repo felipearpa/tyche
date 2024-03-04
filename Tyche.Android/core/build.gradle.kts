@@ -19,7 +19,10 @@ android {
     buildTypes {
         release {
             isMinifyEnabled = false
-            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
         }
     }
     compileOptions {
@@ -28,6 +31,11 @@ android {
     }
     kotlinOptions {
         jvmTarget = "17"
+    }
+    testOptions {
+        unitTests.all { test ->
+            test.useJUnitPlatform()
+        }
     }
     packaging {
         jniLibs {
@@ -45,10 +53,14 @@ dependencies {
     implementation(libs.dagger.hilt.android)
     implementation(libs.androidx.security.crypto)
 
-    testImplementation(libs.junit)
+    testImplementation(platform(libs.junit5.bom))
+    testImplementation(libs.junit5.jupiter)
+    testRuntimeOnly(libs.bundles.junit5.runtime)
     testImplementation(libs.kotlinx.coroutines.test)
-    testImplementation(libs.kotlin.test)
     testImplementation(libs.io.mockk)
+    testImplementation(libs.kotest.runner)
+    testImplementation(libs.kotest.assertions.core)
+    testImplementation(libs.kotest.property)
 
     kapt(libs.dagger.hilt.compiler)
 }

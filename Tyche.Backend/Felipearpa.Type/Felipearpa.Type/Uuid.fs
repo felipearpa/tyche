@@ -15,6 +15,10 @@ type Uuid =
     private
     | Uuid of string
 
+    member this.Value =
+        match this with
+        | Uuid value -> value
+
     override this.ToString() =
         match this with
         | Uuid value -> value
@@ -41,7 +45,7 @@ module Uuid =
         | Ok value -> value
         | Error message -> raise <| ArgumentException(message)
 
-    let value (Uuid element) = element
+    let value (Uuid value) = value
 
     let toString (element: Uuid) = element.ToString()
 

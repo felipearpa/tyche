@@ -173,35 +173,20 @@ private extension View {
     }
 }
 
-struct PoolScoreFakeList_Previews: PreviewProvider {
-    private struct FakeItem : Identifiable, Hashable {
-        let id: String
-    }
-    
-    private class FakePagingSource: PagingSource<String, FakeItem> {
-        override func load(loadConfig: LoadConfig<String>) async -> LoadResult<String, FakeItem> {
-            return LoadResult.page(
-                items: (1...5).lazy.map { _ in FakeItem(id: UUID().uuidString) },
-                nextKey: UUID().uuidString
+#Preview {
+    PagingVStack(
+        lazyPager: LazyPager(
+            pagingData: PagingData(
+                pagingConfig: PagingConfig(prefetchDistance: 5),
+                pagingSourceFactory: FakeFilledPagingSource()
             )
-        }
-    }
-    
-    static var previews: some View {
-        PagingVStack(
-            lazyPager: LazyPager(
-                pagingData: PagingData(
-                    pagingConfig: PagingConfig(prefetchDistance: 5),
-                    pagingSourceFactory: FakePagingSource()
-                )
-            ),
-            loadingContent: { EmptyView() },
-            emptyContent: { EmptyView() },
-            errorContent: { _ in EmptyView() },
-            loadingContentOnConcatenate: { EmptyView() },
-            errorContentOnConcatenate: { _ in EmptyView() }
-        ) { item in
-            Text(item.id)
-        }
+        ),
+        loadingContent: { EmptyView() },
+        emptyContent: { EmptyView() },
+        errorContent: { _ in EmptyView() },
+        loadingContentOnConcatenate: { EmptyView() },
+        errorContentOnConcatenate: { _ in EmptyView() }
+    ) { item in
+        Text(item.id)
     }
 }

@@ -8,14 +8,12 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Compile Include="Type\UsernameTests.fs" />
-        <Compile Include="Type\PasswordTests.fs" />
-        <Compile Include="Application\CreateUserCommandHandlerTests.fs" />
-        <Compile Include="Application\LoginCommandInteractorTests.fs" />
+        <Compile Include="Infrastructure\AccountDynamoDbRepositoryTest.fs" />
         <Compile Include="Program.fs" />
     </ItemGroup>
 
     <ItemGroup>
+        <PackageReference Include="FsUnit.xUnit" Version="6.0.0" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
         <PackageReference Include="Moq" Version="4.20.69" />
         <PackageReference Include="xunit" Version="2.6.1" />

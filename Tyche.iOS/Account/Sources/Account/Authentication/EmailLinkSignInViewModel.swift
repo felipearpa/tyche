@@ -4,7 +4,7 @@ import UI
 import Session
 
 public class EmailLinkSignInViewModel: ObservableObject {
-    @Published @MainActor private(set) var state: LodableViewState<AccountBundle> = .initial
+    @Published @MainActor private(set) var state: LoadableViewState<AccountBundle> = .initial
     
     private let signInWithEmailLinkUseCase: SignInWithEmailLinkUseCase
     

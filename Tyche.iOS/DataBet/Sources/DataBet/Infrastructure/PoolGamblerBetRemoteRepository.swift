@@ -36,7 +36,7 @@ class PoolGamblerBetRemoteRepository: PoolGamblerBetRepository {
         return await networkErrorHandler.handle {
             let response = try await poolGamblerBetRemoteDataSource.bet(betRequest: bet.toBetRequest())
             return response.toPoolGamblerBet()
-        }.mapNetworkError { networkError in
+        }.recoverNetworkError { networkError in
             if case .http(let code) = networkError {
                 if code == .forbidden {
                     return BetError.forbidden

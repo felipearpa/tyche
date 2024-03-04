@@ -74,4 +74,4 @@ enum class HttpStatusCode(val value: Int) {
     NETWORK_AUTHENTICATION_REQUIRED(511);
 }
 
-fun Int.toHtpStatusCode() = HttpStatusCode.values().first { enum -> enum.value == this }
+fun Int.toHtpStatusCode() = HttpStatusCode.entries.first { enum -> enum.value == this }

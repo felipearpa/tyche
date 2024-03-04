@@ -1,46 +1,28 @@
 package com.felipearpa.tyche.core.type
 
-import org.junit.Test
-import org.junit.runner.RunWith
-import org.junit.runners.Parameterized
-import kotlin.test.assertEquals
-import kotlin.test.assertFailsWith
+import com.felipearpa.tyche.core.emptyString
+import io.kotest.assertions.throwables.shouldThrow
+import io.kotest.matchers.shouldBe
+import org.junit.jupiter.api.DynamicTest.dynamicTest
+import org.junit.jupiter.api.TestFactory
 
-@RunWith(Parameterized::class)
-class EmailTestWithValidValuesTest(private val value: String) {
-    @Test
-    fun `given a valid email string when an Email is created then an Email with the string contained is returned`() {
-        val email = Email(value)
-        assertEquals(expected = value, actual = email.value)
-    }
-
-    companion object {
-        @JvmStatic
-        @Parameterized.Parameters
-        fun data(): Collection<Array<Any>> {
-            return listOf(
-                arrayOf("felipearpa@felipearpa.com"),
-                arrayOf("felipearpa@felipearpa.com.co")
-            )
+class EmailTest {
+    @TestFactory
+    fun `given a valid string when an Email is created then an Email containing the string is returned`() =
+        listOf("mail@felipearpa.com", "mail@felipearpa.com.co").map { rawEmail ->
+            dynamicTest("given $rawEmail when en Email is created then an Email containing the string is returned") {
+                val email = Email(rawEmail)
+                email.value shouldBe rawEmail
+            }
         }
-    }
-}
 
-@RunWith(Parameterized::class)
-class EmailTestWithInvalidValuesTest(private val value: String) {
-    @Test
-    fun `given an invalid email string when an Email is created then an exception is raised`() {
-        assertFailsWith<IllegalArgumentException> { Email(value) }
-    }
-
-    companion object {
-        @JvmStatic
-        @Parameterized.Parameters
-        fun data(): Collection<Array<Any>> {
-            return listOf(
-                arrayOf(""),
-                arrayOf("felipearpa")
-            )
+    @TestFactory
+    fun `given an invalid string when an Email is created then an exception is raised`() =
+        listOf(emptyString(), "invalid").map { rawEmail ->
+            dynamicTest("given $rawEmail when an Email is created then an exception is raised") {
+                shouldThrow<IllegalArgumentException> {
+                    Email(rawEmail)
+                }
+            }
         }
-    }
 }

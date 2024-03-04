@@ -1,15 +1,15 @@
 import Foundation
 import SwiftUI
 
-private let IncompleteLoadState = LoadState.notLoading(endOfPaginationReached: false)
-private let CompleteLoadState = LoadState.notLoading(endOfPaginationReached: true)
+let IncompleteLoadState = LoadState.notLoading(endOfPaginationReached: false)
+let CompleteLoadState = LoadState.notLoading(endOfPaginationReached: true)
 
-private let RefreshLoading = CombinedLoadStates(
+let RefreshLoading = CombinedLoadStates(
     refresh: LoadState.loading,
     append: IncompleteLoadState
 )
 
-private let AppendLoading = CombinedLoadStates(
+let AppendLoading = CombinedLoadStates(
     refresh: IncompleteLoadState,
     append: LoadState.loading
 )
@@ -19,15 +19,10 @@ public class LazyPager<Key, Item>: ObservableObject, Sequence {
         refresh: LoadState.loading,
         append: IncompleteLoadState
     )
-    
     @MainActor private var items: [Item] = []
-    
     private let pagingData: PagingData<Key, Item>
-    
     private var nextKey: Key? = nil
-    
     private var invalidateActionId: String? = nil
-    
     private var retryAction: (() async -> Void)? = nil
     
     public init(pagingData: PagingData<Key, Item>) {

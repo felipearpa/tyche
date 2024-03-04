@@ -8,6 +8,10 @@ type NonEmptyString =
     private
     | NonEmptyString of string
 
+    member this.Value =
+        match this with
+        | NonEmptyString value -> value
+
     override this.ToString() =
         match this with
         | NonEmptyString value -> value
@@ -31,6 +35,6 @@ module NonEmptyString =
         | Ok value -> value
         | Error message -> raise <| ArgumentException(message)
 
-    let value (NonEmptyString element) : string = element
+    let value (NonEmptyString value) : string = value
 
     let toString (element: NonEmptyString) : string = element.ToString()

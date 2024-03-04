@@ -19,4 +19,13 @@ public extension Result {
         }
         return error
     }
+
+    var isFailure: Bool {
+        switch self {
+        case .success:
+            return false
+        case .failure:
+            return true
+        }
+    }
 }

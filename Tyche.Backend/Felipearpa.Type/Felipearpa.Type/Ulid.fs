@@ -14,6 +14,10 @@ type Ulid =
     private
     | Ulid of string
 
+    member this.Value =
+        match this with
+        | Ulid value -> value
+
     override this.ToString() =
         match this with
         | Ulid value -> value
@@ -40,7 +44,7 @@ module Ulid =
         | Ok value -> value
         | Error message -> raise <| ArgumentException(message)
 
-    let value (Ulid element) = element
+    let value (Ulid value) = value
 
     let toString (element: Ulid) = element.ToString()
 

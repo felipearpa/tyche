@@ -5,24 +5,145 @@ import androidx.paging.CombinedLoadStates
 import androidx.paging.LoadState
 import androidx.paging.LoadStates
 import androidx.paging.compose.LazyPagingItems
+import io.kotest.matchers.booleans.shouldBeTrue
 import io.mockk.every
 import io.mockk.mockk
-import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 
 class LazyColumnTest {
-
     @get:Rule
     val composeTestRule = createComposeRule()
 
     @Test
-    fun given_a_lazy_paging_item_in_loading_state_when_LazyColumn_is_displayed_then_loadingContent_is_displayed() {
+    fun givenALoadingPagingItemWhenInViewThenTheLoadingContentIsShown() {
         var isLoadingContentExecuted = false
 
         composeTestRule.setContent {
-            val lazyItems = mockk<LazyPagingItems<Any>>()
+            val lazyItems = givenALoadingItem()
 
+            LazyColumn(
+                lazyItems = lazyItems,
+                loadingContent = { isLoadingContentExecuted = true }
+            ) {}
+        }
+
+        isLoadingContentExecuted.shouldBeTrue()
+    }
+
+    @Test
+    fun givenAnAppendLoadingPagingItemWhenInViewThenTheLoadingContentOnConcatenateIsShown() {
+        var isLoadingContentOnConcatenateExecuted = false
+
+        composeTestRule.setContent {
+            val lazyItems = givenAnAppendLoadingItem()
+
+            LazyColumn(
+                lazyItems = lazyItems,
+                loadingContentOnConcatenate = { isLoadingContentOnConcatenateExecuted = true }
+            ) {}
+        }
+
+        isLoadingContentOnConcatenateExecuted.shouldBeTrue()
+    }
+
+    @Test
+    fun givenAPrependLoadingPagingItemWhenInViewThenTheLoadingContentOnConcatenateIsShown() {
+        var isLoadingContentOnConcatenateExecuted = false
+
+        composeTestRule.setContent {
+            val lazyItems = givenAnPrependLoadingItem()
+
+            LazyColumn(
+                lazyItems = lazyItems,
+                loadingContentOnConcatenate = { isLoadingContentOnConcatenateExecuted = true }
+            ) {}
+        }
+
+        isLoadingContentOnConcatenateExecuted.shouldBeTrue()
+    }
+
+    @Test
+    fun givenAnErrorPagingItemWhenInViewThenTheErrorContentIsShown() {
+        var isErrorContentExecuted = false
+
+        composeTestRule.setContent {
+            val lazyItems = givenAnErrorItem()
+
+            LazyColumn(
+                lazyItems = lazyItems,
+                errorContent = { isErrorContentExecuted = true }
+            ) {}
+        }
+
+        isErrorContentExecuted.shouldBeTrue()
+    }
+
+    @Test
+    fun givenAnAppendErrorPagingItemWhenInViewThenTheErrorContentOnConcatenateIsShown() {
+        var isErrorContentOnConcatenateExecuted = false
+
+        composeTestRule.setContent {
+            val lazyItems = givenAnAppendErrorItem()
+
+            LazyColumn(
+                lazyItems = lazyItems,
+                errorContentOnConcatenate = { isErrorContentOnConcatenateExecuted = true }
+            ) {}
+        }
+
+        isErrorContentOnConcatenateExecuted.shouldBeTrue()
+    }
+
+    @Test
+    fun givenAPrependErrorPagingItemWhenInViewThenTheErrorContentOnConcatenateIsShown() {
+        var isErrorContentOnConcatenateExecuted = false
+
+        composeTestRule.setContent {
+            val lazyItems = givenAPrependErrorPagingItem()
+
+            LazyColumn(
+                lazyItems = lazyItems,
+                errorContentOnConcatenate = { isErrorContentOnConcatenateExecuted = true }
+            ) {}
+        }
+
+        isErrorContentOnConcatenateExecuted.shouldBeTrue()
+    }
+
+    @Test
+    fun givenAnEmptyPagingItemWhenInViewThenTheEmptyContentIsShown() {
+        var isEmptyContentExecuted = false
+
+        composeTestRule.setContent {
+            val lazyItems = givenAnEmptyPagingItem()
+
+            LazyColumn(
+                lazyItems = lazyItems,
+                emptyContent = { isEmptyContentExecuted = true }
+            ) {}
+        }
+
+        isEmptyContentExecuted.shouldBeTrue()
+    }
+
+    @Test
+    fun givenAFilledPagingItemWhenInViewThenTheItemContentIsShown() {
+        var isItemContentExecuted = false
+
+        composeTestRule.setContent {
+            val lazyItems = givenAFilledPagingItem()
+
+            LazyColumn(lazyItems = lazyItems) {
+                isItemContentExecuted = true
+            }
+        }
+
+        isItemContentExecuted.shouldBeTrue()
+    }
+
+    private fun givenALoadingItem(): LazyPagingItems<Any> {
+        return mockk<LazyPagingItems<Any>>().also { lazyItems ->
             every { lazyItems.itemCount } returns 10
             every { lazyItems.loadState } returns CombinedLoadStates(
                 refresh = LoadState.Loading,
@@ -35,22 +156,11 @@ class LazyColumnTest {
                 prepend = LoadState.NotLoading(endOfPaginationReached = true)
             )
 
-            LazyColumn(
-                lazyItems = lazyItems,
-                loadingContent = { isLoadingContentExecuted = true }
-            ) {}
         }
-
-        assertTrue(isLoadingContentExecuted)
     }
 
-    @Test
-    fun given_a_lazy_paging_item_in_loading_append_state_when_LazyColumn_is_displayed_then_loadingContentOnConcatenate_is_displayed() {
-        var isLoadingContentOnConcatenateExecuted = false
-
-        composeTestRule.setContent {
-            val lazyItems = mockk<LazyPagingItems<Any>>()
-
+    private fun givenAnAppendLoadingItem(): LazyPagingItems<Any> {
+        return mockk<LazyPagingItems<Any>>().also { lazyItems ->
             every { lazyItems.itemCount } returns 10
             every { lazyItems.loadState } returns CombinedLoadStates(
                 refresh = LoadState.NotLoading(endOfPaginationReached = true),
@@ -62,23 +172,11 @@ class LazyColumnTest {
                 append = LoadState.Loading,
                 prepend = LoadState.NotLoading(endOfPaginationReached = true)
             )
-
-            LazyColumn(
-                lazyItems = lazyItems,
-                loadingContentOnConcatenate = { isLoadingContentOnConcatenateExecuted = true }
-            ) {}
         }
-
-        assertTrue(isLoadingContentOnConcatenateExecuted)
     }
 
-    @Test
-    fun given_a_lazy_paging_item_in_loading_prepend_state_when_LazyColumn_is_displayed_then_loadingContentOnConcatenate_is_displayed() {
-        var isLoadingContentOnConcatenateExecuted = false
-
-        composeTestRule.setContent {
-            val lazyItems = mockk<LazyPagingItems<Any>>()
-
+    private fun givenAnPrependLoadingItem(): LazyPagingItems<Any> {
+        return mockk<LazyPagingItems<Any>>().also { lazyItems ->
             every { lazyItems.itemCount } returns 10
             every { lazyItems.loadState } returns CombinedLoadStates(
                 refresh = LoadState.NotLoading(endOfPaginationReached = true),
@@ -90,23 +188,11 @@ class LazyColumnTest {
                 append = LoadState.NotLoading(endOfPaginationReached = true),
                 prepend = LoadState.Loading
             )
-
-            LazyColumn(
-                lazyItems = lazyItems,
-                loadingContentOnConcatenate = { isLoadingContentOnConcatenateExecuted = true }
-            ) {}
         }
-
-        assertTrue(isLoadingContentOnConcatenateExecuted)
     }
 
-    @Test
-    fun given_a_lazy_paging_item_in_error_state_when_LazyColumn_is_displayed_then_errorContent_is_displayed() {
-        var isErrorContentExecuted = false
-
-        composeTestRule.setContent {
-            val lazyItems = mockk<LazyPagingItems<Any>>()
-
+    private fun givenAnErrorItem(): LazyPagingItems<Any> {
+        return mockk<LazyPagingItems<Any>>().also { lazyItems ->
             every { lazyItems.itemCount } returns 10
             every { lazyItems.loadState } returns CombinedLoadStates(
                 refresh = LoadState.Error(RuntimeException()),
@@ -118,23 +204,11 @@ class LazyColumnTest {
                 append = LoadState.NotLoading(endOfPaginationReached = true),
                 prepend = LoadState.NotLoading(endOfPaginationReached = true)
             )
-
-            LazyColumn(
-                lazyItems = lazyItems,
-                errorContent = { isErrorContentExecuted = true }
-            ) {}
         }
-
-        assertTrue(isErrorContentExecuted)
     }
 
-    @Test
-    fun given_a_lazy_paging_item_in_error_append_state_when_LazyColumn_is_displayed_then_errorContentOnConcatenate_is_displayed() {
-        var isErrorContentOnConcatenateExecuted = false
-
-        composeTestRule.setContent {
-            val lazyItems = mockk<LazyPagingItems<Any>>()
-
+    private fun givenAnAppendErrorItem(): LazyPagingItems<Any> {
+        return mockk<LazyPagingItems<Any>>().also { lazyItems ->
             every { lazyItems.itemCount } returns 10
             every { lazyItems.loadState } returns CombinedLoadStates(
                 refresh = LoadState.NotLoading(endOfPaginationReached = true),
@@ -146,23 +220,11 @@ class LazyColumnTest {
                 append = LoadState.Error(RuntimeException()),
                 prepend = LoadState.NotLoading(endOfPaginationReached = true)
             )
-
-            LazyColumn(
-                lazyItems = lazyItems,
-                errorContentOnConcatenate = { isErrorContentOnConcatenateExecuted = true }
-            ) {}
         }
-
-        assertTrue(isErrorContentOnConcatenateExecuted)
     }
 
-    @Test
-    fun given_a_lazy_paging_item_in_error_prepend_state_when_LazyColumn_is_displayed_then_errorContentOnConcatenate_is_displayed() {
-        var isErrorContentOnConcatenateExecuted = false
-
-        composeTestRule.setContent {
-            val lazyItems = mockk<LazyPagingItems<Any>>()
-
+    private fun givenAPrependErrorPagingItem(): LazyPagingItems<Any> {
+        return mockk<LazyPagingItems<Any>>().also { lazyItems ->
             every { lazyItems.itemCount } returns 10
             every { lazyItems.loadState } returns CombinedLoadStates(
                 refresh = LoadState.NotLoading(endOfPaginationReached = true),
@@ -174,23 +236,11 @@ class LazyColumnTest {
                 append = LoadState.NotLoading(endOfPaginationReached = true),
                 prepend = LoadState.Error(RuntimeException())
             )
-
-            LazyColumn(
-                lazyItems = lazyItems,
-                errorContentOnConcatenate = { isErrorContentOnConcatenateExecuted = true }
-            ) {}
         }
-
-        assertTrue(isErrorContentOnConcatenateExecuted)
     }
 
-    @Test
-    fun given_a_empty_lazy_paging_item_when_LazyColumn_is_displayed_then_emptyContent_is_displayed() {
-        var isEmptyContentExecuted = false
-
-        composeTestRule.setContent {
-            val lazyItems = mockk<LazyPagingItems<Any>>()
-
+    private fun givenAnEmptyPagingItem(): LazyPagingItems<Any> {
+        return mockk<LazyPagingItems<Any>>().also { lazyItems ->
             every { lazyItems.itemCount } returns 0
             every { lazyItems.loadState } returns CombinedLoadStates(
                 refresh = LoadState.NotLoading(endOfPaginationReached = true),
@@ -202,23 +252,11 @@ class LazyColumnTest {
                 append = LoadState.NotLoading(endOfPaginationReached = true),
                 prepend = LoadState.NotLoading(endOfPaginationReached = true)
             )
-
-            LazyColumn(
-                lazyItems = lazyItems,
-                emptyContent = { isEmptyContentExecuted = true }
-            ) {}
         }
-
-        assertTrue(isEmptyContentExecuted)
     }
 
-    @Test
-    fun given_a_filled_lazy_paging_item_when_LazyColumn_is_displayed_then_itemContent_is_displayed() {
-        var isItemContentExecuted = false
-
-        composeTestRule.setContent {
-            val lazyItems = mockk<LazyPagingItems<Any>>()
-
+    private fun givenAFilledPagingItem(): LazyPagingItems<Any> {
+        return mockk<LazyPagingItems<Any>>().also { lazyItems ->
             every { lazyItems.itemCount } returns 10
             every { lazyItems.loadState } returns CombinedLoadStates(
                 refresh = LoadState.NotLoading(endOfPaginationReached = true),
@@ -230,12 +268,6 @@ class LazyColumnTest {
                 append = LoadState.NotLoading(endOfPaginationReached = true),
                 prepend = LoadState.NotLoading(endOfPaginationReached = true)
             )
-
-            LazyColumn(lazyItems = lazyItems) {
-                isItemContentExecuted = true
-            }
         }
-
-        assertTrue(isItemContentExecuted)
     }
 }

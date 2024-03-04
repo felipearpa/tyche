@@ -34,13 +34,13 @@ public struct EmailLinkSignInView: View {
 }
 
 private struct EmailLinkSignInStateView: View {
-    let viewState: LodableViewState<AccountBundle>
+    let viewState: LoadableViewState<AccountBundle>
     let onStartRequested: (AccountBundle) -> Void
     
     @Environment(\.boxSpacing) private var boxSpacing
     
     init(
-        viewState: LodableViewState<AccountBundle>,
+        viewState: LoadableViewState<AccountBundle>,
         onStartRequested: @escaping (AccountBundle) -> Void = { _ in }
     ) {
         self.viewState = viewState

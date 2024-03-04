@@ -29,6 +29,10 @@ type Barcode =
     private
     | Barcode of string
 
+    member this.Value =
+        match this with
+        | Barcode value -> value
+
     override this.ToString() =
         match this with
         | Barcode value -> value
@@ -53,6 +57,6 @@ module Barcode =
         | Ok value -> value
         | Error message -> raise <| ArgumentException(message)
 
-    let value (Barcode element) = element
+    let value (Barcode value) = value
 
     let toString (element: Barcode) = element.ToString()

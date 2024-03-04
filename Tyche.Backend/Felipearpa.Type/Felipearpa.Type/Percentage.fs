@@ -8,6 +8,10 @@ type Percentage =
     private
     | Percentage of float
 
+    member this.Value =
+        match this with
+        | Percentage value -> value
+
     override this.ToString() =
         match this with
         | Percentage value -> value.ToString()
@@ -30,6 +34,6 @@ module Percentage =
         | Ok it -> it
         | Error message -> raise <| ArgumentException(message)
 
-    let value (Percentage element) = element
+    let value (Percentage value) = value
 
     let toString (element: Percentage) = element.ToString()

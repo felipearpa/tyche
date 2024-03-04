@@ -1,11 +1,11 @@
-public enum LodableViewState<Value> {
+public enum LoadableViewState<Value> {
     case initial
     case loading
     case success(Value)
     case failure(Error)
 }
 
-public extension LodableViewState {
+public extension LoadableViewState {
     @inlinable
     func isInitial() -> Bool {
         if case .initial = self {

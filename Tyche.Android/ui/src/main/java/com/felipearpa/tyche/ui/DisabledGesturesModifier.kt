@@ -6,7 +6,7 @@ import androidx.compose.ui.input.pointer.PointerInputChange
 import androidx.compose.ui.input.pointer.pointerInput
 
 fun Modifier.disabledGestures(disabled: Boolean = true) =
-    pointerInput(disabled) {
+    this.pointerInput(disabled) {
         if (!disabled) return@pointerInput
 
         awaitPointerEventScope {
