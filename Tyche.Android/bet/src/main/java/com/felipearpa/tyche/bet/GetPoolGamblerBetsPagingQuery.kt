@@ -1,14 +1,14 @@
 package com.felipearpa.tyche.bet
 
-import com.felipearpa.data.bet.application.GetPoolGamblerBetsUseCase
+import com.felipearpa.data.bet.application.GetPendingPoolGamblerBetsUseCase
 
 suspend fun getPoolGamblerBetsPagingQuery(
     next: String?,
     poolId: String,
     gamblerId: String,
     search: () -> String?,
-    getPoolGamblerBetsUseCase: GetPoolGamblerBetsUseCase
-) = getPoolGamblerBetsUseCase.execute(
+    getPendingPoolGamblerBetsUseCase: GetPendingPoolGamblerBetsUseCase
+) = getPendingPoolGamblerBetsUseCase.execute(
     poolId = poolId,
     gamblerId = gamblerId,
     next = next,

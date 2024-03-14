@@ -4,6 +4,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -32,6 +33,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextDecoration
@@ -39,6 +41,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.felipearpa.tyche.R
 import com.felipearpa.tyche.bet.PoolGamblerBetListView
+import com.felipearpa.tyche.bet.finished.FinishedBetListView
+import com.felipearpa.tyche.bet.finished.finishedBetListViewModel
 import com.felipearpa.tyche.bet.poolGamblerBetListViewModel
 import com.felipearpa.tyche.core.emptyString
 import com.felipearpa.tyche.pool.PoolModel
@@ -58,7 +62,8 @@ private val iconSize = 24.dp
 
 private enum class Tab {
     GAMBLER_SCORE,
-    BET_EDITOR
+    BET_EDITOR,
+    HISTORY_BET
 }
 
 @Composable
@@ -69,7 +74,7 @@ fun PoolHomeView(
 ) {
     val state by viewModel.state.collectAsState()
     PoolHomeView(
-        state = state,
+        viewState = state,
         poolId = viewModel.poolId,
         gamblerId = viewModel.gamblerId,
         onPoolScoreListRequested = onPoolScoreListRequested,
@@ -80,7 +85,7 @@ fun PoolHomeView(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun PoolHomeView(
-    state: LoadableViewState<PoolModel>,
+    viewState: LoadableViewState<PoolModel>,
     poolId: String,
     gamblerId: String,
     onPoolScoreListRequested: () -> Unit = {},
@@ -91,9 +96,9 @@ private fun PoolHomeView(
     val coroutineScope = rememberCoroutineScope()
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
 
-    when (state) {
+    when (viewState) {
         is LoadableViewState.Failure -> ExceptionView(
-            exception = state().localizedExceptionOrNull()!!
+            exception = viewState().localizedExceptionOrNull()!!
         )
 
         else -> ModalNavigationDrawer(
@@ -108,9 +113,12 @@ private fun PoolHomeView(
             },
         ) {
             Scaffold(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .nestedScroll(scrollBehavior.nestedScrollConnection),
                 topBar = {
-                    if (state is LoadableViewState.Success) {
-                        val pool = state()
+                    if (viewState is LoadableViewState.Success) {
+                        val pool = viewState()
                         AppTopBar(
                             title = pool.poolName,
                             onAccountRequested = {
@@ -123,7 +131,7 @@ private fun PoolHomeView(
                             poolScoreListRequested = onPoolScoreListRequested,
                             scrollBehavior = scrollBehavior
                         )
-                    } else if (state is LoadableViewState.Loading) {
+                    } else if (viewState is LoadableViewState.Loading) {
                         AppFakeTopBar()
                     }
                 },
@@ -177,6 +185,29 @@ private fun PoolHomeView(
                                 )
                             }
                         }
+
+                        Tab(
+                            selected = selectedTabIndex == Tab.HISTORY_BET,
+                            onClick = { selectedTabIndex = Tab.HISTORY_BET }
+                        ) {
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.SpaceEvenly,
+                                modifier = Modifier.padding(vertical = MaterialTheme.boxSpacing.medium)
+                            ) {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.history_bets),
+                                    contentDescription = emptyString(),
+                                    modifier = Modifier.size(iconSize)
+                                )
+                                Text(
+                                    text = stringResource(id = R.string.history_bets_tab),
+                                    style = MaterialTheme.typography.titleSmall,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis
+                                )
+                            }
+                        }
                     }
                 }
             ) { paddingValues ->
@@ -191,6 +222,13 @@ private fun PoolHomeView(
 
                         Tab.BET_EDITOR -> PoolGamblerBetListView(
                             viewModel = poolGamblerBetListViewModel(
+                                poolId = poolId,
+                                gamblerId = gamblerId
+                            )
+                        )
+
+                        Tab.HISTORY_BET -> FinishedBetListView(
+                            viewModel = finishedBetListViewModel(
                                 poolId = poolId,
                                 gamblerId = gamblerId
                             )
@@ -239,7 +277,7 @@ private fun AppTopBar(
         navigationIcon = {
             IconButton(onClick = onAccountRequested) {
                 Icon(
-                    painter = painterResource(id = SharedR.drawable.account_circle),
+                    painter = painterResource(id = SharedR.drawable.menu),
                     contentDescription = emptyString()
                 )
             }

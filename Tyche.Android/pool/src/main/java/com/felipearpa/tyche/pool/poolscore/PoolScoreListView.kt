@@ -40,6 +40,7 @@ fun PoolScoreListView(
     val coroutineScope = rememberCoroutineScope()
 
     ModalNavigationDrawer(
+        modifier = Modifier.fillMaxSize(),
         drawerState = drawerState,
         drawerContent = {
             ModalDrawerSheet { drawerView() }
@@ -88,7 +89,7 @@ private fun AppTopBar(
         navigationIcon = {
             IconButton(onClick = onAccountRequested) {
                 Icon(
-                    painter = painterResource(id = SharedR.drawable.account_circle),
+                    painter = painterResource(id = SharedR.drawable.menu),
                     contentDescription = emptyString()
                 )
             }

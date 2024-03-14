@@ -20,7 +20,7 @@ import androidx.paging.compose.itemContentType
 import androidx.paging.compose.itemKey
 import com.felipearpa.tyche.pool.PoolGamblerScoreModel
 import com.felipearpa.tyche.pool.poolGamblerScoreDummyModels
-import com.felipearpa.tyche.ui.lazy.RefreshableLazyColumn
+import com.felipearpa.tyche.ui.lazy.StatefulRefreshableLazyColumn
 import com.felipearpa.tyche.ui.theme.boxSpacing
 import kotlinx.coroutines.flow.flowOf
 
@@ -31,7 +31,7 @@ fun GamblerScoreList(
     modifier: Modifier = Modifier,
     fakeItemCount: Int = 0
 ) {
-    RefreshableLazyColumn(
+    StatefulRefreshableLazyColumn(
         modifier = modifier,
         lazyItems = lazyPoolGamblerScores,
         loadingContent = { GamblerScoreFakeList(count = fakeItemCount) },

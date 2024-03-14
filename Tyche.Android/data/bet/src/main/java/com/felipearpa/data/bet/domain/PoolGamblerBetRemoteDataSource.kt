@@ -8,8 +8,16 @@ import retrofit2.http.Path
 import retrofit2.http.Query
 
 internal interface PoolGamblerBetRemoteDataSource {
-    @GET("/pool/{poolId}/gambler/{gamblerId}/bets")
-    suspend fun getPoolGamblerBets(
+    @GET("/pools/{poolId}/gamblers/{gamblerId}/bets/pending")
+    suspend fun getPendingPoolGamblerBets(
+        @Path("poolId") poolId: String,
+        @Path("gamblerId") gamblerId: String,
+        @Query("next") next: String? = null,
+        @Query("searchText") searchText: String? = null
+    ): CursorPage<PoolGamblerBetResponse>
+
+    @GET("/pools/{poolId}/gamblers/{gamblerId}/bets/finished")
+    suspend fun getFinishedPoolGamblerBets(
         @Path("poolId") poolId: String,
         @Path("gamblerId") gamblerId: String,
         @Query("next") next: String? = null,

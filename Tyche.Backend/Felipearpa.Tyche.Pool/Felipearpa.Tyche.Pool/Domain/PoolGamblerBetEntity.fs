@@ -45,8 +45,8 @@ type PoolGamblerBetEntity =
       [<DynamoDBProperty("awayTeamBet")>]
       AwayTeamBet: Nullable<int>
 
-      [<DynamoDBProperty("betScore")>]
-      BetScore: Nullable<int>
+      [<DynamoDBProperty("score")>]
+      Score: Nullable<int>
 
       [<DynamoDBProperty("matchDateTime")>]
       MatchDateTime: DateTime }

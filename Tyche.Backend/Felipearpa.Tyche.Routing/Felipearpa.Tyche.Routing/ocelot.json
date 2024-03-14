@@ -71,7 +71,7 @@
       ]
     },
     {
-      "DownstreamPathTemplate": "/pool/{poolId}/gambler/{gamblerId}/bets",
+      "DownstreamPathTemplate": "/pools/{poolId}/gamblers/{gamblerId}/bets/pending",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
         {
@@ -79,7 +79,21 @@
           "Port": 5002
         }
       ],
-      "UpstreamPathTemplate": "/pool/{poolId}/gambler/{gamblerId}/bets",
+      "UpstreamPathTemplate": "/pools/{poolId}/gamblers/{gamblerId}/bets/pending",
+      "UpstreamHttpMethod": [
+        "GET"
+      ]
+    },
+    {
+      "DownstreamPathTemplate": "/pools/{poolId}/gamblers/{gamblerId}/bets/finished",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5002
+        }
+      ],
+      "UpstreamPathTemplate": "/pools/{poolId}/gamblers/{gamblerId}/bets/finished",
       "UpstreamHttpMethod": [
         "GET"
       ]

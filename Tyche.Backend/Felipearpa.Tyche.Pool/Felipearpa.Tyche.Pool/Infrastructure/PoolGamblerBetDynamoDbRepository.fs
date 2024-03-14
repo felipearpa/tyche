@@ -15,7 +15,6 @@ open Felipearpa.Tyche.Pool.Domain
 open Felipearpa.Type
 
 type PoolGamblerBetDynamoDbRepository(keySerializer: IKeySerializer, client: IAmazonDynamoDB) =
-
     [<Literal>]
     let tableName = "Pool"
 
@@ -34,12 +33,61 @@ type PoolGamblerBetDynamoDbRepository(keySerializer: IKeySerializer, client: IAm
         context.FromDocument<PoolGamblerBetEntity>(Document.FromAttributeMap(Dictionary(dictionary)))
 
     interface IPoolGamblerBetRepository with
-
-        member this.GetPendingPoolGamblerBetsPoolGamblerBets(poolId, gamblerId, maybeSearchText, maybeNext) =
+        member this.GetPendingPoolGamblerBets(poolId, gamblerId, maybeSearchText, maybeNext) =
             async {
                 let keyConditionExpression = "#pk = :pk"
 
                 let defaultFilterConditionExpression = ":now < #matchDateTime"
+
+                let defaultAttributeValues =
+                    dict
+                        [ ":pk",
+                          AttributeValue($"{gamblerText}#{gamblerId |> Ulid.value}#{poolText}#{poolId |> Ulid.value}")
+                          ":now", AttributeValue(DateTime.Now.ToUniversalTime().ToString("o")) ]
+
+                let defaultAttributeNames = dict [ "#pk", "pk"; "#matchDateTime", "matchDateTime" ]
+
+                let filterExpression, attributeValues, attributeNames =
+                    match maybeSearchText with
+                    | None -> (defaultFilterConditionExpression, defaultAttributeValues, defaultAttributeNames)
+                    | Some filterText ->
+                        ($"{defaultFilterConditionExpression} and contains(#filter, :filter)",
+                         defaultAttributeValues
+                         |> Dict.union (dict [ ":filter", AttributeValue(filterText.ToLower()) ])
+                         :> IDictionary<_, _>,
+                         defaultAttributeNames |> Dict.union (dict [ "#filter", "filter" ]) :> IDictionary<_, _>)
+
+                let request =
+                    QueryRequest(
+                        TableName = tableName,
+                        IndexName = "GetPendingPoolGamblerBets-index",
+                        KeyConditionExpression = keyConditionExpression,
+                        FilterExpression = filterExpression,
+                        ExpressionAttributeNames = Dictionary attributeNames,
+                        ExpressionAttributeValues = Dictionary attributeValues,
+                        ExclusiveStartKey =
+                            match maybeNext with
+                            | None -> null
+                            | Some next -> Dictionary(next |> keySerializer.Deserialize)
+                    )
+
+                let! response = client.QueryAsync(request) |> Async.AwaitTask
+
+                let lastEvaluatedKey = response.LastEvaluatedKey
+
+                return
+                    { CursorPage.Items = response.Items.Select(map >> PoolGamblerBetMapper.mapToDomain)
+                      Next =
+                        match lastEvaluatedKey.Count with
+                        | 0 -> None
+                        | _ -> keySerializer.Serialize(lastEvaluatedKey) |> Some }
+            }
+
+        member this.GetFinishedPoolGamblerBets(poolId, gamblerId, maybeSearchText, maybeNext) =
+            async {
+                let keyConditionExpression = "#pk = :pk"
+
+                let defaultFilterConditionExpression = ":now >= #matchDateTime"
 
                 let defaultAttributeValues =
                     dict

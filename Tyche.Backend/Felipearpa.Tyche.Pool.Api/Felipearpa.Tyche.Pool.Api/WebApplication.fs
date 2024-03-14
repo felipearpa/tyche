@@ -93,17 +93,43 @@ module WebApplication =
 
             this
                 .MapGet(
-                    "/pool/{poolId}/gambler/{gamblerId}/bets",
+                    "/pools/{poolId}/gamblers/{gamblerId}/bets/pending",
                     Func<_, _, _, _, _, _>
                         (fun
                             (poolId: string)
                             (gamblerId: string)
                             (searchText: string)
                             (next: string)
-                            (getPoolGamblerBetsQuery: GetPoolGamblerBetsQuery) ->
+                            (getPendingPoolGamblerBetsQuery: GetPendingPoolGamblerBetsQuery) ->
                             async {
                                 let! page =
-                                    getPoolGamblerBetsQuery.ExecuteAsync(
+                                    getPendingPoolGamblerBetsQuery.ExecuteAsync(
+                                        poolId |> Ulid.newOf,
+                                        gamblerId |> Ulid.newOf,
+                                        searchText |> Option.ofObj,
+                                        next |> Option.ofObj
+                                    )
+
+                                return page |> CursorPage.map PoolGamblerBetMapper.mapToViewModel
+                            }
+                            |> Async.StartAsTask)
+                )
+                .RequireAuthorization()
+            |> ignore
+
+            this
+                .MapGet(
+                    "/pools/{poolId}/gamblers/{gamblerId}/bets/finished",
+                    Func<_, _, _, _, _, _>
+                        (fun
+                            (poolId: string)
+                            (gamblerId: string)
+                            (searchText: string)
+                            (next: string)
+                            (getFinishedPoolGamblerBetsQuery: GetFinishedPoolGamblerBetsQuery) ->
+                            async {
+                                let! page =
+                                    getFinishedPoolGamblerBetsQuery.ExecuteAsync(
                                         poolId |> Ulid.newOf,
                                         gamblerId |> Ulid.newOf,
                                         searchText |> Option.ofObj,

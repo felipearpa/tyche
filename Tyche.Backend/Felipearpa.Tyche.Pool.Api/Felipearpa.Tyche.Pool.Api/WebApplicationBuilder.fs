@@ -34,7 +34,8 @@ module WebApplicationBuilder =
             .AddScoped<GetPoolGamblerScoresByGamblerQuery>()
             .AddScoped<GetPoolGamblerScoresByPoolQuery>()
             .AddScoped<GetPoolQuery>()
-            .AddScoped<GetPoolGamblerBetsQuery>()
+            .AddScoped<GetPendingPoolGamblerBetsQuery>()
+            .AddScoped<GetFinishedPoolGamblerBetsQuery>()
             .AddScoped<BetCommand>()
         |> ignore
 

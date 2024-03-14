@@ -20,12 +20,14 @@ import androidx.paging.compose.LazyPagingItems
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun <T : Any> RefreshableLazyColumn(
+fun <T : Any> StatefulRefreshableLazyColumn(
     modifier: Modifier = Modifier,
     lazyItems: LazyPagingItems<T>,
     state: LazyListState = rememberLazyListState(),
     contentPadding: PaddingValues = PaddingValues(0.dp),
-    verticalArrangement: Arrangement.Vertical = Arrangement.Bottom,
+    reverseLayout: Boolean = false,
+    verticalArrangement: Arrangement.Vertical =
+        if (!reverseLayout) Arrangement.Top else Arrangement.Bottom,
     loadingContent: @Composable () -> Unit = {},
     loadingContentOnConcatenate: (LazyListScope.() -> Unit) = {},
     errorContentOnConcatenate: (LazyListScope.() -> Unit) = {},
@@ -42,11 +44,12 @@ fun <T : Any> RefreshableLazyColumn(
     }
 
     Box(modifier = modifier.nestedScroll(pullToRefreshState.nestedScrollConnection)) {
-        LazyColumn(
+        StatefulLazyColumn(
             modifier = Modifier.fillMaxSize(),
             lazyItems = lazyItems,
             state = state,
             contentPadding = contentPadding,
+            reverseLayout = reverseLayout,
             verticalArrangement = verticalArrangement,
             loadingContent = loadingContent,
             loadingContentOnConcatenate = loadingContentOnConcatenate,

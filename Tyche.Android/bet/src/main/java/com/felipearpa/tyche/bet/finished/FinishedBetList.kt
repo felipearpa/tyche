@@ -1,4 +1,4 @@
-package com.felipearpa.tyche.bet
+package com.felipearpa.tyche.bet.finished
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.fillMaxSize
@@ -17,6 +17,9 @@ import androidx.compose.ui.unit.dp
 import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
+import com.felipearpa.tyche.bet.PoolGamblerBetFakeItem
+import com.felipearpa.tyche.bet.PoolGamblerBetModel
+import com.felipearpa.tyche.bet.poolGamblerBetDummyModels
 import com.felipearpa.tyche.core.toLocalDateString
 import com.felipearpa.tyche.ui.lazy.StatefulRefreshableLazyColumn
 import com.felipearpa.tyche.ui.theme.boxSpacing
@@ -25,7 +28,7 @@ import java.time.LocalDate
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun PoolGamblerBetList(
+fun FinishedBetList(
     lazyPoolGamblerBets: LazyPagingItems<PoolGamblerBetModel>,
     modifier: Modifier = Modifier,
     fakeItemCount: Int = 0
@@ -35,8 +38,8 @@ fun PoolGamblerBetList(
     StatefulRefreshableLazyColumn(
         modifier = modifier,
         lazyItems = lazyPoolGamblerBets,
-        loadingContent = { PoolGamblerBetFakeList(count = fakeItemCount) },
-        loadingContentOnConcatenate = { poolGamblerBetFakeItem() }
+        loadingContent = { FinishedPoolGamblerBetFakeList(count = fakeItemCount) },
+        loadingContentOnConcatenate = { finishedPoolGamblerBetFakeItem() }
     ) {
         var lastMatchDate: LocalDate? = null
 
@@ -56,9 +59,9 @@ fun PoolGamblerBetList(
             }
 
             item {
-                PoolGamblerBetItemView(
-                    viewModel = poolGamblerBetViewModel(poolGamblerBet = poolGamblerBet),
-                    modifier = Modifier.poolGamblerBetItem()
+                FinishedBetItem(
+                    poolGamblerBet = poolGamblerBet,
+                    modifier = Modifier.finishedPoolGamblerBetItem()
                 )
                 HorizontalDivider()
             }
@@ -66,7 +69,7 @@ fun PoolGamblerBetList(
     }
 }
 
-private fun LazyListScope.poolGamblerBetFakeItem() {
+private fun LazyListScope.finishedPoolGamblerBetFakeItem() {
     item {
         PoolGamblerBetFakeItem(modifier = Modifier.fillMaxWidth())
         HorizontalDivider(modifier = Modifier.padding(top = 8.dp))
@@ -74,18 +77,18 @@ private fun LazyListScope.poolGamblerBetFakeItem() {
 }
 
 @Composable
-private fun PoolGamblerBetFakeList(count: Int) {
+private fun FinishedPoolGamblerBetFakeList(count: Int) {
     LazyColumn(modifier = Modifier.fillMaxSize()) {
         repeat(count) {
             item {
-                PoolGamblerBetFakeItem(modifier = Modifier.poolGamblerBetItem())
+                PoolGamblerBetFakeItem(modifier = Modifier.finishedPoolGamblerBetItem())
                 HorizontalDivider()
             }
         }
     }
 }
 
-private fun Modifier.poolGamblerBetItem() = composed {
+private fun Modifier.finishedPoolGamblerBetItem() = composed {
     this
         .fillMaxWidth()
         .padding(horizontal = MaterialTheme.boxSpacing.medium)
@@ -94,13 +97,13 @@ private fun Modifier.poolGamblerBetItem() = composed {
 
 @Preview(showBackground = true)
 @Composable
-private fun PoolGamblerBetListPreview() {
+private fun FinishedBetListPreview() {
     val items = flowOf(PagingData.from(poolGamblerBetDummyModels())).collectAsLazyPagingItems()
-    PoolGamblerBetList(lazyPoolGamblerBets = items)
+    FinishedBetList(lazyPoolGamblerBets = items)
 }
 
 @Preview(showBackground = true)
 @Composable
-private fun PoolGamblerBetFakeListPreview() {
-    PoolGamblerBetFakeList(count = 10)
+private fun FinishedBetFakeListPreview() {
+    FinishedPoolGamblerBetFakeList(count = 10)
 }

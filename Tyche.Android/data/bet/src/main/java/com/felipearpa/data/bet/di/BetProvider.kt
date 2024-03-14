@@ -1,6 +1,7 @@
 package com.felipearpa.data.bet.di
 
-import com.felipearpa.data.bet.application.GetPoolGamblerBetsUseCase
+import com.felipearpa.data.bet.application.GetFinishedPoolGamblerBetsUseCase
+import com.felipearpa.data.bet.application.GetPendingPoolGamblerBetsUseCase
 import com.felipearpa.data.bet.domain.PoolGamblerBetRemoteDataSource
 import com.felipearpa.data.bet.domain.PoolGamblerBetRepository
 import com.felipearpa.data.bet.infrastructure.PoolGamblerBetRemoteRepository
@@ -16,8 +17,12 @@ import retrofit2.Retrofit
 @InstallIn(SingletonComponent::class)
 internal object PoolUseCaseProvider {
     @Provides
-    fun provideGetPoolGamblerBetsUseCase(poolGamblerBetRepository: PoolGamblerBetRepository) =
-        GetPoolGamblerBetsUseCase(poolGamblerBetRepository = poolGamblerBetRepository)
+    fun provideGetPendingPoolGamblerBetsUseCase(poolGamblerBetRepository: PoolGamblerBetRepository) =
+        GetPendingPoolGamblerBetsUseCase(poolGamblerBetRepository = poolGamblerBetRepository)
+
+    @Provides
+    fun provideGetFinishedPoolGamblerBetsUseCase(poolGamblerBetRepository: PoolGamblerBetRepository) =
+        GetFinishedPoolGamblerBetsUseCase(poolGamblerBetRepository = poolGamblerBetRepository)
 }
 
 @Module

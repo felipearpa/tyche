@@ -5,16 +5,12 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.composed
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import com.felipearpa.tyche.core.toLocalDateTimeString
 import com.felipearpa.tyche.ui.theme.boxSpacing
@@ -110,7 +106,7 @@ fun EditablePoolGamblerBetItem(
                     onBetChanged(partialPoolGamblerBet.copy(homeTeamBet = newHomeTeamBet))
                 },
                 modifier = Modifier
-                    .betTextField()
+                    .scoreWidth()
                     .then(shimmerModifier)
             )
         }
@@ -127,16 +123,11 @@ fun EditablePoolGamblerBetItem(
                     onBetChanged(partialPoolGamblerBet.copy(awayTeamBet = newAwayTeamBet))
                 },
                 modifier = Modifier
-                    .betTextField()
+                    .scoreWidth()
                     .then(shimmerModifier)
             )
         }
     }
-}
-
-fun Modifier.betTextField() = composed {
-    val widthInDp = with(LocalDensity.current) { LocalTextStyle.current.fontSize.toDp() } * 3
-    Modifier.width(widthInDp)
 }
 
 @Preview

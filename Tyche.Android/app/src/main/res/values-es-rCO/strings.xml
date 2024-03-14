@@ -7,5 +7,6 @@
     <string name="play_pool_text">Mira quién ha acertado más marcadores y supéralo ahora mismo</string>
     <string name="score_tab">Puntajes</string>
     <string name="bet_tab">Apuestas</string>
+    <string name="history_bets_tab">Historia</string>
     <string name="settings_tab">Configuración</string>
 </resources>

@@ -11,7 +11,7 @@ import io.mockk.mockk
 import org.junit.Rule
 import org.junit.Test
 
-class LazyColumnTest {
+class StatefulLazyColumnTest {
     @get:Rule
     val composeTestRule = createComposeRule()
 
@@ -22,7 +22,7 @@ class LazyColumnTest {
         composeTestRule.setContent {
             val lazyItems = givenALoadingItem()
 
-            LazyColumn(
+            StatefulLazyColumn(
                 lazyItems = lazyItems,
                 loadingContent = { isLoadingContentExecuted = true }
             ) {}
@@ -38,7 +38,7 @@ class LazyColumnTest {
         composeTestRule.setContent {
             val lazyItems = givenAnAppendLoadingItem()
 
-            LazyColumn(
+            StatefulLazyColumn(
                 lazyItems = lazyItems,
                 loadingContentOnConcatenate = { isLoadingContentOnConcatenateExecuted = true }
             ) {}
@@ -54,7 +54,7 @@ class LazyColumnTest {
         composeTestRule.setContent {
             val lazyItems = givenAnPrependLoadingItem()
 
-            LazyColumn(
+            StatefulLazyColumn(
                 lazyItems = lazyItems,
                 loadingContentOnConcatenate = { isLoadingContentOnConcatenateExecuted = true }
             ) {}
@@ -70,7 +70,7 @@ class LazyColumnTest {
         composeTestRule.setContent {
             val lazyItems = givenAnErrorItem()
 
-            LazyColumn(
+            StatefulLazyColumn(
                 lazyItems = lazyItems,
                 errorContent = { isErrorContentExecuted = true }
             ) {}
@@ -86,7 +86,7 @@ class LazyColumnTest {
         composeTestRule.setContent {
             val lazyItems = givenAnAppendErrorItem()
 
-            LazyColumn(
+            StatefulLazyColumn(
                 lazyItems = lazyItems,
                 errorContentOnConcatenate = { isErrorContentOnConcatenateExecuted = true }
             ) {}
@@ -102,7 +102,7 @@ class LazyColumnTest {
         composeTestRule.setContent {
             val lazyItems = givenAPrependErrorPagingItem()
 
-            LazyColumn(
+            StatefulLazyColumn(
                 lazyItems = lazyItems,
                 errorContentOnConcatenate = { isErrorContentOnConcatenateExecuted = true }
             ) {}
@@ -118,7 +118,7 @@ class LazyColumnTest {
         composeTestRule.setContent {
             val lazyItems = givenAnEmptyPagingItem()
 
-            LazyColumn(
+            StatefulLazyColumn(
                 lazyItems = lazyItems,
                 emptyContent = { isEmptyContentExecuted = true }
             ) {}
@@ -134,7 +134,7 @@ class LazyColumnTest {
         composeTestRule.setContent {
             val lazyItems = givenAFilledPagingItem()
 
-            LazyColumn(lazyItems = lazyItems) {
+            StatefulLazyColumn(lazyItems = lazyItems) {
                 isItemContentExecuted = true
             }
         }
@@ -144,7 +144,7 @@ class LazyColumnTest {
 
     private fun givenALoadingItem(): LazyPagingItems<Any> {
         return mockk<LazyPagingItems<Any>>().also { lazyItems ->
-            every { lazyItems.itemCount } returns 10
+            every { lazyItems.itemCount } returns 0
             every { lazyItems.loadState } returns CombinedLoadStates(
                 refresh = LoadState.Loading,
                 source = LoadStates(

@@ -35,6 +35,6 @@ module PoolGamblerBetMapper =
                 |> Some
             else
                 None
-          Score = poolGamblerBetEntity.BetScore |> Option.ofNullable
+          Score = poolGamblerBetEntity.Score |> Option.ofNullable
           MatchDateTime = poolGamblerBetEntity.MatchDateTime
           isLocked = DateTime.Now >= poolGamblerBetEntity.MatchDateTime }

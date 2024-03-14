@@ -7,5 +7,6 @@
     <string name="play_pool_text">See who\'s has hit more scores and get over one right now</string>
     <string name="score_tab">Scores</string>
     <string name="bet_tab">Bets</string>
+    <string name="history_bets_tab">History</string>
     <string name="settings_tab">Settings</string>
 </resources>

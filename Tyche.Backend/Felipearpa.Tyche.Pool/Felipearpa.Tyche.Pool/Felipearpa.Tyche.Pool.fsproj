@@ -28,7 +28,8 @@
         <Compile Include="Application\GetPoolGamblerScoresByPoolQuery.fs" />
         <Compile Include="Application\GetPoolQuery.fs" />
         <Compile Include="Application\BetCommand.fs" />
-        <Compile Include="Application\GetPoolGamblerBetsQuery.fs" />
+        <Compile Include="Application\GetFinishedPoolGamblerBetsQuery.fs" />
+        <Compile Include="Application\GetPendingPoolGamblerBetsQuery.fs" />
     </ItemGroup>
 
     <ItemGroup>

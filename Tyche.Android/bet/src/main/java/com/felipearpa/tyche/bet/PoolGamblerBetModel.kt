@@ -1,6 +1,5 @@
 package com.felipearpa.tyche.bet
 
-import com.felipearpa.tyche.core.emptyString
 import com.felipearpa.tyche.core.type.TeamScore
 import java.time.LocalDateTime
 import java.util.UUID
@@ -21,8 +20,14 @@ data class PoolGamblerBetModel(
     val instanceId: String = UUID.randomUUID().toString()
 )
 
+fun PoolGamblerBetModel.homeTeamMatchRawValue() =
+    this.matchScore?.homeTeamValue?.toString().orEmpty()
+
+fun PoolGamblerBetModel.awayTeamMatchRawValue() =
+    this.matchScore?.awayTeamValue?.toString().orEmpty()
+
 fun PoolGamblerBetModel.homeTeamBetRawValue() =
-    this.betScore?.homeTeamValue?.toString() ?: emptyString()
+    this.betScore?.homeTeamValue?.toString().orEmpty()
 
 fun PoolGamblerBetModel.awayTeamBetRawValue() =
-    this.betScore?.awayTeamValue?.toString() ?: emptyString()
+    this.betScore?.awayTeamValue?.toString().orEmpty()

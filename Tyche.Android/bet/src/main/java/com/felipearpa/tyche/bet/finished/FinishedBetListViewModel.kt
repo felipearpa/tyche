@@ -1,4 +1,4 @@
-package com.felipearpa.tyche.bet
+package com.felipearpa.tyche.bet.finished
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -6,7 +6,8 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
-import com.felipearpa.data.bet.application.GetPendingPoolGamblerBetsUseCase
+import com.felipearpa.data.bet.application.GetFinishedPoolGamblerBetsUseCase
+import com.felipearpa.tyche.bet.PoolGamblerBetPagingSource
 import com.felipearpa.tyche.core.emptyString
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
@@ -19,10 +20,10 @@ import kotlinx.coroutines.flow.stateIn
 private const val PAGE_SIZE = 50
 private const val PREFETCH_DISTANCE = 5
 
-class PoolGamblerBetListViewModel @AssistedInject constructor(
+class FinishedBetListViewModel @AssistedInject constructor(
     @Assisted("poolId") private val poolId: String,
     @Assisted("gamblerId") val gamblerId: String,
-    private val getPendingPoolGamblerBetsUseCase: GetPendingPoolGamblerBetsUseCase
+    private val getFinishedPoolGamblerBetsUseCase: GetFinishedPoolGamblerBetsUseCase
 ) :
     ViewModel() {
 
@@ -48,12 +49,12 @@ class PoolGamblerBetListViewModel @AssistedInject constructor(
             pagingSourceFactory = {
                 PoolGamblerBetPagingSource(
                     pagingQuery = { next ->
-                        getPoolGamblerBetsPagingQuery(
+                        getFinishedBetsPagingQuery(
                             next = next,
                             poolId = poolId,
                             gamblerId = gamblerId,
                             search = { searchText.ifEmpty { null } },
-                            getPendingPoolGamblerBetsUseCase = getPendingPoolGamblerBetsUseCase
+                            getFinishedPoolGamblerBetsUseCase = getFinishedPoolGamblerBetsUseCase
                         )
                     }
                 )
