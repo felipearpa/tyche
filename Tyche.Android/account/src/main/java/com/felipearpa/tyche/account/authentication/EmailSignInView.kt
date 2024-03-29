@@ -35,7 +35,7 @@ import com.felipearpa.tyche.core.type.Email
 import com.felipearpa.tyche.ui.exception.ExceptionAlertDialog
 import com.felipearpa.tyche.ui.exception.UnknownLocalizedException
 import com.felipearpa.tyche.ui.exception.localizedExceptionOrNull
-import com.felipearpa.tyche.ui.progress.ProgressContainerView
+import com.felipearpa.tyche.ui.progress.LoadingContainerView
 import com.felipearpa.tyche.ui.state.LoadableViewState
 import com.felipearpa.tyche.ui.state.exceptionOrNull
 import com.felipearpa.tyche.ui.state.isLoading
@@ -89,7 +89,7 @@ private fun EmailSignInView(
                         .padding(horizontal = MaterialTheme.boxSpacing.medium)
                 )
 
-                LoadableViewState.Loading -> ProgressContainerView {
+                LoadableViewState.Loading -> LoadingContainerView {
                     EmailSignInView(
                         email = email,
                         modifier = Modifier.padding(horizontal = MaterialTheme.boxSpacing.medium)

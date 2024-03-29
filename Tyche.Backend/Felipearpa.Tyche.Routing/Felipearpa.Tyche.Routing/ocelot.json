@@ -15,7 +15,7 @@
       ]
     },
     {
-      "DownstreamPathTemplate": "/gambler/{gamblerId}/pools",
+      "DownstreamPathTemplate": "/gamblers/{gamblerId}/pools",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
         {
@@ -23,13 +23,13 @@
           "Port": 5002
         }
       ],
-      "UpstreamPathTemplate": "/gambler/{gamblerId}/pools",
+      "UpstreamPathTemplate": "/gamblers/{gamblerId}/pools",
       "UpstreamHttpMethod": [
         "GET"
       ]
     },
     {
-      "DownstreamPathTemplate": "/pool/{poolId}/gamblers",
+      "DownstreamPathTemplate": "/pools/{poolId}/gamblers",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
         {
@@ -37,13 +37,13 @@
           "Port": 5002
         }
       ],
-      "UpstreamPathTemplate": "/pool/{poolId}/gamblers",
+      "UpstreamPathTemplate": "/pools/{poolId}/gamblers",
       "UpstreamHttpMethod": [
         "GET"
       ]
     },
     {
-      "DownstreamPathTemplate": "/pool/{poolId}",
+      "DownstreamPathTemplate": "/pools/{poolId}/gamblers/{gamblerId}",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
         {
@@ -51,7 +51,7 @@
           "Port": 5002
         }
       ],
-      "UpstreamPathTemplate": "/pool/{poolId}",
+      "UpstreamPathTemplate": "/pools/{poolId}/gamblers/{gamblerId}",
       "UpstreamHttpMethod": [
         "GET"
       ]

@@ -1,26 +1,28 @@
-package com.felipearpa.tyche.settings
+package com.felipearpa.tyche.poolscore.drawer
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import com.felipearpa.tyche.R
 import com.felipearpa.tyche.core.emptyString
+import com.felipearpa.tyche.ui.theme.boxSpacing
 
 @Composable
-fun SettingsView(viewModel: SettingsViewModel, onLogout: () -> Unit) {
-    SettingsView(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 8.dp),
+fun DrawerView(viewModel: DrawerViewModel, onLogout: () -> Unit) {
+    DrawerView(
+        modifier = Modifier.fillMaxSize(),
         logout = {
             viewModel.logout()
             onLogout()
@@ -29,9 +31,17 @@ fun SettingsView(viewModel: SettingsViewModel, onLogout: () -> Unit) {
 }
 
 @Composable
-fun SettingsView(modifier: Modifier = Modifier, logout: () -> Unit = {}) {
-    Column(modifier = modifier) {
-        OutlinedButton(modifier = Modifier.fillMaxWidth(), onClick = logout) {
+private fun DrawerView(modifier: Modifier = Modifier, logout: () -> Unit = {}) {
+    Column(
+        modifier = modifier.padding(all = MaterialTheme.boxSpacing.large),
+        verticalArrangement = Arrangement.Bottom
+    ) {
+        OutlinedButton(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = MaterialTheme.boxSpacing.medium),
+            onClick = logout
+        ) {
             Icon(
                 painter = painterResource(id = R.drawable.logout),
                 contentDescription = emptyString()
@@ -43,10 +53,8 @@ fun SettingsView(modifier: Modifier = Modifier, logout: () -> Unit = {}) {
 
 @Preview(showBackground = true)
 @Composable
-fun SettingsViewPreview() {
-    SettingsView(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 8.dp)
-    )
+private fun InitialDrawerViewPreview() {
+    Surface {
+        DrawerView(modifier = Modifier.fillMaxSize())
+    }
 }

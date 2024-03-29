@@ -1,6 +1,7 @@
 namespace Felipearpa.Tyche.Pool.Api
 
 open System
+open System.Net
 open Felipearpa.Core.Paging
 open Felipearpa.Tyche.Pool.Api.ViewModel
 open Felipearpa.Tyche.Pool.Application
@@ -22,7 +23,7 @@ module WebApplication =
         member this.ConfigureRoutes() =
             this
                 .MapGet(
-                    "/gambler/{gamblerId}/pools",
+                    "/gamblers/{gamblerId}/pools",
                     Func<_, _, _, _, _>
                         (fun
                             (gamblerId: string)
@@ -48,7 +49,7 @@ module WebApplication =
 
             this
                 .MapGet(
-                    "/pool/{poolId}/gamblers",
+                    "/pools/{poolId}/gamblers",
                     Func<_, _, _, _, _>
                         (fun
                             (poolId: string)
@@ -76,17 +77,26 @@ module WebApplication =
 
             this
                 .MapGet(
-                    "/pool/{poolId}",
-                    Func<_, _, _>(fun (poolId: string) (getPoolQuery: GetPoolQuery) ->
-                        async {
-                            let! maybePool = getPoolQuery.ExecuteAsync(poolId |> Ulid.newOf)
+                    "/pools/{poolId}/gamblers/{gamblerId}",
+                    Func<_, _, _, _>
+                        (fun (poolId: string) (gamblerId: string) (getPoolGamblerScoreQuery: GetPoolGamblerScoreQuery) ->
+                            async {
+                                let! result =
+                                    getPoolGamblerScoreQuery.ExecuteAsync(
+                                        poolId |> Ulid.newOf,
+                                        gamblerId |> Ulid.newOf
+                                    )
 
-                            return
-                                match maybePool with
-                                | Some pool -> Results.Ok(pool |> PoolMapper.mapToViewModel)
-                                | None -> Results.NotFound()
-                        }
-                        |> Async.StartAsTask)
+                                return
+                                    match result with
+                                    | Ok maybePoolGamblerScore ->
+                                        match maybePoolGamblerScore with
+                                        | None -> Results.NotFound()
+                                        | Some poolGamblerScore ->
+                                            Results.Ok(poolGamblerScore |> PoolGamblerScoreMapper.mapToViewModel)
+                                    | Error _ -> Results.StatusCode(int HttpStatusCode.InternalServerError)
+                            }
+                            |> Async.StartAsTask)
                 )
                 .RequireAuthorization()
             |> ignore

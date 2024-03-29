@@ -9,10 +9,15 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import com.felipearpa.tyche.core.emptyString
+import com.felipearpa.tyche.home.homeNavView
 import com.felipearpa.tyche.home.ui.HomeRoute
 import com.felipearpa.tyche.pool.poolscore.PoolScoreListRoute
+import com.felipearpa.tyche.poolhome.poolHomeNavView
+import com.felipearpa.tyche.poolscore.poolScoreListNavView
 import com.felipearpa.tyche.session.AccountBundle
 import com.felipearpa.tyche.session.AccountStorage
+import com.felipearpa.tyche.signin.signInWithEmailLinkNavView
+import com.felipearpa.tyche.signin.signInWithEmailNavView
 import com.felipearpa.tyche.ui.theme.TycheTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.runBlocking
@@ -47,12 +52,15 @@ fun Content(accountBundle: AccountBundle?, intentData: String?) {
 @Composable
 fun Outlet(accountBundle: AccountBundle?, intentData: String?) {
     val initialRoute = if (accountBundle == null) HomeRoute.route else PoolScoreListRoute.route
-
     val navController = rememberNavController()
+
     NavHost(navController = navController, startDestination = initialRoute) {
+        val gamblerId = accountBundle?.accountId ?: emptyString()
+
         homeNavView(navController = navController)
 
-        loginWithEmailNavView(navController = navController)
+        signInWithEmailNavView(navController = navController)
+
         signInWithEmailLinkNavView(
             navController = navController,
             initialRoute = initialRoute,
@@ -62,8 +70,13 @@ fun Outlet(accountBundle: AccountBundle?, intentData: String?) {
         poolScoreListNavView(
             navController = navController,
             initialRoute = initialRoute,
-            loggedInGamblerId = accountBundle?.accountId
+            loggedInGamblerId = gamblerId
         )
-        poolHomeNavView(navController = navController, initialRoute = initialRoute)
+
+        poolHomeNavView(
+            navController = navController,
+            initialRoute = initialRoute,
+            gamblerId = gamblerId
+        )
     }
 }

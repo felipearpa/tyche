@@ -5,7 +5,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 
-fun NavGraphBuilder.poolHomeView(onPoolScoreListRequested: () -> Unit, onLogout: () -> Unit) {
+fun NavGraphBuilder.poolHomeView(changePool: () -> Unit, onLogout: () -> Unit) {
     composable(
         route = PoolHomeViewRoute.route,
         arguments = listOf(
@@ -22,8 +22,9 @@ fun NavGraphBuilder.poolHomeView(onPoolScoreListRequested: () -> Unit, onLogout:
         val gamblerId =
             navBackStackEntry.arguments!!.getString(PoolHomeViewRoute.Param.GAMBLER_ID.id)!!
         PoolHomeView(
-            viewModel = poolHomeViewModel(poolId = poolId, gamblerId = gamblerId),
-            onPoolScoreListRequested = onPoolScoreListRequested,
+            poolId = poolId,
+            gamblerId = gamblerId,
+            changePool = changePool,
             onLogout = onLogout
         )
     }

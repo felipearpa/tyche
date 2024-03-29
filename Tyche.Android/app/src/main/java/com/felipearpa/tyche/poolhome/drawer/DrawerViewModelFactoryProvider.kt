@@ -1,4 +1,4 @@
-package com.felipearpa.tyche.poolhome
+package com.felipearpa.tyche.poolhome.drawer
 
 import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
@@ -6,6 +6,6 @@ import dagger.hilt.android.components.ActivityComponent
 
 @EntryPoint
 @InstallIn(ActivityComponent::class)
-interface PoolHomeViewModelFactoryProvider {
-    fun poolHomeViewModelFactory(): PoolHomeViewModelFactory
+interface DrawerViewModelFactoryProvider {
+    fun drawerViewModelFactory(): DrawerViewModelFactory
 }

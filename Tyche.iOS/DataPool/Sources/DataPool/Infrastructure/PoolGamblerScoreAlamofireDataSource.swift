@@ -19,7 +19,7 @@ class PoolGamblerScoreAlamofireDateSource : PoolGamblerScoreRemoteDataSource {
         do {
             return try await withUnsafeThrowingContinuation { continuation in
                 session.request(
-                    urlBasePathProvider.prependBasePath("gambler/\(gamblerId)/pools")!,
+                    urlBasePathProvider.prependBasePath("gamblers/\(gamblerId)/pools")!,
                     parameters: ["next": next, "searchText": searchText]
                 )
                 .validate()
@@ -45,7 +45,7 @@ class PoolGamblerScoreAlamofireDateSource : PoolGamblerScoreRemoteDataSource {
         do {
             return try await withUnsafeThrowingContinuation { continuation in
                 session.request(
-                    urlBasePathProvider.prependBasePath("pool/\(poolId)/gamblers")!,
+                    urlBasePathProvider.prependBasePath("pools/\(poolId)/gamblers")!,
                     parameters: ["next": next, "searchText": searchText]
                 )
                 .validate()

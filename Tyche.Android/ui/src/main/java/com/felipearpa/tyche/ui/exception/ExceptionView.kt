@@ -19,7 +19,7 @@ import com.felipearpa.tyche.ui.R
 import com.felipearpa.tyche.ui.theme.boxSpacing
 
 @Composable
-fun ExceptionView(exception: LocalizedException) {
+fun ExceptionView(localizedException: LocalizedException) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(MaterialTheme.boxSpacing.large),
@@ -38,18 +38,17 @@ fun ExceptionView(exception: LocalizedException) {
             modifier = Modifier.fillMaxWidth()
         ) {
             Text(
-                text = exception.errorDescription ?: emptyString(),
+                text = localizedException.errorDescription ?: emptyString(),
                 style = MaterialTheme.typography.errorDescription,
                 textAlign = TextAlign.Center
             )
 
             Text(
                 text = listOfNotNull(
-                    exception.failureReason,
-                    exception.recoverySuggestion
+                    localizedException.failureReason,
+                    localizedException.recoverySuggestion
                 ).joinToString(separator = "."),
-                style = MaterialTheme.typography.failureReason,
-                textAlign = TextAlign.Center
+                style = MaterialTheme.typography.failureReason
             )
         }
     }
@@ -58,5 +57,5 @@ fun ExceptionView(exception: LocalizedException) {
 @Composable
 @Preview(showBackground = true)
 private fun ExceptionViewPreview() {
-    ExceptionView(exception = UnknownLocalizedException())
+    ExceptionView(localizedException = UnknownLocalizedException())
 }

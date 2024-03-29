@@ -8,5 +8,5 @@
     <string name="score_tab">Puntajes</string>
     <string name="bet_tab">Apuestas</string>
     <string name="history_bets_tab">Historia</string>
-    <string name="settings_tab">Configuración</string>
+    <string name="change_pool_action">Cambiar polla</string>
 </resources>

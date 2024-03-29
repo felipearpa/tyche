@@ -1,4 +1,4 @@
-package com.felipearpa.tyche
+package com.felipearpa.tyche.home
 
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder

@@ -75,7 +75,7 @@ fun PoolScoreList(
 }
 
 @Composable
-fun PoolScoreFakeList(count: Int) {
+private fun PoolScoreFakeList(count: Int) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.spacedBy(8.dp)
@@ -105,7 +105,7 @@ private fun Modifier.poolScoreItem() = composed {
 
 @Preview(showBackground = true)
 @Composable
-fun PoolScoreListPreview() {
+private fun PoolScoreListPreview() {
     val items = flowOf(PagingData.from(poolGamblerScoreDummyModels())).collectAsLazyPagingItems()
     PoolScoreList(
         lazyPoolGamblerScores = items,

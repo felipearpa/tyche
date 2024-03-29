@@ -1,7 +1,7 @@
-package com.felipearpa.tyche.settings
+package com.felipearpa.tyche.poolscore.drawer
 
 import androidx.compose.runtime.Composable
 import androidx.hilt.navigation.compose.hiltViewModel
 
 @Composable
-fun settingsViewModel(): SettingsViewModel = hiltViewModel()
+fun drawerViewModel(): DrawerViewModel = hiltViewModel()

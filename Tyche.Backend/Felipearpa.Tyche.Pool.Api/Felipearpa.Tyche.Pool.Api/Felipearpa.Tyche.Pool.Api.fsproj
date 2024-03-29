@@ -9,8 +9,6 @@
         <Compile Include="BetRequest.fs" />
         <Compile Include="ViewModel\PoolGamblerScoreViewModel.fs" />
         <Compile Include="ViewModel\PoolGamblerScoreMapper.fs" />
-        <Compile Include="ViewModel\PoolViewModel.fs" />
-        <Compile Include="ViewModel\PoolMapper.fs" />
         <Compile Include="ViewModel\PoolGamblerBetViewModel.fs" />
         <Compile Include="ViewModel\PoolGamblerBetMapper.fs" />
         <Compile Include="WebApplication.fs" />

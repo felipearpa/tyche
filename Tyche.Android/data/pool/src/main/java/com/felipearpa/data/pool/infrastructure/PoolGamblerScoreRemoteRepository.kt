@@ -34,11 +34,23 @@ internal class PoolGamblerScoreRemoteRepository @Inject constructor(
         searchText: String?
     ): Result<CursorPage<PoolGamblerScore>> {
         return networkExceptionHandler.handle {
-            poolGamblerScoreRemoteDataSource.getPoolGamblerScoreByPool(
+            poolGamblerScoreRemoteDataSource.getPoolGamblerScoresByPool(
                 poolId = poolId,
                 next = next,
                 searchText = searchText
             ).map { gamblerPoolResponse -> gamblerPoolResponse.toPoolGamblerScore() }
+        }
+    }
+
+    override suspend fun getPoolGamblerScore(
+        poolId: String,
+        gamblerId: String
+    ): Result<PoolGamblerScore> {
+        return networkExceptionHandler.handle {
+            poolGamblerScoreRemoteDataSource.getPoolGamblerScore(
+                poolId = poolId,
+                gamblerId = gamblerId
+            ).toPoolGamblerScore()
         }
     }
 }

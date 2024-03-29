@@ -1,4 +1,4 @@
-package com.felipearpa.tyche.poolhome
+package com.felipearpa.tyche.poolhome.drawer
 
 import android.app.Activity
 import androidx.compose.runtime.Composable
@@ -7,13 +7,13 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import dagger.hilt.android.EntryPointAccessors
 
 @Composable
-fun poolHomeViewModel(poolId: String, gamblerId: String): PoolHomeViewModel {
+fun drawerViewModel(poolId: String, gamblerId: String): DrawerViewModel {
     val factory = EntryPointAccessors.fromActivity(
         LocalContext.current as Activity,
-        PoolHomeViewModelFactoryProvider::class.java
-    ).poolHomeViewModelFactory()
+        DrawerViewModelFactoryProvider::class.java
+    ).drawerViewModelFactory()
     return viewModel(
-        factory = providePoolHomeViewModelFactory(
+        factory = provideDrawerViewModelFactory(
             assistedFactory = factory,
             poolId = poolId,
             gamblerId = gamblerId

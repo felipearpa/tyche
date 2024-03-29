@@ -30,7 +30,7 @@ import com.felipearpa.tyche.ui.exception.ExceptionView
 import com.felipearpa.tyche.ui.exception.LocalizedException
 import com.felipearpa.tyche.ui.exception.UnknownLocalizedException
 import com.felipearpa.tyche.ui.exception.localizedExceptionOrNull
-import com.felipearpa.tyche.ui.progress.ProgressContainerView
+import com.felipearpa.tyche.ui.progress.LoadingContainerView
 import com.felipearpa.tyche.ui.state.LoadableViewState
 import com.felipearpa.tyche.ui.state.isInitial
 import com.felipearpa.tyche.ui.theme.boxSpacing
@@ -68,7 +68,7 @@ fun EmailLinkSignInView(
         }
 
         LoadableViewState.Initial, LoadableViewState.Loading -> {
-            ProgressContainerView {}
+            LoadingContainerView {}
         }
 
         is LoadableViewState.Success -> {
@@ -125,7 +125,7 @@ private fun SuccessContent(start: () -> Unit, modifier: Modifier = Modifier) {
 @Composable
 private fun FailureContent(localizedException: LocalizedException, modifier: Modifier = Modifier) {
     Box(modifier = modifier, contentAlignment = Alignment.Center) {
-        ExceptionView(exception = localizedException)
+        ExceptionView(localizedException = localizedException)
     }
 }
 

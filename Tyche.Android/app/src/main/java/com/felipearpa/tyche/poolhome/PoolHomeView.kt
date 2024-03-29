@@ -1,6 +1,5 @@
 package com.felipearpa.tyche.poolhome
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -25,7 +24,6 @@ import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -36,7 +34,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.felipearpa.tyche.R
@@ -45,15 +42,10 @@ import com.felipearpa.tyche.bet.finished.FinishedBetListView
 import com.felipearpa.tyche.bet.finished.finishedBetListViewModel
 import com.felipearpa.tyche.bet.poolGamblerBetListViewModel
 import com.felipearpa.tyche.core.emptyString
-import com.felipearpa.tyche.pool.PoolModel
+import com.felipearpa.tyche.poolhome.drawer.DrawerView
+import com.felipearpa.tyche.poolhome.drawer.drawerViewModel
 import com.felipearpa.tyche.pool.gamblerscore.GamblerScoreListView
 import com.felipearpa.tyche.pool.gamblerscore.gamblerScoreListViewModel
-import com.felipearpa.tyche.settings.SettingsView
-import com.felipearpa.tyche.settings.settingsViewModel
-import com.felipearpa.tyche.ui.exception.ExceptionView
-import com.felipearpa.tyche.ui.exception.localizedExceptionOrNull
-import com.felipearpa.tyche.ui.shimmer
-import com.felipearpa.tyche.ui.state.LoadableViewState
 import com.felipearpa.tyche.ui.theme.boxSpacing
 import kotlinx.coroutines.launch
 import com.felipearpa.tyche.ui.R as SharedR
@@ -66,29 +58,12 @@ private enum class Tab {
     HISTORY_BET
 }
 
-@Composable
-fun PoolHomeView(
-    viewModel: PoolHomeViewModel,
-    onPoolScoreListRequested: () -> Unit,
-    onLogout: () -> Unit
-) {
-    val state by viewModel.state.collectAsState()
-    PoolHomeView(
-        viewState = state,
-        poolId = viewModel.poolId,
-        gamblerId = viewModel.gamblerId,
-        onPoolScoreListRequested = onPoolScoreListRequested,
-        onLogout = onLogout
-    )
-}
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun PoolHomeView(
-    viewState: LoadableViewState<PoolModel>,
+fun PoolHomeView(
     poolId: String,
     gamblerId: String,
-    onPoolScoreListRequested: () -> Unit = {},
+    changePool: () -> Unit,
     onLogout: () -> Unit = {}
 ) {
     var selectedTabIndex by remember { mutableStateOf(Tab.GAMBLER_SCORE) }
@@ -96,161 +71,163 @@ private fun PoolHomeView(
     val coroutineScope = rememberCoroutineScope()
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
 
-    when (viewState) {
-        is LoadableViewState.Failure -> ExceptionView(
-            exception = viewState().localizedExceptionOrNull()!!
-        )
-
-        else -> ModalNavigationDrawer(
-            drawerState = drawerState,
-            drawerContent = {
-                ModalDrawerSheet {
-                    SettingsView(
-                        viewModel = settingsViewModel(),
-                        onLogout = onLogout
+    ModalNavigationDrawer(
+        drawerState = drawerState,
+        drawerContent = {
+            ModalDrawerSheet {
+                DrawerView(
+                    viewModel = drawerViewModel(poolId = poolId, gamblerId = gamblerId),
+                    changePool = changePool,
+                    onLogout = onLogout
+                )
+            }
+        },
+    ) {
+        Scaffold(
+            modifier = Modifier
+                .fillMaxSize()
+                .nestedScroll(scrollBehavior.nestedScrollConnection),
+            topBar = {
+                AppTopBar(
+                    title = selectedTabIndex.title,
+                    onAccountRequested = {
+                        coroutineScope.launch {
+                            drawerState.apply {
+                                if (isClosed) open() else close()
+                            }
+                        }
+                    },
+                    scrollBehavior = scrollBehavior
+                )
+            },
+            bottomBar = {
+                TabRow(
+                    selectedTabIndex = selectedTabIndex.ordinal,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    GamblerScoreTab(
+                        selected = selectedTabIndex == Tab.GAMBLER_SCORE,
+                        onClick = { selectedTabIndex = Tab.GAMBLER_SCORE }
+                    )
+                    BetEditorTab(
+                        selected = selectedTabIndex == Tab.BET_EDITOR,
+                        onClick = { selectedTabIndex = Tab.BET_EDITOR }
+                    )
+                    HistoryBetTab(
+                        selected = selectedTabIndex == Tab.HISTORY_BET,
+                        onClick = { selectedTabIndex = Tab.HISTORY_BET }
                     )
                 }
-            },
-        ) {
-            Scaffold(
+            }
+        ) { paddingValues ->
+            Box(
                 modifier = Modifier
+                    .padding(paddingValues = paddingValues)
                     .fillMaxSize()
-                    .nestedScroll(scrollBehavior.nestedScrollConnection),
-                topBar = {
-                    if (viewState is LoadableViewState.Success) {
-                        val pool = viewState()
-                        AppTopBar(
-                            title = pool.poolName,
-                            onAccountRequested = {
-                                coroutineScope.launch {
-                                    drawerState.apply {
-                                        if (isClosed) open() else close()
-                                    }
-                                }
-                            },
-                            poolScoreListRequested = onPoolScoreListRequested,
-                            scrollBehavior = scrollBehavior
+            ) {
+                when (selectedTabIndex) {
+                    Tab.GAMBLER_SCORE -> GamblerScoreListView(
+                        viewModel = gamblerScoreListViewModel(
+                            poolId = poolId,
+                            gamblerId = gamblerId
                         )
-                    } else if (viewState is LoadableViewState.Loading) {
-                        AppFakeTopBar()
-                    }
-                },
-                bottomBar = {
-                    TabRow(
-                        selectedTabIndex = selectedTabIndex.ordinal,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Tab(
-                            selected = selectedTabIndex == Tab.GAMBLER_SCORE,
-                            onClick = { selectedTabIndex = Tab.GAMBLER_SCORE }
-                        ) {
-                            Column(
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                                verticalArrangement = Arrangement.SpaceEvenly,
-                                modifier = Modifier.padding(vertical = MaterialTheme.boxSpacing.medium)
-                            ) {
-                                Icon(
-                                    painter = painterResource(id = R.drawable.ic_sport_score),
-                                    contentDescription = emptyString(),
-                                    modifier = Modifier.size(iconSize)
-                                )
-                                Text(
-                                    text = stringResource(id = R.string.score_tab),
-                                    style = MaterialTheme.typography.titleSmall,
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis
-                                )
-                            }
-                        }
+                    )
 
-                        Tab(
-                            selected = selectedTabIndex == Tab.BET_EDITOR,
-                            onClick = { selectedTabIndex = Tab.BET_EDITOR }
-                        ) {
-                            Column(
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                                verticalArrangement = Arrangement.SpaceEvenly,
-                                modifier = Modifier.padding(vertical = MaterialTheme.boxSpacing.medium)
-                            ) {
-                                Icon(
-                                    painter = painterResource(id = R.drawable.ic_money),
-                                    contentDescription = emptyString(),
-                                    modifier = Modifier.size(iconSize)
-                                )
-                                Text(
-                                    text = stringResource(id = R.string.bet_tab),
-                                    style = MaterialTheme.typography.titleSmall,
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis
-                                )
-                            }
-                        }
-
-                        Tab(
-                            selected = selectedTabIndex == Tab.HISTORY_BET,
-                            onClick = { selectedTabIndex = Tab.HISTORY_BET }
-                        ) {
-                            Column(
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                                verticalArrangement = Arrangement.SpaceEvenly,
-                                modifier = Modifier.padding(vertical = MaterialTheme.boxSpacing.medium)
-                            ) {
-                                Icon(
-                                    painter = painterResource(id = R.drawable.history_bets),
-                                    contentDescription = emptyString(),
-                                    modifier = Modifier.size(iconSize)
-                                )
-                                Text(
-                                    text = stringResource(id = R.string.history_bets_tab),
-                                    style = MaterialTheme.typography.titleSmall,
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis
-                                )
-                            }
-                        }
-                    }
-                }
-            ) { paddingValues ->
-                Box(modifier = Modifier.padding(paddingValues = paddingValues)) {
-                    when (selectedTabIndex) {
-                        Tab.GAMBLER_SCORE -> GamblerScoreListView(
-                            viewModel = gamblerScoreListViewModel(
-                                poolId = poolId,
-                                gamblerId = gamblerId
-                            )
+                    Tab.BET_EDITOR -> PoolGamblerBetListView(
+                        viewModel = poolGamblerBetListViewModel(
+                            poolId = poolId,
+                            gamblerId = gamblerId
                         )
+                    )
 
-                        Tab.BET_EDITOR -> PoolGamblerBetListView(
-                            viewModel = poolGamblerBetListViewModel(
-                                poolId = poolId,
-                                gamblerId = gamblerId
-                            )
+                    Tab.HISTORY_BET -> FinishedBetListView(
+                        viewModel = finishedBetListViewModel(
+                            poolId = poolId,
+                            gamblerId = gamblerId
                         )
-
-                        Tab.HISTORY_BET -> FinishedBetListView(
-                            viewModel = finishedBetListViewModel(
-                                poolId = poolId,
-                                gamblerId = gamblerId
-                            )
-                        )
-                    }
+                    )
                 }
             }
         }
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun AppFakeTopBar() {
-    AppTopBar(
-        title = "X".repeat(15),
-        onAccountRequested = {},
-        poolScoreListRequested = {},
-        modifier = Modifier.fillMaxWidth(),
-        shimmerModifier = Modifier.shimmer(),
-        scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
-    )
+private fun GamblerScoreTab(selected: Boolean, onClick: () -> Unit) {
+    Tab(
+        selected = selected,
+        onClick = onClick
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.SpaceEvenly,
+            modifier = Modifier.padding(vertical = MaterialTheme.boxSpacing.medium)
+        ) {
+            Icon(
+                painter = painterResource(id = R.drawable.ic_sport_score),
+                contentDescription = emptyString(),
+                modifier = Modifier.size(iconSize)
+            )
+            Text(
+                text = stringResource(id = R.string.score_tab),
+                style = MaterialTheme.typography.titleSmall,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+        }
+    }
+}
+
+@Composable
+private fun BetEditorTab(selected: Boolean, onClick: () -> Unit) {
+    Tab(
+        selected = selected,
+        onClick = onClick
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.SpaceEvenly,
+            modifier = Modifier.padding(vertical = MaterialTheme.boxSpacing.medium)
+        ) {
+            Icon(
+                painter = painterResource(id = R.drawable.ic_money),
+                contentDescription = emptyString(),
+                modifier = Modifier.size(iconSize)
+            )
+            Text(
+                text = stringResource(id = R.string.bet_tab),
+                style = MaterialTheme.typography.titleSmall,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+        }
+    }
+}
+
+@Composable
+private fun HistoryBetTab(selected: Boolean, onClick: () -> Unit) {
+    Tab(
+        selected = selected,
+        onClick = onClick
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.SpaceEvenly,
+            modifier = Modifier.padding(vertical = MaterialTheme.boxSpacing.medium)
+        ) {
+            Icon(
+                painter = painterResource(id = R.drawable.history_bets),
+                contentDescription = emptyString(),
+                modifier = Modifier.size(iconSize)
+            )
+            Text(
+                text = stringResource(id = R.string.history_bets_tab),
+                style = MaterialTheme.typography.titleSmall,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+        }
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -260,18 +237,15 @@ private fun AppTopBar(
     onAccountRequested: () -> Unit,
     modifier: Modifier = Modifier,
     shimmerModifier: Modifier = Modifier,
-    poolScoreListRequested: () -> Unit = {},
     scrollBehavior: TopAppBarScrollBehavior
 ) {
     TopAppBar(
         title = {
             Text(
                 text = title,
-                color = MaterialTheme.colorScheme.primary,
-                textDecoration = TextDecoration.Underline,
-                modifier = Modifier
-                    .clickable { poolScoreListRequested() }
-                    .then(shimmerModifier)
+                maxLines = 1,
+                modifier = shimmerModifier,
+                overflow = TextOverflow.Ellipsis
             )
         },
         navigationIcon = {
@@ -286,3 +260,11 @@ private fun AppTopBar(
         scrollBehavior = scrollBehavior
     )
 }
+
+private val Tab.title: String
+    @Composable
+    get() = when (this) {
+        Tab.GAMBLER_SCORE -> stringResource(id = R.string.score_tab)
+        Tab.BET_EDITOR -> stringResource(id = R.string.bet_tab)
+        Tab.HISTORY_BET -> stringResource(id = R.string.history_bets_tab)
+    }

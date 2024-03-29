@@ -24,7 +24,7 @@ import com.felipearpa.tyche.ui.theme.progressBackground
 private const val BLUR_RADIUS = 2
 
 @Composable
-fun ProgressContainerView(content: @Composable () -> Unit) {
+fun LoadingContainerView(content: @Composable () -> Unit) {
     val backgroundAlpha = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) 0.5f else 0f
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -51,7 +51,7 @@ fun ProgressContainerView(content: @Composable () -> Unit) {
 @Preview(showBackground = true)
 @Composable
 private fun ProgressContainerViewPreview() {
-    ProgressContainerView {
+    LoadingContainerView {
         Box(modifier = Modifier.fillMaxSize()) {
             Column(
                 modifier = Modifier

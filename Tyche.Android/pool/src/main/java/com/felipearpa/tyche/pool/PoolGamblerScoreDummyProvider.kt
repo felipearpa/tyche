@@ -11,7 +11,7 @@ internal fun poolGamblerScoreFakeModel() =
         score = 1
     )
 
-internal fun poolGamblerScoreDummyModel() =
+fun poolGamblerScoreDummyModel() =
     PoolGamblerScoreModel(
         poolId = "pool123",
         poolName = "Champions League",
@@ -22,7 +22,7 @@ internal fun poolGamblerScoreDummyModel() =
         score = 150
     )
 
-internal fun poolGamblerScoreDummyModels() =
+fun poolGamblerScoreDummyModels() =
     listOf(
         PoolGamblerScoreModel(
             poolId = "pool123",

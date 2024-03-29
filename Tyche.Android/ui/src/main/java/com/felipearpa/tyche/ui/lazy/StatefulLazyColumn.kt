@@ -1,9 +1,7 @@
 package com.felipearpa.tyche.ui.lazy
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -12,16 +10,14 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.LinearProgressIndicator
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import com.felipearpa.tyche.ui.disabledGestures
-import com.felipearpa.tyche.ui.theme.boxSpacing
 
 @Composable
 fun <Value : Any> StatefulLazyColumn(
@@ -102,18 +98,28 @@ fun <Value : Any> StatefulLazyColumn(
     emptyContent: @Composable () -> Unit = {},
     itemContent: LazyListScope.() -> Unit
 ) {
-    when {
-        lazyItems.loadState.refresh is LoadState.Error ->
-            ErrorContent(
+    if (LocalInspectionMode.current) {
+        StatefulLazyColumn(
+            modifier = modifier.disabledGestures(lazyItems.loadState.refresh is LoadState.Loading),
+            lazyItems = lazyItems,
+            state = state,
+            contentPadding = contentPadding,
+            verticalArrangement = verticalArrangement,
+            loadingContentOnConcatenate = loadingContentOnConcatenate,
+            errorContentOnConcatenate = errorContentOnConcatenate,
+            emptyContent = emptyContent,
+            itemContent = itemContent
+        )
+    } else {
+        when (lazyItems.loadState.refresh) {
+            is LoadState.Error -> ErrorContent(
                 errorLoadState = lazyItems.loadState.refresh as LoadState.Error,
                 errorContent = errorContent
             )
 
-        lazyItems.loadState.refresh is LoadState.Loading && !lazyItems.hasItems() ->
-            LoadingContent(loadingContent = loadingContent)
+            is LoadState.Loading -> LoadingContent(loadingContent = loadingContent)
 
-        else ->
-            StatefulLazyColumn(
+            else -> StatefulLazyColumn(
                 modifier = modifier.disabledGestures(lazyItems.loadState.refresh is LoadState.Loading),
                 lazyItems = lazyItems,
                 state = state,
@@ -124,6 +130,7 @@ fun <Value : Any> StatefulLazyColumn(
                 emptyContent = emptyContent,
                 itemContent = itemContent
             )
+        }
     }
 }
 
@@ -154,39 +161,28 @@ private fun <Value : Any> StatefulLazyColumn(
     emptyContent: @Composable () -> Unit = {},
     itemContent: LazyListScope.() -> Unit
 ) {
-    Column(modifier = modifier) {
-
-        AnimatedVisibility(visible = lazyItems.loadState.refresh is LoadState.Loading) {
-            LinearProgressIndicator(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = MaterialTheme.boxSpacing.medium)
+    if (!lazyItems.hasItems() && !lazyItems.isPendingLoad()) {
+        emptyContent()
+    } else {
+        LazyColumn(
+            state = state,
+            modifier = modifier,
+            contentPadding = contentPadding,
+            verticalArrangement = verticalArrangement
+        ) {
+            prependContent(
+                lazyItems = lazyItems,
+                loadingContentOnConcatenate = loadingContentOnConcatenate,
+                errorContentOnConcatenate = errorContentOnConcatenate
             )
-        }
 
-        if (!lazyItems.hasItems() && !lazyItems.isPendingLoad()) {
-            emptyContent()
-        } else {
-            LazyColumn(
-                state = state,
-                modifier = Modifier.fillMaxSize(),
-                contentPadding = contentPadding,
-                verticalArrangement = verticalArrangement
-            ) {
-                prependContent(
-                    lazyItems = lazyItems,
-                    loadingContentOnConcatenate = loadingContentOnConcatenate,
-                    errorContentOnConcatenate = errorContentOnConcatenate
-                )
+            itemContent()
 
-                itemContent()
-
-                appendContent(
-                    lazyItems = lazyItems,
-                    loadingContentOnConcatenate = loadingContentOnConcatenate,
-                    errorContentOnConcatenate = errorContentOnConcatenate
-                )
-            }
+            appendContent(
+                lazyItems = lazyItems,
+                loadingContentOnConcatenate = loadingContentOnConcatenate,
+                errorContentOnConcatenate = errorContentOnConcatenate
+            )
         }
     }
 }

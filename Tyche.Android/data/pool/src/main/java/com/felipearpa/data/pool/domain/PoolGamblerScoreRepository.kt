@@ -14,4 +14,6 @@ interface PoolGamblerScoreRepository {
         next: String? = null,
         searchText: String? = null
     ): Result<CursorPage<PoolGamblerScore>>
+
+    suspend fun getPoolGamblerScore(poolId: String, gamblerId: String): Result<PoolGamblerScore>
 }

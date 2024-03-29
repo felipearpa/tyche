@@ -1,4 +1,4 @@
-package com.felipearpa.tyche.settings
+package com.felipearpa.tyche.poolscore.drawer
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -8,8 +8,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class SettingsViewModel @Inject constructor(private val logoutUseCase: LogOutUseCase) :
-    ViewModel() {
+class DrawerViewModel @Inject constructor(private val logoutUseCase: LogOutUseCase) : ViewModel() {
     fun logout() {
         viewModelScope.launch {
             logoutUseCase.execute()

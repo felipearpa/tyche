@@ -1,4 +1,4 @@
-package com.felipearpa.tyche.poolhome
+package com.felipearpa.tyche.poolhome.drawer
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -6,15 +6,15 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 
 @AssistedFactory
-interface PoolHomeViewModelFactory {
+interface DrawerViewModelFactory {
     fun create(
         @Assisted("poolId") poolId: String,
         @Assisted("gamblerId") gamblerId: String
-    ): PoolHomeViewModel
+    ): DrawerViewModel
 }
 
-fun providePoolHomeViewModelFactory(
-    assistedFactory: PoolHomeViewModelFactory,
+fun provideDrawerViewModelFactory(
+    assistedFactory: DrawerViewModelFactory,
     poolId: String,
     gamblerId: String
 ): ViewModelProvider.Factory =

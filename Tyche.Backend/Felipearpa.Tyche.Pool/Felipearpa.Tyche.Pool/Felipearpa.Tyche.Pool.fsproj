@@ -13,23 +13,18 @@
         <Compile Include="Domain\PoolGamblerScore.fs" />
         <Compile Include="Domain\PoolGamblerScoreMapper.fs" />
         <Compile Include="Domain\IPoolGamblerScoreRepository.fs" />
-        <Compile Include="Domain\PoolEntity.fs" />
-        <Compile Include="Domain\Pool.fs" />
-        <Compile Include="Domain\PoolMapper.fs" />
-        <Compile Include="Domain\IPoolRepository.fs" />
         <Compile Include="Domain\PoolGamblerBetEntity.fs" />
         <Compile Include="Domain\PoolGamblerBet.fs" />
         <Compile Include="Domain\IPoolGamblerBetRepository.fs" />
         <Compile Include="Domain\PoolGamblerBetMapper.fs" />
         <Compile Include="Infrastructure\PoolGamblerScoreDynamoDbRepository.fs" />
-        <Compile Include="Infrastructure\PoolDynamoDbRepository.fs" />
         <Compile Include="Infrastructure\PoolGamblerBetDynamoDbRepository.fs" />
         <Compile Include="Application\GetPoolGamblerScoresByGamblerQuery.fs" />
         <Compile Include="Application\GetPoolGamblerScoresByPoolQuery.fs" />
-        <Compile Include="Application\GetPoolQuery.fs" />
         <Compile Include="Application\BetCommand.fs" />
         <Compile Include="Application\GetFinishedPoolGamblerBetsQuery.fs" />
         <Compile Include="Application\GetPendingPoolGamblerBetsQuery.fs" />
+        <Compile Include="Application\GetPoolGamblerScoreQuery.fs" />
     </ItemGroup>
 
     <ItemGroup>

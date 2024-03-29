@@ -1,3 +1,13 @@
+### Get Id Token
+POST https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyC8Muo3PUYL6lHgXvZF0P1Pdj6TeUPKc9U 
+Content-Type: application/json
+
+{
+    "email": "test@tyche.com",
+    "password": "test-password",
+    "returnSecureToken": true
+}
+
 ### Get the pools of a gambler
 GET https://localhost:5002/gambler/01H1CMCDHH99FH8FDY36S0YH3A/pools HTTP/1.1
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiZXhwIjoxNzE2MzI2MDMyfQ.yBckrF8m-7WIrprpsSo3HTZ5hOtb1UIOqYiCTGLfmnw
@@ -5,6 +15,10 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3O
 ### Get the gamblers of a pool
 GET https://localhost:5002/pool/01H1CFJB0Y3KK357WCA2HB5MCX/gamblers HTTP/1.1
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiZXhwIjoxNzE2MzI2MDMyfQ.yBckrF8m-7WIrprpsSo3HTZ5hOtb1UIOqYiCTGLfmnw
+
+### Get the PoolGamblerScore
+GET https://localhost:5002/pools/01H1CFJB0Y3KK357WCA2HB5MCX/gamblers/01H1CMCDHH99FH8FDY36S0YH3A HTTP/1.1
+Authorization: Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6ImJhNjI1OTZmNTJmNTJlZDQ0MDQ5Mzk2YmU3ZGYzNGQyYzY0ZjQ1M2UiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL3NlY3VyZXRva2VuLmdvb2dsZS5jb20vdHljaGUtNTg4Y2UiLCJhdWQiOiJ0eWNoZS01ODhjZSIsImF1dGhfdGltZSI6MTcxMTY2MTc4NSwidXNlcl9pZCI6Im5Fa1NHWnJwS1BRbHh1Vm9kVHpaZlQzQUVpSTIiLCJzdWIiOiJuRWtTR1pycEtQUWx4dVZvZFR6WmZUM0FFaUkyIiwiaWF0IjoxNzExNjYxNzg1LCJleHAiOjE3MTE2NjUzODUsImVtYWlsIjoidGVzdEB0eWNoZS5jb20iLCJlbWFpbF92ZXJpZmllZCI6ZmFsc2UsImZpcmViYXNlIjp7ImlkZW50aXRpZXMiOnsiZW1haWwiOlsidGVzdEB0eWNoZS5jb20iXX0sInNpZ25faW5fcHJvdmlkZXIiOiJwYXNzd29yZCJ9fQ.cRf_9qN0k1mSkmfbibt-kqvu02T0dynBpklZbu-jpw4FPtVWgBpknCvxfvLr2kGYj9notCc5ipaSuleh_KW0d-9deru4xWqW8Hx7Udpq55TP-fukgC9Oz4iQd30I05V7PL2YAbEJWQ9UJfdmT9N4xTxEKXq38Ge8MnbCeifhYDqBhRH1-xGfPhvKNiw5VWCIWSqjSdyoJQRPASw3_ew__5BtVnLNu90sbhoAMJe-jgbtW6mzTmtN0VEJ89bmFTiii-2QHi0UvEr64ZJCFVv_8wIQhJ7MRFpUkEP2mzWMFtj6a8gMU6xqDx-cXfnkdr2UWZyJLJorfqEdQ90uP4pjHw
 
 ### Get a pool
 GET https://localhost:5002/pool/01H1CFJB0Y3KK357WCA2HB5MCX HTTP/1.1

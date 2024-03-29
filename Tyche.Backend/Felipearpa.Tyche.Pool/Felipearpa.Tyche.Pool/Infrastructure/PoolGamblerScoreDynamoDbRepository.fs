@@ -30,7 +30,7 @@ type PoolGamblerScoreDynamoDbRepository(keySerializer: IKeySerializer, client: I
 
     interface IPoolGamblerScoreRepository with
 
-        member this.GetPoolGamblerScoresByGamblerAsync(gamblerId, maybeSearchText, maybeNext) =
+        member this.GetGamblerScoresAsync(gamblerId, maybeSearchText, maybeNext) =
             async {
                 let keyConditionExpression = "#sk = :sk"
 
@@ -79,7 +79,7 @@ type PoolGamblerScoreDynamoDbRepository(keySerializer: IKeySerializer, client: I
                         | _ -> keySerializer.Serialize(lastEvaluatedKey) |> Some }
             }
 
-        member this.GetPoolGamblerScoresByPoolAsync(poolId, maybeSearchText, maybeNext) =
+        member this.GetPoolScoresAsync(poolId, maybeSearchText, maybeNext) =
             async {
                 let keyConditionExpression = "#pk = :pk"
 
@@ -126,4 +126,36 @@ type PoolGamblerScoreDynamoDbRepository(keySerializer: IKeySerializer, client: I
                         match lastEvaluatedKey.Count with
                         | 0 -> None
                         | _ -> keySerializer.Serialize(lastEvaluatedKey) |> Some }
+            }
+
+        member this.GetPoolGamblerScoreAsync(poolId, gamblerId) =
+            async {
+                let keyConditionExpression = "#pk = :pk and #sk = :sk"
+
+                let filterConditionExpression = "#status = :status"
+
+                let mutable attributeValues =
+                    dict
+                        [ ":pk", AttributeValue($"{poolText}#{poolId.Value}")
+                          ":sk", AttributeValue($"{gamblerText}#{gamblerId.Value}")
+                          ":status", AttributeValue("OPENED") ]
+
+                let mutable attributeNames = dict [ "#pk", "pk"; "#sk", "sk"; "#status", "status" ]
+
+                let request =
+                    QueryRequest(
+                        TableName = tableName,
+                        KeyConditionExpression = keyConditionExpression,
+                        FilterExpression = filterConditionExpression,
+                        ExpressionAttributeNames = Dictionary attributeNames,
+                        ExpressionAttributeValues = Dictionary attributeValues
+                    )
+
+                let! response = client.QueryAsync(request) |> Async.AwaitTask
+
+                return
+                    (match response.Items.FirstOrDefault() |> Option.ofObj with
+                     | Some item -> item |> (map >> PoolGamblerScoreMapper.mapToDomain) |> Some
+                     | None -> None)
+                    |> Ok
             }

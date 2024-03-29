@@ -29,13 +29,12 @@ module WebApplicationBuilder =
             .AddDefaultAWSOptions(app.Configuration.GetAWSOptions())
             .AddAWSService<IAmazonDynamoDB>()
             .AddScoped<IPoolGamblerScoreRepository, PoolGamblerScoreDynamoDbRepository>()
-            .AddScoped<IPoolRepository, PoolDynamoDbRepository>()
             .AddScoped<IPoolGamblerBetRepository, PoolGamblerBetDynamoDbRepository>()
             .AddScoped<GetPoolGamblerScoresByGamblerQuery>()
             .AddScoped<GetPoolGamblerScoresByPoolQuery>()
-            .AddScoped<GetPoolQuery>()
             .AddScoped<GetPendingPoolGamblerBetsQuery>()
             .AddScoped<GetFinishedPoolGamblerBetsQuery>()
+            .AddScoped<GetPoolGamblerScoreQuery>()
             .AddScoped<BetCommand>()
         |> ignore
 

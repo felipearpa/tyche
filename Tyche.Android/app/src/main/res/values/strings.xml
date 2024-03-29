@@ -8,5 +8,5 @@
     <string name="score_tab">Scores</string>
     <string name="bet_tab">Bets</string>
     <string name="history_bets_tab">History</string>
-    <string name="settings_tab">Settings</string>
+    <string name="change_pool_action">Change pool</string>
 </resources>
