@@ -1,127 +1,44 @@
 namespace Felipearpa.Tyche.Pool.Infrastructure
 
-open System.Collections.Generic
 open System.Linq
 open Amazon.DynamoDBv2
 open Amazon.DynamoDBv2.DataModel
-open Amazon.DynamoDBv2.DocumentModel
-open Amazon.DynamoDBv2.Model
-open Felipearpa.Core
 open Felipearpa.Core.Paging
 open Felipearpa.Data.DynamoDb
 open Felipearpa.Tyche.Pool.Domain
-open Felipearpa.Type
+open Felipearpa.Tyche.Pool.Domain.PoolGamblerScoreDictionaryTransformer
 
 type PoolGamblerScoreDynamoDbRepository(keySerializer: IKeySerializer, client: IAmazonDynamoDB) =
-
-    [<Literal>]
-    let tableName = "Pool"
-
-    [<Literal>]
-    let gamblerText = "GAMBLER"
-
-    [<Literal>]
-    let poolText = "POOL"
-
     let context = new DynamoDBContext(client)
-
-    let map (dictionary: IDictionary<string, AttributeValue>) =
-        context.FromDocument<PoolGamblerScoreEntity>(Document.FromAttributeMap(Dictionary(dictionary)))
 
     interface IPoolGamblerScoreRepository with
 
-        member this.GetGamblerScoresAsync(gamblerId, maybeSearchText, maybeNext) =
+        member this.GetGamblerScoresAsync(gamblerId, maybeNext) =
             async {
-                let keyConditionExpression = "#sk = :sk"
-
-                let defaultFilterConditionExpression = "#status = :status"
-
-                let mutable defaultAttributeValues =
-                    dict
-                        [ ":sk", AttributeValue($"{gamblerText}#{gamblerId |> Ulid.value}")
-                          ":status", AttributeValue("OPENED") ]
-
-                let mutable defaultAttributeNames = dict [ "#sk", "sk"; "#status", "status" ]
-
-                let filterExpression, attributeValues, attributeNames =
-                    match maybeSearchText with
-                    | None -> (defaultFilterConditionExpression, defaultAttributeValues, defaultAttributeNames)
-                    | Some filterText ->
-                        ($"{defaultFilterConditionExpression} and contains(#filter, :filter)",
-                         defaultAttributeValues
-                         |> Dict.union (dict [ ":filter", AttributeValue(filterText.ToLower()) ])
-                         :> IDictionary<_, _>,
-                         defaultAttributeNames |> Dict.union (dict [ "#filter", "filter" ]) :> IDictionary<_, _>)
-
                 let request =
-                    QueryRequest(
-                        TableName = tableName,
-                        IndexName = "GetPoolGamblerScoresByGambler-index",
-                        KeyConditionExpression = keyConditionExpression,
-                        FilterExpression = filterExpression,
-                        ExpressionAttributeNames = Dictionary attributeNames,
-                        ExpressionAttributeValues = Dictionary attributeValues,
-                        ExclusiveStartKey =
-                            match maybeNext with
-                            | None -> null
-                            | Some next -> Dictionary(next |> keySerializer.Deserialize)
-                    )
+                    GetGamblerScoresRequestBuilder.build gamblerId (maybeNext |> Option.map keySerializer.Deserialize)
 
                 let! response = client.QueryAsync(request) |> Async.AwaitTask
-
                 let lastEvaluatedKey = response.LastEvaluatedKey
 
                 return
-                    { CursorPage.Items = response.Items.Select(map >> PoolGamblerScoreMapper.mapToDomain)
+                    { CursorPage.Items = response.Items.Select(toPoolGamblerScore)
                       Next =
                         match lastEvaluatedKey.Count with
                         | 0 -> None
                         | _ -> keySerializer.Serialize(lastEvaluatedKey) |> Some }
             }
 
-        member this.GetPoolScoresAsync(poolId, maybeSearchText, maybeNext) =
+        member this.GetPoolScoresAsync(poolId, maybeNext) =
             async {
-                let keyConditionExpression = "#pk = :pk"
-
-                let defaultFilterConditionExpression = "#status = :status"
-
-                let mutable defaultAttributeValues =
-                    dict
-                        [ ":pk", AttributeValue($"{poolText}#{poolId |> Ulid.value}")
-                          ":status", AttributeValue("OPENED") ]
-
-                let mutable defaultAttributeNames = dict [ "#pk", "pk"; "#status", "status" ]
-
-                let filterExpression, attributeValues, attributeNames =
-                    match maybeSearchText with
-                    | None -> (defaultFilterConditionExpression, defaultAttributeValues, defaultAttributeNames)
-                    | Some filterText ->
-                        ($"{defaultFilterConditionExpression} and contains(#filter, :filter)",
-                         defaultAttributeValues
-                         |> Dict.union (dict [ ":filter", AttributeValue(filterText.ToLower()) ])
-                         :> IDictionary<_, _>,
-                         defaultAttributeNames |> Dict.union (dict [ "#filter", "filter" ]) :> IDictionary<_, _>)
-
                 let request =
-                    QueryRequest(
-                        TableName = tableName,
-                        IndexName = "GetPoolGamblerScoresByPool-index",
-                        KeyConditionExpression = keyConditionExpression,
-                        FilterExpression = filterExpression,
-                        ExpressionAttributeNames = Dictionary attributeNames,
-                        ExpressionAttributeValues = Dictionary attributeValues,
-                        ExclusiveStartKey =
-                            match maybeNext with
-                            | None -> null
-                            | Some next -> Dictionary(next |> keySerializer.Deserialize)
-                    )
+                    GetPoolScoresRequestBuilder.build poolId (maybeNext |> Option.map keySerializer.Deserialize)
 
                 let! response = client.QueryAsync(request) |> Async.AwaitTask
-
                 let lastEvaluatedKey = response.LastEvaluatedKey
 
                 return
-                    { CursorPage.Items = response.Items.Select(map >> PoolGamblerScoreMapper.mapToDomain)
+                    { CursorPage.Items = response.Items.Select(toPoolGamblerScore)
                       Next =
                         match lastEvaluatedKey.Count with
                         | 0 -> None
@@ -130,32 +47,12 @@ type PoolGamblerScoreDynamoDbRepository(keySerializer: IKeySerializer, client: I
 
         member this.GetPoolGamblerScoreAsync(poolId, gamblerId) =
             async {
-                let keyConditionExpression = "#pk = :pk and #sk = :sk"
-
-                let filterConditionExpression = "#status = :status"
-
-                let mutable attributeValues =
-                    dict
-                        [ ":pk", AttributeValue($"{poolText}#{poolId.Value}")
-                          ":sk", AttributeValue($"{gamblerText}#{gamblerId.Value}")
-                          ":status", AttributeValue("OPENED") ]
-
-                let mutable attributeNames = dict [ "#pk", "pk"; "#sk", "sk"; "#status", "status" ]
-
-                let request =
-                    QueryRequest(
-                        TableName = tableName,
-                        KeyConditionExpression = keyConditionExpression,
-                        FilterExpression = filterConditionExpression,
-                        ExpressionAttributeNames = Dictionary attributeNames,
-                        ExpressionAttributeValues = Dictionary attributeValues
-                    )
-
+                let request = GetPoolGamblerScoreRequestBuilder.build poolId gamblerId
                 let! response = client.QueryAsync(request) |> Async.AwaitTask
 
                 return
                     (match response.Items.FirstOrDefault() |> Option.ofObj with
-                     | Some item -> item |> (map >> PoolGamblerScoreMapper.mapToDomain) |> Some
+                     | Some item -> item.ToPoolGamblerScore() |> Some
                      | None -> None)
                     |> Ok
             }

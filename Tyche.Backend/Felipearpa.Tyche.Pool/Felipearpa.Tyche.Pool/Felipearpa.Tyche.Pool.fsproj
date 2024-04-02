@@ -9,14 +9,16 @@
     <ItemGroup>
         <Compile Include="Type\BetScore.fs" />
         <Compile Include="Type\TeamScore.fs" />
-        <Compile Include="Domain\PoolGamblerScoreEntity.fs" />
         <Compile Include="Domain\PoolGamblerScore.fs" />
-        <Compile Include="Domain\PoolGamblerScoreMapper.fs" />
+        <Compile Include="Domain\PoolGamblerScoreDictionaryTransformer.fs" />
         <Compile Include="Domain\IPoolGamblerScoreRepository.fs" />
         <Compile Include="Domain\PoolGamblerBetEntity.fs" />
         <Compile Include="Domain\PoolGamblerBet.fs" />
         <Compile Include="Domain\IPoolGamblerBetRepository.fs" />
         <Compile Include="Domain\PoolGamblerBetMapper.fs" />
+        <Compile Include="Infrastructure\GetGamblerScoresRequestBuilder.fs" />
+        <Compile Include="Infrastructure\GetPoolScoresRequestBuilder.fs" />
+        <Compile Include="Infrastructure\GetPoolGamblerScoreRequestBuilder.fs" />
         <Compile Include="Infrastructure\PoolGamblerScoreDynamoDbRepository.fs" />
         <Compile Include="Infrastructure\PoolGamblerBetDynamoDbRepository.fs" />
         <Compile Include="Application\GetPoolGamblerScoresByGamblerQuery.fs" />

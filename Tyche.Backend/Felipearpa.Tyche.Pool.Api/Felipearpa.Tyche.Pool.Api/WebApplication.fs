@@ -24,17 +24,15 @@ module WebApplication =
             this
                 .MapGet(
                     "/gamblers/{gamblerId}/pools",
-                    Func<_, _, _, _, _>
+                    Func<_, _, _, _>
                         (fun
                             (gamblerId: string)
-                            (searchText: string)
                             (next: string)
                             (getPoolGamblerScoresByGamblerQuery: GetPoolGamblerScoresByGamblerQuery) ->
                             async {
                                 let! page =
                                     getPoolGamblerScoresByGamblerQuery.ExecuteAsync(
                                         gamblerId |> Ulid.newOf,
-                                        searchText |> Option.ofObj,
                                         next |> Option.ofObj
                                     )
 
@@ -50,17 +48,15 @@ module WebApplication =
             this
                 .MapGet(
                     "/pools/{poolId}/gamblers",
-                    Func<_, _, _, _, _>
+                    Func<_, _, _, _>
                         (fun
                             (poolId: string)
-                            (searchText: string)
                             (next: string)
                             (getPoolGamblerScoresByPoolQuery: GetPoolGamblerScoresByPoolQuery) ->
                             async {
                                 let! page =
                                     getPoolGamblerScoresByPoolQuery.ExecuteAsync(
                                         poolId |> Ulid.newOf,
-                                        searchText |> Option.ofObj,
                                         next |> Option.ofObj
                                     )
 

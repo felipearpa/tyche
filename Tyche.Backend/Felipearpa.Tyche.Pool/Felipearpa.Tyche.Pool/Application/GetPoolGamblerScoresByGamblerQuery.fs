@@ -5,5 +5,5 @@ open Felipearpa.Type
 
 type GetPoolGamblerScoresByGamblerQuery(poolGamblerScoreRepository: IPoolGamblerScoreRepository) =
 
-    member this.ExecuteAsync(gamblerId: Ulid, searchText: string option, next: string option) =
-        poolGamblerScoreRepository.GetGamblerScoresAsync(gamblerId, searchText, next)
+    member this.ExecuteAsync(gamblerId: Ulid, next: string option) =
+        poolGamblerScoreRepository.GetGamblerScoresAsync(gamblerId, next)
