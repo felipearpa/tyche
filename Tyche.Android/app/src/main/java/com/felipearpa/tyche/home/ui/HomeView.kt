@@ -25,8 +25,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.felipearpa.tyche.R
 import com.felipearpa.tyche.core.emptyString
+import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
 import com.felipearpa.tyche.ui.theme.TycheTheme
-import com.felipearpa.tyche.ui.theme.boxSpacing
 
 private val titleIconSize = 64.dp
 
@@ -46,7 +46,7 @@ private fun HomeView(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .padding(all = MaterialTheme.boxSpacing.large),
+            .padding(all = LocalBoxSpacing.current.large),
         verticalArrangement = Arrangement.SpaceBetween
     ) {
         HeaderSection()
@@ -60,7 +60,7 @@ private fun HeaderSection() {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(
-            MaterialTheme.boxSpacing.small,
+            LocalBoxSpacing.current.small,
             Alignment.CenterHorizontally
         )
     ) {

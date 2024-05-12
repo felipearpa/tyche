@@ -12,4 +12,9 @@ protocol PoolGamblerScoreRemoteDataSource {
         next: String?,
         searchText: String?
     ) async throws -> CursorPage<PoolGamblerScoreResponse>
+    
+    func getPoolGamblerScore(
+        poolId: String,
+        gamblerId: String
+    ) async throws -> PoolGamblerScoreResponse
 }

@@ -35,11 +35,11 @@ import com.felipearpa.tyche.core.type.Email
 import com.felipearpa.tyche.ui.exception.ExceptionAlertDialog
 import com.felipearpa.tyche.ui.exception.UnknownLocalizedException
 import com.felipearpa.tyche.ui.exception.localizedExceptionOrNull
-import com.felipearpa.tyche.ui.progress.LoadingContainerView
+import com.felipearpa.tyche.ui.loading.LoadingContainerView
 import com.felipearpa.tyche.ui.state.LoadableViewState
 import com.felipearpa.tyche.ui.state.exceptionOrNull
 import com.felipearpa.tyche.ui.state.isLoading
-import com.felipearpa.tyche.ui.theme.boxSpacing
+import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
 import com.felipearpa.tyche.ui.R as SharedR
 
 @Composable
@@ -86,13 +86,13 @@ private fun EmailSignInView(
                     signIn = signIn,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = MaterialTheme.boxSpacing.medium)
+                        .padding(horizontal = LocalBoxSpacing.current.medium)
                 )
 
                 LoadableViewState.Loading -> LoadingContainerView {
                     EmailSignInView(
                         email = email,
-                        modifier = Modifier.padding(horizontal = MaterialTheme.boxSpacing.medium)
+                        modifier = Modifier.padding(horizontal = LocalBoxSpacing.current.medium)
                     )
                 }
 
@@ -100,14 +100,14 @@ private fun EmailSignInView(
                     SuccessContent(
                         modifier = Modifier
                             .fillMaxSize()
-                            .padding(horizontal = MaterialTheme.boxSpacing.medium)
+                            .padding(horizontal = LocalBoxSpacing.current.medium)
                     )
                 }
 
                 is LoadableViewState.Failure -> Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = MaterialTheme.boxSpacing.medium)
+                        .padding(horizontal = LocalBoxSpacing.current.medium)
                 ) {
                     EmailSignInView(
                         email = email,
@@ -147,7 +147,7 @@ private fun EmailSignInView(
 ) {
     Column(
         modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(MaterialTheme.boxSpacing.medium)
+        verticalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.medium)
     ) {
         EmailTextField(
             value = email,
@@ -171,7 +171,7 @@ private fun SuccessContent(modifier: Modifier = Modifier) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(MaterialTheme.boxSpacing.large)
+                verticalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.large)
             ) {
                 Icon(
                     painter = painterResource(id = R.drawable.outgoing_mail),
@@ -182,7 +182,7 @@ private fun SuccessContent(modifier: Modifier = Modifier) {
                 Column(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(MaterialTheme.boxSpacing.medium)
+                    verticalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.medium)
                 ) {
                     Text(
                         text = stringResource(id = R.string.verification_email_sent_title),

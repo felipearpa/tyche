@@ -12,4 +12,9 @@ public protocol PoolGamblerScoreRepository {
         next: String?,
         searchText: String?
     ) async -> Result<CursorPage<PoolGamblerScore>, Error>
+    
+    func getPoolGamblerScore(
+        poolId: String,
+        gamblerId: String
+    ) async -> Result<PoolGamblerScore, Error>
 }

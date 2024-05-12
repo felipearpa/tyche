@@ -11,7 +11,6 @@ import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
@@ -24,8 +23,8 @@ import androidx.paging.compose.itemContentType
 import androidx.paging.compose.itemKey
 import com.felipearpa.tyche.pool.PoolGamblerScoreModel
 import com.felipearpa.tyche.pool.poolGamblerScoreDummyModels
-import com.felipearpa.tyche.ui.lazy.StatefulRefreshableLazyColumn
-import com.felipearpa.tyche.ui.theme.boxSpacing
+import com.felipearpa.tyche.ui.lazy.RefreshableStatefulLazyColumn
+import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
 import kotlinx.coroutines.flow.flowOf
 
 @Composable
@@ -36,7 +35,7 @@ fun PoolScoreList(
     onDetailRequested: (String, String) -> Unit,
     fakeItemCount: Int = 50
 ) {
-    StatefulRefreshableLazyColumn(
+    RefreshableStatefulLazyColumn(
         modifier = modifier,
         lazyItems = lazyPoolGamblerScores,
         state = lazyListState,
@@ -99,8 +98,7 @@ private fun LazyListScope.poolScoreFakeItem() {
 private fun Modifier.poolScoreItem() = composed {
     this
         .fillMaxWidth()
-        .padding(horizontal = MaterialTheme.boxSpacing.medium)
-        .padding(vertical = MaterialTheme.boxSpacing.small)
+        .padding(all = LocalBoxSpacing.current.medium)
 }
 
 @Preview(showBackground = true)

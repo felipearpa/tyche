@@ -18,20 +18,23 @@ import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import com.felipearpa.tyche.ui.disabledGestures
+import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
 
 @Composable
 fun <Value : Any> StatefulLazyColumn(
     modifier: Modifier = Modifier,
     lazyItems: LazyPagingItems<Value>,
     state: LazyListState = rememberLazyListState(),
+    loadingVisibilityDecider: LoadingVisibilityDecider<Value> = AlwaysLoadingVisibilityDecider(),
     loadingContent: @Composable () -> Unit = {},
     itemContent: LazyListScope.() -> Unit
 ) = StatefulLazyColumn(
     modifier = modifier,
     lazyItems = lazyItems,
     state = state,
-    contentPadding = PaddingValues(8.dp),
-    verticalArrangement = Arrangement.spacedBy(8.dp),
+    contentPadding = PaddingValues(LocalBoxSpacing.current.medium),
+    verticalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.medium),
+    loadingVisibilityDecider = loadingVisibilityDecider,
     loadingContent = loadingContent,
     loadingContentOnConcatenate = { contentOnConcatenate() },
     errorContentOnConcatenate = { contentOnConcatenateError(lazyItems = lazyItems) },
@@ -45,7 +48,7 @@ fun LazyListScope.contentOnConcatenate() {
         ProgressIndicator(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(8.dp)
+                .padding(LocalBoxSpacing.current.medium)
         )
     }
 }
@@ -91,6 +94,7 @@ fun <Value : Any> StatefulLazyColumn(
     reverseLayout: Boolean = false,
     verticalArrangement: Arrangement.Vertical =
         if (!reverseLayout) Arrangement.Top else Arrangement.Bottom,
+    loadingVisibilityDecider: LoadingVisibilityDecider<Value> = AlwaysLoadingVisibilityDecider(),
     loadingContent: @Composable () -> Unit = {},
     loadingContentOnConcatenate: (LazyListScope.() -> Unit) = {},
     errorContentOnConcatenate: (LazyListScope.() -> Unit) = {},
@@ -99,38 +103,54 @@ fun <Value : Any> StatefulLazyColumn(
     itemContent: LazyListScope.() -> Unit
 ) {
     if (LocalInspectionMode.current) {
-        StatefulLazyColumn(
-            modifier = modifier.disabledGestures(lazyItems.loadState.refresh is LoadState.Loading),
-            lazyItems = lazyItems,
-            state = state,
-            contentPadding = contentPadding,
-            verticalArrangement = verticalArrangement,
-            loadingContentOnConcatenate = loadingContentOnConcatenate,
-            errorContentOnConcatenate = errorContentOnConcatenate,
-            emptyContent = emptyContent,
+        StatefulLazyColumnForPreview(
+            state,
+            modifier,
+            contentPadding,
+            verticalArrangement,
             itemContent = itemContent
         )
     } else {
-        when (lazyItems.loadState.refresh) {
-            is LoadState.Error -> ErrorContent(
+        when {
+            lazyItems.loadState.refresh is LoadState.Error -> ErrorContent(
                 errorLoadState = lazyItems.loadState.refresh as LoadState.Error,
                 errorContent = errorContent
             )
 
-            is LoadState.Loading -> LoadingContent(loadingContent = loadingContent)
+            loadingVisibilityDecider.shouldShowLoader(lazyPagingItems = lazyItems) ->
+                LoadingContent(loadingContent = loadingContent)
 
-            else -> StatefulLazyColumn(
-                modifier = modifier.disabledGestures(lazyItems.loadState.refresh is LoadState.Loading),
-                lazyItems = lazyItems,
-                state = state,
-                contentPadding = contentPadding,
-                verticalArrangement = verticalArrangement,
-                loadingContentOnConcatenate = loadingContentOnConcatenate,
-                errorContentOnConcatenate = errorContentOnConcatenate,
-                emptyContent = emptyContent,
-                itemContent = itemContent
-            )
+            else ->
+                StatefulLazyColumn(
+                    modifier = modifier.disabledGestures(lazyItems.loadState.refresh is LoadState.Loading),
+                    lazyItems = lazyItems,
+                    state = state,
+                    contentPadding = contentPadding,
+                    verticalArrangement = verticalArrangement,
+                    loadingContentOnConcatenate = loadingContentOnConcatenate,
+                    errorContentOnConcatenate = errorContentOnConcatenate,
+                    emptyContent = emptyContent,
+                    itemContent = itemContent
+                )
         }
+    }
+}
+
+@Composable
+private fun StatefulLazyColumnForPreview(
+    state: LazyListState,
+    modifier: Modifier,
+    contentPadding: PaddingValues,
+    verticalArrangement: Arrangement.Vertical,
+    itemContent: LazyListScope.() -> Unit
+) {
+    LazyColumn(
+        state = state,
+        modifier = modifier,
+        contentPadding = contentPadding,
+        verticalArrangement = verticalArrangement
+    ) {
+        itemContent()
     }
 }
 
@@ -186,11 +206,6 @@ private fun <Value : Any> StatefulLazyColumn(
         }
     }
 }
-
-private fun <Value : Any> LazyPagingItems<Value>.hasItems() = this.itemCount > 0
-
-private fun <Value : Any> LazyPagingItems<Value>.isPendingLoad() =
-    !this.loadState.prepend.endOfPaginationReached || !this.loadState.append.endOfPaginationReached
 
 private fun <Value : Any> LazyListScope.prependContent(
     lazyItems: LazyPagingItems<Value>,

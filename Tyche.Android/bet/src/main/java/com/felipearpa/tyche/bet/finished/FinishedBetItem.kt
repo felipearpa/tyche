@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -23,7 +24,8 @@ import com.felipearpa.tyche.bet.homeTeamMatchRawValue
 import com.felipearpa.tyche.bet.poolGamblerBetDummyModel
 import com.felipearpa.tyche.bet.scoreWidth
 import com.felipearpa.tyche.core.toLocalDateTimeString
-import com.felipearpa.tyche.ui.theme.boxSpacing
+import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
+import com.felipearpa.tyche.ui.theme.TycheTheme
 
 @Composable
 fun FinishedBetItem(
@@ -32,7 +34,7 @@ fun FinishedBetItem(
     poolGamblerBet: PoolGamblerBetModel
 ) {
     Column(
-        verticalArrangement = Arrangement.spacedBy(MaterialTheme.boxSpacing.medium),
+        verticalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.medium),
         modifier = modifier
     ) {
         Row(
@@ -41,7 +43,7 @@ fun FinishedBetItem(
             modifier = Modifier.fillMaxWidth()
         ) {
             Text(text = poolGamblerBet.homeTeamName, modifier = shimmerModifier)
-            Row(horizontalArrangement = Arrangement.spacedBy(MaterialTheme.boxSpacing.medium)) {
+            Row(horizontalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.medium)) {
                 Text(
                     text = poolGamblerBet.homeTeamMatchRawValue(),
                     textAlign = TextAlign.Center,
@@ -62,7 +64,7 @@ fun FinishedBetItem(
             modifier = Modifier.fillMaxWidth()
         ) {
             Text(text = poolGamblerBet.awayTeamName, modifier = shimmerModifier)
-            Row(horizontalArrangement = Arrangement.spacedBy(MaterialTheme.boxSpacing.medium)) {
+            Row(horizontalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.medium)) {
                 Text(
                     text = poolGamblerBet.awayTeamMatchRawValue(),
                     textAlign = TextAlign.Center,
@@ -85,7 +87,7 @@ fun FinishedBetItem(
             Text(
                 text = poolGamblerBet.matchDateTime.toLocalDateTimeString(),
                 style = MaterialTheme.typography.bodySmall,
-                modifier = shimmerModifier
+                modifier = Modifier.padding(start = LocalBoxSpacing.current.large)
             )
             Text(
                 text = poolGamblerBet.score?.toString().orEmpty(),
@@ -96,7 +98,7 @@ fun FinishedBetItem(
     }
 }
 
-fun Modifier.betScoreStyle() = composed {
+private fun Modifier.betScoreStyle() = composed {
     this
         .scoreWidth()
         .clip(CircleShape)
@@ -105,8 +107,8 @@ fun Modifier.betScoreStyle() = composed {
 
 @Preview(showBackground = true)
 @Composable
-fun FinishedBetItemPreview() {
-    MaterialTheme {
+private fun FinishedBetItemPreview() {
+    TycheTheme {
         FinishedBetItem(
             poolGamblerBet = poolGamblerBetDummyModel(),
             modifier = Modifier.fillMaxWidth()

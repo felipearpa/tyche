@@ -32,6 +32,12 @@ public class PoolAssembly : Assembly {
             )
         }
         
+        container.register(GetPoolGamblerScoreUseCase.self) { resolver in
+            GetPoolGamblerScoreUseCase(
+                poolGamblerScoreRepository: resolver.resolve(PoolGamblerScoreRepository.self)!
+            )
+        }
+        
         container.register(PoolStorage.self) { _ in
             PoolStorageInUserDefaults()
         }

@@ -5,18 +5,20 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.felipearpa.tyche.core.emptyString
-import com.felipearpa.tyche.ui.theme.negative
-import com.felipearpa.tyche.ui.theme.neutral
-import com.felipearpa.tyche.ui.theme.positive
+import com.felipearpa.tyche.ui.preview.UIModePreview
+import com.felipearpa.tyche.ui.theme.LocalExtendedColorScheme
+import com.felipearpa.tyche.ui.theme.TycheTheme
 import kotlin.math.abs
+
+private const val ICON_SIZE = 24
 
 @Composable
 private fun StableProgressIndicator(
@@ -26,11 +28,11 @@ private fun StableProgressIndicator(
     Box(modifier = modifier) {
         Icon(
             modifier = shimmerModifier
-                .size(24.dp, 24.dp)
+                .size(width = ICON_SIZE.dp, ICON_SIZE.dp)
                 .testTag("stableProgressIndicator"),
             painter = painterResource(id = R.drawable.ic_horizontal_rule),
             contentDescription = emptyString(),
-            tint = MaterialTheme.colorScheme.neutral
+            tint = LocalExtendedColorScheme.current.steady
         )
     }
 }
@@ -43,15 +45,15 @@ private fun UpProgressIndicator(
 ) {
     Row(modifier = modifier.testTag("upProgressIndicator")) {
         Icon(
-            modifier = shimmerModifier.size(24.dp, 24.dp),
+            modifier = shimmerModifier.size(width = ICON_SIZE.dp, height = ICON_SIZE.dp),
             painter = painterResource(id = R.drawable.ic_arrow_upward),
             contentDescription = emptyString(),
-            tint = MaterialTheme.colorScheme.positive
+            tint = LocalExtendedColorScheme.current.gain
         )
         Text(
             text = abs(progress).toString(),
             style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.positive,
+            color = LocalExtendedColorScheme.current.gain,
             modifier = shimmerModifier
         )
     }
@@ -65,15 +67,15 @@ private fun DownProgressIndicator(
 ) {
     Row(modifier = modifier.testTag("downProgressIndicator")) {
         Icon(
-            modifier = shimmerModifier.size(24.dp, 24.dp),
+            modifier = shimmerModifier.size(width = ICON_SIZE.dp, height = ICON_SIZE.dp),
             painter = painterResource(id = R.drawable.ic_arrow_downward),
             contentDescription = emptyString(),
-            tint = MaterialTheme.colorScheme.negative
+            tint = LocalExtendedColorScheme.current.drop
         )
         Text(
             text = abs(progress).toString(),
             style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.negative,
+            color = LocalExtendedColorScheme.current.drop,
             modifier = shimmerModifier
         )
     }
@@ -102,20 +104,32 @@ fun ProgressIndicator(
     }
 }
 
-@Preview(showBackground = true)
+@UIModePreview
 @Composable
 private fun StableProgressIndicatorPreview() {
-    StableProgressIndicator()
+    TycheTheme {
+        Surface {
+            StableProgressIndicator()
+        }
+    }
 }
 
-@Preview(showBackground = true)
+@UIModePreview
 @Composable
 private fun UpProgressIndicatorPreview() {
-    UpProgressIndicator(progress = 1)
+    TycheTheme {
+        Surface {
+            UpProgressIndicator(progress = 1)
+        }
+    }
 }
 
-@Preview(showBackground = true)
+@UIModePreview
 @Composable
 private fun DownProgressIndicatorPreview() {
-    DownProgressIndicator(progress = 1)
+    TycheTheme {
+        Surface {
+            DownProgressIndicator(progress = 1)
+        }
+    }
 }

@@ -16,13 +16,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.felipearpa.tyche.core.emptyString
 import com.felipearpa.tyche.ui.R
-import com.felipearpa.tyche.ui.theme.boxSpacing
+import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
 
 @Composable
 fun ExceptionView(localizedException: LocalizedException) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(MaterialTheme.boxSpacing.large),
+        verticalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.large),
         modifier = Modifier.fillMaxWidth()
     ) {
         Icon(
@@ -34,7 +34,7 @@ fun ExceptionView(localizedException: LocalizedException) {
 
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(MaterialTheme.boxSpacing.medium),
+            verticalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.medium),
             modifier = Modifier.fillMaxWidth()
         ) {
             Text(

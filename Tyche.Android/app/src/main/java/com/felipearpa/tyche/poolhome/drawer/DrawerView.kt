@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -29,9 +28,9 @@ import com.felipearpa.tyche.ui.exception.ExceptionView
 import com.felipearpa.tyche.ui.exception.LocalizedException
 import com.felipearpa.tyche.ui.exception.UnknownLocalizedException
 import com.felipearpa.tyche.ui.exception.localizedExceptionOrNull
-import com.felipearpa.tyche.ui.progress.LoadingContainerView
+import com.felipearpa.tyche.ui.loading.LoadingContainerView
 import com.felipearpa.tyche.ui.state.LoadableViewState
-import com.felipearpa.tyche.ui.theme.boxSpacing
+import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
 
 @Composable
 fun DrawerView(viewModel: DrawerViewModel, changePool: () -> Unit, onLogout: () -> Unit) {
@@ -70,7 +69,7 @@ private fun DrawerView(
                 currentPoolGamblerScore = viewState(),
                 changePool = changePool,
                 logout = logout,
-                modifier = modifier.padding(all = MaterialTheme.boxSpacing.large)
+                modifier = modifier.padding(all = LocalBoxSpacing.current.large)
             )
     }
 }
@@ -79,7 +78,7 @@ private fun DrawerView(
 private fun FailureContent(modifier: Modifier = Modifier, localizedException: LocalizedException) {
     Box(
         contentAlignment = Alignment.Center,
-        modifier = modifier.padding(all = MaterialTheme.boxSpacing.large)
+        modifier = modifier.padding(all = LocalBoxSpacing.current.large)
     ) {
         ExceptionView(localizedException = localizedException)
     }
@@ -98,18 +97,18 @@ private fun DrawerView(
     ) {
         Column(
             modifier = Modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(MaterialTheme.boxSpacing.medium)
+            verticalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.medium)
         ) {
             PoolSpotlightItem(
                 poolGamblerScore = currentPoolGamblerScore,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = MaterialTheme.boxSpacing.medium)
+                    .padding(horizontal = LocalBoxSpacing.current.medium)
             )
             OutlinedButton(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = MaterialTheme.boxSpacing.medium),
+                    .padding(horizontal = LocalBoxSpacing.current.medium),
                 onClick = changePool
             ) {
                 Text(text = stringResource(id = R.string.change_pool_action))
@@ -120,7 +119,7 @@ private fun DrawerView(
         OutlinedButton(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = MaterialTheme.boxSpacing.medium),
+                .padding(horizontal = LocalBoxSpacing.current.medium),
             onClick = logout
         ) {
             Icon(

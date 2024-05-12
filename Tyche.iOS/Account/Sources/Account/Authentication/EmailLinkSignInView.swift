@@ -50,7 +50,7 @@ private struct EmailLinkSignInStateView: View {
     var body: some View {
         switch viewState {
         case .initial, .loading:
-            ProgressContainerView { EmptyView() }
+            LoadingContainerView { EmptyView() }
         case .success(let accountBundle):
             SuccessContent(start: { onStartRequested(accountBundle) })
                 .padding(boxSpacing.medium)

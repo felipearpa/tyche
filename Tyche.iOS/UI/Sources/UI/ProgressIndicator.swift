@@ -57,8 +57,6 @@ private struct StableProgressIndicator: View {
     }
 }
 
-struct ProgressIndicator_Previews: PreviewProvider {
-    static var previews: some View {
-        ProgressIndicator(difference: 0)
-    }
+#Preview {
+    ProgressIndicator(difference: 0)
 }

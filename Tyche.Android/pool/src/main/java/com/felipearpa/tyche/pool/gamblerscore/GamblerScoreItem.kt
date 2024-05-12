@@ -15,12 +15,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.felipearpa.tyche.pool.PoolGamblerScoreModel
 import com.felipearpa.tyche.pool.difference
 import com.felipearpa.tyche.pool.poolGamblerScoreDummyModel
 import com.felipearpa.tyche.ui.ProgressIndicator
+import com.felipearpa.tyche.ui.preview.UIModePreview
+import com.felipearpa.tyche.ui.theme.TycheTheme
 
 @Composable
 fun GamblerScoreItem(
@@ -87,10 +88,10 @@ fun Position(
     }
 }
 
-@Preview
+@UIModePreview
 @Composable
-fun NonLoggedInGamblerScoreItemPreview() {
-    MaterialTheme {
+private fun NonLoggedInGamblerScoreItemPreview() {
+    TycheTheme {
         Surface {
             GamblerScoreItem(
                 poolGamblerScore = poolGamblerScoreDummyModel(),
@@ -101,10 +102,10 @@ fun NonLoggedInGamblerScoreItemPreview() {
     }
 }
 
-@Preview(showBackground = true)
+@UIModePreview
 @Composable
 fun LoggedInGamblerScoreItemPreview() {
-    MaterialTheme {
+    TycheTheme {
         Surface {
             GamblerScoreItem(
                 poolGamblerScore = PoolGamblerScoreModel(

@@ -51,7 +51,7 @@ private struct EmailSignInStateView: View {
             case .initial:
                 EmailSignInContent(email: $email, signIn: signIn)
             case .loading:
-                ProgressContainerView {
+                LoadingContainerView {
                     EmailSignInContent(email: .constant(email), signIn: {})
                 }
             case .success():

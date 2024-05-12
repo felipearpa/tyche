@@ -1,3 +1,15 @@
+func dummyPoolGamblerScore() -> PoolGamblerScore {
+    PoolGamblerScore(
+        poolId: "A3C2E1",
+        poolName: "Neptune World Series 2023",
+        gamblerId: "YF23H1",
+        gamblerUsername: "neptune-player",
+        currentPosition: 4,
+        beforePosition: 3,
+        score: 8
+    )
+}
+
 func dummyPoolGamblerScores() -> [PoolGamblerScore] {
     return [
         PoolGamblerScore(

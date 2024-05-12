@@ -7,7 +7,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
@@ -20,8 +20,10 @@ import androidx.paging.compose.itemContentType
 import androidx.paging.compose.itemKey
 import com.felipearpa.tyche.pool.PoolGamblerScoreModel
 import com.felipearpa.tyche.pool.poolGamblerScoreDummyModels
-import com.felipearpa.tyche.ui.lazy.StatefulRefreshableLazyColumn
-import com.felipearpa.tyche.ui.theme.boxSpacing
+import com.felipearpa.tyche.ui.lazy.RefreshableStatefulLazyColumn
+import com.felipearpa.tyche.ui.preview.UIModePreview
+import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
+import com.felipearpa.tyche.ui.theme.TycheTheme
 import kotlinx.coroutines.flow.flowOf
 
 @Composable
@@ -31,7 +33,7 @@ fun GamblerScoreList(
     modifier: Modifier = Modifier,
     fakeItemCount: Int = 0
 ) {
-    StatefulRefreshableLazyColumn(
+    RefreshableStatefulLazyColumn(
         modifier = modifier,
         lazyItems = lazyPoolGamblerScores,
         loadingContent = { GamblerScoreFakeList(count = fakeItemCount) },
@@ -83,19 +85,23 @@ private fun LazyListScope.gamblerScoreFakeItem() {
 private fun Modifier.gamblerScoreItem() = composed {
     this
         .fillMaxWidth()
-        .padding(horizontal = MaterialTheme.boxSpacing.medium)
-        .padding(vertical = MaterialTheme.boxSpacing.small)
+        .padding(all = LocalBoxSpacing.current.medium)
 }
 
-@Preview(showBackground = true)
+@UIModePreview
 @Composable
 private fun GamblerScoreListPreview() {
     val items = flowOf(PagingData.from(poolGamblerScoreDummyModels())).collectAsLazyPagingItems()
-    GamblerScoreList(
-        lazyPoolGamblerScores = items,
-        loggedInGamblerId = "X".repeat(15),
-        modifier = Modifier.fillMaxSize()
-    )
+
+    TycheTheme {
+        Surface {
+            GamblerScoreList(
+                lazyPoolGamblerScores = items,
+                loggedInGamblerId = "gambler001",
+                modifier = Modifier.fillMaxSize()
+            )
+        }
+    }
 }
 
 @Preview(showBackground = true)

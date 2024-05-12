@@ -25,15 +25,11 @@ struct PoolScoreItem: View {
     }
 }
 
-struct PoolScoreItem_Previews: PreviewProvider {
-    static var previews: some View {
-        PoolScoreItem(poolGamblerScore: poolGamblerScoreModel())
-    }
+#Preview {
+    PoolScoreItem(poolGamblerScore: poolGamblerScoreModel())
 }
 
-struct PoolScoreFakeItem_Previews: PreviewProvider {
-    static var previews: some View {
-        PoolScoreItem(poolGamblerScore: poolGamblerScoreModel())
-            .shimmer()
-    }
+#Preview {
+    PoolScoreItem(poolGamblerScore: poolGamblerScoreModel())
+        .shimmer()
 }

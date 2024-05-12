@@ -53,9 +53,9 @@ type PoolGamblerBetDynamoDbRepository(keySerializer: IKeySerializer, client: IAm
                     | Some filterText ->
                         ($"{defaultFilterConditionExpression} and contains(#filter, :filter)",
                          defaultAttributeValues
-                         |> Dict.union (dict [ ":filter", AttributeValue(filterText.ToLower()) ])
+                         |> Dictionary.union (dict [ ":filter", AttributeValue(filterText.ToLower()) ])
                          :> IDictionary<_, _>,
-                         defaultAttributeNames |> Dict.union (dict [ "#filter", "filter" ]) :> IDictionary<_, _>)
+                         defaultAttributeNames |> Dictionary.union (dict [ "#filter", "filter" ]) :> IDictionary<_, _>)
 
                 let request =
                     QueryRequest(
@@ -103,9 +103,9 @@ type PoolGamblerBetDynamoDbRepository(keySerializer: IKeySerializer, client: IAm
                     | Some filterText ->
                         ($"{defaultFilterConditionExpression} and contains(#filter, :filter)",
                          defaultAttributeValues
-                         |> Dict.union (dict [ ":filter", AttributeValue(filterText.ToLower()) ])
+                         |> Dictionary.union (dict [ ":filter", AttributeValue(filterText.ToLower()) ])
                          :> IDictionary<_, _>,
-                         defaultAttributeNames |> Dict.union (dict [ "#filter", "filter" ]) :> IDictionary<_, _>)
+                         defaultAttributeNames |> Dictionary.union (dict [ "#filter", "filter" ]) :> IDictionary<_, _>)
 
                 let request =
                     QueryRequest(

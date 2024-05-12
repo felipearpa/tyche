@@ -37,16 +37,16 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.felipearpa.tyche.R
-import com.felipearpa.tyche.bet.PoolGamblerBetListView
+import com.felipearpa.tyche.bet.pending.PendingBetListView
 import com.felipearpa.tyche.bet.finished.FinishedBetListView
 import com.felipearpa.tyche.bet.finished.finishedBetListViewModel
-import com.felipearpa.tyche.bet.poolGamblerBetListViewModel
+import com.felipearpa.tyche.bet.pending.pendingBetListViewModel
 import com.felipearpa.tyche.core.emptyString
-import com.felipearpa.tyche.poolhome.drawer.DrawerView
-import com.felipearpa.tyche.poolhome.drawer.drawerViewModel
 import com.felipearpa.tyche.pool.gamblerscore.GamblerScoreListView
 import com.felipearpa.tyche.pool.gamblerscore.gamblerScoreListViewModel
-import com.felipearpa.tyche.ui.theme.boxSpacing
+import com.felipearpa.tyche.poolhome.drawer.DrawerView
+import com.felipearpa.tyche.poolhome.drawer.drawerViewModel
+import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
 import kotlinx.coroutines.launch
 import com.felipearpa.tyche.ui.R as SharedR
 
@@ -133,8 +133,8 @@ fun PoolHomeView(
                         )
                     )
 
-                    Tab.BET_EDITOR -> PoolGamblerBetListView(
-                        viewModel = poolGamblerBetListViewModel(
+                    Tab.BET_EDITOR -> PendingBetListView(
+                        viewModel = pendingBetListViewModel(
                             poolId = poolId,
                             gamblerId = gamblerId
                         )
@@ -161,7 +161,7 @@ private fun GamblerScoreTab(selected: Boolean, onClick: () -> Unit) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceEvenly,
-            modifier = Modifier.padding(vertical = MaterialTheme.boxSpacing.medium)
+            modifier = Modifier.padding(vertical = LocalBoxSpacing.current.medium)
         ) {
             Icon(
                 painter = painterResource(id = R.drawable.ic_sport_score),
@@ -187,7 +187,7 @@ private fun BetEditorTab(selected: Boolean, onClick: () -> Unit) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceEvenly,
-            modifier = Modifier.padding(vertical = MaterialTheme.boxSpacing.medium)
+            modifier = Modifier.padding(vertical = LocalBoxSpacing.current.medium)
         ) {
             Icon(
                 painter = painterResource(id = R.drawable.ic_money),
@@ -213,7 +213,7 @@ private fun HistoryBetTab(selected: Boolean, onClick: () -> Unit) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceEvenly,
-            modifier = Modifier.padding(vertical = MaterialTheme.boxSpacing.medium)
+            modifier = Modifier.padding(vertical = LocalBoxSpacing.current.medium)
         ) {
             Icon(
                 painter = painterResource(id = R.drawable.history_bets),

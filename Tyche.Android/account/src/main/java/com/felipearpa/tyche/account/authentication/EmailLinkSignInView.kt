@@ -30,10 +30,10 @@ import com.felipearpa.tyche.ui.exception.ExceptionView
 import com.felipearpa.tyche.ui.exception.LocalizedException
 import com.felipearpa.tyche.ui.exception.UnknownLocalizedException
 import com.felipearpa.tyche.ui.exception.localizedExceptionOrNull
-import com.felipearpa.tyche.ui.progress.LoadingContainerView
+import com.felipearpa.tyche.ui.loading.LoadingContainerView
 import com.felipearpa.tyche.ui.state.LoadableViewState
 import com.felipearpa.tyche.ui.state.isInitial
-import com.felipearpa.tyche.ui.theme.boxSpacing
+import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
 
 @Composable
 fun EmailLinkSignInView(
@@ -63,7 +63,7 @@ fun EmailLinkSignInView(
                 localizedException = viewState().localizedExceptionOrNull()!!,
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(horizontal = MaterialTheme.boxSpacing.medium)
+                    .padding(horizontal = LocalBoxSpacing.current.medium)
             )
         }
 
@@ -76,7 +76,7 @@ fun EmailLinkSignInView(
                 start = { onStartRequested(viewState.value) },
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(horizontal = MaterialTheme.boxSpacing.medium)
+                    .padding(horizontal = LocalBoxSpacing.current.medium)
             )
         }
     }
@@ -89,7 +89,7 @@ private fun SuccessContent(start: () -> Unit, modifier: Modifier = Modifier) {
             Column(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(MaterialTheme.boxSpacing.large)
+                verticalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.large)
             ) {
                 Icon(
                     painter = painterResource(id = R.drawable.mark_email_read),
@@ -100,7 +100,7 @@ private fun SuccessContent(start: () -> Unit, modifier: Modifier = Modifier) {
                 Column(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(MaterialTheme.boxSpacing.medium)
+                    verticalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.medium)
                 ) {
                     Text(
                         text = stringResource(id = R.string.account_verified_title),

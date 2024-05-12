@@ -19,7 +19,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import com.felipearpa.tyche.core.type.Email
-import com.felipearpa.tyche.ui.theme.boxSpacing
+import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
 
 private const val EMAIL_MAX_LENGTH = 320
 
@@ -31,7 +31,7 @@ fun EmailTextField(
 ) {
     var isValid by remember { mutableStateOf(value.isInitiallyValidEmail()) }
 
-    Column(verticalArrangement = Arrangement.spacedBy(MaterialTheme.boxSpacing.small)) {
+    Column(verticalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.small)) {
         OutlinedTextField(
             value = value,
             onValueChange = { newValue ->

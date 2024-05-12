@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -17,7 +16,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.felipearpa.tyche.R
 import com.felipearpa.tyche.core.emptyString
-import com.felipearpa.tyche.ui.theme.boxSpacing
+import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
 
 @Composable
 fun DrawerView(viewModel: DrawerViewModel, onLogout: () -> Unit) {
@@ -33,13 +32,13 @@ fun DrawerView(viewModel: DrawerViewModel, onLogout: () -> Unit) {
 @Composable
 private fun DrawerView(modifier: Modifier = Modifier, logout: () -> Unit = {}) {
     Column(
-        modifier = modifier.padding(all = MaterialTheme.boxSpacing.large),
+        modifier = modifier.padding(all = LocalBoxSpacing.current.large),
         verticalArrangement = Arrangement.Bottom
     ) {
         OutlinedButton(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = MaterialTheme.boxSpacing.medium),
+                .padding(horizontal = LocalBoxSpacing.current.medium),
             onClick = logout
         ) {
             Icon(

@@ -28,4 +28,11 @@ public class PoolGamblerScoreFakeRepository: PoolGamblerScoreRepository {
             )
         )
     }
+    
+    public func getPoolGamblerScore(
+        poolId: String,
+        gamblerId: String
+    ) async -> Result<PoolGamblerScore, any Error> {
+        .success(dummyPoolGamblerScore())
+    }
 }

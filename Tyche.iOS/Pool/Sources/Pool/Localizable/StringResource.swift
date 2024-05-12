@@ -13,7 +13,6 @@ struct StringResource {
 
 extension StringResource {
     static let positionLabel = StringResource(name: "position_label", bundle: Bundle.module)
-    
     static let gamblerPoolListTitle = StringResource(name: "gambler_pool_list_title", bundle: Bundle.module)
 }
 

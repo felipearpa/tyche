@@ -76,7 +76,7 @@ fun poolGamblerBetDummyModels() =
             matchScore = TeamScore(2, 2),
             betScore = TeamScore(3, 1),
             score = 25,
-            matchDateTime = LocalDateTime.now(),
+            matchDateTime = LocalDateTime.now().plusDays(1),
             isLocked = true
         )
     )

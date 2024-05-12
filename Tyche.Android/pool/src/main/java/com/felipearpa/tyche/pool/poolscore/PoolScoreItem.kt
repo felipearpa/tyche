@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -18,6 +17,7 @@ import com.felipearpa.tyche.pool.R
 import com.felipearpa.tyche.pool.difference
 import com.felipearpa.tyche.pool.poolGamblerScoreDummyModel
 import com.felipearpa.tyche.ui.ProgressIndicator
+import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
 
 @Composable
 fun PoolScoreItem(
@@ -30,35 +30,33 @@ fun PoolScoreItem(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Column {
+        Column(verticalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.small)) {
             Text(text = poolGamblerScore.poolName, modifier = shimmerModifier)
-            poolGamblerScore.currentPosition?.let { nonNullCurrentPosition ->
+            poolGamblerScore.currentPosition?.let {
                 Text(
-                    text = stringResource(R.string.position_label, nonNullCurrentPosition),
+                    text = stringResource(R.string.position_label, it),
                     modifier = shimmerModifier,
                     style = MaterialTheme.typography.labelSmall
                 )
             }
         }
 
-        poolGamblerScore.difference()?.let { nonNullDifference ->
+        poolGamblerScore.difference()?.let {
             Box {
                 ProgressIndicator(
                     shimmerModifier = shimmerModifier,
-                    difference = nonNullDifference
+                    difference = it
                 )
             }
         }
     }
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
-fun PoolScoreItemPreview() {
-    Surface {
-        PoolScoreItem(
-            poolGamblerScore = poolGamblerScoreDummyModel(),
-            modifier = Modifier.fillMaxWidth()
-        )
-    }
+private fun PoolScoreItemPreview() {
+    PoolScoreItem(
+        poolGamblerScore = poolGamblerScoreDummyModel(),
+        modifier = Modifier.fillMaxWidth()
+    )
 }

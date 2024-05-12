@@ -13,16 +13,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
-import com.felipearpa.tyche.bet.PoolGamblerBetFakeItem
 import com.felipearpa.tyche.bet.PoolGamblerBetModel
+import com.felipearpa.tyche.bet.pending.PendingBetFakeItem
 import com.felipearpa.tyche.bet.poolGamblerBetDummyModels
 import com.felipearpa.tyche.core.toLocalDateString
-import com.felipearpa.tyche.ui.lazy.StatefulRefreshableLazyColumn
-import com.felipearpa.tyche.ui.theme.boxSpacing
+import com.felipearpa.tyche.ui.lazy.RefreshableStatefulLazyColumn
+import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
+import com.felipearpa.tyche.ui.theme.TycheTheme
 import kotlinx.coroutines.flow.flowOf
 import java.time.LocalDate
 
@@ -33,37 +33,45 @@ fun FinishedBetList(
     modifier: Modifier = Modifier,
     fakeItemCount: Int = 0
 ) {
-    val poolGamblerBetsCount = lazyPoolGamblerBets.itemCount
-
-    StatefulRefreshableLazyColumn(
+    RefreshableStatefulLazyColumn(
         modifier = modifier,
         lazyItems = lazyPoolGamblerBets,
         loadingContent = { FinishedPoolGamblerBetFakeList(count = fakeItemCount) },
         loadingContentOnConcatenate = { finishedPoolGamblerBetFakeItem() }
     ) {
+        val poolGamblerBetsCount = lazyPoolGamblerBets.itemCount
         var lastMatchDate: LocalDate? = null
 
         repeat(poolGamblerBetsCount) { index ->
             val poolGamblerBet = lazyPoolGamblerBets[index]!!
             if (lastMatchDate != poolGamblerBet.matchDateTime.toLocalDate()) {
-                stickyHeader {
+                val localDateString = poolGamblerBet.matchDateTime.toLocalDateString()
+                stickyHeader(
+                    key = localDateString,
+                    contentType = "Header"
+                ) {
                     Text(
-                        text = poolGamblerBet.matchDateTime.toLocalDateString(),
+                        text = localDateString,
                         style = MaterialTheme.typography.titleMedium,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = MaterialTheme.boxSpacing.small)
+                        modifier = Modifier.finishedHeaderBetItem()
                     )
                 }
                 lastMatchDate = poolGamblerBet.matchDateTime.toLocalDate()
             }
 
-            item {
+            item(
+                key = Triple(
+                    poolGamblerBet.poolId,
+                    poolGamblerBet.gamblerId,
+                    poolGamblerBet.matchId
+                ),
+                contentType = "PoolGamblerBet"
+            ) {
                 FinishedBetItem(
                     poolGamblerBet = poolGamblerBet,
-                    modifier = Modifier.finishedPoolGamblerBetItem()
+                    modifier = Modifier.finishedBetItem()
                 )
-                HorizontalDivider()
+                HorizontalDivider(modifier = Modifier.padding(horizontal = LocalBoxSpacing.current.large))
             }
         }
     }
@@ -71,8 +79,8 @@ fun FinishedBetList(
 
 private fun LazyListScope.finishedPoolGamblerBetFakeItem() {
     item {
-        PoolGamblerBetFakeItem(modifier = Modifier.fillMaxWidth())
-        HorizontalDivider(modifier = Modifier.padding(top = 8.dp))
+        PendingBetFakeItem(modifier = Modifier.fillMaxWidth())
+        HorizontalDivider(modifier = Modifier.padding(horizontal = LocalBoxSpacing.current.large))
     }
 }
 
@@ -81,29 +89,37 @@ private fun FinishedPoolGamblerBetFakeList(count: Int) {
     LazyColumn(modifier = Modifier.fillMaxSize()) {
         repeat(count) {
             item {
-                PoolGamblerBetFakeItem(modifier = Modifier.finishedPoolGamblerBetItem())
-                HorizontalDivider()
+                PendingBetFakeItem(modifier = Modifier.finishedBetItem())
+                HorizontalDivider(modifier = Modifier.padding(horizontal = LocalBoxSpacing.current.large))
             }
         }
     }
 }
 
-private fun Modifier.finishedPoolGamblerBetItem() = composed {
+private fun Modifier.finishedBetItem() = composed {
     this
         .fillMaxWidth()
-        .padding(horizontal = MaterialTheme.boxSpacing.medium)
-        .padding(vertical = MaterialTheme.boxSpacing.small)
+        .padding(all = LocalBoxSpacing.current.large)
+}
+
+private fun Modifier.finishedHeaderBetItem() = composed {
+    this
+        .fillMaxWidth()
+        .padding(horizontal = LocalBoxSpacing.current.medium)
+        .padding(top = LocalBoxSpacing.current.medium)
 }
 
 @Preview(showBackground = true)
 @Composable
 private fun FinishedBetListPreview() {
     val items = flowOf(PagingData.from(poolGamblerBetDummyModels())).collectAsLazyPagingItems()
-    FinishedBetList(lazyPoolGamblerBets = items)
+    TycheTheme {
+        FinishedBetList(lazyPoolGamblerBets = items)
+    }
 }
 
 @Preview(showBackground = true)
 @Composable
 private fun FinishedBetFakeListPreview() {
-    FinishedPoolGamblerBetFakeList(count = 10)
+    FinishedPoolGamblerBetFakeList(count = 50)
 }

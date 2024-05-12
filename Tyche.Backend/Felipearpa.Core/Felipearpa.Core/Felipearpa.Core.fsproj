@@ -11,7 +11,7 @@
         <Compile Include="Json\JsonSerializer.fs" />
         <Compile Include="Exception.fs" />
         <Compile Include="FuncAs.fs" />
-        <Compile Include="Dict.fs" />
+        <Compile Include="Dictionary.fs" />
         <Compile Include="Jwt\JwtSetting.fs" />
         <Compile Include="Jwt\JwtGenerator.fs" />
     </ItemGroup>

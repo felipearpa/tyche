@@ -48,7 +48,7 @@ fun poolGamblerScoreDummyModels() =
             gamblerId = "gambler003",
             gamblerUsername = "LuckyStrike",
             currentPosition = 2,
-            beforePosition = 3,
+            beforePosition = 2,
             score = 142
         )
     )

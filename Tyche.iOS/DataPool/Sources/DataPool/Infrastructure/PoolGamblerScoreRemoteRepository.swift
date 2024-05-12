@@ -46,4 +46,17 @@ class PoolGamblerScoreRemoteRepository : PoolGamblerScoreRepository {
             }
         }
     }
+    
+    func getPoolGamblerScore(
+        poolId: String,
+        gamblerId: String
+    ) async -> Result<PoolGamblerScore, Error> {
+        return await networkErrorHandler.handle {
+            let poolGamblerScoreResponse = try await poolGamblerScoreRemoteDataSource.getPoolGamblerScore(
+                poolId: poolId,
+                gamblerId: gamblerId
+            )
+            return poolGamblerScoreResponse.toPoolGamblerScore()
+        }
+    }
 }

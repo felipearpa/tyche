@@ -7,7 +7,7 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.felipearpa.data.bet.application.GetFinishedPoolGamblerBetsUseCase
-import com.felipearpa.tyche.bet.PoolGamblerBetPagingSource
+import com.felipearpa.tyche.bet.pending.PendingBetPagingSource
 import com.felipearpa.tyche.core.emptyString
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
@@ -47,7 +47,7 @@ class FinishedBetListViewModel @AssistedInject constructor(
                 enablePlaceholders = true
             ),
             pagingSourceFactory = {
-                PoolGamblerBetPagingSource(
+                PendingBetPagingSource(
                     pagingQuery = { next ->
                         getFinishedBetsPagingQuery(
                             next = next,
