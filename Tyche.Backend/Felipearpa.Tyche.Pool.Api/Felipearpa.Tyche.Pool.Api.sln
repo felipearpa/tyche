@@ -2,7 +2,7 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Felipearpa.Tyche.Pool.Api", "Felipearpa.Tyche.Pool.Api\Felipearpa.Tyche.Pool.Api.fsproj", "{4ED3ED33-38BD-44A9-9A84-071172BAFB8C}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Pippel.Type", "..\Felipearpa.Type\Felipearpa.Type\Felipearpa.Type.fsproj", "{166B046E-568A-477A-AC12-BAFF038236DF}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Felipearpa.Type", "..\Felipearpa.Type\Felipearpa.Type\Felipearpa.Type.fsproj", "{166B046E-568A-477A-AC12-BAFF038236DF}"
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Felipearpa.Type.Test", "..\Felipearpa.Type\Felipearpa.Type.Test\Felipearpa.Type.Test.fsproj", "{54A0C9ED-C80F-4E3F-BAA2-5424C8C4E66A}"
 EndProject

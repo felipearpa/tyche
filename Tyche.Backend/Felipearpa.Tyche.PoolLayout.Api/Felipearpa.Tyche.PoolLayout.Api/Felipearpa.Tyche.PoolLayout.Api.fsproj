@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Compile Include="ViewModel\PoolLayoutViewModel.fs" />
+        <Compile Include="ViewModel\PoolLayoutTransformer.fs" />
+        <Compile Include="WebApplication.fs" />
+        <Compile Include="WebApplicationBuilder.fs" />
+        <Compile Include="Program.fs" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Include=".dockerignore" />
+      <Content Include="Dockerfile" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\Felipearpa.Crypto\Felipearpa.Crypto\Felipearpa.Crypto.fsproj" />
+      <ProjectReference Include="..\..\Felipearpa.Tyche.PoolLayout\Felipearpa.Tyche.PoolLayout\Felipearpa.Tyche.PoolLayout.fsproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="AWSSDK.Extensions.NETCore.Setup" Version="3.7.301" />
+      <PackageReference Update="FSharp.Core" Version="8.0.100" />
+    </ItemGroup>
+
+</Project>
