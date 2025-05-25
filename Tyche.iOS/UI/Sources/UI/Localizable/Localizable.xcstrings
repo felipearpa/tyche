@@ -41,9 +41,6 @@
         }
       }
     },
-    "Drawer Content" : {
-
-    },
     "edit_action" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -162,9 +159,6 @@
           }
         }
       }
-    },
-    "Show drawer" : {
-
     },
     "unknown_failure_description" : {
       "extractionState" : "manual",

@@ -112,13 +112,13 @@ fun <Value : Any> StatefulLazyColumn(
         )
     } else {
         when {
+            loadingVisibilityDecider.shouldShowLoader(lazyPagingItems = lazyItems) ->
+                LoadingContent(loadingContent = loadingContent)
+
             lazyItems.loadState.refresh is LoadState.Error -> ErrorContent(
                 errorLoadState = lazyItems.loadState.refresh as LoadState.Error,
                 errorContent = errorContent
             )
-
-            loadingVisibilityDecider.shouldShowLoader(lazyPagingItems = lazyItems) ->
-                LoadingContent(loadingContent = loadingContent)
 
             else ->
                 StatefulLazyColumn(

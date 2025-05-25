@@ -9,9 +9,9 @@ import com.felipearpa.tyche.bet.PoolGamblerBetModel
 import com.felipearpa.tyche.bet.toPoolGamblerBetModel
 import com.felipearpa.tyche.core.type.BetScore
 import com.felipearpa.tyche.core.type.TeamScore
-import com.felipearpa.tyche.ui.exception.orLocalizedException
-import com.felipearpa.tyche.ui.state.EditableViewState
-import com.felipearpa.tyche.ui.state.currentValue
+import com.felipearpa.tyche.ui.exception.orDefaultLocalized
+import com.felipearpa.ui.state.EditableViewState
+import com.felipearpa.ui.state.relevantValue
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -45,7 +45,7 @@ class PendingBetItemViewModel @AssistedInject constructor(
     fun bet(betScore: TeamScore<Int>) {
         viewModelScope.launch {
             val (currentPoolGamblerBet, targetPoolGamblerBet) = _state.updateAndGet { currentState ->
-                val currentPoolGamblerBet = currentState.currentValue()
+                val currentPoolGamblerBet = currentState.relevantValue()
                 val targetPoolGamblerBet = currentPoolGamblerBet.copy(betScore = betScore)
                 EditableViewState.Loading(
                     current = currentPoolGamblerBet,
@@ -79,7 +79,7 @@ class PendingBetItemViewModel @AssistedInject constructor(
                                 failed = targetPoolGamblerBet,
                                 exception = exception
                                     .toBetLocalizedExceptionOnMatch()
-                                    .orLocalizedException()
+                                    .orDefaultLocalized()
                             )
                         )
                     }
@@ -89,7 +89,7 @@ class PendingBetItemViewModel @AssistedInject constructor(
 
     fun reset() {
         _state.update { currentState ->
-            val poolGamblerBet = currentState.currentValue()
+            val poolGamblerBet = currentState.relevantValue()
             EditableViewState.Initial(
                 poolGamblerBet.copy(
                     instanceId = UUID.randomUUID().toString()

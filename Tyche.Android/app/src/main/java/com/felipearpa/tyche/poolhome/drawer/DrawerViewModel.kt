@@ -6,8 +6,8 @@ import com.felipearpa.data.pool.application.GetPoolGamblerScoreUseCase
 import com.felipearpa.tyche.pool.PoolGamblerScoreModel
 import com.felipearpa.tyche.pool.toPoolGamblerScoreModel
 import com.felipearpa.tyche.session.authentication.application.LogOutUseCase
-import com.felipearpa.tyche.ui.exception.orLocalizedException
-import com.felipearpa.tyche.ui.state.LoadableViewState
+import com.felipearpa.tyche.ui.exception.orDefaultLocalized
+import com.felipearpa.ui.state.LoadableViewState
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -33,7 +33,7 @@ class DrawerViewModel @AssistedInject constructor(
             poolResult.onSuccess { poolGamblerScore ->
                 _state.emit(LoadableViewState.Success(poolGamblerScore.toPoolGamblerScoreModel()))
             }.onFailure { exception ->
-                _state.emit(LoadableViewState.Failure(exception.orLocalizedException()))
+                _state.emit(LoadableViewState.Failure(exception.orDefaultLocalized()))
             }
         }
     }

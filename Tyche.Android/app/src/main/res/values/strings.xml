@@ -2,11 +2,12 @@
     <string name="app_name">Tyche</string>
     <string name="create_account_action">Create account</string>
     <string name="account_exists_text">Do you have an account already?</string>
-    <string name="sign_in_with_email_action">Sign in with email</string>
+    <string name="sign_in_with_email_action">Continue with email</string>
     <string name="log_out_action">Log out</string>
     <string name="play_pool_text">See who\'s has hit more scores and get over one right now</string>
     <string name="score_tab">Scores</string>
     <string name="bet_tab">Bets</string>
     <string name="history_bets_tab">History</string>
     <string name="change_pool_action">Change pool</string>
+    <string name="sign_in_with_email_and_password">Email and password</string>
 </resources>

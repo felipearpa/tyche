@@ -11,7 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="AWSSDK.DynamoDBv2" Version="3.7.404.11" />
+    <PackageReference Include="AWSSDK.DynamoDBv2" Version="4.0.0.3" />
     <PackageReference Update="FSharp.Core" Version="8.0.100" />
   </ItemGroup>
 

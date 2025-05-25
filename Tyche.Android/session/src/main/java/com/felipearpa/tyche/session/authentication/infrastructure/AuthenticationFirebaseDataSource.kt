@@ -21,6 +21,14 @@ internal class AuthenticationFirebaseDataSource(private val firebaseAuth: Fireba
         return authResult.user!!.uid
     }
 
+    override suspend fun signInWithEmailAndPassword(
+        email: String,
+        password: String
+    ): ExternalAccountId {
+        val authResult = firebaseAuth.signInWithEmailAndPassword(email, password).await()
+        return authResult.user!!.uid
+    }
+
     override suspend fun isSignInWithEmailLink(emailLink: String): Boolean =
         firebaseAuth.isSignInWithEmailLink(emailLink)
 

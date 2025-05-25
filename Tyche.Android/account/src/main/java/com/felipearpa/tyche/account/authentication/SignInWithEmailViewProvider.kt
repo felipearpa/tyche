@@ -7,7 +7,7 @@ fun NavGraphBuilder.emailSignInView(onBackRequested: () -> Unit) {
     composable(route = EmailSignInRoute.route) {
         EmailSignInView(
             viewModel = emailSignInViewModel(),
-            onBackRequested = onBackRequested
+            onBack = onBackRequested
         )
     }
 }

@@ -12,10 +12,15 @@ import androidx.paging.compose.LazyPagingItems
 class FirstTimeLoadingVisibilityDecider<Value : Any> : LoadingVisibilityDecider<Value> {
     @Composable
     override fun shouldShowLoader(lazyPagingItems: LazyPagingItems<Value>): Boolean {
+        var hasShownLoading by remember { mutableStateOf(false) }
         var isContentLoaded by remember { mutableStateOf(false) }
 
         LaunchedEffect(lazyPagingItems.loadState.refresh) {
-            if (lazyPagingItems.loadState.refresh is LoadState.NotLoading || lazyPagingItems.loadState.refresh is LoadState.Error) {
+            if (lazyPagingItems.loadState.refresh is LoadState.Loading) {
+                hasShownLoading = true
+            }
+
+            if (hasShownLoading && lazyPagingItems.loadState.refresh is LoadState.NotLoading) {
                 isContentLoaded = true
             }
         }

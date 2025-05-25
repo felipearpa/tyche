@@ -16,6 +16,7 @@ import com.felipearpa.tyche.poolhome.poolHomeNavView
 import com.felipearpa.tyche.poolscore.poolScoreListNavView
 import com.felipearpa.tyche.session.AccountBundle
 import com.felipearpa.tyche.session.AccountStorage
+import com.felipearpa.tyche.signin.signInWithEmailAndPasswordNavView
 import com.felipearpa.tyche.signin.signInWithEmailLinkNavView
 import com.felipearpa.tyche.signin.signInWithEmailNavView
 import com.felipearpa.tyche.ui.theme.TycheTheme
@@ -65,6 +66,11 @@ fun Outlet(accountBundle: AccountBundle?, intentData: String?) {
             navController = navController,
             initialRoute = initialRoute,
             emailLink = intentData ?: emptyString()
+        )
+
+        signInWithEmailAndPasswordNavView(
+            navController = navController,
+            initialRoute = initialRoute
         )
 
         poolScoreListNavView(

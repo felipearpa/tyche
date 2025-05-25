@@ -29,11 +29,11 @@ import com.felipearpa.tyche.session.emptyAccountBundle
 import com.felipearpa.tyche.ui.exception.ExceptionView
 import com.felipearpa.tyche.ui.exception.LocalizedException
 import com.felipearpa.tyche.ui.exception.UnknownLocalizedException
-import com.felipearpa.tyche.ui.exception.localizedExceptionOrNull
+import com.felipearpa.tyche.ui.exception.localizedOrNull
 import com.felipearpa.tyche.ui.loading.LoadingContainerView
-import com.felipearpa.tyche.ui.state.LoadableViewState
-import com.felipearpa.tyche.ui.state.isInitial
 import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
+import com.felipearpa.ui.state.LoadableViewState
+import com.felipearpa.ui.state.isInitial
 
 @Composable
 fun EmailLinkSignInView(
@@ -60,7 +60,7 @@ fun EmailLinkSignInView(
     when (viewState) {
         is LoadableViewState.Failure -> {
             FailureContent(
-                localizedException = viewState().localizedExceptionOrNull()!!,
+                localizedException = viewState().localizedOrNull()!!,
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(horizontal = LocalBoxSpacing.current.medium)
@@ -71,14 +71,13 @@ fun EmailLinkSignInView(
             LoadingContainerView {}
         }
 
-        is LoadableViewState.Success -> {
+        is LoadableViewState.Success ->
             SuccessContent(
                 start = { onStartRequested(viewState.value) },
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(horizontal = LocalBoxSpacing.current.medium)
             )
-        }
     }
 }
 

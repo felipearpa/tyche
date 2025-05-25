@@ -9,4 +9,5 @@
     <string name="bet_tab">Apuestas</string>
     <string name="history_bets_tab">Historia</string>
     <string name="change_pool_action">Cambiar polla</string>
+    <string name="sign_in_with_email_and_password">Correo electrónico y contraseña</string>
 </resources>

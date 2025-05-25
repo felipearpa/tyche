@@ -27,10 +27,10 @@ import com.felipearpa.tyche.pool.poolscore.spotlight.PoolSpotlightItem
 import com.felipearpa.tyche.ui.exception.ExceptionView
 import com.felipearpa.tyche.ui.exception.LocalizedException
 import com.felipearpa.tyche.ui.exception.UnknownLocalizedException
-import com.felipearpa.tyche.ui.exception.localizedExceptionOrNull
+import com.felipearpa.tyche.ui.exception.localizedOrNull
 import com.felipearpa.tyche.ui.loading.LoadingContainerView
-import com.felipearpa.tyche.ui.state.LoadableViewState
 import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
+import com.felipearpa.ui.state.LoadableViewState
 
 @Composable
 fun DrawerView(viewModel: DrawerViewModel, changePool: () -> Unit, onLogout: () -> Unit) {
@@ -57,7 +57,7 @@ private fun DrawerView(
     when (viewState) {
         is LoadableViewState.Failure ->
             FailureContent(
-                localizedException = viewState().localizedExceptionOrNull()!!,
+                localizedException = viewState().localizedOrNull()!!,
                 modifier = modifier
             )
 

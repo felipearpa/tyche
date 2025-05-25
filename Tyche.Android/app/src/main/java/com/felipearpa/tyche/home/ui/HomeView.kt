@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -31,16 +32,18 @@ import com.felipearpa.tyche.ui.theme.TycheTheme
 private val titleIconSize = 64.dp
 
 @Composable
-fun HomeView(onSignInRequested: () -> Unit) {
+fun HomeView(onSignInWithEmail: () -> Unit, onSignInWithEmailAndPassword: () -> Unit) {
     HomeView(
-        onSignInRequested = onSignInRequested,
-        modifier = Modifier.padding(all = 8.dp)
+        onSignInWithEmail = onSignInWithEmail,
+        onSignInWithEmailAndPassword = onSignInWithEmailAndPassword,
+        modifier = Modifier.padding(all = LocalBoxSpacing.current.medium)
     )
 }
 
 @Composable
 private fun HomeView(
-    onSignInRequested: () -> Unit,
+    onSignInWithEmail: () -> Unit,
+    onSignInWithEmailAndPassword: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -51,7 +54,10 @@ private fun HomeView(
     ) {
         HeaderSection()
         InformationSection()
-        SignInSection(onLoginRequested = onSignInRequested)
+        SignInSection(
+            onSignInWithEmail = onSignInWithEmail,
+            onSignInWithEmailAndPassword = onSignInWithEmailAndPassword
+        )
     }
 }
 
@@ -92,12 +98,24 @@ private fun InformationSection() {
 }
 
 @Composable
-private fun SignInSection(onLoginRequested: () -> Unit) {
-    Button(
-        onClick = onLoginRequested,
-        modifier = Modifier.fillMaxWidth()
+private fun SignInSection(onSignInWithEmail: () -> Unit, onSignInWithEmailAndPassword: () -> Unit) {
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.small)
     ) {
-        Text(text = stringResource(id = R.string.sign_in_with_email_action))
+        Button(
+            onClick = onSignInWithEmail,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text(text = stringResource(id = R.string.sign_in_with_email_action))
+        }
+
+        OutlinedButton(
+            onClick = onSignInWithEmailAndPassword,
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            Text(text = stringResource(id = R.string.sign_in_with_email_and_password))
+        }
     }
 }
 
@@ -108,7 +126,8 @@ fun HomeViewPreview() {
         Surface {
             HomeView(
                 modifier = Modifier.padding(all = 8.dp),
-                onSignInRequested = {}
+                onSignInWithEmail = {},
+                onSignInWithEmailAndPassword = {}
             )
         }
     }
@@ -121,7 +140,8 @@ fun HomeViewDarkPreview() {
         Surface {
             HomeView(
                 modifier = Modifier.padding(all = 8.dp),
-                onSignInRequested = {}
+                onSignInWithEmail = {},
+                onSignInWithEmailAndPassword = {}
             )
         }
     }

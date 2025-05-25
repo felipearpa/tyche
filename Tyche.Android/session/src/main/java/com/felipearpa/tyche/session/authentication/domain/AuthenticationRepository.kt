@@ -4,7 +4,14 @@ import com.felipearpa.tyche.session.AccountBundle
 
 interface AuthenticationRepository {
     suspend fun sendSignInLinkToEmail(email: String): Result<Unit>
+
     suspend fun signInWithEmailLink(email: String, emailLink: String): Result<ExternalAccountId>
+
+    suspend fun signInWithEmailAndPassword(
+        email: String,
+        password: String
+    ): Result<ExternalAccountId>
+
     suspend fun logout(): Result<Unit>
 
     suspend fun linkAccount(accountLink: AccountLink): Result<AccountBundle>

@@ -73,14 +73,17 @@ type PoolGamblerBetDynamoDbRepository(keySerializer: IKeySerializer, client: IAm
 
                 let! response = client.QueryAsync(request) |> Async.AwaitTask
 
-                let lastEvaluatedKey = response.LastEvaluatedKey
+                let maybeLastEvaluatedKey = response.LastEvaluatedKey |> Option.ofObj
 
                 return
                     { CursorPage.Items = response.Items.Select(map >> PoolGamblerBetMapper.mapToDomain)
                       Next =
-                        match lastEvaluatedKey.Count with
-                        | 0 -> None
-                        | _ -> keySerializer.Serialize(lastEvaluatedKey) |> Some }
+                        match maybeLastEvaluatedKey with
+                        | Some lastEvaluatedKey ->
+                            match lastEvaluatedKey.Count with
+                            | 0 -> None
+                            | _ -> keySerializer.Serialize(lastEvaluatedKey) |> Some
+                        | None -> None }
             }
 
         member this.GetFinishedPoolGamblerBets(poolId, gamblerId, maybeSearchText, maybeNext) =
@@ -123,14 +126,17 @@ type PoolGamblerBetDynamoDbRepository(keySerializer: IKeySerializer, client: IAm
 
                 let! response = client.QueryAsync(request) |> Async.AwaitTask
 
-                let lastEvaluatedKey = response.LastEvaluatedKey
+                let maybeLastEvaluatedKey = response.LastEvaluatedKey |> Option.ofObj
 
                 return
                     { CursorPage.Items = response.Items.Select(map >> PoolGamblerBetMapper.mapToDomain)
                       Next =
-                        match lastEvaluatedKey.Count with
-                        | 0 -> None
-                        | _ -> keySerializer.Serialize(lastEvaluatedKey) |> Some }
+                        match maybeLastEvaluatedKey with
+                        | Some lastEvaluatedKey ->
+                            match lastEvaluatedKey.Count with
+                            | 0 -> None
+                            | _ -> keySerializer.Serialize(lastEvaluatedKey) |> Some
+                        | None -> None }
             }
 
         member this.BetAsync(poolId, gamblerId, matchId, betScore) =

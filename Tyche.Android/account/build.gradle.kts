@@ -1,10 +1,10 @@
-val composeCompilerVersion: String by rootProject.extra
 val projectCompileSdk: String by project
 val projectMinSdk: String by project
 
 plugins {
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.jetbrainsKotlinAndroid)
+    alias(libs.plugins.composeCompiler)
     alias(libs.plugins.jetbrainsKotlinKapt)
     alias(libs.plugins.googleDaggerHiltAndroid)
 }
@@ -30,12 +30,6 @@ android {
     kotlinOptions {
         jvmTarget = "17"
     }
-    buildFeatures {
-        compose = true
-    }
-    composeOptions {
-        kotlinCompilerExtensionVersion = composeCompilerVersion
-    }
     packaging {
         jniLibs {
             excludes.add("META-INF/*")
@@ -59,6 +53,7 @@ dependencies {
     implementation(libs.dagger.hilt.android)
     implementation(libs.google.accompanist.placeholder)
     implementation(libs.androidx.security.crypto)
+    implementation(libs.felipearpa.viewing.state)
 
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)

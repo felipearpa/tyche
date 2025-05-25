@@ -1,10 +1,10 @@
-val composeCompilerVersion: String by rootProject.extra
 val projectCompileSdk: String by project
 val projectMinSdk: String by project
 
 plugins {
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.jetbrainsKotlinAndroid)
+    alias(libs.plugins.composeCompiler)
 }
 
 android {
@@ -32,12 +32,6 @@ android {
         unitTests.all { test ->
             test.useJUnitPlatform()
         }
-    }
-    buildFeatures {
-        compose = true
-    }
-    composeOptions {
-        kotlinCompilerExtensionVersion = composeCompilerVersion
     }
     packaging {
         jniLibs {
@@ -75,12 +69,12 @@ dependencies {
 
     testImplementation(platform(libs.junit5.bom))
     testImplementation(libs.junit5.jupiter)
-    testRuntimeOnly(libs.bundles.junit5.runtime)
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.io.mockk)
     testImplementation(libs.kotest.runner)
     testImplementation(libs.kotest.assertions.core)
     testImplementation(libs.kotest.property)
+    testRuntimeOnly(libs.bundles.junit5.runtime)
 
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.espresso.core)

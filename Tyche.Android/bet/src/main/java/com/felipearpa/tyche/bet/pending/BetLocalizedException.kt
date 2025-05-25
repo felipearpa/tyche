@@ -7,21 +7,16 @@ import com.felipearpa.tyche.bet.R
 import com.felipearpa.tyche.ui.exception.LocalizedException
 
 sealed class BetLocalizedException : LocalizedException() {
-    data object Forbidden : BetLocalizedException()
+    data object Forbidden :
+        BetLocalizedException() {
+        override val errorDescription: String
+            @Composable get() =
+                stringResource(id = R.string.forbidden_bet_title)
 
-    override val errorDescription: String?
-        @Composable get() =
-            when (this) {
-                Forbidden ->
-                    stringResource(id = R.string.forbidden_bet_title)
-            }
-
-    override val failureReason: String?
-        @Composable get() =
-            when (this) {
-                Forbidden ->
-                    stringResource(id = R.string.forbidden_bet_message)
-            }
+        override val failureReason: String
+            @Composable get() =
+                stringResource(id = R.string.forbidden_bet_message)
+    }
 }
 
 fun Throwable.toBetLocalizedExceptionOnMatch() =

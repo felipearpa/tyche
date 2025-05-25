@@ -3,8 +3,14 @@ package com.felipearpa.tyche.home.ui
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 
-fun NavGraphBuilder.homeView(onLoginRequested: () -> Unit) {
+fun NavGraphBuilder.homeView(
+    onSignInWithEmail: () -> Unit,
+    onSignInWithEmailAndPassword: () -> Unit
+) {
     composable(route = HomeRoute.route) {
-        HomeView(onSignInRequested = onLoginRequested)
+        HomeView(
+            onSignInWithEmail = onSignInWithEmail,
+            onSignInWithEmailAndPassword = onSignInWithEmailAndPassword
+        )
     }
 }

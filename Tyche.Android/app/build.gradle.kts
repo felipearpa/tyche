@@ -1,13 +1,11 @@
-val composeCompilerVersion: String by rootProject.extra
-
 val projectCompileSdk: String by project
 val projectMinSdk: String by project
-
 val urlBasePath: String by project
 
 plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsKotlinAndroid)
+    alias(libs.plugins.composeCompiler)
     alias(libs.plugins.googleGmsServices)
     alias(libs.plugins.jetbrainsKotlinKapt)
     alias(libs.plugins.googleDaggerHiltAndroid)
@@ -46,11 +44,7 @@ android {
         jvmTarget = "17"
     }
     buildFeatures {
-        compose = true
         buildConfig = true
-    }
-    composeOptions {
-        kotlinCompilerExtensionVersion = composeCompilerVersion
     }
     packaging {
         jniLibs {
@@ -87,6 +81,7 @@ dependencies {
     implementation(libs.hilt.navigation.compose)
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.auth)
+    implementation(libs.felipearpa.viewing.state)
 
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)

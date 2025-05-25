@@ -1,5 +1,14 @@
 ### Link an account
-POST https://localhost:5000/account/link HTTP/1.1
+POST http://localhost:5059/account/link
+content-type: application/json
+
+{
+    "email": "felipearcila@gmail.com",
+    "externalAccountId": "ZaGjvMlgGxbhW0yK5mYK0Lg6Wl93"
+}
+
+### Link an account
+POST https://guiding-terminally-cicada.ngrok-free.app/account/link
 content-type: application/json
 
 {

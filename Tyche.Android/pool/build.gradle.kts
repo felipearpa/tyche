@@ -1,10 +1,10 @@
-val composeCompilerVersion: String by rootProject.extra
 val projectCompileSdk: String by project
 val projectMinSdk: String by project
 
 plugins {
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.jetbrainsKotlinAndroid)
+    alias(libs.plugins.composeCompiler)
     alias(libs.plugins.jetbrainsKotlinKapt)
     alias(libs.plugins.googleDaggerHiltAndroid)
 }
@@ -32,9 +32,6 @@ android {
     }
     buildFeatures {
         compose = true
-    }
-    composeOptions {
-        kotlinCompilerExtensionVersion = composeCompilerVersion
     }
     packaging {
         jniLibs {

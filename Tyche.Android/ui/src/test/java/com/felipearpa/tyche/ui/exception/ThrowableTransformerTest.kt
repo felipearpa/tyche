@@ -14,7 +14,7 @@ import org.junit.jupiter.api.TestFactory
 class ThrowableTransformerTest {
     @Test
     fun `given a LocalizedException when transformation attempt then the same LocalizedException is returned`() {
-        val newLocalizedException = localizedException.orLocalizedException()
+        val newLocalizedException = localizedException.orDefaultLocalized()
         newLocalizedException shouldBeSameInstanceAs localizedException
     }
 
@@ -25,26 +25,26 @@ class ThrowableTransformerTest {
             NetworkException.Http(HttpStatusCode.INTERNAL_SERVER_ERROR)
         ).map { networkException ->
             dynamicTest("given a $networkException when transformation attempt then is transformed to NetworkLocalizedException") {
-                val newLocalizedException = networkException.orLocalizedException()
+                val newLocalizedException = networkException.orDefaultLocalized()
                 newLocalizedException should beInstanceOf<NetworkLocalizedException>()
             }
         }
 
     @Test
     fun `given a neither LocalizedException nor NetworkException when transformation attempt then is transformed to UnknownLocalizedException`() {
-        val newLocalizedException = neitherLocalizedNorNetworkException.orLocalizedException()
+        val newLocalizedException = neitherLocalizedNorNetworkException.orDefaultLocalized()
         newLocalizedException should beInstanceOf<UnknownLocalizedException>()
     }
 
     @Test
     fun `given a LocalizedException when checked for LocalizedException type then the same LocalizedException is returned`() {
-        val newLocalizedException = localizedException.localizedExceptionOrNull()
+        val newLocalizedException = localizedException.localizedOrNull()
         newLocalizedException shouldBeSameInstanceAs localizedException
     }
 
     @Test
     fun `given a no LocalizedException when checked for LocalizedException type then null is returned`() {
-        val newLocalizedException = noLocalizedException.localizedExceptionOrNull()
+        val newLocalizedException = noLocalizedException.localizedOrNull()
         newLocalizedException.shouldBeNull()
     }
 }

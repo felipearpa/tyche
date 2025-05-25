@@ -25,4 +25,10 @@
     <string name="invalid_email_link_sign_in_failure_description">Invalid sign-in link</string>
     <string name="invalid_email_link_sign_in_failure_reason">The sign-in link you clicked is either invalid or has expired</string>
     <string name="invalid_email_link_sign_in_failure_recovery_suggestion">Please request a new sign-in link. If you\'re experiencing issues repeatedly, contact our support team for further assistance</string>
+    <string name="invalid_credential_sign_in_failure_description">Invalid credentials provided</string>
+    <string name="invalid_credential_sign_in_failure_reason">The email or password entered does not correspond to our records</string>
+    <string name="invalid_credential_sign_in_failure_recovery_suggestion">Please verify your credentials or consider resetting your password if the issue persists</string>
+    <string name="authentication_failed_sign_in_failure_description">Authentication failed</string>
+    <string name="authentication_failed_sign_in_failure_reason">There was a problem verifying your credentials with the server</string>
+    <string name="authentication_failed_sign_in_failure_recovery_suggestion">Please try again later or contact support if the problem continues</string>
 </resources>

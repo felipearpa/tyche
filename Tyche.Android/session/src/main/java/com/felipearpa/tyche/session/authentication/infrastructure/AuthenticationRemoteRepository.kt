@@ -17,7 +17,7 @@ internal class AuthenticationRemoteRepository @Inject constructor(
     private val networkExceptionHandler: NetworkExceptionHandler
 ) : AuthenticationRepository {
     override suspend fun sendSignInLinkToEmail(email: String) =
-        handleFirebaseSignInWithEmail {
+        handleFirebaseSendSignInLinkToEmail {
             authenticationExternalDataSource.sendSignInLinkToEmail(email = email)
         }
 
@@ -32,6 +32,18 @@ internal class AuthenticationRemoteRepository @Inject constructor(
             authenticationExternalDataSource.signInWithEmailLink(
                 email = email,
                 emailLink = emailLink
+            )
+        }
+    }
+
+    override suspend fun signInWithEmailAndPassword(
+        email: String,
+        password: String
+    ): Result<ExternalAccountId> {
+        return handleFirebaseSignInWithEmailAndPassword {
+            authenticationExternalDataSource.signInWithEmailAndPassword(
+                email = email,
+                password = password
             )
         }
     }

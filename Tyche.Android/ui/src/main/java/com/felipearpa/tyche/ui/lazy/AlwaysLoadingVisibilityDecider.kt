@@ -6,7 +6,6 @@ import androidx.paging.compose.LazyPagingItems
 
 class AlwaysLoadingVisibilityDecider<Value : Any> : LoadingVisibilityDecider<Value> {
     @Composable
-    override fun shouldShowLoader(lazyPagingItems: LazyPagingItems<Value>): Boolean {
-        return lazyPagingItems.loadState.refresh is LoadState.Loading
-    }
+    override fun shouldShowLoader(lazyPagingItems: LazyPagingItems<Value>): Boolean =
+        lazyPagingItems.loadState.refresh is LoadState.Loading
 }

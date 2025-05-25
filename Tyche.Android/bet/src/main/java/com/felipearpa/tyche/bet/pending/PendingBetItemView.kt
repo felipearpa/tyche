@@ -37,9 +37,9 @@ import com.felipearpa.tyche.core.emptyString
 import com.felipearpa.tyche.core.type.TeamScore
 import com.felipearpa.tyche.ui.exception.UnknownLocalizedException
 import com.felipearpa.tyche.ui.loading.BallSpinner
-import com.felipearpa.tyche.ui.state.EditableViewState
-import com.felipearpa.tyche.ui.state.currentValue
 import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
+import com.felipearpa.ui.state.EditableViewState
+import com.felipearpa.ui.state.relevantValue
 import com.felipearpa.tyche.ui.R as SharedR
 
 private val ICON_SIZE = 24.dp
@@ -192,7 +192,7 @@ private fun EditableDefaultActionBar(
     reset: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val poolGamblerBet = viewModelState.currentValue()
+    val poolGamblerBet = viewModelState.relevantValue()
     var isRecomposition by remember { mutableStateOf(false) }
     var maxButtonWidth by remember { mutableStateOf(0.dp) }
     val density = LocalDensity.current

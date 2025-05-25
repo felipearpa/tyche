@@ -1,4 +1,3 @@
-val composeCompilerVersion: String by rootProject.extra
 val projectCompileSdk: String by project
 val projectMinSdk: String by project
 
@@ -6,6 +5,7 @@ val projectMinSdk: String by project
 plugins {
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.jetbrainsKotlinAndroid)
+    alias(libs.plugins.composeCompiler)
     alias(libs.plugins.jetbrainsKotlinKapt)
     alias(libs.plugins.googleDaggerHiltAndroid)
 }
@@ -19,31 +19,19 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
     }
-
     buildTypes {
         getByName("release") {
             isMinifyEnabled = false
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
     }
-
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
-
     kotlinOptions {
         jvmTarget = "17"
     }
-
-    buildFeatures {
-        compose = true
-    }
-
-    composeOptions {
-        kotlinCompilerExtensionVersion = composeCompilerVersion
-    }
-
     packaging {
         jniLibs {
             excludes.add("META-INF/*")
@@ -66,6 +54,7 @@ dependencies {
     implementation(libs.gson)
     implementation(libs.dagger.hilt.android)
     implementation(libs.google.accompanist.placeholder)
+    implementation(libs.felipearpa.viewing.state)
 
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)

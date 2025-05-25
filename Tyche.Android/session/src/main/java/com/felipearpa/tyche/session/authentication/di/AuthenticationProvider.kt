@@ -4,6 +4,7 @@ import com.felipearpa.tyche.session.AccountStorage
 import com.felipearpa.tyche.session.Auth
 import com.felipearpa.tyche.session.authentication.application.LogOutUseCase
 import com.felipearpa.tyche.session.authentication.application.SendSignInLinkToEmailUseCase
+import com.felipearpa.tyche.session.authentication.application.SignInWithEmailAndPasswordUseCase
 import com.felipearpa.tyche.session.authentication.application.SignInWithEmailLinkUseCase
 import com.felipearpa.tyche.session.authentication.domain.AuthenticationExternalDataSource
 import com.felipearpa.tyche.session.authentication.domain.AuthenticationRemoteDataSource
@@ -30,22 +31,25 @@ internal object AuthenticationUseCaseProvider {
     @Provides
     @Singleton
     fun provideSignInWithEmailLinkUseCase(
-        authenticationRepository: AuthenticationRepository,
-        accountStorage: AccountStorage
-    ) =
-        SignInWithEmailLinkUseCase(
-            authenticationRepository = authenticationRepository,
-            accountStorage = accountStorage
-        )
+        authenticationRepository: AuthenticationRepository, accountStorage: AccountStorage
+    ) = SignInWithEmailLinkUseCase(
+        authenticationRepository = authenticationRepository, accountStorage = accountStorage
+    )
+
+    @Provides
+    @Singleton
+    fun provideSignInWithEmailAndPasswordUseCase(
+        authenticationRepository: AuthenticationRepository, accountStorage: AccountStorage
+    ) = SignInWithEmailAndPasswordUseCase(
+        authenticationRepository = authenticationRepository, accountStorage = accountStorage
+    )
 
     @Provides
     @Singleton
     fun provideLogoutUseCase(
-        authenticationRepository: AuthenticationRepository,
-        accountStorage: AccountStorage
+        authenticationRepository: AuthenticationRepository, accountStorage: AccountStorage
     ) = LogOutUseCase(
-        authenticationRepository = authenticationRepository,
-        accountStorage = accountStorage
+        authenticationRepository = authenticationRepository, accountStorage = accountStorage
     )
 }
 

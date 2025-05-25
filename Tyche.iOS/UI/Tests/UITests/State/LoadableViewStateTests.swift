@@ -109,3 +109,4 @@ final class LoadableViewStateTests: XCTestCase {
                  LoadableViewState<Void>.failure(CustomError()) ]
     }
 }
+
