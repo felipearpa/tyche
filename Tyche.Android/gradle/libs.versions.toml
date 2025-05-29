@@ -1,6 +1,6 @@
 [versions]
-agp = "8.10.0"
-kotlin = "2.1.0"
+agp = "8.10.1"
+kotlin = "2.1.21"
 core-ktx = "1.16.0"
 junit = "4.13.2"
 androidx-test-ext-junit = "1.2.1"
@@ -12,7 +12,7 @@ dagger-hilt = "2.54"
 paging-compose = "3.3.6"
 retrofit = "2.9.0"
 retrofit-login-interceptor = "4.11.0"
-gson = "2.11.0"
+retrofit-converter-kotlinx-serialization = "3.0.0"
 google-accompanist-placeholder = "0.30.1"
 navigation-compose = "2.9.0"
 hilt-navigation-compose = "1.2.0"
@@ -25,7 +25,8 @@ google-services = "4.4.2"
 firebase-bom = "33.14.0"
 junit5 = "5.10.2"
 kotest = "5.8.0"
-felipearpa-viewing-state = "main-SNAPSHOT"
+kotlinx-serialization-json = "1.8.1"
+felipearpa-viewing-state = "v0.0.1"
 
 [libraries]
 core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "core-ktx" }
@@ -46,9 +47,8 @@ dagger-hilt-android = { group = "com.google.dagger", name = "hilt-android", vers
 dagger-hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "dagger-hilt" }
 paging-compose = { group = "androidx.paging", name = "paging-compose", version.ref = "paging-compose" }
 retrofit = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit" }
-retrofit-gson = { group = "com.squareup.retrofit2", name = "converter-gson", version.ref = "retrofit" }
 retrofit-login-interceptor = { group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref = "retrofit-login-interceptor" }
-gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }
+retrofit-converter-kotlinx-serialization = { group = "com.squareup.retrofit2", name = "converter-kotlinx-serialization", version.ref = "retrofit-converter-kotlinx-serialization" }
 google-accompanist-placeholder = { group = "com.google.accompanist", name = "accompanist-placeholder-material", version.ref = "google-accompanist-placeholder" }
 navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigation-compose" }
 hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "hilt-navigation-compose" }
@@ -58,6 +58,7 @@ io-mockk-android = { group = "io.mockk", name = "mockk-android", version.ref = "
 androidx-security-crypto = { group = "androidx.security", name = "security-crypto", version.ref = "androidx-security-crypto" }
 kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "kotlinx-coroutines-test" }
 kotlinx-serialization = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
+kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinx-serialization-json" }
 firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebase-bom" }
 firebase-auth = { group = "com.google.firebase", name = "firebase-auth" }
 junit5-bom = { group = "org.junit", name = "junit-bom", version.ref = "junit5" }
@@ -83,6 +84,7 @@ composeCompiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "k
 
 [bundles]
 compose = ["ui", "ui-graphics", "ui-tooling", "ui-tooling-preview"]
-retrofit = ["retrofit", "retrofit-gson", "retrofit-login-interceptor"]
+retrofit = ["retrofit", "retrofit-login-interceptor", "retrofit-converter-kotlinx-serialization"]
 compose-debug-test = ["ui-tooling", "ui-test-manifest"]
 junit5-runtime = ["junit5-platform-launcher", "junit5-jupiter-engine", "junit5-vintage-engine"]
+kotlinx-serialization = ["kotlinx-serialization", "kotlinx-serialization-json"]

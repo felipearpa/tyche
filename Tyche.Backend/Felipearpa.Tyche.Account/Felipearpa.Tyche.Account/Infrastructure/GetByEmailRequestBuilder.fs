@@ -8,7 +8,7 @@ module GetByEmailRequestBuilder =
     let private accountTableName = "Account"
 
     [<Literal>]
-    let private emailIndex = "email-index"
+    let private emailIndex = "GetByEmail-index"
 
     let build (email: string) =
         let keyConditionExpression = "#email = :email"

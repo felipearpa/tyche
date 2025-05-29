@@ -52,7 +52,6 @@ dependencies {
     implementation(libs.navigation.compose)
     implementation(libs.constraint.layout.compose)
     implementation(libs.bundles.retrofit)
-    implementation(libs.gson)
     implementation(libs.dagger.hilt.android)
     implementation(libs.hilt.navigation.compose)
     implementation(libs.google.accompanist.placeholder)

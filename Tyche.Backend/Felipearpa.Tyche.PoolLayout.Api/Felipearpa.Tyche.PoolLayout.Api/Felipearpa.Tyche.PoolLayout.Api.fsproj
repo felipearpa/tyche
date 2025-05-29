@@ -6,8 +6,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Compile Include="ViewModel\PoolLayoutViewModel.fs" />
-        <Compile Include="ViewModel\PoolLayoutTransformer.fs" />
+        <Compile Include="PoolLayoutViewModel.fs" />
+        <Compile Include="PoolLayoutTransformer.fs" />
         <Compile Include="WebApplication.fs" />
         <Compile Include="WebApplicationBuilder.fs" />
         <Compile Include="Program.fs" />

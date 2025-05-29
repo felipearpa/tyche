@@ -3,6 +3,7 @@ package com.felipearpa.tyche.session.di
 import android.content.Context
 import com.felipearpa.tyche.core.data.StorageInKeyStore
 import com.felipearpa.tyche.core.network.UrlBasePathProvider
+import com.felipearpa.tyche.core.network.retrofit.LocalDateTimeSerializer
 import com.felipearpa.tyche.session.AccountStorage
 import com.felipearpa.tyche.session.AccountStorageInKeyStore
 import com.felipearpa.tyche.session.Auth
@@ -10,16 +11,19 @@ import com.felipearpa.tyche.session.AuthInterceptor
 import com.felipearpa.tyche.session.AuthTokenFirebaseRetriever
 import com.felipearpa.tyche.session.AuthTokenRetriever
 import com.google.firebase.auth.FirebaseAuth
-import com.google.gson.Gson
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.modules.SerializersModule
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.converter.kotlinx.serialization.asConverterFactory
+import java.time.LocalDateTime
 import javax.inject.Singleton
 
 private const val ACCOUNT_FILE_NAME = "account"
@@ -40,8 +44,8 @@ object AuthProvider {
             StorageInKeyStore(
                 context = context,
                 key = ACCOUNT_KEY,
-                filename = ACCOUNT_FILE_NAME
-            )
+                filename = ACCOUNT_FILE_NAME,
+            ),
         )
 
     @Provides
@@ -58,7 +62,7 @@ object AuthProvider {
     @Singleton
     fun provideOkHttpClient(
         httpLoggingInterceptor: HttpLoggingInterceptor,
-        authInterceptor: AuthInterceptor
+        authInterceptor: AuthInterceptor,
     ): OkHttpClient =
         OkHttpClient.Builder().apply {
             interceptors().add(httpLoggingInterceptor)
@@ -70,12 +74,18 @@ object AuthProvider {
     @Singleton
     fun provideRetrofit(
         urlBasePathProvider: UrlBasePathProvider,
-        gson: Gson,
-        @Auth okHttpClient: OkHttpClient
-    ): Retrofit =
-        Retrofit.Builder().apply {
-            baseUrl(urlBasePathProvider.basePath)
-            addConverterFactory(GsonConverterFactory.create(gson))
-            client(okHttpClient)
-        }.build()
+        @Auth okHttpClient: OkHttpClient,
+    ): Retrofit {
+        val json = Json {
+            serializersModule = SerializersModule {
+                contextual(LocalDateTime::class, LocalDateTimeSerializer)
+            }
+        }
+
+        return Retrofit.Builder()
+            .baseUrl(urlBasePathProvider.basePath)
+            .addConverterFactory(json.asConverterFactory("application/json; charset=UTF8".toMediaType()))
+            .client(okHttpClient)
+            .build()
+    }
 }

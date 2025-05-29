@@ -51,7 +51,6 @@ dependencies {
     implementation(libs.constraint.layout.compose)
     implementation(libs.navigation.compose)
     implementation(libs.bundles.retrofit)
-    implementation(libs.gson)
     implementation(libs.dagger.hilt.android)
     implementation(libs.google.accompanist.placeholder)
     implementation(libs.felipearpa.viewing.state)

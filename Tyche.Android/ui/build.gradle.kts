@@ -64,7 +64,6 @@ dependencies {
     implementation(libs.paging.compose)
     implementation(libs.navigation.compose)
     implementation(libs.bundles.retrofit)
-    implementation(libs.gson)
     implementation(libs.google.accompanist.placeholder)
 
     testImplementation(platform(libs.junit5.bom))

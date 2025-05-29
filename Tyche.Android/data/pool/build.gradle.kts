@@ -46,9 +46,8 @@ android {
 
 dependencies {
     implementation(libs.bundles.retrofit)
-    implementation(libs.gson)
     implementation(libs.dagger.hilt.android)
-    implementation(libs.kotlinx.serialization)
+    implementation(libs.bundles.kotlinx.serialization)
 
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)

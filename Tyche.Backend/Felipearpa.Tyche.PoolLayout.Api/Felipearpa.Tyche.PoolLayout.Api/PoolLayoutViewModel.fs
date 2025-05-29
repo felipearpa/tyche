@@ -1,8 +1,8 @@
-namespace Felipearpa.Tyche.PoolLayout.Api.ViewModel
+namespace Felipearpa.Tyche.PoolLayout.Api
 
 open System
 
-type PoolLayoutViewModel =
+type PoolLayoutResponse =
     { Id: string
       Name: string
       StartDateTime: DateTime }

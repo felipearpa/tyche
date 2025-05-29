@@ -42,9 +42,8 @@ android {
 
 dependencies {
     implementation(libs.bundles.retrofit)
-    implementation(libs.gson)
     implementation(libs.dagger.hilt.android)
-    implementation(libs.kotlinx.serialization)
+    implementation(libs.bundles.kotlinx.serialization)
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.auth)
 

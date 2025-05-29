@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.jetbrainsKotlinAndroid)
     alias(libs.plugins.jetbrainsKotlinKapt)
+    alias(libs.plugins.jetbrainsKotlinxSerialization)
     alias(libs.plugins.googleDaggerHiltAndroid)
 }
 
@@ -49,9 +50,9 @@ android {
 
 dependencies {
     implementation(libs.bundles.retrofit)
-    implementation(libs.gson)
     implementation(libs.dagger.hilt.android)
     implementation(libs.androidx.security.crypto)
+    implementation(libs.kotlinx.serialization)
 
     testImplementation(platform(libs.junit5.bom))
     testImplementation(libs.junit5.jupiter)

@@ -23,7 +23,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
@@ -37,12 +36,11 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import com.felipearpa.tyche.ui.R as SharedR
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PoolScoreListView(
     viewModel: PoolScoreListViewModel,
     drawerView: @Composable () -> Unit,
-    onDetailRequested: (String, String) -> Unit
+    onPoolClick: (String, String) -> Unit
 ) {
     val lazyItems = viewModel.poolGamblerScores.collectAsLazyPagingItems()
     val pageSize = viewModel.pageSize
@@ -50,7 +48,7 @@ fun PoolScoreListView(
     PoolScoreListView(
         lazyItems = lazyItems,
         pageSize = pageSize,
-        onDetailRequested = onDetailRequested,
+        onPoolClick = onPoolClick,
         drawerView = drawerView
     )
 }
@@ -60,7 +58,7 @@ fun PoolScoreListView(
 private fun PoolScoreListView(
     lazyItems: LazyPagingItems<PoolGamblerScoreModel>,
     pageSize: Int = 50,
-    onDetailRequested: (String, String) -> Unit = { _, _ -> },
+    onPoolClick: (String, String) -> Unit = { _, _ -> },
     drawerView: @Composable () -> Unit = {}
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
@@ -95,7 +93,7 @@ private fun PoolScoreListView(
             PoolScoreList(
                 lazyPoolGamblerScores = lazyItems,
                 fakeItemCount = pageSize,
-                onDetailRequested = onDetailRequested,
+                onPoolClick = onPoolClick,
                 modifier = Modifier
                     .padding(paddingValues = paddingValues)
                     .fillMaxSize()

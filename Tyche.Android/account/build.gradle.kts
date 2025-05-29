@@ -48,7 +48,6 @@ dependencies {
     implementation(libs.paging.compose)
     implementation(libs.navigation.compose)
     implementation(libs.bundles.retrofit)
-    implementation(libs.gson)
     implementation(libs.hilt.navigation.compose)
     implementation(libs.dagger.hilt.android)
     implementation(libs.google.accompanist.placeholder)

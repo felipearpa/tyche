@@ -2,7 +2,6 @@ namespace Felipearpa.Tyche.PoolLayout.Api
 
 open System
 open Felipearpa.Core.Paging
-open Felipearpa.Tyche.PoolLayout.Api.ViewModel
 open Felipearpa.Tyche.PoolLayout.Application
 open Microsoft.AspNetCore.Builder
 
@@ -23,7 +22,7 @@ module WebApplication =
                     Func<_, _, _>(fun (next: string) (getOpenedPoolLayoutsQuery: GetOpenedPoolLayoutsQuery) ->
                         async {
                             let! page = getOpenedPoolLayoutsQuery.ExecuteAsync(next |> Option.ofObj)
-                            return page |> CursorPage.map PoolLayoutTransformer.toPoolLayoutViewModel
+                            return page |> CursorPage.map PoolLayoutTransformer.toPoolLayoutResponse
                         }
                         |> Async.StartAsTask
 

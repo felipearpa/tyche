@@ -1,16 +1,17 @@
 package com.felipearpa.tyche.pool.gamblerscore
 
 import com.felipearpa.data.pool.application.GetPoolGamblerScoresByPoolUseCase
+import com.felipearpa.tyche.core.paging.map
 import com.felipearpa.tyche.pool.toPoolGamblerScoreModel
 
 suspend fun getPoolGamblerScoresByPoolPagingQuery(
     next: String?,
     poolId: String,
     search: () -> String?,
-    getPoolGamblerScoresByPoolUseCase: GetPoolGamblerScoresByPoolUseCase
+    getPoolGamblerScoresByPoolUseCase: GetPoolGamblerScoresByPoolUseCase,
 ) =
     getPoolGamblerScoresByPoolUseCase.execute(
         poolId = poolId,
         next = next,
-        searchText = search()
+        searchText = search(),
     ).map { page -> page.map { gamblerPool -> gamblerPool.toPoolGamblerScoreModel() } }

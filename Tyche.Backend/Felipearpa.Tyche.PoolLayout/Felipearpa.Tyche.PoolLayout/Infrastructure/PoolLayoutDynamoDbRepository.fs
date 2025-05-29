@@ -16,12 +16,12 @@ type PoolLayoutDynamoDbRepository(keySerializer: IKeySerializer, client: IAmazon
                     |> client.QueryAsync
                     |> Async.AwaitTask
 
-                let lastEvaluatedKey = response.LastEvaluatedKey
+                let maybeLastEvaluatedKey = response.LastEvaluatedKey |> Option.ofObj
 
                 return
                     { CursorPage.Items = response.Items.Select(toPoolLayout)
                       Next =
-                        match response.LastEvaluatedKey.Count with
-                        | 0 -> None
-                        | _ -> keySerializer.Serialize(lastEvaluatedKey) |> Some }
+                        match maybeLastEvaluatedKey with
+                        | Some lastEvaluatedKey -> keySerializer.Serialize(lastEvaluatedKey) |> Some
+                        | None -> None }
             }

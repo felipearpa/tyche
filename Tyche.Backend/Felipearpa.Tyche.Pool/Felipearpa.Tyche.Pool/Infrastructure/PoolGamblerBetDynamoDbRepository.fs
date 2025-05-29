@@ -79,10 +79,7 @@ type PoolGamblerBetDynamoDbRepository(keySerializer: IKeySerializer, client: IAm
                     { CursorPage.Items = response.Items.Select(map >> PoolGamblerBetMapper.mapToDomain)
                       Next =
                         match maybeLastEvaluatedKey with
-                        | Some lastEvaluatedKey ->
-                            match lastEvaluatedKey.Count with
-                            | 0 -> None
-                            | _ -> keySerializer.Serialize(lastEvaluatedKey) |> Some
+                        | Some lastEvaluatedKey -> keySerializer.Serialize(lastEvaluatedKey) |> Some
                         | None -> None }
             }
 
@@ -132,10 +129,7 @@ type PoolGamblerBetDynamoDbRepository(keySerializer: IKeySerializer, client: IAm
                     { CursorPage.Items = response.Items.Select(map >> PoolGamblerBetMapper.mapToDomain)
                       Next =
                         match maybeLastEvaluatedKey with
-                        | Some lastEvaluatedKey ->
-                            match lastEvaluatedKey.Count with
-                            | 0 -> None
-                            | _ -> keySerializer.Serialize(lastEvaluatedKey) |> Some
+                        | Some lastEvaluatedKey -> keySerializer.Serialize(lastEvaluatedKey) |> Some
                         | None -> None }
             }
 

@@ -11,24 +11,25 @@ import com.felipearpa.tyche.core.network.HttpStatusCode
 import com.felipearpa.tyche.core.network.NetworkExceptionHandler
 import com.felipearpa.tyche.core.network.recoverHttpException
 import com.felipearpa.tyche.core.paging.CursorPage
+import com.felipearpa.tyche.core.paging.map
 import javax.inject.Inject
 
 internal class PoolGamblerBetRemoteRepository @Inject constructor(
     private val poolGamblerBetRemoteDataSource: PoolGamblerBetRemoteDataSource,
-    private val networkExceptionHandler: NetworkExceptionHandler
+    private val networkExceptionHandler: NetworkExceptionHandler,
 ) : PoolGamblerBetRepository {
     override suspend fun getPendingPoolGamblerBets(
         poolId: String,
         gamblerId: String,
         next: String?,
-        searchText: String?
+        searchText: String?,
     ): Result<CursorPage<PoolGamblerBet>> {
         return networkExceptionHandler.handle {
             poolGamblerBetRemoteDataSource.getPendingPoolGamblerBets(
                 poolId = poolId,
                 gamblerId = gamblerId,
                 next = next,
-                searchText = searchText
+                searchText = searchText,
             ).map { poolGamblerBetResponse -> poolGamblerBetResponse.toPoolGamblerBet() }
         }
     }
@@ -37,14 +38,14 @@ internal class PoolGamblerBetRemoteRepository @Inject constructor(
         poolId: String,
         gamblerId: String,
         next: String?,
-        searchText: String?
+        searchText: String?,
     ): Result<CursorPage<PoolGamblerBet>> {
         return networkExceptionHandler.handle {
             poolGamblerBetRemoteDataSource.getFinishedPoolGamblerBets(
                 poolId = poolId,
                 gamblerId = gamblerId,
                 next = next,
-                searchText = searchText
+                searchText = searchText,
             ).map { poolGamblerBetResponse -> poolGamblerBetResponse.toPoolGamblerBet() }
         }
     }

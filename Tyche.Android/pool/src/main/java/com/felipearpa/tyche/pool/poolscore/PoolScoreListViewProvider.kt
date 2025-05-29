@@ -28,7 +28,7 @@ fun NavGraphBuilder.poolScoreListView(
         PoolScoreListView(
             viewModel = poolScoreListViewModel(gamblerId = gamblerId),
             drawerView = settingsView,
-            onDetailRequested = onDetailRequested
+            onPoolClick = onDetailRequested
         )
     }
 }

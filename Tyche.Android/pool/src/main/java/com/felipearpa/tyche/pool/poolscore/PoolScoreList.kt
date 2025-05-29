@@ -32,7 +32,7 @@ fun PoolScoreList(
     modifier: Modifier = Modifier,
     lazyPoolGamblerScores: LazyPagingItems<PoolGamblerScoreModel>,
     lazyListState: LazyListState = rememberLazyListState(),
-    onDetailRequested: (String, String) -> Unit,
+    onPoolClick: (String, String) -> Unit,
     fakeItemCount: Int = 50
 ) {
     RefreshableStatefulLazyColumn(
@@ -57,10 +57,7 @@ fun PoolScoreList(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clickable {
-                        onDetailRequested(
-                            poolGamblerScore.poolId,
-                            poolGamblerScore.gamblerId
-                        )
+                        onPoolClick(poolGamblerScore.poolId, poolGamblerScore.gamblerId)
                     }
             ) {
                 PoolScoreItem(
@@ -107,7 +104,7 @@ private fun PoolScoreListPreview() {
     val items = flowOf(PagingData.from(poolGamblerScoreDummyModels())).collectAsLazyPagingItems()
     PoolScoreList(
         lazyPoolGamblerScores = items,
-        onDetailRequested = { _, _ -> },
+        onPoolClick = { _, _ -> },
         modifier = Modifier.fillMaxSize()
     )
 }

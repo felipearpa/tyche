@@ -8,7 +8,7 @@ module GetOpenedPoolLayoutRequestBuilder =
     let private tableName = "PoolLayout"
 
     [<Literal>]
-    let private indexName = "status-startDateTime-index"
+    let private indexName = "GetOpenedPoolLayout-index"
 
     [<Literal>]
     let poolText = "POOLLAYOUT"

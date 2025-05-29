@@ -2,15 +2,12 @@ namespace Felipearpa.Tyche.Pool.Infrastructure
 
 open System.Linq
 open Amazon.DynamoDBv2
-open Amazon.DynamoDBv2.DataModel
 open Felipearpa.Core.Paging
 open Felipearpa.Data.DynamoDb
 open Felipearpa.Tyche.Pool.Domain
 open Felipearpa.Tyche.Pool.Domain.PoolGamblerScoreDictionaryTransformer
 
 type PoolGamblerScoreDynamoDbRepository(keySerializer: IKeySerializer, client: IAmazonDynamoDB) =
-    let context = new DynamoDBContext(client)
-
     interface IPoolGamblerScoreRepository with
 
         member this.GetGamblerScoresAsync(gamblerId, maybeNext) =
@@ -25,10 +22,7 @@ type PoolGamblerScoreDynamoDbRepository(keySerializer: IKeySerializer, client: I
                     { CursorPage.Items = response.Items.Select(toPoolGamblerScore)
                       Next =
                         match maybeLastEvaluatedKey with
-                        | Some lastEvaluatedKey ->
-                            match lastEvaluatedKey.Count with
-                            | 0 -> None
-                            | _ -> keySerializer.Serialize(lastEvaluatedKey) |> Some
+                        | Some lastEvaluatedKey -> keySerializer.Serialize(lastEvaluatedKey) |> Some
                         | None -> None }
             }
 
@@ -44,10 +38,7 @@ type PoolGamblerScoreDynamoDbRepository(keySerializer: IKeySerializer, client: I
                     { CursorPage.Items = response.Items.Select(toPoolGamblerScore)
                       Next =
                         match maybeLastEvaluatedKey with
-                        | Some lastEvaluatedKey ->
-                            match lastEvaluatedKey.Count with
-                            | 0 -> None
-                            | _ -> keySerializer.Serialize(lastEvaluatedKey) |> Some
+                        | Some lastEvaluatedKey -> keySerializer.Serialize(lastEvaluatedKey) |> Some
                         | None -> None }
             }
 
