@@ -5,12 +5,12 @@ import androidx.navigation.compose.composable
 
 fun NavGraphBuilder.homeView(
     onSignInWithEmail: () -> Unit,
-    onSignInWithEmailAndPassword: () -> Unit
+    onSignInWithEmailAndPassword: () -> Unit,
 ) {
-    composable(route = HomeRoute.route) {
+    composable<HomeRoute> {
         HomeView(
             onSignInWithEmail = onSignInWithEmail,
-            onSignInWithEmailAndPassword = onSignInWithEmailAndPassword
+            onSignInWithEmailAndPassword = onSignInWithEmailAndPassword,
         )
     }
 }

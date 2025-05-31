@@ -1,16 +1,9 @@
 package com.felipearpa.tyche.poolhome
 
-object PoolHomeViewRoute {
-    enum class Param(val id: String) {
-        POOL_ID("poolId"),
-        GAMBLER_ID("gamblerId")
-    }
+import kotlinx.serialization.Serializable
 
-    val route: String =
-        "pool/{${Param.POOL_ID.id}}/gambler/{${Param.GAMBLER_ID.id}}/home"
-
-    fun route(poolId: String, gamblerId: String) =
-        route
-            .replace("{${Param.POOL_ID.id}}", poolId)
-            .replace("{${Param.GAMBLER_ID.id}}", gamblerId)
-}
+@Serializable
+data class PoolHomeViewRoute(
+    val poolId: String,
+    val gamblerId: String,
+)

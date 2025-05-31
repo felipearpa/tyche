@@ -4,10 +4,10 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 
 fun NavGraphBuilder.emailSignInView(onBackRequested: () -> Unit) {
-    composable(route = EmailSignInRoute.route) {
+    composable<EmailSignInRoute> {
         EmailSignInView(
             viewModel = emailSignInViewModel(),
-            onBack = onBackRequested
+            onBack = onBackRequested,
         )
     }
 }

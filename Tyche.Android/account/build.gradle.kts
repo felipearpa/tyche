@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.jetbrainsKotlinAndroid)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.jetbrainsKotlinKapt)
+    alias(libs.plugins.jetbrainsKotlinxSerialization)
     alias(libs.plugins.googleDaggerHiltAndroid)
 }
 
@@ -53,6 +54,7 @@ dependencies {
     implementation(libs.google.accompanist.placeholder)
     implementation(libs.androidx.security.crypto)
     implementation(libs.felipearpa.viewing.state)
+    implementation(libs.kotlinx.serialization)
 
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)

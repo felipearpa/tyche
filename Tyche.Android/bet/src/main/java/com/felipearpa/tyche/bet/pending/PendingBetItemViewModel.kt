@@ -2,9 +2,9 @@ package com.felipearpa.tyche.bet.pending
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.felipearpa.data.bet.application.BetUseCase
-import com.felipearpa.data.bet.domain.Bet
-import com.felipearpa.data.bet.domain.BetException
+import com.felipearpa.tyche.data.bet.application.BetUseCase
+import com.felipearpa.tyche.data.bet.domain.Bet
+import com.felipearpa.tyche.data.bet.domain.BetException
 import com.felipearpa.tyche.bet.PoolGamblerBetModel
 import com.felipearpa.tyche.bet.toPoolGamblerBetModel
 import com.felipearpa.tyche.core.type.BetScore

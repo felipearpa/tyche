@@ -1,8 +1,3 @@
-import java.net.URI
-
-include(":data:pool-layout")
-
-
 pluginManagement {
     repositories {
         gradlePluginPortal()

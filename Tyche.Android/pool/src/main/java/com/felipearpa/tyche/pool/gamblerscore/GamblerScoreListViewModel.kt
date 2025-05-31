@@ -6,7 +6,7 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
-import com.felipearpa.data.pool.application.GetPoolGamblerScoresByPoolUseCase
+import com.felipearpa.tyche.data.pool.application.GetPoolGamblerScoresByPoolUseCase
 import com.felipearpa.tyche.core.emptyString
 import com.felipearpa.tyche.pool.PoolGamblerScorePagingSource
 import dagger.assisted.Assisted

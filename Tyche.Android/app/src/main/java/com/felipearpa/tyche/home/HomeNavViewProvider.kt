@@ -8,7 +8,7 @@ import com.felipearpa.tyche.home.ui.homeView
 
 fun NavGraphBuilder.homeNavView(navController: NavController) {
     homeView(
-        onSignInWithEmail = { navController.navigate(route = EmailSignInRoute.route()) },
-        onSignInWithEmailAndPassword = { navController.navigate(route = EmailAndPasswordSignInRoute.route()) },
+        onSignInWithEmail = { navController.navigate(route = EmailSignInRoute) },
+        onSignInWithEmailAndPassword = { navController.navigate(route = EmailAndPasswordSignInRoute) },
     )
 }

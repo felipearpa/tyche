@@ -12,8 +12,8 @@ class RetrofitExceptionHandler @Inject constructor() : NetworkExceptionHandler {
         } catch (httpException: HttpException) {
             Result.failure(
                 NetworkException.Http(
-                    httpStatusCode = httpException.code().toHtpStatusCode()
-                )
+                    httpStatusCode = httpException.code().toHtpStatusCode(),
+                ),
             )
         } catch (_: UnknownHostException) {
             Result.failure(NetworkException.RemoteCommunication)

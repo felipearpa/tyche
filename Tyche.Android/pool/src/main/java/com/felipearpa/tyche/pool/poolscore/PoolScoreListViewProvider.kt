@@ -2,33 +2,19 @@ package com.felipearpa.tyche.pool.poolscore
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavGraphBuilder
-import androidx.navigation.NavType
 import androidx.navigation.compose.composable
-import androidx.navigation.navArgument
+import androidx.navigation.toRoute
 
 fun NavGraphBuilder.poolScoreListView(
-    loggedInGamblerId: String?,
     settingsView: @Composable () -> Unit,
-    onDetailRequested: (String, String) -> Unit
+    onDetailRequested: (String, String) -> Unit,
 ) {
-    composable(
-        route = PoolScoreListRoute.route,
-        arguments = listOf(
-            navArgument(name = PoolScoreListRoute.Param.GAMBLER_ID.id) {
-                type = NavType.StringType
-
-                loggedInGamblerId?.let {
-                    defaultValue = loggedInGamblerId
-                }
-            }
-        )
-    ) { navBackStackEntry ->
-        val gamblerId =
-            navBackStackEntry.arguments?.getString(PoolScoreListRoute.Param.GAMBLER_ID.id)!!
+    composable<PoolScoreListRoute> { navBackStackEntry ->
+        val poolScoreListRoute: PoolScoreListRoute = navBackStackEntry.toRoute()
         PoolScoreListView(
-            viewModel = poolScoreListViewModel(gamblerId = gamblerId),
+            viewModel = poolScoreListViewModel(gamblerId = poolScoreListRoute.gamblerId),
             drawerView = settingsView,
-            onPoolClick = onDetailRequested
+            onPoolClick = onDetailRequested,
         )
     }
 }

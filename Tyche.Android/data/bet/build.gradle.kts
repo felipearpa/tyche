@@ -10,7 +10,7 @@ plugins {
 }
 
 android {
-    namespace = "com.felipearpa.data.bet"
+    namespace = "com.felipearpa.tyche.data.bet"
     compileSdk = projectCompileSdk.toInt()
     defaultConfig {
         minSdk = projectMinSdk.toInt()

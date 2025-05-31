@@ -10,7 +10,7 @@ plugins {
 }
 
 android {
-    namespace = "com.felipearpa.data.pool"
+    namespace = "com.felipearpa.tyche.data.pool"
     compileSdk = projectCompileSdk.toInt()
     defaultConfig {
         minSdk = projectMinSdk.toInt()

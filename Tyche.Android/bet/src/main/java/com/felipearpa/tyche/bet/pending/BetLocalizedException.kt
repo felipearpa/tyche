@@ -2,7 +2,7 @@ package com.felipearpa.tyche.bet.pending
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
-import com.felipearpa.data.bet.domain.BetException
+import com.felipearpa.tyche.data.bet.domain.BetException
 import com.felipearpa.tyche.bet.R
 import com.felipearpa.tyche.ui.exception.LocalizedException
 

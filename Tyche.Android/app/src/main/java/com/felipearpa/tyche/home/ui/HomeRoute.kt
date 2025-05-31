@@ -1,7 +1,6 @@
 package com.felipearpa.tyche.home.ui
 
-object HomeRoute {
-    const val route: String = "home"
+import kotlinx.serialization.Serializable
 
-    fun route() = route
-}
+@Serializable
+object HomeRoute

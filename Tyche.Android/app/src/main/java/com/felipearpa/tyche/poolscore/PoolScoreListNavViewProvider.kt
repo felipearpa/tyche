@@ -10,28 +10,26 @@ import com.felipearpa.tyche.poolscore.drawer.drawerViewModel
 
 fun NavGraphBuilder.poolScoreListNavView(
     navController: NavController,
-    initialRoute: String,
-    loggedInGamblerId: String
+    initialRoute: Any,
 ) {
     poolScoreListView(
-        loggedInGamblerId = loggedInGamblerId,
         settingsView = {
             DrawerView(
                 viewModel = drawerViewModel(),
                 onLogout = {
-                    navController.navigate(route = HomeRoute.route()) {
+                    navController.navigate(route = HomeRoute) {
                         popUpTo(route = initialRoute) { inclusive = true }
                     }
-                }
+                },
             )
         },
         onDetailRequested = { poolId, gamblerId ->
             navController.navigate(
-                route = PoolHomeViewRoute.route(
+                route = PoolHomeViewRoute(
                     poolId = poolId,
-                    gamblerId = gamblerId
-                )
+                    gamblerId = gamblerId,
+                ),
             ) { popUpTo(route = initialRoute) { inclusive = true } }
-        }
+        },
     )
 }

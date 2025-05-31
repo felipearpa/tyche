@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.jetbrainsKotlinAndroid)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.jetbrainsKotlinKapt)
+    alias(libs.plugins.jetbrainsKotlinxSerialization)
     alias(libs.plugins.googleDaggerHiltAndroid)
 }
 
@@ -55,6 +56,7 @@ dependencies {
     implementation(libs.dagger.hilt.android)
     implementation(libs.hilt.navigation.compose)
     implementation(libs.google.accompanist.placeholder)
+    implementation(libs.kotlinx.serialization)
 
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)

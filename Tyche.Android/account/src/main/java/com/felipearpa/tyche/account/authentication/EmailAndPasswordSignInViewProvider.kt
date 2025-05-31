@@ -6,13 +6,13 @@ import com.felipearpa.tyche.session.AccountBundle
 
 fun NavGraphBuilder.emailAndPasswordSignInView(
     onBack: () -> Unit,
-    onAuthenticate: (AccountBundle) -> Unit
+    onAuthenticate: (AccountBundle) -> Unit,
 ) {
-    composable(route = EmailAndPasswordSignInRoute.route) {
+    composable<EmailAndPasswordSignInRoute> {
         EmailAndPasswordSignInView(
             viewModel = emailAndPasswordSignInViewModel(),
             onBack = onBack,
-            onAuthenticate = onAuthenticate
+            onAuthenticate = onAuthenticate,
         )
     }
 }

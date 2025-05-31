@@ -7,14 +7,14 @@ import com.felipearpa.tyche.pool.poolscore.PoolScoreListRoute
 
 fun NavGraphBuilder.signInWithEmailAndPasswordNavView(
     navController: NavController,
-    initialRoute: String
+    initialRoute: Any,
 ) {
     emailAndPasswordSignInView(
         onBack = { navController.navigateUp() },
         onAuthenticate = { accountBundle ->
-            navController.navigate(route = PoolScoreListRoute.route(gamblerId = accountBundle.accountId)) {
+            navController.navigate(route = PoolScoreListRoute(gamblerId = accountBundle.accountId)) {
                 popUpTo(route = initialRoute) { inclusive = true }
             }
-        }
+        },
     )
 }

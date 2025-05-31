@@ -27,6 +27,8 @@ junit5 = "5.10.2"
 kotest = "5.8.0"
 kotlinx-serialization-json = "1.8.1"
 felipearpa-viewing-state = "v0.0.1"
+appcompat = "1.7.0"
+material = "1.12.0"
 
 [libraries]
 core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "core-ktx" }
@@ -71,6 +73,8 @@ kotest-assertions-core = { group = "io.kotest", name = "kotest-assertions-core",
 kotest-property = { group = "io.kotest", name = "kotest-property", version.ref = "kotest" }
 kotest-runner-junit4 = { group = "io.kotest", name = "kotest-runner-junit4", version.ref = "kotest" }
 felipearpa-viewing-state = { group = "com.github.felipearpa", name = "viewing-state-android", version.ref = "felipearpa-viewing-state" }
+androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

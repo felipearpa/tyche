@@ -6,7 +6,7 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
-import com.felipearpa.data.bet.application.GetFinishedPoolGamblerBetsUseCase
+import com.felipearpa.tyche.data.bet.application.GetFinishedPoolGamblerBetsUseCase
 import com.felipearpa.tyche.bet.pending.PendingBetPagingSource
 import com.felipearpa.tyche.core.emptyString
 import dagger.assisted.Assisted

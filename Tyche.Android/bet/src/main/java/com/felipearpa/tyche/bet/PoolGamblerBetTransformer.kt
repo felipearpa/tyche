@@ -1,6 +1,6 @@
 package com.felipearpa.tyche.bet
 
-import com.felipearpa.data.bet.domain.PoolGamblerBet
+import com.felipearpa.tyche.data.bet.domain.PoolGamblerBet
 
 fun PoolGamblerBet.toPoolGamblerBetModel() =
     PoolGamblerBetModel(

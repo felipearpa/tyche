@@ -7,22 +7,21 @@ import com.felipearpa.tyche.session.AccountBundle
 
 fun NavGraphBuilder.emailLinkSignInView(
     emailLink: String,
-    onStartRequested: (AccountBundle) -> Unit
+    onStartRequested: (AccountBundle) -> Unit,
 ) {
-    composable(
-        route = EmailLinkSignInRoute.route,
+    composable<EmailLinkSignInRoute>(
         deepLinks = listOf(
             navDeepLink {
                 uriPattern = "felipearpa.github.io/tyche/signin/{email}"
-            }
-        )
+            },
+        ),
     ) { navBackStackEntry ->
         val email = navBackStackEntry.arguments?.getString("email")!!
         EmailLinkSignInView(
             viewModel = emailLinkSignInViewModel(),
             email = email,
             emailLink = emailLink,
-            onStartRequested = onStartRequested
+            onStartRequested = onStartRequested,
         )
     }
 }

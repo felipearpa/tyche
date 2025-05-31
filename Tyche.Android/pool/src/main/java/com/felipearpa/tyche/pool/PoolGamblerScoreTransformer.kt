@@ -1,6 +1,6 @@
 package com.felipearpa.tyche.pool
 
-import com.felipearpa.data.pool.domain.PoolGamblerScore
+import com.felipearpa.tyche.data.pool.domain.PoolGamblerScore
 
 fun PoolGamblerScore.toPoolGamblerScoreModel() =
     PoolGamblerScoreModel(

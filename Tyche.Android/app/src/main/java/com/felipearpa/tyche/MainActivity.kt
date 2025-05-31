@@ -52,12 +52,12 @@ fun Content(accountBundle: AccountBundle?, intentData: String?) {
 
 @Composable
 fun Outlet(accountBundle: AccountBundle?, intentData: String?) {
-    val initialRoute = if (accountBundle == null) HomeRoute.route else PoolScoreListRoute.route
+    val gamblerId = accountBundle?.accountId
+    val initialRoute: Any =
+        if (gamblerId == null) HomeRoute else PoolScoreListRoute(gamblerId = gamblerId)
     val navController = rememberNavController()
 
     NavHost(navController = navController, startDestination = initialRoute) {
-        val gamblerId = accountBundle?.accountId ?: emptyString()
-
         homeNavView(navController = navController)
 
         signInWithEmailNavView(navController = navController)
@@ -65,24 +65,25 @@ fun Outlet(accountBundle: AccountBundle?, intentData: String?) {
         signInWithEmailLinkNavView(
             navController = navController,
             initialRoute = initialRoute,
-            emailLink = intentData ?: emptyString()
+            emailLink = intentData ?: emptyString(),
         )
 
         signInWithEmailAndPasswordNavView(
             navController = navController,
-            initialRoute = initialRoute
+            initialRoute = initialRoute,
         )
 
         poolScoreListNavView(
             navController = navController,
             initialRoute = initialRoute,
-            loggedInGamblerId = gamblerId
         )
 
-        poolHomeNavView(
-            navController = navController,
-            initialRoute = initialRoute,
-            gamblerId = gamblerId
-        )
+        gamblerId?.let {
+            poolHomeNavView(
+                navController = navController,
+                initialRoute = initialRoute,
+                gamblerId = gamblerId,
+            )
+        }
     }
 }

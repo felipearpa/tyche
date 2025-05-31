@@ -1,6 +1,6 @@
 package com.felipearpa.tyche.pool.gamblerscore
 
-import com.felipearpa.data.pool.application.GetPoolGamblerScoresByPoolUseCase
+import com.felipearpa.tyche.data.pool.application.GetPoolGamblerScoresByPoolUseCase
 import com.felipearpa.tyche.core.paging.map
 import com.felipearpa.tyche.pool.toPoolGamblerScoreModel
 

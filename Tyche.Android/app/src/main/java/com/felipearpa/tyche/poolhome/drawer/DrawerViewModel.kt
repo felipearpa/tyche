@@ -2,7 +2,7 @@ package com.felipearpa.tyche.poolhome.drawer
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.felipearpa.data.pool.application.GetPoolGamblerScoreUseCase
+import com.felipearpa.tyche.data.pool.application.GetPoolGamblerScoreUseCase
 import com.felipearpa.tyche.pool.PoolGamblerScoreModel
 import com.felipearpa.tyche.pool.toPoolGamblerScoreModel
 import com.felipearpa.tyche.session.authentication.application.LogOutUseCase
