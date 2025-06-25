@@ -1,9 +1,9 @@
 package com.felipearpa.tyche.session.di
 
 import android.content.Context
+import com.felipearpa.network.serializer.LocalDateTimeSerializer
 import com.felipearpa.tyche.core.data.StorageInKeyStore
 import com.felipearpa.tyche.core.network.UrlBasePathProvider
-import com.felipearpa.tyche.core.network.retrofit.LocalDateTimeSerializer
 import com.felipearpa.tyche.session.AccountStorage
 import com.felipearpa.tyche.session.AccountStorageInKeyStore
 import com.felipearpa.tyche.session.Auth

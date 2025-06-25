@@ -6,8 +6,8 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
+import com.felipearpa.foundation.emptyString
 import com.felipearpa.tyche.data.pool.application.GetPoolGamblerScoresByPoolUseCase
-import com.felipearpa.tyche.core.emptyString
 import com.felipearpa.tyche.pool.PoolGamblerScorePagingSource
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
@@ -23,7 +23,7 @@ private const val PREFETCH_DISTANCE = 5
 class GamblerScoreListViewModel @AssistedInject constructor(
     @Assisted("poolId") private val poolId: String,
     @Assisted("gamblerId") val gamblerId: String,
-    private val getPoolGamblerScoresByPoolUseCase: GetPoolGamblerScoresByPoolUseCase
+    private val getPoolGamblerScoresByPoolUseCase: GetPoolGamblerScoresByPoolUseCase,
 ) : ViewModel() {
 
     val pageSize = PAGE_SIZE
@@ -35,7 +35,7 @@ class GamblerScoreListViewModel @AssistedInject constructor(
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.Lazily,
-        initialValue = PagingData.empty()
+        initialValue = PagingData.empty(),
     )
 
     private fun buildPager(searchText: String) =
@@ -43,7 +43,7 @@ class GamblerScoreListViewModel @AssistedInject constructor(
             config = PagingConfig(
                 pageSize = pageSize,
                 prefetchDistance = PREFETCH_DISTANCE,
-                enablePlaceholders = true
+                enablePlaceholders = true,
             ),
             pagingSourceFactory = {
                 PoolGamblerScorePagingSource(
@@ -52,11 +52,11 @@ class GamblerScoreListViewModel @AssistedInject constructor(
                             next = next,
                             poolId = poolId,
                             search = { searchText.ifEmpty { null } },
-                            getPoolGamblerScoresByPoolUseCase = getPoolGamblerScoresByPoolUseCase
+                            getPoolGamblerScoresByPoolUseCase = getPoolGamblerScoresByPoolUseCase,
                         )
-                    }
+                    },
                 )
-            }
+            },
         )
 
     fun search(searchText: String) {

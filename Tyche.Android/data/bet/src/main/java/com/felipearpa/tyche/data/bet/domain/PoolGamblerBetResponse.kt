@@ -1,8 +1,8 @@
 package com.felipearpa.tyche.data.bet.domain
 
+import kotlinx.datetime.LocalDateTime
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
-import java.time.LocalDateTime
 
 @Serializable
 internal data class PoolGamblerBetResponse(

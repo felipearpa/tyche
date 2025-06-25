@@ -24,27 +24,27 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import com.felipearpa.foundation.emptyString
 import com.felipearpa.tyche.account.EmailTextField
 import com.felipearpa.tyche.account.PasswordTextField
 import com.felipearpa.tyche.account.R
-import com.felipearpa.tyche.core.emptyString
 import com.felipearpa.tyche.core.type.Email
 import com.felipearpa.tyche.session.AccountBundle
 import com.felipearpa.tyche.ui.exception.ExceptionAlertDialog
 import com.felipearpa.tyche.ui.exception.localizedOrDefault
 import com.felipearpa.tyche.ui.loading.LoadingContainerView
+import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
 import com.felipearpa.ui.state.LoadableViewState
 import com.felipearpa.ui.state.isLoading
 import com.felipearpa.ui.state.onFailure
 import com.felipearpa.ui.state.onSuccess
-import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
 import com.felipearpa.tyche.ui.R as SharedR
 
 @Composable
 fun EmailAndPasswordSignInView(
     viewModel: EmailAndPasswordSignInViewModel,
     onBack: () -> Unit,
-    onAuthenticate: (AccountBundle) -> Unit
+    onAuthenticate: (AccountBundle) -> Unit,
 ) {
     val viewState by viewModel.state.collectAsState(initial = LoadableViewState.Initial)
     EmailAndPasswordSignInView(
@@ -55,7 +55,7 @@ fun EmailAndPasswordSignInView(
         onBack = onBack,
         onReset = viewModel::reset,
         onSignIn = viewModel::signInWithEmailAndPassword,
-        onAuthenticate = onAuthenticate
+        onAuthenticate = onAuthenticate,
     )
 }
 
@@ -66,7 +66,7 @@ private fun EmailAndPasswordSignInView(
     onSignIn: (String, String) -> Unit,
     onBack: () -> Unit,
     onReset: () -> Unit,
-    onAuthenticate: (AccountBundle) -> Unit
+    onAuthenticate: (AccountBundle) -> Unit,
 ) {
     var email by remember { mutableStateOf(emptyString()) }
     var password by remember { mutableStateOf(emptyString()) }
@@ -95,7 +95,7 @@ private fun EmailAndPasswordSignInView(
         Box(
             modifier = Modifier
                 .padding(paddingValues = paddingValues)
-                .fillMaxWidth()
+                .fillMaxWidth(),
         ) {
             when (viewState) {
                 LoadableViewState.Initial ->
@@ -105,7 +105,7 @@ private fun EmailAndPasswordSignInView(
                         onEmailChanged = updateEmail,
                         password = password,
                         onPasswordChanged = updatePassword,
-                        onSignIn = { signIn?.invoke() }
+                        onSignIn = { signIn?.invoke() },
                     )
 
                 LoadableViewState.Loading -> LoadingContainerView {
@@ -120,7 +120,7 @@ private fun EmailAndPasswordSignInView(
                     email = email,
                     password = password,
                     viewState = viewState,
-                    reset = onReset
+                    reset = onReset,
                 )
 
                 is LoadableViewState.Success ->
@@ -141,28 +141,28 @@ private fun EmailAndPasswordSignInView(
     onEmailChanged: (String) -> Unit = {},
     password: String,
     onPasswordChanged: (String) -> Unit = {},
-    onSignIn: (() -> Unit)? = null
+    onSignIn: (() -> Unit)? = null,
 ) {
     Column(
         modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.medium)
+        verticalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.medium),
     ) {
         EmailTextField(
             value = email,
             onValueChanged = { newEmail -> onEmailChanged(newEmail) },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
         )
 
         PasswordTextField(
             value = password,
             onValueChanged = onPasswordChanged,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
         )
 
         Button(
             onClick = onSignIn ?: {},
             enabled = onSignIn != null,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
         ) {
             Text(text = stringResource(id = R.string.sign_in_action))
         }
@@ -175,18 +175,18 @@ private fun FailureContent(
     email: String,
     password: String,
     viewState: LoadableViewState<Unit>,
-    reset: () -> Unit
+    reset: () -> Unit,
 ) {
     viewState.onFailure { exception ->
         Column(modifier = modifier) {
             EmailAndPasswordSignInView(
                 email = email,
                 password = password,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
             )
             ExceptionAlertDialog(
                 exception = exception.localizedOrDefault(),
-                onDismiss = { reset() }
+                onDismiss = { reset() },
             )
         }
     }
@@ -201,10 +201,10 @@ private fun TopBar(onBack: (() -> Unit)?) {
             IconButton(onClick = { onBack?.invoke() }, enabled = onBack != null) {
                 Icon(
                     painter = painterResource(id = SharedR.drawable.arrow_back),
-                    contentDescription = emptyString()
+                    contentDescription = emptyString(),
                 )
             }
-        }
+        },
     )
 }
 
@@ -219,6 +219,6 @@ private fun EmailAndPasswordSignInViewPreview() {
         onSignIn = { _, _ -> },
         onBack = {},
         onReset = {},
-        onAuthenticate = {}
+        onAuthenticate = {},
     )
 }

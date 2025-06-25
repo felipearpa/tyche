@@ -25,7 +25,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.felipearpa.tyche.core.emptyString
+import com.felipearpa.foundation.emptyString
 import com.felipearpa.tyche.session.type.Password
 
 @Composable
@@ -53,28 +53,28 @@ fun PasswordTextField(
             visualTransformation = if (isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Password,
-                imeAction = ImeAction.Done
+                imeAction = ImeAction.Done,
             ),
             keyboardActions = KeyboardActions(
-                onDone = { isValid = value.isValidPassword() }
+                onDone = { isValid = value.isValidPassword() },
             ),
             trailingIcon = {
                 IconButton(onClick = { isPasswordVisible = !isPasswordVisible }) {
                     Icon(
                         painter = painterResource(id = passwordIconResource),
                         contentDescription = emptyString(),
-                        modifier = Modifier.size(24.dp, 24.dp)
+                        modifier = Modifier.size(24.dp, 24.dp),
                     )
                 }
             },
-            modifier = modifier
+            modifier = modifier,
         )
 
         AnimatedVisibility(visible = !isValid) {
             Text(
                 text = stringResource(id = R.string.password_validation_failure_message),
                 color = MaterialTheme.colorScheme.error,
-                style = MaterialTheme.typography.bodySmall
+                style = MaterialTheme.typography.bodySmall,
             )
         }
     }
@@ -90,7 +90,7 @@ fun PasswordTextFieldWithValidValuePreview() {
     PasswordTextField(
         value = "#Valid2Password#",
         onValueChanged = {},
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier.fillMaxWidth(),
     )
 }
 

@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
@@ -21,7 +22,6 @@ import androidx.paging.compose.itemKey
 import com.felipearpa.tyche.pool.PoolGamblerScoreModel
 import com.felipearpa.tyche.pool.poolGamblerScoreDummyModels
 import com.felipearpa.tyche.ui.lazy.RefreshableStatefulLazyColumn
-import com.felipearpa.tyche.ui.preview.UIModePreview
 import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
 import com.felipearpa.tyche.ui.theme.TycheTheme
 import kotlinx.coroutines.flow.flowOf
@@ -31,29 +31,31 @@ fun GamblerScoreList(
     lazyPoolGamblerScores: LazyPagingItems<PoolGamblerScoreModel>,
     loggedInGamblerId: String,
     modifier: Modifier = Modifier,
-    fakeItemCount: Int = 0
+    fakeItemCount: Int = 0,
 ) {
     RefreshableStatefulLazyColumn(
         modifier = modifier,
         lazyItems = lazyPoolGamblerScores,
         loadingContent = { GamblerScoreFakeList(count = fakeItemCount) },
-        loadingContentOnConcatenate = { gamblerScoreFakeItem() }
+        loadingContentOnConcatenate = { gamblerScoreFakeItem() },
     ) {
         items(
             count = lazyPoolGamblerScores.itemCount,
-            key = lazyPoolGamblerScores.itemKey(key = { poolGamblerScore ->
-                Pair(
-                    poolGamblerScore.poolId,
-                    poolGamblerScore.gamblerId
-                )
-            }),
-            contentType = lazyPoolGamblerScores.itemContentType { "PoolGamblerScore" }
+            key = lazyPoolGamblerScores.itemKey(
+                key = { poolGamblerScore ->
+                    Pair(
+                        poolGamblerScore.poolId,
+                        poolGamblerScore.gamblerId,
+                    )
+                },
+            ),
+            contentType = lazyPoolGamblerScores.itemContentType { "PoolGamblerScore" },
         ) { index ->
             val item = lazyPoolGamblerScores[index]
             GamblerScoreItem(
                 poolGamblerScore = item!!,
                 isLoggedIn = item.gamblerId == loggedInGamblerId,
-                modifier = Modifier.gamblerScoreItem()
+                modifier = Modifier.gamblerScoreItem(),
             )
             HorizontalDivider()
         }
@@ -64,7 +66,7 @@ fun GamblerScoreList(
 private fun GamblerScoreFakeList(count: Int) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+        verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         repeat(count) {
             item {
@@ -88,7 +90,7 @@ private fun Modifier.gamblerScoreItem() = composed {
         .padding(all = LocalBoxSpacing.current.medium)
 }
 
-@UIModePreview
+@PreviewLightDark
 @Composable
 private fun GamblerScoreListPreview() {
     val items = flowOf(PagingData.from(poolGamblerScoreDummyModels())).collectAsLazyPagingItems()
@@ -98,7 +100,7 @@ private fun GamblerScoreListPreview() {
             GamblerScoreList(
                 lazyPoolGamblerScores = items,
                 loggedInGamblerId = "gambler001",
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier.fillMaxSize(),
             )
         }
     }

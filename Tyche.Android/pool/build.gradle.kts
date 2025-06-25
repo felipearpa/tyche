@@ -2,12 +2,12 @@ val projectCompileSdk: String by project
 val projectMinSdk: String by project
 
 plugins {
-    alias(libs.plugins.androidLibrary)
-    alias(libs.plugins.jetbrainsKotlinAndroid)
-    alias(libs.plugins.composeCompiler)
-    alias(libs.plugins.jetbrainsKotlinKapt)
-    alias(libs.plugins.jetbrainsKotlinxSerialization)
-    alias(libs.plugins.googleDaggerHiltAndroid)
+    alias(libs.plugins.android.library)
+    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.kotlin.kapt)
+    alias(libs.plugins.kotlinx.serialization)
+    alias(libs.plugins.dagger.hilt)
 }
 
 android {
@@ -55,8 +55,9 @@ dependencies {
     implementation(libs.bundles.retrofit)
     implementation(libs.dagger.hilt.android)
     implementation(libs.hilt.navigation.compose)
-    implementation(libs.google.accompanist.placeholder)
-    implementation(libs.kotlinx.serialization)
+    implementation(libs.kotlinx.serialization.json)
+    implementation(libs.kotlinx.datetime)
+    implementation(libs.felipearpa.foundation)
 
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)

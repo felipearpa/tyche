@@ -27,7 +27,7 @@ fun <Value : Any> StatefulLazyColumn(
     state: LazyListState = rememberLazyListState(),
     loadingVisibilityDecider: LoadingVisibilityDecider<Value> = AlwaysLoadingVisibilityDecider(),
     loadingContent: @Composable () -> Unit = {},
-    itemContent: LazyListScope.() -> Unit
+    itemContent: LazyListScope.() -> Unit,
 ) = StatefulLazyColumn(
     modifier = modifier,
     lazyItems = lazyItems,
@@ -40,7 +40,7 @@ fun <Value : Any> StatefulLazyColumn(
     errorContentOnConcatenate = { contentOnConcatenateError(lazyItems = lazyItems) },
     errorContent = { ContentOnError(lazyItems = lazyItems) },
     emptyContent = { ContentOnEmpty() },
-    itemContent = itemContent
+    itemContent = itemContent,
 )
 
 fun LazyListScope.contentOnConcatenate() {
@@ -48,7 +48,7 @@ fun LazyListScope.contentOnConcatenate() {
         ProgressIndicator(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(LocalBoxSpacing.current.medium)
+                .padding(LocalBoxSpacing.current.medium),
         )
     }
 }
@@ -58,7 +58,7 @@ fun <Value : Any> LazyListScope.contentOnConcatenateError(lazyItems: LazyPagingI
         Retry(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 8.dp)
+                .padding(top = 8.dp),
         ) { lazyItems.retry() }
     }
 }
@@ -67,7 +67,7 @@ fun <Value : Any> LazyListScope.contentOnConcatenateError(lazyItems: LazyPagingI
 fun <Value : Any> ContentOnError(lazyItems: LazyPagingItems<Value>) {
     Box(
         contentAlignment = Alignment.Center,
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier.fillMaxSize(),
     ) {
         Failure(modifier = Modifier.fillMaxWidth()) {
             lazyItems.retry()
@@ -79,7 +79,7 @@ fun <Value : Any> ContentOnError(lazyItems: LazyPagingItems<Value>) {
 fun ContentOnEmpty() {
     Box(
         contentAlignment = Alignment.Center,
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier.fillMaxSize(),
     ) {
         Empty(modifier = Modifier.fillMaxWidth())
     }
@@ -100,7 +100,7 @@ fun <Value : Any> StatefulLazyColumn(
     errorContentOnConcatenate: (LazyListScope.() -> Unit) = {},
     errorContent: @Composable (Throwable) -> Unit = {},
     emptyContent: @Composable () -> Unit = {},
-    itemContent: LazyListScope.() -> Unit
+    itemContent: LazyListScope.() -> Unit,
 ) {
     if (LocalInspectionMode.current) {
         StatefulLazyColumnForPreview(
@@ -108,7 +108,7 @@ fun <Value : Any> StatefulLazyColumn(
             modifier,
             contentPadding,
             verticalArrangement,
-            itemContent = itemContent
+            itemContent = itemContent,
         )
     } else {
         when {
@@ -117,7 +117,7 @@ fun <Value : Any> StatefulLazyColumn(
 
             lazyItems.loadState.refresh is LoadState.Error -> ErrorContent(
                 errorLoadState = lazyItems.loadState.refresh as LoadState.Error,
-                errorContent = errorContent
+                errorContent = errorContent,
             )
 
             else ->
@@ -130,7 +130,7 @@ fun <Value : Any> StatefulLazyColumn(
                     loadingContentOnConcatenate = loadingContentOnConcatenate,
                     errorContentOnConcatenate = errorContentOnConcatenate,
                     emptyContent = emptyContent,
-                    itemContent = itemContent
+                    itemContent = itemContent,
                 )
         }
     }
@@ -142,13 +142,13 @@ private fun StatefulLazyColumnForPreview(
     modifier: Modifier,
     contentPadding: PaddingValues,
     verticalArrangement: Arrangement.Vertical,
-    itemContent: LazyListScope.() -> Unit
+    itemContent: LazyListScope.() -> Unit,
 ) {
     LazyColumn(
         state = state,
         modifier = modifier,
         contentPadding = contentPadding,
-        verticalArrangement = verticalArrangement
+        verticalArrangement = verticalArrangement,
     ) {
         itemContent()
     }
@@ -157,7 +157,7 @@ private fun StatefulLazyColumnForPreview(
 @Composable
 private fun ErrorContent(
     errorLoadState: LoadState.Error,
-    errorContent: @Composable (Throwable) -> Unit = {}
+    errorContent: @Composable (Throwable) -> Unit = {},
 ) {
     errorContent(errorLoadState.error)
 }
@@ -179,7 +179,7 @@ private fun <Value : Any> StatefulLazyColumn(
     loadingContentOnConcatenate: (LazyListScope.() -> Unit) = {},
     errorContentOnConcatenate: (LazyListScope.() -> Unit) = {},
     emptyContent: @Composable () -> Unit = {},
-    itemContent: LazyListScope.() -> Unit
+    itemContent: LazyListScope.() -> Unit,
 ) {
     if (!lazyItems.hasItems() && !lazyItems.isPendingLoad()) {
         emptyContent()
@@ -188,12 +188,12 @@ private fun <Value : Any> StatefulLazyColumn(
             state = state,
             modifier = modifier,
             contentPadding = contentPadding,
-            verticalArrangement = verticalArrangement
+            verticalArrangement = verticalArrangement,
         ) {
             prependContent(
                 lazyItems = lazyItems,
                 loadingContentOnConcatenate = loadingContentOnConcatenate,
-                errorContentOnConcatenate = errorContentOnConcatenate
+                errorContentOnConcatenate = errorContentOnConcatenate,
             )
 
             itemContent()
@@ -201,7 +201,7 @@ private fun <Value : Any> StatefulLazyColumn(
             appendContent(
                 lazyItems = lazyItems,
                 loadingContentOnConcatenate = loadingContentOnConcatenate,
-                errorContentOnConcatenate = errorContentOnConcatenate
+                errorContentOnConcatenate = errorContentOnConcatenate,
             )
         }
     }

@@ -1,4 +1,4 @@
-package com.felipearpa.tyche.core.network.retrofit
+package com.felipearpa.network.serializer
 
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.descriptors.PrimitiveKind

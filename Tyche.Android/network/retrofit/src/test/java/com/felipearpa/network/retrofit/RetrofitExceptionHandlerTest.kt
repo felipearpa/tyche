@@ -1,6 +1,6 @@
-package com.felipearpa.tyche.core.network
+package com.felipearpa.network.retrofit
 
-import com.felipearpa.tyche.core.emptyString
+import com.felipearpa.network.NetworkException
 import io.kotest.matchers.booleans.shouldBeTrue
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
@@ -76,8 +76,8 @@ class RetrofitExceptionHandlerTest {
             throw HttpException(
                 Response.error<String>(
                     FAILED_STATUS_CODE,
-                    emptyString().toResponseBody("plain/text".toMediaType())
-                )
+                    "".toResponseBody("plain/text".toMediaType()),
+                ),
             )
         }
         return block
@@ -85,8 +85,11 @@ class RetrofitExceptionHandlerTest {
 
     private fun `verify failure is http`(result: Result<String>) {
         result.isFailure.shouldBeTrue()
-        result.exceptionOrNull()!!.shouldBeTypeOf<NetworkException.Http>()
-        (result.exceptionOrNull() as NetworkException.Http).httpStatusCode.value shouldBe FAILED_STATUS_CODE
+        val exception = result.exceptionOrNull().shouldNotBeNull()
+        with(exception) {
+            shouldBeTypeOf<NetworkException.Http>()
+            httpStatus.code shouldBe FAILED_STATUS_CODE
+        }
     }
 
     private fun `assert failure is a runtime exception`(result: Result<String>) {
@@ -98,9 +101,7 @@ class RetrofitExceptionHandlerTest {
         result.isFailure.shouldBeTrue()
         result.exceptionOrNull()!!.shouldBeTypeOf<NetworkException.RemoteCommunication>()
     }
-
-    companion object {
-        const val BLOCK_VALUE = "result"
-        const val FAILED_STATUS_CODE = 500
-    }
 }
+
+private const val BLOCK_VALUE = "result"
+private const val FAILED_STATUS_CODE = 500

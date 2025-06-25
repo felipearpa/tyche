@@ -2,4 +2,7 @@
 <resources>
     <string name="position_label">Posición %d</string>
     <string name="gambler_pool_list_title">Mis pollas</string>
+    <string name="pool_from_layout_creator_title">Polla desde plantilla</string>
+    <string name="starting_from_date_text">Inicia el %1$s</string>
+    <string name="select_pool_layout_text">Elige una plantilla para crear tu polla</string>
 </resources>

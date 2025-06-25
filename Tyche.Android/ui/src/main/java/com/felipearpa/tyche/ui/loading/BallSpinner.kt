@@ -15,10 +15,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
-import com.felipearpa.tyche.core.emptyString
+import com.felipearpa.foundation.emptyString
 import com.felipearpa.tyche.ui.R
-import com.felipearpa.tyche.ui.preview.UIModePreview
 import com.felipearpa.tyche.ui.theme.TycheTheme
 
 private const val labelAnimation = "ProgressIndicator"
@@ -32,9 +32,9 @@ fun BallSpinner(modifier: Modifier = Modifier) {
         targetValue = 360f,
         animationSpec = infiniteRepeatable(
             animation = tween(2000, easing = LinearEasing),
-            repeatMode = RepeatMode.Restart
+            repeatMode = RepeatMode.Restart,
         ),
-        label = labelAnimation
+        label = labelAnimation,
     )
 
     Icon(
@@ -43,11 +43,11 @@ fun BallSpinner(modifier: Modifier = Modifier) {
         tint = MaterialTheme.colorScheme.primary,
         modifier = modifier
             .size(width = iconSize.dp, height = iconSize.dp)
-            .rotate(angle)
+            .rotate(angle),
     )
 }
 
-@UIModePreview
+@PreviewLightDark
 @Composable
 private fun ProgressIndicatorPreview() {
     TycheTheme {

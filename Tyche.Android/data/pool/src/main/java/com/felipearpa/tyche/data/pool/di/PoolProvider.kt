@@ -6,6 +6,7 @@ import com.felipearpa.tyche.data.pool.application.GetPoolGamblerScoresByGamblerU
 import com.felipearpa.tyche.data.pool.application.GetPoolGamblerScoresByPoolUseCase
 import com.felipearpa.tyche.data.pool.domain.PoolGamblerScoreRemoteDataSource
 import com.felipearpa.tyche.data.pool.domain.PoolGamblerScoreRepository
+import com.felipearpa.tyche.data.pool.domain.PoolLayoutRemoteDataSource
 import com.felipearpa.tyche.data.pool.domain.PoolLayoutRepository
 import com.felipearpa.tyche.data.pool.infrastructure.PoolGamblerScoreRemoteRepository
 import com.felipearpa.tyche.data.pool.infrastructure.PoolLayoutRemoteRepository
@@ -55,6 +56,6 @@ internal object PoolDataSourceProvider {
         retrofit.create(PoolGamblerScoreRemoteDataSource::class.java)
 
     @Provides
-    fun providePoolLayoutRepository(@Auth retrofit: Retrofit): PoolLayoutRepository =
-        retrofit.create(PoolLayoutRepository::class.java)
+    fun providePoolLayoutRemoteDataSource(@Auth retrofit: Retrofit): PoolLayoutRemoteDataSource =
+        retrofit.create(PoolLayoutRemoteDataSource::class.java)
 }

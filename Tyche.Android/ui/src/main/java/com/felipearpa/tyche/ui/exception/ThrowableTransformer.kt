@@ -1,6 +1,6 @@
 package com.felipearpa.tyche.ui.exception
 
-import com.felipearpa.tyche.core.network.NetworkException
+import com.felipearpa.network.NetworkException
 import com.felipearpa.tyche.ui.network.toNetworkLocalizedException
 
 fun Throwable.orDefaultLocalized() =

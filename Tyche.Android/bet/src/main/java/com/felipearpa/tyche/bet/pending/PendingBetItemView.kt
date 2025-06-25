@@ -29,11 +29,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.max
+import com.felipearpa.foundation.emptyString
 import com.felipearpa.tyche.bet.PoolGamblerBetModel
 import com.felipearpa.tyche.bet.awayTeamBetRawValue
 import com.felipearpa.tyche.bet.homeTeamBetRawValue
 import com.felipearpa.tyche.bet.poolGamblerBetDummyModel
-import com.felipearpa.tyche.core.emptyString
 import com.felipearpa.tyche.core.type.TeamScore
 import com.felipearpa.tyche.ui.exception.UnknownLocalizedException
 import com.felipearpa.tyche.ui.loading.BallSpinner
@@ -57,14 +57,14 @@ fun PendingBetItemView(viewModel: PendingBetItemViewModel, modifier: Modifier = 
             viewModel.bet(
                 TeamScore(
                     homeTeamValue = viewState.value.homeTeamBet.toInt(),
-                    awayTeamValue = viewState.value.awayTeamBet.toInt()
-                )
+                    awayTeamValue = viewState.value.awayTeamBet.toInt(),
+                ),
             )
         },
         reset = viewModel::reset,
         retryBet = viewModel::retryBet,
         edit = { viewState = PendingBetItemViewState.Edition(viewState.value) },
-        modifier = modifier
+        modifier = modifier,
     )
 
     LaunchedEffect(viewModelState) {
@@ -74,8 +74,8 @@ fun PendingBetItemView(viewModel: PendingBetItemViewModel, modifier: Modifier = 
                 PendingBetItemViewState.Visualization(
                     PartialPoolGamblerBetModel(
                         homeTeamBet = poolGamblerBet.homeTeamBetRawValue(),
-                        awayTeamBet = poolGamblerBet.awayTeamBetRawValue()
-                    )
+                        awayTeamBet = poolGamblerBet.awayTeamBetRawValue(),
+                    ),
                 )
             }
 
@@ -93,11 +93,11 @@ private fun PendingBetItemView(
     bet: () -> Unit = {},
     reset: () -> Unit = {},
     retryBet: () -> Unit = {},
-    edit: () -> Unit = {}
+    edit: () -> Unit = {},
 ) {
     Column(
         modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.medium)
+        verticalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.medium),
     ) {
         when (viewModelState) {
             is EditableViewState.Initial, is EditableViewState.Success -> {
@@ -112,11 +112,11 @@ private fun PendingBetItemView(
                     onBetChanged = { newPartialPoolGamblerBet ->
                         onViewStateChanged(
                             viewState.copy(
-                                newPartialPoolGamblerBet
-                            )
+                                newPartialPoolGamblerBet,
+                            ),
                         )
                     },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
                 )
                 DefaultActionBar(
                     viewModelState = viewModelState,
@@ -124,7 +124,7 @@ private fun PendingBetItemView(
                     bet = bet,
                     reset = reset,
                     edit = edit,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
                 )
             }
 
@@ -132,11 +132,11 @@ private fun PendingBetItemView(
                 PendingBetItem(
                     poolGamblerBet = viewModelState.target,
                     viewState = PendingBetItemViewState.Visualization(viewState.value),
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
                 )
                 LoadingActionBar(
                     viewModelState = viewModelState,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
                 )
             }
 
@@ -144,13 +144,13 @@ private fun PendingBetItemView(
                 PendingBetItem(
                     poolGamblerBet = viewModelState.failed,
                     viewState = PendingBetItemViewState.Visualization(viewState.value),
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
                 )
                 FailureActionBar(
                     viewModelState = viewModelState,
                     retryBet = retryBet,
                     reset = reset,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
                 )
             }
         }
@@ -164,7 +164,7 @@ private fun DefaultActionBar(
     bet: () -> Unit,
     reset: () -> Unit,
     edit: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     if (viewState is PendingBetItemViewState.Edition) {
         EditableDefaultActionBar(
@@ -172,14 +172,14 @@ private fun DefaultActionBar(
             viewState = viewState,
             bet = bet,
             reset = reset,
-            modifier = modifier
+            modifier = modifier,
         )
     } else {
         NonEditableDefaultActionBar(
             viewModelState = viewModelState,
             viewState = viewState,
             edit = edit,
-            modifier = modifier
+            modifier = modifier,
         )
     }
 }
@@ -190,7 +190,7 @@ private fun EditableDefaultActionBar(
     viewState: PendingBetItemViewState,
     bet: () -> Unit,
     reset: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     val poolGamblerBet = viewModelState.relevantValue()
     var isRecomposition by remember { mutableStateOf(false) }
@@ -201,7 +201,7 @@ private fun EditableDefaultActionBar(
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier
+        modifier = modifier,
     ) {
         StateIndicator(viewModelState = viewModelState, isEditable = true)
 
@@ -215,7 +215,7 @@ private fun EditableDefaultActionBar(
                                 max(maxButtonWidth, with(density) { intSize.width.toDp() })
                         }
                     }
-                    .then(buttonWidthModifier)
+                    .then(buttonWidthModifier),
             ) {
                 Text(text = stringResource(id = SharedR.string.cancel_action))
             }
@@ -224,7 +224,7 @@ private fun EditableDefaultActionBar(
                 onClick = bet,
                 enabled = viewState.value != PartialPoolGamblerBetModel(
                     homeTeamBet = poolGamblerBet.homeTeamBetRawValue(),
-                    awayTeamBet = poolGamblerBet.awayTeamBetRawValue()
+                    awayTeamBet = poolGamblerBet.awayTeamBetRawValue(),
                 ),
                 modifier = Modifier
                     .onSizeChanged { intSize ->
@@ -233,7 +233,7 @@ private fun EditableDefaultActionBar(
                                 max(maxButtonWidth, with(density) { intSize.width.toDp() })
                         }
                     }
-                    .then(buttonWidthModifier)
+                    .then(buttonWidthModifier),
             ) {
                 Text(text = stringResource(id = SharedR.string.save_action))
             }
@@ -250,16 +250,16 @@ private fun NonEditableDefaultActionBar(
     viewModelState: EditableViewState<PoolGamblerBetModel>,
     viewState: PendingBetItemViewState,
     edit: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier
+        modifier = modifier,
     ) {
         StateIndicator(
             viewModelState = viewModelState,
-            isEditable = viewState is PendingBetItemViewState.Edition
+            isEditable = viewState is PendingBetItemViewState.Edition,
         )
 
         TextButton(onClick = edit) {
@@ -271,7 +271,7 @@ private fun NonEditableDefaultActionBar(
 @Composable
 private fun LoadingActionBar(
     viewModelState: EditableViewState<PoolGamblerBetModel>,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Row(modifier = modifier) {
         StateIndicator(viewModelState = viewModelState)
@@ -283,7 +283,7 @@ private fun FailureActionBar(
     viewModelState: EditableViewState<PoolGamblerBetModel>,
     retryBet: () -> Unit,
     reset: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     var isRecomposition by remember { mutableStateOf(false) }
     var maxButtonWidth by remember { mutableStateOf(0.dp) }
@@ -293,7 +293,7 @@ private fun FailureActionBar(
     Row(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween
+        horizontalArrangement = Arrangement.SpaceBetween,
     ) {
         StateIndicator(viewModelState = viewModelState)
 
@@ -307,7 +307,7 @@ private fun FailureActionBar(
                                 max(maxButtonWidth, with(density) { intSize.width.toDp() })
                         }
                     }
-                    .then(buttonWidthModifier)
+                    .then(buttonWidthModifier),
             ) {
                 Text(text = stringResource(id = SharedR.string.cancel_action))
             }
@@ -321,7 +321,7 @@ private fun FailureActionBar(
                                 max(maxButtonWidth, with(density) { intSize.width.toDp() })
                         }
                     }
-                    .then(buttonWidthModifier)
+                    .then(buttonWidthModifier),
             ) {
                 Text(text = stringResource(id = SharedR.string.retry_action))
             }
@@ -335,12 +335,12 @@ private fun FailureActionBar(
 @Composable
 private fun StateIndicator(
     viewModelState: EditableViewState<PoolGamblerBetModel>,
-    isEditable: Boolean = false
+    isEditable: Boolean = false,
 ) {
     if (isEditable) {
         Icon(
             painter = painterResource(id = SharedR.drawable.pending),
-            contentDescription = emptyString()
+            contentDescription = emptyString(),
         )
     } else {
         when (viewModelState) {
@@ -348,11 +348,11 @@ private fun StateIndicator(
                 Icon(
                     painter = painterResource(id = SharedR.drawable.error),
                     contentDescription = emptyString(),
-                    tint = MaterialTheme.colorScheme.error
+                    tint = MaterialTheme.colorScheme.error,
                 )
 
             is EditableViewState.Loading -> BallSpinner(
-                modifier = Modifier.size(ICON_SIZE)
+                modifier = Modifier.size(ICON_SIZE),
             )
 
             is EditableViewState.Initial, is EditableViewState.Success -> {
@@ -372,12 +372,12 @@ private fun ContentIndicator(poolGamblerBet: PoolGamblerBetModel) {
     if (poolGamblerBet.isLocked) {
         Icon(
             painter = painterResource(id = SharedR.drawable.pending),
-            contentDescription = emptyString()
+            contentDescription = emptyString(),
         )
     } else {
         Icon(
             painter = painterResource(id = SharedR.drawable.done),
-            contentDescription = emptyString()
+            contentDescription = emptyString(),
         )
     }
 }
@@ -390,8 +390,8 @@ private fun NonEditableInitialPendingBetItemViewPreview() {
             PendingBetItemView(
                 viewModelState = EditableViewState.Initial(poolGamblerBetDummyModel()),
                 viewState = PendingBetItemViewState.Visualization(
-                    partialPoolGamblerBetDummyModel()
-                )
+                    partialPoolGamblerBetDummyModel(),
+                ),
             )
         }
     }
@@ -404,7 +404,7 @@ private fun EditableInitialPendingBetItemViewPreview() {
         Surface {
             PendingBetItemView(
                 viewModelState = EditableViewState.Initial(poolGamblerBetDummyModel()),
-                viewState = PendingBetItemViewState.Edition(partialPoolGamblerBetDummyModel())
+                viewState = PendingBetItemViewState.Edition(partialPoolGamblerBetDummyModel()),
             )
         }
     }
@@ -418,11 +418,11 @@ private fun NonEditableLoadingPendingBetItemViewPreview() {
             PendingBetItemView(
                 viewModelState = EditableViewState.Loading(
                     current = poolGamblerBetDummyModel(),
-                    target = poolGamblerBetDummyModel()
+                    target = poolGamblerBetDummyModel(),
                 ),
                 viewState = PendingBetItemViewState.Visualization(
-                    partialPoolGamblerBetDummyModel()
-                )
+                    partialPoolGamblerBetDummyModel(),
+                ),
             )
         }
     }
@@ -436,9 +436,9 @@ private fun EditableLoadingPendingBetItemViewPreview() {
             PendingBetItemView(
                 viewModelState = EditableViewState.Loading(
                     current = poolGamblerBetDummyModel(),
-                    target = poolGamblerBetDummyModel()
+                    target = poolGamblerBetDummyModel(),
                 ),
-                viewState = PendingBetItemViewState.Edition(partialPoolGamblerBetDummyModel())
+                viewState = PendingBetItemViewState.Edition(partialPoolGamblerBetDummyModel()),
             )
         }
     }
@@ -453,11 +453,11 @@ private fun NonEditableFailurePendingBetItemViewPreview() {
                 viewModelState = EditableViewState.Failure(
                     current = poolGamblerBetDummyModel(),
                     failed = poolGamblerBetDummyModel(),
-                    exception = UnknownLocalizedException()
+                    exception = UnknownLocalizedException(),
                 ),
                 viewState = PendingBetItemViewState.Visualization(
-                    partialPoolGamblerBetDummyModel()
-                )
+                    partialPoolGamblerBetDummyModel(),
+                ),
             )
         }
     }
@@ -472,9 +472,9 @@ private fun EditableFailurePendingBetItemViewPreview() {
                 viewModelState = EditableViewState.Failure(
                     current = poolGamblerBetDummyModel(),
                     failed = poolGamblerBetDummyModel(),
-                    exception = UnknownLocalizedException()
+                    exception = UnknownLocalizedException(),
                 ),
-                viewState = PendingBetItemViewState.Edition(partialPoolGamblerBetDummyModel())
+                viewState = PendingBetItemViewState.Edition(partialPoolGamblerBetDummyModel()),
             )
         }
     }

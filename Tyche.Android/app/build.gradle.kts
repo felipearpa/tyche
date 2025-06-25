@@ -3,13 +3,13 @@ val projectMinSdk: String by project
 val urlBasePath: String by project
 
 plugins {
-    alias(libs.plugins.androidApplication)
-    alias(libs.plugins.jetbrainsKotlinAndroid)
-    alias(libs.plugins.composeCompiler)
-    alias(libs.plugins.googleGmsServices)
-    alias(libs.plugins.jetbrainsKotlinxSerialization)
-    alias(libs.plugins.jetbrainsKotlinKapt)
-    alias(libs.plugins.googleDaggerHiltAndroid)
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.google.gms.services)
+    alias(libs.plugins.kotlinx.serialization)
+    alias(libs.plugins.kotlin.kapt)
+    alias(libs.plugins.dagger.hilt)
 }
 
 android {
@@ -76,13 +76,13 @@ dependencies {
     implementation(libs.constraint.layout.compose)
     implementation(libs.androidx.security.crypto)
     implementation(libs.bundles.retrofit)
-    implementation(libs.google.accompanist.placeholder)
     implementation(libs.dagger.hilt.android)
     implementation(libs.hilt.navigation.compose)
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.auth)
     implementation(libs.felipearpa.viewing.state)
-    implementation(libs.bundles.kotlinx.serialization)
+    implementation(libs.kotlinx.serialization.json)
+    implementation(libs.felipearpa.foundation)
 
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)
@@ -108,6 +108,7 @@ dependencies {
     implementation(project(":session"))
     implementation(project(":data:pool"))
     implementation(project(":data:bet"))
+    implementation(project(":network:core"))
 }
 
 kapt {

@@ -1,6 +1,6 @@
 package com.felipearpa.tyche.session
 
-import com.felipearpa.tyche.core.emptyString
+import com.felipearpa.foundation.emptyString
 import kotlinx.serialization.Serializable
 
 @Serializable

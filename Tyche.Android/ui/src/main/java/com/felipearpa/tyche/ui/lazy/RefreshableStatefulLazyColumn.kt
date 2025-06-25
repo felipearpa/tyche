@@ -3,6 +3,7 @@ package com.felipearpa.tyche.ui.lazy
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -16,6 +17,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
@@ -36,40 +38,68 @@ fun <Value : Any> RefreshableStatefulLazyColumn(
     errorContentOnConcatenate: (LazyListScope.() -> Unit) = {},
     errorContent: @Composable (Throwable) -> Unit = { ContentOnError(lazyItems = lazyItems) },
     emptyContent: @Composable () -> Unit = { ContentOnEmpty() },
-    itemContent: LazyListScope.() -> Unit
+    itemContent: LazyListScope.() -> Unit,
 ) {
-    var isRefreshing by remember { mutableStateOf(false) }
-    val pullToRefreshState = rememberPullToRefreshState()
-    val onRefresh: () -> Unit = { isRefreshing = true }
-
-    if (isRefreshing) {
-        LaunchedEffect(Unit) { lazyItems.refresh() }
-    }
-
-    if (lazyItems.loadState.refresh is LoadState.NotLoading) {
-        LaunchedEffect(Unit) { isRefreshing = false }
-    }
-
-    PullToRefreshBox(
-        isRefreshing = isRefreshing,
-        modifier = modifier,
-        state = pullToRefreshState,
-        onRefresh = onRefresh
-    ) {
-        StatefulLazyColumn(
-            modifier = Modifier.fillMaxSize(),
-            lazyItems = lazyItems,
-            state = state,
-            contentPadding = contentPadding,
-            reverseLayout = reverseLayout,
-            verticalArrangement = verticalArrangement,
-            loadingVisibilityDecider = loadingVisibilityDecider,
-            loadingContent = loadingContent,
-            loadingContentOnConcatenate = loadingContentOnConcatenate,
-            errorContentOnConcatenate = errorContentOnConcatenate,
-            errorContent = errorContent,
-            emptyContent = emptyContent,
-            itemContent = itemContent
+    if (LocalInspectionMode.current) {
+        RefreshableStatefulLazyColumnForPreview(
+            state,
+            modifier,
+            contentPadding,
+            verticalArrangement,
+            itemContent = itemContent,
         )
+    } else {
+        var isRefreshing by remember { mutableStateOf(false) }
+        val pullToRefreshState = rememberPullToRefreshState()
+        val onRefresh: () -> Unit = { isRefreshing = true }
+
+        if (isRefreshing) {
+            LaunchedEffect(Unit) { lazyItems.refresh() }
+        }
+
+        if (lazyItems.loadState.refresh is LoadState.NotLoading) {
+            LaunchedEffect(Unit) { isRefreshing = false }
+        }
+
+        PullToRefreshBox(
+            isRefreshing = isRefreshing,
+            modifier = modifier,
+            state = pullToRefreshState,
+            onRefresh = onRefresh,
+        ) {
+            StatefulLazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                lazyItems = lazyItems,
+                state = state,
+                contentPadding = contentPadding,
+                reverseLayout = reverseLayout,
+                verticalArrangement = verticalArrangement,
+                loadingVisibilityDecider = loadingVisibilityDecider,
+                loadingContent = loadingContent,
+                loadingContentOnConcatenate = loadingContentOnConcatenate,
+                errorContentOnConcatenate = errorContentOnConcatenate,
+                errorContent = errorContent,
+                emptyContent = emptyContent,
+                itemContent = itemContent,
+            )
+        }
+    }
+}
+
+@Composable
+private fun RefreshableStatefulLazyColumnForPreview(
+    state: LazyListState,
+    modifier: Modifier,
+    contentPadding: PaddingValues,
+    verticalArrangement: Arrangement.Vertical,
+    itemContent: LazyListScope.() -> Unit,
+) {
+    LazyColumn(
+        state = state,
+        modifier = modifier,
+        contentPadding = contentPadding,
+        verticalArrangement = verticalArrangement,
+    ) {
+        itemContent()
     }
 }

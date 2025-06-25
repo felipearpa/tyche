@@ -15,7 +15,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.felipearpa.tyche.core.emptyString
+import com.felipearpa.foundation.emptyString
 import com.felipearpa.tyche.ui.R
 
 @Composable
@@ -23,24 +23,24 @@ fun Empty(modifier: Modifier = Modifier) {
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(8.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Icon(
             painter = painterResource(id = R.drawable.ic_sentiment_sad),
             contentDescription = emptyString(),
-            modifier = Modifier.size(40.dp, 40.dp)
+            modifier = Modifier.size(40.dp, 40.dp),
         )
 
         Text(
             text = stringResource(id = R.string.empty_list_message),
             textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.titleMedium
+            style = MaterialTheme.typography.titleMedium,
         )
 
         Text(
             text = stringResource(id = R.string.empty_list_recovery_message),
             textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.bodySmall
+            style = MaterialTheme.typography.bodySmall,
         )
     }
 }

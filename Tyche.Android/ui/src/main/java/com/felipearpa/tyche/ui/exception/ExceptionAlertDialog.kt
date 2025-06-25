@@ -14,7 +14,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.felipearpa.tyche.core.emptyString
+import com.felipearpa.foundation.emptyString
 import com.felipearpa.tyche.ui.R
 
 @Composable
@@ -34,10 +34,10 @@ fun ExceptionAlertDialog(exception: LocalizedException, onDismiss: () -> Unit) {
             Text(
                 text = listOfNotNull(
                     exception.failureReason,
-                    exception.recoverySuggestion
+                    exception.recoverySuggestion,
                 ).joinToString(separator = ". "),
                 textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
             )
         },
         icon = {
@@ -45,9 +45,9 @@ fun ExceptionAlertDialog(exception: LocalizedException, onDismiss: () -> Unit) {
                 painter = painterResource(id = R.drawable.ic_sentiment_sad),
                 contentDescription = emptyString(),
                 modifier = Modifier.size(40.dp, 40.dp),
-                tint = MaterialTheme.colorScheme.error
+                tint = MaterialTheme.colorScheme.error,
             )
-        }
+        },
     )
 }
 

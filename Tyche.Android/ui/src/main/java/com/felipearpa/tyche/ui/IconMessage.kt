@@ -15,7 +15,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.felipearpa.tyche.core.emptyString
+import com.felipearpa.foundation.emptyString
 import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
 
 private const val ICON_SIZE = 40
@@ -30,12 +30,12 @@ fun IconMessage(@DrawableRes iconResourceId: Int, message: String) {
     Column(
         modifier = Modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.small),
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Icon(
             painter = painterResource(id = iconResourceId),
             contentDescription = emptyString(),
-            modifier = Modifier.size(width = ICON_SIZE.dp, height = ICON_SIZE.dp)
+            modifier = Modifier.size(width = ICON_SIZE.dp, height = ICON_SIZE.dp),
         )
 
         Text(text = message)
@@ -47,6 +47,6 @@ fun IconMessage(@DrawableRes iconResourceId: Int, message: String) {
 private fun IconMessagePreview() {
     IconMessage(
         iconResourceId = R.drawable.ic_sentiment_sad,
-        messageResourceId = R.string.unknown_failure_reason
+        messageResourceId = R.string.unknown_failure_reason,
     )
 }

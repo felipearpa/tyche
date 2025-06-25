@@ -1,4 +1,4 @@
-package com.felipearpa.tyche.core.network
+package com.felipearpa.network
 
 import io.kotest.matchers.booleans.shouldBeTrue
 import io.kotest.matchers.equals.shouldBeEqual
@@ -17,7 +17,7 @@ class NetworkExceptionTest {
     fun `given a NetworkException failure result and a transform function when a NetworkException is recover then a transformed failure result is returned`() =
         listOf<Result<String>>(
             Result.failure(NetworkException.RemoteCommunication),
-            Result.failure(NetworkException.Http(HttpStatusCode.INTERNAL_SERVER_ERROR))
+            Result.failure(NetworkException.Http(HttpStatus.INTERNAL_SERVER_ERROR)),
         ).map { networkFailureResult ->
             dynamicTest("given $networkFailureResult and a transform function when a NetworkException is recover then a transformed failure result is returned") {
                 val transformNetworkExceptionFunc = transformNetworkExceptionFunc()
@@ -26,7 +26,7 @@ class NetworkExceptionTest {
                 `verify transformed result was applied to NetworkException`(
                     transformNetworkExceptionFunc = transformNetworkExceptionFunc,
                     networkFailureResult.exceptionOrNull() as NetworkException,
-                    actualResult = actualResult
+                    actualResult = actualResult,
                 )
             }
         }
@@ -38,7 +38,7 @@ class NetworkExceptionTest {
             nonNetworkFailureResult.recoverNetworkException(transformNetworkExceptionFunc)
         `verify transformed result was not applied to NetworkException`(
             transformNetworkExceptionFunc = transformNetworkExceptionFunc,
-            actualResult = actualResult
+            actualResult = actualResult,
         )
     }
 
@@ -50,7 +50,7 @@ class NetworkExceptionTest {
         `verify transformed result was applied to Http NetworkException`(
             transformHttpNetworkExceptionFunc = transformHttpNetworkExceptionFunc,
             httpFailureResult.exceptionOrNull() as NetworkException.Http,
-            actualResult = transformedResult
+            actualResult = transformedResult,
         )
     }
 
@@ -61,14 +61,14 @@ class NetworkExceptionTest {
             nonNetworkFailureResult.recoverHttpException(transformHttpExceptionFunc)
         `verify transformed result was not applied to Http NetworkException`(
             transformHttpNetworkExceptionFunc = transformHttpExceptionFunc,
-            actualResult = nonTransformedResult
+            actualResult = nonTransformedResult,
         )
     }
 
     private fun `verify transformed result was applied to NetworkException`(
         transformNetworkExceptionFunc: (NetworkException) -> Throwable,
         networkException: NetworkException,
-        actualResult: Result<String>
+        actualResult: Result<String>,
     ) {
         actualResult.isFailure.shouldBeTrue()
 
@@ -81,7 +81,7 @@ class NetworkExceptionTest {
     private fun `verify transformed result was applied to Http NetworkException`(
         transformHttpNetworkExceptionFunc: (NetworkException.Http) -> Throwable,
         httpNetworkException: NetworkException.Http,
-        actualResult: Result<String>
+        actualResult: Result<String>,
     ) {
         actualResult.isFailure.shouldBeTrue()
         actualResult.exceptionOrNull()!! shouldBeEqual transformedException
@@ -90,7 +90,7 @@ class NetworkExceptionTest {
 
     private fun `verify transformed result was not applied to NetworkException`(
         transformNetworkExceptionFunc: (NetworkException) -> Throwable,
-        actualResult: Result<String>
+        actualResult: Result<String>,
     ) {
         actualResult shouldBeEqual nonNetworkFailureResult
         verify(exactly = 0) { transformNetworkExceptionFunc(any()) }
@@ -98,7 +98,7 @@ class NetworkExceptionTest {
 
     private fun `verify transformed result was not applied to Http NetworkException`(
         transformHttpNetworkExceptionFunc: (NetworkException.Http) -> Throwable,
-        actualResult: Result<String>
+        actualResult: Result<String>,
     ) {
         actualResult shouldBeEqual nonNetworkFailureResult
         verify(exactly = 0) { transformHttpNetworkExceptionFunc(any()) }
@@ -124,11 +124,9 @@ class NetworkExceptionTest {
     fun tearDown() {
         clearAllMocks()
     }
-
-    companion object {
-        val nonNetworkFailureResult: Result<String> = Result.failure(RuntimeException())
-        val transformedException = RuntimeException()
-        val httpFailureResult: Result<String> =
-            Result.failure(NetworkException.Http(HttpStatusCode.INTERNAL_SERVER_ERROR))
-    }
 }
+
+private val nonNetworkFailureResult: Result<String> = Result.failure(RuntimeException())
+private val transformedException = RuntimeException()
+private val httpFailureResult: Result<String> =
+    Result.failure(NetworkException.Http(HttpStatus.INTERNAL_SERVER_ERROR))

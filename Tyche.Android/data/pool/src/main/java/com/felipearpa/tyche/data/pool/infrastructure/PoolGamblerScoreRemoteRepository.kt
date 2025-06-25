@@ -1,12 +1,12 @@
 package com.felipearpa.tyche.data.pool.infrastructure
 
+import com.felipearpa.network.NetworkExceptionHandler
+import com.felipearpa.tyche.core.paging.CursorPage
+import com.felipearpa.tyche.core.paging.map
 import com.felipearpa.tyche.data.pool.domain.PoolGamblerScore
 import com.felipearpa.tyche.data.pool.domain.PoolGamblerScoreRemoteDataSource
 import com.felipearpa.tyche.data.pool.domain.PoolGamblerScoreRepository
 import com.felipearpa.tyche.data.pool.domain.toPoolGamblerScore
-import com.felipearpa.tyche.core.network.NetworkExceptionHandler
-import com.felipearpa.tyche.core.paging.CursorPage
-import com.felipearpa.tyche.core.paging.map
 import javax.inject.Inject
 
 internal class PoolGamblerScoreRemoteRepository @Inject constructor(

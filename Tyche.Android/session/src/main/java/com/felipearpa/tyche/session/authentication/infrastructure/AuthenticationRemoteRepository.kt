@@ -1,6 +1,6 @@
 package com.felipearpa.tyche.session.authentication.infrastructure
 
-import com.felipearpa.tyche.core.network.NetworkExceptionHandler
+import com.felipearpa.network.NetworkExceptionHandler
 import com.felipearpa.tyche.session.AccountBundle
 import com.felipearpa.tyche.session.authentication.domain.AccountLink
 import com.felipearpa.tyche.session.authentication.domain.AuthenticationExternalDataSource
@@ -14,7 +14,7 @@ import javax.inject.Inject
 internal class AuthenticationRemoteRepository @Inject constructor(
     private val authenticationExternalDataSource: AuthenticationExternalDataSource,
     private val authenticationRemoteDataSource: AuthenticationRemoteDataSource,
-    private val networkExceptionHandler: NetworkExceptionHandler
+    private val networkExceptionHandler: NetworkExceptionHandler,
 ) : AuthenticationRepository {
     override suspend fun sendSignInLinkToEmail(email: String) =
         handleFirebaseSendSignInLinkToEmail {
@@ -23,7 +23,7 @@ internal class AuthenticationRemoteRepository @Inject constructor(
 
     override suspend fun signInWithEmailLink(
         email: String,
-        emailLink: String
+        emailLink: String,
     ): Result<ExternalAccountId> {
         if (!authenticationExternalDataSource.isSignInWithEmailLink(emailLink = emailLink))
             return Result.failure(SignInWithEmailLinkException.InvalidEmailLink)
@@ -31,19 +31,19 @@ internal class AuthenticationRemoteRepository @Inject constructor(
         return handleFirebaseSignInWithEmailLink {
             authenticationExternalDataSource.signInWithEmailLink(
                 email = email,
-                emailLink = emailLink
+                emailLink = emailLink,
             )
         }
     }
 
     override suspend fun signInWithEmailAndPassword(
         email: String,
-        password: String
+        password: String,
     ): Result<ExternalAccountId> {
         return handleFirebaseSignInWithEmailAndPassword {
             authenticationExternalDataSource.signInWithEmailAndPassword(
                 email = email,
-                password = password
+                password = password,
             )
         }
     }
@@ -63,7 +63,7 @@ internal class AuthenticationRemoteRepository @Inject constructor(
                 .run {
                     AccountBundle(
                         accountId = this.accountId,
-                        externalAccountId = accountLink.externalAccountId
+                        externalAccountId = accountLink.externalAccountId,
                     )
                 }
         }

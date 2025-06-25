@@ -14,13 +14,13 @@ internal fun PoolGamblerBetResponse.toPoolGamblerBet() =
         awayTeamScore = this.awayTeamScore,
         matchScore = if (this.homeTeamScore == null || this.awayTeamScore == null) null else TeamScore(
             homeTeamValue = this.homeTeamScore,
-            awayTeamValue = this.awayTeamScore
+            awayTeamValue = this.awayTeamScore,
         ),
         betScore = if (this.homeTeamBet == null || this.awayTeamBet == null) null else TeamScore(
             homeTeamValue = this.homeTeamBet,
-            awayTeamValue = this.awayTeamBet
+            awayTeamValue = this.awayTeamBet,
         ),
         score = this.score,
         matchDateTime = this.matchDateTime,
-        isLocked = this.isLocked
+        isLocked = this.isLocked,
     )

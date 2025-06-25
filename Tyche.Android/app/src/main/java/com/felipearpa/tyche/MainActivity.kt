@@ -8,9 +8,10 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
-import com.felipearpa.tyche.core.emptyString
+import com.felipearpa.foundation.emptyString
 import com.felipearpa.tyche.home.homeNavView
 import com.felipearpa.tyche.home.ui.HomeRoute
+import com.felipearpa.tyche.pool.creator.poolFromLayoutCreatorView
 import com.felipearpa.tyche.pool.poolscore.PoolScoreListRoute
 import com.felipearpa.tyche.poolhome.poolHomeNavView
 import com.felipearpa.tyche.poolscore.poolScoreListNavView
@@ -85,5 +86,7 @@ fun Outlet(accountBundle: AccountBundle?, intentData: String?) {
                 gamblerId = gamblerId,
             )
         }
+
+        poolFromLayoutCreatorView()
     }
 }

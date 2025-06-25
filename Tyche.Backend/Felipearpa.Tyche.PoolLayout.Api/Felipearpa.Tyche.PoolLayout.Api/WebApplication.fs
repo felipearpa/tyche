@@ -18,7 +18,7 @@ module WebApplication =
         member this.ConfigureRoutes() =
             this
                 .MapGet(
-                    "/pool-layouts/opened",
+                    "/pool-layouts/open",
                     Func<_, _, _>(fun (next: string) (getOpenedPoolLayoutsQuery: GetOpenedPoolLayoutsQuery) ->
                         async {
                             let! page = getOpenedPoolLayoutsQuery.ExecuteAsync(next |> Option.ofObj)

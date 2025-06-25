@@ -24,8 +24,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.felipearpa.foundation.emptyString
 import com.felipearpa.tyche.R
-import com.felipearpa.tyche.core.emptyString
 import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
 import com.felipearpa.tyche.ui.theme.TycheTheme
 
@@ -36,7 +36,7 @@ fun HomeView(onSignInWithEmail: () -> Unit, onSignInWithEmailAndPassword: () -> 
     HomeView(
         onSignInWithEmail = onSignInWithEmail,
         onSignInWithEmailAndPassword = onSignInWithEmailAndPassword,
-        modifier = Modifier.padding(all = LocalBoxSpacing.current.medium)
+        modifier = Modifier.padding(all = LocalBoxSpacing.current.medium),
     )
 }
 
@@ -44,19 +44,19 @@ fun HomeView(onSignInWithEmail: () -> Unit, onSignInWithEmailAndPassword: () -> 
 private fun HomeView(
     onSignInWithEmail: () -> Unit,
     onSignInWithEmailAndPassword: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Column(
         modifier = modifier
             .fillMaxSize()
             .padding(all = LocalBoxSpacing.current.large),
-        verticalArrangement = Arrangement.SpaceBetween
+        verticalArrangement = Arrangement.SpaceBetween,
     ) {
         HeaderSection()
         InformationSection()
         SignInSection(
             onSignInWithEmail = onSignInWithEmail,
-            onSignInWithEmailAndPassword = onSignInWithEmailAndPassword
+            onSignInWithEmailAndPassword = onSignInWithEmailAndPassword,
         )
     }
 }
@@ -67,20 +67,20 @@ private fun HeaderSection() {
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(
             LocalBoxSpacing.current.small,
-            Alignment.CenterHorizontally
-        )
+            Alignment.CenterHorizontally,
+        ),
     ) {
         Icon(
             painter = painterResource(id = R.drawable.ic_tyche_logo),
             contentDescription = emptyString(),
-            modifier = Modifier.size(titleIconSize)
+            modifier = Modifier.size(titleIconSize),
         )
 
         Box(contentAlignment = Alignment.Center) {
             Icon(
                 painter = painterResource(id = R.drawable.ic_tyche_title),
                 contentDescription = emptyString(),
-                modifier = Modifier.height(titleIconSize)
+                modifier = Modifier.height(titleIconSize),
             )
         }
     }
@@ -92,7 +92,7 @@ private fun InformationSection() {
         Text(
             text = stringResource(id = R.string.play_pool_text),
             style = MaterialTheme.typography.headlineLarge,
-            textAlign = TextAlign.Center
+            textAlign = TextAlign.Center,
         )
     }
 }
@@ -101,11 +101,11 @@ private fun InformationSection() {
 private fun SignInSection(onSignInWithEmail: () -> Unit, onSignInWithEmailAndPassword: () -> Unit) {
     Column(
         modifier = Modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.small)
+        verticalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.small),
     ) {
         Button(
             onClick = onSignInWithEmail,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
         ) {
             Text(text = stringResource(id = R.string.sign_in_with_email_action))
         }
@@ -127,7 +127,7 @@ fun HomeViewPreview() {
             HomeView(
                 modifier = Modifier.padding(all = 8.dp),
                 onSignInWithEmail = {},
-                onSignInWithEmailAndPassword = {}
+                onSignInWithEmailAndPassword = {},
             )
         }
     }
@@ -141,7 +141,7 @@ fun HomeViewDarkPreview() {
             HomeView(
                 modifier = Modifier.padding(all = 8.dp),
                 onSignInWithEmail = {},
-                onSignInWithEmailAndPassword = {}
+                onSignInWithEmailAndPassword = {},
             )
         }
     }

@@ -36,12 +36,12 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.felipearpa.foundation.emptyString
 import com.felipearpa.tyche.R
-import com.felipearpa.tyche.bet.pending.PendingBetListView
 import com.felipearpa.tyche.bet.finished.FinishedBetListView
 import com.felipearpa.tyche.bet.finished.finishedBetListViewModel
+import com.felipearpa.tyche.bet.pending.PendingBetListView
 import com.felipearpa.tyche.bet.pending.pendingBetListViewModel
-import com.felipearpa.tyche.core.emptyString
 import com.felipearpa.tyche.pool.gamblerscore.GamblerScoreListView
 import com.felipearpa.tyche.pool.gamblerscore.gamblerScoreListViewModel
 import com.felipearpa.tyche.poolhome.drawer.DrawerView
@@ -64,7 +64,7 @@ fun PoolHomeView(
     poolId: String,
     gamblerId: String,
     changePool: () -> Unit,
-    onLogout: () -> Unit = {}
+    onLogout: () -> Unit = {},
 ) {
     var selectedTabIndex by remember { mutableStateOf(Tab.GAMBLER_SCORE) }
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
@@ -78,7 +78,7 @@ fun PoolHomeView(
                 DrawerView(
                     viewModel = drawerViewModel(poolId = poolId, gamblerId = gamblerId),
                     changePool = changePool,
-                    onLogout = onLogout
+                    onLogout = onLogout,
                 )
             }
         },
@@ -97,54 +97,54 @@ fun PoolHomeView(
                             }
                         }
                     },
-                    scrollBehavior = scrollBehavior
+                    scrollBehavior = scrollBehavior,
                 )
             },
             bottomBar = {
                 TabRow(
                     selectedTabIndex = selectedTabIndex.ordinal,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
                 ) {
                     GamblerScoreTab(
                         selected = selectedTabIndex == Tab.GAMBLER_SCORE,
-                        onClick = { selectedTabIndex = Tab.GAMBLER_SCORE }
+                        onClick = { selectedTabIndex = Tab.GAMBLER_SCORE },
                     )
                     BetEditorTab(
                         selected = selectedTabIndex == Tab.BET_EDITOR,
-                        onClick = { selectedTabIndex = Tab.BET_EDITOR }
+                        onClick = { selectedTabIndex = Tab.BET_EDITOR },
                     )
                     HistoryBetTab(
                         selected = selectedTabIndex == Tab.HISTORY_BET,
-                        onClick = { selectedTabIndex = Tab.HISTORY_BET }
+                        onClick = { selectedTabIndex = Tab.HISTORY_BET },
                     )
                 }
-            }
+            },
         ) { paddingValues ->
             Box(
                 modifier = Modifier
                     .padding(paddingValues = paddingValues)
-                    .fillMaxSize()
+                    .fillMaxSize(),
             ) {
                 when (selectedTabIndex) {
                     Tab.GAMBLER_SCORE -> GamblerScoreListView(
                         viewModel = gamblerScoreListViewModel(
                             poolId = poolId,
-                            gamblerId = gamblerId
-                        )
+                            gamblerId = gamblerId,
+                        ),
                     )
 
                     Tab.BET_EDITOR -> PendingBetListView(
                         viewModel = pendingBetListViewModel(
                             poolId = poolId,
-                            gamblerId = gamblerId
-                        )
+                            gamblerId = gamblerId,
+                        ),
                     )
 
                     Tab.HISTORY_BET -> FinishedBetListView(
                         viewModel = finishedBetListViewModel(
                             poolId = poolId,
-                            gamblerId = gamblerId
-                        )
+                            gamblerId = gamblerId,
+                        ),
                     )
                 }
             }
@@ -156,23 +156,23 @@ fun PoolHomeView(
 private fun GamblerScoreTab(selected: Boolean, onClick: () -> Unit) {
     Tab(
         selected = selected,
-        onClick = onClick
+        onClick = onClick,
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceEvenly,
-            modifier = Modifier.padding(vertical = LocalBoxSpacing.current.medium)
+            modifier = Modifier.padding(vertical = LocalBoxSpacing.current.medium),
         ) {
             Icon(
                 painter = painterResource(id = R.drawable.ic_sport_score),
                 contentDescription = emptyString(),
-                modifier = Modifier.size(iconSize)
+                modifier = Modifier.size(iconSize),
             )
             Text(
                 text = stringResource(id = R.string.score_tab),
                 style = MaterialTheme.typography.titleSmall,
                 maxLines = 1,
-                overflow = TextOverflow.Ellipsis
+                overflow = TextOverflow.Ellipsis,
             )
         }
     }
@@ -182,23 +182,23 @@ private fun GamblerScoreTab(selected: Boolean, onClick: () -> Unit) {
 private fun BetEditorTab(selected: Boolean, onClick: () -> Unit) {
     Tab(
         selected = selected,
-        onClick = onClick
+        onClick = onClick,
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceEvenly,
-            modifier = Modifier.padding(vertical = LocalBoxSpacing.current.medium)
+            modifier = Modifier.padding(vertical = LocalBoxSpacing.current.medium),
         ) {
             Icon(
                 painter = painterResource(id = R.drawable.ic_money),
                 contentDescription = emptyString(),
-                modifier = Modifier.size(iconSize)
+                modifier = Modifier.size(iconSize),
             )
             Text(
                 text = stringResource(id = R.string.bet_tab),
                 style = MaterialTheme.typography.titleSmall,
                 maxLines = 1,
-                overflow = TextOverflow.Ellipsis
+                overflow = TextOverflow.Ellipsis,
             )
         }
     }
@@ -208,23 +208,23 @@ private fun BetEditorTab(selected: Boolean, onClick: () -> Unit) {
 private fun HistoryBetTab(selected: Boolean, onClick: () -> Unit) {
     Tab(
         selected = selected,
-        onClick = onClick
+        onClick = onClick,
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceEvenly,
-            modifier = Modifier.padding(vertical = LocalBoxSpacing.current.medium)
+            modifier = Modifier.padding(vertical = LocalBoxSpacing.current.medium),
         ) {
             Icon(
                 painter = painterResource(id = R.drawable.history_bets),
                 contentDescription = emptyString(),
-                modifier = Modifier.size(iconSize)
+                modifier = Modifier.size(iconSize),
             )
             Text(
                 text = stringResource(id = R.string.history_bets_tab),
                 style = MaterialTheme.typography.titleSmall,
                 maxLines = 1,
-                overflow = TextOverflow.Ellipsis
+                overflow = TextOverflow.Ellipsis,
             )
         }
     }
@@ -237,7 +237,7 @@ private fun AppTopBar(
     onAccountRequested: () -> Unit,
     modifier: Modifier = Modifier,
     shimmerModifier: Modifier = Modifier,
-    scrollBehavior: TopAppBarScrollBehavior
+    scrollBehavior: TopAppBarScrollBehavior,
 ) {
     TopAppBar(
         title = {
@@ -245,19 +245,19 @@ private fun AppTopBar(
                 text = title,
                 maxLines = 1,
                 modifier = shimmerModifier,
-                overflow = TextOverflow.Ellipsis
+                overflow = TextOverflow.Ellipsis,
             )
         },
         navigationIcon = {
             IconButton(onClick = onAccountRequested) {
                 Icon(
                     painter = painterResource(id = SharedR.drawable.menu),
-                    contentDescription = emptyString()
+                    contentDescription = emptyString(),
                 )
             }
         },
         modifier = modifier,
-        scrollBehavior = scrollBehavior
+        scrollBehavior = scrollBehavior,
     )
 }
 

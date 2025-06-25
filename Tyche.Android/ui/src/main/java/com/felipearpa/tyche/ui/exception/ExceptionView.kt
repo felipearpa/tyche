@@ -14,7 +14,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.felipearpa.tyche.core.emptyString
+import com.felipearpa.foundation.emptyString
 import com.felipearpa.tyche.ui.R
 import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
 
@@ -23,32 +23,32 @@ fun ExceptionView(localizedException: LocalizedException) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.large),
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier.fillMaxWidth(),
     ) {
         Icon(
             painter = painterResource(id = R.drawable.ic_sentiment_sad),
             contentDescription = emptyString(),
             modifier = Modifier.size(64.dp),
-            tint = MaterialTheme.colorScheme.error
+            tint = MaterialTheme.colorScheme.error,
         )
 
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.medium),
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
         ) {
             Text(
                 text = localizedException.errorDescription ?: emptyString(),
                 style = MaterialTheme.typography.errorDescription,
-                textAlign = TextAlign.Center
+                textAlign = TextAlign.Center,
             )
 
             Text(
                 text = listOfNotNull(
                     localizedException.failureReason,
-                    localizedException.recoverySuggestion
+                    localizedException.recoverySuggestion,
                 ).joinToString(separator = "."),
-                style = MaterialTheme.typography.failureReason
+                style = MaterialTheme.typography.failureReason,
             )
         }
     }

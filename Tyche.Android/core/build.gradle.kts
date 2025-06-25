@@ -2,11 +2,11 @@ val projectCompileSdk: String by project
 val projectMinSdk: String by project
 
 plugins {
-    alias(libs.plugins.androidLibrary)
-    alias(libs.plugins.jetbrainsKotlinAndroid)
-    alias(libs.plugins.jetbrainsKotlinKapt)
-    alias(libs.plugins.jetbrainsKotlinxSerialization)
-    alias(libs.plugins.googleDaggerHiltAndroid)
+    alias(libs.plugins.android.library)
+    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.kapt)
+    alias(libs.plugins.kotlinx.serialization)
+    alias(libs.plugins.dagger.hilt)
 }
 
 android {
@@ -52,18 +52,24 @@ dependencies {
     implementation(libs.bundles.retrofit)
     implementation(libs.dagger.hilt.android)
     implementation(libs.androidx.security.crypto)
-    implementation(libs.kotlinx.serialization)
+    implementation(libs.kotlinx.serialization.json)
 
     testImplementation(platform(libs.junit5.bom))
     testImplementation(libs.junit5.jupiter)
-    testRuntimeOnly(libs.bundles.junit5.runtime)
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.io.mockk)
     testImplementation(libs.kotest.runner)
     testImplementation(libs.kotest.assertions.core)
     testImplementation(libs.kotest.property)
 
+    testRuntimeOnly(libs.bundles.junit5.runtime)
+
     kapt(libs.dagger.hilt.compiler)
+}
+
+dependencies {
+    implementation(project(":network:core"))
+    implementation(project(":network:retrofit"))
 }
 
 kapt {

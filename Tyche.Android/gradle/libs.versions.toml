@@ -1,34 +1,33 @@
 [versions]
-agp = "8.10.1"
-kotlin = "2.1.21"
+agp = "8.11.0"
+kotlin = "2.2.0"
 core-ktx = "1.16.0"
 junit = "4.13.2"
 androidx-test-ext-junit = "1.2.1"
 espresso-core = "3.6.1"
-lifecycle-runtime-ktx = "2.9.0"
+lifecycle-runtime-ktx = "2.9.1"
 activity-compose = "1.10.1"
-compose-bom = "2025.05.01"
-dagger-hilt = "2.54"
+compose-bom = "2025.06.01"
+dagger-hilt = "2.56.2"
 paging-compose = "3.3.6"
-retrofit = "2.9.0"
-retrofit-login-interceptor = "4.11.0"
+retrofit = "3.0.0"
+retrofit-login-interceptor = "4.12.0"
 retrofit-converter-kotlinx-serialization = "3.0.0"
-google-accompanist-placeholder = "0.30.1"
+google-accompanist-placeholder = "0.36.0"
 navigation-compose = "2.9.0"
 hilt-navigation-compose = "1.2.0"
 constraint-layout-compose = "1.1.1"
-io-mockk = "1.13.5"
-kotlinx-coroutines-test = "1.8.0"
+io-mockk = "1.14.4"
+kotlinx-coroutines-test = "1.10.2"
 androidx-security-crypto = "1.0.0"
-kotlinx-serialization = "1.7.3"
-google-services = "4.4.2"
-firebase-bom = "33.14.0"
-junit5 = "5.10.2"
-kotest = "5.8.0"
+google-gms-services = "4.4.2"
+firebase-bom = "33.15.0"
+junit5 = "5.13.2"
+kotest = "5.9.1"
 kotlinx-serialization-json = "1.8.1"
+kotlinx-datetime = "0.7.0"
 felipearpa-viewing-state = "v0.0.1"
-appcompat = "1.7.0"
-material = "1.12.0"
+felipearpa-foundation = "v0.0.1"
 
 [libraries]
 core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "core-ktx" }
@@ -40,6 +39,7 @@ activity-compose = { group = "androidx.activity", name = "activity-compose", ver
 compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "compose-bom" }
 ui = { group = "androidx.compose.ui", name = "ui" }
 ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
+ui-util = { group = "androidx.compose.ui", name = "ui-util" }
 ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
 ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
 ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
@@ -59,7 +59,6 @@ io-mockk = { group = "io.mockk", name = "mockk", version.ref = "io-mockk" }
 io-mockk-android = { group = "io.mockk", name = "mockk-android", version.ref = "io-mockk" }
 androidx-security-crypto = { group = "androidx.security", name = "security-crypto", version.ref = "androidx-security-crypto" }
 kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "kotlinx-coroutines-test" }
-kotlinx-serialization = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinx-serialization-json" }
 firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebase-bom" }
 firebase-auth = { group = "com.google.firebase", name = "firebase-auth" }
@@ -72,23 +71,22 @@ kotest-runner = { group = "io.kotest", name = "kotest-runner-junit5", version.re
 kotest-assertions-core = { group = "io.kotest", name = "kotest-assertions-core", version.ref = "kotest" }
 kotest-property = { group = "io.kotest", name = "kotest-property", version.ref = "kotest" }
 kotest-runner-junit4 = { group = "io.kotest", name = "kotest-runner-junit4", version.ref = "kotest" }
+kotlinx-datetime = { group = "org.jetbrains.kotlinx", name = "kotlinx-datetime", version.ref = "kotlinx-datetime" }
 felipearpa-viewing-state = { group = "com.github.felipearpa", name = "viewing-state-android", version.ref = "felipearpa-viewing-state" }
-androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
-material = { group = "com.google.android.material", name = "material", version.ref = "material" }
+felipearpa-foundation = { group = "com.github.felipearpa", name = "foundation-android", version.ref = "felipearpa-foundation" }
 
 [plugins]
-androidApplication = { id = "com.android.application", version.ref = "agp" }
-androidLibrary = { id = "com.android.library", version.ref = "agp" }
-jetbrainsKotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
-jetbrainsKotlinKapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlin" }
-googleDaggerHiltAndroid = { id = "com.google.dagger.hilt.android", version.ref = "dagger-hilt" }
-jetbrainsKotlinxSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
-googleGmsServices = { id = "com.google.gms.google-services", version.ref = "google-services" }
-composeCompiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+android-application = { id = "com.android.application", version.ref = "agp" }
+android-library = { id = "com.android.library", version.ref = "agp" }
+kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+kotlin-kapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlin" }
+dagger-hilt = { id = "com.google.dagger.hilt.android", version.ref = "dagger-hilt" }
+kotlinx-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+google-gms-services = { id = "com.google.gms.google-services", version.ref = "google-gms-services" }
+kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 
 [bundles]
-compose = ["ui", "ui-graphics", "ui-tooling", "ui-tooling-preview"]
+compose = ["ui", "ui-util", "ui-graphics", "ui-tooling", "ui-tooling-preview"]
 retrofit = ["retrofit", "retrofit-login-interceptor", "retrofit-converter-kotlinx-serialization"]
 compose-debug-test = ["ui-tooling", "ui-test-manifest"]
 junit5-runtime = ["junit5-platform-launcher", "junit5-jupiter-engine", "junit5-vintage-engine"]
-kotlinx-serialization = ["kotlinx-serialization", "kotlinx-serialization-json"]

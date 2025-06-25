@@ -18,10 +18,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.felipearpa.foundation.time.toShortDateTimeString
 import com.felipearpa.tyche.bet.PoolGamblerBetModel
 import com.felipearpa.tyche.bet.poolGamblerBetDummyModel
 import com.felipearpa.tyche.bet.scoreWidth
-import com.felipearpa.tyche.core.toLocalDateTimeString
 import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
 
 @Composable
@@ -30,7 +30,7 @@ fun PendingBetItem(
     shimmerModifier: Modifier = Modifier,
     poolGamblerBet: PoolGamblerBetModel,
     viewState: PendingBetItemViewState,
-    onBetChanged: (PartialPoolGamblerBetModel) -> Unit = {}
+    onBetChanged: (PartialPoolGamblerBetModel) -> Unit = {},
 ) {
     val enterTransition = fadeIn() + expandVertically()
     val exitTransition = shrinkVertically() + fadeOut()
@@ -39,27 +39,27 @@ fun PendingBetItem(
         AnimatedVisibility(
             visible = viewState is PendingBetItemViewState.Visualization,
             enter = enterTransition,
-            exit = exitTransition
+            exit = exitTransition,
         ) {
             NonEditablePendingBetItem(
                 modifier = modifier,
                 shimmerModifier = shimmerModifier,
                 poolGamblerBet = poolGamblerBet,
-                partialPoolGamblerBet = viewState.value
+                partialPoolGamblerBet = viewState.value,
             )
         }
 
         AnimatedVisibility(
             visible = viewState is PendingBetItemViewState.Edition,
             enter = enterTransition,
-            exit = exitTransition
+            exit = exitTransition,
         ) {
             EditablePendingBetItem(
                 modifier = modifier,
                 shimmerModifier = shimmerModifier,
                 poolGamblerBet = poolGamblerBet,
                 partialPoolGamblerBet = viewState.value,
-                onBetChanged = onBetChanged
+                onBetChanged = onBetChanged,
             )
         }
     }
@@ -70,16 +70,16 @@ fun NonEditablePendingBetItem(
     modifier: Modifier = Modifier,
     shimmerModifier: Modifier = Modifier,
     poolGamblerBet: PoolGamblerBetModel,
-    partialPoolGamblerBet: PartialPoolGamblerBetModel
+    partialPoolGamblerBet: PartialPoolGamblerBetModel,
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.medium),
-        modifier = modifier
+        modifier = modifier,
     ) {
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
         ) {
             Text(text = poolGamblerBet.homeTeamName, modifier = shimmerModifier)
             Text(text = partialPoolGamblerBet.homeTeamBet, modifier = shimmerModifier)
@@ -88,18 +88,18 @@ fun NonEditablePendingBetItem(
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
         ) {
             Text(text = poolGamblerBet.awayTeamName, modifier = shimmerModifier)
             Text(text = partialPoolGamblerBet.awayTeamBet, modifier = shimmerModifier)
         }
 
         Text(
-            text = poolGamblerBet.matchDateTime.toLocalDateTimeString(),
+            text = poolGamblerBet.matchDateTime.toShortDateTimeString(),
             style = MaterialTheme.typography.bodySmall,
             modifier = Modifier
                 .padding(start = LocalBoxSpacing.current.large)
-                .then(shimmerModifier)
+                .then(shimmerModifier),
         )
     }
 }
@@ -110,16 +110,16 @@ fun EditablePendingBetItem(
     shimmerModifier: Modifier = Modifier,
     poolGamblerBet: PoolGamblerBetModel,
     partialPoolGamblerBet: PartialPoolGamblerBetModel,
-    onBetChanged: (PartialPoolGamblerBetModel) -> Unit = {}
+    onBetChanged: (PartialPoolGamblerBetModel) -> Unit = {},
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.small),
-        modifier = modifier
+        modifier = modifier,
     ) {
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
         ) {
             Text(text = poolGamblerBet.homeTeamName, modifier = shimmerModifier)
             BetTextField(
@@ -129,14 +129,14 @@ fun EditablePendingBetItem(
                 },
                 modifier = Modifier
                     .scoreWidth()
-                    .then(shimmerModifier)
+                    .then(shimmerModifier),
             )
         }
 
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
         ) {
             Text(text = poolGamblerBet.awayTeamName, modifier = shimmerModifier)
             BetTextField(
@@ -146,7 +146,7 @@ fun EditablePendingBetItem(
                 },
                 modifier = Modifier
                     .scoreWidth()
-                    .then(shimmerModifier)
+                    .then(shimmerModifier),
             )
         }
     }
@@ -160,7 +160,7 @@ private fun NonEditablePendingBetItemPreview() {
             NonEditablePendingBetItem(
                 modifier = Modifier.fillMaxWidth(),
                 poolGamblerBet = poolGamblerBetDummyModel(),
-                partialPoolGamblerBet = partialPoolGamblerBetDummyModel()
+                partialPoolGamblerBet = partialPoolGamblerBetDummyModel(),
             )
         }
     }
@@ -175,7 +175,7 @@ private fun EditablePendingBetItemPreview() {
                 modifier = Modifier.fillMaxWidth(),
                 poolGamblerBet = poolGamblerBetDummyModel(),
                 partialPoolGamblerBet = partialPoolGamblerBetDummyModel(),
-                onBetChanged = {}
+                onBetChanged = {},
             )
         }
     }

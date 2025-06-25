@@ -97,6 +97,20 @@
       "UpstreamHttpMethod": [
         "GET"
       ]
+    },
+    {
+      "DownstreamPathTemplate": "/pool-layouts/open",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5002
+        }
+      ],
+      "UpstreamPathTemplate": "/pool-layouts/open",
+      "UpstreamHttpMethod": [
+        "GET"
+      ]
     }
   ],
   "GlobalConfiguration": {

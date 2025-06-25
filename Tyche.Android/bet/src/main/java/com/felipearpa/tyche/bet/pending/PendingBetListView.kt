@@ -13,6 +13,6 @@ fun PendingBetListView(viewModel: PendingBetListViewModel) {
     PendingBetList(
         lazyPoolGamblerBets = lazyItems,
         fakeItemCount = pageSize,
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier.fillMaxSize(),
     )
 }

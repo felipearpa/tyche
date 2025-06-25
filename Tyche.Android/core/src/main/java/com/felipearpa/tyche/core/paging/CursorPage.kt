@@ -14,10 +14,9 @@ inline fun <Value : Any, Target : Any> CursorPage<Value>.map(transform: (Value) 
         next = this.next,
     )
 
-private val emptyCursorPageInstance = CursorPage<Any>(
+private val emptyCursorPageInstance = CursorPage<Nothing>(
     items = emptyList(),
     next = null,
 )
 
-@Suppress("UNCHECKED_CAST")
-fun <Value : Any> emptyCursorPage() = emptyCursorPageInstance as CursorPage<Value>
+fun <Value : Any> emptyCursorPage() = emptyCursorPageInstance

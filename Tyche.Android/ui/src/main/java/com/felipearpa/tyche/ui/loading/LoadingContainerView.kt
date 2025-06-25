@@ -15,8 +15,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
+import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
-import com.felipearpa.tyche.ui.preview.UIModePreview
 import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
 import com.felipearpa.tyche.ui.theme.LocalExtendedColorScheme
 import com.felipearpa.tyche.ui.theme.TycheTheme
@@ -29,7 +29,7 @@ fun LoadingContainerView(content: @Composable () -> Unit) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .blur(radius = BLUR_RADIUS.dp)
+                .blur(radius = BLUR_RADIUS.dp),
         ) {
             content()
         }
@@ -38,14 +38,14 @@ fun LoadingContainerView(content: @Composable () -> Unit) {
             contentAlignment = Alignment.Center,
             modifier = Modifier
                 .fillMaxSize()
-                .background(LocalExtendedColorScheme.current.loadingBackground)
+                .background(LocalExtendedColorScheme.current.loadingBackground),
         ) {
             BallSpinner()
         }
     }
 }
 
-@UIModePreview
+@PreviewLightDark
 @Composable
 private fun ProgressContainerViewPreview() {
     TycheTheme {
@@ -56,12 +56,12 @@ private fun ProgressContainerViewPreview() {
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(all = LocalBoxSpacing.current.medium),
-                        verticalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.medium)
+                        verticalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.medium),
                     ) {
                         TextField(
                             value = "",
                             onValueChange = {},
-                            modifier = Modifier.fillMaxWidth()
+                            modifier = Modifier.fillMaxWidth(),
                         )
                         Button(onClick = { /*TODO*/ }, modifier = Modifier.fillMaxWidth()) {
                             Text(text = "Ok")

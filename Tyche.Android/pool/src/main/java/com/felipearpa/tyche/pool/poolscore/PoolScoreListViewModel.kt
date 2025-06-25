@@ -6,8 +6,8 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
+import com.felipearpa.foundation.emptyString
 import com.felipearpa.tyche.data.pool.application.GetPoolGamblerScoresByGamblerUseCase
-import com.felipearpa.tyche.core.emptyString
 import com.felipearpa.tyche.pool.PoolGamblerScorePagingSource
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
@@ -22,7 +22,7 @@ private const val PREFETCH_DISTANCE = 5
 
 class PoolScoreListViewModel @AssistedInject constructor(
     @Assisted val gamblerId: String,
-    private val getPoolGamblerScoresByGamblerUseCase: GetPoolGamblerScoresByGamblerUseCase
+    private val getPoolGamblerScoresByGamblerUseCase: GetPoolGamblerScoresByGamblerUseCase,
 ) :
     ViewModel() {
 
@@ -35,7 +35,7 @@ class PoolScoreListViewModel @AssistedInject constructor(
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.Lazily,
-        initialValue = PagingData.empty()
+        initialValue = PagingData.empty(),
     )
 
     private fun buildPager(searchText: String) =
@@ -43,7 +43,7 @@ class PoolScoreListViewModel @AssistedInject constructor(
             config = PagingConfig(
                 pageSize = pageSize,
                 prefetchDistance = PREFETCH_DISTANCE,
-                enablePlaceholders = true
+                enablePlaceholders = true,
             ),
             pagingSourceFactory = {
                 PoolGamblerScorePagingSource(
@@ -52,11 +52,11 @@ class PoolScoreListViewModel @AssistedInject constructor(
                             next = next,
                             gamblerId = "01H1CMCDHH99FH8FDY36S0YH3A",
                             search = { searchText.ifEmpty { null } },
-                            getPoolGamblerScoresByGamblerUseCase = getPoolGamblerScoresByGamblerUseCase
+                            getPoolGamblerScoresByGamblerUseCase = getPoolGamblerScoresByGamblerUseCase,
                         )
-                    }
+                    },
                 )
-            }
+            },
         )
 
     fun search(searchText: String) {

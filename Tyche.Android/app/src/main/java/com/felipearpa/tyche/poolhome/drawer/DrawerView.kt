@@ -19,8 +19,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import com.felipearpa.foundation.emptyString
 import com.felipearpa.tyche.R
-import com.felipearpa.tyche.core.emptyString
 import com.felipearpa.tyche.pool.PoolGamblerScoreModel
 import com.felipearpa.tyche.pool.poolGamblerScoreDummyModel
 import com.felipearpa.tyche.pool.poolscore.spotlight.PoolSpotlightItem
@@ -43,7 +43,7 @@ fun DrawerView(viewModel: DrawerViewModel, changePool: () -> Unit, onLogout: () 
         logout = {
             viewModel.logout()
             onLogout()
-        }
+        },
     )
 }
 
@@ -52,13 +52,13 @@ private fun DrawerView(
     modifier: Modifier = Modifier,
     viewState: LoadableViewState<PoolGamblerScoreModel>,
     changePool: () -> Unit = {},
-    logout: () -> Unit = {}
+    logout: () -> Unit = {},
 ) {
     when (viewState) {
         is LoadableViewState.Failure ->
             FailureContent(
                 localizedException = viewState().localizedOrNull()!!,
-                modifier = modifier
+                modifier = modifier,
             )
 
         LoadableViewState.Initial, LoadableViewState.Loading ->
@@ -69,7 +69,7 @@ private fun DrawerView(
                 currentPoolGamblerScore = viewState(),
                 changePool = changePool,
                 logout = logout,
-                modifier = modifier.padding(all = LocalBoxSpacing.current.large)
+                modifier = modifier.padding(all = LocalBoxSpacing.current.large),
             )
     }
 }
@@ -78,7 +78,7 @@ private fun DrawerView(
 private fun FailureContent(modifier: Modifier = Modifier, localizedException: LocalizedException) {
     Box(
         contentAlignment = Alignment.Center,
-        modifier = modifier.padding(all = LocalBoxSpacing.current.large)
+        modifier = modifier.padding(all = LocalBoxSpacing.current.large),
     ) {
         ExceptionView(localizedException = localizedException)
     }
@@ -89,27 +89,27 @@ private fun DrawerView(
     modifier: Modifier = Modifier,
     currentPoolGamblerScore: PoolGamblerScoreModel,
     changePool: () -> Unit = {},
-    logout: () -> Unit = {}
+    logout: () -> Unit = {},
 ) {
     Column(
         modifier = modifier,
-        verticalArrangement = Arrangement.SpaceBetween
+        verticalArrangement = Arrangement.SpaceBetween,
     ) {
         Column(
             modifier = Modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.medium)
+            verticalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.medium),
         ) {
             PoolSpotlightItem(
                 poolGamblerScore = currentPoolGamblerScore,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = LocalBoxSpacing.current.medium)
+                    .padding(horizontal = LocalBoxSpacing.current.medium),
             )
             OutlinedButton(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = LocalBoxSpacing.current.medium),
-                onClick = changePool
+                onClick = changePool,
             ) {
                 Text(text = stringResource(id = R.string.change_pool_action))
             }
@@ -120,11 +120,11 @@ private fun DrawerView(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = LocalBoxSpacing.current.medium),
-            onClick = logout
+            onClick = logout,
         ) {
             Icon(
                 painter = painterResource(id = R.drawable.logout),
-                contentDescription = emptyString()
+                contentDescription = emptyString(),
             )
             Text(text = stringResource(id = R.string.log_out_action))
         }
@@ -137,7 +137,7 @@ private fun InitialDrawerViewPreview() {
     Surface {
         DrawerView(
             modifier = Modifier.fillMaxSize(),
-            viewState = LoadableViewState.Initial
+            viewState = LoadableViewState.Initial,
         )
     }
 }
@@ -148,7 +148,7 @@ private fun LoadingDrawerViewPreview() {
     Surface {
         DrawerView(
             modifier = Modifier.fillMaxSize(),
-            viewState = LoadableViewState.Loading
+            viewState = LoadableViewState.Loading,
         )
     }
 }
@@ -159,7 +159,7 @@ private fun SuccessDrawerViewPreview() {
     Surface {
         DrawerView(
             modifier = Modifier.fillMaxSize(),
-            viewState = LoadableViewState.Success(poolGamblerScoreDummyModel())
+            viewState = LoadableViewState.Success(poolGamblerScoreDummyModel()),
         )
     }
 }
@@ -170,7 +170,7 @@ private fun FailureDrawerViewPreview() {
     Surface {
         DrawerView(
             modifier = Modifier.fillMaxSize(),
-            viewState = LoadableViewState.Failure(UnknownLocalizedException())
+            viewState = LoadableViewState.Failure(UnknownLocalizedException()),
         )
     }
 }

@@ -1,8 +1,12 @@
 package com.felipearpa.tyche.bet
 
 import com.felipearpa.tyche.core.type.TeamScore
-import java.time.LocalDateTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
 
+@OptIn(ExperimentalTime::class)
 fun poolGamblerBetFakeModel() =
     PoolGamblerBetModel(
         poolId = "X".repeat(15),
@@ -15,10 +19,11 @@ fun poolGamblerBetFakeModel() =
         matchScore = TeamScore(100, 100),
         betScore = TeamScore(100, 100),
         score = 10,
-        matchDateTime = LocalDateTime.now(),
-        isLocked = true
+        matchDateTime = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
+        isLocked = true,
     )
 
+@OptIn(ExperimentalTime::class)
 fun poolGamblerBetDummyModel() =
     PoolGamblerBetModel(
         poolId = "pool123",
@@ -31,10 +36,11 @@ fun poolGamblerBetDummyModel() =
         matchScore = TeamScore(2, 1),
         betScore = TeamScore(1, 2),
         score = 10,
-        matchDateTime = LocalDateTime.now(),
-        isLocked = false
+        matchDateTime = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
+        isLocked = false,
     )
 
+@OptIn(ExperimentalTime::class)
 fun poolGamblerBetDummyModels() =
     listOf(
         PoolGamblerBetModel(
@@ -48,8 +54,8 @@ fun poolGamblerBetDummyModels() =
             matchScore = TeamScore(3, 0),
             betScore = TeamScore(2, 1),
             score = 15,
-            matchDateTime = LocalDateTime.now(),
-            isLocked = true
+            matchDateTime = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
+            isLocked = true,
         ),
         PoolGamblerBetModel(
             poolId = "pool002",
@@ -62,8 +68,8 @@ fun poolGamblerBetDummyModels() =
             matchScore = TeamScore(1, 1),
             betScore = TeamScore(0, 1),
             score = 20,
-            matchDateTime = LocalDateTime.now(),
-            isLocked = false
+            matchDateTime = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
+            isLocked = false,
         ),
         PoolGamblerBetModel(
             poolId = "pool003",
@@ -76,7 +82,7 @@ fun poolGamblerBetDummyModels() =
             matchScore = TeamScore(2, 2),
             betScore = TeamScore(3, 1),
             score = 25,
-            matchDateTime = LocalDateTime.now().plusDays(1),
-            isLocked = true
-        )
+            matchDateTime = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
+            isLocked = true,
+        ),
     )

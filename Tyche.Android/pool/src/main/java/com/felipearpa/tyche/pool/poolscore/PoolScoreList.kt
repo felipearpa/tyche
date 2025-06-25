@@ -13,7 +13,6 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.composed
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.paging.PagingData
@@ -33,24 +32,24 @@ fun PoolScoreList(
     lazyPoolGamblerScores: LazyPagingItems<PoolGamblerScoreModel>,
     lazyListState: LazyListState = rememberLazyListState(),
     onPoolClick: (String, String) -> Unit,
-    fakeItemCount: Int = 50
+    fakeItemCount: Int = 50,
 ) {
     RefreshableStatefulLazyColumn(
         modifier = modifier,
         lazyItems = lazyPoolGamblerScores,
         state = lazyListState,
         loadingContent = { PoolScoreFakeList(count = fakeItemCount) },
-        loadingContentOnConcatenate = { poolScoreFakeItem() }
+        loadingContentOnConcatenate = { poolScoreFakeItem() },
     ) {
         items(
             count = lazyPoolGamblerScores.itemCount,
             key = lazyPoolGamblerScores.itemKey { poolGamblerScore ->
                 Pair(
                     poolGamblerScore.poolId,
-                    poolGamblerScore.gamblerId
+                    poolGamblerScore.gamblerId,
                 )
             },
-            contentType = lazyPoolGamblerScores.itemContentType { "PoolScore" }
+            contentType = lazyPoolGamblerScores.itemContentType { "PoolScore" },
         ) { index ->
             val poolGamblerScore = lazyPoolGamblerScores[index]!!
             Column(
@@ -58,11 +57,11 @@ fun PoolScoreList(
                     .fillMaxWidth()
                     .clickable {
                         onPoolClick(poolGamblerScore.poolId, poolGamblerScore.gamblerId)
-                    }
+                    },
             ) {
                 PoolScoreItem(
                     poolGamblerScore = poolGamblerScore,
-                    modifier = Modifier.poolScoreItem()
+                    modifier = Modifier.poolScoreItem(),
                 )
                 HorizontalDivider()
             }
@@ -74,7 +73,7 @@ fun PoolScoreList(
 private fun PoolScoreFakeList(count: Int) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+        verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         repeat(count) {
             item {
@@ -92,11 +91,10 @@ private fun LazyListScope.poolScoreFakeItem() {
     }
 }
 
-private fun Modifier.poolScoreItem() = composed {
-    this
-        .fillMaxWidth()
+@Composable
+private fun Modifier.poolScoreItem() =
+    fillMaxWidth()
         .padding(all = LocalBoxSpacing.current.medium)
-}
 
 @Preview(showBackground = true)
 @Composable
@@ -105,7 +103,7 @@ private fun PoolScoreListPreview() {
     PoolScoreList(
         lazyPoolGamblerScores = items,
         onPoolClick = { _, _ -> },
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier.fillMaxSize(),
     )
 }
 

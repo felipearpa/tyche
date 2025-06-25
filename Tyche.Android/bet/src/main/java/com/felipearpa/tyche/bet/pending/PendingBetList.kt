@@ -17,27 +17,27 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
+import com.felipearpa.foundation.time.toShortDateString
 import com.felipearpa.tyche.bet.PoolGamblerBetModel
 import com.felipearpa.tyche.bet.poolGamblerBetDummyModels
-import com.felipearpa.tyche.core.toLocalDateString
 import com.felipearpa.tyche.ui.lazy.RefreshableStatefulLazyColumn
 import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
 import com.felipearpa.tyche.ui.theme.TycheTheme
 import kotlinx.coroutines.flow.flowOf
-import java.time.LocalDate
+import kotlinx.datetime.LocalDate
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun PendingBetList(
     lazyPoolGamblerBets: LazyPagingItems<PoolGamblerBetModel>,
     modifier: Modifier = Modifier,
-    fakeItemCount: Int = 0
+    fakeItemCount: Int = 0,
 ) {
     RefreshableStatefulLazyColumn(
         modifier = modifier,
         lazyItems = lazyPoolGamblerBets,
         loadingContent = { PendingBetFakeList(count = fakeItemCount) },
-        loadingContentOnConcatenate = { pendingBetFakeItem() }
+        loadingContentOnConcatenate = { pendingBetFakeItem() },
     ) {
         val poolGamblerBetsCount = lazyPoolGamblerBets.itemCount
         var lastMatchDate: LocalDate? = null
@@ -45,39 +45,39 @@ fun PendingBetList(
         repeat(poolGamblerBetsCount) { index ->
             val poolGamblerBet = lazyPoolGamblerBets[index]!!
 
-            if (lastMatchDate != poolGamblerBet.matchDateTime.toLocalDate()) {
-                val localDateString = poolGamblerBet.matchDateTime.toLocalDateString()
+            if (lastMatchDate != poolGamblerBet.matchDateTime.date) {
+                val localDateString = poolGamblerBet.matchDateTime.toShortDateString()
                 stickyHeader(
                     key = localDateString,
-                    contentType = "Header"
+                    contentType = "Header",
                 ) {
                     Text(
                         text = localDateString,
                         style = MaterialTheme.typography.titleMedium,
-                        modifier = Modifier.pendingHeaderBetItemView()
+                        modifier = Modifier.pendingHeaderBetItemView(),
                     )
                 }
-                lastMatchDate = poolGamblerBet.matchDateTime.toLocalDate()
+                lastMatchDate = poolGamblerBet.matchDateTime.date
             }
 
             item(
                 key = Triple(
                     poolGamblerBet.poolId,
                     poolGamblerBet.gamblerId,
-                    poolGamblerBet.matchId
+                    poolGamblerBet.matchId,
                 ),
-                contentType = "PoolGamblerBet"
+                contentType = "PoolGamblerBet",
             ) {
                 if (LocalInspectionMode.current) {
                     PendingBetItem(
                         poolGamblerBet = poolGamblerBet,
                         viewState = PendingBetItemViewState.dummyVisualization(),
-                        modifier = Modifier.pendingBetItem()
+                        modifier = Modifier.pendingBetItem(),
                     )
                 } else {
                     PendingBetItemView(
                         viewModel = pendingBetViewModel(poolGamblerBet = poolGamblerBet),
-                        modifier = Modifier.pendingBetItem()
+                        modifier = Modifier.pendingBetItem(),
                     )
                 }
                 HorizontalDivider(modifier = Modifier.padding(horizontal = LocalBoxSpacing.current.large))

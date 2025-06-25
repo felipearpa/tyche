@@ -1,7 +1,7 @@
 package com.felipearpa.tyche.data.bet.domain
 
 import com.felipearpa.tyche.core.type.TeamScore
-import java.time.LocalDateTime
+import kotlinx.datetime.LocalDateTime
 
 data class PoolGamblerBet(
     val poolId: String,
@@ -16,5 +16,5 @@ data class PoolGamblerBet(
     val betScore: TeamScore<Int>?,
     val score: Int?,
     val matchDateTime: LocalDateTime,
-    val isLocked: Boolean
+    val isLocked: Boolean,
 )

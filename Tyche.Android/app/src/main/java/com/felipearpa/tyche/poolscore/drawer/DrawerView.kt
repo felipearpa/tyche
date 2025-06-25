@@ -14,8 +14,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import com.felipearpa.foundation.emptyString
 import com.felipearpa.tyche.R
-import com.felipearpa.tyche.core.emptyString
 import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
 
 @Composable
@@ -25,7 +25,7 @@ fun DrawerView(viewModel: DrawerViewModel, onLogout: () -> Unit) {
         logout = {
             viewModel.logout()
             onLogout()
-        }
+        },
     )
 }
 
@@ -33,17 +33,17 @@ fun DrawerView(viewModel: DrawerViewModel, onLogout: () -> Unit) {
 private fun DrawerView(modifier: Modifier = Modifier, logout: () -> Unit = {}) {
     Column(
         modifier = modifier.padding(all = LocalBoxSpacing.current.large),
-        verticalArrangement = Arrangement.Bottom
+        verticalArrangement = Arrangement.Bottom,
     ) {
         OutlinedButton(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = LocalBoxSpacing.current.medium),
-            onClick = logout
+            onClick = logout,
         ) {
             Icon(
                 painter = painterResource(id = R.drawable.logout),
-                contentDescription = emptyString()
+                contentDescription = emptyString(),
             )
             Text(text = stringResource(id = R.string.log_out_action))
         }

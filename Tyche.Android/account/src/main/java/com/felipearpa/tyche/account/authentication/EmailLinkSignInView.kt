@@ -22,8 +22,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.felipearpa.foundation.emptyString
 import com.felipearpa.tyche.account.R
-import com.felipearpa.tyche.core.emptyString
 import com.felipearpa.tyche.session.AccountBundle
 import com.felipearpa.tyche.session.emptyAccountBundle
 import com.felipearpa.tyche.ui.exception.ExceptionView
@@ -40,7 +40,7 @@ fun EmailLinkSignInView(
     viewModel: EmailLinkSignInViewModel,
     email: String,
     emailLink: String,
-    onStartRequested: (AccountBundle) -> Unit
+    onStartRequested: (AccountBundle) -> Unit,
 ) {
     val state by viewModel.state.collectAsState()
 
@@ -55,7 +55,7 @@ fun EmailLinkSignInView(
 @Composable
 fun EmailLinkSignInView(
     viewState: LoadableViewState<AccountBundle>,
-    onStartRequested: (AccountBundle) -> Unit = {}
+    onStartRequested: (AccountBundle) -> Unit = {},
 ) {
     when (viewState) {
         is LoadableViewState.Failure -> {
@@ -63,7 +63,7 @@ fun EmailLinkSignInView(
                 localizedException = viewState().localizedOrNull()!!,
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(horizontal = LocalBoxSpacing.current.medium)
+                    .padding(horizontal = LocalBoxSpacing.current.medium),
             )
         }
 
@@ -76,7 +76,7 @@ fun EmailLinkSignInView(
                 start = { onStartRequested(viewState.value) },
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(horizontal = LocalBoxSpacing.current.medium)
+                    .padding(horizontal = LocalBoxSpacing.current.medium),
             )
     }
 }
@@ -88,28 +88,28 @@ private fun SuccessContent(start: () -> Unit, modifier: Modifier = Modifier) {
             Column(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.large)
+                verticalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.large),
             ) {
                 Icon(
                     painter = painterResource(id = R.drawable.mark_email_read),
                     contentDescription = emptyString(),
-                    modifier = Modifier.size(width = 64.dp, height = 64.dp)
+                    modifier = Modifier.size(width = 64.dp, height = 64.dp),
                 )
 
                 Column(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.medium)
+                    verticalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.medium),
                 ) {
                     Text(
                         text = stringResource(id = R.string.account_verified_title),
                         textAlign = TextAlign.Center,
-                        style = MaterialTheme.typography.titleMedium
+                        style = MaterialTheme.typography.titleMedium,
                     )
 
                     Text(
                         text = stringResource(id = R.string.account_verified_description),
-                        textAlign = TextAlign.Center
+                        textAlign = TextAlign.Center,
                     )
                 }
 

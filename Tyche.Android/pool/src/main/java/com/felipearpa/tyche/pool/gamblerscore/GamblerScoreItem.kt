@@ -15,12 +15,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import com.felipearpa.tyche.pool.PoolGamblerScoreModel
 import com.felipearpa.tyche.pool.difference
 import com.felipearpa.tyche.pool.poolGamblerScoreDummyModel
 import com.felipearpa.tyche.ui.ProgressIndicator
-import com.felipearpa.tyche.ui.preview.UIModePreview
 import com.felipearpa.tyche.ui.theme.TycheTheme
 
 @Composable
@@ -28,22 +28,22 @@ fun GamblerScoreItem(
     poolGamblerScore: PoolGamblerScoreModel,
     isLoggedIn: Boolean,
     modifier: Modifier = Modifier,
-    shimmerModifier: Modifier = Modifier
+    shimmerModifier: Modifier = Modifier,
 ) {
     Row(
         modifier = modifier,
         horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         Row(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             poolGamblerScore.currentPosition?.let { nonNullCurrentPosition ->
                 Position(
                     position = nonNullCurrentPosition,
                     isActiveGambler = isLoggedIn,
-                    shimmerModifier = shimmerModifier
+                    shimmerModifier = shimmerModifier,
                 )
             }
             Text(text = poolGamblerScore.gamblerUsername, modifier = shimmerModifier)
@@ -58,7 +58,7 @@ fun GamblerScoreItem(
                 Box(modifier = Modifier.width(32.dp), contentAlignment = Alignment.Center) {
                     ProgressIndicator(
                         difference = nonNullDifference,
-                        shimmerModifier = shimmerModifier
+                        shimmerModifier = shimmerModifier,
                     )
                 }
             }
@@ -71,7 +71,7 @@ fun Position(
     position: Int,
     isActiveGambler: Boolean,
     modifier: Modifier = Modifier,
-    shimmerModifier: Modifier = Modifier
+    shimmerModifier: Modifier = Modifier,
 ) {
     Box(
         modifier = modifier
@@ -79,16 +79,16 @@ fun Position(
             .clip(CircleShape)
             .background(color = if (isActiveGambler) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.secondaryContainer)
             .then(shimmerModifier),
-        contentAlignment = Alignment.Center
+        contentAlignment = Alignment.Center,
     ) {
         Text(
             text = position.toString(),
-            color = if (isActiveGambler) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSecondaryContainer
+            color = if (isActiveGambler) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSecondaryContainer,
         )
     }
 }
 
-@UIModePreview
+@PreviewLightDark
 @Composable
 private fun NonLoggedInGamblerScoreItemPreview() {
     TycheTheme {
@@ -96,13 +96,13 @@ private fun NonLoggedInGamblerScoreItemPreview() {
             GamblerScoreItem(
                 poolGamblerScore = poolGamblerScoreDummyModel(),
                 isLoggedIn = false,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
             )
         }
     }
 }
 
-@UIModePreview
+@PreviewLightDark
 @Composable
 fun LoggedInGamblerScoreItemPreview() {
     TycheTheme {
@@ -115,10 +115,10 @@ fun LoggedInGamblerScoreItemPreview() {
                     gamblerUsername = "user-tyche",
                     currentPosition = 1,
                     beforePosition = 2,
-                    score = 10
+                    score = 10,
                 ),
                 isLoggedIn = true,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
             )
         }
     }

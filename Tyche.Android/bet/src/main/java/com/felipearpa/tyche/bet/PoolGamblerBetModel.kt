@@ -1,7 +1,7 @@
 package com.felipearpa.tyche.bet
 
 import com.felipearpa.tyche.core.type.TeamScore
-import java.time.LocalDateTime
+import kotlinx.datetime.LocalDateTime
 import java.util.UUID
 
 data class PoolGamblerBetModel(
@@ -17,7 +17,7 @@ data class PoolGamblerBetModel(
     val score: Int?,
     val matchDateTime: LocalDateTime,
     val isLocked: Boolean,
-    val instanceId: String = UUID.randomUUID().toString()
+    val instanceId: String = UUID.randomUUID().toString(),
 )
 
 fun PoolGamblerBetModel.homeTeamMatchRawValue() =

@@ -2,9 +2,9 @@ val projectCompileSdk: String by project
 val projectMinSdk: String by project
 
 plugins {
-    alias(libs.plugins.androidLibrary)
-    alias(libs.plugins.jetbrainsKotlinAndroid)
-    alias(libs.plugins.composeCompiler)
+    alias(libs.plugins.android.library)
+    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.compose)
 }
 
 android {
@@ -63,8 +63,9 @@ dependencies {
     implementation(libs.material3)
     implementation(libs.paging.compose)
     implementation(libs.navigation.compose)
-    implementation(libs.bundles.retrofit)
     implementation(libs.google.accompanist.placeholder)
+    implementation(libs.bundles.retrofit)
+    implementation(libs.felipearpa.foundation)
 
     testImplementation(platform(libs.junit5.bom))
     testImplementation(libs.junit5.jupiter)
@@ -89,4 +90,5 @@ dependencies {
 
 dependencies {
     implementation(project(":core"))
+    implementation(project(":network:core"))
 }

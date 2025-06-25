@@ -1,7 +1,7 @@
 package com.felipearpa.tyche.network.di
 
+import com.felipearpa.network.serializer.LocalDateTimeSerializer
 import com.felipearpa.tyche.core.network.UrlBasePathProvider
-import com.felipearpa.tyche.core.network.retrofit.LocalDateTimeSerializer
 import com.felipearpa.tyche.network.LocalUrlBasePathProvider
 import dagger.Module
 import dagger.Provides

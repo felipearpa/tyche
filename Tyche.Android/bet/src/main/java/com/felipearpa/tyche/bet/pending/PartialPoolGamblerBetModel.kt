@@ -1,10 +1,10 @@
 package com.felipearpa.tyche.bet.pending
 
-import com.felipearpa.tyche.core.emptyString
+import com.felipearpa.foundation.emptyString
 
 data class PartialPoolGamblerBetModel(
     val homeTeamBet: String,
-    val awayTeamBet: String
+    val awayTeamBet: String,
 )
 
 fun emptyPartialPoolGamblerBetModel() =

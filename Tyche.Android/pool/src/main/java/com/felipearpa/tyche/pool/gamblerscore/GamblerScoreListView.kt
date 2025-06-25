@@ -14,6 +14,6 @@ fun GamblerScoreListView(viewModel: GamblerScoreListViewModel) {
         lazyPoolGamblerScores = lazyItems,
         loggedInGamblerId = viewModel.gamblerId,
         fakeItemCount = pageSize,
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier.fillMaxSize(),
     )
 }

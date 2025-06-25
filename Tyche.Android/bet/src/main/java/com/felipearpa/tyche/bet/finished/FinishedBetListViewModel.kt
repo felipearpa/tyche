@@ -6,9 +6,9 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
-import com.felipearpa.tyche.data.bet.application.GetFinishedPoolGamblerBetsUseCase
+import com.felipearpa.foundation.emptyString
 import com.felipearpa.tyche.bet.pending.PendingBetPagingSource
-import com.felipearpa.tyche.core.emptyString
+import com.felipearpa.tyche.data.bet.application.GetFinishedPoolGamblerBetsUseCase
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -23,7 +23,7 @@ private const val PREFETCH_DISTANCE = 5
 class FinishedBetListViewModel @AssistedInject constructor(
     @Assisted("poolId") private val poolId: String,
     @Assisted("gamblerId") val gamblerId: String,
-    private val getFinishedPoolGamblerBetsUseCase: GetFinishedPoolGamblerBetsUseCase
+    private val getFinishedPoolGamblerBetsUseCase: GetFinishedPoolGamblerBetsUseCase,
 ) :
     ViewModel() {
 
@@ -36,7 +36,7 @@ class FinishedBetListViewModel @AssistedInject constructor(
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.Lazily,
-        initialValue = PagingData.empty()
+        initialValue = PagingData.empty(),
     )
 
     private fun buildPager(searchText: String) =
@@ -44,7 +44,7 @@ class FinishedBetListViewModel @AssistedInject constructor(
             config = PagingConfig(
                 pageSize = pageSize,
                 prefetchDistance = PREFETCH_DISTANCE,
-                enablePlaceholders = true
+                enablePlaceholders = true,
             ),
             pagingSourceFactory = {
                 PendingBetPagingSource(
@@ -54,11 +54,11 @@ class FinishedBetListViewModel @AssistedInject constructor(
                             poolId = poolId,
                             gamblerId = gamblerId,
                             search = { searchText.ifEmpty { null } },
-                            getFinishedPoolGamblerBetsUseCase = getFinishedPoolGamblerBetsUseCase
+                            getFinishedPoolGamblerBetsUseCase = getFinishedPoolGamblerBetsUseCase,
                         )
-                    }
+                    },
                 )
-            }
+            },
         )
 
     fun search(searchText: String) {
