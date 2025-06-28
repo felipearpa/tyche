@@ -121,6 +121,7 @@ private fun EmailAndPasswordSignInView(
                     password = password,
                     viewState = viewState,
                     reset = onReset,
+                    modifier = modifier,
                 )
 
                 is LoadableViewState.Success ->

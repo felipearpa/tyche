@@ -7,6 +7,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import kotlinx.datetime.LocalDateTime
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
 import okhttp3.MediaType.Companion.toMediaType
@@ -14,7 +15,6 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.kotlinx.serialization.asConverterFactory
-import java.time.LocalDateTime
 import javax.inject.Singleton
 
 @Module
@@ -43,6 +43,7 @@ object NetworkProvider {
         okHttpClient: OkHttpClient,
     ): Retrofit {
         val json = Json {
+            ignoreUnknownKeys = true
             serializersModule = SerializersModule {
                 contextual(LocalDateTime::class, LocalDateTimeSerializer)
             }
@@ -50,7 +51,7 @@ object NetworkProvider {
 
         return Retrofit.Builder()
             .baseUrl(urlBasePathProvider.basePath)
-            .addConverterFactory(json.asConverterFactory("application/json; charset=UTF8".toMediaType()))
+            .addConverterFactory(json.asConverterFactory("application/json; charset=UTF-8".toMediaType()))
             .client(okHttpClient)
             .build()
     }

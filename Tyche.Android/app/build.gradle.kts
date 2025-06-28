@@ -83,6 +83,7 @@ dependencies {
     implementation(libs.felipearpa.viewing.state)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.felipearpa.foundation)
+    implementation(libs.kotlinx.datetime)
 
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)
