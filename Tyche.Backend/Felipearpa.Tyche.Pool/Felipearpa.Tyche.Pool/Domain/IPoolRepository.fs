@@ -1,4 +1,4 @@
 namespace Felipearpa.Tyche.Pool.Domain
 
 type IPoolRepository =
-    abstract createPool: ResolvedCreatePoolInput -> Result<Pool, unit> Async
+    abstract createPool: ResolvedCreatePoolInput -> Result<CreatePoolOutput, unit> Async

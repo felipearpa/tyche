@@ -13,6 +13,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -28,16 +29,22 @@ import com.felipearpa.tyche.ui.exception.localizedOrDefault
 import com.felipearpa.tyche.ui.loading.LoadingContainerView
 import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
 import com.felipearpa.ui.state.EditableViewState
+import com.felipearpa.ui.state.isSuccess
 import com.felipearpa.tyche.ui.R as SharedR
 
 @Composable
-fun PoolFromLayoutCreatorView(viewModel: PoolFromLayoutCreatorViewModel, onBackClick: () -> Unit) {
+fun PoolFromLayoutCreatorView(
+    viewModel: PoolFromLayoutCreatorViewModel,
+    onPoolCreated: (poolId: String) -> Unit,
+    onBackClick: () -> Unit,
+) {
     val state by viewModel.state.collectAsState()
     PoolFromLayoutCreatorView(
         state = state,
         onSaveClick = { newCreatePoolModel ->
             viewModel.createPool(newCreatePoolModel)
         },
+        onPoolCreated = onPoolCreated,
         onBackClick = onBackClick,
         reset = viewModel::reset,
     )
@@ -48,6 +55,7 @@ fun PoolFromLayoutCreatorView(viewModel: PoolFromLayoutCreatorViewModel, onBackC
 private fun PoolFromLayoutCreatorView(
     state: EditableViewState<CreatePoolModel>,
     onSaveClick: (createPoolModel: CreatePoolModel) -> Unit,
+    onPoolCreated: (poolId: String) -> Unit,
     onBackClick: () -> Unit,
     reset: () -> Unit,
 ) {
@@ -131,6 +139,14 @@ private fun PoolFromLayoutCreatorView(
                     exception = state.exception.localizedOrDefault(),
                     onDismiss = { reset() },
                 )
+            }
+        }
+    }
+
+    LaunchedEffect(state) {
+        if (state.isSuccess()) {
+            state.succeeded.poolId?.let { poolId ->
+                onPoolCreated(poolId)
             }
         }
     }

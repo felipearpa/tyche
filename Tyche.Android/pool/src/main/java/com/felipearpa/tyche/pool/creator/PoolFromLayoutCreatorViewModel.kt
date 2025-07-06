@@ -32,10 +32,10 @@ class PoolFromLayoutCreatorViewModel @AssistedInject constructor(
                         ownerGamblerId = gamblerId,
                     ),
                 )
-            result.onSuccess {
+            result.onSuccess { createPoolOutput ->
                 _state.value = EditableViewState.Success(
                     old = currentCreatePoolModel,
-                    succeeded = createPoolModel,
+                    succeeded = createPoolModel.copy(poolId = createPoolOutput.poolId),
                 )
             }.onFailure {
                 _state.value = EditableViewState.Failure(

@@ -1,7 +1,7 @@
 package com.felipearpa.tyche.data.pool.domain
 
-internal fun PoolResponse.toPool() =
-    Pool(
-        id = poolId,
-        name = poolName,
+internal fun CreatePoolResponse.toCreatePoolOutput() =
+    CreatePoolOutput(
+        poolId = poolId,
+        poolName = poolName,
     )

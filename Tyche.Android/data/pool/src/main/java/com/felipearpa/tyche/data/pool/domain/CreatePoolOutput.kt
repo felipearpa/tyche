@@ -1,9 +1,6 @@
 package com.felipearpa.tyche.data.pool.domain
 
-import kotlinx.serialization.Serializable
-
-@Serializable
-internal data class PoolResponse(
+data class CreatePoolOutput(
     val poolId: String,
     val poolName: String,
 )

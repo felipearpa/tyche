@@ -15,6 +15,9 @@ module CreatePoolGamblerRequestBuilder =
     [<Literal>]
     let private gamblerText = "GAMBLER"
 
+    [<Literal>]
+    let private positionText = "POSITION"
+
     let build (createPoolInput: ResolvedCreatePoolInput) =
         let mutable attributeValues =
             dict
@@ -31,6 +34,8 @@ module CreatePoolGamblerRequestBuilder =
                       S =
                           $"{createPoolInput.PoolName |> NonEmptyString100.value} {createPoolInput.OwnerGamblerUsername |> NonEmptyString100.value}"
                   )
-                  "poolLayoutId", AttributeValue(S = (createPoolInput.PoolLayoutId |> Ulid.value)) ]
+                  "poolLayoutId", AttributeValue(S = (createPoolInput.PoolLayoutId |> Ulid.value))
+                  "getPoolGamblerScoresByGamblerSk",
+                  AttributeValue(S = $"{positionText}0#{poolText}#{createPoolInput.PoolId |> Ulid.value}") ]
 
         Put(TableName = tableName, Item = (attributeValues |> Dictionary))

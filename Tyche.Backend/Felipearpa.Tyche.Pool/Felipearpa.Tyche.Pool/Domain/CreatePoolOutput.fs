@@ -2,6 +2,6 @@ namespace Felipearpa.Tyche.Pool.Domain
 
 open Felipearpa.Type
 
-type Pool =
+type CreatePoolOutput =
     { PoolId: Ulid
       PoolName: NonEmptyString100 }

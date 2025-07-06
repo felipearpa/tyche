@@ -18,7 +18,7 @@
         <Compile Include="Domain\PoolGamblerBetMapper.fs" />
         <Compile Include="Domain\CreatePoolInput.fs" />
         <Compile Include="Domain\ResolvedCreatePoolInput.fs" />
-        <Compile Include="Domain\Pool.fs" />
+        <Compile Include="Domain\CreatePoolOutput.fs" />
         <Compile Include="Domain\IPoolRepository.fs" />
         <Compile Include="Domain\PoolEntity.fs" />
         <Compile Include="Domain\PoolTransformer.fs" />

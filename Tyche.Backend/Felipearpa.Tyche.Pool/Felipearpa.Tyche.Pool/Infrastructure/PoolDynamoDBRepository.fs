@@ -51,7 +51,7 @@ type PoolDynamoDbRepository(keySerializer: IKeySerializer, client: IAmazonDynamo
                 return
                     match response with
                     | Ok _ ->
-                        { Pool.PoolId = createPoolInput.PoolId
+                        { CreatePoolOutput.PoolId = createPoolInput.PoolId
                           PoolName = createPoolInput.PoolName }
                         |> Ok
                     | Error _ -> () |> Error

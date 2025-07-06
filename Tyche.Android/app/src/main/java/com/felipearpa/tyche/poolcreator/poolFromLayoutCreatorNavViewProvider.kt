@@ -4,6 +4,10 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import com.felipearpa.tyche.pool.creator.poolFromLayoutCreatorView
 
-fun NavGraphBuilder.poolFromLayoutCreatorNavView(gamblerId: String, navController: NavController) {
-    poolFromLayoutCreatorView(gamblerId = gamblerId, onBackClick = { navController.popBackStack() })
+fun NavGraphBuilder.poolFromLayoutCreatorNavView(navController: NavController, gamblerId: String) {
+    poolFromLayoutCreatorView(
+        gamblerId = gamblerId,
+        onPoolCreated = { navController.popBackStack() },
+        onBackClick = { navController.popBackStack() },
+    )
 }

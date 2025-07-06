@@ -5,5 +5,5 @@ import retrofit2.http.POST
 
 internal interface PoolRemoteDataSource {
     @POST("pools")
-    suspend fun createPool(@Body createPoolRequest: CreatePoolRequest): PoolResponse
+    suspend fun createPool(@Body createPoolRequest: CreatePoolRequest): CreatePoolResponse
 }
