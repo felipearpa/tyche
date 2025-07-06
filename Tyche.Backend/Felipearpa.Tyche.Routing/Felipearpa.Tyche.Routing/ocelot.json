@@ -71,6 +71,20 @@
       ]
     },
     {
+      "DownstreamPathTemplate": "/pools",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5001
+        }
+      ],
+      "UpstreamPathTemplate": "/pools",
+      "UpstreamHttpMethod": [
+        "POST"
+      ]
+    },
+    {
       "DownstreamPathTemplate": "/pools/{poolId}/gamblers/{gamblerId}/bets/pending",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [

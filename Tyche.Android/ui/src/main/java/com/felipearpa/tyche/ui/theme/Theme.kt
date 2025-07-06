@@ -33,10 +33,12 @@ private val lightColorScheme = lightColorScheme(
     onBackground = lightOnBackgroundColor,
     surface = lightSurfaceColor,
     onSurface = lightOnSurfaceColor,
+    surfaceVariant = lightSurfaceVariantColor,
+    onSurfaceVariant = lightOnSurfaceVariantColor,
     error = lightErrorColor,
     onError = lightOnErrorColor,
     errorContainer = lightErrorContainer,
-    onErrorContainer = lightOnErrorContainer
+    onErrorContainer = lightOnErrorContainer,
 )
 
 private val darkColorScheme = darkColorScheme(
@@ -56,10 +58,12 @@ private val darkColorScheme = darkColorScheme(
     onBackground = darkOnBackgroundColor,
     surface = darkSurfaceColor,
     onSurface = darkOnSurfaceColor,
+    surfaceVariant = darkSurfaceVariantColor,
+    onSurfaceVariant = darkOnSurfaceVariantColor,
     error = darkErrorColor,
     onError = darkOnErrorColor,
     errorContainer = darkErrorContainer,
-    onErrorContainer = darkOnErrorContainer
+    onErrorContainer = darkOnErrorContainer,
 )
 
 @Composable
@@ -67,7 +71,7 @@ fun TycheTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     // Dynamic color is available on Android 12+
     dynamicColor: Boolean = false,
-    content: @Composable () -> Unit
+    content: @Composable () -> Unit,
 ) {
     val colorScheme = when {
         dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
@@ -92,11 +96,11 @@ fun TycheTheme(
 
     MaterialTheme(
         colorScheme = colorScheme,
-        typography = Typography
+        typography = Typography,
     ) {
         CompositionLocalProvider(
             LocalExtendedColorScheme provides extendedColors,
-            LocalBoxSpacing provides BoxSpacing()
+            LocalBoxSpacing provides BoxSpacing(),
         ) {
             content()
         }

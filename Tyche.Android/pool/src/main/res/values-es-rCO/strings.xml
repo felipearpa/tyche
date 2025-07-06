@@ -4,5 +4,8 @@
     <string name="gambler_pool_list_title">Mis pollas</string>
     <string name="pool_from_layout_creator_title">Polla desde plantilla</string>
     <string name="starting_from_date_text">Inicia el %1$s</string>
-    <string name="select_pool_layout_text">Elige una plantilla para crear tu polla</string>
+    <string name="choose_pool_layout_text">Elige una plantilla para crear tu polla</string>
+    <string name="pool_name_label">Ingresa el nombre para la polla</string>
+    <string name="fill_pool_fields_title">Completa los campos para crear tu polla</string>
+    <string name="pool_name_required_failure_text">El nombre de la polla es obligatorio</string>
 </resources>

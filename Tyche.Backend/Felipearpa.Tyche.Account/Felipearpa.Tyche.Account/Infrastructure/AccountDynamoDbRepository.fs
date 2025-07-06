@@ -111,3 +111,25 @@ type AccountDynamoDbRepository(client: IAmazonDynamoDB) =
                         | Error _ -> return () |> Error
                     }
             }
+
+        member this.GetById(id) =
+            async {
+                let request = GetByIdRequestBuilder.build (id |> Ulid.value)
+
+                let! queryResponse =
+                    async {
+                        try
+                            let! response = client.QueryAsync(request) |> Async.AwaitTask
+                            return response |> Ok
+                        with _ ->
+                            return () |> Error
+                    }
+
+                return
+                    match queryResponse with
+                    | Ok response ->
+                        match response.Items.FirstOrDefault() with
+                        | null -> None |> Ok
+                        | valuesMap -> valuesMap.ToAccountEntity().ToAccount() |> Some |> Ok
+                    | Error _ -> () |> Error
+            }

@@ -56,6 +56,12 @@ internal val darkOnBackgroundColor = Color(0xFFE0E0E0)
 internal val darkSurfaceColor = Color(0xFF121212)
 internal val darkOnSurfaceColor = Color(0xFFE0E0E0)
 
+internal val lightSurfaceVariantColor = Color(0xFFF5F5F5)
+internal val lightOnSurfaceVariantColor = Color(0xFF1B1B1B)
+
+internal val darkSurfaceVariantColor = Color(0xFF1E1E1E)
+internal val darkOnSurfaceVariantColor = Color(0xFFEAEAEA)
+
 internal val darkErrorColor = Color(0xFFCF6679)
 internal val darkOnErrorColor = Color(0xFF1E1E1E)
 

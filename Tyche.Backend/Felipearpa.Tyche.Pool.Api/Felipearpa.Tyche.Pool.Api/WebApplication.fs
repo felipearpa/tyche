@@ -178,3 +178,23 @@ module WebApplication =
             |> ignore
 
             this
+                .MapPost(
+                    "/pools",
+                    Func<_, _, _>(fun (createPoolRequest: CreatePoolRequest) (createPoolCommand: CreatePoolCommand) ->
+                        async {
+                            let! result =
+                                createPoolCommand.ExecuteAsync(
+                                    createPoolRequest |> CreatePoolRequestTransformer.toCreatePoolInput
+                                )
+
+                            return
+                                match result with
+                                | Ok pool -> Results.Ok(pool |> PoolTransformer.toPoolViewModel)
+                                | Error _ -> Results.InternalServerError()
+                        }
+                        |> Async.StartAsTask)
+                )
+                .RequireAuthorization()
+            |> ignore
+
+            this

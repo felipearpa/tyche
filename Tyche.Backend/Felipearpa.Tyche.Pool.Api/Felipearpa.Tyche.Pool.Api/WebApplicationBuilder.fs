@@ -5,6 +5,9 @@ open Felipearpa.Core
 open Felipearpa.Core.Json
 open Felipearpa.Core.Jwt
 open Felipearpa.Data.DynamoDb
+open Felipearpa.Tyche.Account.Application
+open Felipearpa.Tyche.Account.Domain
+open Felipearpa.Tyche.Account.Infrastructure
 open Felipearpa.Tyche.Pool.Application
 open Felipearpa.Tyche.Pool.Data
 open Felipearpa.Tyche.Pool.Domain
@@ -28,14 +31,18 @@ module WebApplicationBuilder =
             .AddSingleton<IJwtGenerator, LocalJWTGenerator>()
             .AddDefaultAWSOptions(app.Configuration.GetAWSOptions())
             .AddAWSService<IAmazonDynamoDB>()
+            .AddScoped<IAccountRepository, AccountDynamoDbRepository>()
+            .AddScoped<IGetAccountById, GetAccountByIdQuery>()
             .AddScoped<IPoolGamblerScoreRepository, PoolGamblerScoreDynamoDbRepository>()
             .AddScoped<IPoolGamblerBetRepository, PoolGamblerBetDynamoDbRepository>()
+            .AddScoped<IPoolRepository, PoolDynamoDbRepository>()
             .AddScoped<GetPoolGamblerScoresByGamblerQuery>()
             .AddScoped<GetPoolGamblerScoresByPoolQuery>()
             .AddScoped<GetPendingPoolGamblerBetsQuery>()
             .AddScoped<GetFinishedPoolGamblerBetsQuery>()
             .AddScoped<GetPoolGamblerScoreQuery>()
             .AddScoped<BetCommand>()
+            .AddScoped<CreatePoolCommand>()
         |> ignore
 
     let registerJwt (app: WebApplicationBuilder) =

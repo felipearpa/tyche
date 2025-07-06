@@ -14,4 +14,5 @@
     <string name="edit_action">Editar</string>
     <string name="unknown_failure_recovery_suggestion">Si el problema persiste, contacta a nuestro equipo de soporte para obtener ayuda</string>
     <string name="remote_communication_failure_recovery_suggestion">Por favor, revise su conexión a Internet y vuelva a intentarlo más tarde. Si el problema persiste, contacta a nuestro equipo de soporte para obtener ayuda</string>
+    <string name="next_action">Siguiente</string>
 </resources>

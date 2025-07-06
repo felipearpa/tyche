@@ -4,5 +4,8 @@
     <string name="gambler_pool_list_title">My pools</string>
     <string name="pool_from_layout_creator_title">Pool from layout</string>
     <string name="starting_from_date_text">Starting %1$s</string>
-    <string name="select_pool_layout_text">Choose a template to create your pool</string>
+    <string name="choose_pool_layout_text">Choose a template to create your pool</string>
+    <string name="pool_name_label">Type the name for the pool</string>
+    <string name="fill_pool_fields_title">Fill out the fields to create your pool</string>
+    <string name="pool_name_required_failure_text">The pool\'s name is required</string>
 </resources>

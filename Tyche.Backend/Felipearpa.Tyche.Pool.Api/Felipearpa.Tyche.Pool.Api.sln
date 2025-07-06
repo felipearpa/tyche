@@ -22,6 +22,8 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Felipearpa.Tyche.Pool.Api.T
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Felipearpa.Crypto", "..\Felipearpa.Crypto\Felipearpa.Crypto\Felipearpa.Crypto.fsproj", "{648EB092-E058-4D70-9080-A1DCF0387825}"
 EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Felipearpa.Tyche.Account", "..\Felipearpa.Tyche.Account\Felipearpa.Tyche.Account\Felipearpa.Tyche.Account.fsproj", "{2CFB51AD-6651-45F3-876E-B768519A0E4E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -76,5 +78,9 @@ Global
 		{648EB092-E058-4D70-9080-A1DCF0387825}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{648EB092-E058-4D70-9080-A1DCF0387825}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{648EB092-E058-4D70-9080-A1DCF0387825}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2CFB51AD-6651-45F3-876E-B768519A0E4E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2CFB51AD-6651-45F3-876E-B768519A0E4E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2CFB51AD-6651-45F3-876E-B768519A0E4E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2CFB51AD-6651-45F3-876E-B768519A0E4E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

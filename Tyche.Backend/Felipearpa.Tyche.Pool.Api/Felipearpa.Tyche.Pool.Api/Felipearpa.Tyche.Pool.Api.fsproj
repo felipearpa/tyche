@@ -7,10 +7,14 @@
 
     <ItemGroup>
         <Compile Include="BetRequest.fs" />
+        <Compile Include="CreatePoolRequest.fs" />
+        <Compile Include="CreatePoolRequestTransformer.fs" />
         <Compile Include="ViewModel\PoolGamblerScoreViewModel.fs" />
         <Compile Include="ViewModel\PoolGamblerScoreMapper.fs" />
         <Compile Include="ViewModel\PoolGamblerBetViewModel.fs" />
         <Compile Include="ViewModel\PoolGamblerBetMapper.fs" />
+        <Compile Include="ViewModel\PoolViewModel.fs" />
+        <Compile Include="ViewModel\PoolTransformer.fs" />
         <Compile Include="WebApplication.fs" />
         <Compile Include="WebApplicationBuilder.fs" />
         <Compile Include="Program.fs" />
@@ -27,8 +31,8 @@
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="AWSSDK.Extensions.NETCore.Setup" Version="4.0.0" />
-      <PackageReference Update="FSharp.Core" Version="8.0.100" />
+      <PackageReference Include="AWSSDK.Extensions.NETCore.Setup" Version="4.0.2" />
+      <PackageReference Update="FSharp.Core" Version="9.0.300" />
     </ItemGroup>
 
 </Project>

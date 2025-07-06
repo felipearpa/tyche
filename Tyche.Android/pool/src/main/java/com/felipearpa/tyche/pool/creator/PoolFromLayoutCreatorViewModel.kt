@@ -2,49 +2,52 @@ package com.felipearpa.tyche.pool.creator
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.paging.Pager
-import androidx.paging.PagingConfig
-import androidx.paging.PagingData
-import androidx.paging.cachedIn
-import com.felipearpa.foundation.emptyString
-import com.felipearpa.tyche.data.pool.application.GetOpenPoolLayoutsUseCase
-import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.stateIn
-import javax.inject.Inject
+import com.felipearpa.tyche.data.pool.application.CreatePoolUseCase
+import com.felipearpa.ui.state.EditableViewState
+import com.felipearpa.ui.state.relevantValue
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedInject
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
-private const val PAGE_SIZE = 50
-private const val PREFETCH_DISTANCE = 5
-
-@HiltViewModel
-class PoolFromLayoutCreatorViewModel @Inject constructor(
-    private val getOpenPoolLayoutsUseCase: GetOpenPoolLayoutsUseCase,
+class PoolFromLayoutCreatorViewModel @AssistedInject constructor(
+    private val createPoolUseCase: CreatePoolUseCase,
+    @Assisted("gamblerId") private val gamblerId: String,
 ) : ViewModel() {
-    val pageSize = PAGE_SIZE
-
-    val poolLayouts = buildPager(searchText = emptyString()).flow.cachedIn(viewModelScope).stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.Lazily,
-        initialValue = PagingData.empty(),
+    private val _state = MutableStateFlow<EditableViewState<CreatePoolModel>>(
+        EditableViewState.Initial(emptyCreatePoolModel()),
     )
+    val state = _state.asStateFlow()
 
-    private fun buildPager(searchText: String) =
-        Pager(
-            config = PagingConfig(
-                pageSize = pageSize,
-                prefetchDistance = PREFETCH_DISTANCE,
-                enablePlaceholders = true,
-            ),
-            pagingSourceFactory = {
-                PoolLayoutPagingSource(
-                    pagingQuery = { next ->
-                        getOpenPoolLayoutsPagingQuery(
-                            next = next,
-                            search = { searchText.ifEmpty { null } },
-                            getOpenPoolLayoutsUseCase = getOpenPoolLayoutsUseCase,
-                        )
-                    },
+    fun createPool(createPoolModel: CreatePoolModel) {
+        val currentCreatePoolModel = _state.value.relevantValue()
+        _state.value =
+            EditableViewState.Loading(current = currentCreatePoolModel, target = createPoolModel)
+        viewModelScope.launch {
+            val result =
+                createPoolUseCase.execute(
+                    createPoolInput = createPoolModel.toCreatePoolInput(
+                        ownerGamblerId = gamblerId,
+                    ),
                 )
-            },
-        )
+            result.onSuccess {
+                _state.value = EditableViewState.Success(
+                    old = currentCreatePoolModel,
+                    succeeded = createPoolModel,
+                )
+            }.onFailure {
+                _state.value = EditableViewState.Failure(
+                    current = currentCreatePoolModel,
+                    failed = createPoolModel,
+                    exception = it,
+                )
+            }
+        }
+    }
+
+    fun reset() {
+        _state.update { EditableViewState.Initial(it.relevantValue()) }
+    }
 }

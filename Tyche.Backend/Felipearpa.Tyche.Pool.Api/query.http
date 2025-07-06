@@ -1,13 +1,3 @@
-### Get Id Token
-POST https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyC8Muo3PUYL6lHgXvZF0P1Pdj6TeUPKc9U 
-Content-Type: application/json
-
-{
-    "email": "test@tyche.com",
-    "password": "test-password",
-    "returnSecureToken": true
-}
-
 ### Get the pools of a gambler
 GET https://localhost:5002/gambler/01H1CMCDHH99FH8FDY36S0YH3A/pools HTTP/1.1
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiZXhwIjoxNzE2MzI2MDMyfQ.yBckrF8m-7WIrprpsSo3HTZ5hOtb1UIOqYiCTGLfmnw
@@ -39,4 +29,15 @@ Content-Type: application/json
     "matchId": "01H1FCNWBG30P448MK3DD595AR",
     "homeTeamBet": 2,
     "awayTeamBet": 1
+}
+
+### Create a pool from a pool layout
+POST https://localhost:5001/pools HTTP/1.1
+Authorization: Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6IjQ3YWU0OWM0YzlkM2ViODVhNTI1NDA3MmMzMGQyZThlNzY2MWVmZTEiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL3NlY3VyZXRva2VuLmdvb2dsZS5jb20vdHljaGUtNTg4Y2UiLCJhdWQiOiJ0eWNoZS01ODhjZSIsImF1dGhfdGltZSI6MTc1MTgxNzQ1OSwidXNlcl9pZCI6IkRYcVhENklWMVhnVFc0MlJTZWtZNEFHamVkZjIiLCJzdWIiOiJEWHFYRDZJVjFYZ1RXNDJSU2VrWTRBR2plZGYyIiwiaWF0IjoxNzUxODE3NDU5LCJleHAiOjE3NTE4MjEwNTksImVtYWlsIjoiZmVsaXBlYXJjaWxhQGdtYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwiZmlyZWJhc2UiOnsiaWRlbnRpdGllcyI6eyJlbWFpbCI6WyJmZWxpcGVhcmNpbGFAZ21haWwuY29tIl19LCJzaWduX2luX3Byb3ZpZGVyIjoicGFzc3dvcmQifX0.zB54nfVMybzLVixU3onQCZ9opzp4jQA1xlVV9fWQsMz9HT6EvmkqLvJwrmlkJSwzQpoAChIJY342Rui-QEDzN4rTAVlBhO5Yc0_q8HHrkGQCPGkpBG4IknticIjyUkmj6tLNtdwCli2vmVUCgprADUIPlrkn7iTRdEIKq1IYmqquFMBdPk5VSE8lY1kPUagWfQVNkhDj2ee-xmOo6shbZau-QQHjxTgYCRFM6M1ch8jANks6yHttriOH5RQB1ofT1MY5aCM79UfF_1D4BfDhr-Or-tRZ7obInPfrf8S_xK9NV08lJVlFCpNaZJt-wzLspDEUmfB4yFgjsWVj32VG1g
+Content-Type: application/json
+
+{
+    "poolLayoutId":"01HY8V7VXGPNN8CS5QY8AVMZ2C",
+    "poolName":"pool naming for testing",
+    "ownerGamblerId":"01H1CMCDHH99FH8FDY36S0YH3A"
 }

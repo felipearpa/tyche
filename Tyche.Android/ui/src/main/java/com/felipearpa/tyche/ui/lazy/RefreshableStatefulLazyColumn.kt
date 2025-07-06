@@ -2,7 +2,7 @@ package com.felipearpa.tyche.ui.lazy
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyListState
@@ -68,7 +68,7 @@ fun <Value : Any> RefreshableStatefulLazyColumn(
             onRefresh = onRefresh,
         ) {
             StatefulLazyColumn(
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier.fillMaxWidth(),
                 lazyItems = lazyItems,
                 state = state,
                 contentPadding = contentPadding,

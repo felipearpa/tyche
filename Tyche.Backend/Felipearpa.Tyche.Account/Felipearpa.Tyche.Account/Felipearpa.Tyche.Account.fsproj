@@ -17,9 +17,12 @@
         <Compile Include="Infrastructure\UpdateLinkRequestBuilder.fs" />
         <Compile Include="Infrastructure\LinkRequestBuilder.fs" />
         <Compile Include="Infrastructure\GetByEmailRequestBuilder.fs" />
+        <Compile Include="Infrastructure\GetByIdRequestBuilder.fs" />
         <Compile Include="Infrastructure\AccountDynamoDbRepository.fs" />
         <Compile Include="Application\AccountViewModel.fs" />
         <Compile Include="Application\AccountTransformer.fs" />
+        <Compile Include="Application\IGetAccountById.fs" />
+        <Compile Include="Application\GetAccountByIdQuery.fs" />
         <Compile Include="Application\SignIn\LinkAccountCommand.fs" />
         <Compile Include="Application\SignIn\LinkAccountCommandTransformer.fs" />
         <Compile Include="Application\SignIn\LoginCommandHandler.fs" />
@@ -29,6 +32,10 @@
       <ProjectReference Include="..\..\Felipearpa.Crypto\Felipearpa.Crypto\Felipearpa.Crypto.fsproj" />
       <ProjectReference Include="..\..\Felipearpa.Data.DynamoDb\Felipearpa.Data.DynamoDb\Felipearpa.Data.DynamoDb.fsproj" />
       <ProjectReference Include="..\..\Felipearpa.Type\Felipearpa.Type\Felipearpa.Type.fsproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Update="FSharp.Core" Version="9.0.300" />
     </ItemGroup>
 
 </Project>

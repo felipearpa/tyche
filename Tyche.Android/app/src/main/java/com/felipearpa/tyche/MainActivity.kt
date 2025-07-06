@@ -11,8 +11,8 @@ import androidx.navigation.compose.rememberNavController
 import com.felipearpa.foundation.emptyString
 import com.felipearpa.tyche.home.homeNavView
 import com.felipearpa.tyche.home.ui.HomeRoute
-import com.felipearpa.tyche.pool.creator.poolFromLayoutCreatorView
 import com.felipearpa.tyche.pool.poolscore.PoolScoreListRoute
+import com.felipearpa.tyche.poolcreator.poolFromLayoutCreatorNavView
 import com.felipearpa.tyche.poolhome.poolHomeNavView
 import com.felipearpa.tyche.poolscore.poolScoreListNavView
 import com.felipearpa.tyche.session.AccountBundle
@@ -53,9 +53,9 @@ fun Content(accountBundle: AccountBundle?, intentData: String?) {
 
 @Composable
 fun Outlet(accountBundle: AccountBundle?, intentData: String?) {
-    val gamblerId = accountBundle?.accountId
+    val maybeGamblerId = accountBundle?.accountId
     val initialRoute: Any =
-        if (gamblerId == null) HomeRoute else PoolScoreListRoute(gamblerId = gamblerId)
+        if (maybeGamblerId == null) HomeRoute else PoolScoreListRoute(gamblerId = maybeGamblerId)
     val navController = rememberNavController()
 
     NavHost(navController = navController, startDestination = initialRoute) {
@@ -79,14 +79,16 @@ fun Outlet(accountBundle: AccountBundle?, intentData: String?) {
             initialRoute = initialRoute,
         )
 
-        gamblerId?.let {
+        maybeGamblerId?.let {
             poolHomeNavView(
                 navController = navController,
                 initialRoute = initialRoute,
-                gamblerId = gamblerId,
+                gamblerId = maybeGamblerId,
             )
         }
 
-        poolFromLayoutCreatorView()
+        maybeGamblerId?.let {
+            poolFromLayoutCreatorNavView(navController = navController, gamblerId = maybeGamblerId)
+        }
     }
 }
