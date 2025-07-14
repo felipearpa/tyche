@@ -8,4 +8,7 @@
     <string name="pool_name_label">Type the name for the pool</string>
     <string name="fill_pool_fields_title">Fill out the fields to create your pool</string>
     <string name="pool_name_required_failure_text">The pool\'s name is required</string>
+    <string name="ready_to_join_title">Ready to join “%1$s”?</string>
+    <string name="ready_to_join_subtitle">You’ve been invited to join the “%1$s”! Want to jump in and play alongside others?</string>
+    <string name="join_pool_action">Join</string>
 </resources>

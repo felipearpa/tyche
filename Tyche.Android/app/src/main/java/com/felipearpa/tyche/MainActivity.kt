@@ -11,6 +11,7 @@ import androidx.navigation.compose.rememberNavController
 import com.felipearpa.foundation.emptyString
 import com.felipearpa.tyche.home.homeNavView
 import com.felipearpa.tyche.home.ui.HomeRoute
+import com.felipearpa.tyche.pool.poolJoinerView
 import com.felipearpa.tyche.pool.poolscore.PoolScoreListRoute
 import com.felipearpa.tyche.poolcreator.poolFromLayoutCreatorNavView
 import com.felipearpa.tyche.poolhome.poolHomeNavView
@@ -79,16 +80,20 @@ fun Outlet(accountBundle: AccountBundle?, intentData: String?) {
             initialRoute = initialRoute,
         )
 
-        maybeGamblerId?.let {
+        maybeGamblerId?.let { gamblerId ->
             poolHomeNavView(
                 navController = navController,
                 initialRoute = initialRoute,
-                gamblerId = maybeGamblerId,
+                gamblerId = gamblerId,
             )
-        }
 
-        maybeGamblerId?.let {
-            poolFromLayoutCreatorNavView(navController = navController, gamblerId = maybeGamblerId)
+            poolFromLayoutCreatorNavView(navController = navController, gamblerId = gamblerId)
+
+            poolJoinerView(
+                navController = navController,
+                gamblerId = gamblerId,
+                initialRoute = initialRoute,
+            )
         }
     }
 }

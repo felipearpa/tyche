@@ -5,6 +5,8 @@ import com.felipearpa.tyche.data.pool.application.GetOpenPoolLayoutsUseCase
 import com.felipearpa.tyche.data.pool.application.GetPoolGamblerScoreUseCase
 import com.felipearpa.tyche.data.pool.application.GetPoolGamblerScoresByGamblerUseCase
 import com.felipearpa.tyche.data.pool.application.GetPoolGamblerScoresByPoolUseCase
+import com.felipearpa.tyche.data.pool.application.GetPoolUseCase
+import com.felipearpa.tyche.data.pool.application.JoinPoolUseCase
 import com.felipearpa.tyche.data.pool.domain.PoolGamblerScoreRemoteDataSource
 import com.felipearpa.tyche.data.pool.domain.PoolGamblerScoreRepository
 import com.felipearpa.tyche.data.pool.domain.PoolLayoutRemoteDataSource
@@ -44,6 +46,14 @@ internal object PoolUseCaseProvider {
     @Provides
     fun provideCreatePoolUseCase(poolRepository: PoolRepository) =
         CreatePoolUseCase(poolRepository = poolRepository)
+
+    @Provides
+    fun provideJoinPoolUseCase(poolRepository: PoolRepository) =
+        JoinPoolUseCase(poolRepository = poolRepository)
+
+    @Provides
+    fun provideGetPoolUseCase(poolRepository: PoolRepository) =
+        GetPoolUseCase(poolRepository = poolRepository)
 }
 
 @Module

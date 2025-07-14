@@ -2,13 +2,14 @@ namespace Felipearpa.Tyche.Pool.Infrastructure
 
 open System
 open System.Collections.Generic
+open System.Linq
 open Amazon.DynamoDBv2
-open Amazon.DynamoDBv2.DataModel
-open Amazon.DynamoDBv2.DocumentModel
 open Amazon.DynamoDBv2.Model
 open Felipearpa.Data.DynamoDb
-open Felipearpa.Tyche.Pool.Data
+open Felipearpa.Tyche.Account.Infrastructure
 open Felipearpa.Tyche.Pool.Domain
+open Felipearpa.Tyche.Pool.Domain.PoolDictionaryTransformer
+open Felipearpa.Type
 
 type PoolDynamoDbRepository(keySerializer: IKeySerializer, client: IAmazonDynamoDB) =
     [<Literal>]
@@ -16,11 +17,6 @@ type PoolDynamoDbRepository(keySerializer: IKeySerializer, client: IAmazonDynamo
 
     [<Literal>]
     let poolText = "POOL"
-
-    let context = new DynamoDBContext(client)
-
-    let map (dictionary: IDictionary<string, AttributeValue>) =
-        context.FromDocument<PoolEntity>(Document.FromAttributeMap(Dictionary(dictionary)))
 
     let createPoolInDbAsync createUserTransaction =
         async {
@@ -34,10 +30,32 @@ type PoolDynamoDbRepository(keySerializer: IKeySerializer, client: IAmazonDynamo
         }
 
     interface IPoolRepository with
-        member this.createPool(createPoolInput) =
+        member this.GetPoolById(id) =
+            async {
+                let request = GetPoolByIdRequestBuilder.build (id |> Ulid.value)
+
+                let! response =
+                    async {
+                        try
+                            let! response = client.QueryAsync(request) |> Async.AwaitTask
+                            return response |> Ok
+                        with _ ->
+                            return () |> Error
+                    }
+
+                return
+                    match response with
+                    | Ok response ->
+                        match response.Items.FirstOrDefault() with
+                        | null -> None |> Ok
+                        | valuesMap -> valuesMap.ToPool() |> Some |> Ok
+                    | Error _ -> () |> Error
+            }
+
+        member this.CreatePool(createPoolInput) =
             async {
                 let createPoolRequest = CreatePoolRequestBuilder.build createPoolInput
-                let createPoolGamblerRequest = CreatePoolGamblerRequestBuilder.build createPoolInput
+                let createPoolGamblerRequest = JoinPoolGamblerRequestBuilder.build createPoolInput
 
                 let requests =
                     [ TransactWriteItem(Put = createPoolRequest)
@@ -55,4 +73,28 @@ type PoolDynamoDbRepository(keySerializer: IKeySerializer, client: IAmazonDynamo
                           PoolName = createPoolInput.PoolName }
                         |> Ok
                     | Error _ -> () |> Error
+            }
+
+        member this.JoinPool(joinPoolInput) =
+            async {
+                let putRequest =
+                    JoinPoolGamblerRequestBuilder.build
+                        { ResolvedCreatePoolInput.PoolId = joinPoolInput.PoolId
+                          PoolName = joinPoolInput.PoolName
+                          OwnerGamblerId = joinPoolInput.GamblerId
+                          OwnerGamblerUsername = joinPoolInput.GamblerUsername
+                          PoolLayoutId = joinPoolInput.PoolLayoutId }
+
+                let putItemRequest =
+                    PutItemRequest(
+                        TableName = putRequest.TableName,
+                        Item = putRequest.Item,
+                        ConditionExpression = putRequest.ConditionExpression
+                    )
+
+                try
+                    let! _ = client.PutItemAsync(putItemRequest) |> Async.AwaitTask
+                    return () |> Ok
+                with :? AggregateException as error when (error.InnerException :? ConditionalCheckFailedException) ->
+                    return JoinPoolDomainFailure.AlreadyJoined |> Error
             }

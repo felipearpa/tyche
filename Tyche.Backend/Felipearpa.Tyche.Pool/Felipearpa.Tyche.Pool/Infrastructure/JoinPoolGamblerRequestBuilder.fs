@@ -5,7 +5,7 @@ open Amazon.DynamoDBv2.Model
 open Felipearpa.Tyche.Pool.Domain
 open Felipearpa.Type
 
-module CreatePoolGamblerRequestBuilder =
+module JoinPoolGamblerRequestBuilder =
     [<Literal>]
     let private tableName = "Pool"
 
@@ -38,4 +38,8 @@ module CreatePoolGamblerRequestBuilder =
                   "getPoolGamblerScoresByGamblerSk",
                   AttributeValue(S = $"{positionText}0#{poolText}#{createPoolInput.PoolId |> Ulid.value}") ]
 
-        Put(TableName = tableName, Item = (attributeValues |> Dictionary))
+        Put(
+            TableName = tableName,
+            Item = (attributeValues |> Dictionary),
+            ConditionExpression = "attribute_not_exists(pk) AND attribute_not_exists(sk)"
+        )

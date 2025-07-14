@@ -57,7 +57,7 @@
       ]
     },
     {
-      "DownstreamPathTemplate": "/bet",
+      "DownstreamPathTemplate": "/bets",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
         {
@@ -65,9 +65,23 @@
           "Port": 5001
         }
       ],
-      "UpstreamPathTemplate": "/bet",
+      "UpstreamPathTemplate": "/bets",
       "UpstreamHttpMethod": [
         "PATCH"
+      ]
+    },
+    {
+      "DownstreamPathTemplate": "/pools/{poolId}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5001
+        }
+      ],
+      "UpstreamPathTemplate": "/pools/{poolId}",
+      "UpstreamHttpMethod": [
+        "GET"
       ]
     },
     {
@@ -80,6 +94,20 @@
         }
       ],
       "UpstreamPathTemplate": "/pools",
+      "UpstreamHttpMethod": [
+        "POST"
+      ]
+    },
+    {
+      "DownstreamPathTemplate": "/pools/join",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5001
+        }
+      ],
+      "UpstreamPathTemplate": "/pools/join",
       "UpstreamHttpMethod": [
         "POST"
       ]

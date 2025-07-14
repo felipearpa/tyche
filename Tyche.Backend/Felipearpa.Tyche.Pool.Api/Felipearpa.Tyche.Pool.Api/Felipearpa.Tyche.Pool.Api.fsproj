@@ -9,11 +9,14 @@
         <Compile Include="BetRequest.fs" />
         <Compile Include="CreatePoolRequest.fs" />
         <Compile Include="CreatePoolRequestTransformer.fs" />
+        <Compile Include="JoinPoolRequest.fs" />
+        <Compile Include="JoinPoolRequestTransformer.fs" />
         <Compile Include="ViewModel\PoolGamblerScoreViewModel.fs" />
         <Compile Include="ViewModel\PoolGamblerScoreMapper.fs" />
         <Compile Include="ViewModel\PoolGamblerBetViewModel.fs" />
         <Compile Include="ViewModel\PoolGamblerBetMapper.fs" />
         <Compile Include="ViewModel\PoolViewModel.fs" />
+        <Compile Include="ViewModel\CreatePoolOutputTransformer.fs" />
         <Compile Include="ViewModel\PoolTransformer.fs" />
         <Compile Include="WebApplication.fs" />
         <Compile Include="WebApplicationBuilder.fs" />

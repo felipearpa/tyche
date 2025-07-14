@@ -20,6 +20,7 @@ class RetrofitExceptionHandler : NetworkExceptionHandler {
         } catch (_: SocketTimeoutException) {
             Result.failure(NetworkException.RemoteCommunication)
         } catch (exception: Exception) {
+            println(exception)
             Result.failure(exception)
         }
     }

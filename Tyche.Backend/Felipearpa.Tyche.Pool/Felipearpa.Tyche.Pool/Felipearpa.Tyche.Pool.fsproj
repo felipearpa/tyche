@@ -19,16 +19,21 @@
         <Compile Include="Domain\CreatePoolInput.fs" />
         <Compile Include="Domain\ResolvedCreatePoolInput.fs" />
         <Compile Include="Domain\CreatePoolOutput.fs" />
+        <Compile Include="Domain\JoinPoolInput.fs" />
+        <Compile Include="Domain\ResolvedJoinPoolInput.fs" />
+        <Compile Include="Domain\Pool.fs" />
         <Compile Include="Domain\IPoolRepository.fs" />
         <Compile Include="Domain\PoolEntity.fs" />
         <Compile Include="Domain\PoolTransformer.fs" />
+        <Compile Include="Domain\PoolDictionaryTransformer.fs" />
         <Compile Include="Infrastructure\GetGamblerScoresRequestBuilder.fs" />
         <Compile Include="Infrastructure\GetPoolScoresRequestBuilder.fs" />
         <Compile Include="Infrastructure\GetPoolGamblerScoreRequestBuilder.fs" />
         <Compile Include="Infrastructure\PoolGamblerScoreDynamoDbRepository.fs" />
         <Compile Include="Infrastructure\PoolGamblerBetDynamoDbRepository.fs" />
+        <Compile Include="Infrastructure\GetPoolByIdRequestBuilder.fs" />
         <Compile Include="Infrastructure\CreatePoolRequestBuilder.fs" />
-        <Compile Include="Infrastructure\CreatePoolGamblerRequestBuilder.fs" />
+        <Compile Include="Infrastructure\JoinPoolGamblerRequestBuilder.fs" />
         <Compile Include="Infrastructure\PoolDynamoDBRepository.fs" />
         <Compile Include="Application\GetPoolGamblerScoresByGamblerQuery.fs" />
         <Compile Include="Application\GetPoolGamblerScoresByPoolQuery.fs" />
@@ -37,6 +42,8 @@
         <Compile Include="Application\GetPendingPoolGamblerBetsQuery.fs" />
         <Compile Include="Application\GetPoolGamblerScoreQuery.fs" />
         <Compile Include="Application\CreatePoolCommand.fs" />
+        <Compile Include="Application\JoinPoolCommand.fs" />
+        <Compile Include="Application\GetPoolByIdQuery.fs" />
     </ItemGroup>
 
     <ItemGroup>

@@ -11,8 +11,9 @@ import com.felipearpa.tyche.ui.shimmer
 fun PoolScoreFakeItem(modifier: Modifier = Modifier) {
     PoolScoreItem(
         poolGamblerScore = poolGamblerScoreFakeModel(),
+        onJoinClick = {},
         modifier = modifier,
-        shimmerModifier = Modifier.shimmer()
+        shimmerModifier = Modifier.shimmer(),
     )
 }
 

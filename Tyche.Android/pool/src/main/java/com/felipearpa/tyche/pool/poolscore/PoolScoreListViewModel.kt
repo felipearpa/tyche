@@ -62,4 +62,8 @@ class PoolScoreListViewModel @AssistedInject constructor(
     fun search(searchText: String) {
         _searchText.value = searchText.trim()
     }
+
+    fun createUrlForJoining(poolId: String): String {
+        return "https://felipearpa.github.io/tyche/pools/$poolId/join"
+    }
 }

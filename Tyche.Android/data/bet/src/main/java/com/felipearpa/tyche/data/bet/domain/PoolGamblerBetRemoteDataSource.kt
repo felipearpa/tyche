@@ -13,7 +13,7 @@ internal interface PoolGamblerBetRemoteDataSource {
         @Path("poolId") poolId: String,
         @Path("gamblerId") gamblerId: String,
         @Query("next") next: String? = null,
-        @Query("searchText") searchText: String? = null
+        @Query("searchText") searchText: String? = null,
     ): CursorPage<PoolGamblerBetResponse>
 
     @GET("/pools/{poolId}/gamblers/{gamblerId}/bets/finished")
@@ -21,9 +21,9 @@ internal interface PoolGamblerBetRemoteDataSource {
         @Path("poolId") poolId: String,
         @Path("gamblerId") gamblerId: String,
         @Query("next") next: String? = null,
-        @Query("searchText") searchText: String? = null
+        @Query("searchText") searchText: String? = null,
     ): CursorPage<PoolGamblerBetResponse>
 
-    @PATCH("bet")
+    @PATCH("bets")
     suspend fun bet(@Body betRequest: BetRequest): PoolGamblerBetResponse
 }

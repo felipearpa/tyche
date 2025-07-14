@@ -151,7 +151,7 @@ module WebApplication =
 
             this
                 .MapPatch(
-                    "/bet",
+                    "/bets",
                     Func<_, _, _>(fun (betRequest: BetRequest) (betCommand: BetCommand) ->
                         async {
                             let betScore =
@@ -178,6 +178,26 @@ module WebApplication =
             |> ignore
 
             this
+                .MapGet(
+                    "/pools/{poolId}",
+                    Func<_, _, _>(fun (poolId: String) (getPoolByIdQuery: GetPoolByIdQuery) ->
+                        async {
+                            let! result = getPoolByIdQuery.ExecuteAsync(poolId |> Ulid.newOf)
+
+                            return
+                                match result with
+                                | Ok maybePool ->
+                                    match maybePool with
+                                    | None -> Results.NotFound("Pool not found")
+                                    | Some pool -> Results.Ok(pool |> PoolTransformer.toPoolViewModel)
+                                | Error _ -> Results.InternalServerError()
+                        }
+                        |> Async.StartAsTask)
+                )
+                .RequireAuthorization()
+            |> ignore
+
+            this
                 .MapPost(
                     "/pools",
                     Func<_, _, _>(fun (createPoolRequest: CreatePoolRequest) (createPoolCommand: CreatePoolCommand) ->
@@ -189,8 +209,33 @@ module WebApplication =
 
                             return
                                 match result with
-                                | Ok pool -> Results.Ok(pool |> PoolTransformer.toPoolViewModel)
-                                | Error _ -> Results.InternalServerError()
+                                | Ok pool -> Results.Ok(pool |> CreatePoolOutputTransformer.toPoolViewModel)
+                                | Error _ -> Results.NotFound("Gambler not found")
+                        }
+                        |> Async.StartAsTask)
+                )
+                .RequireAuthorization()
+            |> ignore
+
+            this
+                .MapPost(
+                    "/pools/join",
+                    Func<_, _, _>(fun (joinPoolRequest: JoinPoolRequest) (joinPoolCommand: JoinPoolCommand) ->
+                        async {
+                            let! result =
+                                joinPoolCommand.ExecuteAsync(
+                                    joinPoolRequest |> JoinPoolRequestTransformer.toJoinPoolInput
+                                )
+
+                            return
+                                match result with
+                                | Ok _ -> Results.NoContent()
+                                | Error error ->
+                                    match error with
+                                    | JoinPoolFailure.AlreadyJoined ->
+                                        Results.BadRequest("The gambler has already joined this pool")
+                                    | JoinPoolFailure.PoolNotFound -> Results.NotFound("Pool not found")
+                                    | JoinPoolFailure.GamblerNotFound -> Results.NotFound("Gambler not found")
                         }
                         |> Async.StartAsTask)
                 )

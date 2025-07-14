@@ -41,8 +41,10 @@ module WebApplicationBuilder =
             .AddScoped<GetPendingPoolGamblerBetsQuery>()
             .AddScoped<GetFinishedPoolGamblerBetsQuery>()
             .AddScoped<GetPoolGamblerScoreQuery>()
+            .AddScoped<GetPoolByIdQuery>()
             .AddScoped<BetCommand>()
             .AddScoped<CreatePoolCommand>()
+            .AddScoped<JoinPoolCommand>()
         |> ignore
 
     let registerJwt (app: WebApplicationBuilder) =

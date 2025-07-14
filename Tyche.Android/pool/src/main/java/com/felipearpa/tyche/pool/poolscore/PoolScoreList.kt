@@ -1,11 +1,9 @@
 package com.felipearpa.tyche.pool.poolscore
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyListState
@@ -14,7 +12,6 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
@@ -23,15 +20,15 @@ import androidx.paging.compose.itemKey
 import com.felipearpa.tyche.pool.PoolGamblerScoreModel
 import com.felipearpa.tyche.pool.poolGamblerScoreDummyModels
 import com.felipearpa.tyche.ui.lazy.RefreshableStatefulLazyColumn
-import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
-import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.MutableStateFlow
 
 @Composable
 fun PoolScoreList(
     modifier: Modifier = Modifier,
     lazyPoolGamblerScores: LazyPagingItems<PoolGamblerScoreModel>,
     lazyListState: LazyListState = rememberLazyListState(),
-    onPoolClick: (String, String) -> Unit,
+    onPoolClick: (poolId: String, gamblerId: String) -> Unit,
+    onJoinPoolClick: (poolId: String) -> Unit,
     fakeItemCount: Int = 50,
 ) {
     RefreshableStatefulLazyColumn(
@@ -61,7 +58,8 @@ fun PoolScoreList(
             ) {
                 PoolScoreItem(
                     poolGamblerScore = poolGamblerScore,
-                    modifier = Modifier.poolScoreItem(),
+                    onJoinClick = { onJoinPoolClick(poolGamblerScore.poolId) },
+                    modifier = Modifier.fillMaxWidth(),
                 )
                 HorizontalDivider()
             }
@@ -71,13 +69,10 @@ fun PoolScoreList(
 
 @Composable
 private fun PoolScoreFakeList(count: Int) {
-    LazyColumn(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-    ) {
+    LazyColumn(modifier = Modifier.fillMaxSize()) {
         repeat(count) {
             item {
-                PoolScoreFakeItem(modifier = Modifier.poolScoreItem())
+                PoolScoreFakeItem(modifier = Modifier.fillMaxWidth())
                 HorizontalDivider()
             }
         }
@@ -86,23 +81,20 @@ private fun PoolScoreFakeList(count: Int) {
 
 private fun LazyListScope.poolScoreFakeItem() {
     item {
-        PoolScoreFakeItem(modifier = Modifier.poolScoreItem())
+        PoolScoreFakeItem(modifier = Modifier.fillMaxWidth())
         HorizontalDivider()
     }
 }
 
-@Composable
-private fun Modifier.poolScoreItem() =
-    fillMaxWidth()
-        .padding(all = LocalBoxSpacing.current.medium)
-
 @Preview(showBackground = true)
 @Composable
 private fun PoolScoreListPreview() {
-    val items = flowOf(PagingData.from(poolGamblerScoreDummyModels())).collectAsLazyPagingItems()
+    val items =
+        MutableStateFlow(PagingData.from(poolGamblerScoreDummyModels())).collectAsLazyPagingItems()
     PoolScoreList(
         lazyPoolGamblerScores = items,
         onPoolClick = { _, _ -> },
+        onJoinPoolClick = {},
         modifier = Modifier.fillMaxSize(),
     )
 }
