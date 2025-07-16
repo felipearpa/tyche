@@ -47,11 +47,11 @@ class PendingBetItemViewModel @AssistedInject constructor(
             val (currentPoolGamblerBet, targetPoolGamblerBet) = _state.updateAndGet { currentState ->
                 val currentPoolGamblerBet = currentState.relevantValue()
                 val targetPoolGamblerBet = currentPoolGamblerBet.copy(betScore = betScore)
-                EditableViewState.Loading(
+                EditableViewState.Saving(
                     current = currentPoolGamblerBet,
                     target = targetPoolGamblerBet
                 )
-            } as EditableViewState.Loading
+            } as EditableViewState.Saving
 
             val bet = Bet(
                 poolId = currentPoolGamblerBet.poolId,

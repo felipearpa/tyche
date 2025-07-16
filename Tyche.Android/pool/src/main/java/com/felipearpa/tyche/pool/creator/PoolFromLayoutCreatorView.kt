@@ -96,7 +96,7 @@ private fun PoolFromLayoutCreatorView(
                         .padding(all = LocalBoxSpacing.current.medium),
                 )
 
-            is EditableViewState.Loading -> LoadingContainerView {
+            is EditableViewState.Saving -> LoadingContainerView {
                 Stepper(
                     step = step,
                     onStepChange = {},

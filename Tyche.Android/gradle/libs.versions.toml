@@ -26,7 +26,7 @@ junit5 = "5.13.3"
 kotest = "5.9.1"
 kotlinx-serialization-json = "1.9.0"
 kotlinx-datetime = "0.7.1"
-felipearpa-viewing-state = "v0.0.1"
+felipearpa-viewing-state = "v0.0.2"
 felipearpa-foundation = "v0.0.1"
 
 [libraries]

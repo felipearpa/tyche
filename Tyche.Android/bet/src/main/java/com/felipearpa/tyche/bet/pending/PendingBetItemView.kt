@@ -128,7 +128,7 @@ private fun PendingBetItemView(
                 )
             }
 
-            is EditableViewState.Loading -> {
+            is EditableViewState.Saving -> {
                 PendingBetItem(
                     poolGamblerBet = viewModelState.target,
                     viewState = PendingBetItemViewState.Visualization(viewState.value),
@@ -351,7 +351,7 @@ private fun StateIndicator(
                     tint = MaterialTheme.colorScheme.error,
                 )
 
-            is EditableViewState.Loading -> BallSpinner(
+            is EditableViewState.Saving -> BallSpinner(
                 modifier = Modifier.size(ICON_SIZE),
             )
 
@@ -416,7 +416,7 @@ private fun NonEditableLoadingPendingBetItemViewPreview() {
     MaterialTheme {
         Surface {
             PendingBetItemView(
-                viewModelState = EditableViewState.Loading(
+                viewModelState = EditableViewState.Saving(
                     current = poolGamblerBetDummyModel(),
                     target = poolGamblerBetDummyModel(),
                 ),
@@ -434,7 +434,7 @@ private fun EditableLoadingPendingBetItemViewPreview() {
     MaterialTheme {
         Surface {
             PendingBetItemView(
-                viewModelState = EditableViewState.Loading(
+                viewModelState = EditableViewState.Saving(
                     current = poolGamblerBetDummyModel(),
                     target = poolGamblerBetDummyModel(),
                 ),

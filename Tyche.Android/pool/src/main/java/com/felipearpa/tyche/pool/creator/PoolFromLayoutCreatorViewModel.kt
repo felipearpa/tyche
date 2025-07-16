@@ -24,7 +24,7 @@ class PoolFromLayoutCreatorViewModel @AssistedInject constructor(
     fun createPool(createPoolModel: CreatePoolModel) {
         val currentCreatePoolModel = _state.value.relevantValue()
         _state.value =
-            EditableViewState.Loading(current = currentCreatePoolModel, target = createPoolModel)
+            EditableViewState.Saving(current = currentCreatePoolModel, target = createPoolModel)
         viewModelScope.launch {
             val result =
                 createPoolUseCase.execute(
