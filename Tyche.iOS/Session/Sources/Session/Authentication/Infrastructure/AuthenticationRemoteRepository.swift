@@ -30,7 +30,13 @@ class AuthenticationRemoteRepository: AuthenticationRepository {
             try await authenticationExternalDataSource.signInWithEmailLink(email: email, emailLink: emailLink)
         }
     }
-    
+
+    func signInWithEmailAndPassword(email: String, password: String) async -> Result<ExternalAccountId, any Error> {
+        return await handleFirebaseSignInWithEmailAndPassword {
+            try await authenticationExternalDataSource.signInWithEmailAndPassword(email: email, password: password)
+        }
+    }
+
     func logout() async -> Result<Void, Error> {
         do {
             try await authenticationExternalDataSource.signOut()

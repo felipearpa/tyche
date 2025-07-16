@@ -64,7 +64,14 @@ public class LoginAssembly : Assembly {
                 accountStorage: resolver.resolve(AccountStorage.self)!
             )
         }
-        
+
+        container.register(SignInWithEmailAndPasswordUseCase.self) { resolver in
+            SignInWithEmailAndPasswordUseCase(
+                authenticationRepository: resolver.resolve(AuthenticationRepository.self)!,
+                accountStorage: resolver.resolve(AccountStorage.self)!
+            )
+        }
+
         container.register(LogOutUseCase.self) { resolver in
             LogOutUseCase(
                 authenticationRepository: resolver.resolve(AuthenticationRepository.self)!,

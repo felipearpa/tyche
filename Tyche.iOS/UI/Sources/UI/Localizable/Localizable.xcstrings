@@ -21,9 +21,6 @@
         }
       }
     },
-    "Content" : {
-
-    },
     "done_action" : {
       "extractionState" : "manual",
       "localizations" : {

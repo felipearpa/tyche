@@ -168,6 +168,9 @@
         }
       }
     },
+    "Password" : {
+
+    },
     "password_text" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -201,6 +204,9 @@
           }
         }
       }
+    },
+    "Sign In" : {
+
     },
     "sign_in_action" : {
       "extractionState" : "manual",

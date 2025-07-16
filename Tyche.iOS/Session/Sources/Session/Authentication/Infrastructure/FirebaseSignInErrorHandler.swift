@@ -22,3 +22,18 @@ func handleFirebaseSignInWithEmailLink<Value>(_ perform: () async throws -> Valu
         return Result.failure(error)
     }
 }
+
+func handleFirebaseSignInWithEmailAndPassword<Value>(_ perform: () async throws -> Value) async -> Result<Value, Error> {
+    do {
+        return try await Result.success(perform())
+    } catch let error as NSError {
+        return switch AuthErrorCode(_nsError: error).code {
+        case .invalidCredential, .invalidActionCode:
+            Result.failure(EmailAndPasswordSignInError.invalidCredentials)
+        default:
+            Result.failure(error)
+        }
+    } catch let error {
+        return Result.failure(error)
+    }
+}

@@ -14,13 +14,13 @@ public struct Email {
     public let value: String
     
     public init?(_ value: String) {
-        if !Email.isValid(value: value) {
+        if !Email.isValid(value) {
             return nil
         }
         self.value = value
     }
     
-    public static func isValid(value: String) -> Bool {
+    public static func isValid(_ value: String) -> Bool {
         do {
             try checkPattern(value: value)
             return true

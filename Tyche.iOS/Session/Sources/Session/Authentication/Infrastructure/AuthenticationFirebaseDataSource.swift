@@ -18,7 +18,12 @@ class AuthenticationFirebaseDataSource: AuthenticationExternalDataSource {
         let authResult = try await firebaseAuth.signIn(withEmail: email, link: emailLink)
         return authResult.user.uid
     }
-    
+
+    func signInWithEmailAndPassword(email: String, password: String) async throws -> ExternalAccountId {
+        let authResult = try await firebaseAuth.signIn(withEmail: email, password: password)
+        return authResult.user.uid
+    }
+
     func isSignInWithEmailLink(emailLink: String) async -> Bool {
         firebaseAuth.isSignIn(withEmailLink: emailLink)
     }

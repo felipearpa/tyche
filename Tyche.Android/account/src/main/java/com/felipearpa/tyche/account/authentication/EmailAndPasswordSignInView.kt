@@ -31,6 +31,7 @@ import com.felipearpa.tyche.account.R
 import com.felipearpa.tyche.core.type.Email
 import com.felipearpa.tyche.session.AccountBundle
 import com.felipearpa.tyche.ui.exception.ExceptionAlertDialog
+import com.felipearpa.tyche.ui.exception.UnknownLocalizedException
 import com.felipearpa.tyche.ui.exception.localizedOrDefault
 import com.felipearpa.tyche.ui.loading.LoadingContainerView
 import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
@@ -108,7 +109,7 @@ private fun EmailAndPasswordSignInView(
                         onSignIn = { signIn?.invoke() },
                     )
 
-                LoadableViewState.Loading -> LoadingContainerView {
+                LoadableViewState.Loading, is LoadableViewState.Success -> LoadingContainerView {
                     EmailAndPasswordSignInView(
                         modifier = modifier,
                         email = email,
@@ -123,13 +124,6 @@ private fun EmailAndPasswordSignInView(
                     reset = onReset,
                     modifier = modifier,
                 )
-
-                is LoadableViewState.Success ->
-                    EmailAndPasswordSignInView(
-                        modifier = modifier,
-                        email = email,
-                        password = password,
-                    )
             }
         }
     }
@@ -211,9 +205,59 @@ private fun TopBar(onBack: (() -> Unit)?) {
 
 @Preview(showBackground = true)
 @Composable
-private fun EmailAndPasswordSignInViewPreview() {
+private fun InitialEmailAndPasswordSignInViewPreview() {
     EmailAndPasswordSignInView(
         viewState = LoadableViewState.Initial,
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(all = LocalBoxSpacing.current.medium),
+        onSignIn = { _, _ -> },
+        onBack = {},
+        onReset = {},
+        onAuthenticate = {},
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun LoadingEmailAndPasswordSignInViewPreview() {
+    EmailAndPasswordSignInView(
+        viewState = LoadableViewState.Loading,
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(all = LocalBoxSpacing.current.medium),
+        onSignIn = { _, _ -> },
+        onBack = {},
+        onReset = {},
+        onAuthenticate = {},
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun SuccessEmailAndPasswordSignInViewPreview() {
+    EmailAndPasswordSignInView(
+        viewState = LoadableViewState.Success(
+            AccountBundle(
+                accountId = emptyString(),
+                externalAccountId = emptyString(),
+            ),
+        ),
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(all = LocalBoxSpacing.current.medium),
+        onSignIn = { _, _ -> },
+        onBack = {},
+        onReset = {},
+        onAuthenticate = {},
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun FailureEmailAndPasswordSignInViewPreview() {
+    EmailAndPasswordSignInView(
+        viewState = LoadableViewState.Failure(UnknownLocalizedException()),
         modifier = Modifier
             .fillMaxSize()
             .padding(all = LocalBoxSpacing.current.medium),

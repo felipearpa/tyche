@@ -3,8 +3,9 @@ import UI
 import Account
 
 struct HomeView: View {
-    let onSignInRequested: () -> Void
-    
+    let onSignInWithEmail: () -> Void
+    let onSignInWithEmailAndPassword: () -> Void
+
     @Environment(\.boxSpacing) var boxSpacing
     
     var body: some View {
@@ -28,22 +29,29 @@ struct HomeView: View {
                 .multilineTextAlignment(.center)
             
             Spacer()
-            
-            Button(action: onSignInRequested) {
-                Text(String(.signInWithEmailAction))
-                    .frame(maxWidth:.infinity)
+
+            VStack(spacing: boxSpacing.medium) {
+                Button(action: onSignInWithEmail) {
+                    Text(String(.signInWithEmailAction))
+                        .frame(maxWidth:.infinity)
+                }
+                .buttonStyle(.borderedProminent)
+
+                Button(action: onSignInWithEmailAndPassword) {
+                    Text(String(.signInWithEmailAndPasswordAction))
+                        .frame(maxWidth:.infinity)
+                }
             }
-            .buttonStyle(.borderedProminent)
         }
         .padding(boxSpacing.large)
     }
 }
 
 #Preview {
-    HomeView(onSignInRequested: {})
+    HomeView(onSignInWithEmail: {}, onSignInWithEmailAndPassword: {})
 }
 
 #Preview {
-    HomeView(onSignInRequested: {})
+    HomeView(onSignInWithEmail: {}, onSignInWithEmailAndPassword: {})
         .preferredColorScheme(.dark)
 }

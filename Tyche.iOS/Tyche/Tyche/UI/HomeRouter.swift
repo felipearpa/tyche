@@ -7,10 +7,10 @@ import DataPool
 
 struct HomeRouter: View {
     @State private var signedInAccount: AccountBundle? = nil
-    
+
     var body: some View {
         let _ = Self._printChanges()
-        
+
         if (signedInAccount == nil) {
             HomeContent(
                 onAccountSignedIn: { loggedInUser in self.signedInAccount = loggedInUser }
@@ -23,20 +23,33 @@ struct HomeRouter: View {
 
 private struct HomeContent: View {
     let onAccountSignedIn: (AccountBundle) -> Void
-    
+
     @Environment(\.diResolver) var diResolver: DIResolver
     @State private var path = NavigationPath()
-    
+
     var body: some View {
         NavigationStack(path: $path) {
-            HomeView(onSignInRequested: { path.append(EmailSignInRoute()) })
-                .navigationDestination(for: EmailSignInRoute.self) { loginRoute in
-                    EmailSignInView(
-                        viewModel: EmailSignInViewModel(
-                            sendSignInLinkToEmailUseCase: diResolver.resolve(SendSignInLinkToEmailUseCase.self)!
-                        )
+            HomeView(
+                onSignInWithEmail: { path.append(EmailSignInRoute()) },
+                onSignInWithEmailAndPassword: { path.append(EmailAndPasswordSignInRoute()) },
+            )
+            .navigationDestination(for: EmailSignInRoute.self) { route in
+                EmailSignInView(
+                    viewModel: EmailSignInViewModel(
+                        sendSignInLinkToEmailUseCase: diResolver.resolve(SendSignInLinkToEmailUseCase.self)!
                     )
-                }
+                )
+            }
+            .navigationDestination(for: EmailAndPasswordSignInRoute.self) { route in
+                EmailAndPasswordSignInView(
+                    viewModel: EmailAndPasswordSignInViewModel(
+                        signInWithEmailAndPasswordUseCase: diResolver.resolve(SignInWithEmailAndPasswordUseCase.self)!
+                    ),
+                    onAuthenticate: { accountBundle in
+                        onAccountSignedIn(accountBundle)
+                    },
+                )
+            }
         }
         .task {
             let loginStorage = diResolver.resolve(AccountStorage.self)!
@@ -49,12 +62,12 @@ private struct HomeContent: View {
 
 struct PoolContent: View {
     let user: AccountBundle
-    
+
     @State private var activePool: PoolProfile? = nil
-    
+
     var body: some View {
         let _ = Self._printChanges()
-        
+
         if activePool == nil {
             PoolScoreListRouter(
                 user: user,

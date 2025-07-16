@@ -44,7 +44,7 @@ private struct EmailSignInStateView: View {
     @State private var email: String = ""
     
     var body: some View {
-        let signIn: (() -> Void)? = if Email.isValid(value: email) { { signInWithEmail(email) } } else { nil }
+        let signIn: (() -> Void)? = if Email.isValid(email) { { signInWithEmail(email) } } else { nil }
         
         ZStack {
             switch viewState {

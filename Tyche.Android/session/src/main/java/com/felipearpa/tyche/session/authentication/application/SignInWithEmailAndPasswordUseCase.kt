@@ -8,24 +8,22 @@ import com.felipearpa.tyche.session.authentication.domain.AuthenticationReposito
 
 class SignInWithEmailAndPasswordUseCase(
     private val authenticationRepository: AuthenticationRepository,
-    private val accountStorage: AccountStorage
+    private val accountStorage: AccountStorage,
 ) {
     suspend fun execute(email: Email, password: String): Result<AccountBundle> {
         val externalAccountId =
             authenticationRepository.signInWithEmailAndPassword(
                 email = email.value,
-                password = password
-            )
-                .onFailure { exception -> return Result.failure(exception) }
+                password = password,
+            ).onFailure { exception -> return Result.failure(exception) }
                 .getOrNull()!!
 
         val accountBundle = authenticationRepository.linkAccount(
             accountLink = AccountLink(
                 email = email,
-                externalAccountId = externalAccountId
-            )
-        )
-            .onFailure { exception -> return Result.failure(exception) }
+                externalAccountId = externalAccountId,
+            ),
+        ).onFailure { exception -> return Result.failure(exception) }
             .getOrNull()!!
 
         accountStorage.store(accountBundle = accountBundle)

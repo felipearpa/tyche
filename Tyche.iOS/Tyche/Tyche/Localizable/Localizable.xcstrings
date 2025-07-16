@@ -87,7 +87,20 @@
       }
     },
     "Pool" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pool"
+          }
+        },
+        "es-CO" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Polla"
+          }
+        }
+      }
     },
     "score_tab" : {
       "extractionState" : "manual",
@@ -119,6 +132,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Ingresar con correo electrónico"
+          }
+        }
+      }
+    },
+    "sign_in_with_email_and_password_action" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Email and password"
+          }
+        },
+        "es-CO" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Correo electrónico y contraseña"
           }
         }
       }

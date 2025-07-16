@@ -16,7 +16,7 @@ struct EmailTextField : View {
                 .border(isValid ? Color.clear : Color(sharedResource: .error))
                 .onChange(of: value) { newValue in
                     withAnimation {
-                        isValid = Email.isValid(value: newValue)
+                        isValid = Email.isValid(newValue)
                     }
                 }
             
@@ -31,7 +31,7 @@ struct EmailTextField : View {
             .move(edge: .top)
             .combined(with: .opacity))
         .onAppear {
-            isValid = value == "" || Email.isValid(value: value)
+            isValid = value == "" || Email.isValid(value)
         }
     }
 }
