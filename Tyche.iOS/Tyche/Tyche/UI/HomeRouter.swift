@@ -6,23 +6,35 @@ import Account
 import DataPool
 
 struct HomeRouter: View {
-    @State private var signedInAccount: AccountBundle? = nil
+    @State private var signedInAccountBundle: AccountBundle? = nil
+    @Environment(\.diResolver) var diResolver: DIResolver
 
     var body: some View {
         let _ = Self._printChanges()
 
-        if (signedInAccount == nil) {
-            HomeContent(
-                onAccountSignedIn: { loggedInUser in self.signedInAccount = loggedInUser }
-            )
-        } else {
-            PoolContent(user: signedInAccount!)
+        Group {
+            if (signedInAccountBundle == nil) {
+                HomeContent(
+                    onSignIn: { loggedInUser in signedInAccountBundle = loggedInUser }
+                )
+            } else {
+                PoolContent(
+                    user: signedInAccountBundle!,
+                    onLogout: { signedInAccountBundle = nil }
+                )
+            }
+        }
+        .task {
+            let accountStorage = diResolver.resolve(AccountStorage.self)!
+            if let accountBundle = try? await accountStorage.retrieve() {
+                signedInAccountBundle = accountBundle
+            }
         }
     }
 }
 
 private struct HomeContent: View {
-    let onAccountSignedIn: (AccountBundle) -> Void
+    let onSignIn: (AccountBundle) -> Void
 
     @Environment(\.diResolver) var diResolver: DIResolver
     @State private var path = NavigationPath()
@@ -46,15 +58,9 @@ private struct HomeContent: View {
                         signInWithEmailAndPasswordUseCase: diResolver.resolve(SignInWithEmailAndPasswordUseCase.self)!
                     ),
                     onAuthenticate: { accountBundle in
-                        onAccountSignedIn(accountBundle)
+                        onSignIn(accountBundle)
                     },
                 )
-            }
-        }
-        .task {
-            let loginStorage = diResolver.resolve(AccountStorage.self)!
-            if let loggedInUser = try? await loginStorage.retrieve() {
-                onAccountSignedIn(loggedInUser)
             }
         }
     }
@@ -62,6 +68,7 @@ private struct HomeContent: View {
 
 struct PoolContent: View {
     let user: AccountBundle
+    let onLogout: () -> Void
 
     @State private var activePool: PoolProfile? = nil
 
@@ -71,7 +78,8 @@ struct PoolContent: View {
         if activePool == nil {
             PoolScoreListRouter(
                 user: user,
-                onPoolSelected: { selectedPool in activePool = selectedPool }
+                onPoolSelected: { selectedPool in activePool = selectedPool },
+                onLogout: onLogout,
             )
         } else {
             PoolHomeRouter(

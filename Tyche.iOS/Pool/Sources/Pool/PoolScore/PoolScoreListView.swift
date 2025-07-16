@@ -3,12 +3,9 @@ import Core
 import UI
 import DataPool
 
-private let ICON_SIZE: CGFloat = 24
-
 public struct PoolScoreListView: View {
     @StateObject private var viewModel: PoolScoreListViewModel
     private let onPoolDetailRequested: (PoolProfile) -> Void
-    @State var isDrawerOpen = false
     
     public init(
         viewModel: @autoclosure @escaping () -> PoolScoreListViewModel,
@@ -28,19 +25,12 @@ public struct PoolScoreListView: View {
             }
         )
         .navigationTitle(String(.gamblerPoolListTitle))
-        .navigationBarItems(leading: navigationBarLeading())
         .refreshable {
             viewModel.lazyPager.refresh()
         }
         .onAppearOnce {
             viewModel.lazyPager.refresh()
         }
-    }
-    
-    private func navigationBarLeading() -> some View {
-        Image(sharedResource: .menu)
-            .resizable()
-            .frame(width: ICON_SIZE, height: ICON_SIZE)
     }
 }
 

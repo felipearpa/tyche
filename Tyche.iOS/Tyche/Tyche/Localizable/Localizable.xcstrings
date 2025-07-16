@@ -69,6 +69,23 @@
         }
       }
     },
+    "log_out_action" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Log out"
+          }
+        },
+        "es-CO" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Cerrar sesión"
+          }
+        }
+      }
+    },
     "play_pool_text" : {
       "extractionState" : "manual",
       "localizations" : {

@@ -7,8 +7,8 @@ public class LogOutUseCase {
         self.accountStorage = accountStorage
     }
     
-    func execute() async -> Result<Void, Error> {
-        let logoutResult = await authenticationRepository.logout()
+    public func execute() async -> Result<Void, Error> {
+        let logoutResult = await authenticationRepository.logOut()
         if case .success = logoutResult {
             try! await accountStorage.delete()
         }

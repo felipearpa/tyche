@@ -4,6 +4,7 @@ import Account
 
 struct EmailLinkSignInRouter: View {
     var emailSignInURLProcessor: EmailSignInURLProcessor
+
     @Environment(\.diResolver) private var diResolver;
     @State private var signedInAccountBundle: AccountBundle? = nil
     
@@ -26,8 +27,7 @@ struct EmailLinkSignInRouter: View {
                 )
             }
         } else {
-            PoolContent(user: signedInAccountBundle!)
+            PoolContent(user: signedInAccountBundle!, onLogout: { signedInAccountBundle = nil })
         }
     }
 }
-

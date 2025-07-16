@@ -37,7 +37,7 @@ class AuthenticationRemoteRepository: AuthenticationRepository {
         }
     }
 
-    func logout() async -> Result<Void, Error> {
+    func logOut() async -> Result<Void, Error> {
         do {
             try await authenticationExternalDataSource.signOut()
             return Result.success(())
