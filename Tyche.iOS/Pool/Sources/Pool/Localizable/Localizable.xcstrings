@@ -4,6 +4,38 @@
     "" : {
 
     },
+    "choose_pool_layout_text" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Choose a template to create your pool"
+          }
+        },
+        "es-CO" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Elige una plantilla para crear tu polla"
+          }
+        }
+      }
+    },
+    "fill_pool_fields_title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fill out the fields to create your pool"
+          }
+        },
+        "es-CO" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Completa los campos para crear tu polla"
+          }
+        }
+      }
+    },
     "gambler_pool_list_title" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -21,6 +53,55 @@
         }
       }
     },
+    "pool_from_layout_creator_title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pool from layout"
+          }
+        },
+        "es-CO" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Polla desde plantilla"
+          }
+        }
+      }
+    },
+    "pool_name_label" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Type the name for the pool"
+          }
+        },
+        "es-CO" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ingresa el nombre para la polla"
+          }
+        }
+      }
+    },
+    "pool_name_required_failure_text" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The pool's name is required"
+          }
+        },
+        "es-CO" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El nombre de la polla es obligatorio"
+          }
+        }
+      }
+    },
     "position_label" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -34,6 +115,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Posición %@"
+          }
+        }
+      }
+    },
+    "starting_from_date_text" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Starting %@"
+          }
+        },
+        "es-CO" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Inicia el %@"
           }
         }
       }

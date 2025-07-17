@@ -5,12 +5,12 @@ import UI
 struct GamblerScoreList: View {
     var lazyPager: LazyPager<String, PoolGamblerScoreModel>
     let loggedInGamblerId: String?
-    
+
     @Environment(\.boxSpacing) private var boxSpacing
-    
+
     var body: some View {
         let _ = Self._printChanges()
-        
+
         PagingVStack(
             lazyPager: lazyPager,
             loadingContent: { GamblerScoreFakeList() },
@@ -34,11 +34,11 @@ struct GamblerScoreList: View {
 
 struct GamblerScoreFakeList : View {
     @Environment(\.boxSpacing) private var boxSpacing
-    
+
     private let poolGamblerScores: [PoolGamblerScoreModel] = (1...50).lazy.map { _ in
         fakePoolGamblerScoreModel()
     }
-    
+
     var body: some View {
         ScrollView {
             LazyVStack(spacing: boxSpacing.medium) {
@@ -48,7 +48,7 @@ struct GamblerScoreFakeList : View {
                         isLoggedIn: false
                     )
                     .shimmer()
-                    
+
                     Divider()
                 }
             }
@@ -62,8 +62,8 @@ struct GamblerScoreFakeList : View {
             pagingData: PagingData(
                 pagingConfig: PagingConfig(prefetchDistance: 5),
                 pagingSourceFactory: PoolGamblerScorePagingSource(
-                    pagingQuery: { _ in .
-                        success(CursorPage(items: poolGamblerScoresDummyModels(), next: nil))
+                    pagingQuery: { _ in
+                            .success(CursorPage(items: poolGamblerScoresDummyModels(), next: nil))
                     }
                 )
             )

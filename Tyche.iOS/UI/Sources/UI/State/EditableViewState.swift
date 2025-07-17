@@ -1,6 +1,6 @@
 public enum EditableViewState<Value> {
     case initial(Value)
-    case loading(current: Value, target: Value)
+    case saving(current: Value, target: Value)
     case success(old: Value, succeeded: Value)
     case failure(current: Value, failed: Value, error: Error)
 }
@@ -15,8 +15,8 @@ public extension EditableViewState {
     }
     
     @inlinable
-    func isLoading() -> Bool {
-        if case .loading = self {
+    func isSaving() -> Bool {
+        if case .saving = self {
             return true
         }
         return false
@@ -39,10 +39,10 @@ public extension EditableViewState {
     }
     
     @inlinable
-    func value() -> Value {
+    func relevantValue() -> Value {
         return switch self {
         case .initial(let value),
-                .loading(current: let value, _),
+                .saving(current: let value, _),
                 .success(_, succeeded: let value),
                 .failure(current: let value, _, _):
             value

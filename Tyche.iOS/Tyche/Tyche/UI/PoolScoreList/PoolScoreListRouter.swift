@@ -30,7 +30,16 @@ struct PoolScoreListRouter: View {
                 ),
                 onPoolDetailRequested: { pool in onPoolSelected(pool) }
             )
-            .navigationBarItems(leading: navigationBarLeading())
+            .navigationBarItems(leading: navigationBarLeading(), trailing: navigationBarTrailing())
+            .navigationDestination(for: PoolFromLayoutCreatorRoute.self) { route in
+                PoolFromLayoutCreatorView(
+                    viewModel: PoolFromLayoutCreatorViewModel(
+                        gamblerId: user.accountId,
+                        createPoolUseCase: diResolver.resolve(CreatePoolUseCase.self)!
+                    ),
+                    onPoolCreated: { _ in path = NavigationPath() },
+                )
+            }
         }
         .drawer(isShowing: $drawerVisible) {
             PoolScoreListDrawerView(
@@ -46,6 +55,16 @@ struct PoolScoreListRouter: View {
                 .resizable()
                 .frame(width: ICON_SIZE, height: ICON_SIZE)
                 .tint(.primary)
+        }
+    }
+
+    private func navigationBarTrailing() -> some View {
+        Button(action: {
+            path.append(PoolFromLayoutCreatorRoute())
+        }) {
+            Image(sharedResource: .filledAddCircle)
+                .resizable()
+                .frame(width: ICON_SIZE, height: ICON_SIZE)
         }
     }
 }

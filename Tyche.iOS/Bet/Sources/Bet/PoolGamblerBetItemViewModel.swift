@@ -24,13 +24,13 @@ class PoolGamblerBetItemViewModel: ObservableObject {
     @MainActor
     func bet(betScore: TeamScore<Int>) {
         Task { [self] in
-            var currentPoolGamblerBet = state.value()
+            var currentPoolGamblerBet = state.relevantValue()
             
             let targetPoolGamblerBet = currentPoolGamblerBet.copy { builder in
                 builder.betScore = betScore
             }
             
-            state = .loading(current: currentPoolGamblerBet, target: targetPoolGamblerBet)
+            state = .saving(current: currentPoolGamblerBet, target: targetPoolGamblerBet)
             
             let bet = Bet(
                 poolId: targetPoolGamblerBet.poolId,
@@ -60,6 +60,6 @@ class PoolGamblerBetItemViewModel: ObservableObject {
     
     @MainActor
     func reset() {
-        state = .initial(state.value())
+        state = .initial(state.relevantValue())
     }
 }

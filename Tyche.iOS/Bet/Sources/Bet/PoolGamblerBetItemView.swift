@@ -79,7 +79,7 @@ private struct StatefulPoolGamblerBetItemView: View {
                     reset: reset,
                     edit: edit
                 )
-            case .loading(_, target: let poolGamblerBet):
+            case .saving(_, target: let poolGamblerBet):
                 PoolGamblerBetItem(
                     poolGamblerBet: poolGamblerBet,
                     viewState: .constant(.visualization(viewState.value))
@@ -220,7 +220,7 @@ private struct StateIndicator: View {
             case .failure:
                 Image(sharedResource: .error)
                     .foregroundStyle(Color(sharedResource: .error))
-            case .loading:
+            case .saving:
                 ProgressView()
             case .initial(let poolGamblerBet), .success(_, succeeded: let poolGamblerBet):
                 ContentIndicator(poolGamblerBet: poolGamblerBet)
@@ -261,7 +261,7 @@ private struct ContentIndicator: View {
 
 #Preview("Non Editable Loading PoolGamblerBetItemView") {
     StatefulPoolGamblerBetItemView(
-        viewModelState: .loading(
+        viewModelState: .saving(
             current: poolGamblerBetDummyModel(),
             target: poolGamblerBetDummyModel()
         ),
@@ -271,7 +271,7 @@ private struct ContentIndicator: View {
 
 #Preview("Editable Loading PoolGamblerBetItemView") {
     StatefulPoolGamblerBetItemView(
-        viewModelState: .loading(
+        viewModelState: .saving(
             current: poolGamblerBetDummyModel(),
             target: poolGamblerBetDummyModel()
         ),

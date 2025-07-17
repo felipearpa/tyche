@@ -84,7 +84,7 @@ struct PoolContent: View {
         } else {
             PoolHomeRouter(
                 user: user,
-                pool: activePool!
+                pool: activePool!,
             )
         }
     }
