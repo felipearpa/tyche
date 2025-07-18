@@ -1,13 +1,12 @@
-import Foundation
-import Core
+import SwiftUI
 import UI
 import DataBet
+import Core
 
-public class PoolGamblerBetListViewModel: ObservableObject {
-    private let getPoolGamblerBetsUseCase : GetPendingPoolGamblerBetsUseCase
+public class FinishedBetListViewModel: ObservableObject {
+    private let getFinishedPoolGamblerBetsUseCase: GetFinishedPoolGamblerBetsUseCase
     
     private let gamblerId: String
-    
     private let poolId: String
     
     private var searchText: String? = nil
@@ -24,23 +23,23 @@ public class PoolGamblerBetListViewModel: ObservableObject {
     }()
     
     public init(
-        getPoolGamblerBetsUseCase : GetPendingPoolGamblerBetsUseCase,
+        getFinishedPoolGamblerBetsUseCase: GetFinishedPoolGamblerBetsUseCase,
         gamblerId: String,
         poolId: String
     ) {
-        self.getPoolGamblerBetsUseCase = getPoolGamblerBetsUseCase
+        self.getFinishedPoolGamblerBetsUseCase = getFinishedPoolGamblerBetsUseCase
         self.gamblerId = gamblerId
         self.poolId = poolId
         
         let pagingSource = PoolGamblerBetPagingSource(
             pagingQuery: { next in
-                await getPoolGamblerBetsUseCase.execute(
+                await getFinishedPoolGamblerBetsUseCase.execute(
                     poolId: poolId,
                     gamblerId: gamblerId,
                     next: next,
                     searchText: nil
                 )
-                .map { page in page.map { poolGamblerBet in poolGamblerBet.toPoolGamblerBetModel() }}
+                .map { page in page.map { bet in bet.toPoolGamblerBetModel() } }
                 .mapError { error in error.toLocalizedError() }
             }
         )
@@ -66,7 +65,6 @@ private extension Error {
         if let networkError = self as? NetworkError {
             return networkError.toNetworkLocalizedError()
         }
-        
         return UnknownLocalizedError()
     }
 }

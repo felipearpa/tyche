@@ -79,7 +79,15 @@ extension PoolGamblerBetModel {
             )
         }
     }
-    
+
+    func homeTeamMatchRawValue() -> String {
+        if let homeTeamMatch = self.matchScore?.homeTeamValue { String(homeTeamMatch) } else { "" }
+    }
+
+    func awayTeamMatchRawValue() -> String {
+        if let awayTeamMatch = self.matchScore?.awayTeamValue { String(awayTeamMatch) } else { "" }
+    }
+
     func homeTeamBetRawValue() -> String {
         if let homeTeamBet = self.betScore?.homeTeamValue { String(homeTeamBet) } else { "" }
     }

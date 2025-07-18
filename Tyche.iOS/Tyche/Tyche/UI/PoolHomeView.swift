@@ -10,6 +10,7 @@ import Bet
 private enum Tab: Int {
     case gamblerScores
     case bets
+    case historyBet
 }
 
 struct PoolHomeView: View {
@@ -47,7 +48,7 @@ struct PoolHomeView: View {
             
             PoolGamblerBetListView(
                 viewModel: PoolGamblerBetListViewModel(
-                    getPoolGamblerBetsUseCase: GetPoolGamblerBetsUseCase(
+                    getPoolGamblerBetsUseCase: GetPendingPoolGamblerBetsUseCase(
                         poolGamblerBetRepository: diResolver.resolve(PoolGamblerBetRepository.self)!
                     ),
                     gamblerId: gamblerId,
@@ -58,6 +59,23 @@ struct PoolHomeView: View {
             .tabItem {
                 Label(
                     title: { Text(String(.betTab)) },
+                    icon: { Image(.money) }
+                )
+            }
+
+            FinishedPoolGamblerBetListView(
+                viewModel: FinishedBetListViewModel(
+                    getFinishedPoolGamblerBetsUseCase: GetFinishedPoolGamblerBetsUseCase(
+                        poolGamblerBetRepository: diResolver.resolve(PoolGamblerBetRepository.self)!
+                    ),
+                    gamblerId: gamblerId,
+                    poolId: poolId,
+                )
+            )
+            .tag(Tab.historyBet)
+            .tabItem {
+                Label(
+                    title: { Text(String(.historyBetsTab)) },
                     icon: { Image(.money) }
                 )
             }

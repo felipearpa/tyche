@@ -21,7 +21,7 @@ public struct PoolGamblerBetListView: View {
     NavigationStack {
         PoolGamblerBetListView(
             viewModel: PoolGamblerBetListViewModel(
-                getPoolGamblerBetsUseCase: GetPoolGamblerBetsUseCase(
+                getPoolGamblerBetsUseCase: GetPendingPoolGamblerBetsUseCase(
                     poolGamblerBetRepository: PoolGamblerBetFakeRepository()
                 ),
                 gamblerId: "gambler-id",

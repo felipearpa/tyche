@@ -21,12 +21,18 @@ public class BetAssembly: Assembly {
             )
         }
         
-        container.register(GetPoolGamblerBetsUseCase.self) { resolver in
-            GetPoolGamblerBetsUseCase(
+        container.register(GetPendingPoolGamblerBetsUseCase.self) { resolver in
+            GetPendingPoolGamblerBetsUseCase(
                 poolGamblerBetRepository: resolver.resolve(PoolGamblerBetRepository.self)!
             )
         }
-        
+
+        container.register(GetFinishedPoolGamblerBetsUseCase.self) { resolver in
+            GetFinishedPoolGamblerBetsUseCase(
+                poolGamblerBetRepository: resolver.resolve(PoolGamblerBetRepository.self)!
+            )
+        }
+
         container.register(BetUseCase.self) { resolver in
             BetUseCase(
                 poolGamblerBetRepository: resolver.resolve(PoolGamblerBetRepository.self)!

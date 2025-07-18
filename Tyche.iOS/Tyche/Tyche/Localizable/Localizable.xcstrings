@@ -52,6 +52,23 @@
         }
       }
     },
+    "history_bets_tab" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "History"
+          }
+        },
+        "es-CO" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Historial"
+          }
+        }
+      }
+    },
     "log_in_action" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -80,7 +97,7 @@
         },
         "es-CO" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Cerrar sesión"
           }
         }
