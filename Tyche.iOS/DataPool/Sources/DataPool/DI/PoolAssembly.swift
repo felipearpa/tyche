@@ -66,8 +66,20 @@ public class PoolAssembly : Assembly {
             )
         }
 
+        container.register(GetPoolUseCase.self) { resolver in
+            GetPoolUseCase(
+                poolRepository: resolver.resolve(PoolRepository.self)!
+            )
+        }
+
         container.register(CreatePoolUseCase.self) { resolver in
             CreatePoolUseCase(
+                poolRepository: resolver.resolve(PoolRepository.self)!
+            )
+        }
+
+        container.register(JoinPoolUseCase.self) { resolver in
+            JoinPoolUseCase(
                 poolRepository: resolver.resolve(PoolRepository.self)!
             )
         }

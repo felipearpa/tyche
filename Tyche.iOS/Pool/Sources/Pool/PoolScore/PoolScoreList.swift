@@ -5,9 +5,8 @@ import UI
 struct PoolScoreList: View {
     let lazyPager: LazyPager<String, PoolGamblerScoreModel>
     let onPoolDetailRequested: (String) -> Void
-    
-    @Environment(\.boxSpacing) private var boxSpacing
-    
+    let onJoin: (String) -> Void
+
     var body: some View {
         let _ = Self._printChanges()
         
@@ -15,15 +14,13 @@ struct PoolScoreList: View {
             lazyPager: lazyPager,
             loadingContent: { PoolScoreFakeList() },
             loadingContentOnConcatenate: {
-                PoolScoreItem(poolGamblerScore: fakePoolGamblerScoreModel())
+                PoolScoreItem(poolGamblerScore: fakePoolGamblerScoreModel(), onJoin: {})
                     .shimmer()
                 Divider()
             }
         ) { poolGamblerScore in
             Group {
-                PoolScoreItem(poolGamblerScore: poolGamblerScore)
-                    .padding([.horizontal], boxSpacing.medium)
-                    .padding([.vertical], boxSpacing.small)
+                PoolScoreItem(poolGamblerScore: poolGamblerScore, onJoin: { onJoin(poolGamblerScore.poolId) })
                 Divider()
             }.onTapGesture {
                 onPoolDetailRequested(poolGamblerScore.poolId)
@@ -43,7 +40,7 @@ struct PoolScoreFakeList : View {
         ScrollView {
             LazyVStack(spacing: boxSpacing.medium) {
                 ForEach(poolGamblerScores) { poolGamblerScore in
-                    PoolScoreItem(poolGamblerScore: poolGamblerScore)
+                    PoolScoreItem(poolGamblerScore: poolGamblerScore, onJoin: {})
                         .shimmer()
                     Divider()
                 }
@@ -64,7 +61,8 @@ struct PoolScoreFakeList : View {
                 )
             )
         ),
-        onPoolDetailRequested: { _ in }
+        onPoolDetailRequested: { _ in },
+        onJoin: { _ in }
     )
 }
 

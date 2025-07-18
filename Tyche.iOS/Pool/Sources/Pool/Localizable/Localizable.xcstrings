@@ -1,9 +1,6 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
-    "" : {
-
-    },
     "choose_pool_layout_text" : {
       "localizations" : {
         "en" : {
@@ -49,6 +46,40 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Mis pollas"
+          }
+        }
+      }
+    },
+    "invite_action" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Invite"
+          }
+        },
+        "es-CO" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Invitar"
+          }
+        }
+      }
+    },
+    "join_pool_action" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Join"
+          }
+        },
+        "es-CO" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unirte"
           }
         }
       }
@@ -115,6 +146,40 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Posición %@"
+          }
+        }
+      }
+    },
+    "ready_to_join_subtitle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You’ve been invited to join the “%@”! Want to jump in and play alongside others?"
+          }
+        },
+        "es-CO" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "¡Te han invitado a la emocionante polla “%@”! ¿Quieres unirte y jugar con los demás?"
+          }
+        }
+      }
+    },
+    "ready_to_join_title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ready to join “%@”?"
+          }
+        },
+        "es-CO" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "¿Listo para unirte a “%@”?"
           }
         }
       }

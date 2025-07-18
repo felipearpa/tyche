@@ -15,7 +15,7 @@ struct GamblerScoreList: View {
             lazyPager: lazyPager,
             loadingContent: { GamblerScoreFakeList() },
             loadingContentOnConcatenate: {
-                PoolScoreItem(poolGamblerScore: fakePoolGamblerScoreModel())
+                PoolScoreItem(poolGamblerScore: fakePoolGamblerScoreModel(), onJoin: {})
                     .shimmer()
                 Divider()
             }

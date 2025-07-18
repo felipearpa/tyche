@@ -21,6 +21,14 @@ public extension Error {
         }
         return nil
     }
+
+    @inlinable
+    func localizedErrorOrDefault() -> LocalizedErrorWrapper {
+        if let localizedError = self as? LocalizedError {
+            return LocalizedErrorWrapper(underlyingError: localizedError)
+        }
+        return LocalizedErrorWrapper(underlyingError: UnknownLocalizedError())
+    }
 }
 
 public extension LoadableViewState {
@@ -32,5 +40,15 @@ public extension LoadableViewState {
             }
         }
         return nil
+    }
+
+    @inlinable
+    func localizedErrorOrDefault() -> LocalizedErrorWrapper {
+        if case .failure(let error) = self {
+            if let localizedError = error as? LocalizedError {
+                return LocalizedErrorWrapper(underlyingError: localizedError)
+            }
+        }
+        return LocalizedErrorWrapper(underlyingError: UnknownLocalizedError())
     }
 }

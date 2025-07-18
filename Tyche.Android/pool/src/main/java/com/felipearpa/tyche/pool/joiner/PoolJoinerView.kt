@@ -78,7 +78,13 @@ private fun PoolJoinerContainer(
                 modifier = modifier,
             )
 
-        LoadableViewState.Loading, is LoadableViewState.Success -> LoadingContainerView {}
+        LoadableViewState.Loading, is LoadableViewState.Success -> LoadingContainerView {
+            PoolJoinerContent(
+                poolState = poolState,
+                onJoinPool = {},
+                modifier = modifier,
+            )
+        }
 
         is LoadableViewState.Failure -> PoolJoinerContainerFailure(
             exception = joinPoolState().localizedOrDefault(),
@@ -192,6 +198,24 @@ private fun PoolJoinerContentPreview() {
                 name = "American Cup 2024",
             ),
         ),
+        onJoinPool = {},
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(all = LocalBoxSpacing.current.medium),
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun PoolJoinerContainerLoadingPreview() {
+    PoolJoinerContainer(
+        poolState = LoadableViewState.Success(
+            PoolModel(
+                id = "id",
+                name = "American Cup 2024",
+            ),
+        ),
+        joinPoolState = LoadableViewState.Loading,
         onJoinPool = {},
         modifier = Modifier
             .fillMaxSize()

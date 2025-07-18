@@ -20,6 +20,10 @@ extension StringResource {
     static let poolNameLabel = StringResource(name: "pool_name_label", bundle: Bundle.module)
     static let poolNameRequiredFailureText = StringResource(name: "pool_name_required_failure_text", bundle: Bundle.module)
     static let poolFromLayoutCreatorTitle = StringResource(name: "pool_from_layout_creator_title", bundle: Bundle.module)
+    static let inviteAction = StringResource(name: "invite_action", bundle: Bundle.module)
+    static let readyToJoinTitle = StringResource(name: "ready_to_join_title", bundle: Bundle.module)
+    static let readyToJoinSubtitle = StringResource(name: "ready_to_join_subtitle", bundle: Bundle.module)
+    static let joinPoolAction = StringResource(name: "join_pool_action", bundle: Bundle.module)
 }
 
 extension String {

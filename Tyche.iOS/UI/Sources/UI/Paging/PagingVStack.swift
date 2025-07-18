@@ -77,7 +77,7 @@ private struct ContentWrapper
             EmptyContentWrapper(emptyContent: emptyContent)
         } else {
             ScrollView {
-                LazyVStack(spacing: 8) {
+                LazyVStack(spacing: 0) {
                     ForEach(Array(lazyPager.enumerated()), id: \.element) { index, item in
                         itemContent(item)
                             .onAppearOnce {

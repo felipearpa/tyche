@@ -17,6 +17,8 @@ public extension SharedColorResource  {
     static let error = SharedColorResource(.error)
     static let surfaceVariant = SharedColorResource(.surfaceVariant)
     static let onSurfaceVariant = SharedColorResource(.onSurfaceVariant)
+    static let surface = SharedColorResource(.surface)
+    static let onSurface = SharedColorResource(.onSurface)
 }
 
 public extension Color {

@@ -45,6 +45,10 @@ public class PoolScoreListViewModel: ObservableObject {
         searchText = newSearchText
         pagingSource.invalidate()
     }
+
+    func createUrlForJoining(poolId: String) -> String {
+        "https://felipearpa.github.io/tyche/pools/\(poolId)/join"
+    }
 }
 
 private extension Error {

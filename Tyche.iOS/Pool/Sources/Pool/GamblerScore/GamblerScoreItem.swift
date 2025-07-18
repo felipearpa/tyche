@@ -18,8 +18,7 @@ struct GamblerScoreItem: View {
                 .foregroundColor(isLoggedIn ? Color(sharedResource: .onPrimaryContainter) : Color(sharedResource: .onSecondaryContainer))
                 .clipShape(Circle())
             } else {
-                Text("")
-                    .frame(width: indicatorSize)
+                Color.clear.frame(width: indicatorSize)
             }
             
             Text(poolGamblerScore.gamblerUsername)
@@ -34,8 +33,7 @@ struct GamblerScoreItem: View {
                 ProgressIndicator(difference: difference)
                     .frame(width: indicatorSize)
             } else {
-                Text("")
-                    .frame(width: indicatorSize)
+                Color.clear.frame(width: indicatorSize)
             }
         }
     }
