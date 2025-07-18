@@ -35,6 +35,9 @@
         }
       }
     },
+    "Change Pool" : {
+
+    },
     "create_account_action" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -68,6 +71,9 @@
           }
         }
       }
+    },
+    "Log Out" : {
+
     },
     "log_in_action" : {
       "extractionState" : "manual",

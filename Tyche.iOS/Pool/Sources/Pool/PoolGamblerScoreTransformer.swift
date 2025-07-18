@@ -1,6 +1,6 @@
 import DataPool
 
-extension PoolGamblerScore {
+public extension PoolGamblerScore {
     func toPoolGamblerScoreModel() -> PoolGamblerScoreModel {
         PoolGamblerScoreModel(
             poolId: self.poolId,
