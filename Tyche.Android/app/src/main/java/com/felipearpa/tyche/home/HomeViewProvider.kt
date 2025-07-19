@@ -1,4 +1,4 @@
-package com.felipearpa.tyche.home.ui
+package com.felipearpa.tyche.home
 
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable

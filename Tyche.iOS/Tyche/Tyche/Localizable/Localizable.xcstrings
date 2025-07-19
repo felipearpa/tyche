@@ -38,6 +38,23 @@
     "Change Pool" : {
 
     },
+    "continue_with_text" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Continue with:"
+          }
+        },
+        "es-CO" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Continuar con:"
+          }
+        }
+      }
+    },
     "create_account_action" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -115,13 +132,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "See who's has hit more scores and get over one right now"
+            "value" : "See who’s guessed the most scores and challenge them now"
           }
         },
         "es-CO" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mira quién ha acertado más marcadores y supéralo ahora mismo"
+            "value" : "Mira quién ha acertado más resultados y atrévete a retarlo ahora"
           }
         }
       }
@@ -165,13 +182,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sign in with email"
+            "value" : "Email"
           }
         },
         "es-CO" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ingresar con correo electrónico"
+            "value" : "Correo electrónico"
           }
         }
       }

@@ -2,7 +2,7 @@ package com.felipearpa.tyche.poolhome
 
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
-import com.felipearpa.tyche.home.ui.HomeRoute
+import com.felipearpa.tyche.home.HomeRoute
 import com.felipearpa.tyche.pool.poolscore.PoolScoreListRoute
 
 fun NavGraphBuilder.poolHomeNavView(

@@ -1,10 +1,11 @@
-package com.felipearpa.tyche.home.ui
+package com.felipearpa.tyche.home
 
-import android.content.res.Configuration.UI_MODE_NIGHT_YES
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -14,29 +15,32 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import com.felipearpa.foundation.emptyString
 import com.felipearpa.tyche.R
 import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
 import com.felipearpa.tyche.ui.theme.TycheTheme
 
-private val titleIconSize = 64.dp
-
 @Composable
 fun HomeView(onSignInWithEmail: () -> Unit, onSignInWithEmailAndPassword: () -> Unit) {
     HomeView(
         onSignInWithEmail = onSignInWithEmail,
         onSignInWithEmailAndPassword = onSignInWithEmailAndPassword,
-        modifier = Modifier.padding(all = LocalBoxSpacing.current.medium),
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(all = LocalBoxSpacing.current.medium),
     )
 }
 
@@ -46,18 +50,33 @@ private fun HomeView(
     onSignInWithEmailAndPassword: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Column(
-        modifier = modifier
+    val backgroundColor = Brush.verticalGradient(
+        colors = listOf(
+            MaterialTheme.colorScheme.primaryContainer,
+            MaterialTheme.colorScheme.surface,
+        ),
+    )
+
+    Box(
+        modifier = Modifier
             .fillMaxSize()
-            .padding(all = LocalBoxSpacing.current.large),
-        verticalArrangement = Arrangement.SpaceBetween,
+            .background(backgroundColor),
     ) {
-        HeaderSection()
-        InformationSection()
-        SignInSection(
-            onSignInWithEmail = onSignInWithEmail,
-            onSignInWithEmailAndPassword = onSignInWithEmailAndPassword,
-        )
+        Scaffold(containerColor = Color.Transparent) { innerPadding ->
+            Column(
+                modifier = modifier
+                    .padding(paddingValues = innerPadding)
+                    .padding(all = LocalBoxSpacing.current.large),
+                verticalArrangement = Arrangement.SpaceBetween,
+            ) {
+                HeaderSection()
+                InformationSection()
+                SignInSection(
+                    onSignInWithEmail = onSignInWithEmail,
+                    onSignInWithEmailAndPassword = onSignInWithEmailAndPassword,
+                )
+            }
+        }
     }
 }
 
@@ -103,6 +122,15 @@ private fun SignInSection(onSignInWithEmail: () -> Unit, onSignInWithEmailAndPas
         modifier = Modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.small),
     ) {
+        Text(
+            text = stringResource(id = R.string.continue_with_text),
+            style = MaterialTheme.typography.labelLarge,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.fillMaxWidth(),
+        )
+
+        Spacer(modifier = Modifier.height(LocalBoxSpacing.current.small))
+
         Button(
             onClick = onSignInWithEmail,
             modifier = Modifier.fillMaxWidth(),
@@ -119,27 +147,17 @@ private fun SignInSection(onSignInWithEmail: () -> Unit, onSignInWithEmailAndPas
     }
 }
 
-@Preview(showBackground = true, showSystemUi = true)
+private val titleIconSize = 64.dp
+
+@PreviewLightDark
 @Composable
 fun HomeViewPreview() {
     TycheTheme(dynamicColor = false) {
         Surface {
             HomeView(
-                modifier = Modifier.padding(all = 8.dp),
-                onSignInWithEmail = {},
-                onSignInWithEmailAndPassword = {},
-            )
-        }
-    }
-}
-
-@Preview(showBackground = true, showSystemUi = true, uiMode = UI_MODE_NIGHT_YES)
-@Composable
-fun HomeViewDarkPreview() {
-    TycheTheme(dynamicColor = false) {
-        Surface {
-            HomeView(
-                modifier = Modifier.padding(all = 8.dp),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(all = LocalBoxSpacing.current.medium),
                 onSignInWithEmail = {},
                 onSignInWithEmailAndPassword = {},
             )

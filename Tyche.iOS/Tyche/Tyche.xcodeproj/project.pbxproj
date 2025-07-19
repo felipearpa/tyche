@@ -24,7 +24,6 @@
 		D2127F592A2C2F270047DED7 /* TycheUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2127F582A2C2F270047DED7 /* TycheUITests.swift */; };
 		D2127F5B2A2C2F270047DED7 /* TycheUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2127F5A2A2C2F270047DED7 /* TycheUITestsLaunchTests.swift */; };
 		D2127F752A2C33210047DED7 /* StringResource.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2127F742A2C33210047DED7 /* StringResource.swift */; };
-		D2127F782A2C335E0047DED7 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2127F772A2C335E0047DED7 /* HomeView.swift */; };
 		D2127F7A2A2C33920047DED7 /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2127F792A2C33920047DED7 /* MainView.swift */; };
 		D21495EC2ABFD65E00C18C71 /* HomeRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = D21495EB2ABFD65E00C18C71 /* HomeRouter.swift */; };
 		D21495EE2ABFDDFD00C18C71 /* PoolHomeRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = D21495ED2ABFDDFD00C18C71 /* PoolHomeRouter.swift */; };
@@ -71,7 +70,6 @@
 		D2127F582A2C2F270047DED7 /* TycheUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TycheUITests.swift; sourceTree = "<group>"; };
 		D2127F5A2A2C2F270047DED7 /* TycheUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TycheUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		D2127F742A2C33210047DED7 /* StringResource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringResource.swift; sourceTree = "<group>"; };
-		D2127F772A2C335E0047DED7 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		D2127F792A2C33920047DED7 /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
 		D21495EB2ABFD65E00C18C71 /* HomeRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeRouter.swift; sourceTree = "<group>"; };
 		D21495ED2ABFDDFD00C18C71 /* PoolHomeRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PoolHomeRouter.swift; sourceTree = "<group>"; };
@@ -81,6 +79,7 @@
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		55C9D9102E2AE2A9007B79CA /* PoolHome */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = PoolHome; sourceTree = "<group>"; };
+		55C9D92E2E2B1D24007B79CA /* Home */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Home; sourceTree = "<group>"; };
 		55DC0E1C2E283C32007F7BD9 /* PoolScoreList */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = PoolScoreList; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
 
@@ -192,9 +191,9 @@
 		D2127F762A2C33340047DED7 /* UI */ = {
 			isa = PBXGroup;
 			children = (
+				55C9D92E2E2B1D24007B79CA /* Home */,
 				55C9D9102E2AE2A9007B79CA /* PoolHome */,
 				55DC0E1C2E283C32007F7BD9 /* PoolScoreList */,
-				D2127F772A2C335E0047DED7 /* HomeView.swift */,
 				D2127F792A2C33920047DED7 /* MainView.swift */,
 				D2DAB7992A6DB7B400ED29AC /* PoolHomeRoute.swift */,
 				D21495EB2ABFD65E00C18C71 /* HomeRouter.swift */,
@@ -230,6 +229,7 @@
 			);
 			fileSystemSynchronizedGroups = (
 				55C9D9102E2AE2A9007B79CA /* PoolHome */,
+				55C9D92E2E2B1D24007B79CA /* Home */,
 				55DC0E1C2E283C32007F7BD9 /* PoolScoreList */,
 			);
 			name = Tyche;
@@ -371,7 +371,6 @@
 				D21495EE2ABFDDFD00C18C71 /* PoolHomeRouter.swift in Sources */,
 				D2127F752A2C33210047DED7 /* StringResource.swift in Sources */,
 				D2127F392A2C2F240047DED7 /* TycheApp.swift in Sources */,
-				D2127F782A2C335E0047DED7 /* HomeView.swift in Sources */,
 				D21495EC2ABFD65E00C18C71 /* HomeRouter.swift in Sources */,
 				D2127F452A2C2F260047DED7 /* Tyche.xcdatamodeld in Sources */,
 				55C9D9032E2ACB14007B79CA /* JoinPoolURLProcessor.swift in Sources */,

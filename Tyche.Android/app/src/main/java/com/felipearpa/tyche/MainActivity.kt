@@ -3,14 +3,14 @@ package com.felipearpa.tyche
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.material3.MaterialTheme
+import androidx.activity.enableEdgeToEdge
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import com.felipearpa.foundation.emptyString
+import com.felipearpa.tyche.home.HomeRoute
 import com.felipearpa.tyche.home.homeNavView
-import com.felipearpa.tyche.home.ui.HomeRoute
 import com.felipearpa.tyche.pool.poolJoinerView
 import com.felipearpa.tyche.pool.poolscore.PoolScoreListRoute
 import com.felipearpa.tyche.poolcreator.poolFromLayoutCreatorNavView
@@ -37,9 +37,11 @@ class MainActivity : ComponentActivity() {
         val intentData = intent.data?.toString()
         val accountBundle = runBlocking { accountStorage.retrieve() }
 
+        enableEdgeToEdge()
+
         setContent {
             TycheTheme {
-                Surface(color = MaterialTheme.colorScheme.background) {
+                Surface {
                     Content(accountBundle = accountBundle, intentData = intentData)
                 }
             }
