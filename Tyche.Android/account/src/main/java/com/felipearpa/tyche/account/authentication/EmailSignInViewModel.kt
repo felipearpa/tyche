@@ -14,7 +14,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class EmailSignInViewModel @Inject constructor(
-    private val sendSignInLinkToEmailUseCase: SendSignInLinkToEmailUseCase
+    private val sendSignInLinkToEmailUseCase: SendSignInLinkToEmailUseCase,
 ) : ViewModel() {
     private val _state =
         MutableStateFlow<LoadableViewState<Unit>>(LoadableViewState.Initial)

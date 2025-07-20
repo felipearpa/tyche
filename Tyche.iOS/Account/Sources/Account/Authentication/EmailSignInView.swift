@@ -3,20 +3,17 @@ import Core
 import UI
 import Session
 
-private let ICON_SIZE: CGFloat = 64
-
 public struct EmailSignInView: View {
     @StateObject private var viewModel: EmailSignInViewModel
     
     @State private var loginCredential = LoginCredentialModel(username: "", password: "")
-    @State private var isValid = false
     
     public init(viewModel: @autoclosure @escaping () -> EmailSignInViewModel) {
         self._viewModel = .init(wrappedValue: viewModel())
     }
     
     public var body: some View {
-        EmailSignInStateView(
+        EmailSignInStatefulView(
             viewState: viewModel.state,
             signInWithEmail: viewModel.sendSignInLinkToEmail,
             reset: viewModel.reset
@@ -26,7 +23,7 @@ public struct EmailSignInView: View {
     }
 }
 
-private struct EmailSignInStateView: View {
+private struct EmailSignInStatefulView: View {
     let viewState: LoadableViewState<Void>
     let signInWithEmail: (String) -> Void
     let reset: () -> Void
@@ -104,25 +101,27 @@ private struct SuccessContent: View {
                     .font(.title)
                 
                 Text(String(.verificationEmailSentDescription))
-                    .multilineTextAlignment(.center)
+                    .multilineTextAlignment(.leading)
             }
         }
         .padding(boxSpacing.medium)
     }
 }
 
+private let ICON_SIZE: CGFloat = 64
+
 #Preview("Initial") {
-    EmailSignInStateView(viewState: .initial)
+    EmailSignInStatefulView(viewState: .initial)
 }
 
 #Preview("Loading") {
-    EmailSignInStateView(viewState: .loading)
+    EmailSignInStatefulView(viewState: .loading)
 }
 
 #Preview("Success") {
-    EmailSignInStateView(viewState: .success(()))
+    EmailSignInStatefulView(viewState: .success(()))
 }
 
 #Preview("Failure") {
-    EmailSignInStateView(viewState: .failure(UnknownLocalizedError()))
+    EmailSignInStatefulView(viewState: .failure(UnknownLocalizedError()))
 }

@@ -2,14 +2,17 @@ import FirebaseAuth
 
 class AuthenticationFirebaseDataSource: AuthenticationExternalDataSource {
     private let firebaseAuth: Auth
-    
-    init(firebaseAuth: Auth) {
+
+    private let signInUrlTemplate: SignInLinkUrlTemplateProvider
+
+    init(firebaseAuth: Auth, signInUrlTemplate: SignInLinkUrlTemplateProvider) {
         self.firebaseAuth = firebaseAuth
+        self.signInUrlTemplate = signInUrlTemplate
     }
     
     func sendSignInLinkToEmail(email: String) async throws {
         let actionCodeSettings = ActionCodeSettings()
-        actionCodeSettings.url = URL(string: "https://felipearpa.github.io/tyche/signin/\(email)")
+        actionCodeSettings.url = URL(string: String(format: signInUrlTemplate(), email))
         actionCodeSettings.handleCodeInApp = true
         try await firebaseAuth.sendSignInLink(toEmail: email, actionCodeSettings: actionCodeSettings)
     }

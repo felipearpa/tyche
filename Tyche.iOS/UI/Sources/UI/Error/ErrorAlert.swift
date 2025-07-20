@@ -24,6 +24,6 @@ public extension View {
 }
 
 #Preview {
-    Text("")
+    Color.clear
         .errorAlert(.constant(UnknownLocalizedError()), onDismiss: {})
 }

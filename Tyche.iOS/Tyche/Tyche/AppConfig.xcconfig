@@ -1,0 +1,11 @@
+//
+//  AppConfig.xcconfig
+//  Tyche
+//
+//  Created by Felipe Arcila Parra on 20/07/25.
+//
+
+// Configuration settings file format documentation can be found at:
+// https://developer.apple.com/documentation/xcode/adding-a-build-configuration-file-to-your-project
+
+SIGN_IN_URL_TEMPLATE = https:/$()/felipearpa.github.io/tyche/signin/%@

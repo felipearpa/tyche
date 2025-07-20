@@ -144,13 +144,13 @@ private fun EmailAndPasswordSignInView(
     ) {
         EmailTextField(
             value = email,
-            onValueChanged = { newEmail -> onEmailChanged(newEmail) },
+            onValueChange = { newEmail -> onEmailChanged(newEmail) },
             modifier = Modifier.fillMaxWidth(),
         )
 
         PasswordTextField(
             value = password,
-            onValueChanged = onPasswordChanged,
+            onValueChange = onPasswordChanged,
             modifier = Modifier.fillMaxWidth(),
         )
 

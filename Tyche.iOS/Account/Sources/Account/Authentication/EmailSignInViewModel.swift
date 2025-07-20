@@ -27,7 +27,7 @@ public class EmailSignInViewModel: ObservableObject {
             case .success:
                 state = .success(())
             case .failure(let error):
-                state = .failure(error.orLocalizedError())
+                state = .failure(error.orDefaultLocalized())
             }
         }
     }

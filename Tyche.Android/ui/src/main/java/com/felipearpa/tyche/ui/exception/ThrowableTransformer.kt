@@ -10,10 +10,13 @@ fun Throwable.orDefaultLocalized() =
         else -> UnknownLocalizedException()
     }
 
-fun Throwable.localizedOrNull(): LocalizedException? {
-    if (this is LocalizedException)
-        return this
-    return null
+fun Throwable.mapOrDefaultLocalized(transform: (Throwable) -> Throwable) {
+    val transformedError = transform(this)
+    when (transformedError) {
+        is LocalizedException -> transformedError
+        is NetworkException -> transformedError.toNetworkLocalizedException()
+        else -> UnknownLocalizedException()
+    }
 }
 
 fun Throwable.localizedOrDefault(): LocalizedException {

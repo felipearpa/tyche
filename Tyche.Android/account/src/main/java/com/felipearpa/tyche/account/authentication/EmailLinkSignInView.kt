@@ -29,7 +29,7 @@ import com.felipearpa.tyche.session.emptyAccountBundle
 import com.felipearpa.tyche.ui.exception.ExceptionView
 import com.felipearpa.tyche.ui.exception.LocalizedException
 import com.felipearpa.tyche.ui.exception.UnknownLocalizedException
-import com.felipearpa.tyche.ui.exception.localizedOrNull
+import com.felipearpa.tyche.ui.exception.localizedOrDefault
 import com.felipearpa.tyche.ui.loading.LoadingContainerView
 import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
 import com.felipearpa.ui.state.LoadableViewState
@@ -60,7 +60,7 @@ fun EmailLinkSignInView(
     when (viewState) {
         is LoadableViewState.Failure -> {
             FailureContent(
-                localizedException = viewState().localizedOrNull()!!,
+                localizedException = viewState().localizedOrDefault(),
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(horizontal = LocalBoxSpacing.current.medium),

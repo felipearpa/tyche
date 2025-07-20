@@ -14,6 +14,8 @@
 		55905C322B168C9F003EB79F /* Account in Frameworks */ = {isa = PBXBuildFile; productRef = 55905C312B168C9F003EB79F /* Account */; };
 		55905C362B16C23E003EB79F /* DataPool in Frameworks */ = {isa = PBXBuildFile; productRef = 55905C352B16C23E003EB79F /* DataPool */; };
 		55A869FC2B9000C80055B421 /* EmailSignInURLProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55A869FB2B9000C80055B421 /* EmailSignInURLProcessor.swift */; };
+		55B782CD2E2D449C00E78408 /* AppConfig.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 55B782CC2E2D449C00E78408 /* AppConfig.xcconfig */; };
+		55B782CF2E2D464100E78408 /* LocalSignInLinkUrlTemplateProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55B782CE2E2D463B00E78408 /* LocalSignInLinkUrlTemplateProvider.swift */; };
 		55C9D9032E2ACB14007B79CA /* JoinPoolURLProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55C9D9022E2ACB14007B79CA /* JoinPoolURLProcessor.swift */; };
 		55F9FDCA2B56EAD500066BBA /* EmailLinkSignInRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55F9FDC92B56EAD500066BBA /* EmailLinkSignInRouter.swift */; };
 		D2127F392A2C2F240047DED7 /* TycheApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2127F382A2C2F240047DED7 /* TycheApp.swift */; };
@@ -56,6 +58,8 @@
 		557942532B4C413400B1B3DA /* Tyche.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Tyche.entitlements; sourceTree = "<group>"; };
 		557D1EA92B40AD2B000FF9F9 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		55A869FB2B9000C80055B421 /* EmailSignInURLProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmailSignInURLProcessor.swift; sourceTree = "<group>"; };
+		55B782CC2E2D449C00E78408 /* AppConfig.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = AppConfig.xcconfig; sourceTree = "<group>"; };
+		55B782CE2E2D463B00E78408 /* LocalSignInLinkUrlTemplateProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalSignInLinkUrlTemplateProvider.swift; sourceTree = "<group>"; };
 		55C9D9022E2ACB14007B79CA /* JoinPoolURLProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JoinPoolURLProcessor.swift; sourceTree = "<group>"; };
 		55F9FDC92B56EAD500066BBA /* EmailLinkSignInRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmailLinkSignInRouter.swift; sourceTree = "<group>"; };
 		D204461A2A367F1400390319 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
@@ -78,6 +82,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		55B782D02E2D46CB00E78408 /* DI */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = DI; sourceTree = "<group>"; };
 		55C9D9102E2AE2A9007B79CA /* PoolHome */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = PoolHome; sourceTree = "<group>"; };
 		55C9D92E2E2B1D24007B79CA /* Home */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Home; sourceTree = "<group>"; };
 		55DC0E1C2E283C32007F7BD9 /* PoolScoreList */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = PoolScoreList; sourceTree = "<group>"; };
@@ -141,6 +146,8 @@
 		D2127F372A2C2F240047DED7 /* Tyche */ = {
 			isa = PBXGroup;
 			children = (
+				55B782D02E2D46CB00E78408 /* DI */,
+				55B782CE2E2D463B00E78408 /* LocalSignInLinkUrlTemplateProvider.swift */,
 				557942532B4C413400B1B3DA /* Tyche.entitlements */,
 				D204461A2A367F1400390319 /* Info.plist */,
 				557D1EA92B40AD2B000FF9F9 /* GoogleService-Info.plist */,
@@ -152,6 +159,7 @@
 				D2127F3C2A2C2F260047DED7 /* Assets.xcassets */,
 				D2127F432A2C2F260047DED7 /* Tyche.xcdatamodeld */,
 				D2127F3E2A2C2F260047DED7 /* Preview Content */,
+				55B782CC2E2D449C00E78408 /* AppConfig.xcconfig */,
 			);
 			path = Tyche;
 			sourceTree = "<group>";
@@ -228,6 +236,7 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
+				55B782D02E2D46CB00E78408 /* DI */,
 				55C9D9102E2AE2A9007B79CA /* PoolHome */,
 				55C9D92E2E2B1D24007B79CA /* Home */,
 				55DC0E1C2E283C32007F7BD9 /* PoolScoreList */,
@@ -337,6 +346,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				D2127F402A2C2F260047DED7 /* Preview Assets.xcassets in Resources */,
+				55B782CD2E2D449C00E78408 /* AppConfig.xcconfig in Resources */,
 				557D1EAA2B40AD2B000FF9F9 /* GoogleService-Info.plist in Resources */,
 				D2A7804D2AC8BB1A00F01A02 /* Localizable.xcstrings in Resources */,
 				D2127F3D2A2C2F260047DED7 /* Assets.xcassets in Resources */,
@@ -369,6 +379,7 @@
 				D2127F7A2A2C33920047DED7 /* MainView.swift in Sources */,
 				55A869FC2B9000C80055B421 /* EmailSignInURLProcessor.swift in Sources */,
 				D21495EE2ABFDDFD00C18C71 /* PoolHomeRouter.swift in Sources */,
+				55B782CF2E2D464100E78408 /* LocalSignInLinkUrlTemplateProvider.swift in Sources */,
 				D2127F752A2C33210047DED7 /* StringResource.swift in Sources */,
 				D2127F392A2C2F240047DED7 /* TycheApp.swift in Sources */,
 				D21495EC2ABFD65E00C18C71 /* HomeRouter.swift in Sources */,
@@ -412,6 +423,7 @@
 /* Begin XCBuildConfiguration section */
 		D2127F5C2A2C2F270047DED7 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 55B782CC2E2D449C00E78408 /* AppConfig.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_ASSET_SYMBOLS = YES;
@@ -476,6 +488,7 @@
 		};
 		D2127F5D2A2C2F270047DED7 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 55B782CC2E2D449C00E78408 /* AppConfig.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_ASSET_SYMBOLS = YES;

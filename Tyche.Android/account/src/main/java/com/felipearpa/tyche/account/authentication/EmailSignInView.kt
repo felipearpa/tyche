@@ -34,7 +34,7 @@ import com.felipearpa.tyche.account.R
 import com.felipearpa.tyche.core.type.Email
 import com.felipearpa.tyche.ui.exception.ExceptionAlertDialog
 import com.felipearpa.tyche.ui.exception.UnknownLocalizedException
-import com.felipearpa.tyche.ui.exception.localizedOrNull
+import com.felipearpa.tyche.ui.exception.localizedOrDefault
 import com.felipearpa.tyche.ui.loading.LoadingContainerView
 import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
 import com.felipearpa.ui.state.LoadableViewState
@@ -48,42 +48,46 @@ fun EmailSignInView(
     onBack: () -> Unit,
 ) {
     val viewState by viewModel.state.collectAsState(initial = LoadableViewState.Initial)
+
     EmailSignInView(
         viewState = viewState,
-        signInWithEmail = viewModel::sendSignInLinkToEmail,
-        reset = viewModel::reset,
-        onBackRequested = onBack,
+        onSignInWithEmail = viewModel::sendSignInLinkToEmail,
+        onReset = viewModel::reset,
+        onBack = onBack,
     )
 }
 
 @Composable
 private fun EmailSignInView(
     viewState: LoadableViewState<Unit>,
-    signInWithEmail: (String) -> Unit,
-    reset: () -> Unit,
-    onBackRequested: () -> Unit,
+    onSignInWithEmail: (String) -> Unit,
+    onReset: () -> Unit,
+    onBack: () -> Unit,
 ) {
     var email by remember { mutableStateOf(emptyString()) }
     var isValid by remember { mutableStateOf(false) }
-    val onEdited: (String) -> Unit = { newEmail ->
+    val edit: (String) -> Unit = { newEmail ->
         email = newEmail
         isValid = Email.isValid(email)
     }
     val signIn = if (viewState.isLoading() || !isValid) null else {
-        { signInWithEmail(email) }
+        { onSignInWithEmail(email) }
     }
+    val back = if (viewState.isLoading()) null else onBack
 
-    Scaffold(topBar = { TopBar(back = onBackRequested) }) { paddingValues ->
+    Scaffold(
+        topBar = { TopBar(onBack = back) },
+    ) { innerPadding ->
         Box(
             modifier = Modifier
-                .padding(paddingValues = paddingValues)
+                .padding(paddingValues = innerPadding)
                 .fillMaxWidth(),
         ) {
             when (viewState) {
                 LoadableViewState.Initial -> EmailSignInView(
                     email = email,
-                    onEdited = onEdited,
-                    signIn = signIn,
+                    onEdit = edit,
+                    onSignIn = signIn,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = LocalBoxSpacing.current.medium),
@@ -108,7 +112,7 @@ private fun EmailSignInView(
                         .padding(horizontal = LocalBoxSpacing.current.medium),
                     email = email,
                     viewState = viewState,
-                    reset = reset,
+                    onReset = onReset,
                 )
             }
         }
@@ -117,11 +121,11 @@ private fun EmailSignInView(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun TopBar(back: (() -> Unit)?) {
+private fun TopBar(onBack: (() -> Unit)?) {
     TopAppBar(
         title = { Text(text = stringResource(id = R.string.sign_in_title)) },
         navigationIcon = {
-            IconButton(onClick = back ?: {}, enabled = back != null) {
+            IconButton(onClick = onBack ?: {}, enabled = onBack != null) {
                 Icon(
                     painter = painterResource(id = SharedR.drawable.arrow_back),
                     contentDescription = emptyString(),
@@ -135,8 +139,8 @@ private fun TopBar(back: (() -> Unit)?) {
 private fun EmailSignInView(
     modifier: Modifier = Modifier,
     email: String,
-    onEdited: (String) -> Unit = {},
-    signIn: (() -> Unit)? = null,
+    onEdit: (String) -> Unit = {},
+    onSignIn: (() -> Unit)? = null,
 ) {
     Column(
         modifier = modifier,
@@ -144,13 +148,13 @@ private fun EmailSignInView(
     ) {
         EmailTextField(
             value = email,
-            onValueChanged = { newEmail -> onEdited(newEmail) },
+            onValueChange = { newEmail -> onEdit(newEmail) },
             modifier = Modifier.fillMaxWidth(),
         )
 
         Button(
-            onClick = signIn ?: {},
-            enabled = signIn != null,
+            onClick = onSignIn ?: {},
+            enabled = onSignIn != null,
             modifier = Modifier.fillMaxWidth(),
         ) {
             Text(text = stringResource(id = R.string.sign_in_action))
@@ -169,7 +173,7 @@ private fun SuccessContent(modifier: Modifier = Modifier) {
                 Icon(
                     painter = painterResource(id = R.drawable.outgoing_mail),
                     contentDescription = emptyString(),
-                    modifier = Modifier.size(width = 64.dp, height = 64.dp),
+                    modifier = Modifier.size(width = iconSize, height = iconSize),
                 )
 
                 Column(
@@ -180,13 +184,10 @@ private fun SuccessContent(modifier: Modifier = Modifier) {
                     Text(
                         text = stringResource(id = R.string.verification_email_sent_title),
                         textAlign = TextAlign.Center,
-                        style = MaterialTheme.typography.titleMedium,
+                        style = MaterialTheme.typography.titleLarge,
                     )
 
-                    Text(
-                        text = stringResource(id = R.string.verification_email_sent_description),
-                        textAlign = TextAlign.Center,
-                    )
+                    Text(text = stringResource(id = R.string.verification_email_sent_description))
                 }
             }
         }
@@ -198,7 +199,7 @@ private fun FailureContent(
     modifier: Modifier = Modifier,
     email: String,
     viewState: LoadableViewState<Unit>,
-    reset: () -> Unit,
+    onReset: () -> Unit,
 ) {
     Column(modifier = modifier) {
         EmailSignInView(
@@ -206,52 +207,54 @@ private fun FailureContent(
             modifier = Modifier.fillMaxWidth(),
         )
         ExceptionAlertDialog(
-            exception = viewState.exceptionOrNull()!!.localizedOrNull()!!,
-            onDismiss = { reset() },
+            exception = viewState.exceptionOrNull()!!.localizedOrDefault(),
+            onDismiss = { onReset() },
         )
     }
 }
 
-@Preview(showBackground = true)
+private val iconSize = 64.dp
+
+@Preview(showBackground = true, name = "Initial")
 @Composable
 private fun InitialEmailSignInViewPreview() {
     EmailSignInView(
         viewState = LoadableViewState.Initial,
-        signInWithEmail = {},
-        reset = {},
-        onBackRequested = {},
+        onSignInWithEmail = {},
+        onReset = {},
+        onBack = {},
     )
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, name = "Loading")
 @Composable
 private fun LoadingEmailSignInViewPreview() {
     EmailSignInView(
         viewState = LoadableViewState.Loading,
-        signInWithEmail = {},
-        reset = {},
-        onBackRequested = {},
+        onSignInWithEmail = {},
+        onReset = {},
+        onBack = {},
     )
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, name = "Success")
 @Composable
 private fun SuccessEmailSignInViewPreview() {
     EmailSignInView(
         viewState = LoadableViewState.Success(Unit),
-        signInWithEmail = {},
-        reset = {},
-        onBackRequested = {},
+        onSignInWithEmail = {},
+        onReset = {},
+        onBack = {},
     )
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, name = "Failure")
 @Composable
 private fun FailureEmailSignInViewPreview() {
     EmailSignInView(
         viewState = LoadableViewState.Failure(UnknownLocalizedException()),
-        signInWithEmail = {},
-        reset = {},
-        onBackRequested = {},
+        onSignInWithEmail = {},
+        onReset = {},
+        onBack = {},
     )
 }

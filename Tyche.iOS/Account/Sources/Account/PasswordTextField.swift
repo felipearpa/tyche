@@ -6,9 +6,11 @@ struct PasswordTextField : View {
     @Binding var value : String
     @State private var isValid = true
     @State private var isPasswordTextVisible = false
-    
+
+    @Environment(\.boxSpacing) private var boxSpacing
+
     var body: some View {
-        VStack {
+        VStack(spacing: boxSpacing.small) {
             ZStack {
                 if !isPasswordTextVisible {
                     InternalSecureField(

@@ -52,7 +52,7 @@ class PoolGamblerBetItemViewModel: ObservableObject {
                     state = .failure(
                         current: currentPoolGamblerBet,
                         failed: targetPoolGamblerBet,
-                        error: error.toLocalizedError(transformer: { error in error.toBetLocalizedError() }))
+                        error: error.mapOrDefaultLocalized { error in error.toBetLocalizedError() })
                 }
             }
         }

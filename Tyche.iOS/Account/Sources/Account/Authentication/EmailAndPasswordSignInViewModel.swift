@@ -29,7 +29,7 @@ public class EmailAndPasswordSignInViewModel: ObservableObject {
             case .failure(let error):
                 state = .failure(error
                     .asEmailLinkSignInLocalizedError()
-                    .orLocalizedError())
+                    .orDefaultLocalized())
             }
         }
     }

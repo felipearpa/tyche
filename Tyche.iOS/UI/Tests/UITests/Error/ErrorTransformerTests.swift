@@ -4,7 +4,7 @@ import XCTest
 
 final class ErrorTransformerTests: XCTestCase {
     func testGivenALocalizedErrorWhenTransformationAttemptThenTheSameLocalizedErrorIsReturned() {
-        let newLocalizedError = localizedError.orLocalizedError()
+        let newLocalizedError = localizedError.orDefaultLocalized()
         thenTheSameLocalizedErrorIsReturned(actualLocalizedError: newLocalizedError as! LocalizedError)
     }
     
@@ -14,14 +14,14 @@ final class ErrorTransformerTests: XCTestCase {
             XCTContext.runActivity(
                 named: "given a \(networkError) when transformation attempt then is transformed to NetworkLocalizedError"
             ) { _ in
-                let newLocalizedError = networkError.orLocalizedError()
+                let newLocalizedError = networkError.orDefaultLocalized()
                 XCTAssertTrue(newLocalizedError is NetworkLocalizedError)
             }
         }
     }
     
     func testGivenANeitherLocalizedNorNetworkErrorWhenTransformationAttemptThenIsTransformedToUnknownLocalizedError() {
-        let newLocalizedError = neitherLocalizedNorNetworkError.orLocalizedError()
+        let newLocalizedError = neitherLocalizedNorNetworkError.orDefaultLocalized()
         XCTAssertTrue(newLocalizedError is UnknownLocalizedError)
     }
     

@@ -2,7 +2,7 @@ import Foundation
 import Core
 
 public extension Error {
-    func orLocalizedError() -> Error {
+    func orDefaultLocalized() -> LocalizedError {
         if let localizedError = self as? LocalizedError {
             return localizedError
         }
@@ -11,14 +11,22 @@ public extension Error {
         }
         return UnknownLocalizedError()
     }
-    
-    func toLocalizedError(transformer: (Error) -> Error) -> Error {
-        if let localizedError = transformer(self) as? LocalizedError {
+
+    func mapOrDefaultLocalized(_ transform: (Error) -> Error) -> LocalizedError {
+        let transformedError = transform(self)
+        if let localizedError = transformedError as? LocalizedError {
             return localizedError
         }
-        if let networkError = self as? NetworkError {
+        if let networkError = transformedError as? NetworkError {
             return networkError.toNetworkLocalizedError()
         }
         return UnknownLocalizedError()
+    }
+
+    func localizedOrDefault() throws -> LocalizedError {
+        if let localizedError = self as? LocalizedError {
+            return localizedError
+        }
+        throw UnknownLocalizedError()
     }
 }

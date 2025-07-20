@@ -17,7 +17,8 @@ struct TycheApp: App {
             CoreAssembly(),
             LoginAssembly(),
             PoolAssembly(),
-            BetAssembly()
+            BetAssembly(),
+            TycheAssembly(),
         ]).resolver)
     
     var body: some Scene {

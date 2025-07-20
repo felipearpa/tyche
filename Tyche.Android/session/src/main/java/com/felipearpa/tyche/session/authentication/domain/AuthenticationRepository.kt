@@ -9,7 +9,7 @@ interface AuthenticationRepository {
 
     suspend fun signInWithEmailAndPassword(
         email: String,
-        password: String
+        password: String,
     ): Result<ExternalAccountId>
 
     suspend fun logout(): Result<Unit>

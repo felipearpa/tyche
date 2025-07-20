@@ -34,7 +34,10 @@ public class LoginAssembly : Assembly {
         }
         
         container.register(AuthenticationExternalDataSource.self) { resolver in
-            AuthenticationFirebaseDataSource(firebaseAuth: resolver.resolve(Auth.self)!)
+            AuthenticationFirebaseDataSource(
+                firebaseAuth: resolver.resolve(Auth.self)!,
+                signInUrlTemplate: resolver.resolve(SignInLinkUrlTemplateProvider.self)!
+            )
         }
         
         container.register(AuthenticationRemoteDataSource.self) { resolver in

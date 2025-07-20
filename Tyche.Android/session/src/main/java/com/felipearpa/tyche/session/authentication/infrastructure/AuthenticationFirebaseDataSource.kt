@@ -1,16 +1,20 @@
 package com.felipearpa.tyche.session.authentication.infrastructure
 
+import com.felipearpa.tyche.session.SignInLinkUrlTemplateProvider
 import com.felipearpa.tyche.session.authentication.domain.AuthenticationExternalDataSource
 import com.felipearpa.tyche.session.authentication.domain.ExternalAccountId
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.actionCodeSettings
 import kotlinx.coroutines.tasks.await
 
-internal class AuthenticationFirebaseDataSource(private val firebaseAuth: FirebaseAuth) :
-    AuthenticationExternalDataSource {
+internal class AuthenticationFirebaseDataSource(
+    private val firebaseAuth: FirebaseAuth,
+    private val signInLinkUrlTemplate: SignInLinkUrlTemplateProvider,
+) : AuthenticationExternalDataSource {
+
     override suspend fun sendSignInLinkToEmail(email: String) {
         val actionCodeSettings = actionCodeSettings {
-            url = "https://felipearpa.github.io/tyche/signin/$email"
+            url = String.format(signInLinkUrlTemplate(), email)
             handleCodeInApp = true
         }
         firebaseAuth.sendSignInLinkToEmail(email, actionCodeSettings).await()
@@ -23,7 +27,7 @@ internal class AuthenticationFirebaseDataSource(private val firebaseAuth: Fireba
 
     override suspend fun signInWithEmailAndPassword(
         email: String,
-        password: String
+        password: String,
     ): ExternalAccountId {
         val authResult = firebaseAuth.signInWithEmailAndPassword(email, password).await()
         return authResult.user!!.uid

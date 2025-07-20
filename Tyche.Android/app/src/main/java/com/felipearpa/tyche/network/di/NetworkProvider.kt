@@ -15,29 +15,24 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.kotlinx.serialization.asConverterFactory
-import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
 object NetworkProvider {
     @Provides
-    @Singleton
     fun provideHttpLoggingInterceptor(): HttpLoggingInterceptor =
         HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)
 
     @Provides
-    @Singleton
     fun provideOkHttpClient(httpLoggingInterceptor: HttpLoggingInterceptor): OkHttpClient =
         OkHttpClient.Builder().apply {
             interceptors().add(httpLoggingInterceptor)
         }.build()
 
     @Provides
-    @Singleton
     fun provideUrlBasePathProvider(): UrlBasePathProvider = LocalUrlBasePathProvider()
 
     @Provides
-    @Singleton
     fun provideRetrofit(
         urlBasePathProvider: UrlBasePathProvider,
         okHttpClient: OkHttpClient,
