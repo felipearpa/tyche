@@ -20,8 +20,8 @@ let package = Package(
         .package(path: "../UI"),
         .package(path: "../Session"),
         .package(path: "../DataPool"),
-        .package(url: "https://github.com/Alamofire/Alamofire.git", from: "5.7.0"),
-        .package(url: "https://github.com/Swinject/Swinject.git", from: "2.8.3"),
+        .package(url: "https://github.com/Alamofire/Alamofire.git", from: "5.10.2"),
+        .package(url: "https://github.com/Swinject/Swinject.git", from: "2.9.1"),
     ],
     targets: [
         // Targets are the basic building blocks of a package. A target can define a module or a test suite.
