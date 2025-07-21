@@ -28,7 +28,7 @@ module WebApplicationBuilder =
             .AddDefaultAWSOptions(app.Configuration.GetAWSOptions())
             .AddAWSService<IAmazonDynamoDB>()
             .AddScoped<IPoolLayoutRepository, PoolLayoutDynamoDbRepository>()
-            .AddScoped<GetOpenedPoolLayoutsQuery>()
+            .AddScoped<GetOpenPoolLayoutsQuery>()
         |> ignore
 
     let registerJwt (app: WebApplicationBuilder) =

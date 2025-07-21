@@ -10,9 +10,9 @@
         <Compile Include="Domain\PoolLayout.fs" />
         <Compile Include="Domain\PoolLayoutDictionaryTransformer.fs" />
         <Compile Include="Domain\IPoolLayoutRepository.fs" />
-        <Compile Include="Infrastructure\GetOpenedPoolLayoutRequestBuilder.fs" />
+        <Compile Include="Infrastructure\GetOpenPoolLayoutRequestBuilder.fs" />
         <Compile Include="Infrastructure\PoolLayoutDynamoDbRepository.fs" />
-        <Compile Include="Application\GetOpenedPoolLayoutsQuery.fs" />
+        <Compile Include="Application\GetOpenPoolLayoutsQuery.fs" />
     </ItemGroup>
 
     <ItemGroup>

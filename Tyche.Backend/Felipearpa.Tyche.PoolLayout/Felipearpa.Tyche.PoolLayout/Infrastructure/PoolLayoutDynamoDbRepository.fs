@@ -9,10 +9,10 @@ open Felipearpa.Tyche.PoolLayout.Domain.PoolLayoutDictionaryTransformer
 
 type PoolLayoutDynamoDbRepository(keySerializer: IKeySerializer, client: IAmazonDynamoDB) =
     interface IPoolLayoutRepository with
-        member this.GetOpenedPoolLayoutsAsync(maybeNext) =
+        member this.GetOpenPoolLayoutsAsync(maybeNext) =
             async {
                 let! response =
-                    GetOpenedPoolLayoutRequestBuilder.build (maybeNext |> Option.map keySerializer.Deserialize)
+                    GetOpenPoolLayoutRequestBuilder.build (maybeNext |> Option.map keySerializer.Deserialize)
                     |> client.QueryAsync
                     |> Async.AwaitTask
 

@@ -19,7 +19,7 @@ module WebApplication =
             this
                 .MapGet(
                     "/pool-layouts/open",
-                    Func<_, _, _>(fun (next: string) (getOpenedPoolLayoutsQuery: GetOpenedPoolLayoutsQuery) ->
+                    Func<_, _, _>(fun (next: string) (getOpenedPoolLayoutsQuery: GetOpenPoolLayoutsQuery) ->
                         async {
                             let! page = getOpenedPoolLayoutsQuery.ExecuteAsync(next |> Option.ofObj)
                             return page |> CursorPage.map PoolLayoutTransformer.toPoolLayoutResponse

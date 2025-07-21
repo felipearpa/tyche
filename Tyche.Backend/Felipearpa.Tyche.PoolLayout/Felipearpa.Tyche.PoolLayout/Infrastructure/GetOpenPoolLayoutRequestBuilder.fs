@@ -3,7 +3,7 @@ namespace Felipearpa.Tyche.PoolLayout.Infrastructure
 open System.Collections.Generic
 open Amazon.DynamoDBv2.Model
 
-module GetOpenedPoolLayoutRequestBuilder =
+module GetOpenPoolLayoutRequestBuilder =
     [<Literal>]
     let private tableName = "PoolLayout"
 

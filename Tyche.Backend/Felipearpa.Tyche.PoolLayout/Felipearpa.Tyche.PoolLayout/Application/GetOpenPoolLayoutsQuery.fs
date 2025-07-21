@@ -2,6 +2,6 @@ namespace Felipearpa.Tyche.PoolLayout.Application
 
 open Felipearpa.Tyche.PoolLayout.Domain
 
-type GetOpenedPoolLayoutsQuery(poolLayoutRepository: IPoolLayoutRepository) =
+type GetOpenPoolLayoutsQuery(poolLayoutRepository: IPoolLayoutRepository) =
     member this.ExecuteAsync(maybeNext: string option) =
-        poolLayoutRepository.GetOpenedPoolLayoutsAsync(maybeNext)
+        poolLayoutRepository.GetOpenPoolLayoutsAsync(maybeNext)
