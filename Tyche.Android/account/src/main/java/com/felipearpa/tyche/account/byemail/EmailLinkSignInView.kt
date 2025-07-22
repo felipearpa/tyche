@@ -1,4 +1,4 @@
-package com.felipearpa.tyche.account.authentication
+package com.felipearpa.tyche.account.byemail
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -33,34 +33,41 @@ import com.felipearpa.tyche.ui.exception.localizedOrDefault
 import com.felipearpa.tyche.ui.loading.LoadingContainerView
 import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
 import com.felipearpa.ui.state.LoadableViewState
-import com.felipearpa.ui.state.isInitial
+import com.felipearpa.tyche.ui.R as SharedR
 
 @Composable
 fun EmailLinkSignInView(
     viewModel: EmailLinkSignInViewModel,
     email: String,
     emailLink: String,
-    onStartRequested: (AccountBundle) -> Unit,
+    onStart: (AccountBundle) -> Unit,
 ) {
     val state by viewModel.state.collectAsState()
+    val signInWithEmailAndLink =
+        { viewModel.signInWithEmailLink(email = email, emailLink = emailLink) }
 
-    LaunchedEffect(state) {
-        if (state.isInitial())
-            viewModel.signInWithEmailLink(email = email, emailLink = emailLink)
+    EmailLinkSignInView(
+        state = state,
+        onStart = onStart,
+        onRetry = { signInWithEmailAndLink() },
+    )
+
+    LaunchedEffect(Unit) {
+        signInWithEmailAndLink()
     }
-
-    EmailLinkSignInView(viewState = state, onStartRequested = onStartRequested)
 }
 
 @Composable
 fun EmailLinkSignInView(
-    viewState: LoadableViewState<AccountBundle>,
-    onStartRequested: (AccountBundle) -> Unit = {},
+    state: LoadableViewState<AccountBundle>,
+    onStart: (AccountBundle) -> Unit = {},
+    onRetry: () -> Unit,
 ) {
-    when (viewState) {
+    when (state) {
         is LoadableViewState.Failure -> {
             FailureContent(
-                localizedException = viewState().localizedOrDefault(),
+                localizedException = state().localizedOrDefault(),
+                onRetry = onRetry,
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(horizontal = LocalBoxSpacing.current.medium),
@@ -73,7 +80,7 @@ fun EmailLinkSignInView(
 
         is LoadableViewState.Success ->
             SuccessContent(
-                start = { onStartRequested(viewState.value) },
+                onStart = { onStart(state.value) },
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(horizontal = LocalBoxSpacing.current.medium),
@@ -82,7 +89,7 @@ fun EmailLinkSignInView(
 }
 
 @Composable
-private fun SuccessContent(start: () -> Unit, modifier: Modifier = Modifier) {
+private fun SuccessContent(onStart: () -> Unit, modifier: Modifier = Modifier) {
     Column(modifier = modifier) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             Column(
@@ -93,7 +100,7 @@ private fun SuccessContent(start: () -> Unit, modifier: Modifier = Modifier) {
                 Icon(
                     painter = painterResource(id = R.drawable.mark_email_read),
                     contentDescription = emptyString(),
-                    modifier = Modifier.size(width = 64.dp, height = 64.dp),
+                    modifier = Modifier.size(iconSize),
                 )
 
                 Column(
@@ -104,16 +111,13 @@ private fun SuccessContent(start: () -> Unit, modifier: Modifier = Modifier) {
                     Text(
                         text = stringResource(id = R.string.account_verified_title),
                         textAlign = TextAlign.Center,
-                        style = MaterialTheme.typography.titleMedium,
+                        style = MaterialTheme.typography.titleLarge,
                     )
 
-                    Text(
-                        text = stringResource(id = R.string.account_verified_description),
-                        textAlign = TextAlign.Center,
-                    )
+                    Text(text = stringResource(id = R.string.account_verified_description))
                 }
 
-                Button(onClick = start, modifier = Modifier.fillMaxWidth()) {
+                Button(onClick = onStart, modifier = Modifier.fillMaxWidth()) {
                     Text(text = stringResource(id = R.string.start_action))
                 }
             }
@@ -121,21 +125,39 @@ private fun SuccessContent(start: () -> Unit, modifier: Modifier = Modifier) {
     }
 }
 
+private val iconSize = 64.dp
+
 @Composable
-private fun FailureContent(localizedException: LocalizedException, modifier: Modifier = Modifier) {
+private fun FailureContent(
+    localizedException: LocalizedException,
+    onRetry: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     Box(modifier = modifier, contentAlignment = Alignment.Center) {
-        ExceptionView(localizedException = localizedException)
+        Column(verticalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.large)) {
+            ExceptionView(localizedException = localizedException)
+
+            Button(
+                onClick = onRetry,
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                Text(text = stringResource(id = SharedR.string.retry_action))
+            }
+        }
     }
 }
 
 @Preview(showBackground = true)
 @Composable
 private fun SuccessSignInWithEmailLinkViewPreview() {
-    EmailLinkSignInView(viewState = LoadableViewState.Success(emptyAccountBundle()))
+    EmailLinkSignInView(state = LoadableViewState.Success(emptyAccountBundle()), onRetry = {})
 }
 
 @Preview(showBackground = true)
 @Composable
 private fun FailureSignInWithEmailLinkViewPreview() {
-    EmailLinkSignInView(viewState = LoadableViewState.Failure(UnknownLocalizedException()))
+    EmailLinkSignInView(
+        state = LoadableViewState.Failure(UnknownLocalizedException()),
+        onRetry = {},
+    )
 }

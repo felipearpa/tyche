@@ -1,4 +1,4 @@
-package com.felipearpa.tyche.account.authentication
+package com.felipearpa.tyche.account.byemail
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

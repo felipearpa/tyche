@@ -21,7 +21,7 @@ struct EmailLinkSignInRouter: View {
                     ),
                     email: emailSignInURLProcessor.email() ?? "",
                     emailLink: emailSignInURLProcessor.emailLink(),
-                    onStartRequested: { accountBundle in
+                    onStart: { accountBundle in
                         signedInAccountBundle = accountBundle
                     }
                 )

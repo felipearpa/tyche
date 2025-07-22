@@ -7,7 +7,7 @@ import com.felipearpa.tyche.session.authentication.domain.AuthenticationExternal
 import com.felipearpa.tyche.session.authentication.domain.AuthenticationRemoteDataSource
 import com.felipearpa.tyche.session.authentication.domain.AuthenticationRepository
 import com.felipearpa.tyche.session.authentication.domain.ExternalAccountId
-import com.felipearpa.tyche.session.authentication.domain.SignInWithEmailLinkException
+import com.felipearpa.tyche.session.authentication.domain.EmailLinkSignInException
 import com.felipearpa.tyche.session.authentication.domain.toLinkAccountRequest
 import javax.inject.Inject
 
@@ -26,7 +26,7 @@ internal class AuthenticationRemoteRepository @Inject constructor(
         emailLink: String,
     ): Result<ExternalAccountId> {
         if (!authenticationExternalDataSource.isSignInWithEmailLink(emailLink = emailLink))
-            return Result.failure(SignInWithEmailLinkException.InvalidEmailLink)
+            return Result.failure(EmailLinkSignInException.InvalidEmailLink)
 
         return handleFirebaseSignInWithEmailLink {
             authenticationExternalDataSource.signInWithEmailLink(

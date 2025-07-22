@@ -28,8 +28,7 @@ fun ExceptionView(localizedException: LocalizedException) {
         Icon(
             painter = painterResource(id = R.drawable.ic_sentiment_sad),
             contentDescription = emptyString(),
-            modifier = Modifier.size(64.dp),
-            tint = MaterialTheme.colorScheme.error,
+            modifier = Modifier.size(iconSize),
         )
 
         Column(
@@ -47,12 +46,14 @@ fun ExceptionView(localizedException: LocalizedException) {
                 text = listOfNotNull(
                     localizedException.failureReason,
                     localizedException.recoverySuggestion,
-                ).joinToString(separator = "."),
+                ).joinToString(separator = ". "),
                 style = MaterialTheme.typography.failureReason,
             )
         }
     }
 }
+
+private val iconSize = 64.dp
 
 @Composable
 @Preview(showBackground = true)

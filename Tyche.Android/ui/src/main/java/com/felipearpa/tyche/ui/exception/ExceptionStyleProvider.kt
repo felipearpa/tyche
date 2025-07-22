@@ -3,7 +3,7 @@ package com.felipearpa.tyche.ui.exception
 import androidx.compose.material3.Typography
 
 val Typography.errorDescription
-    get() = this.titleMedium
+    get() = this.titleLarge
 
 val Typography.failureReason
     get() = this.bodyMedium

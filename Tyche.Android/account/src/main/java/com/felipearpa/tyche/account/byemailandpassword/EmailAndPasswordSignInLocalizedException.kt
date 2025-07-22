@@ -1,4 +1,4 @@
-package com.felipearpa.tyche.account.authentication
+package com.felipearpa.tyche.account.byemailandpassword
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
@@ -7,7 +7,9 @@ import com.felipearpa.tyche.session.authentication.domain.SignInWithEmailAndPass
 import com.felipearpa.tyche.ui.exception.LocalizedException
 
 sealed class EmailAndPasswordSignInLocalizedException : LocalizedException() {
-    data object InvalidCredentials : EmailLinkSignInLocalizedException() {
+    data object InvalidCredentials : EmailAndPasswordSignInLocalizedException() {
+        private fun readResolve(): Any = InvalidCredentials
+
         override val errorDescription: String
             @Composable get() = stringResource(id = R.string.invalid_credential_sign_in_failure_description)
 
@@ -18,7 +20,9 @@ sealed class EmailAndPasswordSignInLocalizedException : LocalizedException() {
             @Composable get() = stringResource(id = R.string.invalid_credential_sign_in_failure_recovery_suggestion)
     }
 
-    data object AuthenticationFailed : EmailLinkSignInLocalizedException() {
+    data object AuthenticationFailed : EmailAndPasswordSignInLocalizedException() {
+        private fun readResolve(): Any = AuthenticationFailed
+
         override val errorDescription: String
             @Composable get() = stringResource(id = R.string.authentication_failed_sign_in_failure_description)
 

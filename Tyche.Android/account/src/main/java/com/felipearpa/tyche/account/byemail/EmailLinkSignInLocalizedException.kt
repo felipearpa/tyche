@@ -1,13 +1,15 @@
-package com.felipearpa.tyche.account.authentication
+package com.felipearpa.tyche.account.byemail
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import com.felipearpa.tyche.account.R
-import com.felipearpa.tyche.session.authentication.domain.SignInWithEmailLinkException
+import com.felipearpa.tyche.session.authentication.domain.EmailLinkSignInException
 import com.felipearpa.tyche.ui.exception.LocalizedException
 
 sealed class EmailLinkSignInLocalizedException : LocalizedException() {
     data object InvalidEmailLinkSignIn : EmailLinkSignInLocalizedException() {
+        private fun readResolve(): Any = InvalidEmailLinkSignIn
+
         override val errorDescription: String
             @Composable get() = stringResource(id = R.string.invalid_email_link_sign_in_failure_description)
 
@@ -21,6 +23,6 @@ sealed class EmailLinkSignInLocalizedException : LocalizedException() {
 
 fun Throwable.asEmailLinkSignInLocalizedException() =
     when (this) {
-        SignInWithEmailLinkException.InvalidEmailLink -> EmailLinkSignInLocalizedException.InvalidEmailLinkSignIn
+        EmailLinkSignInException.InvalidEmailLink -> EmailLinkSignInLocalizedException.InvalidEmailLinkSignIn
         else -> this
     }

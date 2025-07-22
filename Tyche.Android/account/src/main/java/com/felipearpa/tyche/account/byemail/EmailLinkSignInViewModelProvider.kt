@@ -1,4 +1,4 @@
-package com.felipearpa.tyche.account.authentication
+package com.felipearpa.tyche.account.byemail
 
 import androidx.compose.runtime.Composable
 import androidx.hilt.navigation.compose.hiltViewModel

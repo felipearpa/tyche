@@ -1,4 +1,4 @@
-package com.felipearpa.tyche.account.authentication
+package com.felipearpa.tyche.account.byemail
 
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
@@ -21,7 +21,7 @@ fun NavGraphBuilder.emailLinkSignInView(
             viewModel = emailLinkSignInViewModel(),
             email = email,
             emailLink = emailLink,
-            onStartRequested = onStartRequested,
+            onStart = onStartRequested,
         )
     }
 }

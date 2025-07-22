@@ -1,10 +1,10 @@
-package com.felipearpa.tyche.account.authentication
+package com.felipearpa.tyche.account.byemailandpassword
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.felipearpa.tyche.core.type.Email
 import com.felipearpa.tyche.session.AccountBundle
-import com.felipearpa.tyche.session.authentication.application.SignInWithEmailLinkUseCase
+import com.felipearpa.tyche.session.authentication.application.SignInWithEmailAndPasswordUseCase
 import com.felipearpa.tyche.ui.exception.orDefaultLocalized
 import com.felipearpa.ui.state.LoadableViewState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -14,8 +14,8 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class EmailLinkSignInViewModel @Inject constructor(
-    private val signInLinkToEmailUseCase: SignInWithEmailLinkUseCase
+class EmailAndPasswordSignInViewModel @Inject constructor(
+    private val signInWithEmailAndPasswordUseCase: SignInWithEmailAndPasswordUseCase
 ) : ViewModel() {
     private val _state =
         MutableStateFlow<LoadableViewState<AccountBundle>>(LoadableViewState.Initial)
@@ -25,16 +25,16 @@ class EmailLinkSignInViewModel @Inject constructor(
         _state.value = LoadableViewState.Initial
     }
 
-    fun signInWithEmailLink(email: String, emailLink: String) {
+    fun signInWithEmailAndPassword(email: String, password: String) {
         viewModelScope.launch {
             _state.emit(LoadableViewState.Loading)
-            signInLinkToEmailUseCase.execute(email = Email(email), emailLink = emailLink)
+            signInWithEmailAndPasswordUseCase.execute(email = Email(email), password = password)
                 .onSuccess { accountBundle -> _state.emit(LoadableViewState.Success(accountBundle)) }
                 .onFailure { exception ->
                     _state.emit(
                         LoadableViewState.Failure(
                             exception
-                                .asEmailLinkSignInLocalizedException()
+                                .asEmailAndPasswordSignInLocalized()
                                 .orDefaultLocalized()
                         )
                     )

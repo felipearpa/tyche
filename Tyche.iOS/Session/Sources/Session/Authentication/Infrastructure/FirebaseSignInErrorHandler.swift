@@ -48,7 +48,7 @@ private func mapFirebaseAuthError(
     _ error: NSError,
     mapping: (AuthErrorCode) -> Error?
 ) -> Error {
-    if let code = AuthErrorCode(_bridgedNSError: error)?.code, let mappedError = mapping(code) {
+    if let code = AuthErrorCode(rawValue: error.code), let mappedError = mapping(code) {
         return mappedError
     }
     return error

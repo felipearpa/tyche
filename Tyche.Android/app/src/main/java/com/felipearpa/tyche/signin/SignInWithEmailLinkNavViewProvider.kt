@@ -2,7 +2,7 @@ package com.felipearpa.tyche.signin
 
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
-import com.felipearpa.tyche.account.authentication.emailLinkSignInView
+import com.felipearpa.tyche.account.byemail.emailLinkSignInView
 import com.felipearpa.tyche.pool.poolscore.PoolScoreListRoute
 
 fun NavGraphBuilder.signInWithEmailLinkNavView(
