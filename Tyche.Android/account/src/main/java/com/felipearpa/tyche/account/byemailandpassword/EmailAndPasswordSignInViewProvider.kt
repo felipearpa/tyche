@@ -12,7 +12,7 @@ fun NavGraphBuilder.emailAndPasswordSignInView(
         EmailAndPasswordSignInView(
             viewModel = emailAndPasswordSignInViewModel(),
             onBack = onBack,
-            onAuthenticate = onAuthenticate,
+            onSignIn = onAuthenticate,
         )
     }
 }

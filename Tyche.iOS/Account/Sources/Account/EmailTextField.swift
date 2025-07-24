@@ -3,25 +3,45 @@ import Core
 import UI
 import Session
 
+struct RawEmailTextField : View {
+    @Binding var value : String
+
+    var body: some View {
+        EmailTextField(value: $value, validation: nil)
+    }
+}
+
 struct EmailTextField : View {
     @Binding var value : String
-    
+    let validation: TextFieldValidation?
+
     @Environment(\.boxSpacing) var boxSpacing
     @State private var isValid = true
-    
+
+    init(
+        value: Binding<String>,
+        validation: TextFieldValidation? = TextFieldValidation(
+            isValid: Email.isValid,
+            errorMessage: String(.emailValidationFailureMessage)
+        )
+    ) {
+        self._value = value
+        self.validation = validation
+    }
+
     var body: some View {
         VStack(spacing: boxSpacing.small) {
-            TextField(String(.emailText), text: $value)
+            TextField(String(.emailLabel), text: $value)
                 .autocapitalization(.none)
                 .border(isValid ? Color.clear : Color(sharedResource: .error))
                 .onChange(of: value) { newValue in
                     withAnimation {
-                        isValid = Email.isValid(newValue)
+                        isValid = validation?.isValid(newValue) ?? true
                     }
                 }
-            
+
             if !isValid {
-                Text(String(.emailValidationFailureMessage))
+                Text(validation?.errorMessage ?? "")
                     .foregroundColor(Color(sharedResource: .error))
                     .font(.caption)
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -29,17 +49,15 @@ struct EmailTextField : View {
         }
         .transition(
             .move(edge: .top)
-            .combined(with: .opacity))
-        .onAppear {
-            isValid = value == "" || Email.isValid(value)
-        }
+            .combined(with: .opacity)
+        )
     }
 }
 
-#Preview("Valid") {
-    EmailTextField(value: .constant("tyche@tyche.com"))
+#Preview {
+    RawEmailTextField(value: .constant(""))
 }
 
-#Preview("Invalid") {
-    EmailTextField(value: .constant("invalid"))
+#Preview {
+    EmailTextField(value: .constant(""))
 }

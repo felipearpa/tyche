@@ -8,4 +8,4 @@
 // Configuration settings file format documentation can be found at:
 // https://developer.apple.com/documentation/xcode/adding-a-build-configuration-file-to-your-project
 
-SIGN_IN_URL_TEMPLATE = https:/$()/felipearpa.github.io/tyche/signin/%@
+SIGN_IN_URL_TEMPLATE = https:/$()/tyche-588ce.web.app/signin/%@

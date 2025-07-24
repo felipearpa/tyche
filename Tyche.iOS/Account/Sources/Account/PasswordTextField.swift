@@ -2,12 +2,29 @@ import SwiftUI
 import UI
 import Session
 
-struct PasswordTextField : View {
+struct RawPasswordTextField: View {
     @Binding var value : String
+
+    var body: some View {
+        PasswordTextField(value: $value, validation: nil)
+    }
+}
+
+struct PasswordTextField: View {
+    @Binding var value: String
     @State private var isValid = true
     @State private var isPasswordTextVisible = false
+    let validation: TextFieldValidation?
 
     @Environment(\.boxSpacing) private var boxSpacing
+
+    init(value: Binding<String>, validation: TextFieldValidation? = TextFieldValidation(
+        isValid: Password.isValid,
+        errorMessage: String(.passwordValidationFailureMessage),
+    )) {
+        self._value = value
+        self.validation = validation
+    }
 
     var body: some View {
         VStack(spacing: boxSpacing.small) {
@@ -26,12 +43,28 @@ struct PasswordTextField : View {
                     )
                 }
             }
-            
+            .onReceive(value.publisher.collect()) { newValue in
+                if newValue.count > 16 {
+                    value = String(newValue.prefix(16))
+                }
+            }
+            .onChange(of: value) { newValue in
+                withAnimation {
+                    isValid = validation?.isValid(newValue) ?? true
+                }
+            }
+
             if !isValid {
-                Text(String(.passwordValidationFailureMessage))
-                    .foregroundColor(.primary)
+                Text(validation?.errorMessage ?? "")
+                    .foregroundColor(Color(sharedResource: .error))
+                    .font(.caption)
+                    .frame(maxWidth: .infinity, alignment: .leading)
             }
         }
+        .transition(
+            .move(edge: .top)
+            .combined(with: .opacity)
+        )
     }
 }
 
@@ -41,20 +74,12 @@ private struct InternalSecureField : View {
     @Binding var isPasswordTextVisible : Bool
     
     var body: some View {
-        SecureField(String(.passwordText), text: $value)
+        SecureField(String(.passwordLabel), text: $value)
             .border(isValid ? Color.clear : Color(sharedResource: .error))
             .overlay(alignment: .trailing) {
                 Image(systemName: isPasswordTextVisible ? "eye.slash.fill" : "eye.fill")
                     .padding(.horizontal)
                     .onTapGesture { isPasswordTextVisible.toggle() }
-            }
-            .onReceive(value.publisher.collect()) { newValue in
-                if newValue.count > 16 {
-                    value = String(newValue.prefix(16))
-                }
-            }
-            .onChange(of: value) { newValue in
-                isValid = Password.isValid(value: newValue)
             }
     }
 }
@@ -65,7 +90,7 @@ private struct InternalTextField : View {
     @Binding var isPasswordTextVisible : Bool
     
     var body: some View {
-        TextField(String(.passwordText), text: $value)
+        TextField(String(.passwordLabel), text: $value)
             .autocapitalization(.none)
             .autocorrectionDisabled(true)
             .border(isValid ? Color.clear : Color(sharedResource: .error))
@@ -77,20 +102,13 @@ private struct InternalTextField : View {
                         isPasswordTextVisible.toggle()
                     }
             }
-            .onReceive(value.publisher.collect()) { newValue in
-                if newValue.count > 16 {
-                    value = String(newValue.prefix(16))
-                }
-            }
-            .onChange(of: value) { newValue in
-                isValid = Password.isValid(value: newValue)
-            }
     }
 }
 
-struct PasswordTextField_Previews: PreviewProvider {
-    static var previews: some View {
-        @State var value = ""
-        PasswordTextField(value: $value)
-    }
+#Preview {
+    RawPasswordTextField(value: .constant(""))
+}
+
+#Preview {
+    PasswordTextField(value: .constant(""))
 }

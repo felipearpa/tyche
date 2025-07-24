@@ -5,18 +5,14 @@
     <string name="done_action">Done</string>
     <string name="create_action">Create</string>
     <string name="sign_in_action">Sign in</string>
-    <string name="email_text">Email</string>
+    <string name="email_label">Email</string>
     <string name="email_validation_failure_message">Must be a valid email</string>
-    <string name="password_text">Password</string>
+    <string name="password_label">Password</string>
     <string name="password_validation_failure_message">Password must be between 8–16 characters and include at least one uppercase letter, one lowercase letter, one number, and one special character</string>
     <string name="invalid_credential_failure_description">Login failed</string>
     <string name="invalid_credential_failure_reason">Incorrect username or password</string>
     <string name="invalid_credential_recovery_suggestion">Please check your username and password and try again. If you\'ve forgotten your password, you can reset it using the \'Forgot Password\' link</string>
-    <string name="user_creation_title">Creation</string>
-    <string name="account_already_registered_failure_description">Email is already in use</string>
-    <string name="account_already_registered_failure_reason">It looks like there\'s already an account associated with this email address</string>
     <string name="user_success_login_message">Congratulations! You\'re in the game and ready to place your bet. Let the fun begin!</string>
-    <string name="account_already_registered_failure_recovery_suggestion">If this is your email address, please try logging in</string>
     <string name="account_verified_title">Email verified: Let the games begin!</string>
     <string name="account_verified_description">Congratulations, your email verification is complete! You\'re all set to embark on an exciting journey in the world of betting games</string>
     <string name="start_action">Get started</string>
@@ -26,9 +22,7 @@
     <string name="invalid_email_link_sign_in_failure_reason">The sign-in link you clicked is either invalid or has expired</string>
     <string name="invalid_email_link_sign_in_failure_recovery_suggestion">Please request a new sign-in link. If you\'re experiencing issues repeatedly, contact our support team for further assistance</string>
     <string name="invalid_credential_sign_in_failure_description">Invalid credentials provided</string>
-    <string name="invalid_credential_sign_in_failure_reason">The email or password entered does not correspond to our records</string>
-    <string name="invalid_credential_sign_in_failure_recovery_suggestion">Please verify your credentials or consider resetting your password if the issue persists</string>
-    <string name="authentication_failed_sign_in_failure_description">Authentication failed</string>
-    <string name="authentication_failed_sign_in_failure_reason">There was a problem verifying your credentials with the server</string>
-    <string name="authentication_failed_sign_in_failure_recovery_suggestion">Please try again later or contact support if the problem continues</string>
+    <string name="invalid_credential_sign_in_failure_reason">That email or password doesn’t seem right</string>
+    <string name="invalid_credential_sign_in_failure_recovery_suggestion">Double-check your credentials and give it another go</string>
+    <string name="no_recovery_password_warning">If you forgot your password, I can’t help with recovery just yet</string>
 </resources>

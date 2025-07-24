@@ -57,7 +57,7 @@ private struct HomeContent: View {
                     viewModel: EmailAndPasswordSignInViewModel(
                         signInWithEmailAndPasswordUseCase: diResolver.resolve(SignInWithEmailAndPasswordUseCase.self)!
                     ),
-                    onAuthenticate: { accountBundle in
+                    onSignIn: { accountBundle in
                         onSignIn(accountBundle)
                     },
                 )

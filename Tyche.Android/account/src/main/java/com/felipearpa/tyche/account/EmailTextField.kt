@@ -19,20 +19,38 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
-import com.felipearpa.tyche.core.type.Email
+import com.felipearpa.tyche.ui.TextFieldValidation
 import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
 
-private const val EMAIL_MAX_LENGTH = 320
+@Composable
+fun RawEmailTextField(
+    value: String,
+    onValueChange: (String) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    EmailTextField(
+        value = value,
+        onValueChange = onValueChange,
+        modifier = modifier,
+        validation = null,
+    )
+}
 
 @Composable
 fun EmailTextField(
     value: String,
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
+    validation: TextFieldValidation? = TextFieldValidation(
+        isValid = { email -> email.isNotBlank() },
+        errorMessage = stringResource(id = R.string.email_validation_failure_message),
+    ),
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val isTouched by interactionSource.collectIsFocusedAsState()
-    val shouldShowError by remember(value) { derivedStateOf { isTouched && !Email.isValid(value) } }
+    val shouldShowError by remember(value) {
+        derivedStateOf { isTouched && !(validation?.isValid(value) ?: true) }
+    }
 
     Column(verticalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.small)) {
         OutlinedTextField(
@@ -42,9 +60,7 @@ fun EmailTextField(
                     onValueChange(newValue)
                 }
             },
-            label = {
-                Text(text = stringResource(id = R.string.email_text))
-            },
+            label = { Text(text = stringResource(id = R.string.email_label)) },
             isError = shouldShowError,
             singleLine = true,
             keyboardOptions = KeyboardOptions(
@@ -55,19 +71,33 @@ fun EmailTextField(
             modifier = modifier,
         )
 
-        AnimatedVisibility(visible = shouldShowError) {
-            Text(
-                text = stringResource(id = R.string.email_validation_failure_message),
-                color = MaterialTheme.colorScheme.error,
-                style = MaterialTheme.typography.bodySmall,
-            )
+        validation?.errorMessage?.let {
+            AnimatedVisibility(visible = shouldShowError) {
+                Text(
+                    text = it,
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodySmall,
+                )
+            }
         }
     }
 }
 
+private const val EMAIL_MAX_LENGTH = 320
+
 @Preview(showBackground = true)
 @Composable
-fun EmailTextFieldPreview() {
+private fun RawEmailTextFieldPreview() {
+    RawEmailTextField(
+        value = "email@tyche.com",
+        onValueChange = {},
+        modifier = Modifier.fillMaxWidth(),
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun EmailTextFieldPreview() {
     EmailTextField(
         value = "email@tyche.com",
         onValueChange = {},

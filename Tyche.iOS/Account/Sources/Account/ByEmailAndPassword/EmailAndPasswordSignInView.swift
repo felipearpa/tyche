@@ -5,14 +5,14 @@ import Core
 
 public struct EmailAndPasswordSignInView: View {
     @StateObject var viewModel: EmailAndPasswordSignInViewModel
-    let onAuthenticate: (AccountBundle) -> Void
+    let onSignIn: (AccountBundle) -> Void
 
     public init(
         viewModel: @autoclosure @escaping () -> EmailAndPasswordSignInViewModel,
-        onAuthenticate: @escaping (AccountBundle) -> Void
+        onSignIn: @escaping (AccountBundle) -> Void
     ) {
         self._viewModel = .init(wrappedValue: viewModel())
-        self.onAuthenticate = onAuthenticate
+        self.onSignIn = onSignIn
     }
 
     public var body: some View {
@@ -22,7 +22,7 @@ public struct EmailAndPasswordSignInView: View {
                 viewModel.signInWithEmailAndPassword(email: email, password: password)
             },
             onReset: { viewModel.reset() },
-            onAuthenticate: onAuthenticate
+            onAuthenticate: onSignIn
         )
     }
 }
@@ -38,17 +38,22 @@ private struct EmailAndPasswordSignInStateView: View {
 
     @Environment(\.boxSpacing) private var boxSpacing
 
+    private var isValid: Bool {
+        Email.isValid(email) &&
+        !password.trimmingCharacters(in: .whitespaces).isEmpty
+    }
+
+    private var signIn: (() -> Void)? {
+        isValid ? { onSignIn(email, password) } : nil
+    }
+
     var body: some View {
         switch viewState {
         case .initial:
             SignInContent(
                 email: $email,
                 password: $password,
-                onSignIn: {
-                    if Email.isValid(email) {
-                        onSignIn(email, password)
-                    }
-                },
+                onSignIn: signIn
             )
         case .loading:
             LoadingContainerView {
@@ -86,18 +91,28 @@ private struct SignInContent: View {
 
     var body: some View {
         VStack(spacing: boxSpacing.medium) {
-            EmailTextField(value: $email)
-
-            SecureField("Password", text: $password)
+            RawEmailTextField(value: $email)
+            RawPasswordTextField(value: $password)
 
             Button(action: {
                 onSignIn?()
             }) {
-                Text("Sign In")
+                Text(String(.signInAction))
                     .frame(maxWidth: .infinity)
             }
             .buttonStyle(.borderedProminent)
             .disabled(onSignIn == nil)
+
+            Text(String(.noRecoveryPasswordWarning))
+                .font(.caption)
+                .foregroundColor(Color(sharedResource: .onSurfaceVariant))
+                .padding(.vertical, boxSpacing.small)
+                .padding(.horizontal, boxSpacing.small)
+                .frame(maxWidth: .infinity)
+                .background(
+                    Color(sharedResource: .surfaceVariant),
+                    in: RoundedRectangle(cornerRadius: 8, style: .continuous)
+                )
 
             Spacer()
         }

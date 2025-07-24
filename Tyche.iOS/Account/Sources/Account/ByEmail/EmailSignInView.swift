@@ -6,8 +6,6 @@ import Session
 public struct EmailSignInView: View {
     @StateObject private var viewModel: EmailSignInViewModel
     
-    @State private var loginCredential = LoginCredentialModel(username: "", password: "")
-    
     public init(viewModel: @autoclosure @escaping () -> EmailSignInViewModel) {
         self._viewModel = .init(wrappedValue: viewModel())
     }

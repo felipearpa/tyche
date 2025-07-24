@@ -1,0 +1,9 @@
+[{
+  "relation": ["delegate_permission/common.handle_all_urls"],
+  "target": {
+    "namespace": "android_app",
+    "package_name": "com.felipearpa.tyche",
+    "sha256_cert_fingerprints":
+    ["3A:58:57:3B:2C:BA:42:E7:A6:03:CA:50:D9:9B:0B:EF:EA:F2:23:17:24:9B:7B:C9:79:30:34:15:14:B6:AD:AA"]
+  }
+}]

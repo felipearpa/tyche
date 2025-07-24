@@ -1,5 +1,6 @@
 package com.felipearpa.tyche.account.byemailandpassword
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,12 +11,14 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -25,9 +28,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.felipearpa.foundation.emptyString
-import com.felipearpa.tyche.account.EmailTextField
-import com.felipearpa.tyche.account.PasswordTextField
 import com.felipearpa.tyche.account.R
+import com.felipearpa.tyche.account.RawEmailTextField
+import com.felipearpa.tyche.account.RawPasswordTextField
 import com.felipearpa.tyche.core.type.Email
 import com.felipearpa.tyche.session.AccountBundle
 import com.felipearpa.tyche.ui.exception.ExceptionAlertDialog
@@ -45,7 +48,7 @@ import com.felipearpa.tyche.ui.R as SharedR
 fun EmailAndPasswordSignInView(
     viewModel: EmailAndPasswordSignInViewModel,
     onBack: () -> Unit,
-    onAuthenticate: (AccountBundle) -> Unit,
+    onSignIn: (AccountBundle) -> Unit,
 ) {
     val viewState by viewModel.state.collectAsState(initial = LoadableViewState.Initial)
     EmailAndPasswordSignInView(
@@ -56,7 +59,7 @@ fun EmailAndPasswordSignInView(
         onBack = onBack,
         onReset = viewModel::reset,
         onSignIn = viewModel::signInWithEmailAndPassword,
-        onAuthenticate = onAuthenticate,
+        onAuthenticate = onSignIn,
     )
 }
 
@@ -71,49 +74,53 @@ private fun EmailAndPasswordSignInView(
 ) {
     var email by remember { mutableStateOf(emptyString()) }
     var password by remember { mutableStateOf(emptyString()) }
-    var isValid by remember { mutableStateOf(false) }
+    val isValid by remember {
+        derivedStateOf { Email.isValid(email) && password.isNotBlank() }
+    }
 
     val updateEmail: (String) -> Unit = { newEmail ->
         email = newEmail
-        isValid = Email.isValid(email)
     }
 
     val updatePassword: (String) -> Unit = { newPassword ->
         password = newPassword
     }
 
-    val signIn = if (viewState.isLoading() || !isValid) null else {
-        { onSignIn(email, password) }
-    }
-
-    LaunchedEffect(viewState) {
-        viewState.onSuccess { accountBundle ->
-            onAuthenticate(accountBundle)
+    val signIn by remember(viewState) {
+        derivedStateOf {
+            if (viewState.isLoading() || !isValid) {
+                null
+            } else {
+                { onSignIn(email, password) }
+            }
         }
     }
 
-    Scaffold(topBar = { TopBar(onBack = onBack) }) { paddingValues ->
+    Scaffold(topBar = { TopBar(onBack = onBack) }) { innerPadding ->
         Box(
             modifier = Modifier
-                .padding(paddingValues = paddingValues)
+                .padding(paddingValues = innerPadding)
                 .fillMaxWidth(),
         ) {
             when (viewState) {
                 LoadableViewState.Initial ->
                     EmailAndPasswordSignInView(
-                        modifier = modifier,
                         email = email,
                         onEmailChanged = updateEmail,
                         password = password,
                         onPasswordChanged = updatePassword,
-                        onSignIn = { signIn?.invoke() },
+                        onSignIn = signIn,
+                        modifier = modifier,
                     )
 
                 LoadableViewState.Loading, is LoadableViewState.Success -> LoadingContainerView {
                     EmailAndPasswordSignInView(
-                        modifier = modifier,
                         email = email,
+                        onEmailChanged = updateEmail,
                         password = password,
+                        onPasswordChanged = updatePassword,
+                        onSignIn = signIn,
+                        modifier = modifier,
                     )
                 }
 
@@ -127,28 +134,34 @@ private fun EmailAndPasswordSignInView(
             }
         }
     }
+
+    LaunchedEffect(viewState) {
+        viewState.onSuccess { accountBundle ->
+            onAuthenticate(accountBundle)
+        }
+    }
 }
 
 @Composable
 private fun EmailAndPasswordSignInView(
-    modifier: Modifier = Modifier,
     email: String,
-    onEmailChanged: (String) -> Unit = {},
+    onEmailChanged: (String) -> Unit,
     password: String,
-    onPasswordChanged: (String) -> Unit = {},
-    onSignIn: (() -> Unit)? = null,
+    onPasswordChanged: (String) -> Unit,
+    onSignIn: (() -> Unit)?,
+    modifier: Modifier = Modifier,
 ) {
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.medium),
     ) {
-        EmailTextField(
+        RawEmailTextField(
             value = email,
             onValueChange = { newEmail -> onEmailChanged(newEmail) },
             modifier = Modifier.fillMaxWidth(),
         )
 
-        PasswordTextField(
+        RawPasswordTextField(
             value = password,
             onValueChange = onPasswordChanged,
             modifier = Modifier.fillMaxWidth(),
@@ -160,6 +173,25 @@ private fun EmailAndPasswordSignInView(
             modifier = Modifier.fillMaxWidth(),
         ) {
             Text(text = stringResource(id = R.string.sign_in_action))
+        }
+
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(
+                    color = MaterialTheme.colorScheme.surfaceVariant,
+                    shape = MaterialTheme.shapes.small,
+                )
+                .padding(
+                    vertical = LocalBoxSpacing.current.small,
+                    horizontal = LocalBoxSpacing.current.small,
+                ),
+        ) {
+            Text(
+                text = stringResource(id = R.string.no_recovery_password_warning),
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                style = MaterialTheme.typography.bodySmall,
+            )
         }
     }
 }
@@ -176,7 +208,10 @@ private fun FailureContent(
         Column(modifier = modifier) {
             EmailAndPasswordSignInView(
                 email = email,
+                onEmailChanged = {},
                 password = password,
+                onPasswordChanged = {},
+                onSignIn = null,
                 modifier = Modifier.fillMaxWidth(),
             )
             ExceptionAlertDialog(
@@ -203,7 +238,7 @@ private fun TopBar(onBack: (() -> Unit)?) {
     )
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, name = "Initial")
 @Composable
 private fun InitialEmailAndPasswordSignInViewPreview() {
     EmailAndPasswordSignInView(
@@ -218,7 +253,7 @@ private fun InitialEmailAndPasswordSignInViewPreview() {
     )
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, name = "Loading")
 @Composable
 private fun LoadingEmailAndPasswordSignInViewPreview() {
     EmailAndPasswordSignInView(
@@ -233,7 +268,7 @@ private fun LoadingEmailAndPasswordSignInViewPreview() {
     )
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, name = "Success")
 @Composable
 private fun SuccessEmailAndPasswordSignInViewPreview() {
     EmailAndPasswordSignInView(
@@ -253,7 +288,7 @@ private fun SuccessEmailAndPasswordSignInViewPreview() {
     )
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, name = "Failure")
 @Composable
 private fun FailureEmailAndPasswordSignInViewPreview() {
     EmailAndPasswordSignInView(

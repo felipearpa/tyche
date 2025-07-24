@@ -52,7 +52,7 @@
         }
       }
     },
-    "email_text" : {
+    "email_label" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -86,36 +86,53 @@
         }
       }
     },
-    "invalid_credential_failure_message" : {
+    "invalid_credential_sign_in_failure_description" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Incorrect username or password"
+            "value" : "Invalid credentials provided"
           }
         },
         "es-CO" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Nombre de usuario o contraseña iconrrectos"
+            "value" : "Credenciales inválidas"
           }
         }
       }
     },
-    "invalid_credential_failure_title" : {
+    "invalid_credential_sign_in_failure_reason" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Login failed"
+            "value" : "That email or password doesn’t seem right"
           }
         },
         "es-CO" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Inicio de sesión fallido"
+            "value" : "Parece que ese correo o contraseña no es correcto"
+          }
+        }
+      }
+    },
+    "invalid_credential_sign_in_failure_recovery_suggestion" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Double-check your credentials and give it another go"
+          }
+        },
+        "es-CO" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verifica que tu correo y contraseña estén bien escritos"
           }
         }
       }
@@ -168,10 +185,24 @@
         }
       }
     },
-    "Password" : {
-
+    "no_recovery_password_warning" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "If you forgot your password, I can’t help with recovery just yet."
+          }
+        },
+        "es-CO" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Si olvidaste tu contraseña, aún no puedo ayudarte con eso"
+          }
+        }
+      }
     },
-    "password_text" : {
+    "password_label" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -205,9 +236,6 @@
         }
       }
     },
-    "Sign In" : {
-
-    },
     "sign_in_action" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -231,7 +259,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Login"
+            "value" : "Sign in"
           }
         },
         "es-CO" : {

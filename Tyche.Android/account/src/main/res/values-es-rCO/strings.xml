@@ -5,18 +5,14 @@
     <string name="done_action">Hecho</string>
     <string name="create_action">Crear</string>
     <string name="sign_in_action">Iniciar</string>
-    <string name="email_text">Correo electrónico</string>
+    <string name="email_label">Correo electrónico</string>
     <string name="email_validation_failure_message">Debe ser un correo electrónico válido</string>
-    <string name="password_text">Contraseña</string>
+    <string name="password_label">Contraseña</string>
     <string name="password_validation_failure_message">La contraseña debe tener entre 8 y 16 caracteres e incluir al menos una letra mayúscula, una letra minúscula, un número y un carácter especial</string>
     <string name="invalid_credential_failure_description">Inicio de sesión fallido</string>
     <string name="invalid_credential_failure_reason">Nombre de usuario o contraseña iconrrectos</string>
     <string name="invalid_credential_recovery_suggestion">Por favor, verifica tu nombre de usuario y contraseña y vuelve a intentarlo. Si has olvidado tu contraseña, puedes restablecerla utilizando el enlace \'¿Olvidaste tu contraseña?\'</string>
-    <string name="user_creation_title">Creación</string>
-    <string name="account_already_registered_failure_description">Correo electrónico ya en uso</string>
-    <string name="account_already_registered_failure_reason">Parece que ya hay una cuenta asociada con esta dirección de correo electrónico</string>
     <string name="user_success_login_message">¡Felicidades! Has iniciado sesión correctamente y estás listo para hacer tu apuesta. ¡Que empiece la diversión!</string>
-    <string name="account_already_registered_failure_recovery_suggestion">Si esta es tu dirección de correo electrónico, intenta iniciar sesión</string>
     <string name="account_verified_title">Correo electrónico verificado: ¡Que comiencen los juegos!</string>
     <string name="account_verified_description">¡Felicidades, la verificación de tu correo electrónico está completa! Estás totalmente preparado para embarcarte en un emocionante viaje en el mundo de los juegos de apuestas</string>
     <string name="start_action">Iniciar</string>
@@ -26,9 +22,7 @@
     <string name="invalid_email_link_sign_in_failure_reason">El enlace de inicio de sesión en el que hiciste clic es inválido o ha expirado</string>
     <string name="invalid_email_link_sign_in_failure_recovery_suggestion">Por favor, solicita un nuevo enlace de inicio de sesión. Si este problema se repite, contacta a nuestro equipo de soporte para obtener más ayuda</string>
     <string name="invalid_credential_sign_in_failure_description">Credenciales inválidas</string>
-    <string name="invalid_credential_sign_in_failure_reason">El correo electrónico o la contraseña ingresados no coinciden con nuestros registros</string>
-    <string name="invalid_credential_sign_in_failure_recovery_suggestion">Verifica tus credenciales o restablece tu contraseña si el problema persiste</string>
-    <string name="authentication_failed_sign_in_failure_description">Falló la autenticación</string>
-    <string name="authentication_failed_sign_in_failure_reason">Hubo un problema al verificar tus credenciales con el servidor</string>
-    <string name="authentication_failed_sign_in_failure_recovery_suggestion">Intenta nuevamente más tarde o comunícate con soporte si el problema persiste</string>
+    <string name="invalid_credential_sign_in_failure_reason">Parece que ese correo o contraseña no es correcto</string>
+    <string name="invalid_credential_sign_in_failure_recovery_suggestion">Verifica que tu correo y contraseña estén bien escritos</string>
+    <string name="no_recovery_password_warning">Si olvidaste tu contraseña, aún no puedo ayudarte con eso</string>
 </resources>

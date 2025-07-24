@@ -27,9 +27,7 @@ public class EmailAndPasswordSignInViewModel: ObservableObject {
             case .success(let accountBundle):
                 state = .success(accountBundle)
             case .failure(let error):
-                state = .failure(error
-                    .asEmailLinkSignInLocalizedError()
-                    .orDefaultLocalized())
+                state = .failure(error.mapOrDefaultLocalized { $0.asEmailAndPasswordSignInLocalizedError() })
             }
         }
     }

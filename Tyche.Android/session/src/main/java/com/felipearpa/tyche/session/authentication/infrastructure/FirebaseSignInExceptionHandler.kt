@@ -1,7 +1,7 @@
 package com.felipearpa.tyche.session.authentication.infrastructure
 
 import com.felipearpa.tyche.session.authentication.domain.EmailLinkSignInException
-import com.felipearpa.tyche.session.authentication.domain.SignInWithEmailAndPasswordException
+import com.felipearpa.tyche.session.authentication.domain.EmailAndPasswordSignInException
 import com.google.firebase.auth.FirebaseAuthActionCodeException
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 
@@ -29,8 +29,8 @@ suspend fun <Value> handleFirebaseSignInWithEmailAndPassword(block: suspend () -
     return try {
         Result.success(block())
     } catch (_: FirebaseAuthInvalidCredentialsException) {
-        Result.failure(SignInWithEmailAndPasswordException.InvalidCredentials)
-    } catch (_: Exception) {
-        Result.failure(SignInWithEmailAndPasswordException.AuthenticationFailed)
+        Result.failure(EmailAndPasswordSignInException.InvalidCredentials)
+    } catch (exception: Exception) {
+        Result.failure(exception)
     }
 }

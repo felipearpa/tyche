@@ -1,5 +1,7 @@
 package com.felipearpa.tyche.ui.exception
 
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.AlertDialog
@@ -13,6 +15,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.felipearpa.tyche.ui.R
+import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
 
 @Composable
 fun ExceptionAlertDialog(exception: LocalizedException, onDismiss: () -> Unit) {
@@ -30,13 +33,20 @@ fun ExceptionAlertDialog(exception: LocalizedException, onDismiss: () -> Unit) {
             Text(text = exception.errorDescription.orEmpty())
         },
         text = {
-            Text(
-                text = listOfNotNull(
-                    exception.failureReason,
-                    exception.recoverySuggestion,
-                ).joinToString(separator = ". "),
+            Column(
+                verticalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.medium),
                 modifier = Modifier.fillMaxWidth(),
-            )
+            ) {
+                Text(
+                    text = exception.failureReason.orEmpty(),
+                    modifier = Modifier.fillMaxWidth(),
+                )
+
+                Text(
+                    text = exception.recoverySuggestion.orEmpty(),
+                    modifier = Modifier.fillMaxWidth(),
+                )
+            }
         },
         icon = {
             Icon(

@@ -29,21 +29,44 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.felipearpa.foundation.emptyString
-import com.felipearpa.tyche.core.type.Email
+import com.felipearpa.tyche.session.type.Password
+import com.felipearpa.tyche.ui.TextFieldValidation
 import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
+
+@Composable
+fun RawPasswordTextField(
+    value: String,
+    onValueChange: (String) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    PasswordTextField(
+        value = value,
+        onValueChange = onValueChange,
+        modifier = modifier,
+        validation = null,
+    )
+}
 
 @Composable
 fun PasswordTextField(
     value: String,
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
+    validation: TextFieldValidation? = TextFieldValidation(
+        isValid = Password::isValid,
+        errorMessage = stringResource(id = R.string.password_validation_failure_message),
+    ),
 ) {
     var isPasswordVisible by remember { mutableStateOf(false) }
     val passwordIconResource =
         if (isPasswordVisible) R.drawable.ic_visibility_off else R.drawable.ic_visibility
     val interactionSource = remember { MutableInteractionSource() }
     val isTouched by interactionSource.collectIsFocusedAsState()
-    val shouldShowError by remember(value) { derivedStateOf { isTouched && !Email.isValid(value) } }
+    val shouldShowError by remember(value) {
+        derivedStateOf {
+            isTouched && !(validation?.isValid(value) ?: true)
+        }
+    }
 
     Column(verticalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.small)) {
         OutlinedTextField(
@@ -53,7 +76,7 @@ fun PasswordTextField(
                     onValueChange(newValue)
                 }
             },
-            label = { Text(text = stringResource(id = R.string.password_text)) },
+            label = { Text(text = stringResource(id = R.string.password_label)) },
             isError = shouldShowError,
             singleLine = true,
             visualTransformation = if (isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
@@ -74,19 +97,31 @@ fun PasswordTextField(
             modifier = modifier,
         )
 
-        AnimatedVisibility(visible = shouldShowError) {
-            Text(
-                text = stringResource(id = R.string.password_validation_failure_message),
-                color = MaterialTheme.colorScheme.error,
-                style = MaterialTheme.typography.bodySmall,
-            )
+        validation?.errorMessage?.let {
+            AnimatedVisibility(visible = shouldShowError) {
+                Text(
+                    text = it,
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodySmall,
+                )
+            }
         }
     }
 }
 
 @Preview(showBackground = true)
 @Composable
-fun PasswordTextFieldPreview() {
+private fun RawPasswordTextFieldPreview() {
+    RawPasswordTextField(
+        value = "#Valid2Password#",
+        onValueChange = {},
+        modifier = Modifier.fillMaxWidth(),
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun PasswordTextFieldPreview() {
     PasswordTextField(
         value = "#Valid2Password#",
         onValueChange = {},
