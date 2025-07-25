@@ -27,8 +27,8 @@ fun PoolScoreList(
     modifier: Modifier = Modifier,
     lazyPoolGamblerScores: LazyPagingItems<PoolGamblerScoreModel>,
     lazyListState: LazyListState = rememberLazyListState(),
-    onPoolClick: (poolId: String, gamblerId: String) -> Unit,
-    onJoinPoolClick: (poolId: String) -> Unit,
+    onPoolOpen: (poolId: String, gamblerId: String) -> Unit,
+    onPoolJoin: (poolId: String) -> Unit,
     fakeItemCount: Int = 50,
 ) {
     RefreshableStatefulLazyColumn(
@@ -48,17 +48,18 @@ fun PoolScoreList(
             },
             contentType = lazyPoolGamblerScores.itemContentType { "PoolScore" },
         ) { index ->
-            val poolGamblerScore = lazyPoolGamblerScores[index]!!
+            val poolGamblerScore = lazyPoolGamblerScores[index] ?: return@items
+
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clickable {
-                        onPoolClick(poolGamblerScore.poolId, poolGamblerScore.gamblerId)
+                        onPoolOpen(poolGamblerScore.poolId, poolGamblerScore.gamblerId)
                     },
             ) {
                 PoolScoreItem(
                     poolGamblerScore = poolGamblerScore,
-                    onJoinClick = { onJoinPoolClick(poolGamblerScore.poolId) },
+                    onJoin = { onPoolJoin(poolGamblerScore.poolId) },
                     modifier = Modifier.fillMaxWidth(),
                 )
                 HorizontalDivider()
@@ -93,8 +94,8 @@ private fun PoolScoreListPreview() {
         MutableStateFlow(PagingData.from(poolGamblerScoreDummyModels())).collectAsLazyPagingItems()
     PoolScoreList(
         lazyPoolGamblerScores = items,
-        onPoolClick = { _, _ -> },
-        onJoinPoolClick = {},
+        onPoolOpen = { _, _ -> },
+        onPoolJoin = {},
         modifier = Modifier.fillMaxSize(),
     )
 }

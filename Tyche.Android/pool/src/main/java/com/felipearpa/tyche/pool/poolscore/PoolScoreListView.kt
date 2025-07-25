@@ -5,6 +5,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -32,6 +33,7 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
+import androidx.compose.ui.unit.dp
 import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
@@ -48,8 +50,8 @@ import com.felipearpa.tyche.ui.R as SharedR
 fun PoolScoreListView(
     viewModel: PoolScoreListViewModel,
     drawerView: @Composable () -> Unit,
-    onPoolClick: (poolId: String, gamblerId: String) -> Unit,
-    onCreatePoolClick: () -> Unit,
+    onPoolOpen: (poolId: String, gamblerId: String) -> Unit,
+    onPoolCreate: () -> Unit,
 ) {
     val lazyItems = viewModel.poolGamblerScores.collectAsLazyPagingItems()
     val pageSize = viewModel.pageSize
@@ -59,9 +61,9 @@ fun PoolScoreListView(
         lazyItems = lazyItems,
         pageSize = pageSize,
         drawerView = drawerView,
-        onPoolClick = onPoolClick,
-        onCreatePoolClick = onCreatePoolClick,
-        onJoinPoolClick = { poolId ->
+        onPoolOpen = onPoolOpen,
+        onPoolCreate = onPoolCreate,
+        onPoolJoin = { poolId ->
             invitePoolUrl = viewModel.createUrlForJoining(poolId = poolId)
         },
     )
@@ -95,9 +97,9 @@ private fun PoolScoreListView(
     lazyItems: LazyPagingItems<PoolGamblerScoreModel>,
     pageSize: Int = 50,
     drawerView: @Composable () -> Unit,
-    onPoolClick: (poolId: String, gamblerId: String) -> Unit,
-    onJoinPoolClick: (poolId: String) -> Unit,
-    onCreatePoolClick: () -> Unit,
+    onPoolOpen: (poolId: String, gamblerId: String) -> Unit,
+    onPoolJoin: (poolId: String) -> Unit,
+    onPoolCreate: () -> Unit,
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val coroutineScope = rememberCoroutineScope()
@@ -119,22 +121,22 @@ private fun PoolScoreListView(
                 TopAppBar(
                     title = { Text(text = stringResource(id = R.string.gambler_pool_list_title)) },
                     scrollBehavior = scrollBehavior,
-                    onAccountClick = {
+                    onAccountOpen = {
                         coroutineScope.launch {
                             drawerState.apply {
                                 if (isClosed) open() else close()
                             }
                         }
                     },
-                    onCreatePoolClick = onCreatePoolClick,
+                    onPoolCreate = onPoolCreate,
                 )
             },
         ) { paddingValues ->
             PoolScoreList(
                 lazyPoolGamblerScores = lazyItems,
                 fakeItemCount = pageSize,
-                onPoolClick = onPoolClick,
-                onJoinPoolClick = onJoinPoolClick,
+                onPoolOpen = onPoolOpen,
+                onPoolJoin = onPoolJoin,
                 modifier = Modifier
                     .padding(paddingValues = paddingValues)
                     .fillMaxSize(),
@@ -148,13 +150,13 @@ private fun PoolScoreListView(
 private fun TopAppBar(
     title: @Composable () -> Unit,
     scrollBehavior: TopAppBarScrollBehavior,
-    onAccountClick: () -> Unit,
-    onCreatePoolClick: () -> Unit,
+    onAccountOpen: () -> Unit,
+    onPoolCreate: () -> Unit,
 ) {
     TopAppBar(
         title = title,
         navigationIcon = {
-            IconButton(onClick = onAccountClick) {
+            IconButton(onClick = onAccountOpen) {
                 Icon(
                     painter = painterResource(id = SharedR.drawable.menu),
                     contentDescription = emptyString(),
@@ -162,17 +164,20 @@ private fun TopAppBar(
             }
         },
         actions = {
-            IconButton(onClick = onCreatePoolClick) {
+            IconButton(onClick = onPoolCreate) {
                 Icon(
                     painter = painterResource(id = SharedR.drawable.filled_add),
                     tint = MaterialTheme.colorScheme.primary,
                     contentDescription = "Localized description",
+                    modifier = Modifier.size(createIconSize),
                 )
             }
         },
         scrollBehavior = scrollBehavior,
     )
 }
+
+private val createIconSize = 32.dp
 
 @PreviewLightDark
 @Composable
@@ -184,9 +189,9 @@ private fun PoolScoreListViewPreview() {
             PoolScoreListView(
                 lazyItems = items,
                 drawerView = {},
-                onPoolClick = { _, _ -> },
-                onJoinPoolClick = {},
-                onCreatePoolClick = {},
+                onPoolOpen = { _, _ -> },
+                onPoolJoin = {},
+                onPoolCreate = {},
             )
         }
     }

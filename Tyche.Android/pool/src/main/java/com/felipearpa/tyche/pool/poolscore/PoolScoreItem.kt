@@ -28,17 +28,17 @@ import com.felipearpa.tyche.pool.PoolGamblerScoreModel
 import com.felipearpa.tyche.pool.R
 import com.felipearpa.tyche.pool.difference
 import com.felipearpa.tyche.pool.poolGamblerScoreDummyModel
+import com.felipearpa.tyche.pool.poolGamblerScoreFakeModel
 import com.felipearpa.tyche.pool.poolGamblerScoreWithoutScoreDummyModel
 import com.felipearpa.tyche.ui.ProgressIndicator
 import com.felipearpa.tyche.ui.SwipeToRevealBox
+import com.felipearpa.tyche.ui.shimmer
 import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
-
-private val MIN_HEIGHT = 48.dp
 
 @Composable
 fun PoolScoreItem(
     poolGamblerScore: PoolGamblerScoreModel,
-    onJoinClick: () -> Unit,
+    onJoin: () -> Unit,
     modifier: Modifier = Modifier,
     shimmerModifier: Modifier = Modifier,
 ) {
@@ -54,7 +54,7 @@ fun PoolScoreItem(
                     .fillMaxHeight()
                     .background(color = MaterialTheme.colorScheme.primaryContainer)
                     .padding(all = LocalBoxSpacing.current.medium),
-                onClick = onJoinClick,
+                onClick = onJoin,
             ) {
                 Icon(
                     painter = painterResource(R.drawable.person_add),
@@ -103,12 +103,24 @@ fun PoolScoreItem(
     }
 }
 
+@Composable
+fun PoolScoreFakeItem(modifier: Modifier = Modifier) {
+    PoolScoreItem(
+        poolGamblerScore = poolGamblerScoreFakeModel(),
+        onJoin = {},
+        modifier = modifier,
+        shimmerModifier = Modifier.shimmer(),
+    )
+}
+
+private val MIN_HEIGHT = 48.dp
+
 @Preview(showBackground = true)
 @Composable
 private fun PoolScoreItemPreview() {
     PoolScoreItem(
         poolGamblerScore = poolGamblerScoreDummyModel(),
-        onJoinClick = {},
+        onJoin = {},
         modifier = Modifier.fillMaxWidth(),
     )
 }
@@ -118,7 +130,13 @@ private fun PoolScoreItemPreview() {
 private fun PoolScoreItemPreviewWithoutScore() {
     PoolScoreItem(
         poolGamblerScore = poolGamblerScoreWithoutScoreDummyModel(),
-        onJoinClick = {},
+        onJoin = {},
         modifier = Modifier.fillMaxWidth(),
     )
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun PoolScoreFakeItemPreview() {
+    PoolScoreFakeItem(modifier = Modifier.fillMaxWidth())
 }
