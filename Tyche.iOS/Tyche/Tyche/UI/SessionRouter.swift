@@ -15,11 +15,11 @@ struct SessionRouter: View {
         Group {
             switch signedInAccountBundle {
             case nil:
-                EmptyView()
+                Color.clear
             case .some(nil):
                 HomeRouter(onSignIn: { accountBundle in signedInAccountBundle = accountBundle })
-            case .some(.some(let bundle)):
-                PoolContent(accountBundle: bundle, onSignOut: { signedInAccountBundle = .some(nil) })
+            case .some(.some(let accountBundle)):
+                PoolContent(accountBundle: accountBundle, onSignOut: { signedInAccountBundle = .some(nil) })
             }
         }
         .task {
@@ -41,9 +41,9 @@ struct PoolContent: View {
     var body: some View {
         if selectedPool == nil {
             PoolScoreListRouter(
-                user: accountBundle,
-                onPoolSelected: { newSelectedPool in selectedPool = newSelectedPool },
-                onLogout: onSignOut,
+                accountBundle: accountBundle,
+                onPoolSelect: { newSelectedPool in selectedPool = newSelectedPool },
+                onSignOut: onSignOut,
             )
         } else {
             PoolHomeRouter(

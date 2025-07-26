@@ -6,41 +6,41 @@ import Session
 import DataPool
 import Pool
 
-private let ICON_SIZE: CGFloat = 24
-
 struct PoolScoreListRouter: View {
-    let user: AccountBundle
-    let onPoolSelected: (PoolProfile) -> Void
-    let onLogout: () -> Void
+    let accountBundle: AccountBundle
+    let onPoolSelect: (PoolProfile) -> Void
+    let onSignOut: () -> Void
 
     @Environment(\.diResolver) private var diResolver: DIResolver
     @State private var path = NavigationPath()
     @State private var drawerVisible = false
 
     var body: some View {
-        PoolScoreListView(
-            viewModel: PoolScoreListViewModel(
-                getPoolGamblerScoresByGamblerUseCase: GetPoolGamblerScoresByGamblerUseCase(
-                    poolGamblerScoreRepository: diResolver.resolve(PoolGamblerScoreRepository.self)!
+        NavigationStack(path: $path) {
+            PoolScoreListView(
+                viewModel: PoolScoreListViewModel(
+                    getPoolGamblerScoresByGamblerUseCase: GetPoolGamblerScoresByGamblerUseCase(
+                        poolGamblerScoreRepository: diResolver.resolve(PoolGamblerScoreRepository.self)!
+                    ),
+                    gamblerId: accountBundle.accountId
                 ),
-                gamblerId: user.accountId
-            ),
-            onPoolDetailRequested: { pool in onPoolSelected(pool) }
-        )
-        .navigationBarItems(leading: navigationBarLeading(), trailing: navigationBarTrailing())
-//        .navigationDestination(for: PoolFromLayoutCreatorRoute.self) { route in
-//            PoolFromLayoutCreatorView(
-//                viewModel: PoolFromLayoutCreatorViewModel(
-//                    gamblerId: user.accountId,
-//                    createPoolUseCase: diResolver.resolve(CreatePoolUseCase.self)!
-//                ),
-//                onPoolCreated: { _ in path = NavigationPath() },
-//            )
-//        }
+                onPoolOpen: { pool in onPoolSelect(pool) }
+            )
+            .navigationBarItems(leading: navigationBarLeading(), trailing: navigationBarTrailing())
+            .navigationDestination(for: PoolFromLayoutCreatorRoute.self) { route in
+                PoolFromLayoutCreatorView(
+                    viewModel: PoolFromLayoutCreatorViewModel(
+                        gamblerId: accountBundle.accountId,
+                        createPoolUseCase: diResolver.resolve(CreatePoolUseCase.self)!
+                    ),
+                    onPoolCreated: { _ in path = NavigationPath() },
+                )
+            }
+        }
         .drawer(isShowing: $drawerVisible) {
             PoolScoreListDrawerView(
                 viewModel: PoolScoreListDrawerViewModel(logOutUseCase: diResolver.resolve(LogOutUseCase.self)!),
-                onLogOut: onLogout,
+                onLogOut: onSignOut,
             )
         }
     }
@@ -49,7 +49,7 @@ struct PoolScoreListRouter: View {
         Button(action: { drawerVisible.toggle() }) {
             Image(sharedResource: .menu)
                 .resizable()
-                .frame(width: ICON_SIZE, height: ICON_SIZE)
+                .frame(width: iconSize, height: iconSize)
                 .tint(.primary)
         }
     }
@@ -60,7 +60,10 @@ struct PoolScoreListRouter: View {
         }) {
             Image(sharedResource: .filledAddCircle)
                 .resizable()
-                .frame(width: ICON_SIZE, height: ICON_SIZE)
+                .frame(width: createIconSize, height: createIconSize)
         }
     }
 }
+
+private let iconSize: CGFloat = 24
+private let createIconSize: CGFloat = 32

@@ -9,7 +9,7 @@ struct PoolScoreItem: View {
     @Environment(\.boxSpacing) private var boxSpacing
 
     var body: some View {
-        HStack {
+        HStack(spacing: boxSpacing.medium) {
             VStack(alignment:.leading) {
                 Text(poolGamblerScore.poolName)
                 if let currentPosition = poolGamblerScore.currentPosition {
@@ -33,6 +33,7 @@ struct PoolScoreItem: View {
             .foregroundStyle(Color(sharedResource: .onPrimaryContainter))
         }
         .enableViewSwipeActions()
+        .padding(boxSpacing.medium)
     }
 }
 

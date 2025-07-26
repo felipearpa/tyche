@@ -5,26 +5,24 @@ import DataPool
 
 public struct PoolScoreListView: View {
     @StateObject private var viewModel: PoolScoreListViewModel
-    private let onPoolDetailRequested: (PoolProfile) -> Void
+    private let onPoolOpen: (PoolProfile) -> Void
     @State private var poolUrl: ShareablePoolUrl? = nil
 
     public init(
         viewModel: @autoclosure @escaping () -> PoolScoreListViewModel,
-        onPoolDetailRequested: @escaping (PoolProfile) -> Void)
+        onPoolOpen: @escaping (PoolProfile) -> Void)
     {
         self._viewModel = .init(wrappedValue: viewModel())
-        self.onPoolDetailRequested = onPoolDetailRequested
+        self.onPoolOpen = onPoolOpen
     }
 
     public var body: some View {
-        let _ = Self._printChanges()
-
         PoolScoreList(
             lazyPager: viewModel.lazyPager,
-            onPoolDetailRequested: { poolId in
-                onPoolDetailRequested(PoolProfile(poolId: poolId))
+            onPoolOpen: { poolId in
+                onPoolOpen(PoolProfile(poolId: poolId))
             },
-            onJoin: { poolId in
+            onPoolJoin: { poolId in
                 poolUrl = ShareablePoolUrl(viewModel.createUrlForJoining(poolId: poolId))
             }
         )
@@ -68,7 +66,7 @@ private struct ShareSheet: UIViewControllerRepresentable {
                 ),
                 gamblerId: "gambler-id"
             ),
-            onPoolDetailRequested: { _ in }
+            onPoolOpen: { _ in }
         )
     }
 }

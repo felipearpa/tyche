@@ -4,12 +4,10 @@ import UI
 
 struct PoolScoreList: View {
     let lazyPager: LazyPager<String, PoolGamblerScoreModel>
-    let onPoolDetailRequested: (String) -> Void
-    let onJoin: (String) -> Void
+    let onPoolOpen: (String) -> Void
+    let onPoolJoin: (String) -> Void
 
     var body: some View {
-        let _ = Self._printChanges()
-        
         PagingVStack(
             lazyPager: lazyPager,
             loadingContent: { PoolScoreFakeList() },
@@ -20,10 +18,10 @@ struct PoolScoreList: View {
             }
         ) { poolGamblerScore in
             Group {
-                PoolScoreItem(poolGamblerScore: poolGamblerScore, onJoin: { onJoin(poolGamblerScore.poolId) })
+                PoolScoreItem(poolGamblerScore: poolGamblerScore, onJoin: { onPoolJoin(poolGamblerScore.poolId) })
                 Divider()
             }.onTapGesture {
-                onPoolDetailRequested(poolGamblerScore.poolId)
+                onPoolOpen(poolGamblerScore.poolId)
             }
         }
     }
@@ -50,20 +48,25 @@ struct PoolScoreFakeList : View {
 }
 
 #Preview {
-    PoolScoreList(
-        lazyPager: LazyPager(
-            pagingData: PagingData(
-                pagingConfig: PagingConfig(prefetchDistance: 5),
-                pagingSourceFactory: PoolGamblerScorePagingSource(
-                    pagingQuery: { _ in .
-                        success(CursorPage(items: poolGamblerScoresDummyModels(), next: nil))
-                    }
-                )
+    let lazyPager = LazyPager(
+        pagingData: PagingData(
+            pagingConfig: PagingConfig(prefetchDistance: 5),
+            pagingSourceFactory: PoolGamblerScorePagingSource(
+                pagingQuery: { _ in .
+                    success(CursorPage(items: poolGamblerScoresDummyModels(), next: nil))
+                }
             )
-        ),
-        onPoolDetailRequested: { _ in },
-        onJoin: { _ in }
+        )
     )
+
+    PoolScoreList(
+        lazyPager: lazyPager,
+        onPoolOpen: { _ in },
+        onPoolJoin: { _ in }
+    )
+    .onAppearOnce {
+        lazyPager.refresh()
+    }
 }
 
 #Preview {
