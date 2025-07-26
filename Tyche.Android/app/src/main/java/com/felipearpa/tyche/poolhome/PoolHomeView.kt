@@ -50,21 +50,13 @@ import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
 import kotlinx.coroutines.launch
 import com.felipearpa.tyche.ui.R as SharedR
 
-private val iconSize = 24.dp
-
-private enum class Tab {
-    GAMBLER_SCORE,
-    BET_EDITOR,
-    HISTORY_BET
-}
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PoolHomeView(
     poolId: String,
     gamblerId: String,
-    changePool: () -> Unit,
-    onLogout: () -> Unit = {},
+    onPoolChange: () -> Unit,
+    onSignOut: () -> Unit = {},
 ) {
     var selectedTabIndex by remember { mutableStateOf(Tab.GAMBLER_SCORE) }
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
@@ -77,8 +69,8 @@ fun PoolHomeView(
             ModalDrawerSheet {
                 DrawerView(
                     viewModel = drawerViewModel(poolId = poolId, gamblerId = gamblerId),
-                    changePool = changePool,
-                    onLogout = onLogout,
+                    onPoolChange = onPoolChange,
+                    onSignOut = onSignOut,
                 )
             }
         },
@@ -90,7 +82,7 @@ fun PoolHomeView(
             topBar = {
                 AppTopBar(
                     title = selectedTabIndex.title,
-                    onAccountRequested = {
+                    onAccountShow = {
                         coroutineScope.launch {
                             drawerState.apply {
                                 if (isClosed) open() else close()
@@ -119,10 +111,10 @@ fun PoolHomeView(
                     )
                 }
             },
-        ) { paddingValues ->
+        ) { innerPadding ->
             Box(
                 modifier = Modifier
-                    .padding(paddingValues = paddingValues)
+                    .padding(paddingValues = innerPadding)
                     .fillMaxSize(),
             ) {
                 when (selectedTabIndex) {
@@ -234,7 +226,7 @@ private fun HistoryBetTab(selected: Boolean, onClick: () -> Unit) {
 @Composable
 private fun AppTopBar(
     title: String,
-    onAccountRequested: () -> Unit,
+    onAccountShow: () -> Unit,
     modifier: Modifier = Modifier,
     shimmerModifier: Modifier = Modifier,
     scrollBehavior: TopAppBarScrollBehavior,
@@ -249,7 +241,7 @@ private fun AppTopBar(
             )
         },
         navigationIcon = {
-            IconButton(onClick = onAccountRequested) {
+            IconButton(onClick = onAccountShow) {
                 Icon(
                     painter = painterResource(id = SharedR.drawable.menu),
                     contentDescription = emptyString(),
@@ -259,6 +251,14 @@ private fun AppTopBar(
         modifier = modifier,
         scrollBehavior = scrollBehavior,
     )
+}
+
+private val iconSize = 24.dp
+
+private enum class Tab {
+    GAMBLER_SCORE,
+    BET_EDITOR,
+    HISTORY_BET
 }
 
 private val Tab.title: String

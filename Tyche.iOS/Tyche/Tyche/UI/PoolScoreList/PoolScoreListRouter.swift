@@ -40,7 +40,7 @@ struct PoolScoreListRouter: View {
         .drawer(isShowing: $drawerVisible) {
             PoolScoreListDrawerView(
                 viewModel: PoolScoreListDrawerViewModel(logOutUseCase: diResolver.resolve(LogOutUseCase.self)!),
-                onLogOut: onSignOut,
+                onSignOut: onSignOut,
             )
         }
     }

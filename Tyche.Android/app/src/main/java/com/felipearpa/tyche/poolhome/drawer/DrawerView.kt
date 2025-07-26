@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedButton
@@ -33,16 +34,16 @@ import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
 import com.felipearpa.ui.state.LoadableViewState
 
 @Composable
-fun DrawerView(viewModel: DrawerViewModel, changePool: () -> Unit, onLogout: () -> Unit) {
+fun DrawerView(viewModel: DrawerViewModel, onPoolChange: () -> Unit, onSignOut: () -> Unit) {
     val viewState by viewModel.state.collectAsState()
 
     DrawerView(
         modifier = Modifier.fillMaxSize(),
         viewState = viewState,
-        changePool = changePool,
+        changePool = onPoolChange,
         logout = {
             viewModel.logout()
-            onLogout()
+            onSignOut()
         },
     )
 }
@@ -116,17 +117,17 @@ private fun DrawerView(
             HorizontalDivider()
         }
 
-        OutlinedButton(
+        Button(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = LocalBoxSpacing.current.medium),
             onClick = logout,
         ) {
             Icon(
-                painter = painterResource(id = R.drawable.logout),
+                painter = painterResource(id = R.drawable.sign_out),
                 contentDescription = emptyString(),
             )
-            Text(text = stringResource(id = R.string.log_out_action))
+            Text(text = stringResource(id = R.string.sign_out_action))
         }
     }
 }

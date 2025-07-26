@@ -4,48 +4,58 @@ import Pool
 
 struct PoolHomeDrawerView: View {
     @ObservedObject var viewModel: PoolHomeDrawerViewModel
-    let changePool: () -> Void
-    let onLogout: () -> Void
-
-    @Environment(\.boxSpacing) private var boxSpacing
+    let onPoolChange: () -> Void
+    let onSignOut: () -> Void
 
     init(viewModel: @autoclosure @escaping () -> PoolHomeDrawerViewModel,
          changePool: @escaping () -> Void,
          onLogout: @escaping () -> Void,
     ) {
         self._viewModel = .init(wrappedValue: viewModel())
-        self.changePool = changePool
-        self.onLogout = onLogout
+        self.onPoolChange = changePool
+        self.onSignOut = onLogout
     }
 
     var body: some View {
-        contentView(for: viewModel.state)
+        PoolHomeDrawerStatefulView(
+            state: viewModel.state,
+            onPoolChange: onPoolChange,
+            onSignOut: {
+                viewModel.signOut()
+                onSignOut()
+            }
+        )
     }
+}
 
-    @ViewBuilder
-    private func contentView(for state: LoadableViewState<PoolGamblerScoreModel>) -> some View {
+private struct PoolHomeDrawerStatefulView: View {
+    let state: LoadableViewState<PoolGamblerScoreModel>
+    let onPoolChange: () -> Void
+    let onSignOut: () -> Void
+
+    @Environment(\.boxSpacing) private var boxSpacing
+
+    var body: some View {
         VStack {
             switch state {
             case .failure(let error):
                 FailureContent(localizedError: error.localizedErrorOrDefault())
-                
+
             case .initial, .loading:
                 LoadingContainerView {
                     EmptyView()
                 }
-                
+
             case .success(let score):
                 PoolHomeDrawer(
                     currentPoolGamblerScore: score,
-                    changePool: changePool,
-                    logout: {
-                        viewModel.logout()
-                        onLogout()
-                    }
+                    onPoolChange: onPoolChange,
+                    onSignOut: { onSignOut() }
                 )
                 .padding(.all, boxSpacing.large)
             }
         }
+        .frame(maxHeight: .infinity)
     }
 }
 
@@ -59,20 +69,22 @@ private struct FailureContent: View {
 
 private struct PoolHomeDrawer: View {
     let currentPoolGamblerScore: PoolGamblerScoreModel
-    let changePool: () -> Void
-    let logout: () -> Void
+    let onPoolChange: () -> Void
+    let onSignOut: () -> Void
 
     @Environment(\.boxSpacing) private var boxSpacing
 
     var body: some View {
-        VStack(spacing: 0) {
+        VStack(spacing: boxSpacing.medium) {
             VStack(spacing: boxSpacing.medium) {
                 PoolSpotlightItem(poolGamblerScore: currentPoolGamblerScore)
                     .padding(.horizontal, boxSpacing.medium)
 
-                Button(action: changePool) {
-                    Text("Change Pool") // Replace with localized string
+                Button(action: onPoolChange) {
+                    Text(String(.changePoolAction))
+                        .frame(maxWidth: .infinity, alignment: .center)
                 }
+                .buttonStyle(.bordered)
                 .padding(.horizontal, boxSpacing.medium)
 
                 Divider()
@@ -80,13 +92,23 @@ private struct PoolHomeDrawer: View {
 
             Spacer()
 
-            Button(action: logout) {
+            Button(action: onSignOut) {
                 HStack {
-                    Image(systemName: "rectangle.portrait.and.arrow.right") // Replace with appropriate asset if needed
-                    Text("Log Out") // Replace with localized string
+                    Image(systemName: "rectangle.portrait.and.arrow.right")
+                    Text(String(.logOutAction))
                 }
+                .frame(maxWidth: .infinity, alignment: .center)
             }
+            .buttonStyle(.borderedProminent)
             .padding(.horizontal, boxSpacing.medium)
         }
     }
+}
+
+#Preview {
+    PoolHomeDrawerStatefulView(
+        state: .success(poolGamblerScoreDummyModel()),
+        onPoolChange: {},
+        onSignOut: {},
+    )
 }

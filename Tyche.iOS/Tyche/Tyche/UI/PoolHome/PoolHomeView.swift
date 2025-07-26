@@ -8,18 +8,12 @@ import DataBet
 import Bet
 import Session
 
-private enum Tab: Int {
-    case gamblerScores
-    case bets
-    case historyBet
-}
-
 struct PoolHomeView: View {
     let gamblerId: String
     let poolId: String
     
     @Environment(\.diResolver) var diResolver: DIResolver
-    @State private var selectedTab = Tab.gamblerScores
+    @State private var selectedTab = PoolHomeTab.gamblerScores
     @State private var drawerVisible = false
 
     init(gamblerId: String, poolId: String) {
@@ -38,7 +32,7 @@ struct PoolHomeView: View {
                     poolId: poolId
                 )
             )
-            .tag(Tab.gamblerScores)
+            .tag(PoolHomeTab.gamblerScores)
             .tabItem {
                 Label(
                     title: { Text(String(.scoreTab)) },
@@ -55,7 +49,7 @@ struct PoolHomeView: View {
                     poolId: poolId
                 )
             )
-            .tag(Tab.bets)
+            .tag(PoolHomeTab.bets)
             .tabItem {
                 Label(
                     title: { Text(String(.betTab)) },
@@ -72,7 +66,7 @@ struct PoolHomeView: View {
                     poolId: poolId,
                 )
             )
-            .tag(Tab.historyBet)
+            .tag(PoolHomeTab.historyBet)
             .tabItem {
                 Label(
                     title: { Text(String(.historyBetsTab)) },
@@ -92,8 +86,9 @@ struct PoolHomeView: View {
                 onLogout: {}
             )
         }
-        .navigationTitle("Pool")
+        .navigationTitle(selectedTab.title)
         .navigationBarItems(leading: navigationBarLeading())
+        .toolbar(drawerVisible ? .hidden : .visible, for: .navigationBar)
     }
 
     private func navigationBarLeading() -> some View {
@@ -106,21 +101,48 @@ struct PoolHomeView: View {
     }
 }
 
-private let ICON_SIZE: CGFloat = 24
+private enum PoolHomeTab: Int {
+    case gamblerScores
+    case bets
+    case historyBet
+}
 
-struct PoolHomeView_Previews: PreviewProvider {
-    private class PoolHomeAssembler: Assembly {
-        func assemble(container: Container) {
-            container.register(PoolGamblerScoreRepository.self) { _ in
-                PoolGamblerScoreFakeRepository()
-            }
+private extension PoolHomeTab {
+    var title: String {
+        switch self {
+        case .gamblerScores:
+            return String(.scoreTab)
+        case .bets:
+            return String(.betTab)
+        case .historyBet:
+            return String(.historyBetsTab)
         }
     }
-    
-    static var previews: some View {
-        PoolHomeView(
-            gamblerId: "gambler-id",
-            poolId: "pool-id"
-        )
+}
+
+private let ICON_SIZE: CGFloat = 24
+
+#Preview {
+    var diResolver = DIResolver(
+        resolver:Assembler([
+            PoolHomeAssembler()
+        ]).resolver)
+
+    PoolHomeView(
+        gamblerId: "gambler-id",
+        poolId: "pool-id"
+    )
+    .environment(\.diResolver, diResolver)
+}
+
+private class PoolHomeAssembler: Assembly {
+    func assemble(container: Container) {
+        container.register(PoolGamblerScoreRepository.self) { _ in
+            PoolGamblerScoreFakeRepository()
+        }
+
+        container.register(PoolGamblerBetRepository.self) { _ in
+            PoolGamblerBetFakeRepository()
+        }
     }
 }

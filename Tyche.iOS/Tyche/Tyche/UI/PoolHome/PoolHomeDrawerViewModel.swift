@@ -46,7 +46,7 @@ class PoolHomeDrawerViewModel: ObservableObject {
     }
 
     @MainActor
-    func logout() {
+    func signOut() {
         Task {
             let _ = await logoutUseCase.execute()
         }

@@ -2,26 +2,26 @@ import SwiftUI
 
 struct PoolScoreListDrawerView : View {
     @StateObject var viewModel: PoolScoreListDrawerViewModel
-    let onLogOut: () -> Void
+    let onSignOut: () -> Void
 
     init(
         viewModel: @autoclosure @escaping () -> PoolScoreListDrawerViewModel,
-        onLogOut: @escaping () -> Void
+        onSignOut: @escaping () -> Void
     ) {
         self._viewModel = .init(wrappedValue: viewModel())
-        self.onLogOut = onLogOut
+        self.onSignOut = onSignOut
     }
 
     var body: some View {
-        PoolScoreListDrawerStateView(onLogOutClick: {
+        PoolScoreListDrawerStatefulView(onSignOut: {
             viewModel.logOut()
-            onLogOut()
+            onSignOut()
         })
     }
 }
 
-private struct PoolScoreListDrawerStateView : View {
-    let onLogOutClick: () -> Void
+private struct PoolScoreListDrawerStatefulView : View {
+    let onSignOut: () -> Void
 
     @Environment(\.boxSpacing) private var boxSpacing
 
@@ -29,7 +29,7 @@ private struct PoolScoreListDrawerStateView : View {
         VStack {
             Spacer()
 
-            Button(action: onLogOutClick) {
+            Button(action: onSignOut) {
                 HStack(spacing: boxSpacing.small) {
                     Image(.logOut)
                     Text(String(.logOutAction))
@@ -43,5 +43,5 @@ private struct PoolScoreListDrawerStateView : View {
 }
 
 #Preview {
-    PoolScoreListDrawerStateView(onLogOutClick: {})
+    PoolScoreListDrawerStatefulView(onSignOut: {})
 }

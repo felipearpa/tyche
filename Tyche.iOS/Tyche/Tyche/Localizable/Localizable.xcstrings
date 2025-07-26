@@ -35,8 +35,22 @@
         }
       }
     },
-    "Change Pool" : {
-
+    "change_pool_action" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Change pool"
+          }
+        },
+        "es-CO" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cambiar polla"
+          }
+        }
+      }
     },
     "continue_with_text" : {
       "extractionState" : "manual",
@@ -89,9 +103,6 @@
         }
       }
     },
-    "Log Out" : {
-
-    },
     "log_in_action" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -139,22 +150,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Mira quién ha acertado más resultados y atrévete a retarlo ahora"
-          }
-        }
-      }
-    },
-    "Pool" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Pool"
-          }
-        },
-        "es-CO" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Polla"
           }
         }
       }

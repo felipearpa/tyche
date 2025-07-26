@@ -20,6 +20,7 @@ extension StringResource {
     static let signInWithEmailAndPasswordAction = StringResource(name: "sign_in_with_email_and_password_action")
     static let historyBetsTab = StringResource(name: "history_bets_tab")
     static let continueWithText = StringResource(name: "continue_with_text")
+    static let changePoolAction = StringResource(name: "change_pool_action")
 }
 
 extension String {

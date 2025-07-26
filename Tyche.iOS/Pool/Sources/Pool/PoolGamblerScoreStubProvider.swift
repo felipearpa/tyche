@@ -1,6 +1,6 @@
 import Foundation
 
-func poolGamblerScorePlaceholderModel() -> PoolGamblerScoreModel {
+public func poolGamblerScorePlaceholderModel() -> PoolGamblerScoreModel {
     return PoolGamblerScoreModel(
         poolId: UUID().uuidString,
         poolName: String(repeating: "X", count: 25),
@@ -12,7 +12,7 @@ func poolGamblerScorePlaceholderModel() -> PoolGamblerScoreModel {
     )
 }
 
-func poolGamblerScoreDummyModel() -> PoolGamblerScoreModel {
+public func poolGamblerScoreDummyModel() -> PoolGamblerScoreModel {
     return PoolGamblerScoreModel(
         poolId: "A3C2E1",
         poolName: "Neptune World Series 2023",
@@ -24,7 +24,7 @@ func poolGamblerScoreDummyModel() -> PoolGamblerScoreModel {
     )
 }
 
-func poolGamblerScoreDummyModelWithoutPositionData() -> PoolGamblerScoreModel {
+public func poolGamblerScoreDummyModelWithoutPositionData() -> PoolGamblerScoreModel {
     return PoolGamblerScoreModel(
         poolId: "P6Z8V4",
         poolName: "Athena Olympics 2024",
@@ -36,7 +36,7 @@ func poolGamblerScoreDummyModelWithoutPositionData() -> PoolGamblerScoreModel {
     )
 }
 
-func poolGamblerScoresDummyModels() -> [PoolGamblerScoreModel] {
+public func poolGamblerScoresDummyModels() -> [PoolGamblerScoreModel] {
     return [
         PoolGamblerScoreModel(
             poolId: "A3C2E1",

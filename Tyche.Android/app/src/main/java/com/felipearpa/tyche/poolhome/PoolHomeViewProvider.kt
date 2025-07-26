@@ -10,8 +10,8 @@ fun NavGraphBuilder.poolHomeView(changePool: () -> Unit, onLogout: () -> Unit) {
         PoolHomeView(
             poolId = route.poolId,
             gamblerId = route.gamblerId,
-            changePool = changePool,
-            onLogout = onLogout,
+            onPoolChange = changePool,
+            onSignOut = onLogout,
         )
     }
 }

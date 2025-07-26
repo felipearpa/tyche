@@ -42,10 +42,10 @@ private fun DrawerView(modifier: Modifier = Modifier, logout: () -> Unit = {}) {
             onClick = logout,
         ) {
             Icon(
-                painter = painterResource(id = R.drawable.logout),
+                painter = painterResource(id = R.drawable.sign_out),
                 contentDescription = emptyString(),
             )
-            Text(text = stringResource(id = R.string.log_out_action))
+            Text(text = stringResource(id = R.string.sign_out_action))
         }
     }
 }
