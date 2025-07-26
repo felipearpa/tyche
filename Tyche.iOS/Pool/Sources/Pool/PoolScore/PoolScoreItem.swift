@@ -21,7 +21,7 @@ struct PoolScoreItem: View {
             Spacer()
 
             if let difference = poolGamblerScore.difference() {
-                ProgressIndicator(difference: difference)
+                TrendIndicator(difference: difference)
             }
         }
         .frame(minHeight: minHeight)
@@ -40,10 +40,10 @@ struct PoolScoreItem: View {
 private let minHeight: CGFloat = 68
 
 #Preview {
-    PoolScoreItem(poolGamblerScore: poolGamblerScoreModel(), onJoin: {})
+    PoolScoreItem(poolGamblerScore: poolGamblerScoreDummyModel(), onJoin: {})
 }
 
 #Preview {
-    PoolScoreItem(poolGamblerScore: poolGamblerScoreModel(), onJoin: {})
+    PoolScoreItem(poolGamblerScore: poolGamblerScoreDummyModel(), onJoin: {})
         .shimmer()
 }

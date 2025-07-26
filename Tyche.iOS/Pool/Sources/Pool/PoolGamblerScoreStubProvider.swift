@@ -1,6 +1,18 @@
 import Foundation
 
-func poolGamblerScoreModel() -> PoolGamblerScoreModel {
+func poolGamblerScorePlaceholderModel() -> PoolGamblerScoreModel {
+    return PoolGamblerScoreModel(
+        poolId: UUID().uuidString,
+        poolName: String(repeating: "X", count: 25),
+        gamblerId: UUID().uuidString,
+        gamblerUsername: String(repeating: "X", count: 15),
+        currentPosition: 1,
+        beforePosition: 2,
+        score: 10
+    )
+}
+
+func poolGamblerScoreDummyModel() -> PoolGamblerScoreModel {
     return PoolGamblerScoreModel(
         poolId: "A3C2E1",
         poolName: "Neptune World Series 2023",
@@ -12,7 +24,7 @@ func poolGamblerScoreModel() -> PoolGamblerScoreModel {
     )
 }
 
-func poolGamblerScoreModelWithoutPositionData() -> PoolGamblerScoreModel {
+func poolGamblerScoreDummyModelWithoutPositionData() -> PoolGamblerScoreModel {
     return PoolGamblerScoreModel(
         poolId: "P6Z8V4",
         poolName: "Athena Olympics 2024",
@@ -20,18 +32,6 @@ func poolGamblerScoreModelWithoutPositionData() -> PoolGamblerScoreModel {
         gamblerUsername: "athena-challenger",
         currentPosition: nil,
         beforePosition: nil,
-        score: 10
-    )
-}
-
-func fakePoolGamblerScoreModel() -> PoolGamblerScoreModel {
-    return PoolGamblerScoreModel(
-        poolId: UUID().uuidString,
-        poolName: String(repeating: "X", count: 25),
-        gamblerId: UUID().uuidString,
-        gamblerUsername: String(repeating: "X", count: 15),
-        currentPosition: 1,
-        beforePosition: 2,
         score: 10
     )
 }

@@ -14,7 +14,7 @@ class ProgressIndicatorTest {
     @Test
     fun given_a_positive_difference_when_is_ProgressIndicator_is_shown_then_UpIndicator_is_displayed() {
         composeTestRule.setContent {
-            ProgressIndicator(difference = 1)
+            TrendIndicator(difference = 1)
         }
 
         composeTestRule.onNodeWithTag(testTag = "upProgressIndicator").assertIsDisplayed()
@@ -26,7 +26,7 @@ class ProgressIndicatorTest {
     fun given_a_negative_difference_when_is_ProgressIndicator_is_shown_then_DownIndicator_is_displayed() {
         composeTestRule.apply {
             setContent {
-                ProgressIndicator(difference = -1)
+                TrendIndicator(difference = -1)
             }
 
             onNodeWithTag(testTag = "upProgressIndicator").assertDoesNotExist()
@@ -39,7 +39,7 @@ class ProgressIndicatorTest {
     fun given_a_zero_difference_when_is_ProgressIndicator_is_shown_then_StableIndicator_is_displayed() {
         composeTestRule.apply {
             setContent {
-                ProgressIndicator(difference = 0)
+                TrendIndicator(difference = 0)
             }
 
             onNodeWithTag(testTag = "upProgressIndicator").assertDoesNotExist()

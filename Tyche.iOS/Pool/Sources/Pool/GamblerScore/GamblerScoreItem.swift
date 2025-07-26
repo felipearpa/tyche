@@ -1,21 +1,21 @@
 import SwiftUI
 import UI
 
-private let indicatorSize = 32.0
-
 struct GamblerScoreItem: View {
     let poolGamblerScore: PoolGamblerScoreModel
-    let isLoggedIn: Bool
-    
+    let isCurrentUser: Bool
+
+    @Environment(\.boxSpacing) private var boxSpacing
+
     var body: some View {
-        HStack(spacing: 8) {
+        HStack(spacing: boxSpacing.medium) {
             if let currentPosition = poolGamblerScore.currentPosition {
                 ZStack {
                     Text(String(currentPosition))
                 }
                 .frame(width: indicatorSize, height: indicatorSize)
-                .background(isLoggedIn ? Color(sharedResource: .primaryContainer) : Color(sharedResource: .secondaryContainer))
-                .foregroundColor(isLoggedIn ? Color(sharedResource: .onPrimaryContainter) : Color(sharedResource: .onSecondaryContainer))
+                .background(isCurrentUser ? Color(sharedResource: .primaryContainer) : Color(sharedResource: .secondaryContainer))
+                .foregroundColor(isCurrentUser ? Color(sharedResource: .onPrimaryContainter) : Color(sharedResource: .onSecondaryContainer))
                 .clipShape(Circle())
             } else {
                 Color.clear.frame(width: indicatorSize)
@@ -30,7 +30,7 @@ struct GamblerScoreItem: View {
             }
             
             if let difference = poolGamblerScore.difference() {
-                ProgressIndicator(difference: difference)
+                TrendIndicator(difference: difference)
                     .frame(width: indicatorSize)
             } else {
                 Color.clear.frame(width: indicatorSize)
@@ -39,19 +39,15 @@ struct GamblerScoreItem: View {
     }
 }
 
-struct GamblerScoreItem_Previews: PreviewProvider {
-    static var previews: some View {
-        Group {
-            GamblerScoreItem(poolGamblerScore: poolGamblerScoreModel(), isLoggedIn: true)
-                .previewLayout(.sizeThatFits)
-                .previewDisplayName("Default")
-            
-            GamblerScoreItem(
-                poolGamblerScore: poolGamblerScoreModelWithoutPositionData(),
-                isLoggedIn: true
-            )
-            .previewLayout(.sizeThatFits)
-            .previewDisplayName("Not position Data")
-        }
-    }
+private let indicatorSize = 32.0
+
+#Preview("Default") {
+    GamblerScoreItem(poolGamblerScore: poolGamblerScoreDummyModel(), isCurrentUser: true)
+}
+
+#Preview("Not position Data") {
+    GamblerScoreItem(
+        poolGamblerScore: poolGamblerScoreDummyModelWithoutPositionData(),
+        isCurrentUser: true
+    )
 }

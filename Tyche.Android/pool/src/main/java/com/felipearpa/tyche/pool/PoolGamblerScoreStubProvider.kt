@@ -1,6 +1,6 @@
 package com.felipearpa.tyche.pool
 
-internal fun poolGamblerScoreFakeModel() =
+fun poolGamblerScorePlaceholderModel() =
     PoolGamblerScoreModel(
         poolId = "X".repeat(15),
         poolName = "X".repeat(25),

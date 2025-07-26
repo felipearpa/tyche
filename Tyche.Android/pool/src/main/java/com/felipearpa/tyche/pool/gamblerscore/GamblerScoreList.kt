@@ -10,10 +10,8 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.composed
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewLightDark
-import androidx.compose.ui.unit.dp
 import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
@@ -24,7 +22,7 @@ import com.felipearpa.tyche.pool.poolGamblerScoreDummyModels
 import com.felipearpa.tyche.ui.lazy.RefreshableStatefulLazyColumn
 import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
 import com.felipearpa.tyche.ui.theme.TycheTheme
-import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.MutableStateFlow
 
 @Composable
 fun GamblerScoreList(
@@ -54,7 +52,7 @@ fun GamblerScoreList(
             val item = lazyPoolGamblerScores[index]
             GamblerScoreItem(
                 poolGamblerScore = item!!,
-                isLoggedIn = item.gamblerId == loggedInGamblerId,
+                isCurrentUser = item.gamblerId == loggedInGamblerId,
                 modifier = Modifier.gamblerScoreItem(),
             )
             HorizontalDivider()
@@ -66,11 +64,11 @@ fun GamblerScoreList(
 private fun GamblerScoreFakeList(count: Int) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.medium),
     ) {
         repeat(count) {
             item {
-                GamblerScoreFakeItem(modifier = Modifier.gamblerScoreItem())
+                GamblerScorePlaceholderItem(modifier = Modifier.gamblerScoreItem())
                 HorizontalDivider()
             }
         }
@@ -79,21 +77,20 @@ private fun GamblerScoreFakeList(count: Int) {
 
 private fun LazyListScope.gamblerScoreFakeItem() {
     item {
-        GamblerScoreFakeItem(modifier = Modifier.gamblerScoreItem())
+        GamblerScorePlaceholderItem(modifier = Modifier.gamblerScoreItem())
         HorizontalDivider()
     }
 }
 
-private fun Modifier.gamblerScoreItem() = composed {
-    this
-        .fillMaxWidth()
-        .padding(all = LocalBoxSpacing.current.medium)
-}
+@Composable
+private fun Modifier.gamblerScoreItem() =
+    fillMaxWidth().padding(all = LocalBoxSpacing.current.medium)
 
 @PreviewLightDark
 @Composable
 private fun GamblerScoreListPreview() {
-    val items = flowOf(PagingData.from(poolGamblerScoreDummyModels())).collectAsLazyPagingItems()
+    val items =
+        MutableStateFlow(PagingData.from(poolGamblerScoreDummyModels())).collectAsLazyPagingItems()
 
     TycheTheme {
         Surface {

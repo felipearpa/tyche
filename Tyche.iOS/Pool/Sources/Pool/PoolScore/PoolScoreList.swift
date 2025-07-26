@@ -10,9 +10,9 @@ struct PoolScoreList: View {
     var body: some View {
         PagingVStack(
             lazyPager: lazyPager,
-            loadingContent: { PoolScoreFakeList() },
+            loadingContent: { PoolScorePlaceholderList() },
             loadingContentOnConcatenate: {
-                PoolScoreItem(poolGamblerScore: fakePoolGamblerScoreModel(), onJoin: {})
+                PoolScoreItem(poolGamblerScore: poolGamblerScorePlaceholderModel(), onJoin: {})
                     .shimmer()
                 Divider()
             }
@@ -27,11 +27,11 @@ struct PoolScoreList: View {
     }
 }
 
-struct PoolScoreFakeList : View {
+struct PoolScorePlaceholderList : View {
     @Environment(\.boxSpacing) private var boxSpacing
     
     private let poolGamblerScores: [PoolGamblerScoreModel] = (1...50).lazy.map { _ in
-        fakePoolGamblerScoreModel()
+        poolGamblerScorePlaceholderModel()
     }
     
     var body: some View {
@@ -47,7 +47,7 @@ struct PoolScoreFakeList : View {
     }
 }
 
-#Preview {
+#Preview("PoolScoreList") {
     let lazyPager = LazyPager(
         pagingData: PagingData(
             pagingConfig: PagingConfig(prefetchDistance: 5),
@@ -69,6 +69,6 @@ struct PoolScoreFakeList : View {
     }
 }
 
-#Preview {
-    PoolScoreFakeList()
+#Preview("PoolScorePlaceholderList") {
+    PoolScorePlaceholderList()
 }

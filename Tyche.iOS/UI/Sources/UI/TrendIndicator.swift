@@ -1,6 +1,6 @@
 import SwiftUI
 
-public struct ProgressIndicator: View {
+public struct TrendIndicator: View {
     let difference: Int
     
     public init(difference: Int) {
@@ -9,23 +9,23 @@ public struct ProgressIndicator: View {
     
     public var body: some View {
         if difference > 0 {
-            UpProgressIndicator(progress: difference)
+            UpTrendIndicator(progress: difference)
         } else if difference < 0 {
-            DownProgressIndicator(progress: difference)
+            DownTrendIndicator(progress: difference)
         } else {
-            StableProgressIndicator()
+            StableTrendIndicator()
         }
     }
 }
 
-private struct UpProgressIndicator: View {
+private struct UpTrendIndicator: View {
     let progress: Int
     
     var body: some View {
         HStack(spacing: 0) {
             Image(.arrowUpward)
                 .resizable()
-                .frame(width: 24, height: 24)
+                .frame(width: iconSize, height: iconSize)
             Text(String(abs(progress)))
                 .font(.footnote)
         }
@@ -33,14 +33,14 @@ private struct UpProgressIndicator: View {
     }
 }
 
-private struct DownProgressIndicator: View {
+private struct DownTrendIndicator: View {
     let progress: Int
     
     var body: some View {
         HStack(spacing: 0) {
             Image(.arrowDownward)
                 .resizable()
-                .frame(width: 24, height: 24)
+                .frame(width: iconSize, height: iconSize)
             Text(String(abs(progress)))
                 .font(.footnote)
         }
@@ -48,15 +48,25 @@ private struct DownProgressIndicator: View {
     }
 }
 
-private struct StableProgressIndicator: View {
+private struct StableTrendIndicator: View {
     var body: some View {
         Image(.horizontalRule)
             .resizable()
-            .frame(width: 24, height: 24)
+            .frame(width: iconSize, height: iconSize)
             .foregroundStyle(Color(.neutral))
     }
 }
 
+private let iconSize: CGFloat = 24
+
 #Preview {
-    ProgressIndicator(difference: 0)
+    TrendIndicator(difference: 0)
+}
+
+#Preview {
+    TrendIndicator(difference: 1)
+}
+
+#Preview {
+    TrendIndicator(difference: -1)
 }

@@ -11,11 +11,9 @@ public struct GamblerScoreListView: View {
     }
     
     public var body: some View {
-        let _ = Self._printChanges()
-        
         GamblerScoreList(
             lazyPager: viewModel.lazyPager,
-            loggedInGamblerId: viewModel.gamblerId
+            isCurrentUser: viewModel.gamblerId
         )
         .refreshable {
             viewModel.lazyPager.refresh()

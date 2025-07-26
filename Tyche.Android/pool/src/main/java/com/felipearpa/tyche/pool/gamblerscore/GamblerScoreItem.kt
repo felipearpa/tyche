@@ -15,18 +15,22 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import com.felipearpa.tyche.pool.PoolGamblerScoreModel
 import com.felipearpa.tyche.pool.difference
 import com.felipearpa.tyche.pool.poolGamblerScoreDummyModel
-import com.felipearpa.tyche.ui.ProgressIndicator
+import com.felipearpa.tyche.pool.poolGamblerScorePlaceholderModel
+import com.felipearpa.tyche.ui.TrendIndicator
+import com.felipearpa.tyche.ui.shimmer
+import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
 import com.felipearpa.tyche.ui.theme.TycheTheme
 
 @Composable
 fun GamblerScoreItem(
     poolGamblerScore: PoolGamblerScoreModel,
-    isLoggedIn: Boolean,
+    isCurrentUser: Boolean,
     modifier: Modifier = Modifier,
     shimmerModifier: Modifier = Modifier,
 ) {
@@ -36,13 +40,13 @@ fun GamblerScoreItem(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Row(
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.medium),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             poolGamblerScore.currentPosition?.let { nonNullCurrentPosition ->
                 Position(
                     position = nonNullCurrentPosition,
-                    isActiveGambler = isLoggedIn,
+                    isCurrentUser = isCurrentUser,
                     shimmerModifier = shimmerModifier,
                 )
             }
@@ -54,10 +58,13 @@ fun GamblerScoreItem(
                 Text(text = score.toString(), modifier = shimmerModifier)
             }
 
-            poolGamblerScore.difference()?.let { nonNullDifference ->
-                Box(modifier = Modifier.width(32.dp), contentAlignment = Alignment.Center) {
-                    ProgressIndicator(
-                        difference = nonNullDifference,
+            poolGamblerScore.difference()?.let { difference ->
+                Box(
+                    modifier = Modifier.width(trendIndicatorSize),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    TrendIndicator(
+                        difference = difference,
                         shimmerModifier = shimmerModifier,
                     )
                 }
@@ -69,33 +76,46 @@ fun GamblerScoreItem(
 @Composable
 fun Position(
     position: Int,
-    isActiveGambler: Boolean,
+    isCurrentUser: Boolean,
     modifier: Modifier = Modifier,
     shimmerModifier: Modifier = Modifier,
 ) {
     Box(
         modifier = modifier
-            .size(32.dp)
+            .size(scoreSize)
             .clip(CircleShape)
-            .background(color = if (isActiveGambler) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.secondaryContainer)
+            .background(color = if (isCurrentUser) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.secondaryContainer)
             .then(shimmerModifier),
         contentAlignment = Alignment.Center,
     ) {
         Text(
             text = position.toString(),
-            color = if (isActiveGambler) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSecondaryContainer,
+            color = if (isCurrentUser) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSecondaryContainer,
         )
     }
 }
 
+@Composable
+fun GamblerScorePlaceholderItem(modifier: Modifier = Modifier) {
+    GamblerScoreItem(
+        poolGamblerScore = poolGamblerScorePlaceholderModel(),
+        isCurrentUser = false,
+        modifier = modifier,
+        shimmerModifier = Modifier.shimmer(),
+    )
+}
+
+private val scoreSize = 32.dp
+private val trendIndicatorSize = 32.dp
+
 @PreviewLightDark
 @Composable
-private fun NonLoggedInGamblerScoreItemPreview() {
+private fun NonCurrentUserGamblerScoreItemPreview() {
     TycheTheme {
         Surface {
             GamblerScoreItem(
                 poolGamblerScore = poolGamblerScoreDummyModel(),
-                isLoggedIn = false,
+                isCurrentUser = false,
                 modifier = Modifier.fillMaxWidth(),
             )
         }
@@ -104,7 +124,7 @@ private fun NonLoggedInGamblerScoreItemPreview() {
 
 @PreviewLightDark
 @Composable
-fun LoggedInGamblerScoreItemPreview() {
+private fun CurrentUserGamblerScoreItemPreview() {
     TycheTheme {
         Surface {
             GamblerScoreItem(
@@ -117,9 +137,17 @@ fun LoggedInGamblerScoreItemPreview() {
                     beforePosition = 2,
                     score = 10,
                 ),
-                isLoggedIn = true,
+                isCurrentUser = true,
                 modifier = Modifier.fillMaxWidth(),
             )
         }
+    }
+}
+
+@Preview
+@Composable
+private fun GamblerScorePlaceholderItemPreview() {
+    Surface {
+        GamblerScorePlaceholderItem(modifier = Modifier.fillMaxWidth())
     }
 }

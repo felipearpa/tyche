@@ -18,10 +18,31 @@ import com.felipearpa.tyche.ui.theme.LocalExtendedColorScheme
 import com.felipearpa.tyche.ui.theme.TycheTheme
 import kotlin.math.abs
 
-private const val ICON_SIZE = 24
+@Composable
+fun TrendIndicator(
+    modifier: Modifier = Modifier,
+    shimmerModifier: Modifier = Modifier,
+    difference: Int,
+) {
+    when {
+        difference > 0 -> UpTrendIndicator(
+            modifier = modifier,
+            shimmerModifier = shimmerModifier,
+            progress = difference,
+        )
+
+        difference < 0 -> DownTrendIndicator(
+            modifier = modifier,
+            shimmerModifier = shimmerModifier,
+            progress = difference,
+        )
+
+        else -> StableTrendIndicator(modifier = modifier, shimmerModifier = shimmerModifier)
+    }
+}
 
 @Composable
-private fun StableProgressIndicator(
+private fun StableTrendIndicator(
     modifier: Modifier = Modifier,
     shimmerModifier: Modifier = Modifier,
 ) {
@@ -38,7 +59,7 @@ private fun StableProgressIndicator(
 }
 
 @Composable
-private fun UpProgressIndicator(
+private fun UpTrendIndicator(
     modifier: Modifier = Modifier,
     shimmerModifier: Modifier = Modifier,
     progress: Int,
@@ -60,7 +81,7 @@ private fun UpProgressIndicator(
 }
 
 @Composable
-private fun DownProgressIndicator(
+private fun DownTrendIndicator(
     modifier: Modifier = Modifier,
     shimmerModifier: Modifier = Modifier,
     progress: Int,
@@ -81,55 +102,34 @@ private fun DownProgressIndicator(
     }
 }
 
-@Composable
-fun ProgressIndicator(
-    modifier: Modifier = Modifier,
-    shimmerModifier: Modifier = Modifier,
-    difference: Int,
-) {
-    when {
-        difference > 0 -> UpProgressIndicator(
-            modifier = modifier,
-            shimmerModifier = shimmerModifier,
-            progress = difference,
-        )
-
-        difference < 0 -> DownProgressIndicator(
-            modifier = modifier,
-            shimmerModifier = shimmerModifier,
-            progress = difference,
-        )
-
-        else -> StableProgressIndicator(modifier = modifier, shimmerModifier = shimmerModifier)
-    }
-}
+private const val ICON_SIZE = 24
 
 @PreviewLightDark
 @Composable
 private fun StableProgressIndicatorPreview() {
     TycheTheme {
         Surface {
-            StableProgressIndicator()
+            StableTrendIndicator()
         }
     }
 }
 
 @PreviewLightDark
 @Composable
-private fun UpProgressIndicatorPreview() {
+private fun UpTrendIndicatorPreview() {
     TycheTheme {
         Surface {
-            UpProgressIndicator(progress = 1)
+            UpTrendIndicator(progress = 1)
         }
     }
 }
 
 @PreviewLightDark
 @Composable
-private fun DownProgressIndicatorPreview() {
+private fun DownTrendIndicatorPreview() {
     TycheTheme {
         Surface {
-            DownProgressIndicator(progress = 1)
+            DownTrendIndicator(progress = 1)
         }
     }
 }

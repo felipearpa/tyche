@@ -19,5 +19,5 @@ public struct PoolSpotlightItem: View {
 }
 
 #Preview {
-    PoolSpotlightItem(poolGamblerScore: poolGamblerScoreModel())
+    PoolSpotlightItem(poolGamblerScore: poolGamblerScoreDummyModel())
 }

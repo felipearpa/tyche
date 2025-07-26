@@ -28,10 +28,10 @@ import com.felipearpa.tyche.pool.PoolGamblerScoreModel
 import com.felipearpa.tyche.pool.R
 import com.felipearpa.tyche.pool.difference
 import com.felipearpa.tyche.pool.poolGamblerScoreDummyModel
-import com.felipearpa.tyche.pool.poolGamblerScoreFakeModel
+import com.felipearpa.tyche.pool.poolGamblerScorePlaceholderModel
 import com.felipearpa.tyche.pool.poolGamblerScoreWithoutScoreDummyModel
-import com.felipearpa.tyche.ui.ProgressIndicator
 import com.felipearpa.tyche.ui.SwipeToRevealBox
+import com.felipearpa.tyche.ui.TrendIndicator
 import com.felipearpa.tyche.ui.shimmer
 import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
 
@@ -92,7 +92,7 @@ fun PoolScoreItem(
 
                 poolGamblerScore.difference()?.let {
                     Box {
-                        ProgressIndicator(
+                        TrendIndicator(
                             shimmerModifier = shimmerModifier,
                             difference = it,
                         )
@@ -106,7 +106,7 @@ fun PoolScoreItem(
 @Composable
 fun PoolScoreFakeItem(modifier: Modifier = Modifier) {
     PoolScoreItem(
-        poolGamblerScore = poolGamblerScoreFakeModel(),
+        poolGamblerScore = poolGamblerScorePlaceholderModel(),
         onJoin = {},
         modifier = modifier,
         shimmerModifier = Modifier.shimmer(),
