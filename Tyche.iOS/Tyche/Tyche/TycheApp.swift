@@ -23,7 +23,7 @@ struct TycheApp: App {
     
     var body: some Scene {
         WindowGroup {
-            MainView()
+            RootRouterView()
                 .environment(\.diResolver, diResolver)
         }
     }

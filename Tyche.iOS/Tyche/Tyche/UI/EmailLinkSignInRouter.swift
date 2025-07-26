@@ -27,7 +27,7 @@ struct EmailLinkSignInRouter: View {
                 )
             }
         } else {
-            PoolContent(user: signedInAccountBundle!, onLogout: { signedInAccountBundle = nil })
+            PoolContent(accountBundle: signedInAccountBundle!, onSignOut: { signedInAccountBundle = nil })
         }
     }
 }

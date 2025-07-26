@@ -18,10 +18,3 @@ struct PoolHomeRouter: View {
         }
     }
 }
-
-#Preview {
-    PoolHomeRouter(
-        user: AccountBundle(accountId: "id", externalAccountId: "id"),
-        pool: PoolProfile(poolId: "poolId")
-    )
-}

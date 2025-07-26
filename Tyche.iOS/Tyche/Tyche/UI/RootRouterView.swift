@@ -4,7 +4,7 @@ import Core
 import Session
 import Account
 
-struct MainView: View {
+struct RootRouterView: View {
     @State var universalLink: URL? = nil
 
     var body: some View {
@@ -13,7 +13,7 @@ struct MainView: View {
                 emailSignInURLProcessor: EmailSignInURLProcessor(link: emailSignInUniversalLink),
             )
         } else {
-            HomeRouter()
+            SessionRouter()
                 .onOpenURL { url in
                     universalLink = url
                 }

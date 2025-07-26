@@ -28,8 +28,6 @@ struct PoolHomeView: View {
     }
     
     var body: some View {
-        let _ = Self._printChanges()
-        
         TabView(selection: $selectedTab) {
             GamblerScoreListView(
                 viewModel: GamblerScoreListViewModel(

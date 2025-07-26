@@ -18,29 +18,25 @@ struct PoolScoreListRouter: View {
     @State private var drawerVisible = false
 
     var body: some View {
-        let _ = Self._printChanges()
-
-        NavigationStack(path: $path) {
-            PoolScoreListView(
-                viewModel: PoolScoreListViewModel(
-                    getPoolGamblerScoresByGamblerUseCase: GetPoolGamblerScoresByGamblerUseCase(
-                        poolGamblerScoreRepository: diResolver.resolve(PoolGamblerScoreRepository.self)!
-                    ),
-                    gamblerId: user.accountId
+        PoolScoreListView(
+            viewModel: PoolScoreListViewModel(
+                getPoolGamblerScoresByGamblerUseCase: GetPoolGamblerScoresByGamblerUseCase(
+                    poolGamblerScoreRepository: diResolver.resolve(PoolGamblerScoreRepository.self)!
                 ),
-                onPoolDetailRequested: { pool in onPoolSelected(pool) }
-            )
-            .navigationBarItems(leading: navigationBarLeading(), trailing: navigationBarTrailing())
-            .navigationDestination(for: PoolFromLayoutCreatorRoute.self) { route in
-                PoolFromLayoutCreatorView(
-                    viewModel: PoolFromLayoutCreatorViewModel(
-                        gamblerId: user.accountId,
-                        createPoolUseCase: diResolver.resolve(CreatePoolUseCase.self)!
-                    ),
-                    onPoolCreated: { _ in path = NavigationPath() },
-                )
-            }
-        }
+                gamblerId: user.accountId
+            ),
+            onPoolDetailRequested: { pool in onPoolSelected(pool) }
+        )
+        .navigationBarItems(leading: navigationBarLeading(), trailing: navigationBarTrailing())
+//        .navigationDestination(for: PoolFromLayoutCreatorRoute.self) { route in
+//            PoolFromLayoutCreatorView(
+//                viewModel: PoolFromLayoutCreatorViewModel(
+//                    gamblerId: user.accountId,
+//                    createPoolUseCase: diResolver.resolve(CreatePoolUseCase.self)!
+//                ),
+//                onPoolCreated: { _ in path = NavigationPath() },
+//            )
+//        }
         .drawer(isShowing: $drawerVisible) {
             PoolScoreListDrawerView(
                 viewModel: PoolScoreListDrawerViewModel(logOutUseCase: diResolver.resolve(LogOutUseCase.self)!),

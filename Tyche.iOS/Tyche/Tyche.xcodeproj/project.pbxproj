@@ -25,15 +25,13 @@
 		D2127F592A2C2F270047DED7 /* TycheUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2127F582A2C2F270047DED7 /* TycheUITests.swift */; };
 		D2127F5B2A2C2F270047DED7 /* TycheUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2127F5A2A2C2F270047DED7 /* TycheUITestsLaunchTests.swift */; };
 		D2127F752A2C33210047DED7 /* StringResource.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2127F742A2C33210047DED7 /* StringResource.swift */; };
-		D2127F7A2A2C33920047DED7 /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2127F792A2C33920047DED7 /* MainView.swift */; };
-		D21495EC2ABFD65E00C18C71 /* HomeRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = D21495EB2ABFD65E00C18C71 /* HomeRouter.swift */; };
-		D21495EE2ABFDDFD00C18C71 /* PoolHomeRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = D21495ED2ABFDDFD00C18C71 /* PoolHomeRouter.swift */; };
+		D2127F7A2A2C33920047DED7 /* RootRouterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2127F792A2C33920047DED7 /* RootRouterView.swift */; };
+		D21495EC2ABFD65E00C18C71 /* SessionRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = D21495EB2ABFD65E00C18C71 /* SessionRouter.swift */; };
 		D29956132A74215600F8878E /* Bet in Frameworks */ = {isa = PBXBuildFile; productRef = D29956122A74215600F8878E /* Bet */; };
 		D2A7804D2AC8BB1A00F01A02 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = D2A7804C2AC8BB1A00F01A02 /* Localizable.xcstrings */; };
 		D2BB75112A5B65D500C7AE04 /* Pool in Frameworks */ = {isa = PBXBuildFile; productRef = D2BB75102A5B65D500C7AE04 /* Pool */; };
 		D2C23D612A3E428D003CC860 /* UI in Frameworks */ = {isa = PBXBuildFile; productRef = D2C23D602A3E428D003CC860 /* UI */; };
 		D2C23D632A3E4290003CC860 /* Core in Frameworks */ = {isa = PBXBuildFile; productRef = D2C23D622A3E4290003CC860 /* Core */; };
-		D2DAB79A2A6DB7B400ED29AC /* PoolHomeRoute.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2DAB7992A6DB7B400ED29AC /* PoolHomeRoute.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -72,11 +70,9 @@
 		D2127F582A2C2F270047DED7 /* TycheUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TycheUITests.swift; sourceTree = "<group>"; };
 		D2127F5A2A2C2F270047DED7 /* TycheUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TycheUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		D2127F742A2C33210047DED7 /* StringResource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringResource.swift; sourceTree = "<group>"; };
-		D2127F792A2C33920047DED7 /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
-		D21495EB2ABFD65E00C18C71 /* HomeRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeRouter.swift; sourceTree = "<group>"; };
-		D21495ED2ABFDDFD00C18C71 /* PoolHomeRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PoolHomeRouter.swift; sourceTree = "<group>"; };
+		D2127F792A2C33920047DED7 /* RootRouterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootRouterView.swift; sourceTree = "<group>"; };
+		D21495EB2ABFD65E00C18C71 /* SessionRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionRouter.swift; sourceTree = "<group>"; };
 		D2A7804C2AC8BB1A00F01A02 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
-		D2DAB7992A6DB7B400ED29AC /* PoolHomeRoute.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PoolHomeRoute.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -201,10 +197,8 @@
 				55C9D92E2E2B1D24007B79CA /* Home */,
 				55C9D9102E2AE2A9007B79CA /* PoolHome */,
 				55DC0E1C2E283C32007F7BD9 /* PoolScoreList */,
-				D2127F792A2C33920047DED7 /* MainView.swift */,
-				D2DAB7992A6DB7B400ED29AC /* PoolHomeRoute.swift */,
-				D21495EB2ABFD65E00C18C71 /* HomeRouter.swift */,
-				D21495ED2ABFDDFD00C18C71 /* PoolHomeRouter.swift */,
+				D2127F792A2C33920047DED7 /* RootRouterView.swift */,
+				D21495EB2ABFD65E00C18C71 /* SessionRouter.swift */,
 				55F9FDC92B56EAD500066BBA /* EmailLinkSignInRouter.swift */,
 			);
 			path = UI;
@@ -374,14 +368,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D2DAB79A2A6DB7B400ED29AC /* PoolHomeRoute.swift in Sources */,
 				55F9FDCA2B56EAD500066BBA /* EmailLinkSignInRouter.swift in Sources */,
-				D2127F7A2A2C33920047DED7 /* MainView.swift in Sources */,
+				D2127F7A2A2C33920047DED7 /* RootRouterView.swift in Sources */,
 				55A869FC2B9000C80055B421 /* EmailSignInURLProcessor.swift in Sources */,
-				D21495EE2ABFDDFD00C18C71 /* PoolHomeRouter.swift in Sources */,
 				D2127F752A2C33210047DED7 /* StringResource.swift in Sources */,
 				D2127F392A2C2F240047DED7 /* TycheApp.swift in Sources */,
-				D21495EC2ABFD65E00C18C71 /* HomeRouter.swift in Sources */,
+				D21495EC2ABFD65E00C18C71 /* SessionRouter.swift in Sources */,
 				D2127F452A2C2F260047DED7 /* Tyche.xcdatamodeld in Sources */,
 				55C9D9032E2ACB14007B79CA /* JoinPoolURLProcessor.swift in Sources */,
 			);
