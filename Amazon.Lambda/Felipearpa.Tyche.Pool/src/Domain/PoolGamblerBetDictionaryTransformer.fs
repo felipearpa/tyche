@@ -4,6 +4,7 @@ open System
 open System.Collections.Generic
 open System.Runtime.CompilerServices
 open Amazon.DynamoDBv2.Model
+open Felipearpa.Data.DynamoDb.Dictionary
 open Felipearpa.Tyche.Pool.Type
 open Felipearpa.Type
 
@@ -20,20 +21,25 @@ module PoolGamblerBetDictionaryTransformer =
           AwayTeamId = dictionary["awayTeamId"].S |> Ulid.newOf
           AwayTeamName = dictionary["awayTeamName"].S |> NonEmptyString100.newOf
           MatchScore =
-            match dictionary["homeTeamScore"] |> Option.ofObj, dictionary["awayTeamScore"] |> Option.ofObj with
+            match
+                tryGetAttributeValueOrNone "homeTeamScore" dictionary,
+                tryGetAttributeValueOrNone "awayTeamScore" dictionary
+            with
             | Some homeTeamScore, Some awayTeamScore ->
                 Some
                     { TeamScore.HomeTeamValue = int homeTeamScore.N
                       AwayTeamValue = int awayTeamScore.N }
             | _ -> None
           BetScore =
-            match dictionary["homeTeamBet"] |> Option.ofObj, dictionary["awayTeamBet"] |> Option.ofObj with
+            match
+                tryGetAttributeValueOrNone "homeTeamBet" dictionary, tryGetAttributeValueOrNone "awayTeamBet" dictionary
+            with
             | Some homeTeamBet, Some awayTeamBet ->
                 Some
                     { TeamScore.HomeTeamValue = homeTeamBet.N |> int |> BetScore.newOf
                       AwayTeamValue = awayTeamBet.N |> int |> BetScore.newOf }
             | _ -> None
-          Score = dictionary["score"].N |> Option.ofObj |> Option.map int
+          Score = tryGetAttributeValueOrNone "score" dictionary |> Option.map (fun it -> int it.N)
           MatchDateTime = matchDateTime
           isLocked = DateTime.Now >= matchDateTime }
 

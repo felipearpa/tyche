@@ -4,10 +4,9 @@ open System.Net
 open System.Text.Json
 open Amazon.Lambda.APIGatewayEvents
 
-[<AutoOpen>]
-module BadRequestResponseBuilder =
+module BadRequestResponseFactory =
 
-    let buildAmazonBadRequestResponse (errors: string list) : APIGatewayHttpApiV2ProxyResponse =
+    let create (errors: string list) : APIGatewayHttpApiV2ProxyResponse =
         let statusCode = int HttpStatusCode.BadRequest
 
         let bodyJson = JsonSerializer.Serialize {| errors = errors |}

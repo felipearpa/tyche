@@ -14,7 +14,7 @@ module IResultTransformer =
 
         member this.ToAmazonProxyResponse() : APIGatewayHttpApiV2ProxyResponse Async =
             async {
-                let httpContext = DefaultHttpContext()
+                let httpContext = HttpContextFactory.create ()
 
                 use bodyStream = new MemoryStream()
                 httpContext.Response.Body <- bodyStream

@@ -74,7 +74,7 @@ type PoolFunctionWrapper(configureServices: IServiceCollection -> unit) =
                 |> tryGetStringParamOrError poolIdParameter
 
             match poolIdResult with
-            | Error error -> return [ error ] |> buildAmazonBadRequestResponse
+            | Error error -> return [ error ] |> BadRequestResponseFactory.create
             | Ok poolId ->
                 let! response = getPoolById poolId (scope.ServiceProvider.GetService<GetPoolByIdQuery>())
                 return! response.ToAmazonProxyResponse()
@@ -112,7 +112,7 @@ type PoolFunctionWrapper(configureServices: IServiceCollection -> unit) =
             | _ ->
                 let errors = [ toErrorOption poolIdResult ] |> List.choose id
 
-                return errors |> buildAmazonBadRequestResponse
+                return errors |> BadRequestResponseFactory.create
         }
         |> Async.StartAsTask
 
@@ -148,7 +148,7 @@ type PoolFunctionWrapper(configureServices: IServiceCollection -> unit) =
                 let errors =
                     [ toErrorOption poolIdResult; toErrorOption gamblerIdResult ] |> List.choose id
 
-                return errors |> buildAmazonBadRequestResponse
+                return errors |> BadRequestResponseFactory.create
         }
         |> Async.StartAsTask
 
@@ -198,6 +198,6 @@ type PoolFunctionWrapper(configureServices: IServiceCollection -> unit) =
                 let errors =
                     [ toErrorOption poolIdResult; toErrorOption gamblerIdResult ] |> List.choose id
 
-                return errors |> buildAmazonBadRequestResponse
+                return errors |> BadRequestResponseFactory.create
         }
         |> Async.StartAsTask

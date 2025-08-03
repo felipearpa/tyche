@@ -3,13 +3,13 @@ namespace Felipearpa.Tyche.AmazonLambda.Pool.Tests
 #nowarn "3536"
 
 open System.Collections.Generic
-open System.IO
 open System.Net
 open Amazon.DynamoDBv2
 open Amazon.DynamoDBv2.Model
 open Amazon.Lambda.APIGatewayEvents
-open Amazon.Lambda.Serialization.SystemTextJson
 open Amazon.Lambda.TestUtilities
+open Felipearpa.Core
+open Felipearpa.Core.Json
 open Felipearpa.Tyche.AmazonLambda
 open Felipearpa.Tyche.Function.Response
 open FsUnit.Xunit
@@ -57,11 +57,8 @@ module GetPoolByIdTest =
     let ``then the pool is returned`` (response: APIGatewayHttpApiV2ProxyResponse) expectedPool =
         response.StatusCode |> should equal (int HttpStatusCode.OK)
 
-        let serializer = DefaultLambdaJsonSerializer()
-
-        use bodyStream = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(response.Body))
-
-        let actualPool = serializer.Deserialize<PoolResponse>(bodyStream)
+        let serializer = JsonSerializer() :> ISerializer
+        let actualPool = serializer.Deserialize<PoolResponse>(response.Body)
 
         actualPool |> should equal expectedPool
 

@@ -9,7 +9,7 @@
     <Compile Include="StringTransformerTest.fs" />
     <Compile Include="ResultTransformerTest.fs" />
     <Compile Include="ParameterResolverTest.fs" />
-    <Compile Include="BadRequestResponseBuilderTest.fs" />
+    <Compile Include="BadRequestResponseFactoryTest.fs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Amazon.Lambda.Core" Version="2.7.0"/>

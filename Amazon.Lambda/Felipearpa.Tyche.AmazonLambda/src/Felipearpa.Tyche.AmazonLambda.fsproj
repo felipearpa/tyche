@@ -9,10 +9,11 @@
     <PublishReadyToRun>true</PublishReadyToRun>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="HttpContextFactory.fs" />
     <Compile Include="StringTransformer.fs" />
     <Compile Include="ResultTransformer.fs" />
     <Compile Include="ParameterResolver.fs" />
-    <Compile Include="BadRequestResponseBuilder.fs" />
+    <Compile Include="BadRequestResponseFactory.fs" />
     <Compile Include="IResultTransformer.fs" />
     <Compile Include="PoolFunctionWrapper.fs" />
     <Compile Include="Assembly.fs" />

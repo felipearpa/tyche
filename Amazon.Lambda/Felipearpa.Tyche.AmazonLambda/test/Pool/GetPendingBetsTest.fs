@@ -4,13 +4,13 @@ namespace Felipearpa.Tyche.AmazonLambda.Tests.Pool
 
 open System
 open System.Collections.Generic
-open System.IO
 open System.Net
 open Amazon.DynamoDBv2
 open Amazon.DynamoDBv2.Model
 open Amazon.Lambda.APIGatewayEvents
-open Amazon.Lambda.Serialization.SystemTextJson
 open Amazon.Lambda.TestUtilities
+open Felipearpa.Core
+open Felipearpa.Core.Json
 open Felipearpa.Core.Paging
 open Felipearpa.Tyche.AmazonLambda
 open Felipearpa.Tyche.Function.Response
@@ -123,12 +123,10 @@ module GetPendingBetsTest =
         =
         response.StatusCode |> should equal (int HttpStatusCode.OK)
 
-        let serializer = DefaultLambdaJsonSerializer()
-
-        use bodyStream = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(response.Body))
+        let serializer = JsonSerializer() :> ISerializer
 
         let actualBets =
-            serializer.Deserialize<CursorPage<PoolGamblerBetResponse>>(bodyStream)
+            serializer.Deserialize<CursorPage<PoolGamblerBetResponse>>(response.Body)
 
         actualBets.Items |> Seq.toList |> shouldEqual (expectedBets.Items |> Seq.toList)
 
