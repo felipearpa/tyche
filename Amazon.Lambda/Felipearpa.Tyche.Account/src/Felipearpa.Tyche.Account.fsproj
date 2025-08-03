@@ -1,0 +1,41 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Compile Include="Domain\AccountEntity.fs" />
+        <Compile Include="Domain\Account.fs" />
+        <Compile Include="Domain\AccountLink.fs" />
+        <Compile Include="Domain\IAccountRepository.fs" />
+        <Compile Include="Domain\AccountLinkTransformer.fs" />
+        <Compile Include="Domain\AccountEntityTransformer.fs" />
+        <Compile Include="Domain\AccountTransformer.fs" />
+        <Compile Include="Domain\AccountDictionaryTransformer.fs" />
+        <Compile Include="Infrastructure\UpdateLinkRequestBuilder.fs" />
+        <Compile Include="Infrastructure\LinkRequestBuilder.fs" />
+        <Compile Include="Infrastructure\GetByEmailRequestBuilder.fs" />
+        <Compile Include="Infrastructure\GetByIdRequestBuilder.fs" />
+        <Compile Include="Infrastructure\AccountDynamoDbRepository.fs" />
+        <Compile Include="Application\AccountViewModel.fs" />
+        <Compile Include="Application\AccountTransformer.fs" />
+        <Compile Include="Application\IGetAccountById.fs" />
+        <Compile Include="Application\GetAccountByIdQuery.fs" />
+        <Compile Include="Application\SignIn\LinkAccountCommand.fs" />
+        <Compile Include="Application\SignIn\LinkAccountCommandTransformer.fs" />
+        <Compile Include="Application\SignIn\LoginCommandHandler.fs" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\Felipearpa.Crypto\src\Felipearpa.Crypto.fsproj" />
+      <ProjectReference Include="..\..\Felipearpa.Data.DynamoDb\src\Felipearpa.Data.DynamoDb.fsproj" />
+      <ProjectReference Include="..\..\Felipearpa.Type\src\Felipearpa.Type.fsproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Update="FSharp.Core" Version="9.0.300" />
+    </ItemGroup>
+
+</Project>

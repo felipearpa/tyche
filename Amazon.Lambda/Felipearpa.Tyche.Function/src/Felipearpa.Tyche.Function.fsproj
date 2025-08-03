@@ -1,0 +1,49 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="HttpResultsExtensions.fs" />
+    <Compile Include="Request\BetRequest.fs" />
+    <Compile Include="Request\CreatePoolRequest.fs" />
+    <Compile Include="Request\CreatePoolRequestTransformer.fs" />
+    <Compile Include="Request\JoinPoolRequest.fs" />
+    <Compile Include="Request\JoinPoolRequestTransformer.fs" />
+    <Compile Include="Request\LinkAccountRequest.fs" />
+    <Compile Include="Request\SignInRequestTransformer.fs" />
+    <Compile Include="Response\PoolGamblerScoreResponse.fs" />
+    <Compile Include="Response\PoolGamblerScoreTransformer.fs" />
+    <Compile Include="Response\PoolGamblerBetResponse.fs" />
+    <Compile Include="Response\PoolGamblerBetTransformer.fs" />
+    <Compile Include="Response\PoolResponse.fs" />
+    <Compile Include="Response\CreatePoolOutputTransformer.fs" />
+    <Compile Include="Response\PoolTransformer.fs" />
+    <Compile Include="Response\PoolLayoutResponse.fs" />
+    <Compile Include="Response\PoolLayoutTransformer.fs" />
+    <Compile Include="InjectedServices.fs" />
+    <Compile Include="PoolFunction.fs" />
+    <Compile Include="GamblerFunction.fs" />
+    <Compile Include="BetFunction.fs" />
+    <Compile Include="PoolLayoutFunction.fs" />
+    <Compile Include="AccountFunction.fs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Felipearpa.Crypto\src\Felipearpa.Crypto.fsproj" />
+    <ProjectReference Include="..\..\Felipearpa.Tyche.PoolLayout\src\Felipearpa.Tyche.PoolLayout.fsproj" />
+    <ProjectReference Include="..\..\Felipearpa.Tyche.Pool\src\Felipearpa.Tyche.Pool.fsproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Amazon.Lambda.Core" Version="2.7.0"/>
+    <PackageReference Include="Amazon.Lambda.APIGatewayEvents" Version="2.7.1"/>
+    <PackageReference Include="Amazon.Lambda.Serialization.SystemTextJson" Version="2.4.4"/>
+    <PackageReference Include="Amazon.Lambda.Annotations" Version="1.7.0"/>
+    <PackageReference Include="AWSSDK.Extensions.NETCore.Setup" Version="4.0.2" />
+    <PackageReference Update="FSharp.Core" Version="9.0.300" />
+  </ItemGroup>
+
+</Project>

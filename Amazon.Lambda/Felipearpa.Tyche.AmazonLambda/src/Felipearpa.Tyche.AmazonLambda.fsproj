@@ -1,0 +1,33 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
+    <AWSProjectType>Lambda</AWSProjectType>
+    <!-- This property makes the build directory similar to a publish directory and helps the AWS .NET Lambda Mock Test Tool find project dependencies. -->
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+    <!-- Generate ready to run images during publishing to improve cold start time. -->
+    <PublishReadyToRun>true</PublishReadyToRun>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="StringTransformer.fs" />
+    <Compile Include="ResultTransformer.fs" />
+    <Compile Include="ParameterResolver.fs" />
+    <Compile Include="BadRequestResponseBuilder.fs" />
+    <Compile Include="IResultTransformer.fs" />
+    <Compile Include="PoolFunctionWrapper.fs" />
+    <Compile Include="Assembly.fs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="aws-lambda-tools-defaults.json"/>
+    <None Include="serverless.template.yaml" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Felipearpa.Tyche.Function\src\Felipearpa.Tyche.Function.fsproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Amazon.Lambda.Core" Version="2.7.0"/>
+    <PackageReference Include="Amazon.Lambda.Serialization.SystemTextJson" Version="2.4.4"/>
+    <PackageReference Include="Amazon.Lambda.APIGatewayEvents" Version="2.7.1"/>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.7" />
+  </ItemGroup>
+</Project>
