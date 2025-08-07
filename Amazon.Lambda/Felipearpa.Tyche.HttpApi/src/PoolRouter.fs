@@ -77,3 +77,27 @@ module PoolRouter =
             |> ignore
 
             this
+                .MapGet(
+                    "/pools/{poolId}/gamblers/{gamblerId}/bets/finished",
+                    Func<_, _, _, _, _, _>
+                        (fun
+                            (poolId: string)
+                            (gamblerId: string)
+                            (searchText: string)
+                            (next: string)
+                            (getFinishedPoolGamblerBetsQuery: GetFinishedPoolGamblerBetsQuery) ->
+                            async {
+                                return!
+                                    getFinishedBets
+                                        poolId
+                                        gamblerId
+                                        (searchText |> Option.ofObj)
+                                        (next |> Option.ofObj)
+                                        getFinishedPoolGamblerBetsQuery
+                            }
+                            |> Async.StartAsTask)
+                )
+                .RequireAuthorization()
+            |> ignore
+
+            this

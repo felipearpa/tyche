@@ -201,3 +201,53 @@ type PoolFunctionWrapper(configureServices: IServiceCollection -> unit) =
                 return errors |> BadRequestResponseFactory.create
         }
         |> Async.StartAsTask
+
+    // URL: /pools/{poolId}/gamblers/{gamblerId}/bets/finished
+    member this.GetFinishedBets
+        (request: APIGatewayHttpApiV2ProxyRequest, _: ILambdaContext)
+        : APIGatewayHttpApiV2ProxyResponse Task =
+        async {
+            use scope = serviceProvider.CreateScope()
+
+            let poolIdResult =
+                request.PathParameters
+                |> Option.ofObj
+                |> Option.defaultValue Map.empty
+                |> tryGetStringParamOrError poolIdParameter
+
+            let gamblerIdResult =
+                request.PathParameters
+                |> Option.ofObj
+                |> Option.defaultValue Map.empty
+                |> tryGetStringParamOrError gamblerIdParameter
+
+            let maybeNext =
+                request.QueryStringParameters
+                |> Option.ofObj
+                |> Option.defaultValue Map.empty
+                |> tryGetStringParamOrNone nextParameter
+
+            let maybeSearchText =
+                request.QueryStringParameters
+                |> Option.ofObj
+                |> Option.defaultValue Map.empty
+                |> tryGetStringParamOrNone searchTextParameter
+
+            match poolIdResult, gamblerIdResult, maybeNext, maybeSearchText with
+            | Ok poolId, Ok gamblerId, next, searchText ->
+                let! response =
+                    getFinishedBets
+                        poolId
+                        gamblerId
+                        searchText
+                        next
+                        (scope.ServiceProvider.GetService<GetFinishedPoolGamblerBetsQuery>())
+
+                return! response.ToAmazonProxyResponse()
+            | _ ->
+                let errors =
+                    [ toErrorOption poolIdResult; toErrorOption gamblerIdResult ] |> List.choose id
+
+                return errors |> BadRequestResponseFactory.create
+        }
+        |> Async.StartAsTask

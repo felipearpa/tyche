@@ -72,22 +72,21 @@ module PoolFunction =
     let getFinishedBets
         (poolId: string)
         (gamblerId: string)
-        (searchText: string)
-        (next: string)
+        (searchText: string option)
+        (next: string option)
         (getFinishedPoolGamblerBetsQuery: GetFinishedPoolGamblerBetsQuery)
-        : Task<IResult> =
+        : IResult Async =
         async {
             let! page =
                 getFinishedPoolGamblerBetsQuery.ExecuteAsync(
                     poolId |> Ulid.newOf,
                     gamblerId |> Ulid.newOf,
-                    searchText |> Option.ofObj,
-                    next |> Option.ofObj
+                    searchText,
+                    next
                 )
 
             return Results.Ok(page |> CursorPage.map PoolGamblerBetTransformer.toResponse)
         }
-        |> Async.StartAsTask
 
     let createPool (createPoolRequest: CreatePoolRequest) (createPoolCommand: CreatePoolCommand) : Task<IResult> =
         async {
