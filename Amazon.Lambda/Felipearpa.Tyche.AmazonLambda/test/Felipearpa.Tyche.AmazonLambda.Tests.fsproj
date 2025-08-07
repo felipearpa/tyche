@@ -6,7 +6,6 @@
     <IsTestProject>true</IsTestProject>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Pool\GetFinishedBetsTest.fs" />
     <Compile Include="StringTransformerTest.fs" />
     <Compile Include="ResultTransformerTest.fs" />
     <Compile Include="ParameterResolverTest.fs" />
@@ -34,5 +33,9 @@
     <Compile Include="Pool\GetGamblersByPoolIdTest.fs" />
     <Compile Include="Pool\GetPoolGamblerScoreByIdTest.fs" />
     <Compile Include="Pool\GetPendingBetsTest.fs" />
+    <Compile Include="Pool\GetFinishedBetsTest.fs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Gambler\GetPoolsByGamblerIdTest.fs" />
   </ItemGroup>
 </Project>

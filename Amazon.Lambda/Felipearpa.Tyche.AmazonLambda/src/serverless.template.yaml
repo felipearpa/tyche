@@ -90,7 +90,7 @@ Resources:
             Path: /pools/{poolId}/gamblers/{gamblerId}
             Method: GET
             ApiId: !Ref AuthGatewayHttpApi
-            
+  
   GetPendingBets:
     Type: AWS::Serverless::Function
     Properties:
@@ -116,7 +116,7 @@ Resources:
             Path: /pools/{poolId}/gamblers/{gamblerId}/bets/pending
             Method: GET
             ApiId: !Ref AuthGatewayHttpApi
-            
+  
   GetFinishedBets:
     Type: AWS::Serverless::Function
     Properties:
@@ -140,6 +140,32 @@ Resources:
           Type: HttpApi
           Properties:
             Path: /pools/{poolId}/gamblers/{gamblerId}/bets/finished
+            Method: GET
+            ApiId: !Ref AuthGatewayHttpApi
+  
+  GetPoolsByGamblerId:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: Felipearpa.Tyche.AmazonLambda::Felipearpa.Tyche.AmazonLambda.PoolFunctionWrapper::GetPoolsByGamblerId
+      Runtime: dotnet8
+      CodeUri: .
+      MemorySize: 256
+      Timeout: 30
+      Policies:
+        - AWSLambdaBasicExecutionRole
+        - Statement:
+            - Effect: Allow
+              Action:
+                - dynamodb:Query
+              Resource:
+                - arn:aws:dynamodb:us-east-2:567776770335:table/Pool
+                - arn:aws:dynamodb:us-east-2:567776770335:table/Pool/index/GetPoolGamblerScoresByGambler-index
+      Architectures: [ arm64 ]
+      Events:
+        HttpApi:
+          Type: HttpApi
+          Properties:
+            Path: /gamblers/{gamblerId}/pools
             Method: GET
             ApiId: !Ref AuthGatewayHttpApi
 

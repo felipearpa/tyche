@@ -1,23 +1,20 @@
 namespace Felipearpa.Tyche.Function
 
-open System.Threading.Tasks
-open Amazon.Lambda.Annotations.APIGateway
 open Felipearpa.Core.Paging
 open Felipearpa.Tyche.Function.Response
 open Felipearpa.Tyche.Pool.Application
 open Felipearpa.Type
+open Microsoft.AspNetCore.Http
 
-type GamblerFunction() =
+module GamblerFunction =
 
-    member this.GetPoolsByGamblerId
-        (
-            gamblerId: string,
-            next: string,
-            getPoolGamblerScoresByGamblerQuery: GetPoolGamblerScoresByGamblerQuery
-        ) : Task<IHttpResult> =
+    let getPoolsByGamblerId
+        (gamblerId: string)
+        (next: string option)
+        (getPoolGamblerScoresByGamblerQuery: GetPoolGamblerScoresByGamblerQuery)
+        : IResult Async =
         async {
-            let! page = getPoolGamblerScoresByGamblerQuery.ExecuteAsync(gamblerId |> Ulid.newOf, next |> Option.ofObj)
+            let! page = getPoolGamblerScoresByGamblerQuery.ExecuteAsync(gamblerId |> Ulid.newOf, next)
 
-            return HttpResults.Ok(page |> CursorPage.map PoolGamblerScoreTransformer.toResponse)
+            return Results.Ok(page |> CursorPage.map PoolGamblerScoreTransformer.toResponse)
         }
-        |> Async.StartAsTask
