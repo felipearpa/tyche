@@ -20,6 +20,7 @@
     <Compile Include="GamblerFunctionWrapper.fs" />
     <Compile Include="BetFunctionWrapper.fs" />
     <Compile Include="PoolLayoutFunctionWrapper.fs" />
+    <Compile Include="AccountFunctionWrapper.fs" />
     <Compile Include="Assembly.fs" />
   </ItemGroup>
   <ItemGroup>

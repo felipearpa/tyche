@@ -15,7 +15,7 @@ open Microsoft.Extensions.DependencyInjection
 open Moq
 open Xunit
 
-module BetTest =
+module LinkAccountTest =
 
     let private setupMockBetWrite (client: Mock<IAmazonDynamoDB>) =
         let item =

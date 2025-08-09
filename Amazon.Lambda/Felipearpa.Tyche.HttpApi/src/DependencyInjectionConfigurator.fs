@@ -8,6 +8,7 @@ open Felipearpa.Core.Json
 open Felipearpa.Core.Jwt
 open Felipearpa.Data.DynamoDb
 open Felipearpa.Tyche.Account.Application
+open Felipearpa.Tyche.Account.Application.SignIn
 open Felipearpa.Tyche.Account.Domain
 open Felipearpa.Tyche.Account.Infrastructure
 open Felipearpa.Tyche.Pool.Application
@@ -38,6 +39,7 @@ module DependencyInjectionConfigurator =
             .AddAWSService<IAmazonDynamoDB>()
             .AddScoped<IAccountRepository, AccountDynamoDbRepository>()
             .AddScoped<IGetAccountById, GetAccountByIdQuery>()
+            .AddScoped<LinkAccountCommand>()
             .AddScoped<IPoolGamblerScoreRepository, PoolGamblerScoreDynamoDbRepository>()
             .AddScoped<IPoolGamblerBetRepository, PoolGamblerBetDynamoDbRepository>()
             .AddScoped<IPoolRepository, PoolDynamoDbRepository>()

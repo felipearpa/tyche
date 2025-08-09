@@ -13,7 +13,7 @@
     <Compile Include="Request\JoinPoolRequest.fs" />
     <Compile Include="Request\JoinPoolRequestTransformer.fs" />
     <Compile Include="Request\LinkAccountRequest.fs" />
-    <Compile Include="Request\SignInRequestTransformer.fs" />
+    <Compile Include="Request\LinkAccountRequestTransformer.fs" />
     <Compile Include="Response\PoolGamblerScoreResponse.fs" />
     <Compile Include="Response\PoolGamblerScoreTransformer.fs" />
     <Compile Include="Response\PoolGamblerBetResponse.fs" />
@@ -23,7 +23,6 @@
     <Compile Include="Response\PoolTransformer.fs" />
     <Compile Include="Response\PoolLayoutResponse.fs" />
     <Compile Include="Response\PoolLayoutTransformer.fs" />
-    <Compile Include="InjectedServices.fs" />
     <Compile Include="PoolFunction.fs" />
     <Compile Include="GamblerFunction.fs" />
     <Compile Include="BetFunction.fs" />

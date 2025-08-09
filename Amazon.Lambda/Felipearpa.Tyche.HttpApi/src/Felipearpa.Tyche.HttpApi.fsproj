@@ -11,6 +11,7 @@
     <Compile Include="GamblerRouter.fs" />
     <Compile Include="BetRouter.fs" />
     <Compile Include="PoolLayoutRouter.fs" />
+    <Compile Include="AccountRouter.fs" />
     <Compile Include="Program.fs"/>
   </ItemGroup>
 

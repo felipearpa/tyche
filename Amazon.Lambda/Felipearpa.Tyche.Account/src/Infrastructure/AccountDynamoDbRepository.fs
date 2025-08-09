@@ -54,19 +54,16 @@ type AccountDynamoDbRepository(client: IAmazonDynamoDB) =
         async {
             let updateAccountLinkRequest = UpdateLinkRequestBuilder.build account accountLink
 
-            return!
-                async {
-                    try
-                        let! _ = client.UpdateItemAsync updateAccountLinkRequest |> Async.AwaitTask
+            try
+                let! _ = client.UpdateItemAsync updateAccountLinkRequest |> Async.AwaitTask
 
-                        return
-                            { Account.Email = accountLink.Email
-                              AccountId = account.AccountId
-                              ExternalAccountId = NonEmptyString.newOf accountLink.ExternalAccountId }
-                            |> Ok
-                    with _ ->
-                        return Error()
-                }
+                return
+                    { Account.Email = accountLink.Email
+                      AccountId = account.AccountId
+                      ExternalAccountId = NonEmptyString.newOf accountLink.ExternalAccountId }
+                    |> Ok
+            with _ ->
+                return Error()
         }
 
     interface IAccountRepository with
@@ -96,15 +93,12 @@ type AccountDynamoDbRepository(client: IAmazonDynamoDB) =
             async {
                 let! accountResult = (this :> IAccountRepository).GetByEmailAsync(accountLink.Email)
 
-                return!
-                    async {
-                        match accountResult with
-                        | Ok maybeAccount ->
-                            match maybeAccount with
-                            | Some account -> return! updateLink account accountLink
-                            | None -> return! linkAsync accountLink
-                        | Error _ -> return Error()
-                    }
+                match accountResult with
+                | Ok maybeAccount ->
+                    match maybeAccount with
+                    | Some account -> return! updateLink account accountLink
+                    | None -> return! linkAsync accountLink
+                | Error _ -> return Error()
             }
 
         member this.GetById(id) =

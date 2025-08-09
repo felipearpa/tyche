@@ -42,9 +42,12 @@
     <Compile Include="Gambler\GetOpenPoolLayoutsTest.fs" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Bet\BetTest.fs" />
+    <Compile Include="Bet\LinkAccountTest.fs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="PoolLayout\GetOpenPoolLayoutsTest.fs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Account\LinkAccountTest.fs" />
   </ItemGroup>
 </Project>

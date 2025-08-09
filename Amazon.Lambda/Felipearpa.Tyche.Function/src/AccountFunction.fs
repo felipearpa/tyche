@@ -1,26 +1,18 @@
 namespace Felipearpa.Tyche.Function
 
-open System.Threading.Tasks
-open Amazon.Lambda.Annotations.APIGateway
-open Felipearpa.Core.Jwt
 open Felipearpa.Tyche.Account.Application.SignIn
 open Felipearpa.Tyche.Function.Request
-open Felipearpa.Tyche.Function.Request.SignInRequestTransformer
+open Felipearpa.Tyche.Function.Request.LinkAccountRequestTransformer
+open Microsoft.AspNetCore.Http
 
-type AccountFunction() =
+module AccountFunction =
 
-    member this.LinkAccount
-        (
-            linkAccountRequest: LinkAccountRequest,
-            jwtGenerator: IJwtGenerator,
-            loginCommandHandler: LoginCommandHandler
-        ) : Task<IHttpResult> =
+    let linkAccount (linkAccountRequest: LinkAccountRequest) (linkAccountCommand: LinkAccountCommand) : IResult Async =
         async {
-            let! result = loginCommandHandler.ExecuteAsync(linkAccountRequest.ToLinkAccountCommand())
+            let! result = linkAccountCommand.ExecuteAsync(linkAccountRequest.ToLinkAccountCommandInput())
 
             return
                 match result with
-                | Ok accountViewModel -> HttpResults.Ok(accountViewModel)
-                | Error _ -> HttpResults.Unauthorized()
+                | Ok accountViewModel -> Results.Ok(accountViewModel)
+                | Error _ -> Results.Unauthorized()
         }
-        |> Async.StartAsTask

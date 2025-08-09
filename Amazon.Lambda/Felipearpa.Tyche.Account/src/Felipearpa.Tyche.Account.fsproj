@@ -19,9 +19,9 @@
         <Compile Include="Application\AccountTransformer.fs" />
         <Compile Include="Application\IGetAccountById.fs" />
         <Compile Include="Application\GetAccountByIdQuery.fs" />
-        <Compile Include="Application\SignIn\LinkAccountCommand.fs" />
+        <Compile Include="Application\SignIn\LinkAccountCommandInput.fs" />
         <Compile Include="Application\SignIn\LinkAccountCommandTransformer.fs" />
-        <Compile Include="Application\SignIn\LoginCommandHandler.fs" />
+        <Compile Include="Application\SignIn\LinkAccountCommand.fs" />
     </ItemGroup>
 
     <ItemGroup>
