@@ -146,7 +146,7 @@ Resources:
   GetPoolsByGamblerId:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: Felipearpa.Tyche.AmazonLambda::Felipearpa.Tyche.AmazonLambda.PoolFunctionWrapper::GetPoolsByGamblerId
+      Handler: Felipearpa.Tyche.AmazonLambda::Felipearpa.Tyche.AmazonLambda.GamblerFunctionWrapper::GetPoolsByGamblerId
       Runtime: dotnet8
       CodeUri: .
       MemorySize: 256
