@@ -168,7 +168,7 @@ Resources:
             Path: /gamblers/{gamblerId}/pools
             Method: GET
             ApiId: !Ref AuthGatewayHttpApi
-            
+  
   CreatePool:
     Type: AWS::Serverless::Function
     Properties:
@@ -185,13 +185,39 @@ Resources:
                 - dynamodb:Query
               Resource:
                 - arn:aws:dynamodb:us-east-2:567776770335:table/Pool
-                - arn:aws:dynamodb:us-east-2:567776770335:table/Pool/index/GetPoolGamblerScoresByGambler-index
+                - arn:aws:dynamodb:us-east-2:567776770335:table/Account
       Architectures: [ arm64 ]
       Events:
         HttpApi:
           Type: HttpApi
           Properties:
             Path: /pools
+            Method: POST
+            ApiId: !Ref AuthGatewayHttpApi
+  
+  JoinPool:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: Felipearpa.Tyche.AmazonLambda::Felipearpa.Tyche.AmazonLambda.PoolFunctionWrapper::JoinPool
+      Runtime: dotnet8
+      CodeUri: .
+      MemorySize: 256
+      Timeout: 30
+      Policies:
+        - AWSLambdaBasicExecutionRole
+        - Statement:
+            - Effect: Allow
+              Action:
+                - dynamodb:Query
+              Resource:
+                - arn:aws:dynamodb:us-east-2:567776770335:table/Pool
+                - arn:aws:dynamodb:us-east-2:567776770335:table/Account
+      Architectures: [ arm64 ]
+      Events:
+        HttpApi:
+          Type: HttpApi
+          Properties:
+            Path: /pools/join
             Method: POST
             ApiId: !Ref AuthGatewayHttpApi
 

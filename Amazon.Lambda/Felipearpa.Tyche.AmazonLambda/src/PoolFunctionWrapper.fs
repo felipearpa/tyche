@@ -274,3 +274,20 @@ type PoolFunctionWrapper(configureServices: IServiceCollection -> unit) =
                 return! response.ToAmazonProxyResponse()
         }
         |> Async.StartAsTask
+
+    // URL: POST /pools/join
+    member this.JoinPool
+        (request: APIGatewayHttpApiV2ProxyRequest, _: ILambdaContext)
+        : APIGatewayHttpApiV2ProxyResponse Task =
+        async {
+            use scope = serviceProvider.CreateScope()
+
+            let joinPoolRequestResult = tryGetOrError<JoinPoolRequest> request.Body
+
+            match joinPoolRequestResult with
+            | Error error -> return [ error ] |> BadRequestResponseFactory.create
+            | Ok joinPoolRequest ->
+                let! response = joinPool joinPoolRequest (scope.ServiceProvider.GetService<JoinPoolCommand>())
+                return! response.ToAmazonProxyResponse()
+        }
+        |> Async.StartAsTask

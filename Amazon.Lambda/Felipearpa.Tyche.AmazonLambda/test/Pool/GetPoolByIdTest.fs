@@ -13,12 +13,13 @@ open Felipearpa.Core.Json
 open Felipearpa.Tyche.AmazonLambda
 open Felipearpa.Tyche.Function.Response
 open FsUnit.Xunit
+open FsUnitTyped
 open Microsoft.Extensions.DependencyInjection
 open Moq
 open Xunit
 
 module GetPoolByIdTest =
-    let ``given an existing pool`` () =
+    let private ``given an existing pool`` () =
         let expectedPool: PoolResponse =
             { PoolId = "01K0DCFFB08W35AW5Q6F82R6NQ"
               PoolName = "Hello world" }
@@ -51,10 +52,10 @@ module GetPoolByIdTest =
 
         (expectedPool, context, request, functions)
 
-    let ``when requesting its information`` (functions: PoolFunctionWrapper) request context =
+    let private ``when requesting its information`` (functions: PoolFunctionWrapper) request context =
         async { return! functions.GetPoolById(request, context) |> Async.AwaitTask }
 
-    let ``then the pool is returned`` (response: APIGatewayHttpApiV2ProxyResponse) expectedPool =
+    let private ``then the pool is returned`` (response: APIGatewayHttpApiV2ProxyResponse) expectedPool =
         response.StatusCode |> should equal (int HttpStatusCode.OK)
 
         let serializer = JsonSerializer() :> ISerializer
@@ -62,7 +63,7 @@ module GetPoolByIdTest =
 
         actualPool |> should equal expectedPool
 
-    let ``given a non existing pool`` () =
+    let private ``given a non existing pool`` () =
         let client = Mock<IAmazonDynamoDB>()
 
         let items: IDictionary<string, AttributeValue> list = []
@@ -82,10 +83,10 @@ module GetPoolByIdTest =
 
         (context, request, functions)
 
-    let ``then a not found response is returned`` (response: APIGatewayHttpApiV2ProxyResponse) =
-        response.StatusCode |> should equal (int HttpStatusCode.NotFound)
+    let private ``then a not found response is returned`` (response: APIGatewayHttpApiV2ProxyResponse) =
+        response.StatusCode |> shouldEqual (int HttpStatusCode.NotFound)
 
-    let ``given a request without poolId`` () =
+    let private ``given a request without poolId`` () =
         let functions = PoolFunctionWrapper()
 
         let context = TestLambdaContext()
@@ -94,8 +95,8 @@ module GetPoolByIdTest =
 
         (context, request, functions)
 
-    let ``then a bad request response is returned`` (response: APIGatewayHttpApiV2ProxyResponse) =
-        response.StatusCode |> should equal (int HttpStatusCode.BadRequest)
+    let private ``then a bad response is returned`` (response: APIGatewayHttpApiV2ProxyResponse) =
+        response.StatusCode |> shouldEqual (int HttpStatusCode.BadRequest)
 
     [<Fact>]
     let ``given an existing poolId when requesting its information then the pool data is returned`` () =
@@ -114,9 +115,9 @@ module GetPoolByIdTest =
         }
 
     [<Fact>]
-    let ``given a request without poolId when requesting its information then the pool data is returned`` () =
+    let ``given a request without poolId when requesting its information then a bad response is returned`` () =
         async {
             let context, request, functions = ``given a request without poolId`` ()
             let! response = ``when requesting its information`` functions request context
-            ``then a bad request response is returned`` response
+            ``then a bad response is returned`` response
         }

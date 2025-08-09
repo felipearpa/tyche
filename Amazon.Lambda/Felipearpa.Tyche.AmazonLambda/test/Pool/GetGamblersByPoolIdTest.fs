@@ -21,7 +21,7 @@ open Xunit
 
 module GetGamblersByPoolIdTest =
 
-    let ``given an existing pending bets`` () =
+    let private ``given an existing pending bets`` () =
         let expectedPoolScores: CursorPage<PoolGamblerScoreResponse> =
             { Items =
                 seq {
@@ -84,10 +84,10 @@ module GetGamblersByPoolIdTest =
 
         (expectedPoolScores, context, request, functions)
 
-    let ``when requesting its information`` (functions: PoolFunctionWrapper) request context =
+    let private ``when requesting its information`` (functions: PoolFunctionWrapper) request context =
         async { return! functions.GetGamblersByPoolId(request, context) |> Async.AwaitTask }
 
-    let ``then associated pool scores are returned``
+    let private ``then associated pool scores are returned``
         (response: APIGatewayHttpApiV2ProxyResponse)
         (expectedPoolScores: CursorPage<PoolGamblerScoreResponse>)
         =
@@ -102,7 +102,7 @@ module GetGamblersByPoolIdTest =
         |> Seq.toList
         |> shouldEqual (expectedPoolScores.Items |> Seq.toList)
 
-    let ``given a request without poolId`` () =
+    let private ``given a request without poolId`` () =
         let functions = PoolFunctionWrapper()
 
         let context = TestLambdaContext()
@@ -111,8 +111,8 @@ module GetGamblersByPoolIdTest =
 
         (context, request, functions)
 
-    let ``then a bad request response is returned`` (response: APIGatewayHttpApiV2ProxyResponse) =
-        response.StatusCode |> should equal (int HttpStatusCode.BadRequest)
+    let private ``then a bad response is returned`` (response: APIGatewayHttpApiV2ProxyResponse) =
+        response.StatusCode |> shouldEqual (int HttpStatusCode.BadRequest)
 
     [<Fact>]
     let ``given an existing pool when requesting its information then the associated pool scores are returned`` () =
@@ -126,11 +126,9 @@ module GetGamblersByPoolIdTest =
         }
 
     [<Fact>]
-    let ``given a request without path parameters when requesting its information then bad request response is returned``
-        ()
-        =
+    let ``given a request without path parameters when requesting its information then bad response is returned`` () =
         async {
             let context, request, functions = ``given a request without poolId`` ()
             let! response = ``when requesting its information`` functions request context
-            ``then a bad request response is returned`` response
+            ``then a bad response is returned`` response
         }

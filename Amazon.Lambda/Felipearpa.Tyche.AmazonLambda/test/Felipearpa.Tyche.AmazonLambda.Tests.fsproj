@@ -38,6 +38,7 @@
     <Compile Include="Pool\CreatePoolTest.fs" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Pool\JoinPoolTest.fs" />
     <Compile Include="Gambler\GetPoolsByGamblerIdTest.fs" />
   </ItemGroup>
 </Project>

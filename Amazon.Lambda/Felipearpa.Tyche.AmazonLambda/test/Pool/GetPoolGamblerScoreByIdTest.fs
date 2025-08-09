@@ -20,7 +20,7 @@ open Xunit
 
 module GetPoolGamblerScoreByIdTest =
 
-    let ``given an existing PoolGamblerScore`` () =
+    let private ``given an existing PoolGamblerScore`` () =
         let expectedPoolGamblerScore: PoolGamblerScoreResponse =
             { PoolId = "01K0DCFFB08W35AW5Q6F82R6NQ"
               PoolName = "Hello world"
@@ -64,10 +64,10 @@ module GetPoolGamblerScoreByIdTest =
 
         (expectedPoolGamblerScore, context, request, functions)
 
-    let ``when requesting its information`` (functions: PoolFunctionWrapper) request context =
+    let private ``when requesting its information`` (functions: PoolFunctionWrapper) request context =
         async { return! functions.GetPoolGamblerScoreById(request, context) |> Async.AwaitTask }
 
-    let ``then the associated PoolGamblerScore is returned``
+    let private ``then the associated PoolGamblerScore is returned``
         (response: APIGatewayHttpApiV2ProxyResponse)
         (expectedPoolGamblerScore: PoolGamblerScoreResponse)
         =
@@ -80,7 +80,7 @@ module GetPoolGamblerScoreByIdTest =
 
         actualPoolGamblerScore |> shouldEqual expectedPoolGamblerScore
 
-    let ``given a request without path parameters`` () =
+    let private ``given a request without path parameters`` () =
         let functions = PoolFunctionWrapper()
 
         let context = TestLambdaContext()
@@ -89,10 +89,10 @@ module GetPoolGamblerScoreByIdTest =
 
         (context, request, functions)
 
-    let ``then a bad request response is returned`` (response: APIGatewayHttpApiV2ProxyResponse) =
-        response.StatusCode |> should equal (int HttpStatusCode.BadRequest)
+    let private ``then a bad response is returned`` (response: APIGatewayHttpApiV2ProxyResponse) =
+        response.StatusCode |> shouldEqual (int HttpStatusCode.BadRequest)
 
-    let ``given a non existing PoolGamblerScore`` () =
+    let private ``given a non existing PoolGamblerScore`` () =
         let client = Mock<IAmazonDynamoDB>()
 
         let items: IDictionary<string, AttributeValue> list = []
@@ -116,8 +116,8 @@ module GetPoolGamblerScoreByIdTest =
 
         (context, request, functions)
 
-    let ``then a not found response is returned`` (response: APIGatewayHttpApiV2ProxyResponse) =
-        response.StatusCode |> should equal (int HttpStatusCode.NotFound)
+    let private ``then a not found response is returned`` (response: APIGatewayHttpApiV2ProxyResponse) =
+        response.StatusCode |> shouldEqual (int HttpStatusCode.NotFound)
 
     [<Fact>]
     let ``given an existing PoolGamblerScore when requesting its information then the associated PoolGamblerScore is returned``
@@ -145,11 +145,9 @@ module GetPoolGamblerScoreByIdTest =
         }
 
     [<Fact>]
-    let ``given a request without path parameters when requesting its information then a bad request response is returned``
-        ()
-        =
+    let ``given a request without path parameters when requesting its information then a bad response is returned`` () =
         async {
             let context, request, functions = ``given a request without path parameters`` ()
             let! response = ``when requesting its information`` functions request context
-            ``then a bad request response is returned`` response
+            ``then a bad response is returned`` response
         }

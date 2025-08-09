@@ -1,6 +1,5 @@
 namespace Felipearpa.Tyche.Function
 
-open System.Threading.Tasks
 open Felipearpa.Core.Paging
 open Felipearpa.Tyche.Function.Request
 open Felipearpa.Tyche.Function.Response
@@ -99,7 +98,7 @@ module PoolFunction =
                 | Error _ -> Results.NotFound("Gambler not found")
         }
 
-    let joinPool (joinPoolRequest: JoinPoolRequest) (joinPoolCommand: JoinPoolCommand) : Task<IResult> =
+    let joinPool (joinPoolRequest: JoinPoolRequest) (joinPoolCommand: JoinPoolCommand) : IResult Async =
         async {
             let! result = joinPoolCommand.ExecuteAsync(joinPoolRequest |> JoinPoolRequestTransformer.toJoinPoolInput)
 
@@ -112,4 +111,3 @@ module PoolFunction =
                     | JoinPoolFailure.PoolNotFound -> Results.NotFound("Pool not found")
                     | JoinPoolFailure.GamblerNotFound -> Results.NotFound("Gambler not found")
         }
-        |> Async.StartAsTask

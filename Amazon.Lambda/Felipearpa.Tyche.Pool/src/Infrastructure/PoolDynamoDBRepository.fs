@@ -7,28 +7,20 @@ open System.Collections.Generic
 open System.Linq
 open Amazon.DynamoDBv2
 open Amazon.DynamoDBv2.Model
-open Felipearpa.Data.DynamoDb
 open Felipearpa.Tyche.Account.Infrastructure
 open Felipearpa.Tyche.Pool.Domain
 open Felipearpa.Tyche.Pool.Domain.PoolDictionaryTransformer
 open Felipearpa.Type
 
-type PoolDynamoDbRepository(keySerializer: IKeySerializer, client: IAmazonDynamoDB) =
-    [<Literal>]
-    let tableName = "Pool"
-
-    [<Literal>]
-    let poolText = "POOL"
-
+type PoolDynamoDbRepository(client: IAmazonDynamoDB) =
     let createPoolInDbAsync createUserTransaction =
         async {
             try
                 let! _ = client.TransactWriteItemsAsync(createUserTransaction) |> Async.AwaitTask
-                return () |> Ok
+                return Ok()
             with
-            | :? AggregateException as error when (error.InnerException :? TransactionCanceledException) ->
-                return () |> Ok
-            | _ -> return () |> Error
+            | :? AggregateException as error when (error.InnerException :? TransactionCanceledException) -> return Ok()
+            | _ -> return Error()
         }
 
     interface IPoolRepository with
@@ -51,7 +43,7 @@ type PoolDynamoDbRepository(keySerializer: IKeySerializer, client: IAmazonDynamo
                         match response.Items.FirstOrDefault() |> Option.ofObj with
                         | None -> None |> Ok
                         | Some valuesMap -> valuesMap.ToPool() |> Some |> Ok
-                    | Error _ -> () |> Error
+                    | Error _ -> Error()
             }
 
         member this.CreatePool(createPoolInput) =
@@ -96,7 +88,7 @@ type PoolDynamoDbRepository(keySerializer: IKeySerializer, client: IAmazonDynamo
 
                 try
                     let! _ = client.PutItemAsync(putItemRequest) |> Async.AwaitTask
-                    return () |> Ok
+                    return Ok()
                 with :? AggregateException as error when (error.InnerException :? ConditionalCheckFailedException) ->
                     return JoinPoolDomainFailure.AlreadyJoined |> Error
             }

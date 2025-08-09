@@ -112,3 +112,12 @@ module PoolRouter =
             |> ignore
 
             this
+                .MapPost(
+                    "/pools/join",
+                    Func<_, _, _>(fun (joinPoolRequest: JoinPoolRequest) (joinPoolCommand: JoinPoolCommand) ->
+                        async { return! joinPool joinPoolRequest joinPoolCommand } |> Async.StartAsTask)
+                )
+                .RequireAuthorization()
+            |> ignore
+
+            this
