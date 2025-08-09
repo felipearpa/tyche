@@ -74,7 +74,7 @@ type PoolDynamoDbRepository(keySerializer: IKeySerializer, client: IAmazonDynamo
                         { CreatePoolOutput.PoolId = createPoolInput.PoolId
                           PoolName = createPoolInput.PoolName }
                         |> Ok
-                    | Error _ -> () |> Error
+                    | Error _ -> Error()
             }
 
         member this.JoinPool(joinPoolInput) =

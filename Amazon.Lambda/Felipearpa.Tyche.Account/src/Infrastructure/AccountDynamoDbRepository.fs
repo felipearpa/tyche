@@ -1,5 +1,7 @@
 namespace Felipearpa.Tyche.Account.Infrastructure
 
+#nowarn "3536"
+
 open System
 open System.Collections.Generic
 open System.Linq
@@ -9,29 +11,25 @@ open Microsoft.FSharp.Core
 open Felipearpa.Type
 open Felipearpa.Tyche.Account.Domain
 open Felipearpa.Tyche.Account.Domain.AccountDictionaryTransformer
-open Felipearpa.Tyche.Account.Domain.AccountEntityTransformer
-open Felipearpa.Tyche.Account.Domain.AccountLinkTransformer
-open Felipearpa.Tyche.Account.Domain.AccountTransformer
 
 type AccountDynamoDbRepository(client: IAmazonDynamoDB) =
     let createAccountInDbAsync createUserTransaction =
         async {
             try
                 let! _ = client.TransactWriteItemsAsync(createUserTransaction) |> Async.AwaitTask
-                return () |> Ok
+                return Ok()
             with
-            | :? AggregateException as error when (error.InnerException :? TransactionCanceledException) ->
-                return () |> Ok
-            | _ -> return () |> Error
+            | :? AggregateException as error when (error.InnerException :? TransactionCanceledException) -> return Ok()
+            | _ -> return Error()
         }
 
     let linkAsync (accountLink: AccountLink) =
         async {
-            let accountEntity = accountLink.ToAccountEntity()
+            let newAccountId = Ulid.random ()
 
-            let createAccountRequest = LinkRequestBuilder.build accountEntity
+            let createAccountRequest = LinkRequestBuilder.build accountLink newAccountId
 
-            let createUniqueEmailRequest = LinkRequestBuilder.buildUniqueEmail accountEntity
+            let createUniqueEmailRequest = LinkRequestBuilder.buildUniqueEmail accountLink
 
             let requests =
                 [ TransactWriteItem(Put = createAccountRequest)
@@ -46,18 +44,15 @@ type AccountDynamoDbRepository(client: IAmazonDynamoDB) =
                 match response with
                 | Ok _ ->
                     { Account.Email = accountLink.Email
-                      AccountId = Ulid.newOf accountEntity.AccountId
+                      AccountId = newAccountId
                       ExternalAccountId = NonEmptyString.newOf accountLink.ExternalAccountId }
                     |> Ok
-                | Error _ -> () |> Error
+                | Error _ -> Error()
         }
 
     let updateLink (account: Account) (accountLink: AccountLink) =
         async {
-            let accountEntity = account.ToAccountEntity()
-
-            let updateAccountLinkRequest =
-                UpdateLinkRequestBuilder.build accountEntity accountLink
+            let updateAccountLinkRequest = UpdateLinkRequestBuilder.build account accountLink
 
             return!
                 async {
@@ -66,11 +61,11 @@ type AccountDynamoDbRepository(client: IAmazonDynamoDB) =
 
                         return
                             { Account.Email = accountLink.Email
-                              AccountId = Ulid.newOf accountEntity.AccountId
+                              AccountId = account.AccountId
                               ExternalAccountId = NonEmptyString.newOf accountLink.ExternalAccountId }
                             |> Ok
                     with _ ->
-                        return () |> Error
+                        return Error()
                 }
         }
 
@@ -85,7 +80,7 @@ type AccountDynamoDbRepository(client: IAmazonDynamoDB) =
                             let! response = client.QueryAsync(request) |> Async.AwaitTask
                             return response |> Ok
                         with _ ->
-                            return () |> Error
+                            return Error()
                     }
 
                 return
@@ -93,8 +88,8 @@ type AccountDynamoDbRepository(client: IAmazonDynamoDB) =
                     | Ok response ->
                         match response.Items.FirstOrDefault() with
                         | null -> None |> Ok
-                        | valuesMap -> valuesMap.ToAccountEntity().ToAccount() |> Some |> Ok
-                    | Error _ -> () |> Error
+                        | valuesMap -> valuesMap.ToAccount() |> Some |> Ok
+                    | Error _ -> Error()
             }
 
         member this.LinkAsync(accountLink) =
@@ -108,7 +103,7 @@ type AccountDynamoDbRepository(client: IAmazonDynamoDB) =
                             match maybeAccount with
                             | Some account -> return! updateLink account accountLink
                             | None -> return! linkAsync accountLink
-                        | Error _ -> return () |> Error
+                        | Error _ -> return Error()
                     }
             }
 
@@ -122,7 +117,7 @@ type AccountDynamoDbRepository(client: IAmazonDynamoDB) =
                             let! response = client.QueryAsync(request) |> Async.AwaitTask
                             return response |> Ok
                         with _ ->
-                            return () |> Error
+                            return Error()
                     }
 
                 return
@@ -130,6 +125,6 @@ type AccountDynamoDbRepository(client: IAmazonDynamoDB) =
                     | Ok response ->
                         match response.Items.FirstOrDefault() with
                         | null -> None |> Ok
-                        | valuesMap -> valuesMap.ToAccountEntity().ToAccount() |> Some |> Ok
-                    | Error _ -> () |> Error
+                        | valuesMap -> valuesMap.ToAccount() |> Some |> Ok
+                    | Error _ -> Error()
             }

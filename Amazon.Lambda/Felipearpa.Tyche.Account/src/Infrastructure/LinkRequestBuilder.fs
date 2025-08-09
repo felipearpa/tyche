@@ -3,6 +3,7 @@ namespace Felipearpa.Tyche.Account.Infrastructure
 open System.Collections.Generic
 open Amazon.DynamoDBv2.Model
 open Felipearpa.Tyche.Account.Domain
+open Felipearpa.Type
 
 module LinkRequestBuilder =
     [<Literal>]
@@ -11,22 +12,25 @@ module LinkRequestBuilder =
     [<Literal>]
     let private userNameText = "EMAIL"
 
-    let private buildAccountMap (accountEntity: AccountEntity) =
+    [<Literal>]
+    let private prefixAccount = "ACCOUNT"
+
+    let private buildAccountMap (account: AccountLink) (newAccountId: Ulid) =
         dict
-            [ "pk", AttributeValue(accountEntity.Pk)
-              "accountId", AttributeValue(accountEntity.AccountId)
-              "email", AttributeValue(accountEntity.Email)
-              "externalAccountId", AttributeValue(accountEntity.ExternalAccountId) ]
+            [ "pk", AttributeValue(S = $"{prefixAccount}#{newAccountId}")
+              "accountId", AttributeValue(S = newAccountId.Value)
+              "email", AttributeValue(S = account.Email.Value)
+              "externalAccountId", AttributeValue(S = account.ExternalAccountId) ]
 
-    let private buildUniqueEmailMap (accountEntity: AccountEntity) =
-        dict [ "pk", AttributeValue($"{userNameText}#{accountEntity.Email}") ]
+    let private buildUniqueEmailMap (accountLink: AccountLink) =
+        dict [ "pk", AttributeValue($"{userNameText}#{accountLink.Email}") ]
 
-    let build (accountEntity: AccountEntity) =
-        let accountMap = buildAccountMap accountEntity
+    let build (accountLink: AccountLink) (newAccountId: Ulid) =
+        let accountMap = buildAccountMap accountLink newAccountId
         Put(TableName = accountTableName, Item = (accountMap |> Dictionary))
 
-    let buildUniqueEmail (accountEntity: AccountEntity) =
-        let uniqueEmailMap = buildUniqueEmailMap accountEntity
+    let buildUniqueEmail (accountLink: AccountLink) =
+        let uniqueEmailMap = buildUniqueEmailMap accountLink
 
         Put(
             TableName = accountTableName,

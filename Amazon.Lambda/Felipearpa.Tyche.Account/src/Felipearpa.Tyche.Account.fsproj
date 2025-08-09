@@ -6,13 +6,9 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Compile Include="Domain\AccountEntity.fs" />
         <Compile Include="Domain\Account.fs" />
         <Compile Include="Domain\AccountLink.fs" />
         <Compile Include="Domain\IAccountRepository.fs" />
-        <Compile Include="Domain\AccountLinkTransformer.fs" />
-        <Compile Include="Domain\AccountEntityTransformer.fs" />
-        <Compile Include="Domain\AccountTransformer.fs" />
         <Compile Include="Domain\AccountDictionaryTransformer.fs" />
         <Compile Include="Infrastructure\UpdateLinkRequestBuilder.fs" />
         <Compile Include="Infrastructure\LinkRequestBuilder.fs" />

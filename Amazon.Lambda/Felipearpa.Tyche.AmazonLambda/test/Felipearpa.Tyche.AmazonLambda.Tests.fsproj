@@ -9,6 +9,7 @@
     <Compile Include="StringTransformerTest.fs" />
     <Compile Include="ResultTransformerTest.fs" />
     <Compile Include="ParameterResolverTest.fs" />
+    <Compile Include="BodyResolverTest.fs" />
     <Compile Include="BadRequestResponseFactoryTest.fs" />
   </ItemGroup>
   <ItemGroup>
@@ -34,6 +35,7 @@
     <Compile Include="Pool\GetPoolGamblerScoreByIdTest.fs" />
     <Compile Include="Pool\GetPendingBetsTest.fs" />
     <Compile Include="Pool\GetFinishedBetsTest.fs" />
+    <Compile Include="Pool\CreatePoolTest.fs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Gambler\GetPoolsByGamblerIdTest.fs" />

@@ -8,8 +8,11 @@ module UpdateLinkRequestBuilder =
     [<Literal>]
     let private accountTableName = "Account"
 
-    let private buildAccountKeyMap (accountEntity: AccountEntity) =
-        dict [ "pk", AttributeValue(accountEntity.Pk) ]
+    [<Literal>]
+    let prefixAccount = "ACCOUNT"
+
+    let private buildAccountKeyMap (account: Account) =
+        dict [ "pk", AttributeValue($"{prefixAccount}#{account.AccountId}") ]
 
     let private buildExternalAccountNames () =
         dict [ "#externalAccountId", "externalAccountId" ]
@@ -20,8 +23,8 @@ module UpdateLinkRequestBuilder =
     let private buildUpdateAccountLinkExpression () =
         "SET #externalAccountId = :externalAccountId"
 
-    let build (accountEntity: AccountEntity) (accountLink: AccountLink) =
-        let keyMap = buildAccountKeyMap accountEntity
+    let build (account: Account) (accountLink: AccountLink) =
+        let keyMap = buildAccountKeyMap account
         let externalAccountNames = buildExternalAccountNames ()
         let externalAccountValues = buildExternalAccountValues accountLink
         let updateExpression = buildUpdateAccountLinkExpression ()

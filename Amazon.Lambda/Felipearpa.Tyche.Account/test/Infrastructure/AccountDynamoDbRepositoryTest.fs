@@ -7,9 +7,9 @@ open Amazon.DynamoDBv2
 open Amazon.DynamoDBv2.Model
 open Felipearpa.Tyche.Account.Domain
 open Felipearpa.Tyche.Account.Domain.AccountDictionaryTransformer
-open Felipearpa.Tyche.Account.Domain.AccountTransformer
 open Felipearpa.Tyche.Account.Infrastructure
 open Felipearpa.Type
+open FsUnitTyped
 open Moq
 open FsUnit.Xunit
 open Xunit
@@ -67,7 +67,7 @@ let ``then the associated account is returned`` (result: Result<Option<Account>,
     | Ok maybeAccount ->
         match maybeAccount with
         | None -> failwith "Not account queried"
-        | Some queriedAccount -> queriedAccount.ToAccountEntity() |> should equal (accountMap.ToAccountEntity())
+        | Some queriedAccount -> queriedAccount |> shouldEqual (accountMap.ToAccount())
     | Error _ -> failwith "Error querying the account"
 
 let ``then no account is returned`` (result: Result<Option<Account>, unit>) =

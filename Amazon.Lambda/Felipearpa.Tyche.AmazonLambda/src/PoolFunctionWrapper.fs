@@ -9,8 +9,12 @@ open Amazon.Lambda.Core
 open Felipearpa.Core
 open Felipearpa.Core.Json
 open Felipearpa.Data.DynamoDb
+open Felipearpa.Tyche.Account.Application
+open Felipearpa.Tyche.Account.Domain
+open Felipearpa.Tyche.Account.Infrastructure
 open Felipearpa.Tyche.AmazonLambda.StringTransformer
 open Felipearpa.Tyche.Function.PoolFunction
+open Felipearpa.Tyche.Function.Request
 open Felipearpa.Tyche.Pool.Application
 open Felipearpa.Tyche.Pool.Data
 open Felipearpa.Tyche.Pool.Domain
@@ -50,6 +54,8 @@ type PoolFunctionWrapper(configureServices: IServiceCollection -> unit) =
             .AddScoped<BetCommand>()
             .AddScoped<CreatePoolCommand>()
             .AddScoped<JoinPoolCommand>()
+            .AddScoped<IAccountRepository, AccountDynamoDbRepository>()
+            .AddScoped<IGetAccountById, GetAccountByIdQuery>()
         |> ignore
 
         configureServices services
@@ -60,7 +66,7 @@ type PoolFunctionWrapper(configureServices: IServiceCollection -> unit) =
 
     new() = PoolFunctionWrapper(fun _ -> ())
 
-    // URL: /pools/{poolId}
+    // URL: GET /pools/{poolId}
     member this.GetPoolById
         (request: APIGatewayHttpApiV2ProxyRequest, _: ILambdaContext)
         : APIGatewayHttpApiV2ProxyResponse Task =
@@ -81,7 +87,7 @@ type PoolFunctionWrapper(configureServices: IServiceCollection -> unit) =
         }
         |> Async.StartAsTask
 
-    // URL: /pools/{poolId}/gamblers?next={next}
+    // URL: GET /pools/{poolId}/gamblers?next={next}
     member this.GetGamblersByPoolId
         (request: APIGatewayHttpApiV2ProxyRequest, _: ILambdaContext)
         : APIGatewayHttpApiV2ProxyResponse Task =
@@ -116,7 +122,7 @@ type PoolFunctionWrapper(configureServices: IServiceCollection -> unit) =
         }
         |> Async.StartAsTask
 
-    // URL: /pools/{poolId}/gamblers/{gamblerId}
+    // URL: GET /pools/{poolId}/gamblers/{gamblerId}
     member this.GetPoolGamblerScoreById
         (request: APIGatewayHttpApiV2ProxyRequest, _: ILambdaContext)
         : APIGatewayHttpApiV2ProxyResponse Task =
@@ -152,7 +158,7 @@ type PoolFunctionWrapper(configureServices: IServiceCollection -> unit) =
         }
         |> Async.StartAsTask
 
-    // URL: /pools/{poolId}/gamblers/{gamblerId}/bets/pending
+    // URL: GET /pools/{poolId}/gamblers/{gamblerId}/bets/pending
     member this.GetPendingBets
         (request: APIGatewayHttpApiV2ProxyRequest, _: ILambdaContext)
         : APIGatewayHttpApiV2ProxyResponse Task =
@@ -202,7 +208,7 @@ type PoolFunctionWrapper(configureServices: IServiceCollection -> unit) =
         }
         |> Async.StartAsTask
 
-    // URL: /pools/{poolId}/gamblers/{gamblerId}/bets/finished
+    // URL: GET /pools/{poolId}/gamblers/{gamblerId}/bets/finished
     member this.GetFinishedBets
         (request: APIGatewayHttpApiV2ProxyRequest, _: ILambdaContext)
         : APIGatewayHttpApiV2ProxyResponse Task =
@@ -249,5 +255,22 @@ type PoolFunctionWrapper(configureServices: IServiceCollection -> unit) =
                     [ toErrorOption poolIdResult; toErrorOption gamblerIdResult ] |> List.choose id
 
                 return errors |> BadRequestResponseFactory.create
+        }
+        |> Async.StartAsTask
+
+    // URL: POST /pools
+    member this.CreatePool
+        (request: APIGatewayHttpApiV2ProxyRequest, _: ILambdaContext)
+        : APIGatewayHttpApiV2ProxyResponse Task =
+        async {
+            use scope = serviceProvider.CreateScope()
+
+            let createPoolRequestResult = tryGetOrError<CreatePoolRequest> request.Body
+
+            match createPoolRequestResult with
+            | Error error -> return [ error ] |> BadRequestResponseFactory.create
+            | Ok createPoolRequest ->
+                let! response = createPool createPoolRequest (scope.ServiceProvider.GetService<CreatePoolCommand>())
+                return! response.ToAmazonProxyResponse()
         }
         |> Async.StartAsTask

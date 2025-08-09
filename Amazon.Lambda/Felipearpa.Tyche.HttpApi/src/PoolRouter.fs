@@ -2,6 +2,7 @@ namespace Felipearpa.Tyche.HttpApi
 
 open System
 open Felipearpa.Tyche.Function.PoolFunction
+open Felipearpa.Tyche.Function.Request
 open Felipearpa.Tyche.Pool.Application
 open Microsoft.AspNetCore.Builder
 
@@ -96,6 +97,16 @@ module PoolRouter =
                                         getFinishedPoolGamblerBetsQuery
                             }
                             |> Async.StartAsTask)
+                )
+                .RequireAuthorization()
+            |> ignore
+
+            this
+                .MapPost(
+                    "/pools",
+                    Func<_, _, _>(fun (createPoolRequest: CreatePoolRequest) (createPoolCommand: CreatePoolCommand) ->
+                        async { return! createPool createPoolRequest createPoolCommand }
+                        |> Async.StartAsTask)
                 )
                 .RequireAuthorization()
             |> ignore

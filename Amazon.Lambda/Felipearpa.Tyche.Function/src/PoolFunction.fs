@@ -88,17 +88,16 @@ module PoolFunction =
             return Results.Ok(page |> CursorPage.map PoolGamblerBetTransformer.toResponse)
         }
 
-    let createPool (createPoolRequest: CreatePoolRequest) (createPoolCommand: CreatePoolCommand) : Task<IResult> =
+    let createPool (createPoolRequest: CreatePoolRequest) (createPoolCommand: CreatePoolCommand) : IResult Async =
         async {
             let! result =
                 createPoolCommand.ExecuteAsync(createPoolRequest |> CreatePoolRequestTransformer.toCreatePoolInput)
 
             return
                 match result with
-                | Ok pool -> Results.Ok(pool |> CreatePoolOutputTransformer.toPoolViewModel)
+                | Ok pool -> Results.Ok(pool |> CreatePoolOutputTransformer.toResponse)
                 | Error _ -> Results.NotFound("Gambler not found")
         }
-        |> Async.StartAsTask
 
     let joinPool (joinPoolRequest: JoinPoolRequest) (joinPoolCommand: JoinPoolCommand) : Task<IResult> =
         async {

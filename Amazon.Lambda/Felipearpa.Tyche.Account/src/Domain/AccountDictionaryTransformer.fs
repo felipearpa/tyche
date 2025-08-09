@@ -3,15 +3,14 @@ namespace Felipearpa.Tyche.Account.Domain
 open System.Collections.Generic
 open Amazon.DynamoDBv2.Model
 open System.Runtime.CompilerServices
+open Felipearpa.Type
 
 module AccountDictionaryTransformer =
-    let toAccountEntity (dictionary: IDictionary<string, AttributeValue>) =
-        { AccountEntity.Pk = dictionary["pk"].S
-          AccountId = dictionary["accountId"].S
-          Email = dictionary["email"].S
-          ExternalAccountId = dictionary["externalAccountId"].S }
+    let toAccount (dictionary: IDictionary<string, AttributeValue>) : Account =
+        { Account.AccountId = Ulid.newOf dictionary["accountId"].S
+          Email = Email.newOf dictionary["email"].S
+          ExternalAccountId = NonEmptyString.newOf dictionary["externalAccountId"].S }
 
-    [<Extension>]
     type Extensions =
         [<Extension>]
-        static member ToAccountEntity(this: IDictionary<string, AttributeValue>) = toAccountEntity this
+        static member ToAccount(this: IDictionary<string, AttributeValue>) = toAccount this

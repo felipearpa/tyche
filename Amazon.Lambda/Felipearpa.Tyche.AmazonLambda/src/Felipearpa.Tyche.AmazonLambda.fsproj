@@ -13,6 +13,7 @@
     <Compile Include="StringTransformer.fs" />
     <Compile Include="ResultTransformer.fs" />
     <Compile Include="ParameterResolver.fs" />
+    <Compile Include="BodyResolver.fs" />
     <Compile Include="BadRequestResponseFactory.fs" />
     <Compile Include="IResultTransformer.fs" />
     <Compile Include="PoolFunctionWrapper.fs" />
