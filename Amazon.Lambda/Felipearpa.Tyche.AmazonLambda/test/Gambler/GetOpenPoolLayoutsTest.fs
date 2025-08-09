@@ -19,9 +19,9 @@ open Microsoft.Extensions.DependencyInjection
 open Moq
 open Xunit
 
-module GetPoolsByGamblerIdTest =
+module GetOpenPoolLayoutsTest =
 
-    let ``given an existing pending bets`` () =
+    let ``given a request to query the open pool layouts`` () =
         let expectedPoolScores: CursorPage<PoolGamblerScoreResponse> =
             { Items =
                 seq {
@@ -81,7 +81,7 @@ module GetPoolsByGamblerIdTest =
     let ``when requesting its information`` (functions: GamblerFunctionWrapper) request context =
         async { return! functions.GetPoolsByGamblerId(request, context) |> Async.AwaitTask }
 
-    let ``then associated pool scores are returned``
+    let ``then the open pool layouts are returned``
         (response: APIGatewayHttpApiV2ProxyResponse)
         (expectedPoolScores: CursorPage<PoolGamblerScoreResponse>)
         =
@@ -112,11 +112,11 @@ module GetPoolsByGamblerIdTest =
     let ``given an existing gambler when requesting its information then the associated pool scores are returned`` () =
         async {
             let expectedPoolScores, context, request, functions =
-                ``given an existing pending bets`` ()
+                ``given a request to query the open pool layouts`` ()
 
             let! response = ``when requesting its information`` functions request context
 
-            ``then associated pool scores are returned`` response expectedPoolScores
+            ``then the open pool layouts are returned`` response expectedPoolScores
         }
 
     [<Fact>]

@@ -14,6 +14,9 @@ open Felipearpa.Tyche.Pool.Application
 open Felipearpa.Tyche.Pool.Data
 open Felipearpa.Tyche.Pool.Domain
 open Felipearpa.Tyche.Pool.Infrastructure
+open Felipearpa.Tyche.PoolLayout.Application
+open Felipearpa.Tyche.PoolLayout.Domain
+open Felipearpa.Tyche.PoolLayout.Infrastructure
 open Microsoft.AspNetCore.Builder
 open Microsoft.AspNetCore.Authentication.JwtBearer
 open Microsoft.Extensions.DependencyInjection
@@ -47,6 +50,8 @@ module DependencyInjectionConfigurator =
             .AddScoped<BetCommand>()
             .AddScoped<CreatePoolCommand>()
             .AddScoped<JoinPoolCommand>()
+            .AddScoped<IPoolLayoutRepository, PoolLayoutDynamoDbRepository>()
+            .AddScoped<GetOpenPoolLayoutsQuery>()
         |> ignore
 
     let registerJwt (app: WebApplicationBuilder) =

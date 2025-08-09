@@ -245,6 +245,32 @@ Resources:
             Path: /bets
             Method: PATCH
             ApiId: !Ref AuthGatewayHttpApi
+            
+  GetOpenPoolLayouts:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: Felipearpa.Tyche.AmazonLambda::Felipearpa.Tyche.AmazonLambda.PoolLayoutFunctionWrapper::GetOpenPoolLayouts
+      Runtime: dotnet8
+      CodeUri: .
+      MemorySize: 256
+      Timeout: 30
+      Policies:
+        - AWSLambdaBasicExecutionRole
+        - Statement:
+            - Effect: Allow
+              Action:
+                - dynamodb:Query
+              Resource:
+                - arn:aws:dynamodb:us-east-2:567776770335:table/Pool
+                - arn:aws:dynamodb:us-east-2:567776770335:table/Pool/index/GetPoolGamblerScoresByGambler-index
+      Architectures: [ arm64 ]
+      Events:
+        HttpApi:
+          Type: HttpApi
+          Properties:
+            Path: /pool-layouts/open
+            Method: GET
+            ApiId: !Ref AuthGatewayHttpApi
 
 Outputs:
   ApiURL:

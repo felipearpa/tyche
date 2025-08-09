@@ -1,5 +1,7 @@
 namespace Felipearpa.Tyche.PoolLayout.Infrastructure
 
+#nowarn "3536"
+
 open System.Linq
 open Amazon.DynamoDBv2
 open Felipearpa.Core.Paging

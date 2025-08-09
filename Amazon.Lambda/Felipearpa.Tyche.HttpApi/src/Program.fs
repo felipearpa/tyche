@@ -12,6 +12,7 @@ let main args =
         .ConfigurePoolRoutes()
         .ConfigureGamblerRoutes()
         .ConfigureBetRoutes()
+        .ConfigurePoolLayoutRoutes()
         .Run()
 
     0 // Exit code

@@ -8,7 +8,7 @@ module PoolLayoutTransformer =
     let toPoolLayoutResponse (poolLayout: PoolLayout) =
         { PoolLayoutResponse.Id = poolLayout.Id |> Ulid.value
           Name = poolLayout.Name |> NonEmptyString100.value
-          StartDateTime = poolLayout.StartDateTime }
+          StartDateTime = poolLayout.StartDateTime.ToUniversalTime() }
 
     type Extensions =
         [<Extension>]
