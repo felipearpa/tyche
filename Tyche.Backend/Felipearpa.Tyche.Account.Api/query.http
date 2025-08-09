@@ -1,8 +1,0 @@
-### Link an account
-POST https://guiding-terminally-cicada.ngrok-free.app/account/link
-content-type: application/json
-
-{
-    "email": "felipearcila@gmail.com",
-    "externalAccountId": "ZaGjvMlgGxbhW0yK5mYK0Lg6Wl93"
-}
