@@ -16,7 +16,7 @@ module PoolRouter =
                 .MapGet(
                     "/pools/{poolId}",
                     Func<_, _, _>(fun (poolId: String) (getPoolByIdQuery: GetPoolByIdQuery) ->
-                        async { return! getPoolById poolId getPoolByIdQuery } |> Async.StartAsTask)
+                        async { return! getPoolByIdAsync poolId getPoolByIdQuery } |> Async.StartAsTask)
                 )
                 .RequireAuthorization()
             |> ignore
@@ -31,7 +31,7 @@ module PoolRouter =
                             (getPoolGamblerScoresByPoolQuery: GetPoolGamblerScoresByPoolQuery) ->
                             async {
                                 return!
-                                    getGamblersByPoolId poolId (next |> Option.ofObj) getPoolGamblerScoresByPoolQuery
+                                    getGamblersByPoolIdAsync poolId (next |> Option.ofObj) getPoolGamblerScoresByPoolQuery
                             }
                             |> Async.StartAsTask)
 
@@ -47,7 +47,7 @@ module PoolRouter =
                             (poolId: string)
                             (gamblerId: string)
                             (getPoolGamblerScoreByIdQuery: GetPoolGamblerScoreByIdQuery) ->
-                            async { return! getPoolGamblerScoreById poolId gamblerId getPoolGamblerScoreByIdQuery }
+                            async { return! getPoolGamblerScoreByIdAsync poolId gamblerId getPoolGamblerScoreByIdQuery }
                             |> Async.StartAsTask)
                 )
                 .RequireAuthorization()
@@ -65,7 +65,7 @@ module PoolRouter =
                             (getPendingPoolGamblerBetsQuery: GetPendingPoolGamblerBetsQuery) ->
                             async {
                                 return!
-                                    getPendingBets
+                                    getPendingBetsAsync
                                         poolId
                                         gamblerId
                                         (searchText |> Option.ofObj)
@@ -89,7 +89,7 @@ module PoolRouter =
                             (getFinishedPoolGamblerBetsQuery: GetFinishedPoolGamblerBetsQuery) ->
                             async {
                                 return!
-                                    getFinishedBets
+                                    getFinishedBetsAsync
                                         poolId
                                         gamblerId
                                         (searchText |> Option.ofObj)
@@ -105,7 +105,7 @@ module PoolRouter =
                 .MapPost(
                     "/pools",
                     Func<_, _, _>(fun (createPoolRequest: CreatePoolRequest) (createPoolCommand: CreatePoolCommand) ->
-                        async { return! createPool createPoolRequest createPoolCommand }
+                        async { return! createPoolAsync createPoolRequest createPoolCommand }
                         |> Async.StartAsTask)
                 )
                 .RequireAuthorization()
@@ -115,7 +115,7 @@ module PoolRouter =
                 .MapPost(
                     "/pools/join",
                     Func<_, _, _>(fun (joinPoolRequest: JoinPoolRequest) (joinPoolCommand: JoinPoolCommand) ->
-                        async { return! joinPool joinPoolRequest joinPoolCommand } |> Async.StartAsTask)
+                        async { return! joinPoolAsync joinPoolRequest joinPoolCommand } |> Async.StartAsTask)
                 )
                 .RequireAuthorization()
             |> ignore

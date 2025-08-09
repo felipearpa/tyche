@@ -15,7 +15,7 @@ module PoolLayoutRouter =
                 .MapGet(
                     "/pool-layouts/open",
                     Func<_, _, _>(fun (next: string) (getOpenedPoolLayoutsQuery: GetOpenPoolLayoutsQuery) ->
-                        async { return! getOpenPoolLayouts (next |> Option.ofObj) getOpenedPoolLayoutsQuery }
+                        async { return! getOpenPoolLayoutsAsync (next |> Option.ofObj) getOpenedPoolLayoutsQuery }
                         |> Async.StartAsTask
 
                     )

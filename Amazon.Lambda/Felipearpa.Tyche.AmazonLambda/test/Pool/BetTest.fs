@@ -65,7 +65,7 @@ module BetTest =
         (context, request, functions)
 
     let private ``when requested`` (functions: PoolFunctionWrapper) request context =
-        async { return! functions.JoinPool(request, context) |> Async.AwaitTask }
+        async { return! functions.JoinPoolAsync(request, context) |> Async.AwaitTask }
 
     let private ``then the participant is added to the pool`` (response: APIGatewayHttpApiV2ProxyResponse) =
         response.StatusCode |> shouldEqual (int HttpStatusCode.NoContent)

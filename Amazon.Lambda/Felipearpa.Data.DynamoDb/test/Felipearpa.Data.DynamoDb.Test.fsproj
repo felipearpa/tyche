@@ -9,7 +9,6 @@
 
     <ItemGroup>
         <Compile Include="DictionaryTest.fs" />
-        <Compile Include="RepositoryTests.fs" />
         <Compile Include="KeySerializerTests.fs" />
     </ItemGroup>
 

@@ -12,7 +12,6 @@ open Felipearpa.Data.DynamoDb
 open Felipearpa.Tyche.Function.BetFunction
 open Felipearpa.Tyche.Function.Request
 open Felipearpa.Tyche.Pool.Application
-open Felipearpa.Tyche.Pool.Data
 open Felipearpa.Tyche.Pool.Domain
 open Felipearpa.Tyche.Pool.Infrastructure
 open Microsoft.Extensions.DependencyInjection
@@ -49,7 +48,7 @@ type BetFunctionWrapper(configureServices: IServiceCollection -> unit) =
     new() = BetFunctionWrapper(fun _ -> ())
 
     // PATCH /bets
-    member this.Bet
+    member this.BetAsync
         (request: APIGatewayHttpApiV2ProxyRequest, _: ILambdaContext)
         : APIGatewayHttpApiV2ProxyResponse Task =
         async {
@@ -60,7 +59,7 @@ type BetFunctionWrapper(configureServices: IServiceCollection -> unit) =
             match betRequestResult with
             | Error error -> return [ error ] |> BadRequestResponseFactory.create
             | Ok betPoolRequest ->
-                let! response = bet betPoolRequest (scope.ServiceProvider.GetService<BetCommand>())
+                let! response = betAsync betPoolRequest (scope.ServiceProvider.GetService<BetCommand>())
                 return! response.ToAmazonProxyResponse()
         }
         |> Async.StartAsTask

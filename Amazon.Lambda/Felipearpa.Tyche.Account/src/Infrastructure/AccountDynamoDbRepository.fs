@@ -50,7 +50,7 @@ type AccountDynamoDbRepository(client: IAmazonDynamoDB) =
                 | Error _ -> Error()
         }
 
-    let updateLink (account: Account) (accountLink: AccountLink) =
+    let updateLinkAsync (account: Account) (accountLink: AccountLink) =
         async {
             let updateAccountLinkRequest = UpdateLinkRequestBuilder.build account accountLink
 
@@ -96,12 +96,12 @@ type AccountDynamoDbRepository(client: IAmazonDynamoDB) =
                 match accountResult with
                 | Ok maybeAccount ->
                     match maybeAccount with
-                    | Some account -> return! updateLink account accountLink
+                    | Some account -> return! updateLinkAsync account accountLink
                     | None -> return! linkAsync accountLink
                 | Error _ -> return Error()
             }
 
-        member this.GetById(id) =
+        member this.GetByIdAsync(id) =
             async {
                 let request = GetByIdRequestBuilder.build (id |> Ulid.value)
 

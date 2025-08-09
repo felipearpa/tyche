@@ -9,7 +9,7 @@ open Microsoft.AspNetCore.Http
 
 module PoolFunction =
 
-    let getPoolById (poolId: string) (getPoolByIdQuery: GetPoolByIdQuery) : IResult Async =
+    let getPoolByIdAsync (poolId: string) (getPoolByIdQuery: GetPoolByIdQuery) : IResult Async =
         async {
             let! result = getPoolByIdQuery.ExecuteAsync(poolId |> Ulid.newOf)
 
@@ -22,7 +22,7 @@ module PoolFunction =
                 | Error _ -> Results.InternalServerError()
         }
 
-    let getGamblersByPoolId
+    let getGamblersByPoolIdAsync
         (poolId: string)
         (next: string option)
         (getPoolGamblerScoresByPoolQuery: GetPoolGamblerScoresByPoolQuery)
@@ -32,7 +32,7 @@ module PoolFunction =
             return Results.Ok(page |> CursorPage.map PoolGamblerScoreTransformer.toResponse)
         }
 
-    let getPoolGamblerScoreById
+    let getPoolGamblerScoreByIdAsync
         (poolId: string)
         (gamblerId: string)
         (getPoolGamblerScoreByIdQuery: GetPoolGamblerScoreByIdQuery)
@@ -49,7 +49,7 @@ module PoolFunction =
                 | Error _ -> Results.InternalServerError()
         }
 
-    let getPendingBets
+    let getPendingBetsAsync
         (poolId: string)
         (gamblerId: string)
         (searchText: string option)
@@ -68,7 +68,7 @@ module PoolFunction =
             return Results.Ok(page |> CursorPage.map PoolGamblerBetTransformer.toResponse)
         }
 
-    let getFinishedBets
+    let getFinishedBetsAsync
         (poolId: string)
         (gamblerId: string)
         (searchText: string option)
@@ -87,7 +87,7 @@ module PoolFunction =
             return Results.Ok(page |> CursorPage.map PoolGamblerBetTransformer.toResponse)
         }
 
-    let createPool (createPoolRequest: CreatePoolRequest) (createPoolCommand: CreatePoolCommand) : IResult Async =
+    let createPoolAsync (createPoolRequest: CreatePoolRequest) (createPoolCommand: CreatePoolCommand) : IResult Async =
         async {
             let! result =
                 createPoolCommand.ExecuteAsync(createPoolRequest |> CreatePoolRequestTransformer.toCreatePoolInput)
@@ -98,7 +98,7 @@ module PoolFunction =
                 | Error _ -> Results.NotFound("Gambler not found")
         }
 
-    let joinPool (joinPoolRequest: JoinPoolRequest) (joinPoolCommand: JoinPoolCommand) : IResult Async =
+    let joinPoolAsync (joinPoolRequest: JoinPoolRequest) (joinPoolCommand: JoinPoolCommand) : IResult Async =
         async {
             let! result = joinPoolCommand.ExecuteAsync(joinPoolRequest |> JoinPoolRequestTransformer.toJoinPoolInput)
 

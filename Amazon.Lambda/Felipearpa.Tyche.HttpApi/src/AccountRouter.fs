@@ -17,7 +17,7 @@ module AccountRouter =
                     "/accounts/link",
                     Func<_, _, _>
                         (fun (linkAccountRequest: LinkAccountRequest) (linkAccountCommand: LinkAccountCommand) ->
-                            async { return! linkAccount linkAccountRequest linkAccountCommand }
+                            async { return! linkAccountAsync linkAccountRequest linkAccountCommand }
                             |> Async.StartAsTask)
                 )
                 .RequireAuthorization()

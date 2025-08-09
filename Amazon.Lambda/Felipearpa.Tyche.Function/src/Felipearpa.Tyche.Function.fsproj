@@ -23,6 +23,8 @@
     <Compile Include="Response\PoolTransformer.fs" />
     <Compile Include="Response\PoolLayoutResponse.fs" />
     <Compile Include="Response\PoolLayoutTransformer.fs" />
+    <Compile Include="Response\AccountResponse.fs" />
+    <Compile Include="Response\AccountTransformer.fs" />
     <Compile Include="PoolFunction.fs" />
     <Compile Include="GamblerFunction.fs" />
     <Compile Include="BetFunction.fs" />

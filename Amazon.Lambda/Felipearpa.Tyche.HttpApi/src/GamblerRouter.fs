@@ -21,7 +21,7 @@ module GamblerRouter =
                             (getPoolGamblerScoresByGamblerQuery: GetPoolGamblerScoresByGamblerQuery) ->
                             async {
                                 return!
-                                    getPoolsByGamblerId
+                                    getPoolsByGamblerIdAsync
                                         poolId
                                         (next |> Option.ofObj)
                                         getPoolGamblerScoresByGamblerQuery

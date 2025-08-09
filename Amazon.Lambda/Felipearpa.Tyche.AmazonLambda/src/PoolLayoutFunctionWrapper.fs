@@ -40,7 +40,7 @@ type PoolLayoutFunctionWrapper(configureServices: IServiceCollection -> unit) =
     new() = PoolLayoutFunctionWrapper(fun _ -> ())
 
     // GET /pool-layouts/open
-    member this.GetOpenPoolLayouts
+    member this.GetOpenPoolLayoutsAsync
         (request: APIGatewayHttpApiV2ProxyRequest, _: ILambdaContext)
         : APIGatewayHttpApiV2ProxyResponse Task =
         async {
@@ -53,7 +53,7 @@ type PoolLayoutFunctionWrapper(configureServices: IServiceCollection -> unit) =
                 |> tryGetStringParamOrNone nextParameter
 
             let! response =
-                getOpenPoolLayouts
+                getOpenPoolLayoutsAsync
                     (maybeNext |> Option.bind noneIfEmpty)
                     (scope.ServiceProvider.GetService<GetOpenPoolLayoutsQuery>())
 

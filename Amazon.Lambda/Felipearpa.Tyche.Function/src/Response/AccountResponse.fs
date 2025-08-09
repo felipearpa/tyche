@@ -1,6 +1,6 @@
-namespace Felipearpa.Tyche.Account.Application
+namespace Felipearpa.Tyche.Function.Response
 
-type AccountViewModel =
+type AccountResponse =
     { AccountId: string
       Email: string
       ExternalAccountId: string }

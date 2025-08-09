@@ -56,7 +56,7 @@ module LinkAccountTest =
         (context, request, functions)
 
     let private ``when requested`` (functions: BetFunctionWrapper) request context =
-        async { return! functions.Bet(request, context) |> Async.AwaitTask }
+        async { return! functions.BetAsync(request, context) |> Async.AwaitTask }
 
     let private ``then the bet is added`` (response: APIGatewayHttpApiV2ProxyResponse) =
         response.StatusCode |> shouldEqual (int HttpStatusCode.OK)

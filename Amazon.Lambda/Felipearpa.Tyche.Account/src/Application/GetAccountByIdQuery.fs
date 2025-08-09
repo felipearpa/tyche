@@ -5,4 +5,4 @@ open Felipearpa.Type
 
 type GetAccountByIdQuery(accountRepository: IAccountRepository) =
     interface IGetAccountById with
-        member this.ExecuteAsync(id: Ulid) = accountRepository.GetById id
+        member this.ExecuteAsync(id: Ulid) = accountRepository.GetByIdAsync id

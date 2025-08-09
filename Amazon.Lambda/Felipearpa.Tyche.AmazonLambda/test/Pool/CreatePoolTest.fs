@@ -53,7 +53,7 @@ module CreatePoolTest =
         (context, request, functions)
 
     let private ``when requested`` (functions: PoolFunctionWrapper) request context =
-        async { return! functions.CreatePool(request, context) |> Async.AwaitTask }
+        async { return! functions.CreatePoolAsync(request, context) |> Async.AwaitTask }
 
     let private ``then the pool is created`` (response: APIGatewayHttpApiV2ProxyResponse) =
         response.StatusCode |> shouldEqual (int HttpStatusCode.OK)

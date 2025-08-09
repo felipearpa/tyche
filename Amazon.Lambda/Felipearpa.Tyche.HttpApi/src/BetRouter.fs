@@ -16,7 +16,7 @@ module BetRouter =
                 .MapPatch(
                     "/bets",
                     Func<_, _, _>(fun (betRequest: BetRequest) (betCommand: BetCommand) ->
-                        async { return! bet betRequest betCommand } |> Async.StartAsTask)
+                        async { return! betAsync betRequest betCommand } |> Async.StartAsTask)
 
                 )
                 .RequireAuthorization()

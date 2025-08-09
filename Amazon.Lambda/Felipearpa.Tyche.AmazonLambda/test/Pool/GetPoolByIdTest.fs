@@ -53,7 +53,7 @@ module GetPoolByIdTest =
         (expectedPool, context, request, functions)
 
     let private ``when requesting its information`` (functions: PoolFunctionWrapper) request context =
-        async { return! functions.GetPoolById(request, context) |> Async.AwaitTask }
+        async { return! functions.GetPoolByIdAsync(request, context) |> Async.AwaitTask }
 
     let private ``then the pool is returned`` (response: APIGatewayHttpApiV2ProxyResponse) expectedPool =
         response.StatusCode |> should equal (int HttpStatusCode.OK)

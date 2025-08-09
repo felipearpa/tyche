@@ -79,7 +79,7 @@ module GetOpenPoolLayoutsTest =
         (expectedPoolScores, context, request, functions)
 
     let ``when requesting its information`` (functions: GamblerFunctionWrapper) request context =
-        async { return! functions.GetPoolsByGamblerId(request, context) |> Async.AwaitTask }
+        async { return! functions.GetPoolsByGamblerIdAsync(request, context) |> Async.AwaitTask }
 
     let ``then the open pool layouts are returned``
         (response: APIGatewayHttpApiV2ProxyResponse)

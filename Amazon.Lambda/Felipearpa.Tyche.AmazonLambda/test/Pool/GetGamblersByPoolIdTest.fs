@@ -85,7 +85,7 @@ module GetGamblersByPoolIdTest =
         (expectedPoolScores, context, request, functions)
 
     let private ``when requesting its information`` (functions: PoolFunctionWrapper) request context =
-        async { return! functions.GetGamblersByPoolId(request, context) |> Async.AwaitTask }
+        async { return! functions.GetGamblersByPoolIdAsync(request, context) |> Async.AwaitTask }
 
     let private ``then associated pool scores are returned``
         (response: APIGatewayHttpApiV2ProxyResponse)

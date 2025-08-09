@@ -18,7 +18,7 @@ Resources:
   GetPoolById:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: Felipearpa.Tyche.AmazonLambda::Felipearpa.Tyche.AmazonLambda.PoolFunctionWrapper::GetPoolById
+      Handler: Felipearpa.Tyche.AmazonLambda::Felipearpa.Tyche.AmazonLambda.PoolFunctionWrapper::GetPoolByIdAsync
       Runtime: dotnet8
       CodeUri: .
       MemorySize: 256
@@ -43,7 +43,7 @@ Resources:
   GetGamblersByPoolId:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: Felipearpa.Tyche.AmazonLambda::Felipearpa.Tyche.AmazonLambda.PoolFunctionWrapper::GetGamblersByPoolId
+      Handler: Felipearpa.Tyche.AmazonLambda::Felipearpa.Tyche.AmazonLambda.PoolFunctionWrapper::GetGamblersByPoolIdAsync
       Runtime: dotnet8
       CodeUri: .
       MemorySize: 256
@@ -69,7 +69,7 @@ Resources:
   GetPoolGamblerScoreById:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: Felipearpa.Tyche.AmazonLambda::Felipearpa.Tyche.AmazonLambda.PoolFunctionWrapper::GetPoolGamblerScoreById
+      Handler: Felipearpa.Tyche.AmazonLambda::Felipearpa.Tyche.AmazonLambda.PoolFunctionWrapper::GetPoolGamblerScoreByIdAsync
       Runtime: dotnet8
       CodeUri: .
       MemorySize: 256
@@ -94,7 +94,7 @@ Resources:
   GetPendingBets:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: Felipearpa.Tyche.AmazonLambda::Felipearpa.Tyche.AmazonLambda.PoolFunctionWrapper::GetPendingBets
+      Handler: Felipearpa.Tyche.AmazonLambda::Felipearpa.Tyche.AmazonLambda.PoolFunctionWrapper::GetPendingBetsAsync
       Runtime: dotnet8
       CodeUri: .
       MemorySize: 256
@@ -120,7 +120,7 @@ Resources:
   GetFinishedBets:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: Felipearpa.Tyche.AmazonLambda::Felipearpa.Tyche.AmazonLambda.PoolFunctionWrapper::GetFinishedBets
+      Handler: Felipearpa.Tyche.AmazonLambda::Felipearpa.Tyche.AmazonLambda.PoolFunctionWrapper::GetFinishedBetsAsync
       Runtime: dotnet8
       CodeUri: .
       MemorySize: 256
@@ -146,7 +146,7 @@ Resources:
   GetPoolsByGamblerId:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: Felipearpa.Tyche.AmazonLambda::Felipearpa.Tyche.AmazonLambda.GamblerFunctionWrapper::GetPoolsByGamblerId
+      Handler: Felipearpa.Tyche.AmazonLambda::Felipearpa.Tyche.AmazonLambda.GamblerFunctionWrapper::GetPoolsByGamblerIdAsync
       Runtime: dotnet8
       CodeUri: .
       MemorySize: 256
@@ -172,7 +172,7 @@ Resources:
   CreatePool:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: Felipearpa.Tyche.AmazonLambda::Felipearpa.Tyche.AmazonLambda.PoolFunctionWrapper::CreatePool
+      Handler: Felipearpa.Tyche.AmazonLambda::Felipearpa.Tyche.AmazonLambda.PoolFunctionWrapper::CreatePoolAsync
       Runtime: dotnet8
       CodeUri: .
       MemorySize: 256
@@ -198,7 +198,7 @@ Resources:
   JoinPool:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: Felipearpa.Tyche.AmazonLambda::Felipearpa.Tyche.AmazonLambda.PoolFunctionWrapper::JoinPool
+      Handler: Felipearpa.Tyche.AmazonLambda::Felipearpa.Tyche.AmazonLambda.PoolFunctionWrapper::JoinPoolAsync
       Runtime: dotnet8
       CodeUri: .
       MemorySize: 256
@@ -224,7 +224,7 @@ Resources:
   Bet:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: Felipearpa.Tyche.AmazonLambda::Felipearpa.Tyche.AmazonLambda.BetFunctionWrapper::Bet
+      Handler: Felipearpa.Tyche.AmazonLambda::Felipearpa.Tyche.AmazonLambda.BetFunctionWrapper::BetAsync
       Runtime: dotnet8
       CodeUri: .
       MemorySize: 256
@@ -249,7 +249,7 @@ Resources:
   GetOpenPoolLayouts:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: Felipearpa.Tyche.AmazonLambda::Felipearpa.Tyche.AmazonLambda.PoolLayoutFunctionWrapper::GetOpenPoolLayouts
+      Handler: Felipearpa.Tyche.AmazonLambda::Felipearpa.Tyche.AmazonLambda.PoolLayoutFunctionWrapper::GetOpenPoolLayoutsAsync
       Runtime: dotnet8
       CodeUri: .
       MemorySize: 256
@@ -275,7 +275,7 @@ Resources:
   LinkAccount:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: Felipearpa.Tyche.AmazonLambda::Felipearpa.Tyche.AmazonLambda.AccountFunctionWrapper::LinkAccount
+      Handler: Felipearpa.Tyche.AmazonLambda::Felipearpa.Tyche.AmazonLambda.AccountFunctionWrapper::LinkAccountAsync
       Runtime: dotnet8
       CodeUri: .
       MemorySize: 256

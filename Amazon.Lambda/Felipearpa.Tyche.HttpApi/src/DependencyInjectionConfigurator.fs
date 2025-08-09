@@ -33,8 +33,6 @@ module DependencyInjectionConfigurator =
             .AddSingleton<IHasher, BCryptHasher>()
             .AddSingleton<ISerializer, JsonSerializer>()
             .AddSingleton<IKeySerializer, DynamoDbKeySerializer>()
-            .AddSingleton<IJwtSetting, LocalJwtSetting>()
-            .AddSingleton<IJwtGenerator, LocalJWTGenerator>()
             .AddDefaultAWSOptions(app.Configuration.GetAWSOptions())
             .AddAWSService<IAmazonDynamoDB>()
             .AddScoped<IAccountRepository, AccountDynamoDbRepository>()

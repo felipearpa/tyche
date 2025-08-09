@@ -24,7 +24,7 @@ type PoolDynamoDbRepository(client: IAmazonDynamoDB) =
         }
 
     interface IPoolRepository with
-        member this.GetPoolById(id) =
+        member this.GetPoolByIdAsync(id) =
             async {
                 let request = GetPoolByIdRequestBuilder.build (id |> Ulid.value)
 
@@ -46,7 +46,7 @@ type PoolDynamoDbRepository(client: IAmazonDynamoDB) =
                     | Error _ -> Error()
             }
 
-        member this.CreatePool(createPoolInput) =
+        member this.CreatePoolAsync(createPoolInput) =
             async {
                 let createPoolRequest = CreatePoolRequestBuilder.build createPoolInput
                 let createPoolGamblerRequest = JoinPoolGamblerRequestBuilder.build createPoolInput
@@ -69,7 +69,7 @@ type PoolDynamoDbRepository(client: IAmazonDynamoDB) =
                     | Error _ -> Error()
             }
 
-        member this.JoinPool(joinPoolInput) =
+        member this.JoinPoolAsync(joinPoolInput) =
             async {
                 let putRequest =
                     JoinPoolGamblerRequestBuilder.build

@@ -12,7 +12,6 @@ open Felipearpa.Data.DynamoDb
 open Felipearpa.Tyche.AmazonLambda.StringTransformer
 open Felipearpa.Tyche.Function.GamblerFunction
 open Felipearpa.Tyche.Pool.Application
-open Felipearpa.Tyche.Pool.Data
 open Felipearpa.Tyche.Pool.Domain
 open Felipearpa.Tyche.Pool.Infrastructure
 open Microsoft.Extensions.DependencyInjection
@@ -55,7 +54,7 @@ type GamblerFunctionWrapper(configureServices: IServiceCollection -> unit) =
     new() = GamblerFunctionWrapper(fun _ -> ())
 
     // GET /gamblers/{gamblerId}/pools?next={next}
-    member this.GetPoolsByGamblerId
+    member this.GetPoolsByGamblerIdAsync
         (request: APIGatewayHttpApiV2ProxyRequest, _: ILambdaContext)
         : APIGatewayHttpApiV2ProxyResponse Task =
         async {
@@ -76,7 +75,7 @@ type GamblerFunctionWrapper(configureServices: IServiceCollection -> unit) =
             match gamblerIdResult, maybeNext with
             | Ok gamblerId, next ->
                 let! response =
-                    getPoolsByGamblerId
+                    getPoolsByGamblerIdAsync
                         gamblerId
                         (next |> Option.bind noneIfEmpty)
                         (scope.ServiceProvider.GetService<GetPoolGamblerScoresByGamblerQuery>())

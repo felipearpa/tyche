@@ -82,7 +82,7 @@ module LinkAccountTest =
         (context, request, functions)
 
     let private ``when requested`` (functions: AccountFunctionWrapper) request context =
-        async { return! functions.LinkAccount(request, context) |> Async.AwaitTask }
+        async { return! functions.LinkAccountAsync(request, context) |> Async.AwaitTask }
 
     let private ``then the account is linked`` (response: APIGatewayHttpApiV2ProxyResponse) =
         response.StatusCode |> shouldEqual (int HttpStatusCode.OK)

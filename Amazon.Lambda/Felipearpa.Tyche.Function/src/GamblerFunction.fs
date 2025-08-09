@@ -8,7 +8,7 @@ open Microsoft.AspNetCore.Http
 
 module GamblerFunction =
 
-    let getPoolsByGamblerId
+    let getPoolsByGamblerIdAsync
         (gamblerId: string)
         (next: string option)
         (getPoolGamblerScoresByGamblerQuery: GetPoolGamblerScoresByGamblerQuery)

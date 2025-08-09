@@ -15,13 +15,11 @@
         <Compile Include="Infrastructure\GetByEmailRequestBuilder.fs" />
         <Compile Include="Infrastructure\GetByIdRequestBuilder.fs" />
         <Compile Include="Infrastructure\AccountDynamoDbRepository.fs" />
-        <Compile Include="Application\AccountViewModel.fs" />
-        <Compile Include="Application\AccountTransformer.fs" />
         <Compile Include="Application\IGetAccountById.fs" />
         <Compile Include="Application\GetAccountByIdQuery.fs" />
-        <Compile Include="Application\SignIn\LinkAccountCommandInput.fs" />
-        <Compile Include="Application\SignIn\LinkAccountCommandTransformer.fs" />
-        <Compile Include="Application\SignIn\LinkAccountCommand.fs" />
+        <Compile Include="Application\LinkAccountCommandInput.fs" />
+        <Compile Include="Application\LinkAccountCommandTransformer.fs" />
+        <Compile Include="Application\LinkAccountCommand.fs" />
     </ItemGroup>
 
     <ItemGroup>

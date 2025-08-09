@@ -1,6 +1,6 @@
 namespace Felipearpa.Tyche.Pool.Application
 
-open Felipearpa.Tyche.Pool.Data
+open Felipearpa.Tyche.Pool.Domain
 open Felipearpa.Tyche.Pool.Type
 open Felipearpa.Type
 

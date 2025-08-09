@@ -1,4 +1,4 @@
-namespace Felipearpa.Tyche.Account.Application.SignIn
+namespace Felipearpa.Tyche.Account.Application
 
 open Felipearpa.Type
 

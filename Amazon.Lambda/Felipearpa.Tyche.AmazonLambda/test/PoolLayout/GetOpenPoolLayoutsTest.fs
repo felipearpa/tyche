@@ -62,7 +62,7 @@ module GetOpenPoolLayoutTest =
         (expectedPoolLayouts, context, request, functions)
 
     let private ``when requesting`` (functions: PoolLayoutFunctionWrapper) request context =
-        async { return! functions.GetOpenPoolLayouts(request, context) |> Async.AwaitTask }
+        async { return! functions.GetOpenPoolLayoutsAsync(request, context) |> Async.AwaitTask }
 
     let private ``then the open pool layouts are returned``
         (response: APIGatewayHttpApiV2ProxyResponse)

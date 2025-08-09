@@ -1,5 +1,7 @@
 module AccountDynamoDbRepositoryTest
 
+#nowarn "3536"
+
 open System
 open System.Collections.Generic
 open System.Threading.Tasks

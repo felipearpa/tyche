@@ -10,7 +10,7 @@ open Amazon.DynamoDBv2.Model
 open Felipearpa.Core
 open Felipearpa.Core.Paging
 open Felipearpa.Data.DynamoDb
-open Felipearpa.Tyche.Pool.Data
+open Felipearpa.Tyche.Pool.Domain
 open Felipearpa.Tyche.Pool.Domain.PoolGamblerBetDictionaryTransformer
 open Felipearpa.Type
 
@@ -28,7 +28,7 @@ type PoolGamblerBetDynamoDbRepository(keySerializer: IKeySerializer, client: IAm
     let matchText = "MATCH"
 
     interface IPoolGamblerBetRepository with
-        member this.GetPendingPoolGamblerBets(poolId, gamblerId, maybeSearchText, maybeNext) =
+        member this.GetPendingPoolGamblerBetsAsync(poolId, gamblerId, maybeSearchText, maybeNext) =
             async {
                 let keyConditionExpression = "#pk = :pk"
 
@@ -78,7 +78,7 @@ type PoolGamblerBetDynamoDbRepository(keySerializer: IKeySerializer, client: IAm
                         | None -> None }
             }
 
-        member this.GetFinishedPoolGamblerBets(poolId, gamblerId, maybeSearchText, maybeNext) =
+        member this.GetFinishedPoolGamblerBetsAsync(poolId, gamblerId, maybeSearchText, maybeNext) =
             async {
                 let keyConditionExpression = "#pk = :pk"
 

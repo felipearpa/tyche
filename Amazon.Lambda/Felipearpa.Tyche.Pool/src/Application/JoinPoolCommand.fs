@@ -14,12 +14,12 @@ type JoinPoolCommand(poolRepository: IPoolRepository, getAccountById: IGetAccoun
     member this.ExecuteAsync(joinPoolInput: JoinPoolInput) : Result<unit, JoinPoolFailure> Async =
         async {
             let! accountResult = getAccountById.ExecuteAsync joinPoolInput.GamblerId
-            let! poolResult = poolRepository.GetPoolById joinPoolInput.PoolId
+            let! poolResult = poolRepository.GetPoolByIdAsync joinPoolInput.PoolId
 
             match accountResult, poolResult with
             | Ok(Some account), Ok(Some pool) ->
                 let! result =
-                    poolRepository.JoinPool
+                    poolRepository.JoinPoolAsync
                         { ResolvedJoinPoolInput.PoolLayoutId = pool.PoolLayoutId
                           PoolId = joinPoolInput.PoolId
                           PoolName = pool.PoolName

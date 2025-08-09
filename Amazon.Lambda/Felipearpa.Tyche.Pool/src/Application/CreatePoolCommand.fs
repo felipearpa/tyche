@@ -25,7 +25,7 @@ type CreatePoolCommand(poolRepository: IPoolRepository, getAccountById: IGetAcco
                       OwnerGamblerId = createPoolInput.OwnerGamblerId
                       OwnerGamblerUsername = account.Email |> Email.value |> NonEmptyString100.newOf }
 
-                let! result = poolRepository.CreatePool resolvedInput
+                let! result = poolRepository.CreatePoolAsync resolvedInput
 
                 return
                     match result with

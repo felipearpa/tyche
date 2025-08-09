@@ -115,7 +115,7 @@ module GetPendingBetsTest =
         (expectedBets, context, request, functions)
 
     let private ``when requesting its information`` (functions: PoolFunctionWrapper) request context =
-        async { return! functions.GetPendingBets(request, context) |> Async.AwaitTask }
+        async { return! functions.GetPendingBetsAsync(request, context) |> Async.AwaitTask }
 
     let ``then the pending bets are returned``
         (response: APIGatewayHttpApiV2ProxyResponse)

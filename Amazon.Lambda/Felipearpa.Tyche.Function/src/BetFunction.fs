@@ -9,7 +9,7 @@ open Microsoft.AspNetCore.Http
 
 module BetFunction =
 
-    let bet (betRequest: BetRequest) (betCommand: BetCommand) : IResult Async =
+    let betAsync (betRequest: BetRequest) (betCommand: BetCommand) : IResult Async =
         async {
             let betScore =
                 { TeamScore.HomeTeamValue = betRequest.HomeTeamBet |> BetScore.newOf

@@ -9,7 +9,7 @@ open Amazon.Lambda.Core
 open Felipearpa.Core
 open Felipearpa.Core.Json
 open Felipearpa.Data.DynamoDb
-open Felipearpa.Tyche.Account.Application.SignIn
+open Felipearpa.Tyche.Account.Application
 open Felipearpa.Tyche.Account.Domain
 open Felipearpa.Tyche.Account.Infrastructure
 open Felipearpa.Tyche.Function.AccountFunction
@@ -38,7 +38,7 @@ type AccountFunctionWrapper(configureServices: IServiceCollection -> unit) =
     new() = AccountFunctionWrapper(fun _ -> ())
 
     // POST /accounts/link
-    member this.LinkAccount
+    member this.LinkAccountAsync
         (request: APIGatewayHttpApiV2ProxyRequest, _: ILambdaContext)
         : APIGatewayHttpApiV2ProxyResponse Task =
         async {
@@ -49,7 +49,7 @@ type AccountFunctionWrapper(configureServices: IServiceCollection -> unit) =
             match linkAccountRequestResult with
             | Error error -> return [ error ] |> BadRequestResponseFactory.create
             | Ok linkAccountRequest ->
-                let! response = linkAccount linkAccountRequest (scope.ServiceProvider.GetService<LinkAccountCommand>())
+                let! response = linkAccountAsync linkAccountRequest (scope.ServiceProvider.GetService<LinkAccountCommand>())
                 return! response.ToAmazonProxyResponse()
         }
         |> Async.StartAsTask

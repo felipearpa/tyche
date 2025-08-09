@@ -1,4 +1,4 @@
-namespace Felipearpa.Tyche.Account.Application
+namespace Felipearpa.Tyche.Function.Response
 
 open Felipearpa.Type
 open Felipearpa.Tyche.Account.Domain
@@ -6,7 +6,7 @@ open Felipearpa.Tyche.Account.Domain
 module AccountTransformer =
     type Account with
 
-        member this.ToAccountViewModel() =
-            { AccountViewModel.AccountId = this.AccountId |> Ulid.value
+        member this.ToAccountResponse() =
+            { AccountResponse.AccountId = this.AccountId |> Ulid.value
               Email = this.Email |> Email.value
               ExternalAccountId = this.ExternalAccountId |> NonEmptyString.value }

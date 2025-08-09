@@ -16,7 +16,6 @@ open Felipearpa.Tyche.AmazonLambda.StringTransformer
 open Felipearpa.Tyche.Function.PoolFunction
 open Felipearpa.Tyche.Function.Request
 open Felipearpa.Tyche.Pool.Application
-open Felipearpa.Tyche.Pool.Data
 open Felipearpa.Tyche.Pool.Domain
 open Felipearpa.Tyche.Pool.Infrastructure
 open Microsoft.Extensions.DependencyInjection
@@ -67,7 +66,7 @@ type PoolFunctionWrapper(configureServices: IServiceCollection -> unit) =
     new() = PoolFunctionWrapper(fun _ -> ())
 
     // GET /pools/{poolId}
-    member this.GetPoolById
+    member this.GetPoolByIdAsync
         (request: APIGatewayHttpApiV2ProxyRequest, _: ILambdaContext)
         : APIGatewayHttpApiV2ProxyResponse Task =
         async {
@@ -82,13 +81,13 @@ type PoolFunctionWrapper(configureServices: IServiceCollection -> unit) =
             match poolIdResult with
             | Error error -> return [ error ] |> BadRequestResponseFactory.create
             | Ok poolId ->
-                let! response = getPoolById poolId (scope.ServiceProvider.GetService<GetPoolByIdQuery>())
+                let! response = getPoolByIdAsync poolId (scope.ServiceProvider.GetService<GetPoolByIdQuery>())
                 return! response.ToAmazonProxyResponse()
         }
         |> Async.StartAsTask
 
     // GET /pools/{poolId}/gamblers?next={next}
-    member this.GetGamblersByPoolId
+    member this.GetGamblersByPoolIdAsync
         (request: APIGatewayHttpApiV2ProxyRequest, _: ILambdaContext)
         : APIGatewayHttpApiV2ProxyResponse Task =
         async {
@@ -109,7 +108,7 @@ type PoolFunctionWrapper(configureServices: IServiceCollection -> unit) =
             match poolIdResult, maybeNext with
             | Ok poolId, next ->
                 let! response =
-                    getGamblersByPoolId
+                    getGamblersByPoolIdAsync
                         poolId
                         (next |> Option.bind noneIfEmpty)
                         (scope.ServiceProvider.GetService<GetPoolGamblerScoresByPoolQuery>())
@@ -123,7 +122,7 @@ type PoolFunctionWrapper(configureServices: IServiceCollection -> unit) =
         |> Async.StartAsTask
 
     // GET /pools/{poolId}/gamblers/{gamblerId}
-    member this.GetPoolGamblerScoreById
+    member this.GetPoolGamblerScoreByIdAsync
         (request: APIGatewayHttpApiV2ProxyRequest, _: ILambdaContext)
         : APIGatewayHttpApiV2ProxyResponse Task =
         async {
@@ -144,7 +143,7 @@ type PoolFunctionWrapper(configureServices: IServiceCollection -> unit) =
             match poolIdResult, gamblerIdResult with
             | Ok poolId, Ok gamblerId ->
                 let! response =
-                    getPoolGamblerScoreById
+                    getPoolGamblerScoreByIdAsync
                         poolId
                         gamblerId
                         (scope.ServiceProvider.GetService<GetPoolGamblerScoreByIdQuery>())
@@ -159,7 +158,7 @@ type PoolFunctionWrapper(configureServices: IServiceCollection -> unit) =
         |> Async.StartAsTask
 
     // GET /pools/{poolId}/gamblers/{gamblerId}/bets/pending
-    member this.GetPendingBets
+    member this.GetPendingBetsAsync
         (request: APIGatewayHttpApiV2ProxyRequest, _: ILambdaContext)
         : APIGatewayHttpApiV2ProxyResponse Task =
         async {
@@ -192,7 +191,7 @@ type PoolFunctionWrapper(configureServices: IServiceCollection -> unit) =
             match poolIdResult, gamblerIdResult, maybeNext, maybeSearchText with
             | Ok poolId, Ok gamblerId, next, searchText ->
                 let! response =
-                    getPendingBets
+                    getPendingBetsAsync
                         poolId
                         gamblerId
                         searchText
@@ -209,7 +208,7 @@ type PoolFunctionWrapper(configureServices: IServiceCollection -> unit) =
         |> Async.StartAsTask
 
     // GET /pools/{poolId}/gamblers/{gamblerId}/bets/finished
-    member this.GetFinishedBets
+    member this.GetFinishedBetsAsync
         (request: APIGatewayHttpApiV2ProxyRequest, _: ILambdaContext)
         : APIGatewayHttpApiV2ProxyResponse Task =
         async {
@@ -242,7 +241,7 @@ type PoolFunctionWrapper(configureServices: IServiceCollection -> unit) =
             match poolIdResult, gamblerIdResult, maybeNext, maybeSearchText with
             | Ok poolId, Ok gamblerId, next, searchText ->
                 let! response =
-                    getFinishedBets
+                    getFinishedBetsAsync
                         poolId
                         gamblerId
                         searchText
@@ -259,7 +258,7 @@ type PoolFunctionWrapper(configureServices: IServiceCollection -> unit) =
         |> Async.StartAsTask
 
     // POST /pools
-    member this.CreatePool
+    member this.CreatePoolAsync
         (request: APIGatewayHttpApiV2ProxyRequest, _: ILambdaContext)
         : APIGatewayHttpApiV2ProxyResponse Task =
         async {
@@ -270,13 +269,15 @@ type PoolFunctionWrapper(configureServices: IServiceCollection -> unit) =
             match createPoolRequestResult with
             | Error error -> return [ error ] |> BadRequestResponseFactory.create
             | Ok createPoolRequest ->
-                let! response = createPool createPoolRequest (scope.ServiceProvider.GetService<CreatePoolCommand>())
+                let! response =
+                    createPoolAsync createPoolRequest (scope.ServiceProvider.GetService<CreatePoolCommand>())
+
                 return! response.ToAmazonProxyResponse()
         }
         |> Async.StartAsTask
 
     // POST /pools/join
-    member this.JoinPool
+    member this.JoinPoolAsync
         (request: APIGatewayHttpApiV2ProxyRequest, _: ILambdaContext)
         : APIGatewayHttpApiV2ProxyResponse Task =
         async {
@@ -287,7 +288,7 @@ type PoolFunctionWrapper(configureServices: IServiceCollection -> unit) =
             match joinPoolRequestResult with
             | Error error -> return [ error ] |> BadRequestResponseFactory.create
             | Ok joinPoolRequest ->
-                let! response = joinPool joinPoolRequest (scope.ServiceProvider.GetService<JoinPoolCommand>())
+                let! response = joinPoolAsync joinPoolRequest (scope.ServiceProvider.GetService<JoinPoolCommand>())
                 return! response.ToAmazonProxyResponse()
         }
         |> Async.StartAsTask

@@ -7,7 +7,6 @@
 
   <ItemGroup>
     <Compile Include="DynamoDbKeySerializer.fs" />
-    <Compile Include="Repository.fs" />
     <Compile Include="Dictionary.fs" />
   </ItemGroup>
 
