@@ -66,7 +66,7 @@ type PoolFunctionWrapper(configureServices: IServiceCollection -> unit) =
 
     new() = PoolFunctionWrapper(fun _ -> ())
 
-    // URL: GET /pools/{poolId}
+    // GET /pools/{poolId}
     member this.GetPoolById
         (request: APIGatewayHttpApiV2ProxyRequest, _: ILambdaContext)
         : APIGatewayHttpApiV2ProxyResponse Task =
@@ -87,7 +87,7 @@ type PoolFunctionWrapper(configureServices: IServiceCollection -> unit) =
         }
         |> Async.StartAsTask
 
-    // URL: GET /pools/{poolId}/gamblers?next={next}
+    // GET /pools/{poolId}/gamblers?next={next}
     member this.GetGamblersByPoolId
         (request: APIGatewayHttpApiV2ProxyRequest, _: ILambdaContext)
         : APIGatewayHttpApiV2ProxyResponse Task =
@@ -122,7 +122,7 @@ type PoolFunctionWrapper(configureServices: IServiceCollection -> unit) =
         }
         |> Async.StartAsTask
 
-    // URL: GET /pools/{poolId}/gamblers/{gamblerId}
+    // GET /pools/{poolId}/gamblers/{gamblerId}
     member this.GetPoolGamblerScoreById
         (request: APIGatewayHttpApiV2ProxyRequest, _: ILambdaContext)
         : APIGatewayHttpApiV2ProxyResponse Task =
@@ -158,7 +158,7 @@ type PoolFunctionWrapper(configureServices: IServiceCollection -> unit) =
         }
         |> Async.StartAsTask
 
-    // URL: GET /pools/{poolId}/gamblers/{gamblerId}/bets/pending
+    // GET /pools/{poolId}/gamblers/{gamblerId}/bets/pending
     member this.GetPendingBets
         (request: APIGatewayHttpApiV2ProxyRequest, _: ILambdaContext)
         : APIGatewayHttpApiV2ProxyResponse Task =
@@ -208,7 +208,7 @@ type PoolFunctionWrapper(configureServices: IServiceCollection -> unit) =
         }
         |> Async.StartAsTask
 
-    // URL: GET /pools/{poolId}/gamblers/{gamblerId}/bets/finished
+    // GET /pools/{poolId}/gamblers/{gamblerId}/bets/finished
     member this.GetFinishedBets
         (request: APIGatewayHttpApiV2ProxyRequest, _: ILambdaContext)
         : APIGatewayHttpApiV2ProxyResponse Task =
@@ -258,7 +258,7 @@ type PoolFunctionWrapper(configureServices: IServiceCollection -> unit) =
         }
         |> Async.StartAsTask
 
-    // URL: POST /pools
+    // POST /pools
     member this.CreatePool
         (request: APIGatewayHttpApiV2ProxyRequest, _: ILambdaContext)
         : APIGatewayHttpApiV2ProxyResponse Task =
@@ -275,7 +275,7 @@ type PoolFunctionWrapper(configureServices: IServiceCollection -> unit) =
         }
         |> Async.StartAsTask
 
-    // URL: POST /pools/join
+    // POST /pools/join
     member this.JoinPool
         (request: APIGatewayHttpApiV2ProxyRequest, _: ILambdaContext)
         : APIGatewayHttpApiV2ProxyResponse Task =

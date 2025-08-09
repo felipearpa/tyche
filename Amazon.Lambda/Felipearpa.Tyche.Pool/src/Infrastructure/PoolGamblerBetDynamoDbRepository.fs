@@ -164,13 +164,9 @@ type PoolGamblerBetDynamoDbRepository(keySerializer: IKeySerializer, client: IAm
                         ReturnValues = "ALL_NEW"
                     )
 
-                return!
-                    async {
-                        try
-                            let! response = client.UpdateItemAsync(request) |> Async.AwaitTask
-                            return response.Attributes |> toPoolGamblerBet |> Ok
-                        with :? AggregateException as error when
-                            (error.InnerException :? ConditionalCheckFailedException) ->
-                            return Error BetFailure.MatchLocked
-                    }
+                try
+                    let! response = client.UpdateItemAsync(request) |> Async.AwaitTask
+                    return response.Attributes |> toPoolGamblerBet |> Ok
+                with :? AggregateException as error when (error.InnerException :? ConditionalCheckFailedException) ->
+                    return Error BetFailure.MatchLocked
             }

@@ -220,6 +220,31 @@ Resources:
             Path: /pools/join
             Method: POST
             ApiId: !Ref AuthGatewayHttpApi
+  
+  Bet:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: Felipearpa.Tyche.AmazonLambda::Felipearpa.Tyche.AmazonLambda.BetFunctionWrapper::Bet
+      Runtime: dotnet8
+      CodeUri: .
+      MemorySize: 256
+      Timeout: 30
+      Policies:
+        - AWSLambdaBasicExecutionRole
+        - Statement:
+            - Effect: Allow
+              Action:
+                - dynamodb:Query
+              Resource:
+                - arn:aws:dynamodb:us-east-2:567776770335:table/Pool
+      Architectures: [ arm64 ]
+      Events:
+        HttpApi:
+          Type: HttpApi
+          Properties:
+            Path: /bets
+            Method: PATCH
+            ApiId: !Ref AuthGatewayHttpApi
 
 Outputs:
   ApiURL:

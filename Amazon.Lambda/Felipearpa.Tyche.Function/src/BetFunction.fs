@@ -1,16 +1,15 @@
 namespace Felipearpa.Tyche.Function
 
-open System.Threading.Tasks
-open Amazon.Lambda.Annotations.APIGateway
 open Felipearpa.Tyche.Function.Request
 open Felipearpa.Tyche.Function.Response
 open Felipearpa.Tyche.Pool.Application
 open Felipearpa.Tyche.Pool.Type
 open Felipearpa.Type
+open Microsoft.AspNetCore.Http
 
-type BetFunction() =
+module BetFunction =
 
-    member this.PatchBet(betRequest: BetRequest, betCommand: BetCommand) : Task<IHttpResult> =
+    let bet (betRequest: BetRequest) (betCommand: BetCommand) : IResult Async =
         async {
             let betScore =
                 { TeamScore.HomeTeamValue = betRequest.HomeTeamBet |> BetScore.newOf
@@ -26,7 +25,6 @@ type BetFunction() =
 
             return
                 match result with
-                | Ok bet -> HttpResults.Ok(bet |> PoolGamblerBetTransformer.toResponse)
-                | Error _ -> HttpResults.Forbid()
+                | Ok bet -> Results.Ok(bet |> PoolGamblerBetTransformer.toResponse)
+                | Error _ -> Results.Forbid()
         }
-        |> Async.StartAsTask

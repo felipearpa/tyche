@@ -6,6 +6,12 @@ open Microsoft.Extensions.Hosting
 let main args =
     let builder = WebApplication.CreateBuilder(args)
     let app = builder.RegisterServices().Build()
-    app.ConfigureMiddleware().ConfigurePoolRoutes().ConfigureGamblerRoutes().Run()
+
+    app
+        .ConfigureMiddleware()
+        .ConfigurePoolRoutes()
+        .ConfigureGamblerRoutes()
+        .ConfigureBetRoutes()
+        .Run()
 
     0 // Exit code

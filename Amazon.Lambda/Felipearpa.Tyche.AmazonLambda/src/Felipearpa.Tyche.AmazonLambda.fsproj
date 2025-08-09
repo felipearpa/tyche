@@ -18,6 +18,7 @@
     <Compile Include="IResultTransformer.fs" />
     <Compile Include="PoolFunctionWrapper.fs" />
     <Compile Include="GamblerFunctionWrapper.fs" />
+    <Compile Include="BetFunctionWrapper.fs" />
     <Compile Include="Assembly.fs" />
   </ItemGroup>
   <ItemGroup>

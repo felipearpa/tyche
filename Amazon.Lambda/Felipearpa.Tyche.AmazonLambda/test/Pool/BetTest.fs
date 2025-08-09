@@ -14,7 +14,7 @@ open Microsoft.Extensions.DependencyInjection
 open Moq
 open Xunit
 
-module JoinPoolTest =
+module BetTest =
 
     let private setupMockCreatePoolWrite (client: Mock<IAmazonDynamoDB>) =
         client

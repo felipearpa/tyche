@@ -9,21 +9,15 @@ open Amazon.Lambda.Core
 open Felipearpa.Core
 open Felipearpa.Core.Json
 open Felipearpa.Data.DynamoDb
-open Felipearpa.Tyche.AmazonLambda.StringTransformer
-open Felipearpa.Tyche.Function.GamblerFunction
+open Felipearpa.Tyche.Function.BetFunction
+open Felipearpa.Tyche.Function.Request
 open Felipearpa.Tyche.Pool.Application
 open Felipearpa.Tyche.Pool.Data
 open Felipearpa.Tyche.Pool.Domain
 open Felipearpa.Tyche.Pool.Infrastructure
 open Microsoft.Extensions.DependencyInjection
 
-type GamblerFunctionWrapper(configureServices: IServiceCollection -> unit) =
-
-    [<Literal>]
-    let gamblerIdParameter = "gamblerId"
-
-    [<Literal>]
-    let nextParameter = "next"
+type BetFunctionWrapper(configureServices: IServiceCollection -> unit) =
 
     let buildServiceProvider () =
         let services = ServiceCollection()
@@ -52,39 +46,21 @@ type GamblerFunctionWrapper(configureServices: IServiceCollection -> unit) =
 
     let serviceProvider = buildServiceProvider ()
 
-    new() = GamblerFunctionWrapper(fun _ -> ())
+    new() = BetFunctionWrapper(fun _ -> ())
 
-    // GET /gamblers/{gamblerId}/pools?next={next}
-    member this.GetPoolsByGamblerId
+    // PATCH /bets
+    member this.Bet
         (request: APIGatewayHttpApiV2ProxyRequest, _: ILambdaContext)
         : APIGatewayHttpApiV2ProxyResponse Task =
         async {
             use scope = serviceProvider.CreateScope()
 
-            let gamblerIdResult =
-                request.PathParameters
-                |> Option.ofObj
-                |> Option.defaultValue Map.empty
-                |> tryGetStringParamOrError gamblerIdParameter
+            let betRequestResult = tryGetOrError<BetRequest> request.Body
 
-            let maybeNext =
-                request.QueryStringParameters
-                |> Option.ofObj
-                |> Option.defaultValue Map.empty
-                |> tryGetStringParamOrNone nextParameter
-
-            match gamblerIdResult, maybeNext with
-            | Ok gamblerId, next ->
-                let! response =
-                    getPoolsByGamblerId
-                        gamblerId
-                        (next |> Option.bind noneIfEmpty)
-                        (scope.ServiceProvider.GetService<GetPoolGamblerScoresByGamblerQuery>())
-
+            match betRequestResult with
+            | Error error -> return [ error ] |> BadRequestResponseFactory.create
+            | Ok betPoolRequest ->
+                let! response = bet betPoolRequest (scope.ServiceProvider.GetService<BetCommand>())
                 return! response.ToAmazonProxyResponse()
-            | _ ->
-                let errors = [ toErrorOption gamblerIdResult ] |> List.choose id
-
-                return errors |> BadRequestResponseFactory.create
         }
         |> Async.StartAsTask
