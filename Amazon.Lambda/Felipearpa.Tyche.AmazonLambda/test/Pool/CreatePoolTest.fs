@@ -47,6 +47,7 @@ module CreatePoolTest =
 
         let request = APIGatewayHttpApiV2ProxyRequest()
 
+        // language=json
         request.Body <-
             """{"poolLayoutId":"01K23DN4Q5WD5BJ5FKGTG414EG","poolName":"Champions League Pool","ownerGamblerId":"01K23DN4Q5WD5BJ5FKGTG414EG"}"""
 

@@ -183,6 +183,7 @@ Resources:
             - Effect: Allow
               Action:
                 - dynamodb:Query
+                - dynamodb:TransactWriteItems
               Resource:
                 - arn:aws:dynamodb:us-east-2:567776770335:table/Pool
                 - arn:aws:dynamodb:us-east-2:567776770335:table/Account
@@ -209,6 +210,7 @@ Resources:
             - Effect: Allow
               Action:
                 - dynamodb:Query
+                - dynamodb:PutItem
               Resource:
                 - arn:aws:dynamodb:us-east-2:567776770335:table/Pool
                 - arn:aws:dynamodb:us-east-2:567776770335:table/Account
@@ -235,6 +237,7 @@ Resources:
             - Effect: Allow
               Action:
                 - dynamodb:Query
+                - dynamodb:UpdateItem
               Resource:
                 - arn:aws:dynamodb:us-east-2:567776770335:table/Pool
       Architectures: [ arm64 ]
@@ -261,8 +264,8 @@ Resources:
               Action:
                 - dynamodb:Query
               Resource:
-                - arn:aws:dynamodb:us-east-2:567776770335:table/Pool
-                - arn:aws:dynamodb:us-east-2:567776770335:table/Pool/index/GetPoolGamblerScoresByGambler-index
+                - arn:aws:dynamodb:us-east-2:567776770335:table/PoolLayout
+                - arn:aws:dynamodb:us-east-2:567776770335:table/PoolLayout/index/GetOpenedPoolLayout-index
       Architectures: [ arm64 ]
       Events:
         HttpApi:
@@ -286,8 +289,12 @@ Resources:
             - Effect: Allow
               Action:
                 - dynamodb:Query
+                - dynamodb:PutItem
+                - dynamodb:UpdateItem
+                - dynamodb:TransactWriteItems
               Resource:
                 - arn:aws:dynamodb:us-east-2:567776770335:table/Account
+                - arn:aws:dynamodb:us-east-2:567776770335:table/Account/index/GetByEmail-index
       Architectures: [ arm64 ]
       Events:
         HttpApi:

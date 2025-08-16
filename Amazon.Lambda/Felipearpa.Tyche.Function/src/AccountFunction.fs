@@ -18,5 +18,5 @@ module AccountFunction =
             return
                 match result with
                 | Ok account -> Results.Ok(account.ToAccountResponse())
-                | Error _ -> Results.Unauthorized()
+                | Error _ -> Results.InternalServerError()
         }

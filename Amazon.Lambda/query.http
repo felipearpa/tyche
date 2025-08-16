@@ -1,22 +1,52 @@
 @baseUrl = https://wfykmbiop4.execute-api.us-east-2.amazonaws.com
-@authToken = Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6IjJiN2JhZmIyZjEwY2FlMmIxZjA3ZjM4MTZjNTQyMmJlY2NhNWMyMjMiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL3NlY3VyZXRva2VuLmdvb2dsZS5jb20vdHljaGUtNTg4Y2UiLCJhdWQiOiJ0eWNoZS01ODhjZSIsImF1dGhfdGltZSI6MTc1NDUzMDMwMSwidXNlcl9pZCI6IkRYcVhENklWMVhnVFc0MlJTZWtZNEFHamVkZjIiLCJzdWIiOiJEWHFYRDZJVjFYZ1RXNDJSU2VrWTRBR2plZGYyIiwiaWF0IjoxNzU0NTMwMzAxLCJleHAiOjE3NTQ1MzM5MDEsImVtYWlsIjoiZmVsaXBlYXJjaWxhQGdtYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJmaXJlYmFzZSI6eyJpZGVudGl0aWVzIjp7ImVtYWlsIjpbImZlbGlwZWFyY2lsYUBnbWFpbC5jb20iXX0sInNpZ25faW5fcHJvdmlkZXIiOiJwYXNzd29yZCJ9fQ.aVU4d4pQWVkflMCpVVWTxG63ZhwX86wrVQbiD_BtT5Au5S_wNy3xCjJ2Zx8sj1R5LiZGebks7SSs3fkn4vrHC4Fuc0K0MM_Y8VXL64YIG5YiwlUf-95ujBlMzTEyH562yD4Y9qZOVkOqmm3V4i8iCt3MxQFRlKl6aiz776WkrYIa7-oPJFT-fCDWtwLxrfjmgNshFWlFTR5bGLsEhwl6O6qJ2IwfpaRZgOWKuOBZK_UcuyuZhoMdMT6CPfrdsBBnIfF08ZDzFLf08LsuSFL3trLgr1Ae7nHXywY_tXAWsvw9nwvFjlab4GBTaMEPOgjiEwQSnjpYpkQ-2UgLLZacJg
+# @baseUrl = https://localhost:7183
+
+@authToken = Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6IjU3YmZiMmExMWRkZmZjMGFkMmU2ODE0YzY4NzYzYjhjNjg3NTgxZDgiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL3NlY3VyZXRva2VuLmdvb2dsZS5jb20vdHljaGUtNTg4Y2UiLCJhdWQiOiJ0eWNoZS01ODhjZSIsImF1dGhfdGltZSI6MTc1NTM4MDIwNiwidXNlcl9pZCI6Ik1uVzFlTHplRGliRVhPZzFTbUNWSHZCem5QbjIiLCJzdWIiOiJNblcxZUx6ZURpYkVYT2cxU21DVkh2QnpuUG4yIiwiaWF0IjoxNzU1MzgwMjA2LCJleHAiOjE3NTUzODM4MDYsImVtYWlsIjoidHljaGVAdHljaGUuY29tIiwiZW1haWxfdmVyaWZpZWQiOmZhbHNlLCJmaXJlYmFzZSI6eyJpZGVudGl0aWVzIjp7ImVtYWlsIjpbInR5Y2hlQHR5Y2hlLmNvbSJdfSwic2lnbl9pbl9wcm92aWRlciI6InBhc3N3b3JkIn19.Jwp49W6C6lG_XB0Dlc9-fCHnZWlLmHAogtVMr6i57ARJ3qjlTXMjZEAgLGo0dgVjDk2iMPaceFxysw32roLI1pxrsEKodug86Sbywhf0SxWQaAhflPWgv_4OGvlJr4V_Pzh5SbnZgmPd0RWBrIOhZKd8Xbwa-iXp4NVGp_CgAlbO-mmOgoTaZwaIRu3IT_JarBafgGfk9t9LEcAd8PjhfliL0dXPkVsoG-GYOLJ5p2MBOb5rBfl9nhfQqWkuHenEagufSseiZgBFTYzMbGu8VxixkSP8Lg6_jWDjcAThmisuc9H-FAU24cnxmHw7CrxO-knI97fJzMj5j1vAGC-hHw
+
 
 ### Get a pool
 GET {{baseUrl}}/pools/01H1CFJB0Y3KK357WCA2HB5MCX HTTP/1.1
 Authorization: {{authToken}}
 
+
 ### Get the pool scores of a pool
 GET {{baseUrl}}/pools/01H1CFJB0Y3KK357WCA2HB5MCX/gamblers HTTP/1.1
 Authorization: {{authToken}}
+
 
 ### Get the pool score by id
 GET {{baseUrl}}/pools/01H1CFJB0Y3KK357WCA2HB5MCX/gamblers/01H1CMCDHH99FH8FDY36S0YH3A HTTP/1.1
 Authorization: {{authToken}}
 
+
 ### Get pendings bet
 GET {{baseUrl}}/pools/01H1CFJB0Y3KK357WCA2HB5MCX/gamblers/01H1CMCDHH99FH8FDY36S0YH3A/bets/pending HTTP/1.1
 Authorization: {{authToken}}
 
+
 ### Get finished bet
 GET {{baseUrl}}/pools/01H1CFJB0Y3KK357WCA2HB5MCX/gamblers/01H1CMCDHH99FH8FDY36S0YH3A/bets/finished HTTP/1.1
 Authorization: {{authToken}}
+
+
+### Link an account
+POST {{baseUrl}}/accounts
+Authorization: {{authToken}}
+Content-Type: application/json
+
+{
+    "email": "tyche@tyche.com",
+    "externalAccountId": "MnW1eLzeDibEXOg1SmCVHvBznPn2"
+}
+
+
+### Create a pool
+POST {{baseUrl}}/pools
+Authorization: {{authToken}}
+Content-Type: application/json
+
+{
+    "poolLayoutId": "01K23DN4Q5WD5BJ5FKGTG414EG",
+    "poolName": "Champions League Pool",
+    "ownerGamblerId": "01K23DN4Q5WD5BJ5FKGTG414EG"
+}
