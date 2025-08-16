@@ -14,7 +14,7 @@ module AccountRouter =
         member this.ConfigureAccountRoutes() =
             this
                 .MapPost(
-                    "/accounts/link",
+                    "/accounts",
                     Func<_, _, _>
                         (fun (linkAccountRequest: LinkAccountRequest) (linkAccountCommand: LinkAccountCommand) ->
                             async { return! linkAccountAsync linkAccountRequest linkAccountCommand }

@@ -293,7 +293,7 @@ Resources:
         HttpApi:
           Type: HttpApi
           Properties:
-            Path: /accounts/link
+            Path: /accounts
             Method: POST
             ApiId: !Ref AuthGatewayHttpApi
 

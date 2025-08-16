@@ -37,7 +37,7 @@ type AccountFunctionWrapper(configureServices: IServiceCollection -> unit) =
 
     new() = AccountFunctionWrapper(fun _ -> ())
 
-    // POST /accounts/link
+    // POST /accounts
     member this.LinkAccountAsync
         (request: APIGatewayHttpApiV2ProxyRequest, _: ILambdaContext)
         : APIGatewayHttpApiV2ProxyResponse Task =
@@ -49,7 +49,9 @@ type AccountFunctionWrapper(configureServices: IServiceCollection -> unit) =
             match linkAccountRequestResult with
             | Error error -> return [ error ] |> BadRequestResponseFactory.create
             | Ok linkAccountRequest ->
-                let! response = linkAccountAsync linkAccountRequest (scope.ServiceProvider.GetService<LinkAccountCommand>())
+                let! response =
+                    linkAccountAsync linkAccountRequest (scope.ServiceProvider.GetService<LinkAccountCommand>())
+
                 return! response.ToAmazonProxyResponse()
         }
         |> Async.StartAsTask
