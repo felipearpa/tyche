@@ -32,7 +32,10 @@ internal class PoolRemoteRepository @Inject constructor(
 
     override suspend fun joinPool(joinPoolInput: JoinPoolInput): Result<Unit> {
         return networkExceptionHandler.handle {
-            poolRemoteDataSource.joinPool(joinPoolRequest = joinPoolInput.toJoinPoolRequest())
+            poolRemoteDataSource.joinPool(
+                poolId = joinPoolInput.poolId,
+                joinPoolRequest = joinPoolInput.toJoinPoolRequest(),
+            )
         }
     }
 }

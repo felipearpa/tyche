@@ -12,6 +12,6 @@ internal interface PoolRemoteDataSource {
     @POST("pools")
     suspend fun createPool(@Body createPoolRequest: CreatePoolRequest): CreatePoolResponse
 
-    @POST("pools/join")
-    suspend fun joinPool(@Body joinPoolRequest: JoinPoolRequest)
+    @POST("pools/{poolId}")
+    suspend fun joinPool(@Path("poolId") poolId: String, @Body joinPoolRequest: JoinPoolRequest)
 }

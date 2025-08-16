@@ -4,6 +4,5 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class JoinPoolRequest(
-    val poolId: String,
     val gamblerId: String,
 )

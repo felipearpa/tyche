@@ -54,10 +54,10 @@ class PoolAlamofireDataSource : PoolRemoteDataSource {
         }
     }
 
-    func joinPool(joinPoolRequest: JoinPoolRequest) async throws {
+    func joinPool(poolId: String, joinPoolRequest: JoinPoolRequest) async throws {
         return try await withUnsafeThrowingContinuation { continuation in
             session.request(
-                urlBasePathProvider.prependBasePath("pools/join")!,
+                urlBasePathProvider.prependBasePath("pools/\(poolId)")!,
                 method: .post,
                 parameters: joinPoolRequest,
                 encoder: JSONParameterEncoder.default

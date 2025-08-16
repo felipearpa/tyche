@@ -14,7 +14,7 @@ class AuthenticationAlamofireDataSource: AuthenticationRemoteDataSource {
     func linkAccount(request: LinkAccountRequest) async throws -> LinkAccountResponse {
         return try await withCheckedThrowingContinuation { continuation in
             session.request(
-                urlBasePathProvider.prependBasePath("account/link")!,
+                urlBasePathProvider.prependBasePath("accounts")!,
                 method: .post,
                 parameters: request,
                 encoder: JSONParameterEncoder.default

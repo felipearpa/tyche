@@ -4,6 +4,6 @@ import retrofit2.http.Body
 import retrofit2.http.POST
 
 internal interface AuthenticationRemoteDataSource {
-    @POST("account/link")
+    @POST("accounts")
     suspend fun linkAccount(@Body request: LinkAccountRequest): LinkAccountResponse
 }

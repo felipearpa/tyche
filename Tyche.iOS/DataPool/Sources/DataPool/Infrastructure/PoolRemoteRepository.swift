@@ -29,7 +29,7 @@ class PoolRemoteRepository : PoolRepository {
 
     func joinPool(joinPoolInput: JoinPoolInput) async -> Result<Void, any Error> {
         return await networkErrorHandler.handle {
-            try await poolRemoteDataSource.joinPool(joinPoolRequest: joinPoolInput.toJoinPoolRequest())
+            try await poolRemoteDataSource.joinPool(poolId: joinPoolInput.poolId, joinPoolRequest: joinPoolInput.toJoinPoolRequest())
         }
     }
 }
