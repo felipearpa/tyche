@@ -217,7 +217,7 @@ Resources:
         HttpApi:
           Type: HttpApi
           Properties:
-            Path: /pools/join
+            Path: /pools/{poolId}/gamblers
             Method: POST
             ApiId: !Ref AuthGatewayHttpApi
   

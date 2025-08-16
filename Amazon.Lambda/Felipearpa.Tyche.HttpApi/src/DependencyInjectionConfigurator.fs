@@ -8,11 +8,9 @@ open Felipearpa.Core.Json
 open Felipearpa.Core.Jwt
 open Felipearpa.Data.DynamoDb
 open Felipearpa.Tyche.Account.Application
-open Felipearpa.Tyche.Account.Application.SignIn
 open Felipearpa.Tyche.Account.Domain
 open Felipearpa.Tyche.Account.Infrastructure
 open Felipearpa.Tyche.Pool.Application
-open Felipearpa.Tyche.Pool.Data
 open Felipearpa.Tyche.Pool.Domain
 open Felipearpa.Tyche.Pool.Infrastructure
 open Felipearpa.Tyche.PoolLayout.Application
@@ -30,6 +28,7 @@ module DependencyInjectionConfigurator =
 
     let registerDependencies (app: WebApplicationBuilder) =
         app.Services
+            .AddSingleton<IJwtSetting, LocalJwtSetting>()
             .AddSingleton<IHasher, BCryptHasher>()
             .AddSingleton<ISerializer, JsonSerializer>()
             .AddSingleton<IKeySerializer, DynamoDbKeySerializer>()

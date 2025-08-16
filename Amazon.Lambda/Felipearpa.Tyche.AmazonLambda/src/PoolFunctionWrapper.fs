@@ -276,19 +276,32 @@ type PoolFunctionWrapper(configureServices: IServiceCollection -> unit) =
         }
         |> Async.StartAsTask
 
-    // POST /pools/join
+    // POST /pools/{poolId}/gamblers
     member this.JoinPoolAsync
         (request: APIGatewayHttpApiV2ProxyRequest, _: ILambdaContext)
         : APIGatewayHttpApiV2ProxyResponse Task =
         async {
             use scope = serviceProvider.CreateScope()
 
+            let poolIdResult =
+                request.PathParameters
+                |> Option.ofObj
+                |> Option.defaultValue Map.empty
+                |> tryGetStringParamOrError poolIdParameter
+
             let joinPoolRequestResult = tryGetOrError<JoinPoolRequest> request.Body
 
-            match joinPoolRequestResult with
-            | Error error -> return [ error ] |> BadRequestResponseFactory.create
-            | Ok joinPoolRequest ->
-                let! response = joinPoolAsync joinPoolRequest (scope.ServiceProvider.GetService<JoinPoolCommand>())
+            match poolIdResult, joinPoolRequestResult with
+            | Ok poolId, Ok joinPoolRequest ->
+                let! response =
+                    joinPoolAsync poolId joinPoolRequest (scope.ServiceProvider.GetService<JoinPoolCommand>())
+
                 return! response.ToAmazonProxyResponse()
+            | _ ->
+                let errors =
+                    [ toErrorOption poolIdResult; toErrorOption joinPoolRequestResult ]
+                    |> List.choose id
+
+                return errors |> BadRequestResponseFactory.create
         }
         |> Async.StartAsTask

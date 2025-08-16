@@ -31,7 +31,10 @@ module PoolRouter =
                             (getPoolGamblerScoresByPoolQuery: GetPoolGamblerScoresByPoolQuery) ->
                             async {
                                 return!
-                                    getGamblersByPoolIdAsync poolId (next |> Option.ofObj) getPoolGamblerScoresByPoolQuery
+                                    getGamblersByPoolIdAsync
+                                        poolId
+                                        (next |> Option.ofObj)
+                                        getPoolGamblerScoresByPoolQuery
                             }
                             |> Async.StartAsTask)
 
@@ -47,7 +50,9 @@ module PoolRouter =
                             (poolId: string)
                             (gamblerId: string)
                             (getPoolGamblerScoreByIdQuery: GetPoolGamblerScoreByIdQuery) ->
-                            async { return! getPoolGamblerScoreByIdAsync poolId gamblerId getPoolGamblerScoreByIdQuery }
+                            async {
+                                return! getPoolGamblerScoreByIdAsync poolId gamblerId getPoolGamblerScoreByIdQuery
+                            }
                             |> Async.StartAsTask)
                 )
                 .RequireAuthorization()
@@ -113,9 +118,11 @@ module PoolRouter =
 
             this
                 .MapPost(
-                    "/pools/join",
-                    Func<_, _, _>(fun (joinPoolRequest: JoinPoolRequest) (joinPoolCommand: JoinPoolCommand) ->
-                        async { return! joinPoolAsync joinPoolRequest joinPoolCommand } |> Async.StartAsTask)
+                    "/pools/{poolId}/gamblers",
+                    Func<_, _, _, _>
+                        (fun (poolId: string) (joinPoolRequest: JoinPoolRequest) (joinPoolCommand: JoinPoolCommand) ->
+                            async { return! joinPoolAsync poolId joinPoolRequest joinPoolCommand }
+                            |> Async.StartAsTask)
                 )
                 .RequireAuthorization()
             |> ignore

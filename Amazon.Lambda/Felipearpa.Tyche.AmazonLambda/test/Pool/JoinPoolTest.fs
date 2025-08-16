@@ -14,7 +14,7 @@ open Microsoft.Extensions.DependencyInjection
 open Moq
 open Xunit
 
-module BetTest =
+module JoinPoolTest =
 
     let private setupMockCreatePoolWrite (client: Mock<IAmazonDynamoDB>) =
         client
@@ -60,7 +60,10 @@ module BetTest =
 
         let request = APIGatewayHttpApiV2ProxyRequest()
 
-        request.Body <- """{"poolId":"01K23DN4Q5WD5BJ5FKGTG414EG","gamblerId":"01K23DN4Q5WD5BJ5FKGTG414EG"}"""
+        request.PathParameters <- dict [ "poolId", "01K23DN4Q5WD5BJ5FKGTG414EG" ]
+        
+        // language=json
+        request.Body <- """{"gamblerId":"01K23DN4Q5WD5BJ5FKGTG414EG"}"""
 
         (context, request, functions)
 

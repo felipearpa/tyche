@@ -1,7 +1,7 @@
 namespace Felipearpa.Tyche.HttpApi
 
 open System
-open Felipearpa.Tyche.Account.Application.SignIn
+open Felipearpa.Tyche.Account.Application
 open Felipearpa.Tyche.Function.AccountFunction
 open Felipearpa.Tyche.Function.Request
 open Microsoft.AspNetCore.Builder

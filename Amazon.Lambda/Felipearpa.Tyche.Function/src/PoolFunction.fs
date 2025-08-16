@@ -98,9 +98,14 @@ module PoolFunction =
                 | Error _ -> Results.NotFound("Gambler not found")
         }
 
-    let joinPoolAsync (joinPoolRequest: JoinPoolRequest) (joinPoolCommand: JoinPoolCommand) : IResult Async =
+    let joinPoolAsync
+        (poolId: string)
+        (joinPoolRequest: JoinPoolRequest)
+        (joinPoolCommand: JoinPoolCommand)
+        : IResult Async =
         async {
-            let! result = joinPoolCommand.ExecuteAsync(joinPoolRequest |> JoinPoolRequestTransformer.toJoinPoolInput)
+            let! result =
+                joinPoolCommand.ExecuteAsync(joinPoolRequest |> JoinPoolRequestTransformer.toJoinPoolInput poolId)
 
             return
                 match result with
