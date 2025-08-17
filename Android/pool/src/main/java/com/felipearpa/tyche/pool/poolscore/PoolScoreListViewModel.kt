@@ -50,7 +50,7 @@ class PoolScoreListViewModel @AssistedInject constructor(
                     pagingQuery = { next ->
                         getPoolGamblerScoresByGamblerPagingQuery(
                             next = next,
-                            gamblerId = "01H1CMCDHH99FH8FDY36S0YH3A",
+                            gamblerId = gamblerId,
                             search = { searchText.ifEmpty { null } },
                             getPoolGamblerScoresByGamblerUseCase = getPoolGamblerScoresByGamblerUseCase,
                         )
