@@ -17,18 +17,19 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.felipearpa.foundation.emptyString
 import com.felipearpa.tyche.ui.R
+import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
 
 @Composable
 fun Empty(modifier: Modifier = Modifier) {
     Column(
         modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.medium),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Icon(
             painter = painterResource(id = R.drawable.ic_sentiment_sad),
             contentDescription = emptyString(),
-            modifier = Modifier.size(40.dp, 40.dp),
+            modifier = Modifier.size(iconSize),
         )
 
         Text(
@@ -44,6 +45,8 @@ fun Empty(modifier: Modifier = Modifier) {
         )
     }
 }
+
+private val iconSize = 64.dp
 
 @Preview(showBackground = true)
 @Composable

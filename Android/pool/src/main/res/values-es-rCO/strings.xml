@@ -11,4 +11,7 @@
     <string name="ready_to_join_title">¿Listo para unirte a “%1$s”?</string>
     <string name="ready_to_join_subtitle">¡Te han invitado a la emocionante polla “%1$s”! ¿Quieres unirte y jugar con los demás?</string>
     <string name="join_pool_action">Unirte</string>
+    <string name="pool_score_empty_list_title">Tus pollas te esperan</string>
+    <string name="pool_score_empty_list_subtitle">Sé el primero en crear una e invita a otros a participar</string>
+    <string name="create_pool_action">Crear</string>
 </resources>

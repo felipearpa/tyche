@@ -137,6 +137,7 @@ private fun PoolScoreListView(
                 fakeItemCount = pageSize,
                 onPoolOpen = onPoolOpen,
                 onPoolJoin = onPoolJoin,
+                onPoolCreate = onPoolCreate,
                 modifier = Modifier
                     .padding(paddingValues = paddingValues)
                     .fillMaxSize(),

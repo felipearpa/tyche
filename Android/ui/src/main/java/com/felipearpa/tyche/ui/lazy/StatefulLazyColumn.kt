@@ -104,10 +104,12 @@ fun <Value : Any> StatefulLazyColumn(
 ) {
     if (LocalInspectionMode.current) {
         StatefulLazyColumnForPreview(
-            state,
-            modifier,
-            contentPadding,
-            verticalArrangement,
+            state = state,
+            lazyItems = lazyItems,
+            modifier = modifier,
+            contentPadding = contentPadding,
+            verticalArrangement = verticalArrangement,
+            emptyContent = emptyContent,
             itemContent = itemContent,
         )
     } else {
@@ -137,21 +139,26 @@ fun <Value : Any> StatefulLazyColumn(
 }
 
 @Composable
-private fun StatefulLazyColumnForPreview(
+private fun <Value : Any> StatefulLazyColumnForPreview(
     state: LazyListState,
+    lazyItems: LazyPagingItems<Value>,
     modifier: Modifier,
     contentPadding: PaddingValues,
     verticalArrangement: Arrangement.Vertical,
+    emptyContent: @Composable () -> Unit,
     itemContent: LazyListScope.() -> Unit,
 ) {
-    LazyColumn(
-        state = state,
-        modifier = modifier,
-        contentPadding = contentPadding,
-        verticalArrangement = verticalArrangement,
-    ) {
-        itemContent()
-    }
+    if (lazyItems.hasItems())
+        LazyColumn(
+            state = state,
+            modifier = modifier,
+            contentPadding = contentPadding,
+            verticalArrangement = verticalArrangement,
+        ) {
+            itemContent()
+        }
+    else
+        emptyContent()
 }
 
 @Composable

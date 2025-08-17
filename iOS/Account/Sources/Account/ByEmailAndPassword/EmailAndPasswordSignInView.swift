@@ -16,7 +16,7 @@ public struct EmailAndPasswordSignInView: View {
     }
 
     public var body: some View {
-        EmailAndPasswordSignInStateView(
+        EmailAndPasswordSignInStatefulView(
             viewState: viewModel.state,
             onSignIn: { email, password in
                 viewModel.signInWithEmailAndPassword(email: email, password: password)
@@ -24,10 +24,11 @@ public struct EmailAndPasswordSignInView: View {
             onReset: { viewModel.reset() },
             onAuthenticate: onSignIn
         )
+        .navigationTitle(String(.signInTitle))
     }
 }
 
-private struct EmailAndPasswordSignInStateView: View {
+private struct EmailAndPasswordSignInStatefulView: View {
     let viewState: LoadableViewState<AccountBundle>
     let onSignIn: (String, String) -> Void
     let onReset: () -> Void
@@ -122,7 +123,7 @@ private struct SignInContent: View {
 }
 
 #Preview("initial") {
-    EmailAndPasswordSignInStateView(
+    EmailAndPasswordSignInStatefulView(
         viewState: .initial,
         onSignIn: {_,_ in },
         onReset: {},
@@ -131,7 +132,7 @@ private struct SignInContent: View {
 }
 
 #Preview("loading") {
-    EmailAndPasswordSignInStateView(
+    EmailAndPasswordSignInStatefulView(
         viewState: .loading,
         onSignIn: {_,_ in },
         onReset: {},
@@ -140,7 +141,7 @@ private struct SignInContent: View {
 }
 
 #Preview("success") {
-    EmailAndPasswordSignInStateView(
+    EmailAndPasswordSignInStatefulView(
         viewState: .success(AccountBundle(accountId: "", externalAccountId: "")),
         onSignIn: {_,_ in },
         onReset: {},
@@ -149,7 +150,7 @@ private struct SignInContent: View {
 }
 
 #Preview("failure") {
-    EmailAndPasswordSignInStateView(
+    EmailAndPasswordSignInStatefulView(
         viewState: .failure(UnknownLocalizedError()),
         onSignIn: {_,_ in },
         onReset: {},

@@ -3,7 +3,6 @@ package com.felipearpa.tyche.ui.lazy
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -42,10 +41,18 @@ fun <Value : Any> RefreshableStatefulLazyColumn(
 ) {
     if (LocalInspectionMode.current) {
         RefreshableStatefulLazyColumnForPreview(
-            state,
-            modifier,
-            contentPadding,
-            verticalArrangement,
+            modifier = modifier,
+            lazyItems = lazyItems,
+            state = state,
+            contentPadding = contentPadding,
+            reverseLayout = reverseLayout,
+            verticalArrangement = verticalArrangement,
+            loadingVisibilityDecider = loadingVisibilityDecider,
+            loadingContent = loadingContent,
+            loadingContentOnConcatenate = loadingContentOnConcatenate,
+            errorContentOnConcatenate = errorContentOnConcatenate,
+            errorContent = errorContent,
+            emptyContent = emptyContent,
             itemContent = itemContent,
         )
     } else {
@@ -87,18 +94,35 @@ fun <Value : Any> RefreshableStatefulLazyColumn(
 }
 
 @Composable
-private fun RefreshableStatefulLazyColumnForPreview(
-    state: LazyListState,
-    modifier: Modifier,
-    contentPadding: PaddingValues,
-    verticalArrangement: Arrangement.Vertical,
+private fun <Value : Any> RefreshableStatefulLazyColumnForPreview(
+    modifier: Modifier = Modifier,
+    lazyItems: LazyPagingItems<Value>,
+    state: LazyListState = rememberLazyListState(),
+    contentPadding: PaddingValues = PaddingValues(0.dp),
+    reverseLayout: Boolean = false,
+    verticalArrangement: Arrangement.Vertical =
+        if (!reverseLayout) Arrangement.Top else Arrangement.Bottom,
+    loadingVisibilityDecider: LoadingVisibilityDecider<Value> = FirstTimeLoadingVisibilityDecider(),
+    loadingContent: @Composable () -> Unit = {},
+    loadingContentOnConcatenate: (LazyListScope.() -> Unit) = {},
+    errorContentOnConcatenate: (LazyListScope.() -> Unit) = {},
+    errorContent: @Composable (Throwable) -> Unit = { ContentOnError(lazyItems = lazyItems) },
+    emptyContent: @Composable () -> Unit = { ContentOnEmpty() },
     itemContent: LazyListScope.() -> Unit,
 ) {
-    LazyColumn(
-        state = state,
+    StatefulLazyColumn(
         modifier = modifier,
+        lazyItems = lazyItems,
+        state = state,
         contentPadding = contentPadding,
+        reverseLayout = reverseLayout,
         verticalArrangement = verticalArrangement,
+        loadingVisibilityDecider = loadingVisibilityDecider,
+        loadingContent = loadingContent,
+        loadingContentOnConcatenate = loadingContentOnConcatenate,
+        errorContentOnConcatenate = errorContentOnConcatenate,
+        errorContent = errorContent,
+        emptyContent = emptyContent,
     ) {
         itemContent()
     }
