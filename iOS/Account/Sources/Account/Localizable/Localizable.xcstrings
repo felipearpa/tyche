@@ -236,6 +236,57 @@
         }
       }
     },
+    "send_sign_in_link_to_email_too_many_requests_failure_description" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Email sign-in is temporarily unavailable"
+          }
+        },
+        "es-CO" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El inicio de sesión por correo no está disponible temporalmente"
+          }
+        }
+      }
+    },
+    "send_sign_in_link_to_email_too_many_requests_failure_reason" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You have exceeded the daily limit for email sign-in requests"
+          }
+        },
+        "es-CO" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Has superado el límite diario de solicitudes de inicio de sesión por correo"
+          }
+        }
+      }
+    },
+    "send_sign_in_link_to_email_too_many_requests_failure_recovery_suggestion" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Please try again in a few hours"
+          }
+        },
+        "es-CO" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Inténtalo de nuevo en unas horas"
+          }
+        }
+      }
+    },
     "sign_in_action" : {
       "extractionState" : "manual",
       "localizations" : {

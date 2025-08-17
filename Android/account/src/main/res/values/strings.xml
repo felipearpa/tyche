@@ -25,4 +25,7 @@
     <string name="invalid_credential_sign_in_failure_reason">That email or password doesn’t seem right</string>
     <string name="invalid_credential_sign_in_failure_recovery_suggestion">Double-check your credentials and give it another go</string>
     <string name="no_recovery_password_warning">If you forgot your password, I can’t help with recovery just yet</string>
+    <string name="send_sign_in_link_to_email_too_many_requests_failure_description">Email sign-in is temporarily unavailable</string>
+    <string name="send_sign_in_link_to_email_too_many_requests_failure_reason">You have exceeded the daily limit for email sign-in requests</string>
+    <string name="send_sign_in_link_to_email_too_many_requests_failure_recovery_suggestion">Please try again in a few hours</string>
 </resources>

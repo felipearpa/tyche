@@ -8,6 +8,7 @@ import com.felipearpa.tyche.ui.exception.LocalizedException
 
 sealed class EmailLinkSignInLocalizedException : LocalizedException() {
     data object InvalidEmailLinkSignIn : EmailLinkSignInLocalizedException() {
+        @Suppress("unused")
         private fun readResolve(): Any = InvalidEmailLinkSignIn
 
         override val errorDescription: String

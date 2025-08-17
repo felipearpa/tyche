@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.felipearpa.tyche.core.type.Email
 import com.felipearpa.tyche.session.authentication.application.SendSignInLinkToEmailUseCase
-import com.felipearpa.tyche.ui.exception.orDefaultLocalized
+import com.felipearpa.tyche.ui.exception.mapOrDefaultLocalized
 import com.felipearpa.ui.state.LoadableViewState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -30,7 +30,11 @@ class EmailSignInViewModel @Inject constructor(
             sendSignInLinkToEmailUseCase.execute(email = Email(email))
                 .onSuccess { _state.emit(LoadableViewState.Success(Unit)) }
                 .onFailure { exception ->
-                    _state.emit(LoadableViewState.Failure(exception.orDefaultLocalized()))
+                    _state.emit(
+                        LoadableViewState.Failure(
+                            exception.mapOrDefaultLocalized { it.asSendSignInLinkToEmailLocalizedException() },
+                        ),
+                    )
                 }
         }
     }

@@ -3,6 +3,16 @@ import FirebaseAuth
 func handleFirebaseSignInWithEmail<Value>(_ perform: () async throws -> Value) async -> Result<Value, Error> {
     do {
         return try await Result.success(perform())
+    } catch let error as NSError {
+        let finalError = mapFirebaseAuthError(error) { code in
+            switch code {
+            case .tooManyRequests, .quotaExceeded:
+                return SendSignInLinkToEmailError.tooManyRequests
+            default:
+                return nil
+            }
+        }
+        return Result.failure(finalError)
     } catch let error {
         return Result.failure(error)
     }

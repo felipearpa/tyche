@@ -1,13 +1,17 @@
 package com.felipearpa.tyche.session.authentication.infrastructure
 
-import com.felipearpa.tyche.session.authentication.domain.EmailLinkSignInException
 import com.felipearpa.tyche.session.authentication.domain.EmailAndPasswordSignInException
+import com.felipearpa.tyche.session.authentication.domain.EmailLinkSignInException
+import com.felipearpa.tyche.session.authentication.domain.SendSignInLinkToEmailException
+import com.google.firebase.FirebaseTooManyRequestsException
 import com.google.firebase.auth.FirebaseAuthActionCodeException
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 
 suspend fun <Value> handleFirebaseSendSignInLinkToEmail(block: suspend () -> Value): Result<Value> {
     return try {
         Result.success(block())
+    } catch (_: FirebaseTooManyRequestsException) {
+        Result.failure(SendSignInLinkToEmailException.TooManyRequests)
     } catch (exception: Exception) {
         Result.failure(exception)
     }

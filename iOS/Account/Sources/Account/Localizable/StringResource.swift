@@ -32,6 +32,9 @@ extension StringResource {
     static let invalidCredentialSignInFailureDescription = StringResource(name: "invalid_credential_sign_in_failure_description", bundle: Bundle.module)
     static let invalidCredentialSignInFailureReason = StringResource(name: "invalid_credential_sign_in_failure_reason", bundle: Bundle.module)
     static let invalidCredentialSignInFailureRecoverySuggestion = StringResource(name: "invalid_credential_sign_in_failure_recovery_suggestion", bundle: Bundle.module)
+    static let sendSignInLinkToEmailTooManyRequestsFailureDescription = StringResource(name: "send_sign_in_link_to_email_too_many_requests_failure_description", bundle: Bundle.module)
+    static let sendSignInLinkToEmailTooManyRequestsFailureReason = StringResource(name: "send_sign_in_link_to_email_too_many_requests_failure_reason", bundle: Bundle.module)
+    static let sendSignInLinkToEmailTooManyRequestsFailureRecoverySuggestion = StringResource(name: "send_sign_in_link_to_email_too_many_requests_failure_recovery_suggestion", bundle: Bundle.module)
 }
 
 extension String {

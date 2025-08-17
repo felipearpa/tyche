@@ -25,4 +25,7 @@
     <string name="invalid_credential_sign_in_failure_reason">Parece que ese correo o contraseña no es correcto</string>
     <string name="invalid_credential_sign_in_failure_recovery_suggestion">Verifica que tu correo y contraseña estén bien escritos</string>
     <string name="no_recovery_password_warning">Si olvidaste tu contraseña, aún no puedo ayudarte con eso</string>
+    <string name="send_sign_in_link_to_email_too_many_requests_failure_description">El inicio de sesión por correo no está disponible temporalmente</string>
+    <string name="send_sign_in_link_to_email_too_many_requests_failure_reason">Has superado el límite diario de solicitudes de inicio de sesión por correo</string>
+    <string name="send_sign_in_link_to_email_too_many_requests_failure_recovery_suggestion">Inténtalo de nuevo en unas horas</string>
 </resources>

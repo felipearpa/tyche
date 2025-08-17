@@ -27,7 +27,7 @@ public class EmailSignInViewModel: ObservableObject {
             case .success:
                 state = .success(())
             case .failure(let error):
-                state = .failure(error.orDefaultLocalized())
+                state = .failure(error.mapOrDefaultLocalized { $0.asSendSignInLinkToEmailLocalizedError() })
             }
         }
     }
