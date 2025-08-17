@@ -24,7 +24,8 @@ struct PoolScoreListRouter: View {
                     ),
                     gamblerId: accountBundle.accountId
                 ),
-                onPoolOpen: { pool in onPoolSelect(pool) }
+                onPoolOpen: { pool in onPoolSelect(pool) },
+                onPoolCreate: { path.append(PoolFromLayoutCreatorRoute()) },
             )
             .navigationBarItems(leading: navigationBarLeading(), trailing: navigationBarTrailing())
             .navigationDestination(for: PoolFromLayoutCreatorRoute.self) { route in

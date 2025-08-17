@@ -6,14 +6,18 @@ import DataPool
 public struct PoolScoreListView: View {
     @StateObject private var viewModel: PoolScoreListViewModel
     private let onPoolOpen: (PoolProfile) -> Void
+    private let onPoolCreate: () -> Void
+
     @State private var poolUrl: ShareablePoolUrl? = nil
 
     public init(
         viewModel: @autoclosure @escaping () -> PoolScoreListViewModel,
-        onPoolOpen: @escaping (PoolProfile) -> Void)
-    {
+        onPoolOpen: @escaping (PoolProfile) -> Void,
+        onPoolCreate: @escaping () -> Void,
+    ) {
         self._viewModel = .init(wrappedValue: viewModel())
         self.onPoolOpen = onPoolOpen
+        self.onPoolCreate = onPoolCreate
     }
 
     public var body: some View {
@@ -24,7 +28,8 @@ public struct PoolScoreListView: View {
             },
             onPoolJoin: { poolId in
                 poolUrl = ShareablePoolUrl(viewModel.createUrlForJoining(poolId: poolId))
-            }
+            },
+            onPoolCreate: onPoolCreate
         )
         .navigationTitle(String(.gamblerPoolListTitle))
         .refreshable {
@@ -66,7 +71,8 @@ private struct ShareSheet: UIViewControllerRepresentable {
                 ),
                 gamblerId: "gambler-id"
             ),
-            onPoolOpen: { _ in }
+            onPoolOpen: { _ in },
+            onPoolCreate: {},
         )
     }
 }

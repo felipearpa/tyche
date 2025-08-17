@@ -6,6 +6,10 @@ public class TycheAssembly : Assembly {
     public init() {}
     
     public func assemble(container: Swinject.Container) {
+        container.register(URLBasePathProvider.self) { _ in
+            LocalURLBasePathProvider()
+        }
+
         container.register(SignInLinkUrlTemplateProvider.self) { _ in
             LocalSignInLinkUrlTemplateProvider()
         }

@@ -17,6 +17,23 @@
         }
       }
     },
+    "create_pool_action" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Create"
+          }
+        },
+        "es-CO" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Crear"
+          }
+        }
+      }
+    },
     "fill_pool_fields_title" : {
       "localizations" : {
         "en" : {
@@ -129,6 +146,40 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "El nombre de la polla es obligatorio"
+          }
+        }
+      }
+    },
+    "pool_score_empty_list_subtitle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Be the first to create one and invite others to join"
+          }
+        },
+        "es-CO" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sé el primero en crear una e invita a otros a participar"
+          }
+        }
+      }
+    },
+    "pool_score_empty_list_title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your pools are waiting"
+          }
+        },
+        "es-CO" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tus pollas te esperan"
           }
         }
       }

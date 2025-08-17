@@ -161,6 +161,35 @@ where EmptyContent == PagingVStackEmpty,
     }
 }
 
+public extension PagingVStack
+where ErrorContent == PagingVStackError,
+      ErrorContentOnConcatenate == PaginVStackRetryableError {
+    init(
+        lazyPager: LazyPager<Key, Item>,
+        @ViewBuilder loadingContent: @escaping () -> LoadingContent,
+        @ViewBuilder loadingContentOnConcatenate: @escaping () -> LoadingContentOnConcatenate,
+        @ViewBuilder emptyContent: @escaping () -> EmptyContent,
+        @ViewBuilder itemContent: @escaping (Item) -> ItemView
+    ) {
+        self.init(
+            lazyPager: lazyPager,
+            loadingContent: loadingContent,
+            emptyContent: emptyContent,
+            errorContent: { error in
+                PagingVStackError(localizedError: error.localizedErrorOrNil()!)
+            },
+            loadingContentOnConcatenate: loadingContentOnConcatenate,
+            errorContentOnConcatenate: { error in
+                PaginVStackRetryableError(
+                    localizedError: error.localizedErrorOrNil()!,
+                    retryAction: { lazyPager.retry() }
+                )
+            },
+            itemContent: itemContent
+        )
+    }
+}
+
 private extension View {
     func withDisableGestures() -> some View {
         self.allowsHitTesting(false)

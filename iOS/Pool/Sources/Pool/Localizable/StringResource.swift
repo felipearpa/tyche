@@ -24,6 +24,9 @@ extension StringResource {
     static let readyToJoinTitle = StringResource(name: "ready_to_join_title", bundle: Bundle.module)
     static let readyToJoinSubtitle = StringResource(name: "ready_to_join_subtitle", bundle: Bundle.module)
     static let joinPoolAction = StringResource(name: "join_pool_action", bundle: Bundle.module)
+    static let poolScoreEmptyListTitle = StringResource(name: "pool_score_empty_list_title", bundle: Bundle.module)
+    static let poolScoreEmptyListSubtitle = StringResource(name: "pool_score_empty_list_subtitle", bundle: Bundle.module)
+    static let createPoolAction = StringResource(name: "create_pool_action", bundle: Bundle.module)
 }
 
 extension String {
