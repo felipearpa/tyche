@@ -24,9 +24,7 @@ struct SessionRouter: View {
         }
         .task {
             let accountStorage = diResolver.resolve(AccountStorage.self)!
-            if let accountBundle = try? await accountStorage.retrieve() {
-                signedInAccountBundle = accountBundle
-            }
+            signedInAccountBundle = try? await accountStorage.retrieve()
         }
     }
 }

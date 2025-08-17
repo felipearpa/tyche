@@ -2,6 +2,7 @@ val projectCompileSdk: String by project
 val projectMinSdk: String by project
 val urlBasePath: String by project
 val signInLinkUrlTemplate: String by project
+val iosBundleId: String by project
 
 plugins {
     alias(libs.plugins.android.application)
@@ -37,6 +38,7 @@ android {
         all {
             buildConfigField(type = "String", name = "URL_BASE_BATH", value = """"$urlBasePath"""")
             buildConfigField(type = "String", name = "SIGN_IN_LINK_URL_TEMPLATE", value = """"$signInLinkUrlTemplate"""")
+            buildConfigField(type = "String", name = "IOS_BUNDLE_ID", value = """"$iosBundleId"""")
         }
     }
     compileOptions {

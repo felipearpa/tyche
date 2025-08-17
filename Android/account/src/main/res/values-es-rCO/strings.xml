@@ -14,7 +14,7 @@
     <string name="invalid_credential_recovery_suggestion">Por favor, verifica tu nombre de usuario y contraseña y vuelve a intentarlo. Si has olvidado tu contraseña, puedes restablecerla utilizando el enlace \'¿Olvidaste tu contraseña?\'</string>
     <string name="user_success_login_message">¡Felicidades! Has iniciado sesión correctamente y estás listo para hacer tu apuesta. ¡Que empiece la diversión!</string>
     <string name="account_verified_title">Correo electrónico verificado: ¡Que comiencen los juegos!</string>
-    <string name="account_verified_description">¡Felicidades, la verificación de tu correo electrónico está completa! Estás totalmente preparado para embarcarte en un emocionante viaje en el mundo de los juegos de apuestas</string>
+    <string name="account_verified_description">¡Felicidades, tu verificación de correo está completa! Ya puedes unirte a la diversión y poner a prueba tus predicciones</string>
     <string name="start_action">Iniciar</string>
     <string name="verification_email_sent_title">Enlace de verificación enviado</string>
     <string name="verification_email_sent_description">Se ha enviado un enlace de verificación a tu correo electrónico. Por favor, revisa tu bandeja de entrada y abre el enlace en el mismo dispositivo para completar el proceso, ya que es necesario para la verificación</string>

@@ -8,9 +8,7 @@ import DataBet
 
 @main
 struct TycheApp: App {
-    init() {
-        FirebaseApp.configure()
-    }
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
 
     var diResolver = DIResolver(
         resolver:Assembler([

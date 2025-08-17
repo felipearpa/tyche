@@ -1,5 +1,7 @@
 package com.felipearpa.tyche.session.authentication.di
 
+import android.content.Context
+import com.felipearpa.tyche.core.IosBundleIdProvider
 import com.felipearpa.tyche.session.AccountStorage
 import com.felipearpa.tyche.session.Auth
 import com.felipearpa.tyche.session.SignInLinkUrlTemplateProvider
@@ -17,6 +19,7 @@ import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import retrofit2.Retrofit
 
@@ -67,9 +70,13 @@ internal object LoginDataSourceProvider {
     fun provideAuthenticationExternalDataSource(
         firebaseAuth: FirebaseAuth,
         signInLinkUrlTemplateProvider: SignInLinkUrlTemplateProvider,
+        iosBundleId: IosBundleIdProvider,
+        @ApplicationContext context: Context,
     ): AuthenticationExternalDataSource =
         AuthenticationFirebaseDataSource(
             firebaseAuth = firebaseAuth,
             signInLinkUrlTemplate = signInLinkUrlTemplateProvider,
+            iosBundleId = iosBundleId,
+            context = context,
         )
 }

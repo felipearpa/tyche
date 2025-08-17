@@ -1,18 +1,28 @@
 import FirebaseAuth
+import Core
 
 class AuthenticationFirebaseDataSource: AuthenticationExternalDataSource {
     private let firebaseAuth: Auth
 
     private let signInUrlTemplate: SignInLinkUrlTemplateProvider
 
-    init(firebaseAuth: Auth, signInUrlTemplate: SignInLinkUrlTemplateProvider) {
+    private let androidPackageName: AndroidPackageNameProvider
+
+    init(
+        firebaseAuth: Auth,
+        signInUrlTemplate: SignInLinkUrlTemplateProvider,
+        androidPackageName: AndroidPackageNameProvider,
+    ) {
         self.firebaseAuth = firebaseAuth
         self.signInUrlTemplate = signInUrlTemplate
+        self.androidPackageName = androidPackageName
     }
     
     func sendSignInLinkToEmail(email: String) async throws {
         let actionCodeSettings = ActionCodeSettings()
         actionCodeSettings.url = URL(string: String(format: signInUrlTemplate(), email))
+        actionCodeSettings.setIOSBundleID(Bundle.main.bundleIdentifier!)
+        actionCodeSettings.setAndroidPackageName(androidPackageName(), installIfNotAvailable: false, minimumVersion: nil)
         actionCodeSettings.handleCodeInApp = true
         try await firebaseAuth.sendSignInLink(toEmail: email, actionCodeSettings: actionCodeSettings)
     }

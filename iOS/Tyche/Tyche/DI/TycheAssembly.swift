@@ -1,5 +1,6 @@
 import Swinject
 import Session
+import Core
 
 public class TycheAssembly : Assembly {
     public init() {}
@@ -7,6 +8,10 @@ public class TycheAssembly : Assembly {
     public func assemble(container: Swinject.Container) {
         container.register(SignInLinkUrlTemplateProvider.self) { _ in
             LocalSignInLinkUrlTemplateProvider()
+        }
+
+        container.register(AndroidPackageNameProvider.self) { _ in
+            LocalAndroidPackageNameProvider()
         }
     }
 }

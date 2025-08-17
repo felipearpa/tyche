@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		550F21DD2B16C7EF004D5A51 /* DataBet in Frameworks */ = {isa = PBXBuildFile; productRef = 550F21DC2B16C7EF004D5A51 /* DataBet */; };
+		5556C5172E515434004F34D5 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5556C5162E51542F004F34D5 /* AppDelegate.swift */; };
 		556EBA612B16CB8F008D4ABD /* Session in Frameworks */ = {isa = PBXBuildFile; productRef = 556EBA602B16CB8F008D4ABD /* Session */; };
 		557D1EAA2B40AD2B000FF9F9 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 557D1EA92B40AD2B000FF9F9 /* GoogleService-Info.plist */; };
 		558C522E2B40A046004AF956 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 558C522D2B40A046004AF956 /* FirebaseAuth */; };
@@ -52,6 +53,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		5556C5162E51542F004F34D5 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		557942532B4C413400B1B3DA /* Tyche.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Tyche.entitlements; sourceTree = "<group>"; };
 		557D1EA92B40AD2B000FF9F9 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		55A869FB2B9000C80055B421 /* EmailSignInURLProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmailSignInURLProcessor.swift; sourceTree = "<group>"; };
@@ -149,6 +151,7 @@
 				D2A7804E2AC8BBD700F01A02 /* Localizable */,
 				D2127F762A2C33340047DED7 /* UI */,
 				D2127F382A2C2F240047DED7 /* TycheApp.swift */,
+				5556C5162E51542F004F34D5 /* AppDelegate.swift */,
 				55A869FB2B9000C80055B421 /* EmailSignInURLProcessor.swift */,
 				55C9D9022E2ACB14007B79CA /* JoinPoolURLProcessor.swift */,
 				D2127F3C2A2C2F260047DED7 /* Assets.xcassets */,
@@ -374,6 +377,7 @@
 				D2127F752A2C33210047DED7 /* StringResource.swift in Sources */,
 				D2127F392A2C2F240047DED7 /* TycheApp.swift in Sources */,
 				D21495EC2ABFD65E00C18C71 /* SessionRouter.swift in Sources */,
+				5556C5172E515434004F34D5 /* AppDelegate.swift in Sources */,
 				D2127F452A2C2F260047DED7 /* Tyche.xcdatamodeld in Sources */,
 				55C9D9032E2ACB14007B79CA /* JoinPoolURLProcessor.swift in Sources */,
 			);
