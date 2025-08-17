@@ -17,7 +17,8 @@ public struct PagingVStack
     let loadingContentOnConcatenate: () -> LoadingContentOnConcatenate
     let errorContentOnConcatenate: (Error) -> ErrorContentOnConcatenate
     let itemContent: (Item) -> ItemView
-    
+    let spacing: CGFloat
+
     public init(
         lazyPager: LazyPager<Key, Item>,
         @ViewBuilder loadingContent: @escaping () -> LoadingContent,
@@ -25,6 +26,7 @@ public struct PagingVStack
         @ViewBuilder errorContent: @escaping (Error) -> ErrorContent,
         @ViewBuilder loadingContentOnConcatenate: @escaping () -> LoadingContentOnConcatenate,
         @ViewBuilder errorContentOnConcatenate: @escaping (Error) -> ErrorContentOnConcatenate,
+        spacing: CGFloat = 0,
         @ViewBuilder itemContent: @escaping (Item) -> ItemView
     ) {
         self.lazyPager = lazyPager
@@ -34,11 +36,10 @@ public struct PagingVStack
         self.loadingContentOnConcatenate = loadingContentOnConcatenate
         self.errorContentOnConcatenate = errorContentOnConcatenate
         self.itemContent = itemContent
+        self.spacing = spacing
     }
     
     public var body: some View {
-        let _ = Self._printChanges()
-        
         switch lazyPager.loadState.refresh {
         case .loading:
             LoadingContentWrapper(loadingContent: loadingContent)
@@ -49,7 +50,8 @@ public struct PagingVStack
                 emptyContent: emptyContent,
                 loadingContentOnAppend: loadingContentOnConcatenate,
                 errorContentOnAppend: errorContentOnConcatenate,
-                itemContent: itemContent
+                spacing: spacing,
+                itemContent: itemContent,
             )
         case .failure(let error):
             ErrorContentWrapper(errorContent: { errorContent(error) })
@@ -71,13 +73,32 @@ private struct ContentWrapper
     let loadingContentOnAppend: () -> LoadingContentOnConcatenate
     let errorContentOnAppend: (Error) -> ErrorContentOnConcatenate
     let itemContent: (Item) -> ItemView
-    
+    let spacing: CGFloat
+
+    init(
+        lazyPager: LazyPager<Key, Item>,
+        endOfPaginationReached: Bool,
+        emptyContent: @escaping () -> EmptyContent,
+        loadingContentOnAppend: @escaping () -> LoadingContentOnConcatenate,
+        errorContentOnAppend: @escaping (Error) -> ErrorContentOnConcatenate,
+        spacing: CGFloat = 0,
+        itemContent: @escaping (Item) -> ItemView,
+    ) {
+        self.lazyPager = lazyPager
+        self.endOfPaginationReached = endOfPaginationReached
+        self.emptyContent = emptyContent
+        self.loadingContentOnAppend = loadingContentOnAppend
+        self.errorContentOnAppend = errorContentOnAppend
+        self.itemContent = itemContent
+        self.spacing = spacing
+    }
+
     var body: some View {
         if endOfPaginationReached && lazyPager.isEmpty() {
             EmptyContentWrapper(emptyContent: emptyContent)
         } else {
             ScrollView {
-                LazyVStack(spacing: 0) {
+                LazyVStack(spacing: spacing) {
                     ForEach(Array(lazyPager.enumerated()), id: \.element) { index, item in
                         itemContent(item)
                             .onAppearOnce {
@@ -140,7 +161,8 @@ where EmptyContent == PagingVStackEmpty,
         lazyPager: LazyPager<Key, Item>,
         @ViewBuilder loadingContent: @escaping () -> LoadingContent,
         @ViewBuilder loadingContentOnConcatenate: @escaping () -> LoadingContentOnConcatenate,
-        @ViewBuilder itemContent: @escaping (Item) -> ItemView
+        spacing: CGFloat = 0,
+        @ViewBuilder itemContent: @escaping (Item) -> ItemView,
     ) {
         self.init(
             lazyPager: lazyPager,
@@ -156,7 +178,8 @@ where EmptyContent == PagingVStackEmpty,
                     retryAction: { lazyPager.retry() }
                 )
             },
-            itemContent: itemContent
+            spacing: spacing,
+            itemContent: itemContent,
         )
     }
 }
@@ -169,7 +192,8 @@ where ErrorContent == PagingVStackError,
         @ViewBuilder loadingContent: @escaping () -> LoadingContent,
         @ViewBuilder loadingContentOnConcatenate: @escaping () -> LoadingContentOnConcatenate,
         @ViewBuilder emptyContent: @escaping () -> EmptyContent,
-        @ViewBuilder itemContent: @escaping (Item) -> ItemView
+        spacing: CGFloat = 0,
+        @ViewBuilder itemContent: @escaping (Item) -> ItemView,
     ) {
         self.init(
             lazyPager: lazyPager,
@@ -185,7 +209,8 @@ where ErrorContent == PagingVStackError,
                     retryAction: { lazyPager.retry() }
                 )
             },
-            itemContent: itemContent
+            spacing: spacing,
+            itemContent: itemContent,
         )
     }
 }
@@ -203,19 +228,30 @@ private extension View {
 }
 
 #Preview {
-    PagingVStack(
-        lazyPager: LazyPager(
-            pagingData: PagingData(
-                pagingConfig: PagingConfig(prefetchDistance: 5),
-                pagingSourceFactory: FakeFilledPagingSource()
-            )
-        ),
-        loadingContent: { EmptyView() },
-        emptyContent: { EmptyView() },
-        errorContent: { _ in EmptyView() },
-        loadingContentOnConcatenate: { EmptyView() },
-        errorContentOnConcatenate: { _ in EmptyView() }
-    ) { item in
-        Text(item.id)
+    let lazyPager = LazyPager(
+        pagingData: PagingData(
+            pagingConfig: PagingConfig(prefetchDistance: 5),
+            pagingSourceFactory: FakeFilledPagingSource(),
+        )
+    )
+
+    let _ = print("felipe 1")
+
+    ZStack {
+        PagingVStack(
+            lazyPager: lazyPager,
+            loadingContent: { EmptyView() },
+            emptyContent: { EmptyView() },
+            errorContent: { _ in EmptyView() },
+            loadingContentOnConcatenate: { EmptyView() },
+            errorContentOnConcatenate: { _ in EmptyView() }
+        ) { item in
+            let _ = print("felipe 3")
+            Text(item.id)
+        }
+    }
+    .onAppear {
+        let _ = print("felipe 2")
+        lazyPager.refresh()
     }
 }
