@@ -7,13 +7,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Congratulations, your email verification is complete! You're all set to embark on an exciting journey in the world of betting games"
+            "value" : "Congratulations, your email verification is complete! You're ready to join the fun and challenge your predictions"
           }
         },
         "es-CO" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "¡Felicidades, la verificación de tu correo electrónico está completa! Estás totalmente preparado para embarcarte en un emocionante viaje en el mundo de los juegos de apuestas"
+            "value" : "¡Felicidades, tu verificación de correo está completa! Ya puedes unirte a la diversión y poner a prueba tus predicciones"
           }
         }
       }
