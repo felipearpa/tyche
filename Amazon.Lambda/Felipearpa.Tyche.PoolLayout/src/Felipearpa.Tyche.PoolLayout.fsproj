@@ -8,11 +8,15 @@
 
     <ItemGroup>
         <Compile Include="Domain\PoolLayout.fs" />
+        <Compile Include="Domain\PoolLayoutMatch.fs" />
         <Compile Include="Domain\PoolLayoutDictionaryTransformer.fs" />
+        <Compile Include="Domain\PoolLayoutMatchDictionaryTransformer.fs" />
         <Compile Include="Domain\IPoolLayoutRepository.fs" />
         <Compile Include="Infrastructure\GetOpenPoolLayoutRequestBuilder.fs" />
+        <Compile Include="Infrastructure\GetPendingPoolLayoutMatchesRequestBuilder.fs" />
         <Compile Include="Infrastructure\PoolLayoutDynamoDbRepository.fs" />
         <Compile Include="Application\GetOpenPoolLayoutsQuery.fs" />
+        <Compile Include="Application\GetPendingPoolLayoutMatchesQuery.fs" />
     </ItemGroup>
 
     <ItemGroup>

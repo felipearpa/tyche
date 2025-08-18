@@ -16,6 +16,7 @@ module PoolGamblerBetDictionaryTransformer =
         { PoolGamblerBet.PoolId = dictionary["poolId"].S |> Ulid.newOf
           GamblerId = dictionary["gamblerId"].S |> Ulid.newOf
           MatchId = dictionary["matchId"].S |> Ulid.newOf
+          PoolLayoutId = dictionary["poolLayoutId"].S |> Ulid.newOf
           HomeTeamId = dictionary["homeTeamId"].S |> Ulid.newOf
           HomeTeamName = dictionary["homeTeamName"].S |> NonEmptyString100.newOf
           AwayTeamId = dictionary["awayTeamId"].S |> Ulid.newOf

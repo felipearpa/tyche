@@ -1,4 +1,4 @@
-namespace Felipearpa.Tyche.AmazonLambda
+namespace Felipearpa.Tyche.AmazonLambda.Function
 
 #nowarn "3536"
 
@@ -9,13 +9,15 @@ open Amazon.Lambda.Core
 open Felipearpa.Core
 open Felipearpa.Core.Json
 open Felipearpa.Data.DynamoDb
+open Felipearpa.Tyche.AmazonLambda
 open Felipearpa.Tyche.Function.PoolLayoutFunction
 open Felipearpa.Tyche.PoolLayout.Application
 open Felipearpa.Tyche.PoolLayout.Domain
 open Felipearpa.Tyche.PoolLayout.Infrastructure
 open Microsoft.Extensions.DependencyInjection
+open Microsoft.Extensions.Logging
 
-type PoolLayoutFunctionWrapper(configureServices: IServiceCollection -> unit) =
+type PoolLayoutFunction(configureServices: IServiceCollection -> unit) =
 
     [<Literal>]
     let nextParameter = "next"
@@ -25,6 +27,7 @@ type PoolLayoutFunctionWrapper(configureServices: IServiceCollection -> unit) =
 
         services
             .AddAWSService<IAmazonDynamoDB>()
+            .AddLogging(fun builder -> builder.AddLambdaLogger() |> ignore)
             .AddSingleton<ISerializer, JsonSerializer>()
             .AddSingleton<IKeySerializer, DynamoDbKeySerializer>()
             .AddScoped<IPoolLayoutRepository, PoolLayoutDynamoDbRepository>()
@@ -37,7 +40,7 @@ type PoolLayoutFunctionWrapper(configureServices: IServiceCollection -> unit) =
 
     let serviceProvider = buildServiceProvider ()
 
-    new() = PoolLayoutFunctionWrapper(fun _ -> ())
+    new() = PoolLayoutFunction(fun _ -> ())
 
     // GET /pool-layouts/open
     member this.GetOpenPoolLayoutsAsync

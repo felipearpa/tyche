@@ -14,8 +14,8 @@ let ``given a dictionary when is transformed to object then is transformed corre
 
     let dictionary =
         dict
-            [ "id", AttributeValue(S = id)
-              "name", AttributeValue(S = name)
+            [ "poolLayoutId", AttributeValue(S = id)
+              "poolLayoutName", AttributeValue(S = name)
               "startDateTime", AttributeValue(S = startDateTime) ]
 
     let model = dictionary.ToPoolLayout()

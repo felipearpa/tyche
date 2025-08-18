@@ -1,4 +1,4 @@
-namespace Felipearpa.Tyche.AmazonLambda.Tests.Account
+namespace Felipearpa.Tyche.AmazonLambda.Function.Account.Tests
 
 #nowarn "3536"
 
@@ -8,9 +8,11 @@ open Amazon.DynamoDBv2
 open Amazon.DynamoDBv2.Model
 open Amazon.Lambda.APIGatewayEvents
 open Amazon.Lambda.TestUtilities
-open Felipearpa.Tyche.AmazonLambda
+open Felipearpa.Tyche.AmazonLambda.Function
 open FsUnitTyped
 open Microsoft.Extensions.DependencyInjection
+open Microsoft.Extensions.Logging
+open Microsoft.Extensions.Logging.Abstractions
 open Moq
 open Xunit
 
@@ -55,7 +57,19 @@ module LinkAccountTest =
         setupMockGetExistingAccountQuery client
 
         let functions =
-            AccountFunctionWrapper(fun services -> services.AddSingleton<IAmazonDynamoDB>(client.Object) |> ignore)
+            AccountFunction(fun services ->
+                services.AddLogging(fun builder ->
+                    builder.ClearProviders() |> ignore
+
+                    builder.AddProvider(
+                        { new ILoggerProvider with
+                            member _.CreateLogger _ = NullLogger.Instance
+                            member _.Dispose() = () }
+                    )
+                    |> ignore)
+                |> ignore
+
+                services.AddSingleton<IAmazonDynamoDB>(client.Object) |> ignore)
 
         let context = TestLambdaContext()
 
@@ -71,7 +85,19 @@ module LinkAccountTest =
         setupMockGetNonExistingAccountQuery client
 
         let functions =
-            AccountFunctionWrapper(fun services -> services.AddSingleton<IAmazonDynamoDB>(client.Object) |> ignore)
+            AccountFunction(fun services ->
+                services.AddLogging(fun builder ->
+                    builder.ClearProviders() |> ignore
+
+                    builder.AddProvider(
+                        { new ILoggerProvider with
+                            member _.CreateLogger _ = NullLogger.Instance
+                            member _.Dispose() = () }
+                    )
+                    |> ignore)
+                |> ignore
+
+                services.AddSingleton<IAmazonDynamoDB>(client.Object) |> ignore)
 
         let context = TestLambdaContext()
 
@@ -81,7 +107,7 @@ module LinkAccountTest =
 
         (context, request, functions)
 
-    let private ``when requested`` (functions: AccountFunctionWrapper) request context =
+    let private ``when requested`` (functions: AccountFunction) request context =
         async { return! functions.LinkAccountAsync(request, context) |> Async.AwaitTask }
 
     let private ``then the account is linked`` (response: APIGatewayHttpApiV2ProxyResponse) =
@@ -93,7 +119,7 @@ module LinkAccountTest =
         setupMockGetExistingAccountQuery client
 
         let functions =
-            AccountFunctionWrapper(fun services -> services.AddSingleton<IAmazonDynamoDB>(client.Object) |> ignore)
+            AccountFunction(fun services -> services.AddSingleton<IAmazonDynamoDB>(client.Object) |> ignore)
 
         let context = TestLambdaContext()
 
@@ -107,7 +133,7 @@ module LinkAccountTest =
         setupMockGetNonExistingAccountQuery client
 
         let functions =
-            AccountFunctionWrapper(fun services -> services.AddSingleton<IAmazonDynamoDB>(client.Object) |> ignore)
+            AccountFunction(fun services -> services.AddSingleton<IAmazonDynamoDB>(client.Object) |> ignore)
 
         let context = TestLambdaContext()
 

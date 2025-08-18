@@ -170,3 +170,40 @@ type PoolGamblerBetDynamoDbRepository(keySerializer: IKeySerializer, client: IAm
                 with :? AggregateException as error when (error.InnerException :? ConditionalCheckFailedException) ->
                     return Error BetFailure.MatchLocked
             }
+
+        member this.AddMatch(poolGamblerBet) =
+            async {
+                let conditionExpression = "attribute_not_exists(pk) AND attribute_not_exists(sk)"
+
+                let item =
+                    dict
+                        [ "pk",
+                          AttributeValue(
+                              S = $"{gamblerText}#{poolGamblerBet.GamblerId}#{poolText}#{poolGamblerBet.PoolId}"
+                          )
+                          "sk", AttributeValue(S = $"{matchText}#{poolGamblerBet.MatchId}")
+                          "poolId", AttributeValue(S = poolGamblerBet.PoolId.Value)
+                          "gamblerId", AttributeValue(S = poolGamblerBet.GamblerId.Value)
+                          "matchId", AttributeValue(S = poolGamblerBet.MatchId.Value)
+                          "homeTeamId", AttributeValue(S = poolGamblerBet.HomeTeamId.Value)
+                          "homeTeamName", AttributeValue(S = poolGamblerBet.HomeTeamName.Value)
+                          "awayTeamId", AttributeValue(S = poolGamblerBet.AwayTeamId.Value)
+                          "awayTeamName", AttributeValue(S = poolGamblerBet.AwayTeamName.Value)
+                          "matchDateTime",
+                          AttributeValue(S = poolGamblerBet.MatchDateTime.ToUniversalTime().ToString("o"))
+                          "poolLayoutId", AttributeValue(S = poolGamblerBet.PoolLayoutId.Value)
+                          "poolLayoutVersion", AttributeValue(N = poolGamblerBet.PoolLayoutVersion.ToString()) ]
+
+                let request =
+                    PutItemRequest(
+                        TableName = tableName,
+                        Item = Dictionary item,
+                        ConditionExpression = conditionExpression
+                    )
+
+                try
+                    let! _ = client.PutItemAsync(request) |> Async.AwaitTask
+                    return item |> toPoolGamblerBet |> Ok
+                with :? AggregateException as error when (error.InnerException :? ConditionalCheckFailedException) ->
+                    return Error AddMatchFailure.AlreadyExist
+            }

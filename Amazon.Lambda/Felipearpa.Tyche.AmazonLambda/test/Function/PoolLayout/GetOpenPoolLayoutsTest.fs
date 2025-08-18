@@ -1,4 +1,4 @@
-namespace Felipearpa.Tyche.AmazonLambda.Tests.PoolLayout
+namespace Felipearpa.Tyche.AmazonLambda.Function.PoolLayout.Tests
 
 #nowarn "3536"
 
@@ -12,10 +12,12 @@ open Amazon.Lambda.TestUtilities
 open Felipearpa.Core
 open Felipearpa.Core.Json
 open Felipearpa.Core.Paging
-open Felipearpa.Tyche.AmazonLambda
+open Felipearpa.Tyche.AmazonLambda.Function
 open Felipearpa.Tyche.Function.Response
 open FsUnitTyped
 open Microsoft.Extensions.DependencyInjection
+open Microsoft.Extensions.Logging
+open Microsoft.Extensions.Logging.Abstractions
 open Moq
 open Xunit
 
@@ -39,12 +41,12 @@ module GetOpenPoolLayoutTest =
 
         let items =
             [ dict
-                  [ "id", AttributeValue(S = "01K0DCFFB08W35AW5Q6F82R6NQ")
-                    "name", AttributeValue(S = "Hello world")
+                  [ "poolLayoutId", AttributeValue(S = "01K0DCFFB08W35AW5Q6F82R6NQ")
+                    "poolLayoutName", AttributeValue(S = "Hello world")
                     "startDateTime", AttributeValue(S = "2023-09-01T12:00:00Z") ]
               dict
-                  [ "id", AttributeValue(S = "01KZXZNSK2WT2BVRZBW1H7E92Y")
-                    "name", AttributeValue(S = "Hola mundo")
+                  [ "poolLayoutId", AttributeValue(S = "01KZXZNSK2WT2BVRZBW1H7E92Y")
+                    "poolLayoutName", AttributeValue(S = "Hola mundo")
                     "startDateTime", AttributeValue(S = "2023-10-15T18:30:00Z") ] ]
 
         client
@@ -53,7 +55,19 @@ module GetOpenPoolLayoutTest =
         |> ignore
 
         let functions =
-            PoolLayoutFunctionWrapper(fun services -> services.AddSingleton<IAmazonDynamoDB>(client.Object) |> ignore)
+            PoolLayoutFunction(fun services ->
+                services.AddLogging(fun builder ->
+                    builder.ClearProviders() |> ignore
+
+                    builder.AddProvider(
+                        { new ILoggerProvider with
+                            member _.CreateLogger _ = NullLogger.Instance
+                            member _.Dispose() = () }
+                    )
+                    |> ignore)
+                |> ignore
+
+                services.AddSingleton<IAmazonDynamoDB>(client.Object) |> ignore)
 
         let context = TestLambdaContext()
 
@@ -61,7 +75,7 @@ module GetOpenPoolLayoutTest =
 
         (expectedPoolLayouts, context, request, functions)
 
-    let private ``when requesting`` (functions: PoolLayoutFunctionWrapper) request context =
+    let private ``when requesting`` (functions: PoolLayoutFunction) request context =
         async { return! functions.GetOpenPoolLayoutsAsync(request, context) |> Async.AwaitTask }
 
     let private ``then the open pool layouts are returned``

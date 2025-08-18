@@ -1,4 +1,4 @@
-namespace Felipearpa.Tyche.AmazonLambda
+namespace Felipearpa.Tyche.AmazonLambda.Function
 
 #nowarn "3536"
 
@@ -12,17 +12,20 @@ open Felipearpa.Data.DynamoDb
 open Felipearpa.Tyche.Account.Application
 open Felipearpa.Tyche.Account.Domain
 open Felipearpa.Tyche.Account.Infrastructure
+open Felipearpa.Tyche.AmazonLambda
 open Felipearpa.Tyche.Function.AccountFunction
 open Felipearpa.Tyche.Function.Request
 open Microsoft.Extensions.DependencyInjection
+open Microsoft.Extensions.Logging
 
-type AccountFunctionWrapper(configureServices: IServiceCollection -> unit) =
+type AccountFunction(configureServices: IServiceCollection -> unit) =
 
     let buildServiceProvider () =
         let services = ServiceCollection()
 
         services
             .AddAWSService<IAmazonDynamoDB>()
+            .AddLogging(fun builder -> builder.AddLambdaLogger() |> ignore)
             .AddSingleton<ISerializer, JsonSerializer>()
             .AddSingleton<IKeySerializer, DynamoDbKeySerializer>()
             .AddScoped<IAccountRepository, AccountDynamoDbRepository>()
@@ -35,7 +38,7 @@ type AccountFunctionWrapper(configureServices: IServiceCollection -> unit) =
 
     let serviceProvider = buildServiceProvider ()
 
-    new() = AccountFunctionWrapper(fun _ -> ())
+    new() = AccountFunction(fun _ -> ())
 
     // POST /accounts
     member this.LinkAccountAsync

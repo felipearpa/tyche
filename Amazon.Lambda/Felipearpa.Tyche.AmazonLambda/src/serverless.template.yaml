@@ -18,7 +18,7 @@ Resources:
   GetPoolById:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: Felipearpa.Tyche.AmazonLambda::Felipearpa.Tyche.AmazonLambda.PoolFunctionWrapper::GetPoolByIdAsync
+      Handler: Felipearpa.Tyche.AmazonLambda::Felipearpa.Tyche.AmazonLambda.Function.PoolFunction::GetPoolByIdAsync
       Runtime: dotnet8
       CodeUri: .
       MemorySize: 256
@@ -43,7 +43,7 @@ Resources:
   GetGamblersByPoolId:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: Felipearpa.Tyche.AmazonLambda::Felipearpa.Tyche.AmazonLambda.PoolFunctionWrapper::GetGamblersByPoolIdAsync
+      Handler: Felipearpa.Tyche.AmazonLambda::Felipearpa.Tyche.AmazonLambda.Function.PoolFunction::GetGamblersByPoolIdAsync
       Runtime: dotnet8
       CodeUri: .
       MemorySize: 256
@@ -69,7 +69,7 @@ Resources:
   GetPoolGamblerScoreById:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: Felipearpa.Tyche.AmazonLambda::Felipearpa.Tyche.AmazonLambda.PoolFunctionWrapper::GetPoolGamblerScoreByIdAsync
+      Handler: Felipearpa.Tyche.AmazonLambda::Felipearpa.Tyche.AmazonLambda.Function.PoolFunction::GetPoolGamblerScoreByIdAsync
       Runtime: dotnet8
       CodeUri: .
       MemorySize: 256
@@ -94,7 +94,7 @@ Resources:
   GetPendingBets:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: Felipearpa.Tyche.AmazonLambda::Felipearpa.Tyche.AmazonLambda.PoolFunctionWrapper::GetPendingBetsAsync
+      Handler: Felipearpa.Tyche.AmazonLambda::Felipearpa.Tyche.AmazonLambda.Function.PoolFunction::GetPendingBetsAsync
       Runtime: dotnet8
       CodeUri: .
       MemorySize: 256
@@ -120,7 +120,7 @@ Resources:
   GetFinishedBets:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: Felipearpa.Tyche.AmazonLambda::Felipearpa.Tyche.AmazonLambda.PoolFunctionWrapper::GetFinishedBetsAsync
+      Handler: Felipearpa.Tyche.AmazonLambda::Felipearpa.Tyche.AmazonLambda.Function.PoolFunction::GetFinishedBetsAsync
       Runtime: dotnet8
       CodeUri: .
       MemorySize: 256
@@ -146,7 +146,7 @@ Resources:
   GetPoolsByGamblerId:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: Felipearpa.Tyche.AmazonLambda::Felipearpa.Tyche.AmazonLambda.GamblerFunctionWrapper::GetPoolsByGamblerIdAsync
+      Handler: Felipearpa.Tyche.AmazonLambda::Felipearpa.Tyche.AmazonLambda.Function.GamblerFunction::GetPoolsByGamblerIdAsync
       Runtime: dotnet8
       CodeUri: .
       MemorySize: 256
@@ -172,7 +172,7 @@ Resources:
   CreatePool:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: Felipearpa.Tyche.AmazonLambda::Felipearpa.Tyche.AmazonLambda.PoolFunctionWrapper::CreatePoolAsync
+      Handler: Felipearpa.Tyche.AmazonLambda::Felipearpa.Tyche.AmazonLambda.Function.PoolFunction::CreatePoolAsync
       Runtime: dotnet8
       CodeUri: .
       MemorySize: 256
@@ -183,6 +183,7 @@ Resources:
             - Effect: Allow
               Action:
                 - dynamodb:Query
+                - dynamodb:PutItem
                 - dynamodb:TransactWriteItems
               Resource:
                 - arn:aws:dynamodb:us-east-2:567776770335:table/Pool
@@ -199,7 +200,7 @@ Resources:
   JoinPool:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: Felipearpa.Tyche.AmazonLambda::Felipearpa.Tyche.AmazonLambda.PoolFunctionWrapper::JoinPoolAsync
+      Handler: Felipearpa.Tyche.AmazonLambda::Felipearpa.Tyche.AmazonLambda.Function.PoolFunction::JoinPoolAsync
       Runtime: dotnet8
       CodeUri: .
       MemorySize: 256
@@ -226,7 +227,7 @@ Resources:
   Bet:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: Felipearpa.Tyche.AmazonLambda::Felipearpa.Tyche.AmazonLambda.BetFunctionWrapper::BetAsync
+      Handler: Felipearpa.Tyche.AmazonLambda::Felipearpa.Tyche.AmazonLambda.Function.BetFunction::BetAsync
       Runtime: dotnet8
       CodeUri: .
       MemorySize: 256
@@ -252,7 +253,7 @@ Resources:
   GetOpenPoolLayouts:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: Felipearpa.Tyche.AmazonLambda::Felipearpa.Tyche.AmazonLambda.PoolLayoutFunctionWrapper::GetOpenPoolLayoutsAsync
+      Handler: Felipearpa.Tyche.AmazonLambda::Felipearpa.Tyche.AmazonLambda.Function.PoolLayoutFunction::GetOpenPoolLayoutsAsync
       Runtime: dotnet8
       CodeUri: .
       MemorySize: 256
@@ -278,7 +279,7 @@ Resources:
   LinkAccount:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: Felipearpa.Tyche.AmazonLambda::Felipearpa.Tyche.AmazonLambda.AccountFunctionWrapper::LinkAccountAsync
+      Handler: Felipearpa.Tyche.AmazonLambda::Felipearpa.Tyche.AmazonLambda.Function.AccountFunction::LinkAccountAsync
       Runtime: dotnet8
       CodeUri: .
       MemorySize: 256
@@ -303,6 +304,40 @@ Resources:
             Path: /accounts
             Method: POST
             ApiId: !Ref AuthGatewayHttpApi
+  
+  OnPoolChanged:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: Felipearpa.Tyche.AmazonLambda::Felipearpa.Tyche.AmazonLambda.Event.PoolEvent::OnPoolChangedAsync
+      Runtime: dotnet8
+      CodeUri: .
+      MemorySize: 256
+      Timeout: 60
+      Policies:
+        - AWSLambdaBasicExecutionRole
+        - Statement:
+            - Effect: Allow
+              Action:
+                - dynamodb:ListStreams
+                - dynamodb:DescribeStream
+                - dynamodb:GetRecords
+                - dynamodb:GetShardIterator
+                - dynamodb:Query
+                - dynamodb:PutItem
+              Resource:
+                - arn:aws:dynamodb:us-east-2:567776770335:table/Pool/stream/2025-08-18T16:45:55.692
+                - arn:aws:dynamodb:us-east-2:567776770335:table/PoolLayout
+                - arn:aws:dynamodb:us-east-2:567776770335:table/Pool
+      Architectures: [ arm64 ]
+      Events:
+        PoolStream:
+          Type: DynamoDB
+          Properties:
+            Stream: arn:aws:dynamodb:us-east-2:567776770335:table/Pool/stream/2025-08-18T16:45:55.692
+            StartingPosition: LATEST
+            BatchSize: 100
+            MaximumBatchingWindowInSeconds: 1
+            Enabled: true
 
 Outputs:
   ApiURL:

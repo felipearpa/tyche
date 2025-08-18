@@ -8,6 +8,8 @@ open Microsoft.FSharp.Core
 
 type BetFailure = | MatchLocked
 
+type AddMatchFailure = | AlreadyExist
+
 type IPoolGamblerBetRepository =
     abstract GetPendingPoolGamblerBetsAsync:
         Ulid * Ulid * string option * string option -> Async<PoolGamblerBet CursorPage>
@@ -16,3 +18,5 @@ type IPoolGamblerBetRepository =
         Ulid * Ulid * string option * string option -> Async<PoolGamblerBet CursorPage>
 
     abstract BetAsync: Ulid * Ulid * Ulid * TeamScore<BetScore> -> Result<PoolGamblerBet, BetFailure> Async
+
+    abstract AddMatch: InitialPoolGamblerBet -> Result<PoolGamblerBet, AddMatchFailure> Async

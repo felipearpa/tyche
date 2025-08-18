@@ -1,10 +1,9 @@
 namespace Felipearpa.Tyche.Pool.Domain
 
 open System
-open Felipearpa.Tyche.Pool.Type
 open Felipearpa.Type
 
-type PoolGamblerBet =
+type InitialPoolGamblerBet =
     { PoolId: Ulid
       GamblerId: Ulid
       MatchId: Ulid
@@ -13,8 +12,5 @@ type PoolGamblerBet =
       HomeTeamName: NonEmptyString100
       AwayTeamId: Ulid
       AwayTeamName: NonEmptyString100
-      MatchScore: TeamScore<int> option
-      BetScore: TeamScore<BetScore> option
-      Score: int option
       MatchDateTime: DateTime
-      isLocked: bool }
+      PoolLayoutVersion: int }

@@ -1,4 +1,4 @@
-namespace Felipearpa.Tyche.AmazonLambda.Tests.Pool
+namespace Felipearpa.Tyche.AmazonLambda.Function.Pool.Tests
 
 #nowarn "3536"
 
@@ -11,11 +11,13 @@ open Amazon.Lambda.TestUtilities
 open Felipearpa.Core
 open Felipearpa.Core.Json
 open Felipearpa.Core.Paging
-open Felipearpa.Tyche.AmazonLambda
+open Felipearpa.Tyche.AmazonLambda.Function
 open Felipearpa.Tyche.Function.Response
 open FsUnit.Xunit
 open FsUnitTyped
 open Microsoft.Extensions.DependencyInjection
+open Microsoft.Extensions.Logging
+open Microsoft.Extensions.Logging.Abstractions
 open Moq
 open Xunit
 
@@ -75,7 +77,19 @@ module GetGamblersByPoolIdTest =
         |> ignore
 
         let functions =
-            PoolFunctionWrapper(fun services -> services.AddSingleton<IAmazonDynamoDB>(client.Object) |> ignore)
+            PoolFunction(fun services ->
+                services.AddLogging(fun builder ->
+                    builder.ClearProviders() |> ignore
+
+                    builder.AddProvider(
+                        { new ILoggerProvider with
+                            member _.CreateLogger _ = NullLogger.Instance
+                            member _.Dispose() = () }
+                    )
+                    |> ignore)
+                |> ignore
+
+                services.AddSingleton<IAmazonDynamoDB>(client.Object) |> ignore)
 
         let context = TestLambdaContext()
 
@@ -84,7 +98,7 @@ module GetGamblersByPoolIdTest =
 
         (expectedPoolScores, context, request, functions)
 
-    let private ``when requesting its information`` (functions: PoolFunctionWrapper) request context =
+    let private ``when requesting its information`` (functions: PoolFunction) request context =
         async { return! functions.GetGamblersByPoolIdAsync(request, context) |> Async.AwaitTask }
 
     let private ``then associated pool scores are returned``
@@ -103,7 +117,7 @@ module GetGamblersByPoolIdTest =
         |> shouldEqual (expectedPoolScores.Items |> Seq.toList)
 
     let private ``given a request without poolId`` () =
-        let functions = PoolFunctionWrapper()
+        let functions = PoolFunction()
 
         let context = TestLambdaContext()
 

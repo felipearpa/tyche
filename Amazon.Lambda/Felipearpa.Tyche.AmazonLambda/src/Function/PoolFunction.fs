@@ -1,4 +1,4 @@
-namespace Felipearpa.Tyche.AmazonLambda
+namespace Felipearpa.Tyche.AmazonLambda.Function
 
 #nowarn "3536"
 
@@ -12,15 +12,16 @@ open Felipearpa.Data.DynamoDb
 open Felipearpa.Tyche.Account.Application
 open Felipearpa.Tyche.Account.Domain
 open Felipearpa.Tyche.Account.Infrastructure
-open Felipearpa.Tyche.AmazonLambda.StringTransformer
+open Felipearpa.Tyche.AmazonLambda
 open Felipearpa.Tyche.Function.PoolFunction
 open Felipearpa.Tyche.Function.Request
 open Felipearpa.Tyche.Pool.Application
 open Felipearpa.Tyche.Pool.Domain
 open Felipearpa.Tyche.Pool.Infrastructure
 open Microsoft.Extensions.DependencyInjection
+open Microsoft.Extensions.Logging
 
-type PoolFunctionWrapper(configureServices: IServiceCollection -> unit) =
+type PoolFunction(configureServices: IServiceCollection -> unit) =
 
     [<Literal>]
     let poolIdParameter = "poolId"
@@ -39,6 +40,7 @@ type PoolFunctionWrapper(configureServices: IServiceCollection -> unit) =
 
         services
             .AddAWSService<IAmazonDynamoDB>()
+            .AddLogging(fun builder -> builder.AddLambdaLogger() |> ignore)
             .AddSingleton<ISerializer, JsonSerializer>()
             .AddSingleton<IKeySerializer, DynamoDbKeySerializer>()
             .AddScoped<IPoolGamblerScoreRepository, PoolGamblerScoreDynamoDbRepository>()
@@ -63,7 +65,7 @@ type PoolFunctionWrapper(configureServices: IServiceCollection -> unit) =
 
     let serviceProvider = buildServiceProvider ()
 
-    new() = PoolFunctionWrapper(fun _ -> ())
+    new() = PoolFunction(fun _ -> ())
 
     // GET /pools/{poolId}
     member this.GetPoolByIdAsync

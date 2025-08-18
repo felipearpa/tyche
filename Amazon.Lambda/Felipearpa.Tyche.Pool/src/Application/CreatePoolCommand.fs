@@ -30,5 +30,5 @@ type CreatePoolCommand(poolRepository: IPoolRepository, getAccountById: IGetAcco
                 return
                     match result with
                     | Ok createPoolOutput -> Ok createPoolOutput
-                    | Error _ -> failwith "Error storing the pool"
+                    | Error error -> failwith "Error storing the pool"
         }

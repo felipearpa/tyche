@@ -10,6 +10,7 @@ module PoolGamblerBetTransformer =
         { PoolGamblerBetResponse.PoolId = poolGamblerBet.PoolId |> Ulid.value
           GamblerId = poolGamblerBet.GamblerId |> Ulid.value
           MatchId = poolGamblerBet.MatchId |> Ulid.value
+          PoolLayoutId = poolGamblerBet.PoolLayoutId |> Ulid.value
           HomeTeamId = poolGamblerBet.HomeTeamId |> Ulid.value
           HomeTeamName = poolGamblerBet.HomeTeamName |> NonEmptyString100.value
           HomeTeamScore =

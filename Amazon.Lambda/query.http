@@ -1,7 +1,7 @@
 @baseUrl = https://wfykmbiop4.execute-api.us-east-2.amazonaws.com
 # @baseUrl = https://localhost:7183
 
-@authToken = Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6IjU3YmZiMmExMWRkZmZjMGFkMmU2ODE0YzY4NzYzYjhjNjg3NTgxZDgiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL3NlY3VyZXRva2VuLmdvb2dsZS5jb20vdHljaGUtNTg4Y2UiLCJhdWQiOiJ0eWNoZS01ODhjZSIsImF1dGhfdGltZSI6MTc1NTQ0NTk4NCwidXNlcl9pZCI6InNxVDJ1ZDJyd05iSWVUSWFIYXVPdkFBd25ORTIiLCJzdWIiOiJzcVQydWQycndOYkllVElhSGF1T3ZBQXduTkUyIiwiaWF0IjoxNzU1NDQ1OTg0LCJleHAiOjE3NTU0NDk1ODQsImVtYWlsIjoidHljaGUtYW5kcm9pZEB0eWNoZS5jb20iLCJlbWFpbF92ZXJpZmllZCI6ZmFsc2UsImZpcmViYXNlIjp7ImlkZW50aXRpZXMiOnsiZW1haWwiOlsidHljaGUtYW5kcm9pZEB0eWNoZS5jb20iXX0sInNpZ25faW5fcHJvdmlkZXIiOiJwYXNzd29yZCJ9fQ.JFTaWYxWy4e-gkNREwkfRlNP59uOPjbxY-eFLqcM8bLYIqFTrsuvlDLAnAo8IRT-q2YwAqTapoIrm1l2NLuVZ8-NA5oI4o3nxho-1oOmiZ66AJo77aWB-RprgMu-1iyf8DgtR0QUCVGrmpp-0Rk8E5nchX_g9spYlSuLdcLKOm1xUn2zOmZpe06CZVMHgsi6INSWhzrQ1gLjzE8TC9vUcbl6pfAv8_WcEj0epzT8fwEFIBJKFH0bxE0mji4SlVeJGPiyII630LH8JEQw-XmKQ6MJHIoU7_jw0arDVPJ_TywtDVGbeRTJPvGyk9BgB3nEj5tWl8_Ocv8Gj_3ElklMdg
+@authToken = Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6IjU3YmZiMmExMWRkZmZjMGFkMmU2ODE0YzY4NzYzYjhjNjg3NTgxZDgiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL3NlY3VyZXRva2VuLmdvb2dsZS5jb20vdHljaGUtNTg4Y2UiLCJhdWQiOiJ0eWNoZS01ODhjZSIsImF1dGhfdGltZSI6MTc1NTU1MDU4NCwidXNlcl9pZCI6InNxVDJ1ZDJyd05iSWVUSWFIYXVPdkFBd25ORTIiLCJzdWIiOiJzcVQydWQycndOYkllVElhSGF1T3ZBQXduTkUyIiwiaWF0IjoxNzU1NTUwNTg0LCJleHAiOjE3NTU1NTQxODQsImVtYWlsIjoidHljaGUtYW5kcm9pZEB0eWNoZS5jb20iLCJlbWFpbF92ZXJpZmllZCI6ZmFsc2UsImZpcmViYXNlIjp7ImlkZW50aXRpZXMiOnsiZW1haWwiOlsidHljaGUtYW5kcm9pZEB0eWNoZS5jb20iXX0sInNpZ25faW5fcHJvdmlkZXIiOiJwYXNzd29yZCJ9fQ.psYU_ACWs-_Ey0VlqzSkf35bZjEqeNT2DOX-wF-D-rd9ZFuLxA11lpbond8e8h_fTPem2OMacgZdqwEbdjWmKWJ73Tswh7NUqLYRINyCvUnoBlU3m6JGxfaSks4Njpd1MWKnEPZ8jPvHDck3zxLZIGRdj4xb5DQotL4Ut126Y8QbwDFM6TjZBfo6ZMDDEsyUJlr8dCGLcVXcVF8iFP8CWJPifwMSlEovBVvspzWBW-9ax6V3_Ke2k5M73udqGf_pqXD2iK67PQ9zadLOZj0r-dN8yDqtFu2ecjqD7LZJbjgA4RLiFOTrzK8G8qzHzpqv9fNzLN_ROWzop_hI40gcXw
 
 
 ### Get a pool
@@ -10,7 +10,7 @@ Authorization: {{authToken}}
 
 
 ### Get the pool scores of a pool
-GET {{baseUrl}}/pools/01H1CFJB0Y3KK357WCA2HB5MCX/gamblers HTTP/1.1
+GET {{baseUrl}}/pools/01K2ZFAMNSXRBHWXABZQ5WWA7K/gamblers HTTP/1.1
 Authorization: {{authToken}}
 
 
@@ -51,7 +51,12 @@ Authorization: {{authToken}}
 Content-Type: application/json
 
 {
-    "poolLayoutId": "01K23DN4Q5WD5BJ5FKGTG414EG",
-    "poolName": "Champions League Pool",
-    "ownerGamblerId": "01K23DN4Q5WD5BJ5FKGTG414EG"
+    "poolLayoutId": "01K2SRPK1Z6N4W2YFQWV4BQM1W",
+    "poolName": "Copa América 2024 (prueba)",
+    "ownerGamblerId": "01K2WBEKVNGG7A5BZPM14QFFFS"
 }
+
+
+### Get open pool layouts
+GET {{baseUrl}}/pool-layouts/open HTTP/1.1
+Authorization: {{authToken}}

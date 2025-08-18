@@ -1,4 +1,4 @@
-namespace Felipearpa.Tyche.AmazonLambda.Tests.Pool
+namespace Felipearpa.Tyche.AmazonLambda.Function.Pool.Tests
 
 #nowarn "3536"
 
@@ -10,11 +10,13 @@ open Amazon.Lambda.APIGatewayEvents
 open Amazon.Lambda.TestUtilities
 open Felipearpa.Core
 open Felipearpa.Core.Json
-open Felipearpa.Tyche.AmazonLambda
+open Felipearpa.Tyche.AmazonLambda.Function
 open Felipearpa.Tyche.Function.Response
 open FsUnit.Xunit
 open FsUnitTyped
 open Microsoft.Extensions.DependencyInjection
+open Microsoft.Extensions.Logging
+open Microsoft.Extensions.Logging.Abstractions
 open Moq
 open Xunit
 
@@ -51,7 +53,19 @@ module GetPoolGamblerScoreByIdTest =
         |> ignore
 
         let functions =
-            PoolFunctionWrapper(fun services -> services.AddSingleton<IAmazonDynamoDB>(client.Object) |> ignore)
+            PoolFunction(fun services ->
+                services.AddLogging(fun builder ->
+                    builder.ClearProviders() |> ignore
+
+                    builder.AddProvider(
+                        { new ILoggerProvider with
+                            member _.CreateLogger _ = NullLogger.Instance
+                            member _.Dispose() = () }
+                    )
+                    |> ignore)
+                |> ignore
+
+                services.AddSingleton<IAmazonDynamoDB>(client.Object) |> ignore)
 
         let context = TestLambdaContext()
 
@@ -64,7 +78,7 @@ module GetPoolGamblerScoreByIdTest =
 
         (expectedPoolGamblerScore, context, request, functions)
 
-    let private ``when requesting its information`` (functions: PoolFunctionWrapper) request context =
+    let private ``when requesting its information`` (functions: PoolFunction) request context =
         async { return! functions.GetPoolGamblerScoreByIdAsync(request, context) |> Async.AwaitTask }
 
     let private ``then the associated PoolGamblerScore is returned``
@@ -81,7 +95,7 @@ module GetPoolGamblerScoreByIdTest =
         actualPoolGamblerScore |> shouldEqual expectedPoolGamblerScore
 
     let private ``given a request without path parameters`` () =
-        let functions = PoolFunctionWrapper()
+        let functions = PoolFunction()
 
         let context = TestLambdaContext()
 
@@ -103,7 +117,19 @@ module GetPoolGamblerScoreByIdTest =
         |> ignore
 
         let functions =
-            PoolFunctionWrapper(fun services -> services.AddSingleton<IAmazonDynamoDB>(client.Object) |> ignore)
+            PoolFunction(fun services ->
+                services.AddLogging(fun builder ->
+                    builder.ClearProviders() |> ignore
+
+                    builder.AddProvider(
+                        { new ILoggerProvider with
+                            member _.CreateLogger _ = NullLogger.Instance
+                            member _.Dispose() = () }
+                    )
+                    |> ignore)
+                |> ignore
+
+                services.AddSingleton<IAmazonDynamoDB>(client.Object) |> ignore)
 
         let context = TestLambdaContext()
 

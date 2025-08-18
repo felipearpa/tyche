@@ -5,7 +5,7 @@ open Felipearpa.Tyche.Pool.Domain.PoolGamblerBetDictionaryTransformer
 open FsUnitTyped
 open Xunit
 
-module PoolGamblerBetDictionaryTransformer =
+module PoolGamblerBetDictionaryTransformerTest =
 
     [<Fact>]
     let ``given a bet dictionary when is transformed to a bet then the bet is returned`` () =
@@ -16,6 +16,7 @@ module PoolGamblerBetDictionaryTransformer =
                   "poolId", AttributeValue(S = "01K1PX1TX2NM1HG851S1V0QG6N")
                   "gamblerId", AttributeValue(S = "01K1PX1TX2NM1HG851S1V0QG6N")
                   "matchId", AttributeValue(S = "01K1PX1TX2NM1HG851S1V0QG6N")
+                  "poolLayoutId", AttributeValue(S = "01K1PX1TX2NM1HG851S1V0QG6N")
                   "homeTeamId", AttributeValue(S = "01K1PX1TX2NM1HG851S1V0QG6N")
                   "homeTeamName", AttributeValue(S = "Team Alpha")
                   "homeTeamScore", AttributeValue(N = "2")
@@ -32,6 +33,7 @@ module PoolGamblerBetDictionaryTransformer =
         bet.PoolId.Value |> shouldEqual "01K1PX1TX2NM1HG851S1V0QG6N"
         bet.GamblerId.Value |> shouldEqual "01K1PX1TX2NM1HG851S1V0QG6N"
         bet.MatchId.Value |> shouldEqual "01K1PX1TX2NM1HG851S1V0QG6N"
+        bet.PoolLayoutId.Value |> shouldEqual "01K1PX1TX2NM1HG851S1V0QG6N"
         bet.HomeTeamId.Value |> shouldEqual "01K1PX1TX2NM1HG851S1V0QG6N"
         bet.HomeTeamName.Value |> shouldEqual "Team Alpha"
         bet.MatchScore.Value.HomeTeamValue |> shouldEqual 2
@@ -54,6 +56,7 @@ module PoolGamblerBetDictionaryTransformer =
                   "poolId", AttributeValue(S = "01K1PX1TX2NM1HG851S1V0QG6N")
                   "gamblerId", AttributeValue(S = "01K1PX1TX2NM1HG851S1V0QG6N")
                   "matchId", AttributeValue(S = "01K1PX1TX2NM1HG851S1V0QG6N")
+                  "poolLayoutId", AttributeValue(S = "01K1PX1TX2NM1HG851S1V0QG6N")
                   "homeTeamId", AttributeValue(S = "01K1PX1TX2NM1HG851S1V0QG6N")
                   "homeTeamName", AttributeValue(S = "Team Alpha")
                   "awayTeamId", AttributeValue(S = "01K1PX1TX2NM1HG851S1V0QG6N")
@@ -65,6 +68,7 @@ module PoolGamblerBetDictionaryTransformer =
         bet.PoolId.Value |> shouldEqual "01K1PX1TX2NM1HG851S1V0QG6N"
         bet.GamblerId.Value |> shouldEqual "01K1PX1TX2NM1HG851S1V0QG6N"
         bet.MatchId.Value |> shouldEqual "01K1PX1TX2NM1HG851S1V0QG6N"
+        bet.PoolLayoutId.Value |> shouldEqual "01K1PX1TX2NM1HG851S1V0QG6N"
         bet.HomeTeamId.Value |> shouldEqual "01K1PX1TX2NM1HG851S1V0QG6N"
         bet.HomeTeamName.Value |> shouldEqual "Team Alpha"
         bet.MatchScore |> shouldEqual None

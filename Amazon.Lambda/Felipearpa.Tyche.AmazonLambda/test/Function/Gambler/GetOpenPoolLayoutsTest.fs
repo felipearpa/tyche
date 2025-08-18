@@ -1,4 +1,4 @@
-namespace Felipearpa.Tyche.AmazonLambda.Tests.Gambler
+namespace Felipearpa.Tyche.AmazonLambda.Function.Gambler.Tests
 
 #nowarn "3536"
 
@@ -11,11 +11,13 @@ open Amazon.Lambda.TestUtilities
 open Felipearpa.Core
 open Felipearpa.Core.Json
 open Felipearpa.Core.Paging
-open Felipearpa.Tyche.AmazonLambda
+open Felipearpa.Tyche.AmazonLambda.Function
 open Felipearpa.Tyche.Function.Response
 open FsUnit.Xunit
 open FsUnitTyped
 open Microsoft.Extensions.DependencyInjection
+open Microsoft.Extensions.Logging
+open Microsoft.Extensions.Logging.Abstractions
 open Moq
 open Xunit
 
@@ -69,7 +71,19 @@ module GetOpenPoolLayoutsTest =
         |> ignore
 
         let functions =
-            GamblerFunctionWrapper(fun services -> services.AddSingleton<IAmazonDynamoDB>(client.Object) |> ignore)
+            GamblerFunction(fun services ->
+                services.AddLogging(fun builder ->
+                    builder.ClearProviders() |> ignore
+
+                    builder.AddProvider(
+                        { new ILoggerProvider with
+                            member _.CreateLogger _ = NullLogger.Instance
+                            member _.Dispose() = () }
+                    )
+                    |> ignore)
+                |> ignore
+
+                services.AddSingleton<IAmazonDynamoDB>(client.Object) |> ignore)
 
         let context = TestLambdaContext()
 
@@ -78,7 +92,7 @@ module GetOpenPoolLayoutsTest =
 
         (expectedPoolScores, context, request, functions)
 
-    let ``when requesting its information`` (functions: GamblerFunctionWrapper) request context =
+    let ``when requesting its information`` (functions: GamblerFunction) request context =
         async { return! functions.GetPoolsByGamblerIdAsync(request, context) |> Async.AwaitTask }
 
     let ``then the open pool layouts are returned``
@@ -97,7 +111,7 @@ module GetOpenPoolLayoutsTest =
         |> shouldEqual (expectedPoolScores.Items |> Seq.toList)
 
     let ``given a request without poolId`` () =
-        let functions = GamblerFunctionWrapper()
+        let functions = GamblerFunction()
 
         let context = TestLambdaContext()
 

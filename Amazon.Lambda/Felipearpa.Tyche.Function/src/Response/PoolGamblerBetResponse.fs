@@ -6,6 +6,7 @@ type PoolGamblerBetResponse =
     { PoolId: string
       GamblerId: string
       MatchId: string
+      PoolLayoutId: string
       HomeTeamId: string
       HomeTeamName: string
       HomeTeamScore: int option

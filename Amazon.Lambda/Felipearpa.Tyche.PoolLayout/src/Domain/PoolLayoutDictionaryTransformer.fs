@@ -8,8 +8,8 @@ open Felipearpa.Type
 
 module PoolLayoutDictionaryTransformer =
     let toPoolLayout (dictionary: IDictionary<string, AttributeValue>) =
-        { PoolLayout.Id = dictionary["id"].S |> Ulid.newOf
-          Name = dictionary["name"].S |> NonEmptyString100.newOf
+        { PoolLayout.Id = dictionary["poolLayoutId"].S |> Ulid.newOf
+          Name = dictionary["poolLayoutName"].S |> NonEmptyString100.newOf
           StartDateTime = DateTime.Parse(dictionary["startDateTime"].S) }
 
     type Extensions =

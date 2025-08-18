@@ -10,6 +10,7 @@
         <Compile Include="Type\TeamScore.fs" />
         <Compile Include="Domain\PoolGamblerScore.fs" />
         <Compile Include="Domain\PoolGamblerBet.fs" />
+        <Compile Include="Domain\InitialPoolGamblerBet.fs" />
         <Compile Include="Domain\PoolGamblerScoreDictionaryTransformer.fs" />
         <Compile Include="Domain\PoolGamblerBetDictionaryTransformer.fs" />
         <Compile Include="Domain\IPoolGamblerScoreRepository.fs" />
@@ -40,6 +41,7 @@
         <Compile Include="Application\CreatePoolCommand.fs" />
         <Compile Include="Application\JoinPoolCommand.fs" />
         <Compile Include="Application\GetPoolByIdQuery.fs" />
+        <Compile Include="Application\AddMatchCommand.fs" />
     </ItemGroup>
 
     <ItemGroup>

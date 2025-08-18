@@ -1,4 +1,4 @@
-namespace Felipearpa.Tyche.AmazonLambda.Pool.Tests
+namespace Felipearpa.Tyche.AmazonLambda.Function.Pool.Tests
 
 #nowarn "3536"
 
@@ -10,11 +10,13 @@ open Amazon.Lambda.APIGatewayEvents
 open Amazon.Lambda.TestUtilities
 open Felipearpa.Core
 open Felipearpa.Core.Json
-open Felipearpa.Tyche.AmazonLambda
+open Felipearpa.Tyche.AmazonLambda.Function
 open Felipearpa.Tyche.Function.Response
 open FsUnit.Xunit
 open FsUnitTyped
 open Microsoft.Extensions.DependencyInjection
+open Microsoft.Extensions.Logging
+open Microsoft.Extensions.Logging.Abstractions
 open Moq
 open Xunit
 
@@ -43,7 +45,19 @@ module GetPoolByIdTest =
         |> ignore
 
         let functions =
-            PoolFunctionWrapper(fun services -> services.AddSingleton<IAmazonDynamoDB>(client.Object) |> ignore)
+            PoolFunction(fun services ->
+                services.AddLogging(fun builder ->
+                    builder.ClearProviders() |> ignore
+
+                    builder.AddProvider(
+                        { new ILoggerProvider with
+                            member _.CreateLogger _ = NullLogger.Instance
+                            member _.Dispose() = () }
+                    )
+                    |> ignore)
+                |> ignore
+
+                services.AddSingleton<IAmazonDynamoDB>(client.Object) |> ignore)
 
         let context = TestLambdaContext()
 
@@ -52,7 +66,7 @@ module GetPoolByIdTest =
 
         (expectedPool, context, request, functions)
 
-    let private ``when requesting its information`` (functions: PoolFunctionWrapper) request context =
+    let private ``when requesting its information`` (functions: PoolFunction) request context =
         async { return! functions.GetPoolByIdAsync(request, context) |> Async.AwaitTask }
 
     let private ``then the pool is returned`` (response: APIGatewayHttpApiV2ProxyResponse) expectedPool =
@@ -74,7 +88,7 @@ module GetPoolByIdTest =
         |> ignore
 
         let functions =
-            PoolFunctionWrapper(fun services -> services.AddSingleton<IAmazonDynamoDB>(client.Object) |> ignore)
+            PoolFunction(fun services -> services.AddSingleton<IAmazonDynamoDB>(client.Object) |> ignore)
 
         let context = TestLambdaContext()
 
@@ -87,7 +101,7 @@ module GetPoolByIdTest =
         response.StatusCode |> shouldEqual (int HttpStatusCode.NotFound)
 
     let private ``given a request without poolId`` () =
-        let functions = PoolFunctionWrapper()
+        let functions = PoolFunction()
 
         let context = TestLambdaContext()
 

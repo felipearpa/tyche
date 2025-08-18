@@ -1,4 +1,4 @@
-namespace Felipearpa.Tyche.AmazonLambda.Tests.Pool
+namespace Felipearpa.Tyche.AmazonLambda.Function.Pool.Tests
 
 #nowarn "3536"
 
@@ -8,9 +8,11 @@ open Amazon.DynamoDBv2
 open Amazon.DynamoDBv2.Model
 open Amazon.Lambda.APIGatewayEvents
 open Amazon.Lambda.TestUtilities
-open Felipearpa.Tyche.AmazonLambda
+open Felipearpa.Tyche.AmazonLambda.Function
 open FsUnitTyped
 open Microsoft.Extensions.DependencyInjection
+open Microsoft.Extensions.Logging
+open Microsoft.Extensions.Logging.Abstractions
 open Moq
 open Xunit
 
@@ -54,20 +56,32 @@ module JoinPoolTest =
         setupMockGetPoolQuery client
 
         let functions =
-            PoolFunctionWrapper(fun services -> services.AddSingleton<IAmazonDynamoDB>(client.Object) |> ignore)
+            PoolFunction(fun services ->
+                services.AddLogging(fun builder ->
+                    builder.ClearProviders() |> ignore
+
+                    builder.AddProvider(
+                        { new ILoggerProvider with
+                            member _.CreateLogger _ = NullLogger.Instance
+                            member _.Dispose() = () }
+                    )
+                    |> ignore)
+                |> ignore
+
+                services.AddSingleton<IAmazonDynamoDB>(client.Object) |> ignore)
 
         let context = TestLambdaContext()
 
         let request = APIGatewayHttpApiV2ProxyRequest()
 
         request.PathParameters <- dict [ "poolId", "01K23DN4Q5WD5BJ5FKGTG414EG" ]
-        
+
         // language=json
         request.Body <- """{"gamblerId":"01K23DN4Q5WD5BJ5FKGTG414EG"}"""
 
         (context, request, functions)
 
-    let private ``when requested`` (functions: PoolFunctionWrapper) request context =
+    let private ``when requested`` (functions: PoolFunction) request context =
         async { return! functions.JoinPoolAsync(request, context) |> Async.AwaitTask }
 
     let private ``then the participant is added to the pool`` (response: APIGatewayHttpApiV2ProxyResponse) =
@@ -80,7 +94,19 @@ module JoinPoolTest =
         setupMockGetPoolQuery client
 
         let functions =
-            PoolFunctionWrapper(fun services -> services.AddSingleton<IAmazonDynamoDB>(client.Object) |> ignore)
+            PoolFunction(fun services ->
+                services.AddLogging(fun builder ->
+                    builder.ClearProviders() |> ignore
+
+                    builder.AddProvider(
+                        { new ILoggerProvider with
+                            member _.CreateLogger _ = NullLogger.Instance
+                            member _.Dispose() = () }
+                    )
+                    |> ignore)
+                |> ignore
+
+                services.AddSingleton<IAmazonDynamoDB>(client.Object) |> ignore)
 
         let context = TestLambdaContext()
 

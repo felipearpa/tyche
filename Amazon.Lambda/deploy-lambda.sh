@@ -6,12 +6,6 @@ cd "$(dirname "$0")" || {
   exit 1
 }
 
-# Navigate to Amazon.Lambda
-cd Amazon.Lambda || {
-  echo "❌ Could not navigate to Amazon.Lambda directory."
-  exit 1
-}
-
 # Run the tests
 echo "🧪 Running tests..."
 dotnet test --nologo --verbosity minimal

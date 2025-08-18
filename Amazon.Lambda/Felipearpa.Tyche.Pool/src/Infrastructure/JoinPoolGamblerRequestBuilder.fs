@@ -18,6 +18,9 @@ module JoinPoolGamblerRequestBuilder =
     [<Literal>]
     let private positionText = "POSITION"
 
+    [<Literal>]
+    let private initialPoolLayoutVersion = 1
+
     let build (createPoolInput: ResolvedCreatePoolInput) =
         let mutable attributeValues =
             dict
@@ -36,7 +39,8 @@ module JoinPoolGamblerRequestBuilder =
                   )
                   "poolLayoutId", AttributeValue(S = (createPoolInput.PoolLayoutId |> Ulid.value))
                   "getPoolGamblerScoresByGamblerSk",
-                  AttributeValue(S = $"{positionText}0#{poolText}#{createPoolInput.PoolId |> Ulid.value}") ]
+                  AttributeValue(S = $"{positionText}0#{poolText}#{createPoolInput.PoolId |> Ulid.value}")
+                  "poolLayoutVersion", AttributeValue(N = initialPoolLayoutVersion.ToString()) ]
 
         Put(
             TableName = tableName,

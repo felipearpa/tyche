@@ -49,11 +49,11 @@ type PoolDynamoDbRepository(client: IAmazonDynamoDB) =
         member this.CreatePoolAsync(createPoolInput) =
             async {
                 let createPoolRequest = CreatePoolRequestBuilder.build createPoolInput
-                let createPoolGamblerRequest = JoinPoolGamblerRequestBuilder.build createPoolInput
+                let joinPoolGamblerRequest = JoinPoolGamblerRequestBuilder.build createPoolInput
 
                 let requests =
                     [ TransactWriteItem(Put = createPoolRequest)
-                      TransactWriteItem(Put = createPoolGamblerRequest) ]
+                      TransactWriteItem(Put = joinPoolGamblerRequest) ]
 
                 let createUserTransaction =
                     TransactWriteItemsRequest(TransactItems = (requests |> List))

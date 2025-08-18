@@ -16,11 +16,12 @@
     <Compile Include="BodyResolver.fs" />
     <Compile Include="BadRequestResponseFactory.fs" />
     <Compile Include="IResultTransformer.fs" />
-    <Compile Include="PoolFunctionWrapper.fs" />
-    <Compile Include="GamblerFunctionWrapper.fs" />
-    <Compile Include="BetFunctionWrapper.fs" />
-    <Compile Include="PoolLayoutFunctionWrapper.fs" />
-    <Compile Include="AccountFunctionWrapper.fs" />
+    <Compile Include="Function\PoolFunction.fs" />
+    <Compile Include="Function\GamblerFunction.fs" />
+    <Compile Include="Function\BetFunction.fs" />
+    <Compile Include="Function\PoolLayoutFunction.fs" />
+    <Compile Include="Function\AccountFunction.fs" />
+    <Compile Include="Event\PoolEvent.fs" />
     <Compile Include="Assembly.fs" />
   </ItemGroup>
   <ItemGroup>
@@ -32,6 +33,8 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Amazon.Lambda.Core" Version="2.7.0"/>
+    <PackageReference Include="Amazon.Lambda.DynamoDBEvents" Version="3.1.1" />
+    <PackageReference Include="Amazon.Lambda.Logging.AspNetCore" Version="4.1.0" />
     <PackageReference Include="Amazon.Lambda.Serialization.SystemTextJson" Version="2.4.4"/>
     <PackageReference Include="Amazon.Lambda.APIGatewayEvents" Version="2.7.1"/>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.7" />

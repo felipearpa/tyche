@@ -30,24 +30,16 @@
     <ProjectReference Include="..\src\Felipearpa.Tyche.AmazonLambda.fsproj" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Pool\GetPoolByIdTest.fs" />
-    <Compile Include="Pool\GetGamblersByPoolIdTest.fs" />
-    <Compile Include="Pool\GetPoolGamblerScoreByIdTest.fs" />
-    <Compile Include="Pool\GetPendingBetsTest.fs" />
-    <Compile Include="Pool\GetFinishedBetsTest.fs" />
-    <Compile Include="Pool\CreatePoolTest.fs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Pool\JoinPoolTest.fs" />
-    <Compile Include="Gambler\GetOpenPoolLayoutsTest.fs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Bet\LinkAccountTest.fs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="PoolLayout\GetOpenPoolLayoutsTest.fs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Account\LinkAccountTest.fs" />
+    <Compile Include="Function\Pool\GetPoolByIdTest.fs" />
+    <Compile Include="Function\Pool\GetGamblersByPoolIdTest.fs" />
+    <Compile Include="Function\Pool\GetPoolGamblerScoreByIdTest.fs" />
+    <Compile Include="Function\Pool\GetPendingBetsTest.fs" />
+    <Compile Include="Function\Pool\GetFinishedBetsTest.fs" />
+    <Compile Include="Function\Pool\CreatePoolTest.fs" />
+    <Compile Include="Function\Pool\JoinPoolTest.fs" />
+    <Compile Include="Function\Gambler\GetOpenPoolLayoutsTest.fs" />
+    <Compile Include="Function\Bet\BetTest.fs" />
+    <Compile Include="Function\PoolLayout\GetOpenPoolLayoutsTest.fs" />
+    <Compile Include="Function\Account\LinkAccountTest.fs" />
   </ItemGroup>
 </Project>

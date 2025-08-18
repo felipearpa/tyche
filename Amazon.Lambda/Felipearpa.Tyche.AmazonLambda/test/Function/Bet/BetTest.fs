@@ -1,4 +1,4 @@
-namespace Felipearpa.Tyche.AmazonLambda.Tests.Bet
+namespace Felipearpa.Tyche.AmazonLambda.Function.Bet.Tests
 
 #nowarn "3536"
 
@@ -9,13 +9,15 @@ open Amazon.DynamoDBv2
 open Amazon.DynamoDBv2.Model
 open Amazon.Lambda.APIGatewayEvents
 open Amazon.Lambda.TestUtilities
-open Felipearpa.Tyche.AmazonLambda
+open Felipearpa.Tyche.AmazonLambda.Function
 open FsUnitTyped
 open Microsoft.Extensions.DependencyInjection
+open Microsoft.Extensions.Logging
+open Microsoft.Extensions.Logging.Abstractions
 open Moq
 open Xunit
 
-module LinkAccountTest =
+module BetTest =
 
     let private setupMockBetWrite (client: Mock<IAmazonDynamoDB>) =
         let item =
@@ -23,6 +25,7 @@ module LinkAccountTest =
                 [ "poolId", AttributeValue(S = "01K0DCFFB08W35AW5Q6F82R6NQ")
                   "gamblerId", AttributeValue(S = "01K0DCFFB08W35AW5Q6F82R6NQ")
                   "matchId", AttributeValue(S = "01K0DCFFB08W35AW5Q6F82R6NQ")
+                  "poolLayoutId", AttributeValue(S = "01K0DCFFB08W35AW5Q6F82R6NQ")
                   "homeTeamId", AttributeValue(S = "01K0DCFFB08W35AW5Q6F82R6NQ")
                   "homeTeamName", AttributeValue(S = "Home FC")
                   "awayTeamId", AttributeValue(S = "01K0DCFFB08W35AW5Q6F82R6NQ")
@@ -44,7 +47,19 @@ module LinkAccountTest =
         setupMockBetWrite client
 
         let functions =
-            BetFunctionWrapper(fun services -> services.AddSingleton<IAmazonDynamoDB>(client.Object) |> ignore)
+            BetFunction(fun services ->
+                services.AddLogging(fun builder ->
+                    builder.ClearProviders() |> ignore
+
+                    builder.AddProvider(
+                        { new ILoggerProvider with
+                            member _.CreateLogger _ = NullLogger.Instance
+                            member _.Dispose() = () }
+                    )
+                    |> ignore)
+                |> ignore
+
+                services.AddSingleton<IAmazonDynamoDB>(client.Object) |> ignore)
 
         let context = TestLambdaContext()
 
@@ -55,7 +70,7 @@ module LinkAccountTest =
 
         (context, request, functions)
 
-    let private ``when requested`` (functions: BetFunctionWrapper) request context =
+    let private ``when requested`` (functions: BetFunction) request context =
         async { return! functions.BetAsync(request, context) |> Async.AwaitTask }
 
     let private ``then the bet is added`` (response: APIGatewayHttpApiV2ProxyResponse) =
@@ -66,7 +81,7 @@ module LinkAccountTest =
         setupMockBetWrite client
 
         let functions =
-            BetFunctionWrapper(fun services -> services.AddSingleton<IAmazonDynamoDB>(client.Object) |> ignore)
+            BetFunction(fun services -> services.AddSingleton<IAmazonDynamoDB>(client.Object) |> ignore)
 
         let context = TestLambdaContext()
 
