@@ -172,7 +172,7 @@ type PoolGamblerBetDynamoDbRepository(keySerializer: IKeySerializer, client: IAm
                     return Error BetFailure.MatchLocked
             }
 
-        member this.AddMatch(poolGamblerBet) =
+        member this.AddPoolGamblerMatchAsync(poolGamblerBet) =
             async {
                 let conditionExpression = "attribute_not_exists(pk) AND attribute_not_exists(sk)"
 
@@ -192,5 +192,6 @@ type PoolGamblerBetDynamoDbRepository(keySerializer: IKeySerializer, client: IAm
                     return Error AddMatchFailure.AlreadyExist
             }
 
-        member this.AddMatches(poolGamblerBets) =
-            poolGamblerBets |> Seq.mapAsync (this :> IPoolGamblerBetRepository).AddMatch
+        member this.AddPoolGamblerMatchesAsync(poolGamblerBets) =
+            poolGamblerBets
+            |> Seq.mapAsync (this :> IPoolGamblerBetRepository).AddPoolGamblerMatchAsync

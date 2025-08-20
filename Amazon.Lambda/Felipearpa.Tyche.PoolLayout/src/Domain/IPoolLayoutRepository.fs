@@ -8,4 +8,4 @@ type IPoolLayoutRepository =
 
     abstract GetOpenPoolLayoutsAsync: string option -> Async<PoolLayout CursorPage>
 
-    abstract GetPendingMatches: Ulid * int * string option -> Async<PoolLayoutMatch CursorPage>
+    abstract GetPoolLayoutMatchesThroughVersionAsync: Ulid * int * string option -> Async<PoolLayoutMatch CursorPage>

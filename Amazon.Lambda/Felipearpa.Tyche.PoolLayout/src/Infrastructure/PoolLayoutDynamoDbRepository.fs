@@ -28,12 +28,12 @@ type PoolLayoutDynamoDbRepository(keySerializer: IKeySerializer, client: IAmazon
                         | None -> None }
             }
 
-        member this.GetPendingMatches(id, layoutVersion, maybeNext) =
+        member this.GetPoolLayoutMatchesThroughVersionAsync(poolLayoutId, poolLayoutVersion, maybeNext) =
             async {
                 let! response =
                     GetPendingPoolLayoutMatchesRequestBuilder.build
-                        id
-                        layoutVersion
+                        poolLayoutId
+                        poolLayoutVersion
                         (maybeNext |> Option.map keySerializer.Deserialize)
                     |> client.QueryAsync
                     |> Async.AwaitTask
