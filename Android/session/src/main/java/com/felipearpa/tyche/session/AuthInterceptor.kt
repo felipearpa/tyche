@@ -1,5 +1,6 @@
 package com.felipearpa.tyche.session
 
+import com.google.firebase.FirebaseNetworkException
 import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import kotlinx.coroutines.runBlocking
 import okhttp3.Interceptor
@@ -13,6 +14,8 @@ class AuthInterceptor @Inject constructor(private val authTokenRetriever: AuthTo
             return@runBlocking try {
                 authTokenRetriever.authToken()
             } catch (_: FirebaseAuthInvalidUserException) {
+                null
+            } catch (_: FirebaseNetworkException) {
                 null
             }
         } ?: return chain.proceed(chain.request())

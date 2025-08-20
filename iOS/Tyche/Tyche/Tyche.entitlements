@@ -5,6 +5,7 @@
 	<key>com.apple.developer.associated-domains</key>
 	<array>
 		<string>applinks:tyche-588ce.web.app</string>
+		<string>applinks:tyche-588ce.firebaseapp.com</string>
 	</array>
 </dict>
 </plist>

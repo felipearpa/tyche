@@ -36,8 +36,8 @@ fun PendingBetList(
     RefreshableStatefulLazyColumn(
         modifier = modifier,
         lazyItems = lazyPoolGamblerBets,
-        loadingContent = { PendingBetFakeList(count = fakeItemCount) },
-        loadingContentOnConcatenate = { pendingBetFakeItem() },
+        loadingContent = { pendingBetPlaceholderList(count = fakeItemCount) },
+        loadingContentOnConcatenate = { pendingBetPlaceholderItem() },
     ) {
         val poolGamblerBetsCount = lazyPoolGamblerBets.itemCount
         var lastMatchDate: LocalDate? = null
@@ -86,22 +86,16 @@ fun PendingBetList(
     }
 }
 
-private fun LazyListScope.pendingBetFakeItem() {
-    item {
-        PendingBetFakeItem(modifier = Modifier.fillMaxWidth())
-        HorizontalDivider(modifier = Modifier.padding(horizontal = LocalBoxSpacing.current.large))
+private fun LazyListScope.pendingBetPlaceholderList(count: Int) {
+    repeat(count) {
+        pendingBetPlaceholderItem()
     }
 }
 
-@Composable
-private fun PendingBetFakeList(count: Int) {
-    LazyColumn(modifier = Modifier.fillMaxSize()) {
-        repeat(count) {
-            item {
-                PendingBetFakeItem(modifier = Modifier.pendingBetItem())
-                HorizontalDivider(modifier = Modifier.padding(horizontal = LocalBoxSpacing.current.large))
-            }
-        }
+private fun LazyListScope.pendingBetPlaceholderItem() {
+    item {
+        PendingBetPlaceholderItem(modifier = Modifier.fillMaxWidth())
+        HorizontalDivider(modifier = Modifier.padding(horizontal = LocalBoxSpacing.current.large))
     }
 }
 
@@ -131,5 +125,11 @@ private fun PendingBetListPreview() {
 @Preview(showBackground = true)
 @Composable
 private fun PendingBetFakeListPreview() {
-    PendingBetFakeList(count = 50)
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(all = LocalBoxSpacing.current.medium),
+    ) {
+        pendingBetPlaceholderList(count = 50)
+    }
 }

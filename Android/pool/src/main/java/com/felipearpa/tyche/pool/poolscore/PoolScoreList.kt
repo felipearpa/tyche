@@ -36,6 +36,7 @@ import com.felipearpa.foundation.emptyString
 import com.felipearpa.tyche.pool.PoolGamblerScoreModel
 import com.felipearpa.tyche.pool.R
 import com.felipearpa.tyche.pool.poolGamblerScoreDummyModels
+import com.felipearpa.tyche.ui.lazy.Failure
 import com.felipearpa.tyche.ui.lazy.RefreshableStatefulLazyColumn
 import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -54,9 +55,10 @@ fun PoolScoreList(
         modifier = modifier,
         lazyItems = lazyPoolGamblerScores,
         state = lazyListState,
-        loadingContent = { PoolScoreFakeList(count = fakeItemCount) },
-        loadingContentOnConcatenate = { poolScoreFakeItem() },
-        emptyContent = { PoolScoreEmptyList(onPoolCreate = onPoolCreate) },
+        loadingContent = { poolScorePlaceholderList(count = fakeItemCount) },
+        loadingContentOnConcatenate = { poolScorePlaceholderItem() },
+        emptyContent = { poolScoreEmptyList(onPoolCreate = onPoolCreate) },
+        errorContent = { poolScoreErrorList() },
     ) {
         items(
             count = lazyPoolGamblerScores.itemCount,
@@ -88,64 +90,72 @@ fun PoolScoreList(
     }
 }
 
-@Composable
-private fun PoolScoreEmptyList(onPoolCreate: () -> Unit) {
-    Box(
-        contentAlignment = Alignment.Center,
-        modifier = Modifier.fillMaxSize(),
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(all = LocalBoxSpacing.current.medium),
-            verticalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.medium),
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            Icon(
-                painter = painterResource(id = R.drawable.emoji_people),
-                contentDescription = emptyString(),
-                modifier = Modifier.size(iconSize),
-            )
-
-            Text(
-                text = stringResource(id = R.string.pool_score_empty_list_title),
-                textAlign = TextAlign.Center,
-                style = MaterialTheme.typography.titleMedium,
-            )
-
-            Text(
-                text = stringResource(id = R.string.pool_score_empty_list_subtitle),
-                textAlign = TextAlign.Center,
-                style = MaterialTheme.typography.bodySmall,
-            )
-
-            Spacer(modifier = Modifier.height(LocalBoxSpacing.current.medium))
-
-            Button(
-                onClick = onPoolCreate,
-                modifier = Modifier.fillMaxWidth(),
-            ) {
-                Text(text = stringResource(id = R.string.create_pool_action))
-            }
-        }
-    }
-}
-
-@Composable
-private fun PoolScoreFakeList(count: Int) {
-    LazyColumn(modifier = Modifier.fillMaxSize()) {
-        repeat(count) {
-            item {
-                PoolScoreFakeItem(modifier = Modifier.fillMaxWidth())
-                HorizontalDivider()
-            }
-        }
-    }
-}
-
-private fun LazyListScope.poolScoreFakeItem() {
+private fun LazyListScope.poolScoreEmptyList(onPoolCreate: () -> Unit) {
     item {
-        PoolScoreFakeItem(modifier = Modifier.fillMaxWidth())
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier
+                .fillParentMaxSize()
+                .padding(all = LocalBoxSpacing.current.medium),
+        ) {
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.medium),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.emoji_people),
+                    contentDescription = emptyString(),
+                    modifier = Modifier.size(iconSize),
+                )
+
+                Text(
+                    text = stringResource(id = R.string.pool_score_empty_list_title),
+                    textAlign = TextAlign.Center,
+                    style = MaterialTheme.typography.titleMedium,
+                )
+
+                Text(
+                    text = stringResource(id = R.string.pool_score_empty_list_subtitle),
+                    textAlign = TextAlign.Center,
+                    style = MaterialTheme.typography.bodySmall,
+                )
+
+                Spacer(modifier = Modifier.height(LocalBoxSpacing.current.medium))
+
+                Button(
+                    onClick = onPoolCreate,
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
+                    Text(text = stringResource(id = R.string.create_pool_action))
+                }
+            }
+        }
+    }
+}
+
+private fun LazyListScope.poolScoreErrorList() {
+    item {
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier
+                .fillParentMaxSize()
+                .padding(all = LocalBoxSpacing.current.medium),
+        ) {
+            Failure(modifier = Modifier.fillMaxWidth())
+        }
+    }
+}
+
+private fun LazyListScope.poolScorePlaceholderList(count: Int) {
+    repeat(count) {
+        poolScorePlaceholderItem()
+    }
+}
+
+private fun LazyListScope.poolScorePlaceholderItem() {
+    item {
+        PoolScorePlaceholderItem(modifier = Modifier.fillMaxWidth())
         HorizontalDivider()
     }
 }
@@ -183,5 +193,11 @@ private fun PoolScoreEmptyListPreview() {
 @Preview(showBackground = true)
 @Composable
 private fun PoolScoreFakeListPreview() {
-    PoolScoreFakeList(count = 50)
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(all = LocalBoxSpacing.current.medium),
+    ) {
+        poolScorePlaceholderList(count = 50)
+    }
 }

@@ -8,7 +8,7 @@ import com.felipearpa.tyche.bet.poolGamblerBetFakeModel
 import com.felipearpa.tyche.ui.shimmer
 
 @Composable
-fun PendingBetFakeItem(modifier: Modifier = Modifier) {
+fun PendingBetPlaceholderItem(modifier: Modifier = Modifier) {
     PendingBetItem(
         poolGamblerBet = poolGamblerBetFakeModel(),
         viewState = PendingBetItemViewState.Visualization(partialPoolGamblerBetFakeModel()),
@@ -20,5 +20,5 @@ fun PendingBetFakeItem(modifier: Modifier = Modifier) {
 @Preview(showBackground = true)
 @Composable
 private fun PendingBetFakeItemPreview() {
-    PendingBetFakeItem(modifier = Modifier.fillMaxWidth())
+    PendingBetPlaceholderItem(modifier = Modifier.fillMaxWidth())
 }

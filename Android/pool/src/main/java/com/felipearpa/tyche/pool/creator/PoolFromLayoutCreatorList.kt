@@ -35,13 +35,8 @@ fun PoolFromLayoutCreatorList(
         modifier = modifier,
         lazyItems = poolLayouts,
         state = lazyListState,
-        loadingContent = {
-            PoolFromLayoutCreatorFakeList(
-                modifier = modifier,
-                count = fakeItemCount,
-            )
-        },
-        loadingContentOnConcatenate = { poolFromLayoutCreatorFakeItem() },
+        loadingContent = { poolFromLayoutCreatorPlaceholderList(count = fakeItemCount) },
+        loadingContentOnConcatenate = { poolFromLayoutCreatorPlaceholderItem() },
         verticalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.small),
     ) {
         items(
@@ -62,19 +57,13 @@ fun PoolFromLayoutCreatorList(
     }
 }
 
-@Composable
-private fun PoolFromLayoutCreatorFakeList(modifier: Modifier = Modifier, count: Int) {
-    LazyColumn(
-        modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.small),
-    ) {
-        repeat(count) {
-            poolFromLayoutCreatorFakeItem()
-        }
+private fun LazyListScope.poolFromLayoutCreatorPlaceholderList(count: Int) {
+    repeat(count) {
+        poolFromLayoutCreatorPlaceholderItem()
     }
 }
 
-private fun LazyListScope.poolFromLayoutCreatorFakeItem() {
+private fun LazyListScope.poolFromLayoutCreatorPlaceholderItem() {
     item {
         PoolFromLayoutCreatorFakeItem(modifier = Modifier.poolFromLayoutCreatorItem())
     }
@@ -112,12 +101,13 @@ private fun PoolFromLayoutCreatorListPreview() {
 @Preview(showBackground = true)
 @Composable
 private fun PoolFromLayoutCreatorListFakePreview() {
-    PoolFromLayoutCreatorFakeList(
+    LazyColumn(
         modifier = Modifier
             .fillMaxSize()
             .padding(LocalBoxSpacing.current.medium),
-        count = 50,
-    )
+    ) {
+        poolFromLayoutCreatorPlaceholderList(count = 50)
+    }
 }
 
 @Preview(showBackground = true)

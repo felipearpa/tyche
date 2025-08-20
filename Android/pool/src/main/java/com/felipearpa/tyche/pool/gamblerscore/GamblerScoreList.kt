@@ -1,6 +1,5 @@
 package com.felipearpa.tyche.pool.gamblerscore
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -34,8 +33,8 @@ fun GamblerScoreList(
     RefreshableStatefulLazyColumn(
         modifier = modifier,
         lazyItems = lazyPoolGamblerScores,
-        loadingContent = { GamblerScoreFakeList(count = fakeItemCount) },
-        loadingContentOnConcatenate = { gamblerScoreFakeItem() },
+        loadingContent = { gamblerScorePlaceholderList(count = fakeItemCount) },
+        loadingContentOnConcatenate = { gamblerScorePlaceholderItem() },
     ) {
         items(
             count = lazyPoolGamblerScores.itemCount,
@@ -60,22 +59,13 @@ fun GamblerScoreList(
     }
 }
 
-@Composable
-private fun GamblerScoreFakeList(count: Int) {
-    LazyColumn(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.medium),
-    ) {
-        repeat(count) {
-            item {
-                GamblerScorePlaceholderItem(modifier = Modifier.gamblerScoreItem())
-                HorizontalDivider()
-            }
-        }
+private fun LazyListScope.gamblerScorePlaceholderList(count: Int) {
+    repeat(count) {
+        gamblerScorePlaceholderItem()
     }
 }
 
-private fun LazyListScope.gamblerScoreFakeItem() {
+private fun LazyListScope.gamblerScorePlaceholderItem() {
     item {
         GamblerScorePlaceholderItem(modifier = Modifier.gamblerScoreItem())
         HorizontalDivider()
@@ -106,5 +96,11 @@ private fun GamblerScoreListPreview() {
 @Preview(showBackground = true)
 @Composable
 private fun GamblerScoreFakeListPreview() {
-    GamblerScoreFakeList(count = 50)
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(all = LocalBoxSpacing.current.medium),
+    ) {
+        gamblerScorePlaceholderList(count = 50)
+    }
 }

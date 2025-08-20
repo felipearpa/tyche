@@ -103,16 +103,13 @@ private fun PoolScoreListView(
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val coroutineScope = rememberCoroutineScope()
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
 
     ModalNavigationDrawer(
         modifier = Modifier.fillMaxSize(),
         drawerState = drawerState,
-        drawerContent = {
-            ModalDrawerSheet { drawerView() }
-        },
+        drawerContent = { ModalDrawerSheet { drawerView() } },
     ) {
-        val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
-
         Scaffold(
             modifier = Modifier
                 .fillMaxSize()

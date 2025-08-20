@@ -13,7 +13,7 @@ import jakarta.inject.Inject
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
 
-private const val PAGE_SIZE = 5
+private const val PAGE_SIZE = 50
 private const val PREFETCH_DISTANCE = 5
 
 @HiltViewModel

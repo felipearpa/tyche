@@ -18,7 +18,7 @@ import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.felipearpa.foundation.time.toShortDateString
 import com.felipearpa.tyche.bet.PoolGamblerBetModel
-import com.felipearpa.tyche.bet.pending.PendingBetFakeItem
+import com.felipearpa.tyche.bet.pending.PendingBetPlaceholderItem
 import com.felipearpa.tyche.bet.poolGamblerBetDummyModels
 import com.felipearpa.tyche.ui.lazy.RefreshableStatefulLazyColumn
 import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
@@ -36,8 +36,8 @@ fun FinishedBetList(
     RefreshableStatefulLazyColumn(
         modifier = modifier,
         lazyItems = lazyPoolGamblerBets,
-        loadingContent = { FinishedPoolGamblerBetFakeList(count = fakeItemCount) },
-        loadingContentOnConcatenate = { finishedPoolGamblerBetFakeItem() },
+        loadingContent = { finishedPoolGamblerBetFakeList(count = fakeItemCount) },
+        loadingContentOnConcatenate = { finishedPoolGamblerBetPlaceholderItem() },
     ) {
         val poolGamblerBetsCount = lazyPoolGamblerBets.itemCount
         var lastMatchDate: LocalDate? = null
@@ -77,22 +77,16 @@ fun FinishedBetList(
     }
 }
 
-private fun LazyListScope.finishedPoolGamblerBetFakeItem() {
-    item {
-        PendingBetFakeItem(modifier = Modifier.fillMaxWidth())
-        HorizontalDivider(modifier = Modifier.padding(horizontal = LocalBoxSpacing.current.large))
+private fun LazyListScope.finishedPoolGamblerBetFakeList(count: Int) {
+    repeat(count) {
+        finishedPoolGamblerBetPlaceholderItem()
     }
 }
 
-@Composable
-private fun FinishedPoolGamblerBetFakeList(count: Int) {
-    LazyColumn(modifier = Modifier.fillMaxSize()) {
-        repeat(count) {
-            item {
-                PendingBetFakeItem(modifier = Modifier.finishedBetItem())
-                HorizontalDivider(modifier = Modifier.padding(horizontal = LocalBoxSpacing.current.large))
-            }
-        }
+private fun LazyListScope.finishedPoolGamblerBetPlaceholderItem() {
+    item {
+        PendingBetPlaceholderItem(modifier = Modifier.fillMaxWidth())
+        HorizontalDivider(modifier = Modifier.padding(horizontal = LocalBoxSpacing.current.large))
     }
 }
 
@@ -121,5 +115,11 @@ private fun FinishedBetListPreview() {
 @Preview(showBackground = true)
 @Composable
 private fun FinishedBetFakeListPreview() {
-    FinishedPoolGamblerBetFakeList(count = 50)
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(all = LocalBoxSpacing.current.medium),
+    ) {
+        finishedPoolGamblerBetFakeList(count = 50)
+    }
 }

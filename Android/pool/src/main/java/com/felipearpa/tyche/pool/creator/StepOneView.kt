@@ -34,7 +34,7 @@ internal fun StepOneView(
     val lazyPoolLayouts = viewModel.poolLayouts.collectAsLazyPagingItems()
     StepOne(
         lazyItems = lazyPoolLayouts,
-        pageSize = viewModel.pageSize,
+        pageSize = 3,
         createPoolModel = createPoolModel,
         onNextClick = onNextClick,
         modifier = modifier,
@@ -72,7 +72,7 @@ private fun StepOne(
 
     LaunchedEffect(selectedPoolLayout) {
         selectedPoolLayout?.let {
-            onNextClick(createPoolModel.copy(poolLayoutId = it.id))
+            onNextClick(createPoolModel.copy(poolLayoutId = it.id, poolName = it.name))
         }
     }
 }

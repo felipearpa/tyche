@@ -2,7 +2,7 @@ package com.felipearpa.tyche.ui.lazy
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -32,11 +32,11 @@ fun <Value : Any> RefreshableStatefulLazyColumn(
     verticalArrangement: Arrangement.Vertical =
         if (!reverseLayout) Arrangement.Top else Arrangement.Bottom,
     loadingVisibilityDecider: LoadingVisibilityDecider<Value> = FirstTimeLoadingVisibilityDecider(),
-    loadingContent: @Composable () -> Unit = {},
-    loadingContentOnConcatenate: (LazyListScope.() -> Unit) = {},
-    errorContentOnConcatenate: (LazyListScope.() -> Unit) = {},
-    errorContent: @Composable (Throwable) -> Unit = { ContentOnError(lazyItems = lazyItems) },
-    emptyContent: @Composable () -> Unit = { ContentOnEmpty() },
+    loadingContent: LazyListScope.() -> Unit = {},
+    loadingContentOnConcatenate: LazyListScope.() -> Unit = {},
+    errorContentOnConcatenate: LazyListScope.() -> Unit = {},
+    errorContent: LazyListScope.(Throwable) -> Unit = { statefulLazyColumnContentOnError() },
+    emptyContent: LazyListScope.() -> Unit = { statefulLazyColumnContentOnEmpty() },
     itemContent: LazyListScope.() -> Unit,
 ) {
     if (LocalInspectionMode.current) {
@@ -56,16 +56,32 @@ fun <Value : Any> RefreshableStatefulLazyColumn(
             itemContent = itemContent,
         )
     } else {
-        var isRefreshing by remember { mutableStateOf(false) }
         val pullToRefreshState = rememberPullToRefreshState()
-        val onRefresh: () -> Unit = { isRefreshing = true }
+        var isRefreshing by remember { mutableStateOf(false) }
+        var hasShownLoading by remember { mutableStateOf(false) }
 
-        if (isRefreshing) {
-            LaunchedEffect(Unit) { lazyItems.refresh() }
+        val shouldLoadingContent = loadingVisibilityDecider.shouldShowLoader(lazyItems)
+        val onRefresh: () -> Unit = {
+            lazyItems.refresh()
+            if (shouldLoadingContent) {
+                isRefreshing = false
+            }
         }
 
-        if (lazyItems.loadState.refresh is LoadState.NotLoading) {
-            LaunchedEffect(Unit) { isRefreshing = false }
+        LaunchedEffect(lazyItems.loadState.refresh) {
+            if (lazyItems.loadState.refresh is LoadState.Loading) {
+                hasShownLoading = true
+                if (!shouldLoadingContent) {
+                    isRefreshing = true
+                }
+            }
+
+            if (hasShownLoading && (lazyItems.loadState.refresh is LoadState.NotLoading || lazyItems.loadState.refresh is LoadState.Error)) {
+                hasShownLoading = false
+                if (!shouldLoadingContent) {
+                    isRefreshing = false
+                }
+            }
         }
 
         PullToRefreshBox(
@@ -75,7 +91,7 @@ fun <Value : Any> RefreshableStatefulLazyColumn(
             onRefresh = onRefresh,
         ) {
             StatefulLazyColumn(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxSize(),
                 lazyItems = lazyItems,
                 state = state,
                 contentPadding = contentPadding,
@@ -103,11 +119,11 @@ private fun <Value : Any> RefreshableStatefulLazyColumnForPreview(
     verticalArrangement: Arrangement.Vertical =
         if (!reverseLayout) Arrangement.Top else Arrangement.Bottom,
     loadingVisibilityDecider: LoadingVisibilityDecider<Value> = FirstTimeLoadingVisibilityDecider(),
-    loadingContent: @Composable () -> Unit = {},
-    loadingContentOnConcatenate: (LazyListScope.() -> Unit) = {},
-    errorContentOnConcatenate: (LazyListScope.() -> Unit) = {},
-    errorContent: @Composable (Throwable) -> Unit = { ContentOnError(lazyItems = lazyItems) },
-    emptyContent: @Composable () -> Unit = { ContentOnEmpty() },
+    loadingContent: LazyListScope.() -> Unit = {},
+    loadingContentOnConcatenate: LazyListScope.() -> Unit = {},
+    errorContentOnConcatenate: LazyListScope.() -> Unit = {},
+    errorContent: LazyListScope.(Throwable) -> Unit = { statefulLazyColumnContentOnError() },
+    emptyContent: LazyListScope.() -> Unit = { statefulLazyColumnContentOnEmpty() },
     itemContent: LazyListScope.() -> Unit,
 ) {
     StatefulLazyColumn(

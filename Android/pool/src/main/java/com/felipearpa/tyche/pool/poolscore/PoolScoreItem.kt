@@ -104,7 +104,7 @@ fun PoolScoreItem(
 }
 
 @Composable
-fun PoolScoreFakeItem(modifier: Modifier = Modifier) {
+fun PoolScorePlaceholderItem(modifier: Modifier = Modifier) {
     PoolScoreItem(
         poolGamblerScore = poolGamblerScorePlaceholderModel(),
         onJoin = {},
@@ -138,5 +138,5 @@ private fun PoolScoreItemPreviewWithoutScore() {
 @Preview(showBackground = true)
 @Composable
 private fun PoolScoreFakeItemPreview() {
-    PoolScoreFakeItem(modifier = Modifier.fillMaxWidth())
+    PoolScorePlaceholderItem(modifier = Modifier.fillMaxWidth())
 }

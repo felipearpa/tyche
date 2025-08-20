@@ -235,8 +235,6 @@ private extension View {
         )
     )
 
-    let _ = print("felipe 1")
-
     ZStack {
         PagingVStack(
             lazyPager: lazyPager,
@@ -246,12 +244,10 @@ private extension View {
             loadingContentOnConcatenate: { EmptyView() },
             errorContentOnConcatenate: { _ in EmptyView() }
         ) { item in
-            let _ = print("felipe 3")
             Text(item.id)
         }
     }
     .onAppear {
-        let _ = print("felipe 2")
         lazyPager.refresh()
     }
 }

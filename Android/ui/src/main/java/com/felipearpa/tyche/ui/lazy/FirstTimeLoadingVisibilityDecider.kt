@@ -20,7 +20,7 @@ class FirstTimeLoadingVisibilityDecider<Value : Any> : LoadingVisibilityDecider<
                 hasShownLoading = true
             }
 
-            if (hasShownLoading && lazyPagingItems.loadState.refresh is LoadState.NotLoading) {
+            if (hasShownLoading && (lazyPagingItems.loadState.refresh is LoadState.NotLoading || lazyPagingItems.loadState.refresh is LoadState.Error)) {
                 isContentLoaded = true
             }
         }
