@@ -15,6 +15,10 @@ class FirstTimeLoadingVisibilityDecider<Value : Any> : LoadingVisibilityDecider<
         var hasShownLoading by remember { mutableStateOf(false) }
         var isContentLoaded by remember { mutableStateOf(false) }
 
+        if (lazyPagingItems.hasItems()) {
+            return false
+        }
+
         LaunchedEffect(lazyPagingItems.loadState.refresh) {
             if (lazyPagingItems.loadState.refresh is LoadState.Loading) {
                 hasShownLoading = true

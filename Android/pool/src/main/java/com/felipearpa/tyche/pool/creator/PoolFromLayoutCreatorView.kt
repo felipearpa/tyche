@@ -161,8 +161,8 @@ private fun Stepper(
     onCreatePoolModelChange: (CreatePoolModel) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    AnimatedContent(targetState = step) {
-        when (it) {
+    AnimatedContent(targetState = step) { currentStep ->
+        when (currentStep) {
             Step.One -> StepOneView(
                 viewModel = stepOneViewModel(),
                 createPoolModel = createPoolModel,

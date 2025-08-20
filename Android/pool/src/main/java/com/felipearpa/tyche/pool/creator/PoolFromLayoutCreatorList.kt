@@ -106,7 +106,7 @@ private fun PoolFromLayoutCreatorListFakePreview() {
             .fillMaxSize()
             .padding(LocalBoxSpacing.current.medium),
     ) {
-        poolFromLayoutCreatorPlaceholderList(count = 50)
+        poolFromLayoutCreatorPlaceholderList(count = 3)
     }
 }
 

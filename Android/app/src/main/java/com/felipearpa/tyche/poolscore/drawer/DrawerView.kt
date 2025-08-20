@@ -19,12 +19,12 @@ import com.felipearpa.tyche.R
 import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
 
 @Composable
-fun DrawerView(viewModel: DrawerViewModel, onLogout: () -> Unit) {
+fun DrawerView(viewModel: DrawerViewModel, onSignOut: () -> Unit) {
     DrawerView(
         modifier = Modifier.fillMaxSize(),
         logout = {
             viewModel.logout()
-            onLogout()
+            onSignOut()
         },
     )
 }

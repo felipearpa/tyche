@@ -1,5 +1,8 @@
 package com.felipearpa.tyche.poolscore
 
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
@@ -13,18 +16,34 @@ import com.felipearpa.tyche.poolhome.PoolHomeViewRoute
 import com.felipearpa.tyche.poolscore.drawer.DrawerView
 import com.felipearpa.tyche.poolscore.drawer.drawerViewModel
 
+const val POOL_CREATED_KEY = "pool_created"
+
 fun NavGraphBuilder.poolScoreListNavView(
     navController: NavController,
     initialRoute: Any,
 ) {
     composable<PoolScoreListRoute> { navBackStackEntry ->
         val poolScoreListRoute: PoolScoreListRoute = navBackStackEntry.toRoute()
+
+        val viewModel = poolScoreListViewModel(gamblerId = poolScoreListRoute.gamblerId)
+
+        val poolCreatedFlag by navBackStackEntry.savedStateHandle
+            .getStateFlow(POOL_CREATED_KEY, false)
+            .collectAsStateWithLifecycle()
+
+        LaunchedEffect(poolCreatedFlag) {
+            if (poolCreatedFlag) {
+                viewModel.refresh()
+                navBackStackEntry.savedStateHandle["pool_created"] = false
+            }
+        }
+
         PoolScoreListView(
             viewModel = poolScoreListViewModel(gamblerId = poolScoreListRoute.gamblerId),
             drawerView = {
                 DrawerView(
                     viewModel = drawerViewModel(),
-                    onLogout = {
+                    onSignOut = {
                         navController.navigate(route = HomeRoute) {
                             popUpTo(route = initialRoute) { inclusive = true }
                         }

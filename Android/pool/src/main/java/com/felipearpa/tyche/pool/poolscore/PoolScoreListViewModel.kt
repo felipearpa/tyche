@@ -38,6 +38,8 @@ class PoolScoreListViewModel @AssistedInject constructor(
         initialValue = PagingData.empty(),
     )
 
+    private var currentSource: PoolGamblerScorePagingSource? = null
+
     private fun buildPager(searchText: String) =
         Pager(
             config = PagingConfig(
@@ -55,9 +57,13 @@ class PoolScoreListViewModel @AssistedInject constructor(
                             getPoolGamblerScoresByGamblerUseCase = getPoolGamblerScoresByGamblerUseCase,
                         )
                     },
-                )
+                ).also { currentSource = it }
             },
         )
+
+    fun refresh() {
+        currentSource?.invalidate()
+    }
 
     fun search(searchText: String) {
         _searchText.value = searchText.trim()
