@@ -11,6 +11,7 @@ open Felipearpa.Core
 open Felipearpa.Core.Paging
 open Felipearpa.Data.DynamoDb
 open Felipearpa.Tyche.Pool.Domain
+open Felipearpa.Tyche.Pool.Domain.InitialPoolGamblerBetTransformer
 open Felipearpa.Tyche.Pool.Domain.PoolGamblerBetDictionaryTransformer
 open Felipearpa.Type
 
@@ -175,24 +176,7 @@ type PoolGamblerBetDynamoDbRepository(keySerializer: IKeySerializer, client: IAm
             async {
                 let conditionExpression = "attribute_not_exists(pk) AND attribute_not_exists(sk)"
 
-                let item =
-                    dict
-                        [ "pk",
-                          AttributeValue(
-                              S = $"{gamblerText}#{poolGamblerBet.GamblerId}#{poolText}#{poolGamblerBet.PoolId}"
-                          )
-                          "sk", AttributeValue(S = $"{matchText}#{poolGamblerBet.MatchId}")
-                          "poolId", AttributeValue(S = poolGamblerBet.PoolId.Value)
-                          "gamblerId", AttributeValue(S = poolGamblerBet.GamblerId.Value)
-                          "matchId", AttributeValue(S = poolGamblerBet.MatchId.Value)
-                          "homeTeamId", AttributeValue(S = poolGamblerBet.HomeTeamId.Value)
-                          "homeTeamName", AttributeValue(S = poolGamblerBet.HomeTeamName.Value)
-                          "awayTeamId", AttributeValue(S = poolGamblerBet.AwayTeamId.Value)
-                          "awayTeamName", AttributeValue(S = poolGamblerBet.AwayTeamName.Value)
-                          "matchDateTime",
-                          AttributeValue(S = poolGamblerBet.MatchDateTime.ToUniversalTime().ToString("o"))
-                          "poolLayoutId", AttributeValue(S = poolGamblerBet.PoolLayoutId.Value)
-                          "poolLayoutVersion", AttributeValue(N = poolGamblerBet.PoolLayoutVersion.ToString()) ]
+                let item = poolGamblerBet |> toAmazonItem
 
                 let request =
                     PutItemRequest(
@@ -207,3 +191,6 @@ type PoolGamblerBetDynamoDbRepository(keySerializer: IKeySerializer, client: IAm
                 with :? AggregateException as error when (error.InnerException :? ConditionalCheckFailedException) ->
                     return Error AddMatchFailure.AlreadyExist
             }
+
+        member this.AddMatches(poolGamblerBets) =
+            poolGamblerBets |> Seq.mapAsync (this :> IPoolGamblerBetRepository).AddMatch

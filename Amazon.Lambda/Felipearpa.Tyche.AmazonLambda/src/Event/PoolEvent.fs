@@ -58,7 +58,7 @@ type PoolEvent(configureServices: IServiceCollection -> unit) =
             .AddScoped<IPoolLayoutRepository, PoolLayoutDynamoDbRepository>()
             .AddScoped<IPoolGamblerBetRepository, PoolGamblerBetDynamoDbRepository>()
             .AddScoped<GetPendingPoolLayoutMatchesQuery>()
-            .AddScoped<AddMatchCommand>()
+            .AddScoped<AddMatchesCommand>()
         |> ignore
 
         configureServices services
@@ -102,28 +102,28 @@ type PoolEvent(configureServices: IServiceCollection -> unit) =
 
     let applyPendingLayoutMatches
         (getPendingPoolLayoutMatchesQuery: GetPendingPoolLayoutMatchesQuery)
-        (addMatchCommand: AddMatchCommand)
+        (addMatchesCommand: AddMatchesCommand)
         (poolId, gamblerId, poolLayoutId, poolLayoutVersion)
         : Async<unit> =
         let rec loop (next: string option) : Async<unit> =
             async {
                 let! page = getPendingPoolLayoutMatchesQuery.ExecuteAsync(poolLayoutId, poolLayoutVersion, next)
 
-                let addMatch (poolLayoutMatch: PoolLayoutMatch) : Async<unit> =
-                    { InitialPoolGamblerBet.PoolId = poolId
-                      GamblerId = gamblerId
-                      MatchId = Ulid.random ()
-                      PoolLayoutId = poolLayoutId
-                      HomeTeamId = poolLayoutMatch.HomeTeamId
-                      HomeTeamName = poolLayoutMatch.HomeTeamName
-                      AwayTeamId = poolLayoutMatch.AwayTeamId
-                      AwayTeamName = poolLayoutMatch.AwayTeamName
-                      MatchDateTime = poolLayoutMatch.MatchDateTime
-                      PoolLayoutVersion = poolLayoutMatch.PoolLayoutVersion }
-                    |> addMatchCommand.ExecuteAsync
-                    |> Async.Ignore
+                let poolGamblerBets: InitialPoolGamblerBet seq =
+                    page.Items
+                    |> Seq.map (fun m ->
+                        { InitialPoolGamblerBet.PoolId = poolId
+                          GamblerId = gamblerId
+                          MatchId = Ulid.random ()
+                          PoolLayoutId = poolLayoutId
+                          HomeTeamId = m.HomeTeamId
+                          HomeTeamName = m.HomeTeamName
+                          AwayTeamId = m.AwayTeamId
+                          AwayTeamName = m.AwayTeamName
+                          MatchDateTime = m.MatchDateTime
+                          PoolLayoutVersion = m.PoolLayoutVersion })
 
-                do! page.Items |> Seq.iterAsync addMatch
+                let! _ = addMatchesCommand.ExecuteAsync poolGamblerBets
 
                 match page.Next with
                 | Some n -> return! loop (Some n)
@@ -143,11 +143,12 @@ type PoolEvent(configureServices: IServiceCollection -> unit) =
             let getPendingPoolLayoutMatchesQuery =
                 scope.ServiceProvider.GetRequiredService<GetPendingPoolLayoutMatchesQuery>()
 
-            let addMatchCommand = scope.ServiceProvider.GetRequiredService<AddMatchCommand>()
+            let addMatchesCommand =
+                scope.ServiceProvider.GetRequiredService<AddMatchesCommand>()
 
             do!
                 records
-                |> Seq.iterAsync (applyPendingLayoutMatches getPendingPoolLayoutMatchesQuery addMatchCommand)
+                |> Seq.iterAsync (applyPendingLayoutMatches getPendingPoolLayoutMatchesQuery addMatchesCommand)
 
             return ()
          }

@@ -20,3 +20,5 @@ type IPoolGamblerBetRepository =
     abstract BetAsync: Ulid * Ulid * Ulid * TeamScore<BetScore> -> Result<PoolGamblerBet, BetFailure> Async
 
     abstract AddMatch: InitialPoolGamblerBet -> Result<PoolGamblerBet, AddMatchFailure> Async
+
+    abstract AddMatches: InitialPoolGamblerBet seq -> Async<Result<PoolGamblerBet, AddMatchFailure> seq>

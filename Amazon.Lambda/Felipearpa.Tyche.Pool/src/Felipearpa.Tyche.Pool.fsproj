@@ -23,6 +23,7 @@
         <Compile Include="Domain\Pool.fs" />
         <Compile Include="Domain\IPoolRepository.fs" />
         <Compile Include="Domain\PoolDictionaryTransformer.fs" />
+        <Compile Include="Domain\InitialPoolGamblerBetTransformer.fs" />
         <Compile Include="Infrastructure\GetGamblerScoresRequestBuilder.fs" />
         <Compile Include="Infrastructure\GetPoolScoresRequestBuilder.fs" />
         <Compile Include="Infrastructure\GetPoolGamblerScoreRequestBuilder.fs" />
@@ -42,6 +43,7 @@
         <Compile Include="Application\JoinPoolCommand.fs" />
         <Compile Include="Application\GetPoolByIdQuery.fs" />
         <Compile Include="Application\AddMatchCommand.fs" />
+        <Compile Include="Application\AddMatchesCommand.fs" />
     </ItemGroup>
 
     <ItemGroup>
