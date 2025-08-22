@@ -27,6 +27,10 @@
         <Compile Include="Infrastructure\GetGamblerScoresRequestBuilder.fs" />
         <Compile Include="Infrastructure\GetPoolScoresRequestBuilder.fs" />
         <Compile Include="Infrastructure\GetPoolGamblerScoreRequestBuilder.fs" />
+        <Compile Include="Infrastructure\GetPendingPoolGamblerBetsRequestBuilder.fs" />
+        <Compile Include="Infrastructure\GetFinishedPoolGamblerBetsRequestBuilder.fs" />
+        <Compile Include="Infrastructure\BetRequestBuilder.fs" />
+        <Compile Include="Infrastructure\AddPoolGamblerMatchRequestBuilder.fs" />
         <Compile Include="Infrastructure\PoolGamblerScoreDynamoDbRepository.fs" />
         <Compile Include="Infrastructure\PoolGamblerBetDynamoDbRepository.fs" />
         <Compile Include="Infrastructure\GetPoolByIdRequestBuilder.fs" />
