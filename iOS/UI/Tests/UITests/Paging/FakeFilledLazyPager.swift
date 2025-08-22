@@ -1,13 +1,13 @@
 import Foundation
 @testable import UI
 
-class FakeFilledLazyPager: LazyPager<String, FakeItemPagingSource> {
+class FakeFilledLazyPager: LazyPagingItems<String, FakeItemPagingSource> {
     let items = (1...10).map { _ in FakeItemPagingSource(id: UUID().uuidString) }
     
     @MainActor
     init() {
         super.init(
-            pagingData: PagingData(
+            pagingData: Pager(
                 pagingConfig: PagingConfig(prefetchDistance: 5),
                 pagingSourceFactory: FakeEmptyPagingSource()
             )

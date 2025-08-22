@@ -22,7 +22,7 @@ public struct PoolScoreListView: View {
 
     public var body: some View {
         PoolScoreList(
-            lazyPager: viewModel.lazyPager,
+            lazyPagingItems: viewModel.lazyPager,
             onPoolOpen: { poolId in
                 onPoolOpen(PoolProfile(poolId: poolId))
             },

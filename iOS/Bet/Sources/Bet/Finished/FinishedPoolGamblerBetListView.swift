@@ -10,8 +10,8 @@ public struct FinishedPoolGamblerBetListView: View {
     public var body: some View {
         let _ = Self._printChanges()
         
-        FinishedPoolGamblerBetList(lazyPager: viewModel.lazyPager)
+        FinishedPoolGamblerBetList(lazyPagingItems: viewModel.lazyPager)
             .refreshable { viewModel.refresh() }
-            .onAppearOnce { viewModel.load() }
+            .onAppearOnce { viewModel.refresh() }
     }
 }

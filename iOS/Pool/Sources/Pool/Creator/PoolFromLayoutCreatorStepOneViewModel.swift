@@ -10,11 +10,11 @@ public class PoolFromLayoutCreatorStepOneViewModel : ObservableObject {
 
     private var searchText: String? = nil
 
-    lazy var lazyPager: LazyPager<String, PoolLayoutModel> = {
-        LazyPager(
+    lazy var lazyPager: LazyPagingItems<String, PoolLayoutModel> = {
+        LazyPagingItems(
             pagingData: PagingData(
                 pagingConfig: PagingConfig(prefetchDistance: 5),
-                pagingSourceFactory: self.pagingSource
+                pagingSourceFactory: { self.pagingSource }
             )
         )
     }()

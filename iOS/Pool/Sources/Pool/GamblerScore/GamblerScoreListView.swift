@@ -12,7 +12,7 @@ public struct GamblerScoreListView: View {
     
     public var body: some View {
         GamblerScoreList(
-            lazyPager: viewModel.lazyPager,
+            lazyPagingItems: viewModel.lazyPager,
             isCurrentUser: viewModel.gamblerId
         )
         .refreshable {

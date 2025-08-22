@@ -3,13 +3,13 @@ import UI
 import Core
 
 struct FinishedPoolGamblerBetList: View {
-    var lazyPager: LazyPager<String, PoolGamblerBetModel>
+    var lazyPagingItems: LazyPagingItems<String, PoolGamblerBetModel>
 
     @Environment(\.boxSpacing) private var boxSpacing
 
     var body: some View {
-        PagingVStack(
-            lazyPager: lazyPager,
+        StatefulLazyVStack(
+            lazyPagingItems: lazyPagingItems,
             loadingContent: {
                 FinishedPoolGamblerBetFakeList(count: 50)
             },
@@ -44,16 +44,11 @@ struct FinishedPoolGamblerBetList: View {
 
 private struct FinishedPoolGamblerBetFakeList: View {
     let count: Int
-    @Environment(\.boxSpacing) private var boxSpacing
 
     var body: some View {
-        ScrollView {
-            LazyVStack(spacing: boxSpacing.medium) {
-                ForEach(0..<count, id: \.self) { _ in
-                    FinishedPoolGamblerBetFakeItem()
-                    Divider()
-                }
-            }
+        ForEach(0..<count, id: \.self) { _ in
+            FinishedPoolGamblerBetFakeItem()
+            Divider()
         }
     }
 }
@@ -70,14 +65,14 @@ private struct FinishedPoolGamblerBetFakeItem: View {
 
 #Preview {
     FinishedPoolGamblerBetList(
-        lazyPager: LazyPager(
+        lazyPagingItems: LazyPagingItems(
             pagingData: PagingData(
                 pagingConfig: PagingConfig(prefetchDistance: 5),
-                pagingSourceFactory: PoolGamblerBetPagingSource(
-                    pagingQuery: { _ in .
-                        success(CursorPage(items: poolGamblerBetDummyModels(), next: nil))
-                    }
-                )
+                pagingSourceFactory: {
+                    PoolGamblerBetPagingSource(
+                        pagingQuery: { _ in .success(CursorPage(items: poolGamblerBetDummyModels(), next: nil)) }
+                    )
+                }
             )
         )
     )

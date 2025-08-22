@@ -4,16 +4,16 @@ import Core
 import DataBet
 
 struct PoolGamblerBetList: View {
-    var lazyPager: LazyPager<String, PoolGamblerBetModel>
-    
+    var lazyPagingItems: LazyPagingItems<String, PoolGamblerBetModel>
+
     @Environment(\.boxSpacing) private var boxSpacing
     @Environment(\.diResolver) private var diResolver: DIResolver
-    
+
     var body: some View {
         let _ = Self._printChanges()
-        
-        PagingVStack(
-            lazyPager: lazyPager,
+
+        StatefulLazyVStack(
+            lazyPagingItems: lazyPagingItems,
             loadingContent: { PoolGamblerBetFakeList() },
             loadingContentOnConcatenate: {
                 PoolGamblerBetFakeItem()
@@ -28,7 +28,7 @@ struct PoolGamblerBetList: View {
             )
             .padding([.horizontal], boxSpacing.medium)
             .padding([.vertical], boxSpacing.small)
-            
+
             Divider()
         }
     }
@@ -36,29 +36,25 @@ struct PoolGamblerBetList: View {
 
 struct PoolGamblerBetFakeList : View {
     @Environment(\.boxSpacing) private var boxSpacing
-    
+
     var body: some View {
-        ScrollView {
-            LazyVStack(spacing: boxSpacing.medium) {
-                ForEach(1...50, id: \.self) { _ in
-                    PoolGamblerBetFakeItem()
-                    Divider()
-                }
-            }
+        ForEach(1...50, id: \.self) { _ in
+            PoolGamblerBetFakeItem()
+            Divider()
         }
     }
 }
 
 #Preview {
     PoolGamblerBetList(
-        lazyPager: LazyPager(
+        lazyPagingItems: LazyPagingItems(
             pagingData: PagingData(
                 pagingConfig: PagingConfig(prefetchDistance: 5),
-                pagingSourceFactory: PoolGamblerBetPagingSource(
-                    pagingQuery: { _ in .
-                        success(CursorPage(items: poolGamblerBetDummyModels(), next: nil))
-                    }
-                )
+                pagingSourceFactory: {
+                    PoolGamblerBetPagingSource(
+                        pagingQuery: { _ in .success(CursorPage(items: poolGamblerBetDummyModels(), next: nil)) }
+                    )
+                }
             )
         )
     )

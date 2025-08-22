@@ -1,9 +1,6 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
-    "" : {
-
-    },
     "cancel_action" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -78,7 +75,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Oops! We\\'re having trouble connecting to our servers right now. Please check your internet connection and give it another shot later"
+            "value" : "Oops! We're having trouble connecting to our servers right now. Please check your internet connection and give it another shot later"
           }
         },
         "es-CO" : {

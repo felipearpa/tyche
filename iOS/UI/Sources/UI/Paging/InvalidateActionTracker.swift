@@ -1,6 +1,6 @@
 import Foundation
 
-typealias InvalidateAction = () -> Void
+typealias InvalidateAction = () async -> Void
 
 class InvalidateActionTracker {
     private var actions: [String: InvalidateAction] = [:]
@@ -15,9 +15,9 @@ class InvalidateActionTracker {
         actions.removeValue(forKey: actionId)
     }
     
-    func invalidate() {
-        actions.forEach { pair in
-            pair.value()
+    func invalidate() async {
+        for action in actions.values {
+            await action()
         }
     }
 }

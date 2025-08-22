@@ -3,7 +3,7 @@ import Core
 import UI
 
 struct GamblerScoreList: View {
-    var lazyPager: LazyPager<String, PoolGamblerScoreModel>
+    var lazyPagingItems: LazyPagingItems<String, PoolGamblerScoreModel>
     let isCurrentUser: String?
 
     @Environment(\.boxSpacing) private var boxSpacing
@@ -11,8 +11,8 @@ struct GamblerScoreList: View {
     var body: some View {
         let _ = Self._printChanges()
 
-        PagingVStack(
-            lazyPager: lazyPager,
+        StatefulLazyVStack(
+            lazyPagingItems: lazyPagingItems,
             loadingContent: { GamblerScoreFakeList() },
             loadingContentOnConcatenate: {
                 PoolScoreItem(poolGamblerScore: poolGamblerScorePlaceholderModel(), onJoin: {})
@@ -40,39 +40,32 @@ struct GamblerScoreFakeList : View {
     }
 
     var body: some View {
-        ScrollView {
-            LazyVStack(spacing: boxSpacing.medium) {
-                ForEach(poolGamblerScores) { poolGamblerScore in
-                    GamblerScoreItem(
-                        poolGamblerScore: poolGamblerScore,
-                        isCurrentUser: false
-                    )
-                    .shimmer()
+        ForEach(poolGamblerScores) { poolGamblerScore in
+            GamblerScoreItem(
+                poolGamblerScore: poolGamblerScore,
+                isCurrentUser: false
+            )
+            .shimmer()
 
-                    Divider()
-                }
-            }
+            Divider()
         }
     }
 }
 
 #Preview {
-    let lazyPager = LazyPager(
+    let lazyPagingItems = LazyPagingItems(
         pagingData: PagingData(
             pagingConfig: PagingConfig(prefetchDistance: 5),
-            pagingSourceFactory: PoolGamblerScorePagingSource(
-                pagingQuery: { _ in
-                        .success(CursorPage(items: poolGamblerScoresDummyModels(), next: nil))
-                }
-            )
+            pagingSourceFactory: {
+                PoolGamblerScorePagingSource(
+                    pagingQuery: { _ in .success(CursorPage(items: poolGamblerScoresDummyModels(), next: nil)) }
+                )
+            }
         )
     )
 
     GamblerScoreList(
-        lazyPager: lazyPager,
+        lazyPagingItems: lazyPagingItems,
         isCurrentUser: "signed-in-gambler-id"
     )
-    .onAppearOnce {
-        lazyPager.refresh()
-    }
 }

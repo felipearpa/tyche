@@ -13,11 +13,11 @@ public class FinishedBetListViewModel: ObservableObject {
     
     private var pagingSource: PoolGamblerBetPagingSource!
 
-    lazy var lazyPager: LazyPager<String, PoolGamblerBetModel> = {
-        LazyPager(
+    lazy var lazyPager: LazyPagingItems<String, PoolGamblerBetModel> = {
+        LazyPagingItems(
             pagingData: PagingData(
                 pagingConfig: PagingConfig(prefetchDistance: 5),
-                pagingSourceFactory: self.pagingSource
+                pagingSourceFactory: { self.pagingSource }
             )
         )
     }()
@@ -49,10 +49,6 @@ public class FinishedBetListViewModel: ObservableObject {
     func search(_ text: String) {
         searchText = text
         pagingSource.invalidate()
-    }
-    
-    func load() {
-        lazyPager.load()
     }
     
     func refresh() {

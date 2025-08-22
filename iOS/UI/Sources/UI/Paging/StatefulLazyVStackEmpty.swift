@@ -1,6 +1,6 @@
 import SwiftUI
 
-public struct PagingVStackEmpty: View {
+public struct StatefulLazyVStackEmpty: View {
     public init() {}
     
     public var body: some View {
@@ -11,8 +11,6 @@ public struct PagingVStackEmpty: View {
     }
 }
 
-struct PagingVStackEmpty_Previews: PreviewProvider {
-    static var previews: some View {
-        PagingVStackEmpty()
-    }
+#Preview {
+    StatefulLazyVStackEmpty()
 }

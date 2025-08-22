@@ -1,6 +1,6 @@
 @testable import UI
 
-class FakeAppendErrorLazyPager: LazyPager<String, FakeItemPagingSource> {
+class FakeAppendErrorLazyPager: LazyPagingItems<String, FakeItemPagingSource> {
     @MainActor
     init() {
         super.init(

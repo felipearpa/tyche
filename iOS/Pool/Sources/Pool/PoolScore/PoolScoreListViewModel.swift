@@ -12,11 +12,11 @@ public class PoolScoreListViewModel: ObservableObject {
     
     private var pagingSource: PoolGamblerScorePagingSource!
     
-    lazy var lazyPager: LazyPager<String, PoolGamblerScoreModel> = {
-        LazyPager(
+    lazy var lazyPager: LazyPagingItems<String, PoolGamblerScoreModel> = {
+        LazyPagingItems(
             pagingData: PagingData(
                 pagingConfig: PagingConfig(prefetchDistance: 5),
-                pagingSourceFactory: self.pagingSource
+                pagingSourceFactory: { self.pagingSource }
             )
         )
     }()

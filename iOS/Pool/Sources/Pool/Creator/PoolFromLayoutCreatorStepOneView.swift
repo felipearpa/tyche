@@ -21,7 +21,7 @@ struct PoolFromLayoutCreatorStepOneView : View {
 
     var body: some View {
         PoolFromLayoutCreatorStepOneStatefulView(
-            lazyPager: viewModel.lazyPager,
+            lazyPagingItems: viewModel.lazyPager,
             fakeItemCount: 5,
             createPoolModel: createPoolModel,
             onNextClick: onNextClick,
@@ -33,7 +33,7 @@ struct PoolFromLayoutCreatorStepOneView : View {
 }
 
 private struct PoolFromLayoutCreatorStepOneStatefulView : View {
-    let lazyPager: LazyPager<String, PoolLayoutModel>
+    let lazyPagingItems: LazyPagingItems<String, PoolLayoutModel>
     let fakeItemCount: Int
     var createPoolModel: CreatePoolModel
     let onNextClick: (CreatePoolModel) -> Void
@@ -50,7 +50,7 @@ private struct PoolFromLayoutCreatorStepOneStatefulView : View {
             }
 
             PoolFromLayoutCreatorList(
-                lazyPager: lazyPager,
+                lazyPagingItems: lazyPagingItems,
                 fakeItemCount: fakeItemCount,
                 selectedPoolLayout: selectedPoolLayout,
                 onPoolLayoutChange: { newPoolLayout in selectedPoolLayout = newPoolLayout }
@@ -69,14 +69,14 @@ private struct PoolFromLayoutCreatorStepOneStatefulView : View {
 
         var body: some View {
             PoolFromLayoutCreatorStepOneStatefulView(
-                lazyPager: LazyPager(
+                lazyPagingItems: LazyPagingItems(
                     pagingData: PagingData(
                         pagingConfig: PagingConfig(prefetchDistance: 5),
-                        pagingSourceFactory: OpenPoolLayoutPagingSource(
-                            pagingQuery: { _ in
-                                    .success(CursorPage(items: poolLayoutDummyModels(), next: nil))
-                            }
-                        )
+                        pagingSourceFactory: {
+                            OpenPoolLayoutPagingSource(
+                                pagingQuery: { _ in .success(CursorPage(items: poolLayoutDummyModels(), next: nil)) }
+                            )
+                        }
                     )
                 ),
                 fakeItemCount: 5,

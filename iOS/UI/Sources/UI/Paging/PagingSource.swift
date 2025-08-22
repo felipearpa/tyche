@@ -14,7 +14,7 @@ open class PagingSource<Key, Item> {
         fatalError("Not implemented")
     }
     
-    func registerInvaliateAction(_ action: @escaping () -> Void) -> String {
+    func registerInvalidateAction(_ action: @escaping () async -> Void) -> String {
         return invalidateActionTracker.registerAction(action)
     }
     
@@ -23,6 +23,6 @@ open class PagingSource<Key, Item> {
     }
     
     public func invalidate() {
-        invalidateActionTracker.invalidate()
+        Task { await invalidateActionTracker.invalidate() }
     }
 }

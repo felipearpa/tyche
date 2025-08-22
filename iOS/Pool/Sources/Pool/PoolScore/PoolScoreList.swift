@@ -3,20 +3,21 @@ import Core
 import UI
 
 struct PoolScoreList: View {
-    let lazyPager: LazyPager<String, PoolGamblerScoreModel>
+    let lazyPagingItems: LazyPagingItems<String, PoolGamblerScoreModel>
     let onPoolOpen: (String) -> Void
     let onPoolJoin: (String) -> Void
     let onPoolCreate: () -> Void
 
     var body: some View {
-        PagingVStack(
-            lazyPager: lazyPager,
+        StatefulLazyVStack(
+            lazyPagingItems: lazyPagingItems,
             loadingContent: { PoolScorePlaceholderList() },
             loadingContentOnConcatenate: {
                 PoolScoreItem(poolGamblerScore: poolGamblerScorePlaceholderModel(), onJoin: {})
                     .shimmer()
                 Divider()
             },
+            errorContent: { error in StatefulLazyVStackError(localizedError: error.localizedErrorOrDefault()) },
             emptyContent: { PoolScoreEmptyList(onPoolCreate: onPoolCreate) },
         ) { poolGamblerScore in
             Group {
@@ -35,16 +36,11 @@ private struct PoolScorePlaceholderList : View {
     }
 
     var body: some View {
-        ScrollView {
-            LazyVStack(spacing: 0) {
-                ForEach(poolGamblerScores) { poolGamblerScore in
-                    PoolScoreItem(poolGamblerScore: poolGamblerScore, onJoin: {})
-                        .shimmer()
-                    Divider()
-                }
-            }
+        ForEach(poolGamblerScores) { poolGamblerScore in
+            PoolScoreItem(poolGamblerScore: poolGamblerScore, onJoin: {})
+                .shimmer()
+            Divider()
         }
-        .scrollDisabled(true)
     }
 }
 
@@ -85,49 +81,39 @@ private struct PoolScoreEmptyList: View {
 private let iconSize: CGFloat = 64
 
 #Preview("PoolScoreList") {
-    let lazyPager = LazyPager(
-        pagingData: PagingData(
-            pagingConfig: PagingConfig(prefetchDistance: 5),
-            pagingSourceFactory: PoolGamblerScorePagingSource(
-                pagingQuery: { _ in .
-                    success(CursorPage(items: poolGamblerScoresDummyModels(), next: nil))
+    PoolScoreList(
+        lazyPagingItems: LazyPagingItems(
+            pagingData: PagingData(
+                pagingConfig: PagingConfig(prefetchDistance: 5),
+                pagingSourceFactory: {
+                    PoolGamblerScorePagingSource(
+                        pagingQuery: { _ in .success(CursorPage(items: poolGamblerScoresDummyModels(), next: nil)) }
+                    )
                 }
             )
-        )
-    )
-
-    PoolScoreList(
-        lazyPager: lazyPager,
+        ),
         onPoolOpen: { _ in },
         onPoolJoin: { _ in },
         onPoolCreate: {},
     )
-    .onAppearOnce {
-        lazyPager.refresh()
-    }
 }
 
 #Preview("PoolScoreEmptyList") {
-    let lazyPager = LazyPager(
-        pagingData: PagingData(
-            pagingConfig: PagingConfig(prefetchDistance: 5),
-            pagingSourceFactory: PoolGamblerScorePagingSource(
-                pagingQuery: { _ in .
-                    success(CursorPage(items: [], next: nil))
+    PoolScoreList(
+        lazyPagingItems: LazyPagingItems(
+            pagingData: PagingData(
+                pagingConfig: PagingConfig(prefetchDistance: 5),
+                pagingSourceFactory: {
+                    PoolGamblerScorePagingSource(
+                        pagingQuery: { _ in .success(CursorPage(items: [], next: nil)) }
+                    )
                 }
             )
-        )
-    )
-
-    PoolScoreList(
-        lazyPager: lazyPager,
+        ),
         onPoolOpen: { _ in },
         onPoolJoin: { _ in },
         onPoolCreate: {},
     )
-    .onAppearOnce {
-        lazyPager.refresh()
-    }
 }
 
 #Preview("PoolScorePlaceholderList") {

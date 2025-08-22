@@ -3,7 +3,7 @@ import Core
 import UI
 
 struct PoolFromLayoutCreatorList: View {
-    var lazyPager: LazyPager<String, PoolLayoutModel>
+    var lazyPagingItems: LazyPagingItems<String, PoolLayoutModel>
     var fakeItemCount: Int
     var selectedPoolLayout: PoolLayoutModel?
     var onPoolLayoutChange: (PoolLayoutModel) -> Void
@@ -11,8 +11,8 @@ struct PoolFromLayoutCreatorList: View {
     @Environment(\.boxSpacing) private var boxSpacing
 
     var body: some View {
-        PagingVStack(
-            lazyPager: lazyPager,
+        StatefulLazyVStack(
+            lazyPagingItems: lazyPagingItems,
             loadingContent: {
                 PoolFromLayoutCreatorPlaceholderList(count: fakeItemCount)
             },
@@ -42,41 +42,33 @@ private struct PoolFromLayoutCreatorPlaceholderList: View {
     @Environment(\.boxSpacing) private var boxSpacing
 
     var body: some View {
-        ScrollView {
-            LazyVStack(spacing: boxSpacing.small) {
-                ForEach(0..<count, id: \.self) { _ in
-                    PoolFromLayoutCreatorItem(
-                        poolLayout: poolLayoutFakeModel(),
-                        isSelected: false
-                    )
-                    .shimmer()
-                }
-            }
+        ForEach(0..<count, id: \.self) { _ in
+            PoolFromLayoutCreatorItem(
+                poolLayout: poolLayoutFakeModel(),
+                isSelected: false
+            )
+            .shimmer()
         }
     }
 }
 
 #Preview("PoolFromLayoutCreatorList") {
-    let lazyPager = LazyPager(
-        pagingData: PagingData(
-            pagingConfig: PagingConfig(prefetchDistance: 5),
-            pagingSourceFactory: OpenPoolLayoutPagingSource(
-                pagingQuery: { _ in
-                    .success(CursorPage(items: poolLayoutDummyModels(), next: nil))
+    PoolFromLayoutCreatorList(
+        lazyPagingItems: LazyPagingItems(
+            pagingData: PagingData(
+                pagingConfig: PagingConfig(prefetchDistance: 5),
+                pagingSourceFactory: {
+                    OpenPoolLayoutPagingSource(
+                        pagingQuery: { _ in .success(CursorPage(items: poolLayoutDummyModels(), next: nil))
+                        }
+                    )
                 }
             )
-        )
-    )
-
-    PoolFromLayoutCreatorList(
-        lazyPager: lazyPager,
+        ),
         fakeItemCount: 5,
         selectedPoolLayout: nil,
         onPoolLayoutChange: { _ in },
     )
-    .onAppear {
-        lazyPager.refresh()
-    }
 }
 
 #Preview("PoolFromLayoutCreatorPlaceholderList") {

@@ -48,11 +48,11 @@ final class PagingVStackTests: XCTestCase {
     }
     
     @MainActor
-    private func givenALoadingPagingItem() -> LazyPager<String, FakeItemPagingSource> {
+    private func givenALoadingPagingItem() -> LazyPagingItems<String, FakeItemPagingSource> {
         FakeLoadingLazyPager()
     }
     
-    private func whenLoadingPageItemInView(lazyPager: LazyPager<String, FakeItemPagingSource>) -> PagingVStack<
+    private func whenLoadingPageItemInView(lazyPager: LazyPagingItems<String, FakeItemPagingSource>) -> StatefulLazyVStack<
         String,
         FakeItemPagingSource,
         ViewShown,
@@ -61,7 +61,7 @@ final class PagingVStackTests: XCTestCase {
         EmptyView,
         EmptyView,
         EmptyView> {
-            return PagingVStack<String, FakeItemPagingSource, ViewShown, EmptyView, EmptyView, EmptyView, EmptyView, EmptyView>(
+            return StatefulLazyVStack<String, FakeItemPagingSource, ViewShown, EmptyView, EmptyView, EmptyView, EmptyView, EmptyView>(
                 lazyPager: lazyPager,
                 loadingContent: { ViewShown() },
                 emptyContent: { EmptyView() },
@@ -82,7 +82,7 @@ final class PagingVStackTests: XCTestCase {
      LoadingContentOnConcatenate: View,
      ErrorContentOnConcatenate: View,
      ItemView: View>(
-        pagingVStack: PagingVStack<
+        pagingVStack: StatefulLazyVStack<
         Key,
         Item,
         LoadingContent,
@@ -95,11 +95,11 @@ final class PagingVStackTests: XCTestCase {
         }
     
     @MainActor
-    private func givenAnAppendLoadingPagingItem() -> LazyPager<String, FakeItemPagingSource> {
+    private func givenAnAppendLoadingPagingItem() -> LazyPagingItems<String, FakeItemPagingSource> {
         FakeAppendLoadingLazyPager()
     }
     
-    private func whenAppendLoadingPageItemInView(lazyPager: LazyPager<String, FakeItemPagingSource>) -> PagingVStack<
+    private func whenAppendLoadingPageItemInView(lazyPager: LazyPagingItems<String, FakeItemPagingSource>) -> StatefulLazyVStack<
         String,
         FakeItemPagingSource,
         EmptyView,
@@ -108,7 +108,7 @@ final class PagingVStackTests: XCTestCase {
         ViewShown,
         EmptyView,
         EmptyView> {
-            return PagingVStack<
+            return StatefulLazyVStack<
                 String,
                 FakeItemPagingSource,
                 EmptyView,
@@ -137,7 +137,7 @@ final class PagingVStackTests: XCTestCase {
      LoadingContentOnConcatenate: View,
      ErrorContentOnConcatenate: View,
      ItemView: View>(
-        pagingVStack: PagingVStack<
+        pagingVStack: StatefulLazyVStack<
         Key,
         Item,
         LoadingContent,
@@ -158,7 +158,7 @@ final class PagingVStackTests: XCTestCase {
      LoadingContentOnConcatenate: View,
      ErrorContentOnConcatenate: View,
      ItemView: View>(
-        pagingVStack: PagingVStack<
+        pagingVStack: StatefulLazyVStack<
         Key,
         Item,
         LoadingContent,
@@ -172,11 +172,11 @@ final class PagingVStackTests: XCTestCase {
         }
     
     @MainActor
-    private func givenAnErrorPagingItem() -> LazyPager<String, FakeItemPagingSource> {
+    private func givenAnErrorPagingItem() -> LazyPagingItems<String, FakeItemPagingSource> {
         FakeErrorLazyPager()
     }
     
-    private func whenErrorPageItemInView(lazyPager: LazyPager<String, FakeItemPagingSource>) -> PagingVStack<
+    private func whenErrorPageItemInView(lazyPager: LazyPagingItems<String, FakeItemPagingSource>) -> StatefulLazyVStack<
         String,
         FakeItemPagingSource,
         EmptyView,
@@ -185,7 +185,7 @@ final class PagingVStackTests: XCTestCase {
         EmptyView,
         EmptyView,
         EmptyView> {
-            return PagingVStack<
+            return StatefulLazyVStack<
                 String,
                 FakeItemPagingSource,
                 EmptyView,
@@ -214,7 +214,7 @@ final class PagingVStackTests: XCTestCase {
      LoadingContentOnConcatenate: View,
      ErrorContentOnConcatenate: View,
      ItemView: View>(
-        pagingVStack: PagingVStack<
+        pagingVStack: StatefulLazyVStack<
         Key,
         Item,
         LoadingContent,
@@ -227,11 +227,11 @@ final class PagingVStackTests: XCTestCase {
         }
     
     @MainActor
-    private func givenAnAppendErrorPagingItem() -> LazyPager<String, FakeItemPagingSource> {
+    private func givenAnAppendErrorPagingItem() -> LazyPagingItems<String, FakeItemPagingSource> {
         FakeAppendErrorLazyPager()
     }
     
-    private func whenAppendErrorPageItemInView(lazyPager: LazyPager<String, FakeItemPagingSource>) -> PagingVStack<
+    private func whenAppendErrorPageItemInView(lazyPager: LazyPagingItems<String, FakeItemPagingSource>) -> StatefulLazyVStack<
         String,
         FakeItemPagingSource,
         EmptyView,
@@ -240,7 +240,7 @@ final class PagingVStackTests: XCTestCase {
         EmptyView,
         ViewShown,
         EmptyView> {
-            return PagingVStack<
+            return StatefulLazyVStack<
                 String,
                 FakeItemPagingSource,
                 EmptyView,
@@ -269,7 +269,7 @@ final class PagingVStackTests: XCTestCase {
      LoadingContentOnConcatenate: View,
      ErrorContentOnConcatenate: View,
      ItemView: View>(
-        pagingVStack: PagingVStack<
+        pagingVStack: StatefulLazyVStack<
         Key,
         Item,
         LoadingContent,
@@ -282,11 +282,11 @@ final class PagingVStackTests: XCTestCase {
         }
     
     @MainActor
-    private func givenAnEmptyPagingItem() -> LazyPager<String, FakeItemPagingSource> {
+    private func givenAnEmptyPagingItem() -> LazyPagingItems<String, FakeItemPagingSource> {
         FakeEmptyLazyPager()
     }
     
-    private func whenEmptyPageItemInView(lazyPager: LazyPager<String, FakeItemPagingSource>) -> PagingVStack<
+    private func whenEmptyPageItemInView(lazyPager: LazyPagingItems<String, FakeItemPagingSource>) -> StatefulLazyVStack<
         String,
         FakeItemPagingSource,
         EmptyView,
@@ -295,7 +295,7 @@ final class PagingVStackTests: XCTestCase {
         EmptyView,
         EmptyView,
         EmptyView> {
-            return PagingVStack<
+            return StatefulLazyVStack<
                 String,
                 FakeItemPagingSource,
                 EmptyView,
@@ -324,7 +324,7 @@ final class PagingVStackTests: XCTestCase {
      LoadingContentOnConcatenate: View,
      ErrorContentOnConcatenate: View,
      ItemView: View>(
-        pagingVStack: PagingVStack<
+        pagingVStack: StatefulLazyVStack<
         Key,
         Item,
         LoadingContent,
@@ -337,13 +337,13 @@ final class PagingVStackTests: XCTestCase {
         }
     
     @MainActor
-    private func givenAFilledPagingItem() -> LazyPager<String, FakeItemPagingSource> {
+    private func givenAFilledPagingItem() -> LazyPagingItems<String, FakeItemPagingSource> {
         FakeFilledLazyPager()
     }
     
     private func whenFilledPageItemInView(
-        lazyPager: LazyPager<String, FakeItemPagingSource>
-    ) -> PagingVStack<
+        lazyPager: LazyPagingItems<String, FakeItemPagingSource>
+    ) -> StatefulLazyVStack<
         String,
         FakeItemPagingSource,
         EmptyView,
@@ -352,7 +352,7 @@ final class PagingVStackTests: XCTestCase {
         EmptyView,
         EmptyView,
         ViewShown> {
-            return PagingVStack<
+            return StatefulLazyVStack<
                 String,
                 FakeItemPagingSource,
                 EmptyView,
@@ -381,7 +381,7 @@ final class PagingVStackTests: XCTestCase {
      LoadingContentOnConcatenate: View,
      ErrorContentOnConcatenate: View,
      ItemView: View>(
-        pagingVStack: PagingVStack<
+        pagingVStack: StatefulLazyVStack<
         Key,
         Item,
         LoadingContent,
