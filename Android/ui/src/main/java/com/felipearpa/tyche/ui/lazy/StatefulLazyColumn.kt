@@ -30,27 +30,28 @@ import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
+import com.felipearpa.tyche.ui.exception.localizedOrDefault
 import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
 
 @Composable
 fun <Value : Any> StatefulLazyColumn(
     modifier: Modifier = Modifier,
-    lazyItems: LazyPagingItems<Value>,
+    lazyPagingItems: LazyPagingItems<Value>,
     state: LazyListState = rememberLazyListState(),
     loadingVisibilityDecider: LoadingVisibilityDecider<Value> = AlwaysLoadingVisibilityDecider(),
     loadingContent: LazyListScope.() -> Unit = {},
     itemContent: LazyListScope.() -> Unit,
 ) = StatefulLazyColumn(
     modifier = modifier,
-    lazyItems = lazyItems,
+    lazyPagingItems = lazyPagingItems,
     state = state,
     contentPadding = PaddingValues(LocalBoxSpacing.current.medium),
     verticalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.medium),
     loadingVisibilityDecider = loadingVisibilityDecider,
     loadingContent = loadingContent,
     loadingContentOnConcatenate = { statefulLazyColumnContentOnConcatenate() },
-    errorContentOnConcatenate = { statefulLazyColumnContentOnConcatenateError(lazyItems = lazyItems) },
-    errorContent = { statefulLazyColumnContentOnError() },
+    errorContentOnConcatenate = { statefulLazyColumnContentOnConcatenateError(lazyPagingItems = lazyPagingItems) },
+    errorContent = { exception -> statefulLazyColumnContentOnError(exception) },
     emptyContent = { statefulLazyColumnContentOnEmpty() },
     itemContent = itemContent,
 )
@@ -58,7 +59,7 @@ fun <Value : Any> StatefulLazyColumn(
 @Composable
 fun <Value : Any> StatefulLazyColumn(
     modifier: Modifier = Modifier,
-    lazyItems: LazyPagingItems<Value>,
+    lazyPagingItems: LazyPagingItems<Value>,
     state: LazyListState = rememberLazyListState(),
     contentPadding: PaddingValues = PaddingValues(0.dp),
     reverseLayout: Boolean = false,
@@ -75,7 +76,7 @@ fun <Value : Any> StatefulLazyColumn(
     if (LocalInspectionMode.current) {
         StatefulLazyColumnForPreview(
             state = state,
-            lazyItems = lazyItems,
+            lazyPagingItems = lazyPagingItems,
             modifier = modifier,
             contentPadding = contentPadding,
             verticalArrangement = verticalArrangement,
@@ -84,28 +85,34 @@ fun <Value : Any> StatefulLazyColumn(
         )
     } else {
         val shouldShowLoader =
-            loadingVisibilityDecider.shouldShowLoader(lazyPagingItems = lazyItems)
+            loadingVisibilityDecider.shouldShowLoader(lazyPagingItems = lazyPagingItems)
 
         fun computeStatefulLazyColumnState(): StatefulLazyColumnState =
-            when (val refreshLoadState = lazyItems.loadState.refresh) {
+            when (val refreshLoadState = lazyPagingItems.loadState.refresh) {
                 is LoadState.Error -> StatefulLazyColumnState.Error(refreshLoadState.error)
                 is LoadState.NotLoading -> {
-                    if (!lazyItems.hasItems() && !lazyItems.isPendingLoad()) StatefulLazyColumnState.Empty
+                    if (lazyPagingItems.isEmpty) StatefulLazyColumnState.Empty
                     else StatefulLazyColumnState.Content
                 }
 
                 is LoadState.Loading -> {
                     if (shouldShowLoader) StatefulLazyColumnState.Loading
                     else {
-                        if (!lazyItems.hasItems()) StatefulLazyColumnState.Empty else StatefulLazyColumnState.Content
+                        if (lazyPagingItems.isEmpty) StatefulLazyColumnState.Empty else StatefulLazyColumnState.Content
                     }
                 }
             }
 
-        var statefulLazyColumnState by remember { mutableStateOf(computeStatefulLazyColumnState()) }
+        var statefulLazyColumnState by remember {
+            mutableStateOf<StatefulLazyColumnState>(StatefulLazyColumnState.Content)
+        }
 
-        LaunchedEffect(shouldShowLoader, lazyItems.loadState.refresh, lazyItems.itemCount) {
-            val refresh = lazyItems.loadState.refresh
+        LaunchedEffect(
+            shouldShowLoader,
+            lazyPagingItems.loadState.refresh,
+            lazyPagingItems.itemCount,
+        ) {
+            val refresh = lazyPagingItems.loadState.refresh
             statefulLazyColumnState = if (refresh is LoadState.Loading && !shouldShowLoader) {
                 statefulLazyColumnState
             } else {
@@ -130,13 +137,13 @@ fun <Value : Any> StatefulLazyColumn(
                     is StatefulLazyColumnState.Error -> errorContent(statefulLazyColumnState.exception)
                     StatefulLazyColumnState.Content -> {
                         prependContent(
-                            lazyItems = lazyItems,
+                            lazyPagingItems = lazyPagingItems,
                             loadingContentOnConcatenate = loadingContentOnConcatenate,
                             errorContentOnConcatenate = errorContentOnConcatenate,
                         )
                         itemContent()
                         appendContent(
-                            lazyItems = lazyItems,
+                            lazyPagingItems = lazyPagingItems,
                             loadingContentOnConcatenate = loadingContentOnConcatenate,
                             errorContentOnConcatenate = errorContentOnConcatenate,
                         )
@@ -174,7 +181,7 @@ private fun <Value> skeletonToContentTransition(): AnimatedContentTransitionScop
 @Composable
 private fun <Value : Any> StatefulLazyColumnForPreview(
     state: LazyListState,
-    lazyItems: LazyPagingItems<Value>,
+    lazyPagingItems: LazyPagingItems<Value>,
     modifier: Modifier,
     contentPadding: PaddingValues,
     verticalArrangement: Arrangement.Vertical,
@@ -187,7 +194,7 @@ private fun <Value : Any> StatefulLazyColumnForPreview(
         contentPadding = contentPadding,
         verticalArrangement = verticalArrangement,
     ) {
-        if (lazyItems.hasItems())
+        if (lazyPagingItems.isEmpty)
             itemContent()
         else
             emptyContent()
@@ -195,25 +202,25 @@ private fun <Value : Any> StatefulLazyColumnForPreview(
 }
 
 private fun <Value : Any> LazyListScope.prependContent(
-    lazyItems: LazyPagingItems<Value>,
+    lazyPagingItems: LazyPagingItems<Value>,
     loadingContentOnConcatenate: (LazyListScope.() -> Unit) = {},
     errorContentOnConcatenate: (LazyListScope.() -> Unit) = {},
 ) {
-    if (lazyItems.loadState.prepend is LoadState.Loading) {
+    if (lazyPagingItems.loadState.prepend is LoadState.Loading) {
         loadingContentOnConcatenate()
-    } else if (lazyItems.loadState.prepend is LoadState.Error) {
+    } else if (lazyPagingItems.loadState.prepend is LoadState.Error) {
         errorContentOnConcatenate()
     }
 }
 
 private fun <Value : Any> LazyListScope.appendContent(
-    lazyItems: LazyPagingItems<Value>,
+    lazyPagingItems: LazyPagingItems<Value>,
     loadingContentOnConcatenate: (LazyListScope.() -> Unit) = {},
     errorContentOnConcatenate: (LazyListScope.() -> Unit) = {},
 ) {
-    if (lazyItems.loadState.append is LoadState.Loading) {
+    if (lazyPagingItems.loadState.append is LoadState.Loading) {
         loadingContentOnConcatenate()
-    } else if (lazyItems.loadState.append is LoadState.Error) {
+    } else if (lazyPagingItems.loadState.append is LoadState.Error) {
         errorContentOnConcatenate()
     }
 }
@@ -228,23 +235,26 @@ fun LazyListScope.statefulLazyColumnContentOnConcatenate() {
     }
 }
 
-fun <Value : Any> LazyListScope.statefulLazyColumnContentOnConcatenateError(lazyItems: LazyPagingItems<Value>) {
+fun <Value : Any> LazyListScope.statefulLazyColumnContentOnConcatenateError(lazyPagingItems: LazyPagingItems<Value>) {
     item {
         Retry(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = LocalBoxSpacing.current.medium),
-        ) { lazyItems.retry() }
+        ) { lazyPagingItems.retry() }
     }
 }
 
-fun LazyListScope.statefulLazyColumnContentOnError() {
+fun LazyListScope.statefulLazyColumnContentOnError(exception: Throwable) {
     item {
         Box(
             contentAlignment = Alignment.Center,
             modifier = Modifier.fillParentMaxSize(),
         ) {
-            Failure(modifier = Modifier.fillMaxWidth())
+            Failure(
+                localizedException = exception.localizedOrDefault(),
+                modifier = Modifier.fillMaxWidth(),
+            )
         }
     }
 }

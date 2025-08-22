@@ -35,7 +35,7 @@ fun FinishedBetList(
 ) {
     RefreshableStatefulLazyColumn(
         modifier = modifier,
-        lazyItems = lazyPoolGamblerBets,
+        lazyPagingItems = lazyPoolGamblerBets,
         loadingContent = { finishedPoolGamblerBetFakeList(count = fakeItemCount) },
         loadingContentOnConcatenate = { finishedPoolGamblerBetPlaceholderItem() },
     ) {

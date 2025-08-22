@@ -35,7 +35,7 @@ fun PendingBetList(
 ) {
     RefreshableStatefulLazyColumn(
         modifier = modifier,
-        lazyItems = lazyPoolGamblerBets,
+        lazyPagingItems = lazyPoolGamblerBets,
         loadingContent = { pendingBetPlaceholderList(count = fakeItemCount) },
         loadingContentOnConcatenate = { pendingBetPlaceholderItem() },
     ) {

@@ -32,7 +32,7 @@ fun GamblerScoreList(
 ) {
     RefreshableStatefulLazyColumn(
         modifier = modifier,
-        lazyItems = lazyPoolGamblerScores,
+        lazyPagingItems = lazyPoolGamblerScores,
         loadingContent = { gamblerScorePlaceholderList(count = fakeItemCount) },
         loadingContentOnConcatenate = { gamblerScorePlaceholderItem() },
     ) {

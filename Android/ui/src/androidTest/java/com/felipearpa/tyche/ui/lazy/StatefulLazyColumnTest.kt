@@ -23,7 +23,7 @@ class StatefulLazyColumnTest {
             val lazyItems = givenALoadingItem()
 
             StatefulLazyColumn(
-                lazyItems = lazyItems,
+                lazyPagingItems = lazyItems,
                 loadingContent = { isLoadingContentExecuted = true }
             ) {}
         }
@@ -39,7 +39,7 @@ class StatefulLazyColumnTest {
             val lazyItems = givenAnAppendLoadingItem()
 
             StatefulLazyColumn(
-                lazyItems = lazyItems,
+                lazyPagingItems = lazyItems,
                 loadingContentOnConcatenate = { isLoadingContentOnConcatenateExecuted = true }
             ) {}
         }
@@ -55,7 +55,7 @@ class StatefulLazyColumnTest {
             val lazyItems = givenAnPrependLoadingItem()
 
             StatefulLazyColumn(
-                lazyItems = lazyItems,
+                lazyPagingItems = lazyItems,
                 loadingContentOnConcatenate = { isLoadingContentOnConcatenateExecuted = true }
             ) {}
         }
@@ -71,7 +71,7 @@ class StatefulLazyColumnTest {
             val lazyItems = givenAnErrorItem()
 
             StatefulLazyColumn(
-                lazyItems = lazyItems,
+                lazyPagingItems = lazyItems,
                 errorContent = { isErrorContentExecuted = true }
             ) {}
         }
@@ -87,7 +87,7 @@ class StatefulLazyColumnTest {
             val lazyItems = givenAnAppendErrorItem()
 
             StatefulLazyColumn(
-                lazyItems = lazyItems,
+                lazyPagingItems = lazyItems,
                 errorContentOnConcatenate = { isErrorContentOnConcatenateExecuted = true }
             ) {}
         }
@@ -103,7 +103,7 @@ class StatefulLazyColumnTest {
             val lazyItems = givenAPrependErrorPagingItem()
 
             StatefulLazyColumn(
-                lazyItems = lazyItems,
+                lazyPagingItems = lazyItems,
                 errorContentOnConcatenate = { isErrorContentOnConcatenateExecuted = true }
             ) {}
         }
@@ -119,7 +119,7 @@ class StatefulLazyColumnTest {
             val lazyItems = givenAnEmptyPagingItem()
 
             StatefulLazyColumn(
-                lazyItems = lazyItems,
+                lazyPagingItems = lazyItems,
                 emptyContent = { isEmptyContentExecuted = true }
             ) {}
         }
@@ -134,7 +134,7 @@ class StatefulLazyColumnTest {
         composeTestRule.setContent {
             val lazyItems = givenAFilledPagingItem()
 
-            StatefulLazyColumn(lazyItems = lazyItems) {
+            StatefulLazyColumn(lazyPagingItems = lazyItems) {
                 isItemContentExecuted = true
             }
         }

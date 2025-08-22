@@ -33,7 +33,7 @@ fun PoolFromLayoutCreatorList(
 ) {
     RefreshableStatefulLazyColumn(
         modifier = modifier,
-        lazyItems = poolLayouts,
+        lazyPagingItems = poolLayouts,
         state = lazyListState,
         loadingContent = { poolFromLayoutCreatorPlaceholderList(count = fakeItemCount) },
         loadingContentOnConcatenate = { poolFromLayoutCreatorPlaceholderItem() },

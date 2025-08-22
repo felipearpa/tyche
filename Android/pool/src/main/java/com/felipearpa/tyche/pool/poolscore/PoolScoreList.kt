@@ -36,6 +36,7 @@ import com.felipearpa.foundation.emptyString
 import com.felipearpa.tyche.pool.PoolGamblerScoreModel
 import com.felipearpa.tyche.pool.R
 import com.felipearpa.tyche.pool.poolGamblerScoreDummyModels
+import com.felipearpa.tyche.ui.exception.localizedOrDefault
 import com.felipearpa.tyche.ui.lazy.Failure
 import com.felipearpa.tyche.ui.lazy.RefreshableStatefulLazyColumn
 import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
@@ -53,12 +54,12 @@ fun PoolScoreList(
 ) {
     RefreshableStatefulLazyColumn(
         modifier = modifier,
-        lazyItems = lazyPoolGamblerScores,
+        lazyPagingItems = lazyPoolGamblerScores,
         state = lazyListState,
         loadingContent = { poolScorePlaceholderList(count = fakeItemCount) },
         loadingContentOnConcatenate = { poolScorePlaceholderItem() },
         emptyContent = { poolScoreEmptyList(onPoolCreate = onPoolCreate) },
-        errorContent = { poolScoreErrorList() },
+        errorContent = { exception -> poolScoreErrorList(exception) },
     ) {
         items(
             count = lazyPoolGamblerScores.itemCount,
@@ -134,7 +135,7 @@ private fun LazyListScope.poolScoreEmptyList(onPoolCreate: () -> Unit) {
     }
 }
 
-private fun LazyListScope.poolScoreErrorList() {
+private fun LazyListScope.poolScoreErrorList(exception: Throwable) {
     item {
         Box(
             contentAlignment = Alignment.Center,
@@ -142,7 +143,10 @@ private fun LazyListScope.poolScoreErrorList() {
                 .fillParentMaxSize()
                 .padding(all = LocalBoxSpacing.current.medium),
         ) {
-            Failure(modifier = Modifier.fillMaxWidth())
+            Failure(
+                localizedException = exception.localizedOrDefault(),
+                modifier = Modifier.fillMaxWidth(),
+            )
         }
     }
 }

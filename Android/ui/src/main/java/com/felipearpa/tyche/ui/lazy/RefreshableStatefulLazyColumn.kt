@@ -25,7 +25,7 @@ import androidx.paging.compose.LazyPagingItems
 @Composable
 fun <Value : Any> RefreshableStatefulLazyColumn(
     modifier: Modifier = Modifier,
-    lazyItems: LazyPagingItems<Value>,
+    lazyPagingItems: LazyPagingItems<Value>,
     state: LazyListState = rememberLazyListState(),
     contentPadding: PaddingValues = PaddingValues(0.dp),
     reverseLayout: Boolean = false,
@@ -35,14 +35,16 @@ fun <Value : Any> RefreshableStatefulLazyColumn(
     loadingContent: LazyListScope.() -> Unit = {},
     loadingContentOnConcatenate: LazyListScope.() -> Unit = {},
     errorContentOnConcatenate: LazyListScope.() -> Unit = {},
-    errorContent: LazyListScope.(Throwable) -> Unit = { statefulLazyColumnContentOnError() },
+    errorContent: LazyListScope.(Throwable) -> Unit = { exception ->
+        statefulLazyColumnContentOnError(exception)
+    },
     emptyContent: LazyListScope.() -> Unit = { statefulLazyColumnContentOnEmpty() },
     itemContent: LazyListScope.() -> Unit,
 ) {
     if (LocalInspectionMode.current) {
         RefreshableStatefulLazyColumnForPreview(
             modifier = modifier,
-            lazyItems = lazyItems,
+            lazyPagingItems = lazyPagingItems,
             state = state,
             contentPadding = contentPadding,
             reverseLayout = reverseLayout,
@@ -60,23 +62,23 @@ fun <Value : Any> RefreshableStatefulLazyColumn(
         var isRefreshing by remember { mutableStateOf(false) }
         var hasShownLoading by remember { mutableStateOf(false) }
 
-        val shouldLoadingContent = loadingVisibilityDecider.shouldShowLoader(lazyItems)
+        val shouldLoadingContent = loadingVisibilityDecider.shouldShowLoader(lazyPagingItems)
         val onRefresh: () -> Unit = {
-            lazyItems.refresh()
+            lazyPagingItems.refresh()
             if (shouldLoadingContent) {
                 isRefreshing = false
             }
         }
 
-        LaunchedEffect(lazyItems.loadState.refresh) {
-            if (lazyItems.loadState.refresh is LoadState.Loading) {
+        LaunchedEffect(lazyPagingItems.loadState.refresh) {
+            if (lazyPagingItems.loadState.refresh is LoadState.Loading) {
                 hasShownLoading = true
                 if (!shouldLoadingContent) {
                     isRefreshing = true
                 }
             }
 
-            if (hasShownLoading && (lazyItems.loadState.refresh is LoadState.NotLoading || lazyItems.loadState.refresh is LoadState.Error)) {
+            if (hasShownLoading && (lazyPagingItems.loadState.refresh is LoadState.NotLoading || lazyPagingItems.loadState.refresh is LoadState.Error)) {
                 hasShownLoading = false
                 if (!shouldLoadingContent) {
                     isRefreshing = false
@@ -92,7 +94,7 @@ fun <Value : Any> RefreshableStatefulLazyColumn(
         ) {
             StatefulLazyColumn(
                 modifier = Modifier.fillMaxSize(),
-                lazyItems = lazyItems,
+                lazyPagingItems = lazyPagingItems,
                 state = state,
                 contentPadding = contentPadding,
                 reverseLayout = reverseLayout,
@@ -112,7 +114,7 @@ fun <Value : Any> RefreshableStatefulLazyColumn(
 @Composable
 private fun <Value : Any> RefreshableStatefulLazyColumnForPreview(
     modifier: Modifier = Modifier,
-    lazyItems: LazyPagingItems<Value>,
+    lazyPagingItems: LazyPagingItems<Value>,
     state: LazyListState = rememberLazyListState(),
     contentPadding: PaddingValues = PaddingValues(0.dp),
     reverseLayout: Boolean = false,
@@ -122,13 +124,15 @@ private fun <Value : Any> RefreshableStatefulLazyColumnForPreview(
     loadingContent: LazyListScope.() -> Unit = {},
     loadingContentOnConcatenate: LazyListScope.() -> Unit = {},
     errorContentOnConcatenate: LazyListScope.() -> Unit = {},
-    errorContent: LazyListScope.(Throwable) -> Unit = { statefulLazyColumnContentOnError() },
+    errorContent: LazyListScope.(Throwable) -> Unit = { exception ->
+        statefulLazyColumnContentOnError(exception)
+    },
     emptyContent: LazyListScope.() -> Unit = { statefulLazyColumnContentOnEmpty() },
     itemContent: LazyListScope.() -> Unit,
 ) {
     StatefulLazyColumn(
         modifier = modifier,
-        lazyItems = lazyItems,
+        lazyPagingItems = lazyPagingItems,
         state = state,
         contentPadding = contentPadding,
         reverseLayout = reverseLayout,
