@@ -11,7 +11,7 @@ class FakeAppendLoadingLazyPager: LazyPagingItems<String, FakeItemPagingSource> 
         )
         loadState = CombinedLoadStates(
             refresh: LoadState.failure(TestError()),
-            append: CompleteLoadState
+            append: completeLoadState
         )
     }
 }

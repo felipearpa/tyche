@@ -3,8 +3,8 @@ import SwiftUI
 
 public class LazyPagingItems<Key, Item>: ObservableObject, @preconcurrency Sequence {
     @MainActor @Published public var loadState: CombinedLoadStates = CombinedLoadStates(
-        refresh: IncompleteLoadState,
-        append: IncompleteLoadState
+        refresh: incompleteLoadState,
+        append: incompleteLoadState
     )
     @MainActor private var items: [Item] = []
     private let pagingData: PagingData<Key, Item>
@@ -23,7 +23,7 @@ public class LazyPagingItems<Key, Item>: ObservableObject, @preconcurrency Seque
     private func fetch() {
         Task {
             await MainActor.run {
-                if loadState != RefreshLoading { loadState = RefreshLoading }
+                loadState.setIfDifferent(to: refreshLoadingCombinedLoadState)
             }
 
             let outcome = await pageFetcher.refresh()
@@ -33,15 +33,15 @@ public class LazyPagingItems<Key, Item>: ObservableObject, @preconcurrency Seque
                 await MainActor.run {
                     self.items = responsedItems
                     self.loadState = CombinedLoadStates(
-                        refresh: responsedNextKey == nil ? CompleteLoadState : IncompleteLoadState,
-                        append:  responsedNextKey == nil ? CompleteLoadState : IncompleteLoadState
+                        refresh: responsedNextKey == nil ? completeLoadState : incompleteLoadState,
+                        append:  responsedNextKey == nil ? completeLoadState : incompleteLoadState
                     )
                 }
             case .failure(let error):
                 await MainActor.run {
                     self.loadState = CombinedLoadStates(
                         refresh: LoadState.failure(error: error, endOfPaginationReached: false),
-                        append:  CompleteLoadState
+                        append:  completeLoadState
                     )
                 }
             }
@@ -79,7 +79,7 @@ public class LazyPagingItems<Key, Item>: ObservableObject, @preconcurrency Seque
         guard await !loadState.append.isLoading  else { return }
 
         await MainActor.run {
-            if loadState != AppendLoading { loadState = AppendLoading }
+            loadState.setIfDifferent(to: appendLoadingCombinedLoadState)
         }
 
         let outcome = await pageFetcher.append()
@@ -89,15 +89,15 @@ public class LazyPagingItems<Key, Item>: ObservableObject, @preconcurrency Seque
             await MainActor.run {
                 self.items.append(contentsOf: responsedItems)
                 self.loadState = CombinedLoadStates(
-                    refresh: responsedNextKey == nil ? CompleteLoadState : IncompleteLoadState,
-                    append:  responsedNextKey == nil ? CompleteLoadState : IncompleteLoadState
+                    refresh: responsedNextKey == nil ? completeLoadState : incompleteLoadState,
+                    append:  responsedNextKey == nil ? completeLoadState : incompleteLoadState
                 )
             }
         case .failure(let responsedError):
             await MainActor.run {
                 self.loadState = CombinedLoadStates(
                     refresh: LoadState.failure(error: responsedError, endOfPaginationReached: false),
-                    append:  IncompleteLoadState
+                    append:  incompleteLoadState
                 )
             }
         }
@@ -115,15 +115,15 @@ public class LazyPagingItems<Key, Item>: ObservableObject, @preconcurrency Seque
                         self.items.append(contentsOf: responsedItems)
                     }
                     self.loadState = CombinedLoadStates(
-                        refresh: responsedNextKey == nil ? CompleteLoadState : IncompleteLoadState,
-                        append:  responsedNextKey == nil ? CompleteLoadState : IncompleteLoadState
+                        refresh: responsedNextKey == nil ? completeLoadState : incompleteLoadState,
+                        append:  responsedNextKey == nil ? completeLoadState : incompleteLoadState
                     )
                 }
             case .failure(let error):
                 await MainActor.run {
                     self.loadState = CombinedLoadStates(
                         refresh: LoadState.failure(error: error, endOfPaginationReached: false),
-                        append:  IncompleteLoadState
+                        append:  incompleteLoadState
                     )
                 }
             }
@@ -144,17 +144,22 @@ public class LazyPagingItems<Key, Item>: ObservableObject, @preconcurrency Seque
     public var isNotEmpty: Bool {
         return !items.isEmpty
     }
+
+    @MainActor
+    public var itemCount: Int {
+        return items.count
+    }
 }
 
-let IncompleteLoadState = LoadState.notLoading(endOfPaginationReached: false)
-let CompleteLoadState = LoadState.notLoading(endOfPaginationReached: true)
+private let incompleteLoadState = LoadState.notLoading(endOfPaginationReached: false)
+private let completeLoadState = LoadState.notLoading(endOfPaginationReached: true)
 
-let RefreshLoading = CombinedLoadStates(
+private let refreshLoadingCombinedLoadState = CombinedLoadStates(
     refresh: LoadState.loading(endOfPaginationReached: false),
-    append: IncompleteLoadState
+    append: incompleteLoadState
 )
 
-let AppendLoading = CombinedLoadStates(
-    refresh: IncompleteLoadState,
+private let appendLoadingCombinedLoadState = CombinedLoadStates(
+    refresh: incompleteLoadState,
     append: LoadState.loading(endOfPaginationReached: false)
 )

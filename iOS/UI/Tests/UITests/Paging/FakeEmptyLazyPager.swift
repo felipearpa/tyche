@@ -10,8 +10,8 @@ class FakeEmptyLazyPager: LazyPagingItems<String, FakeItemPagingSource> {
             )
         )
         loadState = CombinedLoadStates(
-            refresh: CompleteLoadState,
-            append: CompleteLoadState
+            refresh: completeLoadState,
+            append: completeLoadState
         )
     }
 }

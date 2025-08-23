@@ -9,6 +9,6 @@ class FakeLoadingLazyPager: LazyPagingItems<String, FakeItemPagingSource> {
                 pagingSourceFactory: FakeFilledPagingSource()
             )
         )
-        loadState = RefreshLoading
+        loadState = refreshLoadingCombinedLoadState
     }
 }

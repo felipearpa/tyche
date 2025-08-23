@@ -35,9 +35,6 @@ public struct PoolScoreListView: View {
         .refreshable {
             viewModel.lazyPager.refresh()
         }
-        .onAppearOnce {
-            viewModel.lazyPager.refresh()
-        }
         .sheet(item: $poolUrl) { poolUrl in
             ShareSheet(activityItems: [URL(string: poolUrl.id)!])
         }

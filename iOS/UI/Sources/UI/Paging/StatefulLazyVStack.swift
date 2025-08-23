@@ -11,6 +11,8 @@ public struct StatefulLazyVStack
  ItemView: View>: View
 {
     @ObservedObject var lazyPagingItems: LazyPagingItems<Key, Item>
+    @State private var statefulState: StatefulLazyVStackState = .initial
+
     let loadingContent: () -> LoadingContent
     let emptyContent: () -> EmptyContent
     let errorContent: (Error) -> ErrorContent
@@ -18,8 +20,6 @@ public struct StatefulLazyVStack
     let errorContentOnConcatenate: (Error) -> ErrorContentOnConcatenate
     let itemContent: (Item) -> ItemView
     let spacing: CGFloat
-    let loadingVisibilityDecider: any LoadingVisibilityDecider<Key, Item>
-    @State private var statefulState: StatefulLazyColumnState = .content
 
     public init(
         lazyPagingItems: LazyPagingItems<Key, Item>,
@@ -29,7 +29,6 @@ public struct StatefulLazyVStack
         @ViewBuilder loadingContentOnConcatenate: @escaping () -> LoadingContentOnConcatenate,
         @ViewBuilder errorContentOnConcatenate: @escaping (Error) -> ErrorContentOnConcatenate,
         spacing: CGFloat = 0,
-        loadingVisibilityDecider: any LoadingVisibilityDecider<Key, Item> = FirstTimeLoadingVisibilityDecider(),
         @ViewBuilder itemContent: @escaping (Item) -> ItemView
     ) {
         self.lazyPagingItems = lazyPagingItems
@@ -40,30 +39,22 @@ public struct StatefulLazyVStack
         self.errorContentOnConcatenate = errorContentOnConcatenate
         self.itemContent = itemContent
         self.spacing = spacing
-        self.loadingVisibilityDecider = loadingVisibilityDecider
     }
 
     public var body: some View {
-        let shouldShowLoader = loadingVisibilityDecider.shouldShowLoader(lazyPagingItems: lazyPagingItems)
-        let nextState: StatefulLazyColumnState = {
-            if case .loading = lazyPagingItems.loadState.refresh, !shouldShowLoader {
-                return statefulState
-            } else {
-                return computeStatefulLazyVStackState(shouldShowLoader: shouldShowLoader)
-            }
-        }()
-
         GeometryReader { geometryProxy in
             ScrollView {
                 LazyVStack(spacing: spacing) {
-                    switch nextState {
+                    let _ = print("\(lazyPagingItems.loadState.refresh) \(statefulState)")
+
+                    switch statefulState {
                     case .loading:
                         LoadingContentWrapper(loadingContent: loadingContent)
                     case .empty:
                         EmptyContentWrapper(geometryProxy: geometryProxy) { emptyContent() }
                     case .error(let error):
                         ErrorContentWrapper(geometryProxy: geometryProxy, error: error) { error in errorContent(error) }
-                    case .content:
+                    case .content, .initial:
                         ContentWrapper(
                             lazyPager: lazyPagingItems,
                             loadingContentOnAppend: loadingContentOnConcatenate,
@@ -75,19 +66,35 @@ public struct StatefulLazyVStack
                 }
             }
             .onAppearOnce { lazyPagingItems.refresh() }
+            .task(id: lazyPagingItems.loadState.refresh) {
+                statefulState.setIfDifferent(to: nextState(pagingLazyItems: lazyPagingItems, previous: statefulState))
+            }
         }
     }
+}
 
-    private func computeStatefulLazyVStackState(shouldShowLoader: Bool) -> StatefulLazyColumnState {
-        switch lazyPagingItems.loadState.refresh {
-        case .failure(let error, _):
-            return .error(error)
-        case .notLoading:
-            return lazyPagingItems.isEmpty ? .empty : .content
-        case .loading:
-            if shouldShowLoader { return .loading }
-            return lazyPagingItems.isNotEmpty ? .content : .empty
+@MainActor
+private func nextState<Key, Item>(
+    pagingLazyItems: LazyPagingItems<Key, Item>,
+    previous: StatefulLazyVStackState
+) -> StatefulLazyVStackState where Item: Identifiable & Hashable {
+    let refresh = pagingLazyItems.loadState.refresh
+    let isEmpty = pagingLazyItems.itemCount == 0
+
+    print("nextState \(refresh) \(previous)")
+
+    switch refresh {
+    case .failure(let error, _):
+        return .error(error)
+    case .notLoading:
+        if previous.isInitial { return .loading }
+        else {
+            if isEmpty { return .empty }
+            else { return .content }
         }
+    case .loading:
+        if previous.isInitial { return .loading }
+        else { return previous }
     }
 }
 
@@ -163,13 +170,6 @@ private struct ErrorContentWrapper<ErrorContent: View>: View {
         errorContent(error)
             .frame(maxWidth: .infinity, minHeight: geometryProxy.size.height)
     }
-}
-
-enum StatefulLazyColumnState {
-    case loading
-    case empty
-    case error(Error)
-    case content
 }
 
 public extension StatefulLazyVStack

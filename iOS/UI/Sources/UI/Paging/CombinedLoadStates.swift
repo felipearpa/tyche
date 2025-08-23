@@ -6,3 +6,11 @@ public struct CombinedLoadStates: Equatable {
         return lhs.refresh == rhs.refresh && lhs.append == rhs.append
     }
 }
+
+extension CombinedLoadStates {
+    mutating func setIfDifferent(to newValue: CombinedLoadStates) {
+        if self != newValue {
+            self = newValue
+        }
+    }
+}

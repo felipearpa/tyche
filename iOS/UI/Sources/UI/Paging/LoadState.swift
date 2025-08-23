@@ -5,21 +5,21 @@ public enum LoadState: Equatable {
 
     var endOfPaginationReached: Bool {
         switch self {
-        case .notLoading(let end), .loading(let end), .failure(_, let end):
-            return end
+        case .notLoading(let endOfPaginationReached), .loading(let endOfPaginationReached), .failure(_, let endOfPaginationReached):
+            return endOfPaginationReached
         }
     }
 
     public static func ==(lhs: LoadState, rhs: LoadState) -> Bool {
         switch (lhs, rhs) {
-        case (.notLoading, .notLoading):
-            return true
+        case (.notLoading(let lhsEndOfPaginationReached), .notLoading(let rhsEndOfPaginationReached)):
+            return lhsEndOfPaginationReached == rhsEndOfPaginationReached
 
-        case (.loading, .loading):
-            return true
+        case (.loading(let lhsEndOfPaginationReached), .loading(let rhsEndOfPaginationReached)):
+            return lhsEndOfPaginationReached == rhsEndOfPaginationReached
 
-        case (.failure, .failure):
-            return true
+        case (.failure(_, let lhsEndOfPaginationReached), .failure(_, let rhsEndOfPaginationReached)):
+            return lhsEndOfPaginationReached == rhsEndOfPaginationReached
 
         default:
             return false
