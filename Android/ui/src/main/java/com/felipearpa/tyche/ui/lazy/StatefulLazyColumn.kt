@@ -1,14 +1,5 @@
 package com.felipearpa.tyche.ui.lazy
 
-import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.AnimatedContentTransitionScope
-import androidx.compose.animation.ContentTransform
-import androidx.compose.animation.SizeTransform
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.scaleIn
-import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -19,11 +10,6 @@ import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalInspectionMode
@@ -37,17 +23,19 @@ import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
 fun <Value : Any> StatefulLazyColumn(
     modifier: Modifier = Modifier,
     lazyPagingItems: LazyPagingItems<Value>,
-    state: LazyListState = rememberLazyListState(),
-    loadingVisibilityDecider: LoadingVisibilityDecider<Value> = AlwaysLoadingVisibilityDecider(),
+    lazyListState: LazyListState = rememberLazyListState(),
+    statefulLazyColumnState: StatefulLazyColumnState = rememberStatefulLazyColumnState(
+        lazyPagingItems,
+    ),
     loadingContent: LazyListScope.() -> Unit = {},
     itemContent: LazyListScope.() -> Unit,
 ) = StatefulLazyColumn(
     modifier = modifier,
     lazyPagingItems = lazyPagingItems,
-    state = state,
+    lazyListState = lazyListState,
+    statefulLazyColumnState = statefulLazyColumnState,
     contentPadding = PaddingValues(LocalBoxSpacing.current.medium),
     verticalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.medium),
-    loadingVisibilityDecider = loadingVisibilityDecider,
     loadingContent = loadingContent,
     loadingContentOnConcatenate = { statefulLazyColumnContentOnConcatenate() },
     errorContentOnConcatenate = { statefulLazyColumnContentOnConcatenateError(lazyPagingItems = lazyPagingItems) },
@@ -60,12 +48,14 @@ fun <Value : Any> StatefulLazyColumn(
 fun <Value : Any> StatefulLazyColumn(
     modifier: Modifier = Modifier,
     lazyPagingItems: LazyPagingItems<Value>,
-    state: LazyListState = rememberLazyListState(),
+    lazyListState: LazyListState = rememberLazyListState(),
+    statefulLazyColumnState: StatefulLazyColumnState = rememberStatefulLazyColumnState(
+        lazyPagingItems,
+    ),
     contentPadding: PaddingValues = PaddingValues(0.dp),
     reverseLayout: Boolean = false,
     verticalArrangement: Arrangement.Vertical =
         if (!reverseLayout) Arrangement.Top else Arrangement.Bottom,
-    loadingVisibilityDecider: LoadingVisibilityDecider<Value> = AlwaysLoadingVisibilityDecider(),
     loadingContent: LazyListScope.() -> Unit = {},
     loadingContentOnConcatenate: LazyListScope.() -> Unit = {},
     errorContentOnConcatenate: LazyListScope.() -> Unit = {},
@@ -75,7 +65,7 @@ fun <Value : Any> StatefulLazyColumn(
 ) {
     if (LocalInspectionMode.current) {
         StatefulLazyColumnForPreview(
-            state = state,
+            lazyListState = lazyListState,
             lazyPagingItems = lazyPagingItems,
             modifier = modifier,
             contentPadding = contentPadding,
@@ -84,121 +74,45 @@ fun <Value : Any> StatefulLazyColumn(
             itemContent = itemContent,
         )
     } else {
-        val shouldShowLoader =
-            loadingVisibilityDecider.shouldShowLoader(lazyPagingItems = lazyPagingItems)
-
-        fun computeStatefulLazyColumnState(): StatefulLazyColumnState =
-            when (val refreshLoadState = lazyPagingItems.loadState.refresh) {
-                is LoadState.Error -> StatefulLazyColumnState.Error(refreshLoadState.error)
-                is LoadState.NotLoading -> {
-                    if (lazyPagingItems.isEmpty) StatefulLazyColumnState.Empty
-                    else StatefulLazyColumnState.Content
-                }
-
-                is LoadState.Loading -> {
-                    if (shouldShowLoader) StatefulLazyColumnState.Loading
-                    else {
-                        if (lazyPagingItems.isEmpty) StatefulLazyColumnState.Empty else StatefulLazyColumnState.Content
-                    }
-                }
-            }
-
-        var statefulLazyColumnState by remember {
-            mutableStateOf<StatefulLazyColumnState>(StatefulLazyColumnState.Content)
-        }
-
-        LaunchedEffect(
-            shouldShowLoader,
-            lazyPagingItems.loadState.refresh,
-            lazyPagingItems.itemCount,
+        LazyColumn(
+            state = lazyListState,
+            modifier = modifier,
+            contentPadding = contentPadding,
+            verticalArrangement = verticalArrangement,
         ) {
-            val refresh = lazyPagingItems.loadState.refresh
-            statefulLazyColumnState = if (refresh is LoadState.Loading && !shouldShowLoader) {
-                statefulLazyColumnState
-            } else {
-                computeStatefulLazyColumnState()
-            }
-        }
-
-        AnimatedContent(
-            targetState = statefulLazyColumnState,
-            transitionSpec = skeletonToContentTransition(),
-            label = "SkeletonToContentFadeThrough",
-        ) { statefulLazyColumnState ->
-            LazyColumn(
-                state = state,
-                modifier = modifier,
-                contentPadding = contentPadding,
-                verticalArrangement = verticalArrangement,
-            ) {
-                when (statefulLazyColumnState) {
-                    StatefulLazyColumnState.Loading -> loadingContent()
-                    StatefulLazyColumnState.Empty -> emptyContent()
-                    is StatefulLazyColumnState.Error -> errorContent(statefulLazyColumnState.exception)
-                    StatefulLazyColumnState.Content -> {
-                        prependContent(
-                            lazyPagingItems = lazyPagingItems,
-                            loadingContentOnConcatenate = loadingContentOnConcatenate,
-                            errorContentOnConcatenate = errorContentOnConcatenate,
-                        )
-                        itemContent()
-                        appendContent(
-                            lazyPagingItems = lazyPagingItems,
-                            loadingContentOnConcatenate = loadingContentOnConcatenate,
-                            errorContentOnConcatenate = errorContentOnConcatenate,
-                        )
-                    }
-                }
+            when (statefulLazyColumnState) {
+                StatefulLazyColumnState.Loading -> loadingContent()
+                StatefulLazyColumnState.Empty -> emptyContent()
+                is StatefulLazyColumnState.Error -> errorContent(statefulLazyColumnState.exception)
+                StatefulLazyColumnState.Content, StatefulLazyColumnState.Initial ->
+                    statefulLazyColumnContent(
+                        lazyPagingItems = lazyPagingItems,
+                        loadingContentOnConcatenate = loadingContentOnConcatenate,
+                        errorContentOnConcatenate = errorContentOnConcatenate,
+                        itemContent = itemContent,
+                    )
             }
         }
     }
 }
 
-private sealed interface StatefulLazyColumnState {
-    data object Loading : StatefulLazyColumnState
-    data object Empty : StatefulLazyColumnState
-    data class Error(val exception: Throwable) : StatefulLazyColumnState
-    data object Content : StatefulLazyColumnState
-}
-
-private fun <Value> skeletonToContentTransition(): AnimatedContentTransitionScope<Value>.() -> ContentTransform {
-    return {
-        val out = fadeOut(animationSpec = tween(durationMillis = 90))
-        val `in` = fadeIn(animationSpec = tween(delayMillis = 90, durationMillis = 210)) +
-                scaleIn(
-                    initialScale = 0.92f,
-                    animationSpec = tween(delayMillis = 90, durationMillis = 210),
-                )
-
-        (`in`) togetherWith out using
-                SizeTransform(
-                    clip = false,
-                    sizeAnimationSpec = { _, _ -> tween(durationMillis = 210) },
-                )
-    }
-}
-
-@Composable
-private fun <Value : Any> StatefulLazyColumnForPreview(
-    state: LazyListState,
+private fun <Value : Any> LazyListScope.statefulLazyColumnContent(
     lazyPagingItems: LazyPagingItems<Value>,
-    modifier: Modifier,
-    contentPadding: PaddingValues,
-    verticalArrangement: Arrangement.Vertical,
-    emptyContent: LazyListScope.() -> Unit = {},
+    loadingContentOnConcatenate: LazyListScope.() -> Unit = {},
+    errorContentOnConcatenate: LazyListScope.() -> Unit = {},
     itemContent: LazyListScope.() -> Unit,
 ) {
-    LazyColumn(
-        state = state,
-        modifier = modifier,
-        contentPadding = contentPadding,
-        verticalArrangement = verticalArrangement,
-    ) {
-        if (lazyPagingItems.isEmpty)
-            itemContent()
-        else
-            emptyContent()
-    }
+    prependContent(
+        lazyPagingItems = lazyPagingItems,
+        loadingContentOnConcatenate = loadingContentOnConcatenate,
+        errorContentOnConcatenate = errorContentOnConcatenate,
+    )
+    itemContent()
+    appendContent(
+        lazyPagingItems = lazyPagingItems,
+        loadingContentOnConcatenate = loadingContentOnConcatenate,
+        errorContentOnConcatenate = errorContentOnConcatenate,
+    )
 }
 
 private fun <Value : Any> LazyListScope.prependContent(
@@ -267,5 +181,28 @@ fun LazyListScope.statefulLazyColumnContentOnEmpty() {
         ) {
             Empty(modifier = Modifier.fillMaxWidth())
         }
+    }
+}
+
+@Composable
+private fun <Value : Any> StatefulLazyColumnForPreview(
+    lazyListState: LazyListState,
+    lazyPagingItems: LazyPagingItems<Value>,
+    modifier: Modifier,
+    contentPadding: PaddingValues,
+    verticalArrangement: Arrangement.Vertical,
+    emptyContent: LazyListScope.() -> Unit = {},
+    itemContent: LazyListScope.() -> Unit,
+) {
+    LazyColumn(
+        state = lazyListState,
+        modifier = modifier,
+        contentPadding = contentPadding,
+        verticalArrangement = verticalArrangement,
+    ) {
+        if (lazyPagingItems.isEmpty)
+            itemContent()
+        else
+            emptyContent()
     }
 }

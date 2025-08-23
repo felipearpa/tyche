@@ -26,12 +26,14 @@ import androidx.paging.compose.LazyPagingItems
 fun <Value : Any> RefreshableStatefulLazyColumn(
     modifier: Modifier = Modifier,
     lazyPagingItems: LazyPagingItems<Value>,
-    state: LazyListState = rememberLazyListState(),
+    lazyListState: LazyListState = rememberLazyListState(),
+    statefulLazyColumnState: StatefulLazyColumnState = rememberStatefulLazyColumnState(
+        lazyPagingItems,
+    ),
     contentPadding: PaddingValues = PaddingValues(0.dp),
     reverseLayout: Boolean = false,
     verticalArrangement: Arrangement.Vertical =
         if (!reverseLayout) Arrangement.Top else Arrangement.Bottom,
-    loadingVisibilityDecider: LoadingVisibilityDecider<Value> = FirstTimeLoadingVisibilityDecider(),
     loadingContent: LazyListScope.() -> Unit = {},
     loadingContentOnConcatenate: LazyListScope.() -> Unit = {},
     errorContentOnConcatenate: LazyListScope.() -> Unit = {},
@@ -45,11 +47,11 @@ fun <Value : Any> RefreshableStatefulLazyColumn(
         RefreshableStatefulLazyColumnForPreview(
             modifier = modifier,
             lazyPagingItems = lazyPagingItems,
-            state = state,
+            lazyListState = lazyListState,
+            statefulLazyColumnState = statefulLazyColumnState,
             contentPadding = contentPadding,
             reverseLayout = reverseLayout,
             verticalArrangement = verticalArrangement,
-            loadingVisibilityDecider = loadingVisibilityDecider,
             loadingContent = loadingContent,
             loadingContentOnConcatenate = loadingContentOnConcatenate,
             errorContentOnConcatenate = errorContentOnConcatenate,
@@ -60,46 +62,26 @@ fun <Value : Any> RefreshableStatefulLazyColumn(
     } else {
         val pullToRefreshState = rememberPullToRefreshState()
         var isRefreshing by remember { mutableStateOf(false) }
-        var hasShownLoading by remember { mutableStateOf(false) }
+        val refreshLoadState = lazyPagingItems.loadState.refresh
 
-        val shouldLoadingContent = loadingVisibilityDecider.shouldShowLoader(lazyPagingItems)
-        val onRefresh: () -> Unit = {
-            lazyPagingItems.refresh()
-            if (shouldLoadingContent) {
-                isRefreshing = false
-            }
-        }
-
-        LaunchedEffect(lazyPagingItems.loadState.refresh) {
-            if (lazyPagingItems.loadState.refresh is LoadState.Loading) {
-                hasShownLoading = true
-                if (!shouldLoadingContent) {
-                    isRefreshing = true
-                }
-            }
-
-            if (hasShownLoading && (lazyPagingItems.loadState.refresh is LoadState.NotLoading || lazyPagingItems.loadState.refresh is LoadState.Error)) {
-                hasShownLoading = false
-                if (!shouldLoadingContent) {
-                    isRefreshing = false
-                }
-            }
+        LaunchedEffect(refreshLoadState, statefulLazyColumnState) {
+            isRefreshing =
+                refreshLoadState is LoadState.Loading && statefulLazyColumnState !is StatefulLazyColumnState.Loading
         }
 
         PullToRefreshBox(
             isRefreshing = isRefreshing,
             modifier = modifier,
             state = pullToRefreshState,
-            onRefresh = onRefresh,
+            onRefresh = { lazyPagingItems.refresh() },
         ) {
             StatefulLazyColumn(
                 modifier = Modifier.fillMaxSize(),
                 lazyPagingItems = lazyPagingItems,
-                state = state,
+                lazyListState = lazyListState,
                 contentPadding = contentPadding,
                 reverseLayout = reverseLayout,
                 verticalArrangement = verticalArrangement,
-                loadingVisibilityDecider = loadingVisibilityDecider,
                 loadingContent = loadingContent,
                 loadingContentOnConcatenate = loadingContentOnConcatenate,
                 errorContentOnConcatenate = errorContentOnConcatenate,
@@ -115,12 +97,14 @@ fun <Value : Any> RefreshableStatefulLazyColumn(
 private fun <Value : Any> RefreshableStatefulLazyColumnForPreview(
     modifier: Modifier = Modifier,
     lazyPagingItems: LazyPagingItems<Value>,
-    state: LazyListState = rememberLazyListState(),
+    lazyListState: LazyListState = rememberLazyListState(),
+    statefulLazyColumnState: StatefulLazyColumnState = rememberStatefulLazyColumnState(
+        lazyPagingItems,
+    ),
     contentPadding: PaddingValues = PaddingValues(0.dp),
     reverseLayout: Boolean = false,
     verticalArrangement: Arrangement.Vertical =
         if (!reverseLayout) Arrangement.Top else Arrangement.Bottom,
-    loadingVisibilityDecider: LoadingVisibilityDecider<Value> = FirstTimeLoadingVisibilityDecider(),
     loadingContent: LazyListScope.() -> Unit = {},
     loadingContentOnConcatenate: LazyListScope.() -> Unit = {},
     errorContentOnConcatenate: LazyListScope.() -> Unit = {},
@@ -133,11 +117,11 @@ private fun <Value : Any> RefreshableStatefulLazyColumnForPreview(
     StatefulLazyColumn(
         modifier = modifier,
         lazyPagingItems = lazyPagingItems,
-        state = state,
+        lazyListState = lazyListState,
+        statefulLazyColumnState = statefulLazyColumnState,
         contentPadding = contentPadding,
         reverseLayout = reverseLayout,
         verticalArrangement = verticalArrangement,
-        loadingVisibilityDecider = loadingVisibilityDecider,
         loadingContent = loadingContent,
         loadingContentOnConcatenate = loadingContentOnConcatenate,
         errorContentOnConcatenate = errorContentOnConcatenate,

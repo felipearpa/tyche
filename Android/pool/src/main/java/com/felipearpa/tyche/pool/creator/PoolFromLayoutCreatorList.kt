@@ -34,7 +34,7 @@ fun PoolFromLayoutCreatorList(
     RefreshableStatefulLazyColumn(
         modifier = modifier,
         lazyPagingItems = poolLayouts,
-        state = lazyListState,
+        lazyListState = lazyListState,
         loadingContent = { poolFromLayoutCreatorPlaceholderList(count = fakeItemCount) },
         loadingContentOnConcatenate = { poolFromLayoutCreatorPlaceholderItem() },
         verticalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.small),

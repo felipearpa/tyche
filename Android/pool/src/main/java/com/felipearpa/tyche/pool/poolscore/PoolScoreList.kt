@@ -55,7 +55,7 @@ fun PoolScoreList(
     RefreshableStatefulLazyColumn(
         modifier = modifier,
         lazyPagingItems = lazyPoolGamblerScores,
-        state = lazyListState,
+        lazyListState = lazyListState,
         loadingContent = { poolScorePlaceholderList(count = fakeItemCount) },
         loadingContentOnConcatenate = { poolScorePlaceholderItem() },
         emptyContent = { poolScoreEmptyList(onPoolCreate = onPoolCreate) },
