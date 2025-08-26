@@ -1,66 +1,68 @@
 import Foundation
 import SwiftUI
 
-public class LazyPagingItems<Key, Item>: ObservableObject, @preconcurrency Sequence {
-    @MainActor @Published public var loadState: CombinedLoadStates = CombinedLoadStates(
+public class LazyPagingItems<Key, Item: Identifiable & Hashable>: ObservableObject, Sequence {
+    @Published public var loadState: CombinedLoadStates = CombinedLoadStates(
         refresh: incompleteLoadState,
         append: incompleteLoadState
     )
-    @MainActor private var items: [Item] = []
+    private var items: [Item] = []
     private let pagingData: PagingData<Key, Item>
     private let pageFetcher: PageFetcher<Key, Item>
+    private var invalidateActionId: String?
+    private var retryAction: (() async -> Void)?
 
     public init(pagingData: PagingData<Key, Item>) {
         self.pagingData = pagingData
         self.pageFetcher = PageFetcher(pagingData: pagingData)
-        Task { [pageFetcher] in await pageFetcher.activate() }
+
+        Task { [pageFetcher] in
+            await pageFetcher.registerInvalidateAction { [weak self] in
+                guard let self else { return }
+                await self.refresh()
+            }
+        }
     }
 
     deinit {
-        Task { [pageFetcher] in await pageFetcher.deactivate() }
-    }
-
-    private func fetch() {
-        Task {
-            await MainActor.run {
-                loadState.setIfDifferent(to: refreshLoadingCombinedLoadState)
-            }
-
-            let outcome = await pageFetcher.refresh()
-
-            switch outcome {
-            case .page(let responsedItems, let responsedNextKey):
-                await MainActor.run {
-                    self.items = responsedItems
-                    self.loadState = CombinedLoadStates(
-                        refresh: responsedNextKey == nil ? completeLoadState : incompleteLoadState,
-                        append:  responsedNextKey == nil ? completeLoadState : incompleteLoadState
-                    )
-                }
-            case .failure(let error):
-                await MainActor.run {
-                    self.loadState = CombinedLoadStates(
-                        refresh: LoadState.failure(error: error, endOfPaginationReached: false),
-                        append:  completeLoadState
-                    )
-                }
+        Task { [pageFetcher, invalidateActionId] in
+            if let actionId = invalidateActionId {
+                await pageFetcher.unregisterInvalidateAction(actionId: actionId)
             }
         }
     }
 
-    public func refresh() {
-        fetch()
+    public func refresh() async {
+        retryAction = { [weak self] in
+            guard let self else { return }
+            return await self.refresh()
+        }
+
+        await MainActor.run { loadState = refreshLoadingCombinedLoadState }
+        let result = await pageFetcher.refresh()
+        await processResult(result)
     }
 
-    public func appendIfNeeded(currentIndex: Int) {
-        Task {
-            if await MainActor.run(body: { isAppendNeeded(currentIndex: currentIndex) }) {
-                await append()
+    public func refreshWithoutNotification() async {
+        retryAction = { [weak self] in
+            guard let self else { return }
+            return await self.refresh()
+        }
+
+        let _ = await pageFetcher.refresh()
+    }
+
+    public func appendIfNeeded(currentIndex: Int) async {
+        if isAppendNeeded(currentIndex: currentIndex) {
+            retryAction = { [weak self] in
+                guard let self else { return }
+                return await self.appendIfNeeded(currentIndex: currentIndex)
             }
+
+            await append()
         }
     }
 
-    @MainActor
     private func isAppendNeeded(currentIndex: Int) -> Bool {
         let itemsCount = items.count
         if pagingData.pagingConfig.prefetchDistance > itemsCount {
@@ -75,77 +77,56 @@ public class LazyPagingItems<Key, Item>: ObservableObject, @preconcurrency Seque
 
     private func append() async {
         guard await pageFetcher.canAppend() else { return }
-        guard await !loadState.refresh.isLoading else { return }
-        guard await !loadState.append.isLoading  else { return }
+        guard !loadState.refresh.isLoading else { return }
+        guard !loadState.append.isLoading  else { return }
 
-        await MainActor.run {
-            loadState.setIfDifferent(to: appendLoadingCombinedLoadState)
+        await MainActor.run { loadState = appendLoadingCombinedLoadState }
+        if let result = await pageFetcher.append() {
+            await processResult(result, shouldAppend: true)
         }
+    }
 
-        let outcome = await pageFetcher.append()
+    public func retry() async {
+        guard let retryAction else { return }
+        await retryAction()
+    }
 
-        switch outcome {
+    private func processResult(_ result: FetchResult<Key, Item>, shouldAppend: Bool = false) async {
+        switch result {
         case .page(let responsedItems, let responsedNextKey):
             await MainActor.run {
-                self.items.append(contentsOf: responsedItems)
-                self.loadState = CombinedLoadStates(
+                if self.items.isEmpty {
+                    self.items = responsedItems
+                } else {
+                    self.items.append(contentsOf: responsedItems)
+                }
+                loadState = CombinedLoadStates(
                     refresh: responsedNextKey == nil ? completeLoadState : incompleteLoadState,
                     append:  responsedNextKey == nil ? completeLoadState : incompleteLoadState
                 )
             }
-        case .failure(let responsedError):
+        case .failure(let error):
             await MainActor.run {
                 self.loadState = CombinedLoadStates(
-                    refresh: LoadState.failure(error: responsedError, endOfPaginationReached: false),
-                    append:  incompleteLoadState
+                    refresh: LoadState.failure(error: error, endOfPaginationReached: false),
+                    append:  completeLoadState
                 )
             }
         }
     }
 
-    public func retry() {
-        Task {
-            let outcome = await pageFetcher.retry()
-            switch outcome {
-            case .page(let responsedItems, let responsedNextKey):
-                await MainActor.run {
-                    if self.items.isEmpty {
-                        self.items = responsedItems
-                    } else {
-                        self.items.append(contentsOf: responsedItems)
-                    }
-                    self.loadState = CombinedLoadStates(
-                        refresh: responsedNextKey == nil ? completeLoadState : incompleteLoadState,
-                        append:  responsedNextKey == nil ? completeLoadState : incompleteLoadState
-                    )
-                }
-            case .failure(let error):
-                await MainActor.run {
-                    self.loadState = CombinedLoadStates(
-                        refresh: LoadState.failure(error: error, endOfPaginationReached: false),
-                        append:  incompleteLoadState
-                    )
-                }
-            }
-        }
-    }
-
-    @MainActor
     public func makeIterator() -> IndexingIterator<[Item]> {
         return items.makeIterator()
     }
 
-    @MainActor
     public var isEmpty: Bool {
         return items.isEmpty
     }
 
-    @MainActor
     public var isNotEmpty: Bool {
         return !items.isEmpty
     }
 
-    @MainActor
     public var itemCount: Int {
         return items.count
     }

@@ -53,7 +53,7 @@ public class PoolGamblerBetListViewModel: ObservableObject {
     }
     
     func refresh() {
-        lazyPager.refresh()
+//        lazyPager.refresh()
     }
 }
 

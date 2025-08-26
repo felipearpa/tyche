@@ -7,18 +7,26 @@ struct PoolScoreList: View {
     let onPoolOpen: (String) -> Void
     let onPoolJoin: (String) -> Void
     let onPoolCreate: () -> Void
-
+    
     var body: some View {
-        StatefulLazyVStack(
+        let _ = Self._printChangesIfDebug()
+        
+        RefreshableStatefulLazyVStack(
             lazyPagingItems: lazyPagingItems,
-            loadingContent: { PoolScorePlaceholderList() },
+            loadingContent: { _ in PoolScorePlaceholderList() },
             loadingContentOnConcatenate: {
                 PoolScoreItem(poolGamblerScore: poolGamblerScorePlaceholderModel(), onJoin: {})
                     .shimmer()
                 Divider()
             },
-            errorContent: { error in StatefulLazyVStackError(localizedError: error.localizedErrorOrDefault()) },
-            emptyContent: { PoolScoreEmptyList(onPoolCreate: onPoolCreate) },
+            errorContent: { error, geometryProxy in
+                StatefulLazyVStackError(localizedError: error.localizedErrorOrDefault())
+                    .frame(minHeight: geometryProxy.size.height)
+            },
+            emptyContent: { geometryProxy in
+                PoolScoreEmptyList(onPoolCreate: onPoolCreate)
+                    .frame(minHeight: geometryProxy.size.height)
+            },
         ) { poolGamblerScore in
             Group {
                 PoolScoreItem(poolGamblerScore: poolGamblerScore, onJoin: { onPoolJoin(poolGamblerScore.poolId) })
@@ -34,7 +42,7 @@ private struct PoolScorePlaceholderList : View {
     private let poolGamblerScores: [PoolGamblerScoreModel] = (1...50).lazy.map { _ in
         poolGamblerScorePlaceholderModel()
     }
-
+    
     var body: some View {
         ForEach(poolGamblerScores) { poolGamblerScore in
             PoolScoreItem(poolGamblerScore: poolGamblerScore, onJoin: {})
@@ -46,9 +54,9 @@ private struct PoolScorePlaceholderList : View {
 
 private struct PoolScoreEmptyList: View {
     let onPoolCreate: () -> Void
-
+    
     @Environment(\.boxSpacing) private var boxSpacing
-
+    
     var body: some View {
         VStack(spacing: boxSpacing.medium) {
             Image(.emojiPeople)
@@ -56,18 +64,18 @@ private struct PoolScoreEmptyList: View {
                 .scaledToFit()
                 .frame(width: iconSize, height: iconSize)
                 .foregroundColor(.primary)
-
+            
             Text(String(.poolScoreEmptyListTitle))
                 .font(.title3)
                 .multilineTextAlignment(.center)
-
+            
             Text(String(.poolScoreEmptyListSubtitle))
                 .font(.footnote)
                 .multilineTextAlignment(.center)
                 .foregroundColor(.secondary)
-
+            
             Spacer().frame(height: boxSpacing.medium)
-
+            
             Button(action: onPoolCreate) {
                 Text(String(.createPoolAction))
                     .frame(maxWidth: .infinity)

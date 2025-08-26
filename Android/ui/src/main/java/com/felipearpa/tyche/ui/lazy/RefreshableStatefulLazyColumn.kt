@@ -23,9 +23,9 @@ import androidx.paging.compose.LazyPagingItems
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun <Value : Any> RefreshableStatefulLazyColumn(
+fun <Item : Any> RefreshableStatefulLazyColumn(
     modifier: Modifier = Modifier,
-    lazyPagingItems: LazyPagingItems<Value>,
+    lazyPagingItems: LazyPagingItems<Item>,
     lazyListState: LazyListState = rememberLazyListState(),
     statefulLazyColumnState: StatefulLazyColumnState = rememberStatefulLazyColumnState(
         lazyPagingItems,
@@ -63,17 +63,22 @@ fun <Value : Any> RefreshableStatefulLazyColumn(
         val pullToRefreshState = rememberPullToRefreshState()
         var isRefreshing by remember { mutableStateOf(false) }
         val refreshLoadState = lazyPagingItems.loadState.refresh
+        val onRefresh = {
+            isRefreshing = true
+            lazyPagingItems.refresh()
+        }
 
         LaunchedEffect(refreshLoadState, statefulLazyColumnState) {
-            isRefreshing =
-                refreshLoadState is LoadState.Loading && statefulLazyColumnState !is StatefulLazyColumnState.Loading
+            if (isRefreshing && refreshLoadState is LoadState.NotLoading) {
+                isRefreshing = false
+            }
         }
 
         PullToRefreshBox(
             isRefreshing = isRefreshing,
             modifier = modifier,
             state = pullToRefreshState,
-            onRefresh = { lazyPagingItems.refresh() },
+            onRefresh = onRefresh,
         ) {
             StatefulLazyColumn(
                 modifier = Modifier.fillMaxSize(),
@@ -94,9 +99,9 @@ fun <Value : Any> RefreshableStatefulLazyColumn(
 }
 
 @Composable
-private fun <Value : Any> RefreshableStatefulLazyColumnForPreview(
+private fun <Item : Any> RefreshableStatefulLazyColumnForPreview(
     modifier: Modifier = Modifier,
-    lazyPagingItems: LazyPagingItems<Value>,
+    lazyPagingItems: LazyPagingItems<Item>,
     lazyListState: LazyListState = rememberLazyListState(),
     statefulLazyColumnState: StatefulLazyColumnState = rememberStatefulLazyColumnState(
         lazyPagingItems,

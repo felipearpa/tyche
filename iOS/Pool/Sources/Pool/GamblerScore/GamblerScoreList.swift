@@ -9,11 +9,11 @@ struct GamblerScoreList: View {
     @Environment(\.boxSpacing) private var boxSpacing
 
     var body: some View {
-        let _ = Self._printChanges()
+        let _ = Self._printChangesIfDebug()
 
         StatefulLazyVStack(
             lazyPagingItems: lazyPagingItems,
-            loadingContent: { GamblerScoreFakeList() },
+            loadingContent: { _ in GamblerScoreFakeList() },
             loadingContentOnConcatenate: {
                 PoolScoreItem(poolGamblerScore: poolGamblerScorePlaceholderModel(), onJoin: {})
                     .shimmer()

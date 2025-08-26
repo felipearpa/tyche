@@ -34,7 +34,7 @@ fun NavGraphBuilder.poolScoreListNavView(
         LaunchedEffect(poolCreatedFlag) {
             if (poolCreatedFlag) {
                 viewModel.refresh()
-                navBackStackEntry.savedStateHandle["pool_created"] = false
+                navBackStackEntry.savedStateHandle[POOL_CREATED_KEY] = false
             }
         }
 

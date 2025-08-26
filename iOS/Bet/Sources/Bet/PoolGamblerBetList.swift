@@ -10,11 +10,11 @@ struct PoolGamblerBetList: View {
     @Environment(\.diResolver) private var diResolver: DIResolver
 
     var body: some View {
-        let _ = Self._printChanges()
+        let _ = Self._printChangesIfDebug()
 
         StatefulLazyVStack(
             lazyPagingItems: lazyPagingItems,
-            loadingContent: { PoolGamblerBetFakeList() },
+            loadingContent: { _ in PoolGamblerBetFakeList() },
             loadingContentOnConcatenate: {
                 PoolGamblerBetFakeItem()
                 Divider()

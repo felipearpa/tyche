@@ -8,8 +8,6 @@ public struct PoolScoreListView: View {
     private let onPoolOpen: (PoolProfile) -> Void
     private let onPoolCreate: () -> Void
 
-    @State private var poolUrl: ShareablePoolUrl? = nil
-
     public init(
         viewModel: @autoclosure @escaping () -> PoolScoreListViewModel,
         onPoolOpen: @escaping (PoolProfile) -> Void,
@@ -21,8 +19,36 @@ public struct PoolScoreListView: View {
     }
 
     public var body: some View {
+        PoolScoreListObservedView(
+            viewModel: viewModel,
+            onPoolOpen: onPoolOpen,
+            onPoolCreate: onPoolCreate
+        )
+    }
+}
+
+public struct PoolScoreListObservedView: View {
+    @ObservedObject private var viewModel: PoolScoreListViewModel
+    private let onPoolOpen: (PoolProfile) -> Void
+    private let onPoolCreate: () -> Void
+
+    @State private var poolUrl: ShareablePoolUrl? = nil
+
+    public init(
+        viewModel: PoolScoreListViewModel,
+        onPoolOpen: @escaping (PoolProfile) -> Void,
+        onPoolCreate: @escaping () -> Void,
+    ) {
+        self._viewModel = .init(wrappedValue: viewModel)
+        self.onPoolOpen = onPoolOpen
+        self.onPoolCreate = onPoolCreate
+    }
+
+    public var body: some View {
+        let _ = Self._printChangesIfDebug()
+
         PoolScoreList(
-            lazyPagingItems: viewModel.lazyPager,
+            lazyPagingItems: viewModel.lazyPagingItems,
             onPoolOpen: { poolId in
                 onPoolOpen(PoolProfile(poolId: poolId))
             },
@@ -32,9 +58,6 @@ public struct PoolScoreListView: View {
             onPoolCreate: onPoolCreate
         )
         .navigationTitle(String(.gamblerPoolListTitle))
-        .refreshable {
-            viewModel.lazyPager.refresh()
-        }
         .sheet(item: $poolUrl) { poolUrl in
             ShareSheet(activityItems: [URL(string: poolUrl.id)!])
         }

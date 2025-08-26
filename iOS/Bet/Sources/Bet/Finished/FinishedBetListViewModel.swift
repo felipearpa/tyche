@@ -52,7 +52,7 @@ public class FinishedBetListViewModel: ObservableObject {
     }
     
     func refresh() {
-        lazyPager.refresh()
+//        lazyPager.refresh()
     }
 }
 

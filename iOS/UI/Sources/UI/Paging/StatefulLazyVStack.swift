@@ -8,14 +8,13 @@ public struct StatefulLazyVStack
  ErrorContent: View,
  LoadingContentOnConcatenate: View,
  ErrorContentOnConcatenate: View,
- ItemView: View>: View
-{
-    @ObservedObject var lazyPagingItems: LazyPagingItems<Key, Item>
-    @State private var statefulState: StatefulLazyVStackState = .initial
+ ItemView: View>: View {
+    let lazyPagingItems: LazyPagingItems<Key, Item>
+    @State private var statefulLazyVStackState: StatefulLazyVStackState = .content
 
-    let loadingContent: () -> LoadingContent
-    let emptyContent: () -> EmptyContent
-    let errorContent: (Error) -> ErrorContent
+    let loadingContent: (GeometryProxy) -> LoadingContent
+    let emptyContent: (GeometryProxy) -> EmptyContent
+    let errorContent: (Error, GeometryProxy) -> ErrorContent
     let loadingContentOnConcatenate: () -> LoadingContentOnConcatenate
     let errorContentOnConcatenate: (Error) -> ErrorContentOnConcatenate
     let itemContent: (Item) -> ItemView
@@ -23,9 +22,9 @@ public struct StatefulLazyVStack
 
     public init(
         lazyPagingItems: LazyPagingItems<Key, Item>,
-        @ViewBuilder loadingContent: @escaping () -> LoadingContent,
-        @ViewBuilder emptyContent: @escaping () -> EmptyContent,
-        @ViewBuilder errorContent: @escaping (Error) -> ErrorContent,
+        @ViewBuilder loadingContent: @escaping (GeometryProxy) -> LoadingContent,
+        @ViewBuilder emptyContent: @escaping (GeometryProxy) -> EmptyContent,
+        @ViewBuilder errorContent: @escaping (Error, GeometryProxy) -> ErrorContent,
         @ViewBuilder loadingContentOnConcatenate: @escaping () -> LoadingContentOnConcatenate,
         @ViewBuilder errorContentOnConcatenate: @escaping (Error) -> ErrorContentOnConcatenate,
         spacing: CGFloat = 0,
@@ -42,59 +41,91 @@ public struct StatefulLazyVStack
     }
 
     public var body: some View {
+        StatefulObservedLazyVStack(
+            lazyPagingItems: lazyPagingItems,
+            statefulLazyVStackState: $statefulLazyVStackState,
+            loadingContent: loadingContent,
+            emptyContent: emptyContent,
+            errorContent: errorContent,
+            loadingContentOnConcatenate: loadingContentOnConcatenate,
+            errorContentOnConcatenate: errorContentOnConcatenate,
+            spacing: spacing,
+            itemContent: itemContent
+        )
+    }
+}
+
+internal struct StatefulObservedLazyVStack
+<Key,
+ Item: Identifiable & Hashable,
+ LoadingContent: View,
+ EmptyContent: View,
+ ErrorContent: View,
+ LoadingContentOnConcatenate: View,
+ ErrorContentOnConcatenate: View,
+ ItemView: View>: View {
+    let lazyPagingItems: LazyPagingItems<Key, Item>
+    @Binding private var statefulVStackState: StatefulLazyVStackState
+
+    let loadingContent: (GeometryProxy) -> LoadingContent
+    let emptyContent: (GeometryProxy) -> EmptyContent
+    let errorContent: (Error, GeometryProxy) -> ErrorContent
+    let loadingContentOnConcatenate: () -> LoadingContentOnConcatenate
+    let errorContentOnConcatenate: (Error) -> ErrorContentOnConcatenate
+    let itemContent: (Item) -> ItemView
+    let spacing: CGFloat
+
+    public init(
+        lazyPagingItems: LazyPagingItems<Key, Item>,
+        statefulLazyVStackState: Binding<StatefulLazyVStackState>,
+        @ViewBuilder loadingContent: @escaping (GeometryProxy) -> LoadingContent,
+        @ViewBuilder emptyContent: @escaping (GeometryProxy) -> EmptyContent,
+        @ViewBuilder errorContent: @escaping (Error, GeometryProxy) -> ErrorContent,
+        @ViewBuilder loadingContentOnConcatenate: @escaping () -> LoadingContentOnConcatenate,
+        @ViewBuilder errorContentOnConcatenate: @escaping (Error) -> ErrorContentOnConcatenate,
+        spacing: CGFloat = 0,
+        @ViewBuilder itemContent: @escaping (Item) -> ItemView
+    ) {
+        self.lazyPagingItems = lazyPagingItems
+        self._statefulVStackState = .init(projectedValue: statefulLazyVStackState)
+        self.loadingContent = loadingContent
+        self.emptyContent = emptyContent
+        self.errorContent = errorContent
+        self.loadingContentOnConcatenate = loadingContentOnConcatenate
+        self.errorContentOnConcatenate = errorContentOnConcatenate
+        self.itemContent = itemContent
+        self.spacing = spacing
+    }
+
+    public var body: some View {
+        let _ = Self._printChangesIfDebug()
+
         GeometryReader { geometryProxy in
             ScrollView {
                 LazyVStack(spacing: spacing) {
-                    let _ = print("\(lazyPagingItems.loadState.refresh) \(statefulState)")
-
-                    switch statefulState {
+                    switch statefulVStackState {
                     case .loading:
-                        LoadingContentWrapper(loadingContent: loadingContent)
+                        loadingContent(geometryProxy)
                     case .empty:
-                        EmptyContentWrapper(geometryProxy: geometryProxy) { emptyContent() }
+                        emptyContent(geometryProxy)
                     case .error(let error):
-                        ErrorContentWrapper(geometryProxy: geometryProxy, error: error) { error in errorContent(error) }
-                    case .content, .initial:
+                        errorContent(error, geometryProxy)
+                    case .content:
                         ContentWrapper(
-                            lazyPager: lazyPagingItems,
+                            lazyPagingItems: lazyPagingItems,
                             loadingContentOnAppend: loadingContentOnConcatenate,
                             errorContentOnAppend: errorContentOnConcatenate,
-                            geometryProxy: geometryProxy,
                             itemContent: itemContent,
                         )
                     }
                 }
+                .nextStatefulLazyVStack(
+                    statefulLazyVStackState: $statefulVStackState,
+                    lazyPagingItems: lazyPagingItems,
+                )
             }
-            .onAppearOnce { lazyPagingItems.refresh() }
-            .task(id: lazyPagingItems.loadState.refresh) {
-                statefulState.setIfDifferent(to: nextState(pagingLazyItems: lazyPagingItems, previous: statefulState))
-            }
+            .task { await lazyPagingItems.refresh() }
         }
-    }
-}
-
-@MainActor
-private func nextState<Key, Item>(
-    pagingLazyItems: LazyPagingItems<Key, Item>,
-    previous: StatefulLazyVStackState
-) -> StatefulLazyVStackState where Item: Identifiable & Hashable {
-    let refresh = pagingLazyItems.loadState.refresh
-    let isEmpty = pagingLazyItems.itemCount == 0
-
-    print("nextState \(refresh) \(previous)")
-
-    switch refresh {
-    case .failure(let error, _):
-        return .error(error)
-    case .notLoading:
-        if previous.isInitial { return .loading }
-        else {
-            if isEmpty { return .empty }
-            else { return .content }
-        }
-    case .loading:
-        if previous.isInitial { return .loading }
-        else { return previous }
     }
 }
 
@@ -105,38 +136,33 @@ private struct ContentWrapper
  ErrorContentOnConcatenate: View,
  ItemView: View>: View
 {
-    @ObservedObject var lazyPager: LazyPagingItems<Key, Item>
+    let lazyPagingItems: LazyPagingItems<Key, Item>
     let loadingContentOnAppend: () -> LoadingContentOnConcatenate
     let errorContentOnAppend: (Error) -> ErrorContentOnConcatenate
     let itemContent: (Item) -> ItemView
-    let geometryProxy: GeometryProxy
 
     init(
-        lazyPager: LazyPagingItems<Key, Item>,
+        lazyPagingItems: LazyPagingItems<Key, Item>,
         loadingContentOnAppend: @escaping () -> LoadingContentOnConcatenate,
         errorContentOnAppend: @escaping (Error) -> ErrorContentOnConcatenate,
-        geometryProxy: GeometryProxy,
         itemContent: @escaping (Item) -> ItemView,
     ) {
-        self.lazyPager = lazyPager
+        self.lazyPagingItems = lazyPagingItems
         self.loadingContentOnAppend = loadingContentOnAppend
         self.errorContentOnAppend = errorContentOnAppend
-        self.geometryProxy = geometryProxy
         self.itemContent = itemContent
     }
 
     var body: some View {
-        ForEach(Array(lazyPager.enumerated()), id: \.element) { index, item in
+        ForEach(Array(lazyPagingItems.enumerated()), id: \.element) { index, item in
             itemContent(item)
-                .onAppearOnce {
-                    lazyPager.appendIfNeeded(currentIndex: index)
-                }
+                .task { await lazyPagingItems.appendIfNeeded(currentIndex: index) }
         }
 
-        if case .loading = lazyPager.loadState.append {
+        if case .loading = lazyPagingItems.loadState.append {
             loadingContentOnAppend()
                 .withDisableGestures()
-        } else if case .failure(let error, _) = lazyPager.loadState.append {
+        } else if case .failure(let error, _) = lazyPagingItems.loadState.append {
             errorContentOnAppend(error)
         }
     }
@@ -157,18 +183,6 @@ private struct EmptyContentWrapper<EmptyContent: View>: View {
 
     var body: some View {
         emptyContent()
-            .frame(maxWidth: .infinity, minHeight: geometryProxy.size.height)
-    }
-}
-
-private struct ErrorContentWrapper<ErrorContent: View>: View {
-    let geometryProxy: GeometryProxy
-    let error: Error
-    let errorContent: (Error) -> ErrorContent
-
-    var body: some View {
-        errorContent(error)
-            .frame(maxWidth: .infinity, minHeight: geometryProxy.size.height)
     }
 }
 
@@ -176,12 +190,16 @@ public extension StatefulLazyVStack
 where ErrorContentOnConcatenate == StatefulLazyVStackError {
     init(
         lazyPagingItems: LazyPagingItems<Key, Item>,
-        @ViewBuilder loadingContent: @escaping () -> LoadingContent,
+        @ViewBuilder loadingContent: @escaping (GeometryProxy) -> LoadingContent,
         @ViewBuilder loadingContentOnConcatenate: @escaping () -> LoadingContentOnConcatenate,
-        @ViewBuilder errorContent: @escaping (Error) -> ErrorContent = { error in
+        @ViewBuilder errorContent: @escaping (Error, GeometryProxy) -> ErrorContent = { error, geometryProxy in
             StatefulLazyVStackError(localizedError: error.localizedErrorOrDefault())
+                .frame(minWidth: geometryProxy.size.height)
         },
-        @ViewBuilder emptyContent: @escaping () -> EmptyContent = { StatefulLazyVStackEmpty() },
+        @ViewBuilder emptyContent: @escaping (GeometryProxy) -> EmptyContent = { geometryProxy in
+            StatefulLazyVStackEmpty()
+                .frame(minWidth: geometryProxy.size.height)
+        },
         spacing: CGFloat = 0,
         @ViewBuilder itemContent: @escaping (Item) -> ItemView,
     ) {
@@ -214,9 +232,9 @@ private extension View {
                 pagingSourceFactory: { FakeFilledPagingSource() },
             )
         ),
-        loadingContent: { EmptyView() },
-        emptyContent: { EmptyView() },
-        errorContent: { _ in EmptyView() },
+        loadingContent: { _ in EmptyView() },
+        emptyContent: { _ in EmptyView() },
+        errorContent: { _, _ in EmptyView() },
         loadingContentOnConcatenate: { EmptyView() },
         errorContentOnConcatenate: { _ in EmptyView() }
     ) { item in

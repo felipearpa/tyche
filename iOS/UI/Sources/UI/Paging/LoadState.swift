@@ -1,4 +1,4 @@
-public enum LoadState: Equatable {
+public enum LoadState {
     case notLoading(endOfPaginationReached: Bool)
     case loading(endOfPaginationReached: Bool)
     case failure(error: Error, endOfPaginationReached: Bool)
@@ -9,17 +9,19 @@ public enum LoadState: Equatable {
             return endOfPaginationReached
         }
     }
+}
 
+extension LoadState: Equatable {
     public static func ==(lhs: LoadState, rhs: LoadState) -> Bool {
         switch (lhs, rhs) {
-        case (.notLoading(let lhsEndOfPaginationReached), .notLoading(let rhsEndOfPaginationReached)):
-            return lhsEndOfPaginationReached == rhsEndOfPaginationReached
+        case (.notLoading(let lhEndOfPaginationReached), .notLoading(let rhEndOfPaginationReached)):
+            return lhEndOfPaginationReached == rhEndOfPaginationReached
 
-        case (.loading(let lhsEndOfPaginationReached), .loading(let rhsEndOfPaginationReached)):
-            return lhsEndOfPaginationReached == rhsEndOfPaginationReached
+        case (.loading(let lhEndOfPaginationReached), .loading(let rhEndOfPaginationReached)):
+            return lhEndOfPaginationReached == rhEndOfPaginationReached
 
-        case (.failure(_, let lhsEndOfPaginationReached), .failure(_, let rhsEndOfPaginationReached)):
-            return lhsEndOfPaginationReached == rhsEndOfPaginationReached
+        case (.failure(let lhError, let lhEndOfPaginationReached), .failure(let rhError, let rhEndOfPaginationReached)):
+            return type(of: lhError) == type(of: rhError) && lhEndOfPaginationReached == rhEndOfPaginationReached
 
         default:
             return false

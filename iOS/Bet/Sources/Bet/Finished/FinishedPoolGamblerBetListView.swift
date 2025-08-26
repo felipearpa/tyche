@@ -8,7 +8,7 @@ public struct FinishedPoolGamblerBetListView: View {
     }
     
     public var body: some View {
-        let _ = Self._printChanges()
+        let _ = Self._printChangesIfDebug()
         
         FinishedPoolGamblerBetList(lazyPagingItems: viewModel.lazyPager)
             .refreshable { viewModel.refresh() }

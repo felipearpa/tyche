@@ -20,9 +20,9 @@ import com.felipearpa.tyche.ui.exception.localizedOrDefault
 import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
 
 @Composable
-fun <Value : Any> StatefulLazyColumn(
+fun <Item : Any> StatefulLazyColumn(
     modifier: Modifier = Modifier,
-    lazyPagingItems: LazyPagingItems<Value>,
+    lazyPagingItems: LazyPagingItems<Item>,
     lazyListState: LazyListState = rememberLazyListState(),
     statefulLazyColumnState: StatefulLazyColumnState = rememberStatefulLazyColumnState(
         lazyPagingItems,
@@ -45,9 +45,9 @@ fun <Value : Any> StatefulLazyColumn(
 )
 
 @Composable
-fun <Value : Any> StatefulLazyColumn(
+fun <Item : Any> StatefulLazyColumn(
     modifier: Modifier = Modifier,
-    lazyPagingItems: LazyPagingItems<Value>,
+    lazyPagingItems: LazyPagingItems<Item>,
     lazyListState: LazyListState = rememberLazyListState(),
     statefulLazyColumnState: StatefulLazyColumnState = rememberStatefulLazyColumnState(
         lazyPagingItems,
@@ -84,7 +84,7 @@ fun <Value : Any> StatefulLazyColumn(
                 StatefulLazyColumnState.Loading -> loadingContent()
                 StatefulLazyColumnState.Empty -> emptyContent()
                 is StatefulLazyColumnState.Error -> errorContent(statefulLazyColumnState.exception)
-                StatefulLazyColumnState.Content, StatefulLazyColumnState.Initial ->
+                StatefulLazyColumnState.Content ->
                     statefulLazyColumnContent(
                         lazyPagingItems = lazyPagingItems,
                         loadingContentOnConcatenate = loadingContentOnConcatenate,
@@ -96,8 +96,8 @@ fun <Value : Any> StatefulLazyColumn(
     }
 }
 
-private fun <Value : Any> LazyListScope.statefulLazyColumnContent(
-    lazyPagingItems: LazyPagingItems<Value>,
+private fun <Item : Any> LazyListScope.statefulLazyColumnContent(
+    lazyPagingItems: LazyPagingItems<Item>,
     loadingContentOnConcatenate: LazyListScope.() -> Unit = {},
     errorContentOnConcatenate: LazyListScope.() -> Unit = {},
     itemContent: LazyListScope.() -> Unit,
@@ -115,8 +115,8 @@ private fun <Value : Any> LazyListScope.statefulLazyColumnContent(
     )
 }
 
-private fun <Value : Any> LazyListScope.prependContent(
-    lazyPagingItems: LazyPagingItems<Value>,
+private fun <Item : Any> LazyListScope.prependContent(
+    lazyPagingItems: LazyPagingItems<Item>,
     loadingContentOnConcatenate: (LazyListScope.() -> Unit) = {},
     errorContentOnConcatenate: (LazyListScope.() -> Unit) = {},
 ) {
@@ -127,8 +127,8 @@ private fun <Value : Any> LazyListScope.prependContent(
     }
 }
 
-private fun <Value : Any> LazyListScope.appendContent(
-    lazyPagingItems: LazyPagingItems<Value>,
+private fun <Item : Any> LazyListScope.appendContent(
+    lazyPagingItems: LazyPagingItems<Item>,
     loadingContentOnConcatenate: (LazyListScope.() -> Unit) = {},
     errorContentOnConcatenate: (LazyListScope.() -> Unit) = {},
 ) {
@@ -149,7 +149,7 @@ fun LazyListScope.statefulLazyColumnContentOnConcatenate() {
     }
 }
 
-fun <Value : Any> LazyListScope.statefulLazyColumnContentOnConcatenateError(lazyPagingItems: LazyPagingItems<Value>) {
+fun <Item : Any> LazyListScope.statefulLazyColumnContentOnConcatenateError(lazyPagingItems: LazyPagingItems<Item>) {
     item {
         Retry(
             modifier = Modifier
@@ -185,9 +185,9 @@ fun LazyListScope.statefulLazyColumnContentOnEmpty() {
 }
 
 @Composable
-private fun <Value : Any> StatefulLazyColumnForPreview(
+private fun <Item : Any> StatefulLazyColumnForPreview(
     lazyListState: LazyListState,
-    lazyPagingItems: LazyPagingItems<Value>,
+    lazyPagingItems: LazyPagingItems<Item>,
     modifier: Modifier,
     contentPadding: PaddingValues,
     verticalArrangement: Arrangement.Vertical,

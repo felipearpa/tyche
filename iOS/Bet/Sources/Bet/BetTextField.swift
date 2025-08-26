@@ -5,7 +5,7 @@ struct BetTextField: View {
     @Binding var value: String
     
     var body: some View {
-        let _ = Self._printChanges()
+        let _ = Self._printChangesIfDebug()
         
         TextField("", text: $value)
             .textFieldStyle(RoundedBorderTextFieldStyle())

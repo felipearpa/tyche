@@ -1,6 +1,16 @@
 package com.felipearpa.tyche.pool.creator
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.ContentTransform
+import androidx.compose.animation.SizeTransform
+import androidx.compose.animation.core.CubicBezierEasing
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -18,6 +28,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -161,27 +172,85 @@ private fun Stepper(
     onCreatePoolModelChange: (CreatePoolModel) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    AnimatedContent(targetState = step) { currentStep ->
-        when (currentStep) {
-            Step.One -> StepOneView(
-                viewModel = stepOneViewModel(),
-                createPoolModel = createPoolModel,
-                onNextClick = { newCreatePoolModel ->
-                    onCreatePoolModelChange(newCreatePoolModel)
-                    onStepChange(Step.Two)
-                },
-                modifier = modifier,
+    NavigationStep(currentScreen = step, modifier = modifier) {
+        AnimatedContent(
+            targetState = step,
+            transitionSpec = { transform() },
+        ) { currentStep ->
+            when (currentStep) {
+                Step.One -> StepOneView(
+                    viewModel = stepOneViewModel(),
+                    createPoolModel = createPoolModel,
+                    onNextClick = { newCreatePoolModel ->
+                        onCreatePoolModelChange(newCreatePoolModel)
+                        onStepChange(Step.Two)
+                    },
+                )
+
+                Step.Two -> StepTwoView(
+                    createPoolModel = createPoolModel,
+                    onSaveClick = { newCreatePoolModel ->
+                        onCreatePoolModelChange(newCreatePoolModel)
+                        onSaveClick()
+                    },
+                )
+            }
+        }
+    }
+}
+
+private fun <T> AnimatedContentTransitionScope<T>.transform(): ContentTransform {
+    val isForward = when {
+        initialState == Step.One && targetState == Step.Two -> true
+        initialState == Step.Two && targetState == Step.One -> false
+        else -> true
+    }
+    val duration = 280
+    val easing = CubicBezierEasing(0.4f, 0f, 0.2f, 1f)
+
+    val enter = slideInHorizontally(
+        animationSpec = tween(
+            durationMillis = duration,
+            easing = easing,
+        ),
+    ) { fullWidth -> if (isForward) +fullWidth else -fullWidth } +
+            fadeIn(
+                animationSpec = tween(
+                    durationMillis = duration,
+                    easing = easing,
+                ),
             )
 
-            Step.Two -> StepTwoView(
-                createPoolModel = createPoolModel,
-                onSaveClick = { newCreatePoolModel ->
-                    onCreatePoolModelChange(newCreatePoolModel)
-                    onSaveClick()
-                },
-                modifier = modifier,
+    val exit = slideOutHorizontally(
+        animationSpec = tween(
+            durationMillis = duration,
+            easing = easing,
+        ),
+    ) { fullWidth -> if (isForward) -fullWidth else +fullWidth } +
+            fadeOut(
+                animationSpec = tween(
+                    durationMillis = duration,
+                    easing = easing,
+                ),
             )
-        }
+
+    return ContentTransform(
+        targetContentEnter = enter,
+        initialContentExit = exit,
+        sizeTransform = SizeTransform(clip = false),
+        targetContentZIndex = 1f,
+    )
+}
+
+@Composable
+private fun <T : Any> NavigationStep(
+    currentScreen: T,
+    modifier: Modifier = Modifier,
+    content: @Composable (T) -> Unit,
+) {
+    val saveableStateHolder = rememberSaveableStateHolder()
+    Box(modifier = modifier) {
+        saveableStateHolder.SaveableStateProvider(currentScreen) { content(currentScreen) }
     }
 }
 
@@ -206,7 +275,7 @@ private fun TopBar(
     )
 }
 
-private sealed class Step {
-    object One : Step()
-    object Two : Step()
+private enum class Step {
+    One,
+    Two
 }

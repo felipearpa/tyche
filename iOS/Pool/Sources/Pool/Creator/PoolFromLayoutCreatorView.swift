@@ -35,10 +35,17 @@ private struct PoolFromLayoutCreatorStatefulView: View {
     let onPoolCreated: (String) -> Void
     let reset: () -> Void
 
+    @Environment(\.diResolver) private var diResolver: DIResolver
+    @State private var step: Step = .one
+
     var body: some View {
         switch state {
         case .initial:
             StepperView(
+                poolFromLayoutCreatorStepOneViewModel: PoolFromLayoutCreatorStepOneViewModel(
+                    getOpenPoolLayoutsUseCase: diResolver.resolve(GetOpenPoolLayoutsUseCase.self)!,
+                ),
+                step: $step,
                 onSaveClick: { createPoolModel in
                     onSaveClick(createPoolModel)
                 },
@@ -47,15 +54,21 @@ private struct PoolFromLayoutCreatorStatefulView: View {
         case .saving:
             LoadingContainerView {
                 StepperView(
-                    onSaveClick: { createPoolModel in
-                        onSaveClick(createPoolModel)
-                    },
+                    poolFromLayoutCreatorStepOneViewModel: PoolFromLayoutCreatorStepOneViewModel(
+                        getOpenPoolLayoutsUseCase: diResolver.resolve(GetOpenPoolLayoutsUseCase.self)!,
+                    ),
+                    step: $step,
+                    onSaveClick: { createPoolModel in },
                 )
             }
 
         case .success(_, let succededCreatePoolModel):
             LoadingContainerView {
                 StepperView(
+                    poolFromLayoutCreatorStepOneViewModel: PoolFromLayoutCreatorStepOneViewModel(
+                        getOpenPoolLayoutsUseCase: diResolver.resolve(GetOpenPoolLayoutsUseCase.self)!,
+                    ),
+                    step: $step,
                     onSaveClick: { createPoolModel in
                         onSaveClick(createPoolModel)
                     },
@@ -67,6 +80,10 @@ private struct PoolFromLayoutCreatorStatefulView: View {
 
         case .failure( _, _, let error):
             StepperView(
+                poolFromLayoutCreatorStepOneViewModel: PoolFromLayoutCreatorStepOneViewModel(
+                    getOpenPoolLayoutsUseCase: diResolver.resolve(GetOpenPoolLayoutsUseCase.self)!,
+                ),
+                step: $step,
                 onSaveClick: { createPoolModel in
                     onSaveClick(createPoolModel)
                 },
@@ -77,31 +94,26 @@ private struct PoolFromLayoutCreatorStatefulView: View {
 }
 
 private struct StepperView: View {
+    @StateObject var poolFromLayoutCreatorStepOneViewModel: PoolFromLayoutCreatorStepOneViewModel
+    @Binding var step: Step
     let onSaveClick: (CreatePoolModel) -> Void
 
-    @State private var step: Step = .one
-    @State private var isForward: Bool = true
     @State var createPoolModel: CreatePoolModel = emptyCreatePoolModel()
-    @Environment(\.diResolver) private var diResolver: DIResolver
+    @State var previousStep: Step? = nil
 
     var body: some View {
         VStack {
             switch step {
             case .one:
                 PoolFromLayoutCreatorStepOneView(
-                    viewModel: PoolFromLayoutCreatorStepOneViewModel(
-                        getOpenPoolLayoutsUseCase: diResolver.resolve(GetOpenPoolLayoutsUseCase.self)!,
-                    ),
+                    viewModel: poolFromLayoutCreatorStepOneViewModel,
                     createPoolModel: createPoolModel,
                     onNextClick: { newCreatePoolModel in
                         createPoolModel = newCreatePoolModel
-                        withAnimation {
-                            isForward = true
-                            step = .two
-                        }
+                        withAnimation { step = .two }
                     }
                 )
-                .transition(isForward ? .move(edge: .leading) : .move(edge: .trailing))
+                .transition(transition(for: .one))
             case .two:
                 PoolFromLayoutCreatorStepTwoView(
                     createPoolModel: createPoolModel,
@@ -110,10 +122,31 @@ private struct StepperView: View {
                         onSaveClick(newCreatePoolModel)
                     }
                 )
-                .transition(isForward ? .move(edge: .trailing) : .move(edge: .leading))
+                .transition(transition(for: .two))
             }
         }
-        .animation(.easeInOut, value: step)
+        .onAppear { previousStep = step }
+        .onChange(of: step) { new in previousStep = new }
+        .animation(.easeInOut(duration: 0.28), value: step)
+    }
+
+    private var forwardTransition: AnyTransition {
+        .asymmetric(
+            insertion: .push(from: .trailing).combined(with: .opacity),
+            removal:   .push(from: .leading).combined(with: .opacity)
+        )
+    }
+
+    private var backwardTransition: AnyTransition {
+        .asymmetric(
+            insertion: .push(from: .leading).combined(with: .opacity),
+            removal:   .push(from: .trailing).combined(with: .opacity)
+        )
+    }
+
+    private func transition(for new: Step) -> AnyTransition {
+        let isForward = (previousStep, new) == (.one, .two)
+        return isForward ? forwardTransition : backwardTransition
     }
 }
 

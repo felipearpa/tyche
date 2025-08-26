@@ -10,23 +10,38 @@ struct PoolScoreListRouter: View {
     let accountBundle: AccountBundle
     let onPoolSelect: (PoolProfile) -> Void
     let onSignOut: () -> Void
+    @StateObject var poolScoreViewModel: PoolScoreListViewModel
 
     @Environment(\.diResolver) private var diResolver: DIResolver
     @State private var path = NavigationPath()
     @State private var drawerVisible = false
+    @State private var wasPoolCreated: Bool = false
+
+    init(
+        accountBundle: AccountBundle,
+        onPoolSelect: @escaping (PoolProfile) -> Void,
+        onSignOut: @escaping () -> Void,
+        poolScoreViewModel: @escaping @autoclosure () -> PoolScoreListViewModel,
+    ) {
+        self.accountBundle = accountBundle
+        self.onPoolSelect = onPoolSelect
+        self.onSignOut = onSignOut
+        self._poolScoreViewModel = .init(wrappedValue: poolScoreViewModel())
+    }
 
     var body: some View {
         NavigationStack(path: $path) {
-            PoolScoreListView(
-                viewModel: PoolScoreListViewModel(
-                    getPoolGamblerScoresByGamblerUseCase: GetPoolGamblerScoresByGamblerUseCase(
-                        poolGamblerScoreRepository: diResolver.resolve(PoolGamblerScoreRepository.self)!
-                    ),
-                    gamblerId: accountBundle.accountId
-                ),
+            PoolScoreListObservedView(
+                viewModel: poolScoreViewModel,
                 onPoolOpen: { pool in onPoolSelect(pool) },
-                onPoolCreate: { path.append(PoolFromLayoutCreatorRoute()) },
+                onPoolCreate: { path.append(PoolFromLayoutCreatorRoute()) }
             )
+            .onAppear {
+                if wasPoolCreated {
+                    wasPoolCreated = false
+                    poolScoreViewModel.refresh()
+                }
+            }
             .navigationBarItems(leading: navigationBarLeading(), trailing: navigationBarTrailing())
             .navigationDestination(for: PoolFromLayoutCreatorRoute.self) { route in
                 PoolFromLayoutCreatorView(
@@ -34,7 +49,10 @@ struct PoolScoreListRouter: View {
                         gamblerId: accountBundle.accountId,
                         createPoolUseCase: diResolver.resolve(CreatePoolUseCase.self)!
                     ),
-                    onPoolCreated: { _ in path = NavigationPath() },
+                    onPoolCreated: { _ in
+                        wasPoolCreated = true
+                        path = NavigationPath()
+                    },
                 )
             }
         }

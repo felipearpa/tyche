@@ -16,10 +16,7 @@ public struct GamblerScoreListView: View {
             isCurrentUser: viewModel.gamblerId
         )
         .refreshable {
-            viewModel.lazyPager.refresh()
-        }
-        .onAppearOnce {
-            viewModel.lazyPager.refresh()
+            await viewModel.lazyPager.refresh()
         }
     }
 }

@@ -42,6 +42,12 @@ struct PoolContent: View {
                 accountBundle: accountBundle,
                 onPoolSelect: { newSelectedPool in selectedPool = newSelectedPool },
                 onSignOut: onSignOut,
+                poolScoreViewModel: PoolScoreListViewModel(
+                    getPoolGamblerScoresByGamblerUseCase: GetPoolGamblerScoresByGamblerUseCase(
+                        poolGamblerScoreRepository: diResolver.resolve(PoolGamblerScoreRepository.self)!
+                    ),
+                    gamblerId: accountBundle.accountId
+                )
             )
         } else {
             PoolHomeRouter(

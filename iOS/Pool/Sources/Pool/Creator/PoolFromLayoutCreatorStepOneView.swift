@@ -2,8 +2,34 @@ import SwiftUI
 import UI
 import Core
 
-struct PoolFromLayoutCreatorStepOneView : View {
+struct PoolFromLayoutCreatorStepOneView: View {
     @StateObject private var viewModel: PoolFromLayoutCreatorStepOneViewModel
+    let onNextClick: (CreatePoolModel) -> Void
+    let createPoolModel: CreatePoolModel
+
+    @Environment(\.boxSpacing) private var boxSpacing
+
+    init(
+        viewModel: @autoclosure @escaping () -> PoolFromLayoutCreatorStepOneViewModel,
+        createPoolModel: CreatePoolModel,
+        onNextClick: @escaping (CreatePoolModel) -> Void,
+    ) {
+        self._viewModel = .init(wrappedValue: viewModel())
+        self.createPoolModel = createPoolModel
+        self.onNextClick = onNextClick
+    }
+
+    var body: some View {
+        PoolFromLayoutCreatorStepOneObservedView(
+            viewModel: viewModel,
+            createPoolModel: createPoolModel,
+            onNextClick: onNextClick
+        )
+    }
+}
+
+struct PoolFromLayoutCreatorStepOneObservedView: View {
+    @ObservedObject private var viewModel: PoolFromLayoutCreatorStepOneViewModel
     let onNextClick: (CreatePoolModel) -> Void
     let createPoolModel: CreatePoolModel
 
@@ -22,17 +48,14 @@ struct PoolFromLayoutCreatorStepOneView : View {
     var body: some View {
         PoolFromLayoutCreatorStepOneStatefulView(
             lazyPagingItems: viewModel.lazyPager,
-            fakeItemCount: 5,
+            fakeItemCount: 3,
             createPoolModel: createPoolModel,
             onNextClick: onNextClick,
         )
-        .onAppearOnce {
-            viewModel.lazyPager.refresh()
-        }
     }
 }
 
-private struct PoolFromLayoutCreatorStepOneStatefulView : View {
+private struct PoolFromLayoutCreatorStepOneStatefulView: View {
     let lazyPagingItems: LazyPagingItems<String, PoolLayoutModel>
     let fakeItemCount: Int
     var createPoolModel: CreatePoolModel
@@ -57,8 +80,11 @@ private struct PoolFromLayoutCreatorStepOneStatefulView : View {
             )
         }
         .onChange(of: selectedPoolLayout) { newPoolLayout in
-            guard let nonNullNewPoolLayout = newPoolLayout else { return }
-            onNextClick(createPoolModel.copy { builder in builder.poolLayoutId = nonNullNewPoolLayout.id })
+            guard let newPoolLayout = newPoolLayout else { return }
+            onNextClick(createPoolModel.copy { builder in
+                builder.poolLayoutId = newPoolLayout.id
+                builder.poolName = newPoolLayout.name
+            })
         }
     }
 }
