@@ -22,14 +22,14 @@ public struct Email {
     
     public static func isValid(_ value: String) -> Bool {
         do {
-            try checkPattern(value: value)
+            try checkPattern(value)
             return true
         } catch {
             return false
         }
     }
     
-    private static func checkPattern(value: String) throws {
+    private static func checkPattern(_ value: String) throws {
         if !value.contains(pattern) {
             throw EmailError.invalidPattern
         }

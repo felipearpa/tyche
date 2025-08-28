@@ -1,5 +1,9 @@
 package com.felipearpa.tyche.ui.lazy
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -28,6 +32,7 @@ fun <Item : Any> StatefulLazyColumn(
         lazyPagingItems,
     ),
     loadingContent: LazyListScope.() -> Unit = {},
+    refreshLoadingContent: @Composable () -> Unit = {},
     itemContent: LazyListScope.() -> Unit,
 ) = StatefulLazyColumn(
     modifier = modifier,
@@ -37,6 +42,7 @@ fun <Item : Any> StatefulLazyColumn(
     contentPadding = PaddingValues(LocalBoxSpacing.current.medium),
     verticalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.medium),
     loadingContent = loadingContent,
+    refreshLoadingContent = refreshLoadingContent,
     loadingContentOnConcatenate = { statefulLazyColumnContentOnConcatenate() },
     errorContentOnConcatenate = { statefulLazyColumnContentOnConcatenateError(lazyPagingItems = lazyPagingItems) },
     errorContent = { exception -> statefulLazyColumnContentOnError(exception) },
@@ -57,6 +63,7 @@ fun <Item : Any> StatefulLazyColumn(
     verticalArrangement: Arrangement.Vertical =
         if (!reverseLayout) Arrangement.Top else Arrangement.Bottom,
     loadingContent: LazyListScope.() -> Unit = {},
+    refreshLoadingContent: @Composable () -> Unit = {},
     loadingContentOnConcatenate: LazyListScope.() -> Unit = {},
     errorContentOnConcatenate: LazyListScope.() -> Unit = {},
     errorContent: LazyListScope.(Throwable) -> Unit = {},
@@ -74,6 +81,27 @@ fun <Item : Any> StatefulLazyColumn(
             itemContent = itemContent,
         )
     } else {
+        val shouldShowRefreshIndicator =
+            lazyPagingItems.loadState.refresh is LoadState.Loading && statefulLazyColumnState !is StatefulLazyColumnState.Loading
+
+        Box(modifier = Modifier.fillMaxWidth()) {
+            AnimatedVisibility(
+                visible = shouldShowRefreshIndicator,
+                enter = fadeIn(),
+                exit = fadeOut(),
+            ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(LocalBoxSpacing.current.medium)
+                        .animateContentSize(),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    refreshLoadingContent()
+                }
+            }
+        }
+
         LazyColumn(
             state = lazyListState,
             modifier = modifier,

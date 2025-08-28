@@ -7,7 +7,7 @@
     <string name="choose_pool_layout_text">Elige una plantilla para crear tu polla</string>
     <string name="pool_name_label">Ingresa el nombre para la polla</string>
     <string name="fill_pool_fields_title">Completa los campos para crear tu polla</string>
-    <string name="pool_name_required_failure_text">El nombre de la polla es obligatorio</string>
+    <string name="pool_name_length_validation_error">El nombre de la polla debe tener entre 1 y 100 caracteres</string>
     <string name="ready_to_join_title">¿Listo para unirte a “%1$s”?</string>
     <string name="ready_to_join_subtitle">¡Te han invitado a la emocionante polla “%1$s”! ¿Quieres unirte y jugar con los demás?</string>
     <string name="join_pool_action">Unirte</string>

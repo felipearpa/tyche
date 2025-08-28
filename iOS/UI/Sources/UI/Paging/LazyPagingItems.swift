@@ -44,11 +44,6 @@ public class LazyPagingItems<Key, Item: Identifiable & Hashable>: ObservableObje
     }
 
     public func refreshWithoutNotification() async {
-        retryAction = { [weak self] in
-            guard let self else { return }
-            return await self.refresh()
-        }
-
         let _ = await pageFetcher.refresh()
     }
 

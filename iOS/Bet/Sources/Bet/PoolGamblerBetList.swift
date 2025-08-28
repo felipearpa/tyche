@@ -14,7 +14,7 @@ struct PoolGamblerBetList: View {
 
         StatefulLazyVStack(
             lazyPagingItems: lazyPagingItems,
-            loadingContent: { _ in PoolGamblerBetFakeList() },
+            loadingContent: { PoolGamblerBetFakeList() },
             loadingContentOnConcatenate: {
                 PoolGamblerBetFakeItem()
                 Divider()

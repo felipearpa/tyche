@@ -1,8 +1,11 @@
 package com.felipearpa.tyche.ui.lazy
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -15,11 +18,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
+import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -35,6 +40,11 @@ fun <Item : Any> RefreshableStatefulLazyColumn(
     verticalArrangement: Arrangement.Vertical =
         if (!reverseLayout) Arrangement.Top else Arrangement.Bottom,
     loadingContent: LazyListScope.() -> Unit = {},
+    refreshLoadingContent: @Composable () -> Unit = {
+        Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+            ProgressIndicator(modifier = Modifier.padding(all = LocalBoxSpacing.current.medium))
+        }
+    },
     loadingContentOnConcatenate: LazyListScope.() -> Unit = {},
     errorContentOnConcatenate: LazyListScope.() -> Unit = {},
     errorContent: LazyListScope.(Throwable) -> Unit = { exception ->
@@ -63,6 +73,7 @@ fun <Item : Any> RefreshableStatefulLazyColumn(
         val pullToRefreshState = rememberPullToRefreshState()
         var isRefreshing by remember { mutableStateOf(false) }
         val refreshLoadState = lazyPagingItems.loadState.refresh
+
         val onRefresh = {
             isRefreshing = true
             lazyPagingItems.refresh()
@@ -88,6 +99,14 @@ fun <Item : Any> RefreshableStatefulLazyColumn(
                 reverseLayout = reverseLayout,
                 verticalArrangement = verticalArrangement,
                 loadingContent = loadingContent,
+                refreshLoadingContent = {
+                    val shouldShowRefreshIndicator = !isRefreshing
+                            && refreshLoadState is LoadState.Loading
+                            && statefulLazyColumnState !is StatefulLazyColumnState.Loading
+                    if (shouldShowRefreshIndicator) {
+                        refreshLoadingContent()
+                    }
+                },
                 loadingContentOnConcatenate = loadingContentOnConcatenate,
                 errorContentOnConcatenate = errorContentOnConcatenate,
                 errorContent = errorContent,
@@ -111,6 +130,7 @@ private fun <Item : Any> RefreshableStatefulLazyColumnForPreview(
     verticalArrangement: Arrangement.Vertical =
         if (!reverseLayout) Arrangement.Top else Arrangement.Bottom,
     loadingContent: LazyListScope.() -> Unit = {},
+    refreshLoadingContent: @Composable () -> Unit = {},
     loadingContentOnConcatenate: LazyListScope.() -> Unit = {},
     errorContentOnConcatenate: LazyListScope.() -> Unit = {},
     errorContent: LazyListScope.(Throwable) -> Unit = { exception ->
@@ -128,6 +148,7 @@ private fun <Item : Any> RefreshableStatefulLazyColumnForPreview(
         reverseLayout = reverseLayout,
         verticalArrangement = verticalArrangement,
         loadingContent = loadingContent,
+        refreshLoadingContent = refreshLoadingContent,
         loadingContentOnConcatenate = loadingContentOnConcatenate,
         errorContentOnConcatenate = errorContentOnConcatenate,
         errorContent = errorContent,

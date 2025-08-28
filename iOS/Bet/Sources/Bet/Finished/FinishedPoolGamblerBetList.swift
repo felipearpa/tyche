@@ -10,9 +10,7 @@ struct FinishedPoolGamblerBetList: View {
     var body: some View {
         StatefulLazyVStack(
             lazyPagingItems: lazyPagingItems,
-            loadingContent: { _ in
-                FinishedPoolGamblerBetFakeList(count: 50)
-            },
+            loadingContent: { FinishedPoolGamblerBetFakeList(count: 50) },
             loadingContentOnConcatenate: {
                 FinishedPoolGamblerBetFakeItem()
                 Divider()

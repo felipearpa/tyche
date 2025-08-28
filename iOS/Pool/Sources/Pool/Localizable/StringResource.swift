@@ -18,7 +18,6 @@ extension StringResource {
     static let choosePoolLayoutText = StringResource(name: "choose_pool_layout_text", bundle: Bundle.module)
     static let fillPoolFieldsTitle = StringResource(name: "fill_pool_fields_title", bundle: Bundle.module)
     static let poolNameLabel = StringResource(name: "pool_name_label", bundle: Bundle.module)
-    static let poolNameRequiredFailureText = StringResource(name: "pool_name_required_failure_text", bundle: Bundle.module)
     static let poolFromLayoutCreatorTitle = StringResource(name: "pool_from_layout_creator_title", bundle: Bundle.module)
     static let inviteAction = StringResource(name: "invite_action", bundle: Bundle.module)
     static let readyToJoinTitle = StringResource(name: "ready_to_join_title", bundle: Bundle.module)
@@ -27,6 +26,7 @@ extension StringResource {
     static let poolScoreEmptyListTitle = StringResource(name: "pool_score_empty_list_title", bundle: Bundle.module)
     static let poolScoreEmptyListSubtitle = StringResource(name: "pool_score_empty_list_subtitle", bundle: Bundle.module)
     static let createPoolAction = StringResource(name: "create_pool_action", bundle: Bundle.module)
+    static let poolNameLengthValidationError = StringResource(name: "pool_name_length_validation_error", bundle: Bundle.module)
 }
 
 extension String {

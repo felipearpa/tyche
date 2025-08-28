@@ -25,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import com.felipearpa.tyche.data.pool.type.PoolName
 import com.felipearpa.tyche.pool.R
 import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
 import com.felipearpa.tyche.ui.R as SharedR
@@ -95,7 +96,7 @@ private fun PoolNameTextField(
     val interactionSource = remember { MutableInteractionSource() }
     val isTouched by interactionSource.collectIsFocusedAsState()
     val shouldShowError by remember(value, isTouched) {
-        derivedStateOf { isTouched && value.isBlank() }
+        derivedStateOf { isTouched && PoolName.isValid(value) }
     }
 
     Column(
@@ -115,7 +116,7 @@ private fun PoolNameTextField(
 
         AnimatedVisibility(visible = shouldShowError) {
             Text(
-                text = stringResource(id = R.string.pool_name_required_failure_text),
+                text = stringResource(id = R.string.pool_name_length_validation_error),
                 color = MaterialTheme.colorScheme.error,
                 style = MaterialTheme.typography.bodySmall,
             )

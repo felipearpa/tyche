@@ -13,9 +13,7 @@ struct PoolFromLayoutCreatorList: View {
     var body: some View {
         StatefulLazyVStack(
             lazyPagingItems: lazyPagingItems,
-            loadingContent: { _ in
-                PoolFromLayoutCreatorPlaceholderList(count: fakeItemCount)
-            },
+            loadingContent: { PoolFromLayoutCreatorPlaceholderList(count: fakeItemCount) },
             loadingContentOnConcatenate: {
                 PoolFromLayoutCreatorItem(
                     poolLayout: poolLayoutFakeModel(),

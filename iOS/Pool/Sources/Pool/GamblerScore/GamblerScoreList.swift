@@ -13,7 +13,7 @@ struct GamblerScoreList: View {
 
         StatefulLazyVStack(
             lazyPagingItems: lazyPagingItems,
-            loadingContent: { _ in GamblerScoreFakeList() },
+            loadingContent: { GamblerScoreFakeList() },
             loadingContentOnConcatenate: {
                 PoolScoreItem(poolGamblerScore: poolGamblerScorePlaceholderModel(), onJoin: {})
                     .shimmer()

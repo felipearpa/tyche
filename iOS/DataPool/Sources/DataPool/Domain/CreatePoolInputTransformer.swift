@@ -2,7 +2,7 @@ extension CreatePoolInput {
     func toCreatePoolRequest() -> CreatePoolRequest {
         CreatePoolRequest(
             poolLayoutId: poolLayoutId,
-            poolName: poolName,
+            poolName: poolName.value,
             ownerGamblerId: ownerGamblerId,
         )
     }

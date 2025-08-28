@@ -134,7 +134,25 @@
         }
       }
     },
+    "pool_name_length_validation_error" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The pool name must be between 1 and 100 characters"
+          }
+        },
+        "es-CO" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El nombre de la polla debe tener entre 1 y 100 caracteres"
+          }
+        }
+      }
+    },
     "pool_name_required_failure_text" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {

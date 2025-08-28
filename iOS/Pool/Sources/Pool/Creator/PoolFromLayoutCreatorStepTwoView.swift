@@ -1,6 +1,6 @@
 import SwiftUI
-
-import SwiftUI
+import UI
+import DataPool
 
 struct PoolFromLayoutCreatorStepTwoView: View {
     let createPoolModel: CreatePoolModel
@@ -8,6 +8,10 @@ struct PoolFromLayoutCreatorStepTwoView: View {
 
     @Environment(\.boxSpacing) private var boxSpacing
     @State private var poolName: String
+
+    var isValid: Bool {
+        PoolName.isValid(poolName)
+    }
 
     init(
         createPoolModel: CreatePoolModel,
@@ -18,10 +22,6 @@ struct PoolFromLayoutCreatorStepTwoView: View {
         self._poolName = State(initialValue: createPoolModel.poolName)
     }
 
-    var isValid: Bool {
-        !poolName.isEmpty
-    }
-
     var body: some View {
         VStack(spacing: boxSpacing.large) {
             HStack {
@@ -30,10 +30,7 @@ struct PoolFromLayoutCreatorStepTwoView: View {
                 Spacer()
             }
 
-            FormBody(
-                poolName: poolName,
-                onPoolNameChange: { poolName = $0 }
-            )
+            FormBody(poolName: $poolName, isValid: isValid)
 
             Button(action: {
                 onSaveClick(createPoolModel.copy { builder in builder.poolName = poolName })
@@ -53,47 +50,29 @@ struct PoolFromLayoutCreatorStepTwoView: View {
 }
 
 private struct FormBody: View {
-    let poolName: String
-    let onPoolNameChange: (String) -> Void
+    @Binding var poolName: String
+    let isValid: Bool
 
     var body: some View {
-        PoolNameTextField(
-            value: poolName,
-            onValueChange: onPoolNameChange
-        )
+        PoolNameTextField(value: $poolName, isValid: isValid)
     }
 }
 
 private struct PoolNameTextField: View {
-    let value: String
-    let onValueChange: (String) -> Void
+    @Binding var value: String
+    let isValid: Bool
 
     @Environment(\.boxSpacing) private var boxSpacing
     @FocusState private var isFocused: Bool
 
-    var shouldShowError: Bool {
-        isFocused && value.isEmpty
-    }
-
     var body: some View {
-        VStack(spacing: boxSpacing.small) {
-            TextField(
-                String(.poolNameLabel),
-                text: Binding(
-                    get: { value },
-                    set: { onValueChange($0) }
-                )
-            )
-            .textFieldStyle(.roundedBorder)
-            .focused($isFocused)
-            .submitLabel(.done)
-
-            if shouldShowError {
-                Text(String(.poolNameRequiredFailureText))
-                    .foregroundColor(.red)
-                    .font(.footnote)
-            }
-        }
+        ValidatableTextField(
+            label: String(.poolNameLabel),
+            value: $value,
+            isValid: isValid,
+            errorMessage: String(.poolNameLengthValidationError),
+        )
+        .textFieldStyle(.roundedBorder)
     }
 }
 
