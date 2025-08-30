@@ -82,6 +82,10 @@ private struct ShareSheet: UIViewControllerRepresentable {
     func updateUIViewController(_ uiViewController: UIActivityViewController, context: Context) {}
 }
 
+private struct JoinPoolUrlTemplateFakeProvider: JoinPoolUrlTemplateProvider {
+    func callAsFunction() -> String { "https://example.com/pools/{poolId}/join?gambler={gamblerId}" }
+}
+
 #Preview {
     NavigationStack {
         PoolScoreListView(
@@ -89,6 +93,7 @@ private struct ShareSheet: UIViewControllerRepresentable {
                 getPoolGamblerScoresByGamblerUseCase: GetPoolGamblerScoresByGamblerUseCase(
                     poolGamblerScoreRepository: PoolGamblerScoreFakeRepository()
                 ),
+                joinPoolUrlTemplate: JoinPoolUrlTemplateFakeProvider(),
                 gamblerId: "gambler-id"
             ),
             onPoolOpen: { _ in },

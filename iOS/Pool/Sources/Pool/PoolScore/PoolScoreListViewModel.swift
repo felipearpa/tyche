@@ -5,7 +5,9 @@ import DataPool
 
 public class PoolScoreListViewModel: ObservableObject {
     private let getPoolGamblerScoresByGamblerUseCase : GetPoolGamblerScoresByGamblerUseCase
-    
+
+    private let joinPoolUrlTemplate: JoinPoolUrlTemplateProvider
+
     private let gamblerId: String
     
     private var searchText: String? = nil
@@ -23,9 +25,11 @@ public class PoolScoreListViewModel: ObservableObject {
 
     public init(
         getPoolGamblerScoresByGamblerUseCase : GetPoolGamblerScoresByGamblerUseCase,
+        joinPoolUrlTemplate: JoinPoolUrlTemplateProvider,
         gamblerId: String
     ) {
         self.getPoolGamblerScoresByGamblerUseCase = getPoolGamblerScoresByGamblerUseCase
+        self.joinPoolUrlTemplate = joinPoolUrlTemplate
         self.gamblerId = gamblerId
         
         self.pagingSource = PoolGamblerScorePagingSource(
@@ -51,7 +55,7 @@ public class PoolScoreListViewModel: ObservableObject {
     }
 
     func createUrlForJoining(poolId: String) -> String {
-        "https://felipearpa.github.io/tyche/pools/\(poolId)/join"
+        String(format: joinPoolUrlTemplate(), poolId)
     }
 }
 

@@ -13,7 +13,7 @@ value class PoolName(val value: String) {
             return try {
                 check(value = value)
                 true
-            } catch (ignored: IllegalArgumentException) {
+            } catch (_: IllegalArgumentException) {
                 false
             }
         }
@@ -23,7 +23,7 @@ value class PoolName(val value: String) {
         }
 
         private fun checkLength(value: String) {
-            require(!(value.isNotEmpty() && value.length <= 100)) { "Length of pool name must be between 1 and 100" }
+            require(value.isNotEmpty() && value.length <= 100) { "Length of pool name must be between 1 and 100" }
         }
     }
 }

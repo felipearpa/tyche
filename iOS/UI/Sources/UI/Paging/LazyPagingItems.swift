@@ -90,10 +90,10 @@ public class LazyPagingItems<Key, Item: Identifiable & Hashable>: ObservableObje
         switch result {
         case .page(let responsedItems, let responsedNextKey):
             await MainActor.run {
-                if self.items.isEmpty {
-                    self.items = responsedItems
-                } else {
+                if shouldAppend {
                     self.items.append(contentsOf: responsedItems)
+                } else {
+                    self.items = responsedItems
                 }
                 loadState = CombinedLoadStates(
                     refresh: responsedNextKey == nil ? completeLoadState : incompleteLoadState,

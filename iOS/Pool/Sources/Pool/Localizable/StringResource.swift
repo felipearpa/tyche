@@ -27,6 +27,7 @@ extension StringResource {
     static let poolScoreEmptyListSubtitle = StringResource(name: "pool_score_empty_list_subtitle", bundle: Bundle.module)
     static let createPoolAction = StringResource(name: "create_pool_action", bundle: Bundle.module)
     static let poolNameLengthValidationError = StringResource(name: "pool_name_length_validation_error", bundle: Bundle.module)
+    static let goToMyPoolsAction = StringResource(name: "go_to_my_pools_action", bundle: Bundle.module)
 }
 
 extension String {

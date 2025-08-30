@@ -17,5 +17,9 @@ public class TycheAssembly : Assembly {
         container.register(AndroidPackageNameProvider.self) { _ in
             LocalAndroidPackageNameProvider()
         }
+
+        container.register(JoinPoolUrlTemplateProvider.self) { _ in
+            LocalJoinPoolUrlTemplateProvider()
+        }
     }
 }

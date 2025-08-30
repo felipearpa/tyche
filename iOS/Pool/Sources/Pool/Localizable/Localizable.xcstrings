@@ -67,6 +67,23 @@
         }
       }
     },
+    "go_to_my_pools_action" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Go to my pools"
+          }
+        },
+        "es-CO" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ir a mis pollas"
+          }
+        }
+      }
+    },
     "invite_action" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -147,23 +164,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "El nombre de la polla debe tener entre 1 y 100 caracteres"
-          }
-        }
-      }
-    },
-    "pool_name_required_failure_text" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "The pool's name is required"
-          }
-        },
-        "es-CO" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "El nombre de la polla es obligatorio"
           }
         }
       }

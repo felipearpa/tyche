@@ -1,8 +1,10 @@
 package com.felipearpa.tyche.config.di
 
 import com.felipearpa.tyche.config.LocalIosBundleIdProvider
+import com.felipearpa.tyche.config.LocalJoinPoolUrlTemplateProvider
 import com.felipearpa.tyche.config.LocalSignInLinkUrlTemplateProvider
 import com.felipearpa.tyche.core.IosBundleIdProvider
+import com.felipearpa.tyche.core.JoinPoolUrlTemplateProvider
 import com.felipearpa.tyche.session.SignInLinkUrlTemplateProvider
 import dagger.Module
 import dagger.Provides
@@ -15,6 +17,10 @@ object ConfigProvider {
     @Provides
     fun provideSignInLinkUrlTemplateProvider(): SignInLinkUrlTemplateProvider =
         LocalSignInLinkUrlTemplateProvider()
+
+    @Provides
+    fun provideJoinPoolUrlTemplateProvider(): JoinPoolUrlTemplateProvider =
+        LocalJoinPoolUrlTemplateProvider()
 
     @Provides
     fun provideIosBundleIdProvider(): IosBundleIdProvider =

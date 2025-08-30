@@ -21,7 +21,7 @@ struct TycheApp: App {
     
     var body: some Scene {
         WindowGroup {
-            RootRouterView()
+            SessionRouterView()
                 .environment(\.diResolver, diResolver)
         }
     }

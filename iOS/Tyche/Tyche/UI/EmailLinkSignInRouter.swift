@@ -3,14 +3,11 @@ import Session
 import Account
 
 struct EmailLinkSignInRouter: View {
-    var emailSignInURLProcessor: EmailSignInURLProcessor
+    let email: String
+    let emailLink: String
 
     @Environment(\.diResolver) private var diResolver;
     @State private var signedInAccountBundle: AccountBundle? = nil
-    
-    init(emailSignInURLProcessor: EmailSignInURLProcessor) {
-        self.emailSignInURLProcessor = emailSignInURLProcessor
-    }
     
     var body: some View {
         if signedInAccountBundle == nil {
@@ -19,8 +16,8 @@ struct EmailLinkSignInRouter: View {
                     viewModel: EmailLinkSignInViewModel(
                         signInWithEmailLinkUseCase: diResolver.resolve(SignInWithEmailLinkUseCase.self)!
                     ),
-                    email: emailSignInURLProcessor.email() ?? "",
-                    emailLink: emailSignInURLProcessor.emailLink(),
+                    email: email,
+                    emailLink: emailLink,
                     onStart: { accountBundle in
                         signedInAccountBundle = accountBundle
                     }

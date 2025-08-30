@@ -24,6 +24,7 @@ struct PoolScoreItem: View {
                 TrendIndicator(difference: difference)
             }
         }
+        .padding(boxSpacing.medium)
         .frame(minHeight: minHeight)
         .swipeActions(edge: .trailing) {
             Button(action: onJoin) {
@@ -33,7 +34,6 @@ struct PoolScoreItem: View {
             .foregroundStyle(Color(sharedResource: .onPrimaryContainter))
         }
         .enableViewSwipeActions()
-        .padding(boxSpacing.medium)
     }
 }
 

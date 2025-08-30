@@ -14,4 +14,5 @@
     <string name="pool_score_empty_list_title">Your pools are waiting</string>
     <string name="pool_score_empty_list_subtitle">Be the first to create one and invite others to join</string>
     <string name="create_pool_action">Create</string>
+    <string name="go_to_my_pools_action">Go to my pools</string>
 </resources>

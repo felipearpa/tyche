@@ -14,4 +14,5 @@
     <string name="pool_score_empty_list_title">Tus pollas te esperan</string>
     <string name="pool_score_empty_list_subtitle">Sé el primero en crear una e invita a otros a participar</string>
     <string name="create_pool_action">Crear</string>
+    <string name="go_to_my_pools_action">Ir a mis pollas</string>
 </resources>

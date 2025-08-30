@@ -9,5 +9,6 @@
 // https://developer.apple.com/documentation/xcode/adding-a-build-configuration-file-to-your-project
 
 SIGN_IN_URL_TEMPLATE = https:/$()/tyche-588ce.web.app/sign-in/%@
+JOIN_POOL_URL_TEMPLATE = https:/$()/tyche-588ce.web.app/pools/%@/join
 ANDROID_PACKAGE_NAME = com.felipearpa.tyche
 URL_BASE_PATH = https:/$()/wfykmbiop4.execute-api.us-east-2.amazonaws.com

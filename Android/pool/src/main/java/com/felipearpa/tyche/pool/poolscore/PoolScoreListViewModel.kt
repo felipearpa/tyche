@@ -7,13 +7,18 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.felipearpa.foundation.emptyString
+import com.felipearpa.tyche.core.JoinPoolUrlTemplateProvider
 import com.felipearpa.tyche.data.pool.application.GetPoolGamblerScoresByGamblerUseCase
 import com.felipearpa.tyche.pool.PoolGamblerScorePagingSource
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 
@@ -23,6 +28,7 @@ private const val PREFETCH_DISTANCE = 5
 class PoolScoreListViewModel @AssistedInject constructor(
     @Assisted val gamblerId: String,
     private val getPoolGamblerScoresByGamblerUseCase: GetPoolGamblerScoresByGamblerUseCase,
+    private val joinPoolUrlTemplate: JoinPoolUrlTemplateProvider,
 ) :
     ViewModel() {
 
@@ -38,7 +44,16 @@ class PoolScoreListViewModel @AssistedInject constructor(
         initialValue = PagingData.empty(),
     )
 
-    private var currentSource: PoolGamblerScorePagingSource? = null
+    private val _refreshEvent: MutableSharedFlow<Unit> =
+        MutableSharedFlow(
+            replay = 0,
+            extraBufferCapacity = 1,
+            onBufferOverflow = BufferOverflow.DROP_OLDEST,
+        )
+
+    val refreshEvents: SharedFlow<Unit> = _refreshEvent.asSharedFlow()
+
+    private var pagingSource: PoolGamblerScorePagingSource? = null
 
     private fun buildPager(searchText: String) =
         Pager(
@@ -57,12 +72,12 @@ class PoolScoreListViewModel @AssistedInject constructor(
                             getPoolGamblerScoresByGamblerUseCase = getPoolGamblerScoresByGamblerUseCase,
                         )
                     },
-                ).also { currentSource = it }
+                ).also { pagingSource = it }
             },
         )
 
     fun refresh() {
-        currentSource?.invalidate()
+        pagingSource?.invalidate()
     }
 
     fun search(searchText: String) {
@@ -70,6 +85,6 @@ class PoolScoreListViewModel @AssistedInject constructor(
     }
 
     fun createUrlForJoining(poolId: String): String {
-        return "https://felipearpa.github.io/tyche/pools/$poolId/join"
+        return String.format(joinPoolUrlTemplate(), poolId)
     }
 }

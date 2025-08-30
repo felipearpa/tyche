@@ -9,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import com.felipearpa.foundation.emptyString
+import com.felipearpa.tyche.core.JoinPoolUrlTemplateProvider
 import com.felipearpa.tyche.home.HomeRoute
 import com.felipearpa.tyche.home.homeNavView
 import com.felipearpa.tyche.pool.poolJoinerView
@@ -31,6 +32,9 @@ class MainActivity : ComponentActivity() {
     @Inject
     lateinit var accountStorage: AccountStorage
 
+    @Inject
+    lateinit var joinUrlTemplate: JoinPoolUrlTemplateProvider
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -42,7 +46,11 @@ class MainActivity : ComponentActivity() {
         setContent {
             TycheTheme {
                 Surface {
-                    Content(accountBundle = accountBundle, intentData = intentData)
+                    Content(
+                        accountBundle = accountBundle,
+                        intentData = intentData,
+                        joinPoolUrlTemplate = joinUrlTemplate,
+                    )
                 }
             }
         }
@@ -50,12 +58,24 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun Content(accountBundle: AccountBundle?, intentData: String?) {
-    Outlet(accountBundle = accountBundle, intentData = intentData)
+fun Content(
+    accountBundle: AccountBundle?,
+    intentData: String?,
+    joinPoolUrlTemplate: JoinPoolUrlTemplateProvider,
+) {
+    Outlet(
+        accountBundle = accountBundle,
+        intentData = intentData,
+        joinPoolUrlTemplate = joinPoolUrlTemplate,
+    )
 }
 
 @Composable
-fun Outlet(accountBundle: AccountBundle?, intentData: String?) {
+fun Outlet(
+    accountBundle: AccountBundle?,
+    intentData: String?,
+    joinPoolUrlTemplate: JoinPoolUrlTemplateProvider,
+) {
     val maybeGamblerId = accountBundle?.accountId
     val initialRoute: Any =
         if (maybeGamblerId == null) HomeRoute else PoolScoreListRoute(gamblerId = maybeGamblerId)
@@ -95,6 +115,7 @@ fun Outlet(accountBundle: AccountBundle?, intentData: String?) {
                 navController = navController,
                 gamblerId = gamblerId,
                 initialRoute = initialRoute,
+                joinPoolUrlTemplate = joinPoolUrlTemplate,
             )
         }
     }
