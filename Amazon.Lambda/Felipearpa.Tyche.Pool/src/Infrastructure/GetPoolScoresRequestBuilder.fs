@@ -18,7 +18,7 @@ module GetPoolScoresRequestBuilder =
 
         let attributeValues =
             dict
-                [ ":pk", AttributeValue($"{poolText}#{poolId.Value}")
+                [ ":pk", AttributeValue($"{poolText}#{poolId}")
                   ":status", AttributeValue("OPENED") ]
 
         let attributeNames = dict [ "#pk", "pk"; "#status", "status" ]
