@@ -13,6 +13,7 @@ public extension EnvironmentValues {
         get { self[ParentSizeKey.self] }
         set { self[ParentSizeKey.self] = newValue }
     }
+
     var parentSafeAreaInsets: EdgeInsets {
         get { self[ParentSafeAreaInsetsKey.self] }
         set { self[ParentSafeAreaInsetsKey.self] = newValue }
@@ -20,9 +21,11 @@ public extension EnvironmentValues {
 }
 
 public extension View {
-    func withParentGeometryProxy(_ geometryProxy: GeometryProxy) -> some View {
-        self
-            .environment(\.parentSize, geometryProxy.size)
-            .environment(\.parentSafeAreaInsets, geometryProxy.safeAreaInsets)
+    func withParentGeometryProxy() -> some View {
+        GeometryReader { geometryProxy in
+            self
+                .environment(\.parentSize, geometryProxy.size)
+                .environment(\.parentSafeAreaInsets, geometryProxy.safeAreaInsets)
+        }
     }
 }

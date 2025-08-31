@@ -11,7 +11,7 @@ import Session
 struct PoolHomeView: View {
     let gamblerId: String
     let poolId: String
-    
+
     @Environment(\.diResolver) var diResolver: DIResolver
     @State private var selectedTab = PoolHomeTab.gamblerScores
     @State private var drawerVisible = false
@@ -20,8 +20,10 @@ struct PoolHomeView: View {
         self.gamblerId = gamblerId
         self.poolId = poolId
     }
-    
+
     var body: some View {
+        let _ = Self._printChangesIfDebug()
+
         TabView(selection: $selectedTab) {
             GamblerScoreListView(
                 viewModel: GamblerScoreListViewModel(
@@ -39,7 +41,7 @@ struct PoolHomeView: View {
                     icon: { Image(.sportScore) }
                 )
             }
-            
+
             PoolGamblerBetListView(
                 viewModel: PoolGamblerBetListViewModel(
                     getPoolGamblerBetsUseCase: GetPendingPoolGamblerBetsUseCase(

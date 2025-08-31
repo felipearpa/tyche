@@ -30,41 +30,39 @@ struct PoolScoreListRouter: View {
     }
 
     var body: some View {
-        GeometryReader { geometryProxy in
-            NavigationStack(path: $path) {
-                PoolScoreListObservedView(
-                    viewModel: poolScoreViewModel,
-                    onPoolOpen: { pool in onPoolSelect(pool) },
-                    onPoolCreate: { path.append(PoolFromLayoutCreatorRoute()) }
-                )
-                .onAppear {
-                    if wasPoolCreated {
-                        wasPoolCreated = false
-                        poolScoreViewModel.refresh()
-                    }
-                }
-                .navigationBarItems(leading: navigationBarLeading(), trailing: navigationBarTrailing())
-                .navigationDestination(for: PoolFromLayoutCreatorRoute.self) { route in
-                    PoolFromLayoutCreatorView(
-                        viewModel: PoolFromLayoutCreatorViewModel(
-                            gamblerId: accountBundle.accountId,
-                            createPoolUseCase: diResolver.resolve(CreatePoolUseCase.self)!
-                        ),
-                        onPoolCreated: { _ in
-                            wasPoolCreated = true
-                            path = NavigationPath()
-                        },
-                    )
+        NavigationStack(path: $path) {
+            PoolScoreListObservedView(
+                viewModel: poolScoreViewModel,
+                onPoolOpen: { pool in onPoolSelect(pool) },
+                onPoolCreate: { path.append(PoolFromLayoutCreatorRoute()) }
+            )
+            .onAppear {
+                if wasPoolCreated {
+                    wasPoolCreated = false
+                    poolScoreViewModel.refresh()
                 }
             }
-            .withParentGeometryProxy(geometryProxy)
-            .drawer(isShowing: $drawerVisible) {
-                PoolScoreListDrawerView(
-                    viewModel: PoolScoreListDrawerViewModel(logOutUseCase: diResolver.resolve(LogOutUseCase.self)!),
-                    onSignOut: onSignOut,
+            .navigationBarItems(leading: navigationBarLeading(), trailing: navigationBarTrailing())
+            .navigationDestination(for: PoolFromLayoutCreatorRoute.self) { route in
+                PoolFromLayoutCreatorView(
+                    viewModel: PoolFromLayoutCreatorViewModel(
+                        gamblerId: accountBundle.accountId,
+                        createPoolUseCase: diResolver.resolve(CreatePoolUseCase.self)!
+                    ),
+                    onPoolCreated: { _ in
+                        wasPoolCreated = true
+                        path = NavigationPath()
+                    },
                 )
             }
         }
+        .drawer(isShowing: $drawerVisible) {
+            PoolScoreListDrawerView(
+                viewModel: PoolScoreListDrawerViewModel(logOutUseCase: diResolver.resolve(LogOutUseCase.self)!),
+                onSignOut: onSignOut,
+            )
+        }
+        .withParentGeometryProxy()
     }
 
     private func navigationBarLeading() -> some View {

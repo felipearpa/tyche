@@ -12,7 +12,7 @@ struct PoolScoreList: View {
 
     var body: some View {
         let _ = Self._printChangesIfDebug()
-        
+
         RefreshableStatefulLazyVStack(
             lazyPagingItems: lazyPagingItems,
             loadingContent: { PoolScorePlaceholderList() },
@@ -38,7 +38,7 @@ private struct PoolScorePlaceholderList : View {
     private let poolGamblerScores: [PoolGamblerScoreModel] = (1...50).lazy.map { _ in
         poolGamblerScorePlaceholderModel()
     }
-    
+
     var body: some View {
         ForEach(poolGamblerScores) { poolGamblerScore in
             PoolScoreItem(poolGamblerScore: poolGamblerScore, onJoin: {})
@@ -50,7 +50,7 @@ private struct PoolScorePlaceholderList : View {
 
 private struct PoolScoreEmptyList: View {
     let onPoolCreate: () -> Void
-    
+
     @Environment(\.boxSpacing) private var boxSpacing
     @Environment(\.parentSize) private var parentSize
     @Environment(\.parentSafeAreaInsets) private var parentSafeAreaInsets
@@ -62,18 +62,18 @@ private struct PoolScoreEmptyList: View {
                 .scaledToFit()
                 .frame(width: iconSize, height: iconSize)
                 .foregroundColor(.primary)
-            
+
             Text(String(.poolScoreEmptyListTitle))
                 .font(.title3)
                 .multilineTextAlignment(.center)
-            
+
             Text(String(.poolScoreEmptyListSubtitle))
                 .font(.footnote)
                 .multilineTextAlignment(.center)
                 .foregroundColor(.secondary)
-            
+
             Spacer().frame(height: boxSpacing.medium)
-            
+
             Button(action: onPoolCreate) {
                 Text(String(.createPoolAction))
                     .frame(maxWidth: .infinity)
@@ -117,25 +117,23 @@ private let iconSize: CGFloat = 64
 }
 
 #Preview("PoolScoreEmptyList") {
-    GeometryReader { geometryProxy in
-        NavigationStack {
-            PoolScoreList(
-                lazyPagingItems: LazyPagingItems(
-                    pagingData: PagingData(
-                        pagingConfig: PagingConfig(prefetchDistance: 5),
-                        pagingSourceFactory: {
-                            PoolGamblerScorePagingSource(
-                                pagingQuery: { _ in .success(CursorPage(items: [], next: nil)) }
-                            )
-                        }
-                    )
-                ),
-                onPoolOpen: { _ in },
-                onPoolJoin: { _ in },
-                onPoolCreate: {},
-            )
-        }
-        .withParentGeometryProxy(geometryProxy)
+    NavigationStack {
+        PoolScoreList(
+            lazyPagingItems: LazyPagingItems(
+                pagingData: PagingData(
+                    pagingConfig: PagingConfig(prefetchDistance: 5),
+                    pagingSourceFactory: {
+                        PoolGamblerScorePagingSource(
+                            pagingQuery: { _ in .success(CursorPage(items: [], next: nil)) }
+                        )
+                    }
+                )
+            ),
+            onPoolOpen: { _ in },
+            onPoolJoin: { _ in },
+            onPoolCreate: {},
+        )
+        .withParentGeometryProxy()
     }
 }
 

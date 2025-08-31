@@ -16,5 +16,6 @@ struct PoolHomeRouter: View {
                 poolId: pool.poolId
             )
         }
+        .withParentGeometryProxy()
     }
 }

@@ -11,14 +11,19 @@ struct GamblerScoreList: View {
     var body: some View {
         let _ = Self._printChangesIfDebug()
 
-        StatefulLazyVStack(
+        RefreshableStatefulLazyVStack(
             lazyPagingItems: lazyPagingItems,
             loadingContent: { GamblerScorePlaceholderList() },
             loadingContentOnConcatenate: {
                 PoolScoreItem(poolGamblerScore: poolGamblerScorePlaceholderModel(), onJoin: {})
                     .shimmer()
                 Divider()
-            }
+            },
+            errorContent: { error in
+                StatefulLazyVStackError(localizedError: error.localizedErrorOrDefault())
+                    .padding(boxSpacing.medium)
+            },
+            emptyContent: { StatefulLazyVStackEmpty().padding(boxSpacing.medium) },
         ) { poolGamblerScore in
             GamblerScoreItem(
                 poolGamblerScore: poolGamblerScore,
