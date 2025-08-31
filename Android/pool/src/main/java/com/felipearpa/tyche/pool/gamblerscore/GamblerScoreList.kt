@@ -1,5 +1,6 @@
 package com.felipearpa.tyche.pool.gamblerscore
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -8,6 +9,7 @@ import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewLightDark
@@ -18,6 +20,9 @@ import androidx.paging.compose.itemContentType
 import androidx.paging.compose.itemKey
 import com.felipearpa.tyche.pool.PoolGamblerScoreModel
 import com.felipearpa.tyche.pool.poolGamblerScoreDummyModels
+import com.felipearpa.tyche.ui.exception.localizedOrDefault
+import com.felipearpa.tyche.ui.lazy.Empty
+import com.felipearpa.tyche.ui.lazy.Failure
 import com.felipearpa.tyche.ui.lazy.RefreshableStatefulLazyColumn
 import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
 import com.felipearpa.tyche.ui.theme.TycheTheme
@@ -35,6 +40,33 @@ fun GamblerScoreList(
         lazyPagingItems = lazyPoolGamblerScores,
         loadingContent = { gamblerScorePlaceholderList(count = fakeItemCount) },
         loadingContentOnConcatenate = { gamblerScorePlaceholderItem() },
+        emptyContent = {
+            item {
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier
+                        .fillParentMaxSize()
+                        .padding(all = LocalBoxSpacing.current.medium),
+                ) {
+                    Empty(modifier = Modifier.fillMaxWidth())
+                }
+            }
+        },
+        errorContent = { exception ->
+            item {
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier
+                        .fillParentMaxSize()
+                        .padding(all = LocalBoxSpacing.current.medium),
+                ) {
+                    Failure(
+                        localizedException = exception.localizedOrDefault(),
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+                }
+            }
+        },
     ) {
         items(
             count = lazyPoolGamblerScores.itemCount,
