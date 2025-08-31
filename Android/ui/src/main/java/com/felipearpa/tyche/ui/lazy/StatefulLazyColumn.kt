@@ -39,8 +39,8 @@ fun <Item : Any> StatefulLazyColumn(
     lazyPagingItems = lazyPagingItems,
     lazyListState = lazyListState,
     statefulLazyColumnState = statefulLazyColumnState,
-    contentPadding = PaddingValues(LocalBoxSpacing.current.medium),
-    verticalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.medium),
+    contentPadding = PaddingValues(0.dp),
+    verticalArrangement = Arrangement.Top,
     loadingContent = loadingContent,
     refreshLoadingContent = refreshLoadingContent,
     loadingContentOnConcatenate = { statefulLazyColumnContentOnConcatenate() },
@@ -60,8 +60,7 @@ fun <Item : Any> StatefulLazyColumn(
     ),
     contentPadding: PaddingValues = PaddingValues(0.dp),
     reverseLayout: Boolean = false,
-    verticalArrangement: Arrangement.Vertical =
-        if (!reverseLayout) Arrangement.Top else Arrangement.Bottom,
+    verticalArrangement: Arrangement.Vertical = if (!reverseLayout) Arrangement.Top else Arrangement.Bottom,
     loadingContent: LazyListScope.() -> Unit = {},
     refreshLoadingContent: @Composable () -> Unit = {},
     loadingContentOnConcatenate: LazyListScope.() -> Unit = {},
@@ -73,11 +72,9 @@ fun <Item : Any> StatefulLazyColumn(
     if (LocalInspectionMode.current) {
         StatefulLazyColumnForPreview(
             lazyListState = lazyListState,
-            lazyPagingItems = lazyPagingItems,
             modifier = modifier,
             contentPadding = contentPadding,
             verticalArrangement = verticalArrangement,
-            emptyContent = emptyContent,
             itemContent = itemContent,
         )
     } else {
@@ -213,13 +210,11 @@ fun LazyListScope.statefulLazyColumnContentOnEmpty() {
 }
 
 @Composable
-private fun <Item : Any> StatefulLazyColumnForPreview(
+private fun StatefulLazyColumnForPreview(
     lazyListState: LazyListState,
-    lazyPagingItems: LazyPagingItems<Item>,
     modifier: Modifier,
     contentPadding: PaddingValues,
     verticalArrangement: Arrangement.Vertical,
-    emptyContent: LazyListScope.() -> Unit = {},
     itemContent: LazyListScope.() -> Unit,
 ) {
     LazyColumn(
@@ -228,9 +223,6 @@ private fun <Item : Any> StatefulLazyColumnForPreview(
         contentPadding = contentPadding,
         verticalArrangement = verticalArrangement,
     ) {
-        if (lazyPagingItems.isEmpty)
-            itemContent()
-        else
-            emptyContent()
+        itemContent()
     }
 }

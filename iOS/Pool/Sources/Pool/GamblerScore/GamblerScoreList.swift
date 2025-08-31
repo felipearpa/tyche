@@ -13,7 +13,7 @@ struct GamblerScoreList: View {
 
         StatefulLazyVStack(
             lazyPagingItems: lazyPagingItems,
-            loadingContent: { GamblerScoreFakeList() },
+            loadingContent: { GamblerScorePlaceholderList() },
             loadingContentOnConcatenate: {
                 PoolScoreItem(poolGamblerScore: poolGamblerScorePlaceholderModel(), onJoin: {})
                     .shimmer()
@@ -24,15 +24,14 @@ struct GamblerScoreList: View {
                 poolGamblerScore: poolGamblerScore,
                 isCurrentUser: isCurrentUser != nil ? isCurrentUser == poolGamblerScore.gamblerId : false
             )
-            .padding([.horizontal], boxSpacing.medium)
-            .padding([.vertical], boxSpacing.small)
+            .padding(boxSpacing.medium)
 
             Divider()
         }
     }
 }
 
-struct GamblerScoreFakeList : View {
+struct GamblerScorePlaceholderList: View {
     @Environment(\.boxSpacing) private var boxSpacing
 
     private let poolGamblerScores: [PoolGamblerScoreModel] = (1...50).lazy.map { _ in
@@ -46,13 +45,14 @@ struct GamblerScoreFakeList : View {
                 isCurrentUser: false
             )
             .shimmer()
+            .padding(boxSpacing.medium)
 
             Divider()
         }
     }
 }
 
-#Preview {
+#Preview("List") {
     let lazyPagingItems = LazyPagingItems(
         pagingData: PagingData(
             pagingConfig: PagingConfig(prefetchDistance: 5),
@@ -68,4 +68,12 @@ struct GamblerScoreFakeList : View {
         lazyPagingItems: lazyPagingItems,
         isCurrentUser: "signed-in-gambler-id"
     )
+}
+
+#Preview("Placeholder") {
+    ScrollView {
+        LazyVStack(spacing: 0) {
+            GamblerScorePlaceholderList()
+        }
+    }
 }

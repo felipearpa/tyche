@@ -15,6 +15,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
@@ -43,14 +44,23 @@ fun GamblerScoreItem(
             horizontalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.medium),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            poolGamblerScore.currentPosition?.let { nonNullCurrentPosition ->
+            if (poolGamblerScore.currentPosition != null) {
                 Position(
-                    position = nonNullCurrentPosition,
+                    position = poolGamblerScore.currentPosition,
                     isCurrentUser = isCurrentUser,
                     shimmerModifier = shimmerModifier,
                 )
+            } else {
+                Box(modifier = Modifier.size(scoreSize))
             }
-            Text(text = poolGamblerScore.gamblerUsername, modifier = shimmerModifier)
+
+            Text(
+                text = poolGamblerScore.gamblerUsername,
+                style = MaterialTheme.typography.bodyMedium.copy(
+                    fontWeight = if (isCurrentUser) FontWeight.Bold else FontWeight.Normal,
+                ),
+                modifier = shimmerModifier,
+            )
         }
 
         Row {

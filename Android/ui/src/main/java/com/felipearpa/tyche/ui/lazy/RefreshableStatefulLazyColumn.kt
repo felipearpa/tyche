@@ -37,8 +37,7 @@ fun <Item : Any> RefreshableStatefulLazyColumn(
     ),
     contentPadding: PaddingValues = PaddingValues(0.dp),
     reverseLayout: Boolean = false,
-    verticalArrangement: Arrangement.Vertical =
-        if (!reverseLayout) Arrangement.Top else Arrangement.Bottom,
+    verticalArrangement: Arrangement.Vertical = if (!reverseLayout) Arrangement.Top else Arrangement.Bottom,
     loadingContent: LazyListScope.() -> Unit = {},
     refreshLoadingContent: @Composable () -> Unit = {
         Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
@@ -127,8 +126,7 @@ private fun <Item : Any> RefreshableStatefulLazyColumnForPreview(
     ),
     contentPadding: PaddingValues = PaddingValues(0.dp),
     reverseLayout: Boolean = false,
-    verticalArrangement: Arrangement.Vertical =
-        if (!reverseLayout) Arrangement.Top else Arrangement.Bottom,
+    verticalArrangement: Arrangement.Vertical = if (!reverseLayout) Arrangement.Top else Arrangement.Bottom,
     loadingContent: LazyListScope.() -> Unit = {},
     refreshLoadingContent: @Composable () -> Unit = {},
     loadingContentOnConcatenate: LazyListScope.() -> Unit = {},

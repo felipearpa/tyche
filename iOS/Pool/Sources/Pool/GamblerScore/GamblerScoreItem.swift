@@ -18,17 +18,17 @@ struct GamblerScoreItem: View {
                 .foregroundColor(isCurrentUser ? Color(sharedResource: .onPrimaryContainter) : Color(sharedResource: .onSecondaryContainer))
                 .clipShape(Circle())
             } else {
-                Color.clear.frame(width: indicatorSize)
+                Color.clear.frame(width: indicatorSize, height: indicatorSize)
             }
-            
-            Text(poolGamblerScore.gamblerUsername)
-            
+
+            Text(poolGamblerScore.gamblerUsername).fontWeight(isCurrentUser ? .bold : .regular)
+
             Spacer()
-            
+
             if let score = poolGamblerScore.score {
                 Text(String(score))
             }
-            
+
             if let difference = poolGamblerScore.difference() {
                 TrendIndicator(difference: difference)
                     .frame(width: indicatorSize)
