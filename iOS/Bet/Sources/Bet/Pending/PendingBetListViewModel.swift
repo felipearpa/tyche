@@ -3,7 +3,7 @@ import Core
 import UI
 import DataBet
 
-public class PoolGamblerBetListViewModel: ObservableObject {
+public class PendingBetListViewModel: ObservableObject {
     private let getPoolGamblerBetsUseCase : GetPendingPoolGamblerBetsUseCase
     
     private let gamblerId: String
@@ -53,7 +53,7 @@ public class PoolGamblerBetListViewModel: ObservableObject {
     }
     
     func refresh() {
-//        lazyPager.refresh()
+        pagingSource.invalidate()
     }
 }
 

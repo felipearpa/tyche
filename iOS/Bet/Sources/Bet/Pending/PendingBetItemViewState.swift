@@ -1,4 +1,4 @@
-enum PoolGamblerBetItemViewState {
+enum PendingBetItemViewState {
     case visualization(_ value: PartialPoolGamblerBetModel)
     case edition(_ value: PartialPoolGamblerBetModel)
     
@@ -18,8 +18,8 @@ enum PoolGamblerBetItemViewState {
     }
 }
 
-extension PoolGamblerBetItemViewState {
-    func copy(value: PartialPoolGamblerBetModel) -> PoolGamblerBetItemViewState {
+extension PendingBetItemViewState {
+    func copy(value: PartialPoolGamblerBetModel) -> PendingBetItemViewState {
         switch self {
         case .visualization: .visualization(value)
         case .edition: .edition(value)
@@ -27,8 +27,8 @@ extension PoolGamblerBetItemViewState {
     }
 }
 
-extension PoolGamblerBetItemViewState {
-    static func emptyVisualization() -> PoolGamblerBetItemViewState {
+extension PendingBetItemViewState {
+    static func emptyVisualization() -> PendingBetItemViewState {
         .visualization(PartialPoolGamblerBetModel.empty())
     }
 }

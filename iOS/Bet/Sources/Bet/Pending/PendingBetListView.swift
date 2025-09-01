@@ -1,26 +1,24 @@
 import SwiftUI
 import DataBet
 
-public struct PoolGamblerBetListView: View {
-    @StateObject private var viewModel: PoolGamblerBetListViewModel
+public struct PendingBetListView: View {
+    @StateObject private var viewModel: PendingBetListViewModel
     
-    public init(viewModel: @autoclosure @escaping () -> PoolGamblerBetListViewModel) {
+    public init(viewModel: @autoclosure @escaping () -> PendingBetListViewModel) {
         self._viewModel = .init(wrappedValue: viewModel())
     }
     
     public var body: some View {
         let _ = Self._printChangesIfDebug()
         
-        PoolGamblerBetList(lazyPagingItems: viewModel.lazyPager)
-            .refreshable { viewModel.refresh() }
-            .onAppearOnce { viewModel.refresh() }
+        PendingBetList(lazyPagingItems: viewModel.lazyPager)
     }
 }
 
 #Preview {
     NavigationStack {
-        PoolGamblerBetListView(
-            viewModel: PoolGamblerBetListViewModel(
+        PendingBetListView(
+            viewModel: PendingBetListViewModel(
                 getPoolGamblerBetsUseCase: GetPendingPoolGamblerBetsUseCase(
                     poolGamblerBetRepository: PoolGamblerBetFakeRepository()
                 ),

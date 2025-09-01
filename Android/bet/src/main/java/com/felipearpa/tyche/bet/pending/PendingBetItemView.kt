@@ -371,14 +371,21 @@ private fun StateIndicator(
 private fun ContentIndicator(poolGamblerBet: PoolGamblerBetModel) {
     if (poolGamblerBet.isLocked) {
         Icon(
-            painter = painterResource(id = SharedR.drawable.pending),
+            painter = painterResource(id = SharedR.drawable.lock),
             contentDescription = emptyString(),
         )
     } else {
-        Icon(
-            painter = painterResource(id = SharedR.drawable.done),
-            contentDescription = emptyString(),
-        )
+        if (poolGamblerBet.betScore == null) {
+            Icon(
+                painter = painterResource(id = SharedR.drawable.pending),
+                contentDescription = emptyString(),
+            )
+        } else {
+            Icon(
+                painter = painterResource(id = SharedR.drawable.done),
+                contentDescription = emptyString(),
+            )
+        }
     }
 }
 

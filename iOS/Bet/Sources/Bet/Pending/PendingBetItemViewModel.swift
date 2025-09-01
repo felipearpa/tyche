@@ -3,7 +3,7 @@ import UI
 import Core
 import DataBet
 
-class PoolGamblerBetItemViewModel: ObservableObject {
+class PendingBetItemViewModel: ObservableObject {
     private let betUseCase: BetUseCase
     
     @Published @MainActor private(set) var state: EditableViewState<PoolGamblerBetModel>
@@ -52,7 +52,7 @@ class PoolGamblerBetItemViewModel: ObservableObject {
                     state = .failure(
                         current: currentPoolGamblerBet,
                         failed: targetPoolGamblerBet,
-                        error: error.mapOrDefaultLocalized { error in error.toBetLocalizedError() })
+                        error: error.mapOrDefaultLocalized { error in error.asBetLocalizedError() })
                 }
             }
         }

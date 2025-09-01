@@ -6,23 +6,22 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.felipearpa.tyche.bet.PoolGamblerBetModel
 import dagger.hilt.android.EntryPointAccessors
-import java.util.UUID
 
 @Composable
 fun pendingBetListViewModel(
     poolId: String,
-    gamblerId: String
+    gamblerId: String,
 ): PendingBetListViewModel {
     val factory = EntryPointAccessors.fromActivity(
         LocalContext.current as Activity,
-        PendingBetViewModelFactoryProvider::class.java
+        PendingBetViewModelFactoryProvider::class.java,
     ).poolGamblerBetListViewModelFactory()
     return viewModel(
         factory = providePendingBetListViewModelFactory(
             assistedFactory = factory,
             poolId = poolId,
-            gamblerId = gamblerId
-        )
+            gamblerId = gamblerId,
+        ),
     )
 }
 
@@ -30,13 +29,13 @@ fun pendingBetListViewModel(
 fun pendingBetViewModel(poolGamblerBet: PoolGamblerBetModel): PendingBetItemViewModel {
     val factory = EntryPointAccessors.fromActivity(
         LocalContext.current as Activity,
-        PendingBetViewModelFactoryProvider::class.java
+        PendingBetViewModelFactoryProvider::class.java,
     ).poolGamblerBetViewModelFactory()
     return viewModel(
         factory = providePendingBetItemViewModelFactory(
             assistedFactory = factory,
-            poolGamblerBet = poolGamblerBet
+            poolGamblerBet = poolGamblerBet,
         ),
-        key = UUID.randomUUID().toString()
+        key = "${poolGamblerBet.poolId}:${poolGamblerBet.gamblerId}:${poolGamblerBet.matchId}",
     )
 }

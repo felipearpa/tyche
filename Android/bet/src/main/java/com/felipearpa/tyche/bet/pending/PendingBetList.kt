@@ -11,7 +11,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.composed
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.paging.PagingData
@@ -23,7 +22,7 @@ import com.felipearpa.tyche.bet.poolGamblerBetDummyModels
 import com.felipearpa.tyche.ui.lazy.RefreshableStatefulLazyColumn
 import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
 import com.felipearpa.tyche.ui.theme.TycheTheme
-import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.datetime.LocalDate
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -80,7 +79,7 @@ fun PendingBetList(
                         modifier = Modifier.pendingBetItem(),
                     )
                 }
-                HorizontalDivider(modifier = Modifier.padding(horizontal = LocalBoxSpacing.current.large))
+                HorizontalDivider()
             }
         }
     }
@@ -94,29 +93,24 @@ private fun LazyListScope.pendingBetPlaceholderList(count: Int) {
 
 private fun LazyListScope.pendingBetPlaceholderItem() {
     item {
-        PendingBetPlaceholderItem(modifier = Modifier.fillMaxWidth())
-        HorizontalDivider(modifier = Modifier.padding(horizontal = LocalBoxSpacing.current.large))
+        PendingBetPlaceholderItem(modifier = Modifier.pendingBetItem())
+        HorizontalDivider()
     }
 }
 
-private fun Modifier.pendingBetItem() = composed {
-    this
-        .fillMaxWidth()
-        .padding(horizontal = LocalBoxSpacing.current.large)
-        .padding(vertical = LocalBoxSpacing.current.medium)
-}
+@Composable
+private fun Modifier.pendingBetItem() =
+    fillMaxWidth().padding(all = LocalBoxSpacing.current.medium)
 
-private fun Modifier.pendingHeaderBetItemView() = composed {
-    this
-        .fillMaxWidth()
-        .padding(horizontal = LocalBoxSpacing.current.medium)
-        .padding(top = LocalBoxSpacing.current.medium)
-}
+@Composable
+private fun Modifier.pendingHeaderBetItemView() =
+    fillMaxWidth().padding(all = LocalBoxSpacing.current.medium)
 
 @Preview(showBackground = true)
 @Composable
 private fun PendingBetListPreview() {
-    val items = flowOf(PagingData.from(poolGamblerBetDummyModels())).collectAsLazyPagingItems()
+    val items =
+        MutableStateFlow(PagingData.from(poolGamblerBetDummyModels())).collectAsLazyPagingItems()
     TycheTheme {
         PendingBetList(lazyPoolGamblerBets = items, modifier = Modifier.fillMaxSize())
     }
@@ -124,12 +118,8 @@ private fun PendingBetListPreview() {
 
 @Preview(showBackground = true)
 @Composable
-private fun PendingBetFakeListPreview() {
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(all = LocalBoxSpacing.current.medium),
-    ) {
+private fun PendingBetPlaceholderListPreview() {
+    LazyColumn(modifier = Modifier.fillMaxSize()) {
         pendingBetPlaceholderList(count = 50)
     }
 }

@@ -15,6 +15,8 @@ module InitialPoolGamblerBetTransformer =
     let matchKeyPrefix = "MATCH"
 
     let toAmazonItem (poolGamblerBet: InitialPoolGamblerBet) : IDictionary<string, AttributeValue> =
+        let matchDateTime = poolGamblerBet.MatchDateTime.ToUniversalTime().ToString("o")
+
         dict
             [ "pk",
               AttributeValue(
@@ -28,6 +30,7 @@ module InitialPoolGamblerBetTransformer =
               "homeTeamName", AttributeValue(S = poolGamblerBet.HomeTeamName.Value)
               "awayTeamId", AttributeValue(S = poolGamblerBet.AwayTeamId.Value)
               "awayTeamName", AttributeValue(S = poolGamblerBet.AwayTeamName.Value)
-              "matchDateTime", AttributeValue(S = poolGamblerBet.MatchDateTime.ToUniversalTime().ToString("o"))
+              "matchDateTime", AttributeValue(S = matchDateTime)
               "poolLayoutId", AttributeValue(S = poolGamblerBet.PoolLayoutId.Value)
-              "poolLayoutVersion", AttributeValue(N = poolGamblerBet.PoolLayoutVersion.ToString()) ]
+              "poolLayoutVersion", AttributeValue(N = poolGamblerBet.PoolLayoutVersion.ToString())
+              "getPendingPoolGamblerBetsSk", AttributeValue(S = matchDateTime) ]

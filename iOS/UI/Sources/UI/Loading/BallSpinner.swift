@@ -1,14 +1,14 @@
 import SwiftUI
 
-private let ICON_SIZE: CGFloat = 64
-
-struct BallSpinner: View {
+public struct BallSpinner: View {
     @State var degreesRotating = 0.0
-    
-    var body: some View {
+
+    public init() {}
+
+    public var body: some View {
         Image(.tycheLogo)
             .resizable()
-            .frame(width: ICON_SIZE, height: ICON_SIZE)
+            .aspectRatio(contentMode: .fit)
             .foregroundStyle(Color.accentColor)
             .rotationEffect(.degrees(degreesRotating))
             .onAppear {
@@ -23,4 +23,5 @@ struct BallSpinner: View {
 
 #Preview {
     BallSpinner()
+        .frame(width: 64, height: 64)
 }

@@ -2,13 +2,13 @@ import SwiftUI
 import UI
 import Core
 
-struct PoolGamblerBetItem: View {
+struct PendingBetItem: View {
     private let poolGamblerBet: PoolGamblerBetModel
-    @Binding private var viewState: PoolGamblerBetItemViewState
+    @Binding private var viewState: PendingBetItemViewState
     
     init(
         poolGamblerBet: PoolGamblerBetModel,
-        viewState: Binding<PoolGamblerBetItemViewState>
+        viewState: Binding<PendingBetItemViewState>
     ) {
         self.poolGamblerBet = poolGamblerBet
         self._viewState = viewState
@@ -17,12 +17,12 @@ struct PoolGamblerBetItem: View {
     var body: some View {
         switch viewState {
         case .visualization:
-            NonEditablePoolGamblerBetItem(
+            NonEditablePendingBetItem(
                 poolGamblerBet: poolGamblerBet,
                 partialPoolGamblerBet: viewState.value
             )
         case .edition:
-            EditablePoolGamblerBetItem(
+            EditablePendingBetItem(
                 poolGamblerBet: poolGamblerBet,
                 partialPoolGamblerBet: $viewState.value
             )
@@ -30,12 +30,14 @@ struct PoolGamblerBetItem: View {
     }
 }
 
-private struct NonEditablePoolGamblerBetItem: View {
+private struct NonEditablePendingBetItem: View {
     let poolGamblerBet: PoolGamblerBetModel
     let partialPoolGamblerBet: PartialPoolGamblerBetModel
-    
+
+    @Environment(\.boxSpacing) private var boxSpacing
+
     var body: some View {
-        VStack(spacing: 8) {
+        VStack(spacing: boxSpacing.medium) {
             HStack {
                 Text(poolGamblerBet.homeTeamName)
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -51,19 +53,21 @@ private struct NonEditablePoolGamblerBetItem: View {
             HStack {
                 Text(poolGamblerBet.matchDateTime.toShortDateTimeString())
                     .font(.footnote)
-                    .padding(.leading, 8)
+                    .padding(.leading, boxSpacing.medium)
                 Spacer()
             }
         }
     }
 }
 
-private struct EditablePoolGamblerBetItem: View {
+private struct EditablePendingBetItem: View {
     let poolGamblerBet: PoolGamblerBetModel
     @Binding var partialPoolGamblerBet: PartialPoolGamblerBetModel
-    
+
+    @Environment(\.boxSpacing) private var boxSpacing
+
     var body: some View {
-        VStack(spacing: 8) {
+        VStack(spacing: boxSpacing.medium) {
             HStack {
                 Text(poolGamblerBet.homeTeamName)
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -90,15 +94,15 @@ private extension View {
     }
 }
 
-#Preview("Non Editable PoolGamblerBetItem") {
-    NonEditablePoolGamblerBetItem(
+#Preview("Non Editable") {
+    NonEditablePendingBetItem(
         poolGamblerBet: poolGamblerBetDummyModel(),
         partialPoolGamblerBet: partialPoolGamblerBetDummyModel()
     )
 }
 
-#Preview("Editable PoolGamblerBetItem") {
-    EditablePoolGamblerBetItem(
+#Preview("Editable") {
+    EditablePendingBetItem(
         poolGamblerBet: poolGamblerBetDummyModel(),
         partialPoolGamblerBet: .constant(partialPoolGamblerBetDummyModel())
     )

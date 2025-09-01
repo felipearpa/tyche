@@ -2,14 +2,14 @@ package com.felipearpa.tyche.bet.pending
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.felipearpa.tyche.data.bet.application.BetUseCase
-import com.felipearpa.tyche.data.bet.domain.Bet
-import com.felipearpa.tyche.data.bet.domain.BetException
 import com.felipearpa.tyche.bet.PoolGamblerBetModel
 import com.felipearpa.tyche.bet.toPoolGamblerBetModel
 import com.felipearpa.tyche.core.type.BetScore
 import com.felipearpa.tyche.core.type.TeamScore
-import com.felipearpa.tyche.ui.exception.orDefaultLocalized
+import com.felipearpa.tyche.data.bet.application.BetUseCase
+import com.felipearpa.tyche.data.bet.domain.Bet
+import com.felipearpa.tyche.data.bet.domain.BetException
+import com.felipearpa.tyche.ui.exception.mapOrDefaultLocalized
 import com.felipearpa.ui.state.EditableViewState
 import com.felipearpa.ui.state.relevantValue
 import dagger.assisted.Assisted
@@ -23,13 +23,13 @@ import java.util.UUID
 
 class PendingBetItemViewModel @AssistedInject constructor(
     @Assisted poolGamblerBet: PoolGamblerBetModel,
-    private val betUseCase: BetUseCase
+    private val betUseCase: BetUseCase,
 ) :
     ViewModel() {
 
     private val _state =
         MutableStateFlow<EditableViewState<PoolGamblerBetModel>>(
-            EditableViewState.Initial(poolGamblerBet)
+            EditableViewState.Initial(poolGamblerBet),
         )
     val state = _state.asStateFlow()
 
@@ -49,7 +49,7 @@ class PendingBetItemViewModel @AssistedInject constructor(
                 val targetPoolGamblerBet = currentPoolGamblerBet.copy(betScore = betScore)
                 EditableViewState.Saving(
                     current = currentPoolGamblerBet,
-                    target = targetPoolGamblerBet
+                    target = targetPoolGamblerBet,
                 )
             } as EditableViewState.Saving
 
@@ -58,7 +58,7 @@ class PendingBetItemViewModel @AssistedInject constructor(
                 gamblerId = currentPoolGamblerBet.gamblerId,
                 matchId = currentPoolGamblerBet.matchId,
                 homeTeamBet = BetScore(betScore.homeTeamValue),
-                awayTeamBet = BetScore(betScore.awayTeamValue)
+                awayTeamBet = BetScore(betScore.awayTeamValue),
             )
 
             betUseCase.execute(bet = bet)
@@ -66,8 +66,8 @@ class PendingBetItemViewModel @AssistedInject constructor(
                     _state.emit(
                         EditableViewState.Success(
                             old = currentPoolGamblerBet,
-                            succeeded = updatedPoolGamblerBet.toPoolGamblerBetModel()
-                        )
+                            succeeded = updatedPoolGamblerBet.toPoolGamblerBetModel(),
+                        ),
                     )
                 }.onFailure { exception ->
                     if (exception is BetException.Forbidden) {
@@ -77,10 +77,8 @@ class PendingBetItemViewModel @AssistedInject constructor(
                             EditableViewState.Failure(
                                 current = currentPoolGamblerBet,
                                 failed = targetPoolGamblerBet,
-                                exception = exception
-                                    .toBetLocalizedExceptionOnMatch()
-                                    .orDefaultLocalized()
-                            )
+                                exception = exception.mapOrDefaultLocalized { it.asBetLocalizedExceptionOnMatch() },
+                            ),
                         )
                     }
                 }
@@ -92,8 +90,8 @@ class PendingBetItemViewModel @AssistedInject constructor(
             val poolGamblerBet = currentState.relevantValue()
             EditableViewState.Initial(
                 poolGamblerBet.copy(
-                    instanceId = UUID.randomUUID().toString()
-                )
+                    instanceId = UUID.randomUUID().toString(),
+                ),
             )
         }
     }

@@ -62,12 +62,11 @@ class PoolGamblerBetAlamofireDataSource: PoolGamblerBetRemoteDataSource {
     func bet(betRequest: BetRequest) async throws -> PoolGamblerBetResponse {
         return try await withUnsafeThrowingContinuation { continuation in
             session.request(
-                urlBasePathProvider.prependBasePath("bet")!,
+                urlBasePathProvider.prependBasePath("bets")!,
                 method: .patch,
                 parameters: betRequest,
                 encoder: JSONParameterEncoder.default
             )
-            .cURLDescription(calling: { curl in print(curl) })
             .validate()
             .responseDecodable(
                 of: PoolGamblerBetResponse.self,

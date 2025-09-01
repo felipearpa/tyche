@@ -1,4 +1,5 @@
 import Foundation
+import DataBet
 
 enum BetLocalizedError: LocalizedError {
     case forbidden
@@ -15,5 +16,16 @@ enum BetLocalizedError: LocalizedError {
         case .forbidden:
             return String(.forbiddenBetFailureReason)
         }
+    }
+}
+
+extension Error {
+    func asBetLocalizedError() -> Error {
+        if let error = self as? BetError {
+            return switch error {
+            case .forbidden: BetLocalizedError.forbidden
+            }
+        }
+        return self
     }
 }

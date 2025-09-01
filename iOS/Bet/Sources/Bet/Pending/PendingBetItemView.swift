@@ -2,16 +2,16 @@ import SwiftUI
 import UI
 import Core
 
-struct PoolGamblerBetItemView: View {
-    @StateObject private var viewModel: PoolGamblerBetItemViewModel
-    @State private var viewState = PoolGamblerBetItemViewState.emptyVisualization()
+struct PendingBetItemView: View {
+    @StateObject private var viewModel: PendingBetItemViewModel
+    @State private var viewState = PendingBetItemViewState.emptyVisualization()
     
-    init(viewModel: @autoclosure @escaping () -> PoolGamblerBetItemViewModel) {
+    init(viewModel: @autoclosure @escaping () -> PendingBetItemViewModel) {
         self._viewModel = .init(wrappedValue: viewModel())
     }
     
     var body: some View {
-        StatefulPoolGamblerBetItemView(
+        StatefulPendingBetItemView(
             viewModelState: viewModel.state,
             viewState: $viewState,
             bet: {
@@ -40,9 +40,9 @@ struct PoolGamblerBetItemView: View {
     }
 }
 
-private struct StatefulPoolGamblerBetItemView: View {
+private struct StatefulPendingBetItemView: View {
     let viewModelState: EditableViewState<PoolGamblerBetModel>
-    @Binding var viewState: PoolGamblerBetItemViewState
+    @Binding var viewState: PendingBetItemViewState
     let bet: () -> Void
     let retryBet: () -> Void
     let reset: () -> Void
@@ -50,7 +50,7 @@ private struct StatefulPoolGamblerBetItemView: View {
     
     init(
         viewModelState: EditableViewState<PoolGamblerBetModel>,
-        viewState: Binding<PoolGamblerBetItemViewState>,
+        viewState: Binding<PendingBetItemViewState>,
         bet: @escaping () -> Void = {},
         retryBet: @escaping () -> Void = {},
         reset: @escaping () -> Void = {},
@@ -68,7 +68,7 @@ private struct StatefulPoolGamblerBetItemView: View {
         VStack {
             switch viewModelState {
             case .initial(let poolGamblerBet), .success(_, succeeded: let poolGamblerBet):
-                PoolGamblerBetItem(
+                PendingBetItem(
                     poolGamblerBet: poolGamblerBet,
                     viewState: $viewState
                 )
@@ -80,13 +80,13 @@ private struct StatefulPoolGamblerBetItemView: View {
                     edit: edit
                 )
             case .saving(_, target: let poolGamblerBet):
-                PoolGamblerBetItem(
+                PendingBetItem(
                     poolGamblerBet: poolGamblerBet,
                     viewState: .constant(.visualization(viewState.value))
                 )
                 LoadingActionBar(viewModelState: viewModelState)
             case .failure(_, failed: let poolGamblerBet, _):
-                PoolGamblerBetItem(
+                PendingBetItem(
                     poolGamblerBet: poolGamblerBet,
                     viewState: .constant(.visualization(viewState.value))
                 )
@@ -102,7 +102,7 @@ private struct StatefulPoolGamblerBetItemView: View {
 
 private struct DefaultActionBar: View {
     let viewModelState: EditableViewState<PoolGamblerBetModel>
-    @Binding var viewState: PoolGamblerBetItemViewState
+    @Binding var viewState: PendingBetItemViewState
     let bet: () -> Void
     let reset: () -> Void
     let edit: () -> Void
@@ -130,7 +130,7 @@ private struct DefaultActionBar: View {
 
 private struct EditableDefaultActionBar: View {
     let viewModelState: EditableViewState<PoolGamblerBetModel>
-    @Binding var viewState: PoolGamblerBetItemViewState
+    @Binding var viewState: PendingBetItemViewState
     let bet: () -> Void
     let reset: () -> Void
     
@@ -152,7 +152,7 @@ private struct EditableDefaultActionBar: View {
 
 private struct NonEditableDefaultActionBar: View {
     let viewModelState: EditableViewState<PoolGamblerBetModel>
-    @Binding var viewState: PoolGamblerBetItemViewState
+    @Binding var viewState: PendingBetItemViewState
     let edit: () -> Void
     
     var body: some View {
@@ -221,7 +221,8 @@ private struct StateIndicator: View {
                 Image(sharedResource: .error)
                     .foregroundStyle(Color(sharedResource: .error))
             case .saving:
-                ProgressView()
+                BallSpinner()
+                    .frame(width: ICON_SIZE, height: ICON_SIZE)
             case .initial(let poolGamblerBet), .success(_, succeeded: let poolGamblerBet):
                 ContentIndicator(poolGamblerBet: poolGamblerBet)
             }
@@ -245,22 +246,24 @@ private struct ContentIndicator: View {
     }
 }
 
-#Preview("Non Editable Initial PoolGamblerBetItemView") {
-    StatefulPoolGamblerBetItemView(
+private let ICON_SIZE: CGFloat = 24
+
+#Preview("Non Editable Initial") {
+    StatefulPendingBetItemView(
         viewModelState: .initial(poolGamblerBetDummyModel()),
         viewState: .constant(.visualization(partialPoolGamblerBetDummyModel()))
     )
 }
 
-#Preview("Editable Initial PoolGamblerBetItemView") {
-    StatefulPoolGamblerBetItemView(
+#Preview("Editable Initial") {
+    StatefulPendingBetItemView(
         viewModelState: .initial(poolGamblerBetDummyModel()),
         viewState: .constant(.edition(partialPoolGamblerBetDummyModel()))
     )
 }
 
-#Preview("Non Editable Loading PoolGamblerBetItemView") {
-    StatefulPoolGamblerBetItemView(
+#Preview("Non Editable Loading") {
+    StatefulPendingBetItemView(
         viewModelState: .saving(
             current: poolGamblerBetDummyModel(),
             target: poolGamblerBetDummyModel()
@@ -269,8 +272,8 @@ private struct ContentIndicator: View {
     )
 }
 
-#Preview("Editable Loading PoolGamblerBetItemView") {
-    StatefulPoolGamblerBetItemView(
+#Preview("Editable Loading") {
+    StatefulPendingBetItemView(
         viewModelState: .saving(
             current: poolGamblerBetDummyModel(),
             target: poolGamblerBetDummyModel()
@@ -279,8 +282,8 @@ private struct ContentIndicator: View {
     )
 }
 
-#Preview("Non Editable Failure PoolGamblerBetItemView") {
-    StatefulPoolGamblerBetItemView(
+#Preview("Non Editable Failure") {
+    StatefulPendingBetItemView(
         viewModelState: .failure(
             current: poolGamblerBetDummyModel(),
             failed: poolGamblerBetDummyModel(),
@@ -290,8 +293,8 @@ private struct ContentIndicator: View {
     )
 }
 
-#Preview("Editable Failure PoolGamblerBetItemView") {
-    StatefulPoolGamblerBetItemView(
+#Preview("Editable Failure") {
+    StatefulPendingBetItemView(
         viewModelState: .failure(
             current: poolGamblerBetDummyModel(),
             failed: poolGamblerBetDummyModel(),
