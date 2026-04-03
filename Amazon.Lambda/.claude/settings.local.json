@@ -2,7 +2,11 @@
   "permissions": {
     "allow": [
       "Bash(dotnet build:*)",
-      "Bash(dotnet test:*)"
+      "Bash(dotnet test:*)",
+      "Bash(xargs dirname:*)",
+      "Bash(xargs ls:*)",
+      "Bash(rm /Users/felipe/Documents/Codes/tyche/Amazon.Lambda/Felipearpa.Tyche.Function/src/Properties/launchSettings.json)",
+      "Bash(rmdir /Users/felipe/Documents/Codes/tyche/Amazon.Lambda/Felipearpa.Tyche.Function/src/Properties)"
     ]
   }
 }

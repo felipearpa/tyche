@@ -65,8 +65,11 @@ type PoolGamblerScoreDynamoDbRepository(keySerializer: IKeySerializer, client: I
         member this.Compute(matchId, matchScore) =
             async {
                 let requestId = Ulid.random().ToString()
+                let affectedPoolIds = HashSet<string>()
 
                 let toUpdateAction (attr: Dictionary<string, AttributeValue>) : Async<unit> =
+                    affectedPoolIds.Add(attr["poolId"].S) |> ignore
+
                     let updateRequest =
                         ComputePoolGamblerBetRequestBuilder.build (attr |> toPoolGamblerBet) matchScore requestId
 
@@ -95,4 +98,35 @@ type PoolGamblerScoreDynamoDbRepository(keySerializer: IKeySerializer, client: I
                     }
 
                 do! loop None
+
+                return affectedPoolIds |> Seq.map Ulid.newOf |> Set.ofSeq
             }
+
+        member this.UpdatePositions(poolId: Ulid) =
+            let rec loop (position: int) (maybeNext: string option) =
+                async {
+                    let request =
+                        GetPoolScoresRequestBuilder.build poolId (maybeNext |> Option.map keySerializer.Deserialize)
+
+                    let! response = client.QueryAsync(request) |> Async.AwaitTask
+
+                    do!
+                        response.Items
+                        |> Seq.mapi (fun i item ->
+                            let gamblerId = item["gamblerId"].S |> Ulid.newOf
+                            let currentPosition = position + i + 1
+
+                            let updateRequest =
+                                UpdateCurrentPositionRequestBuilder.build poolId gamblerId currentPosition
+
+                            client.UpdateItemAsync updateRequest |> Async.AwaitTask |> Async.Ignore)
+                        |> Seq.iterAsync id
+
+                    match response.LastEvaluatedKey |> Option.ofObj with
+                    | Some lek ->
+                        let serialized = keySerializer.Serialize(lek)
+                        return! loop (position + response.Items.Count) (Some serialized)
+                    | None -> return ()
+                }
+
+            loop 0 None

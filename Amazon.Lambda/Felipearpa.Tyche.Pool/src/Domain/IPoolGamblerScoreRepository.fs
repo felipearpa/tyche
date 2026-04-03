@@ -12,4 +12,6 @@ type IPoolGamblerScoreRepository =
 
     abstract GetPoolGamblerScoreByIdAsync: Ulid * Ulid -> Result<PoolGamblerScore option, Unit> Async
 
-    abstract Compute: Ulid * TeamScore<int> -> Unit Async
+    abstract Compute: Ulid * TeamScore<int> -> Ulid Set Async
+
+    abstract UpdatePositions: Ulid -> Unit Async

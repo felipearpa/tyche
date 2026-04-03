@@ -19,7 +19,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       Handler: Felipearpa.Tyche.AmazonLambda::Felipearpa.Tyche.AmazonLambda.Function.PoolFunction::GetPoolByIdAsync
-      Runtime: dotnet8
+      Runtime: dotnet10
       CodeUri: .
       MemorySize: 256
       Timeout: 30
@@ -44,7 +44,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       Handler: Felipearpa.Tyche.AmazonLambda::Felipearpa.Tyche.AmazonLambda.Function.PoolFunction::GetGamblersByPoolIdAsync
-      Runtime: dotnet8
+      Runtime: dotnet10
       CodeUri: .
       MemorySize: 256
       Timeout: 30
@@ -70,7 +70,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       Handler: Felipearpa.Tyche.AmazonLambda::Felipearpa.Tyche.AmazonLambda.Function.PoolFunction::GetPoolGamblerScoreByIdAsync
-      Runtime: dotnet8
+      Runtime: dotnet10
       CodeUri: .
       MemorySize: 256
       Timeout: 30
@@ -95,7 +95,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       Handler: Felipearpa.Tyche.AmazonLambda::Felipearpa.Tyche.AmazonLambda.Function.PoolFunction::GetPendingBetsAsync
-      Runtime: dotnet8
+      Runtime: dotnet10
       CodeUri: .
       MemorySize: 256
       Timeout: 30
@@ -121,7 +121,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       Handler: Felipearpa.Tyche.AmazonLambda::Felipearpa.Tyche.AmazonLambda.Function.PoolFunction::GetFinishedBetsAsync
-      Runtime: dotnet8
+      Runtime: dotnet10
       CodeUri: .
       MemorySize: 256
       Timeout: 30
@@ -147,7 +147,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       Handler: Felipearpa.Tyche.AmazonLambda::Felipearpa.Tyche.AmazonLambda.Function.GamblerFunction::GetPoolsByGamblerIdAsync
-      Runtime: dotnet8
+      Runtime: dotnet10
       CodeUri: .
       MemorySize: 256
       Timeout: 30
@@ -173,7 +173,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       Handler: Felipearpa.Tyche.AmazonLambda::Felipearpa.Tyche.AmazonLambda.Function.PoolFunction::CreatePoolAsync
-      Runtime: dotnet8
+      Runtime: dotnet10
       CodeUri: .
       MemorySize: 256
       Timeout: 30
@@ -201,7 +201,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       Handler: Felipearpa.Tyche.AmazonLambda::Felipearpa.Tyche.AmazonLambda.Function.PoolFunction::JoinPoolAsync
-      Runtime: dotnet8
+      Runtime: dotnet10
       CodeUri: .
       MemorySize: 256
       Timeout: 30
@@ -228,7 +228,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       Handler: Felipearpa.Tyche.AmazonLambda::Felipearpa.Tyche.AmazonLambda.Function.BetFunction::BetAsync
-      Runtime: dotnet8
+      Runtime: dotnet10
       CodeUri: .
       MemorySize: 256
       Timeout: 30
@@ -254,7 +254,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       Handler: Felipearpa.Tyche.AmazonLambda::Felipearpa.Tyche.AmazonLambda.Function.PoolLayoutFunction::GetOpenPoolLayoutsAsync
-      Runtime: dotnet8
+      Runtime: dotnet10
       CodeUri: .
       MemorySize: 256
       Timeout: 30
@@ -280,7 +280,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       Handler: Felipearpa.Tyche.AmazonLambda::Felipearpa.Tyche.AmazonLambda.Function.AccountFunction::LinkAccountAsync
-      Runtime: dotnet8
+      Runtime: dotnet10
       CodeUri: .
       MemorySize: 256
       Timeout: 30
@@ -309,7 +309,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       Handler: Felipearpa.Tyche.AmazonLambda::Felipearpa.Tyche.AmazonLambda.Event.PoolEvent::OnPoolChangeAsync
-      Runtime: dotnet8
+      Runtime: dotnet10
       CodeUri: .
       MemorySize: 256
       Timeout: 60
@@ -343,7 +343,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       Handler: Felipearpa.Tyche.AmazonLambda::Felipearpa.Tyche.AmazonLambda.Event.PoolLayoutEvent::OnPoolLayoutChangeAsync
-      Runtime: dotnet8
+      Runtime: dotnet10
       CodeUri: .
       MemorySize: 256
       Timeout: 60
