@@ -2,14 +2,20 @@ namespace Felipearpa.Tyche.Pool.Infrastructure
 
 #nowarn "3536"
 
+open System.Collections.Generic
 open System.Linq
 open Amazon.DynamoDBv2
+open Amazon.DynamoDBv2.Model
+open Felipearpa.Core
 open Felipearpa.Core.Paging
 open Felipearpa.Data.DynamoDb
 open Felipearpa.Tyche.Pool.Domain
+open Felipearpa.Tyche.Pool.Domain.PoolGamblerBetDictionaryTransformer
 open Felipearpa.Tyche.Pool.Domain.PoolGamblerScoreDictionaryTransformer
+open Felipearpa.Type
 
 type PoolGamblerScoreDynamoDbRepository(keySerializer: IKeySerializer, client: IAmazonDynamoDB) =
+
     interface IPoolGamblerScoreRepository with
 
         member this.GetGamblerScoresAsync(gamblerId, maybeNext) =
@@ -54,4 +60,39 @@ type PoolGamblerScoreDynamoDbRepository(keySerializer: IKeySerializer, client: I
                      | Some item -> item.ToPoolGamblerScore() |> Some
                      | None -> None)
                     |> Ok
+            }
+
+        member this.Compute(matchId, matchScore) =
+            async {
+                let requestId = Ulid.random().ToString()
+
+                let toUpdateAction (attr: Dictionary<string, AttributeValue>) : Async<unit> =
+                    let updateRequest =
+                        ComputePoolGamblerBetRequestBuilder.build (attr |> toPoolGamblerBet) matchScore requestId
+
+                    client.UpdateItemAsync updateRequest |> Async.AwaitTask |> Async.Ignore
+
+                let rec loop maybeNext =
+                    async {
+                        let poolGamblerScoresByMatchRequest =
+                            GetBetPoolGamblerScoresByMatchRequestBuilder.build
+                                matchId
+                                (maybeNext |> Option.map keySerializer.Deserialize)
+
+                        let! poolGamblerScoresByMatchResponse =
+                            client.QueryAsync(poolGamblerScoresByMatchRequest) |> Async.AwaitTask
+
+                        do!
+                            poolGamblerScoresByMatchResponse.Items
+                            |> Seq.map toUpdateAction
+                            |> Seq.iterAsync id
+
+                        match poolGamblerScoresByMatchResponse.LastEvaluatedKey |> Option.ofObj with
+                        | Some lek ->
+                            let serialized = keySerializer.Serialize(lek)
+                            return! loop (Some serialized)
+                        | None -> return ()
+                    }
+
+                do! loop None
             }

@@ -305,10 +305,10 @@ Resources:
             Method: POST
             ApiId: !Ref AuthGatewayHttpApi
   
-  OnPoolChanged:
+  OnPoolChange:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: Felipearpa.Tyche.AmazonLambda::Felipearpa.Tyche.AmazonLambda.Event.PoolEvent::OnPoolChangedAsync
+      Handler: Felipearpa.Tyche.AmazonLambda::Felipearpa.Tyche.AmazonLambda.Event.PoolEvent::OnPoolChangeAsync
       Runtime: dotnet8
       CodeUri: .
       MemorySize: 256
@@ -334,6 +334,40 @@ Resources:
           Type: DynamoDB
           Properties:
             Stream: arn:aws:dynamodb:us-east-2:567776770335:table/Pool/stream/2025-08-18T16:45:55.692
+            StartingPosition: LATEST
+            BatchSize: 100
+            MaximumBatchingWindowInSeconds: 1
+            Enabled: true
+            
+  OnPoolLayoutChange:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: Felipearpa.Tyche.AmazonLambda::Felipearpa.Tyche.AmazonLambda.Event.PoolLayoutEvent::OnPoolLayoutChangeAsync
+      Runtime: dotnet8
+      CodeUri: .
+      MemorySize: 256
+      Timeout: 60
+      Policies:
+        - AWSLambdaBasicExecutionRole
+        - Statement:
+            - Effect: Allow
+              Action:
+                - dynamodb:ListStreams
+                - dynamodb:DescribeStream
+                - dynamodb:GetRecords
+                - dynamodb:GetShardIterator
+                - dynamodb:Query
+                - dynamodb:PutItem
+              Resource:
+                - arn:aws:dynamodb:us-east-2:567776770335:table/PoolLayout/stream/2025-09-27T02:24:29.497
+                - arn:aws:dynamodb:us-east-2:567776770335:table/PoolLayout
+                - arn:aws:dynamodb:us-east-2:567776770335:table/Pool
+      Architectures: [ arm64 ]
+      Events:
+        PoolStream:
+          Type: DynamoDB
+          Properties:
+            Stream: arn:aws:dynamodb:us-east-2:567776770335:table/PoolLayout/stream/2025-09-27T02:24:29.497
             StartingPosition: LATEST
             BatchSize: 100
             MaximumBatchingWindowInSeconds: 1

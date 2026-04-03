@@ -16,9 +16,6 @@ module JoinPoolGamblerRequestBuilder =
     let private gamblerText = "GAMBLER"
 
     [<Literal>]
-    let private positionText = "POSITION"
-
-    [<Literal>]
     let private initialPoolLayoutVersion = 1
 
     let build (createPoolInput: ResolvedCreatePoolInput) =
@@ -26,20 +23,16 @@ module JoinPoolGamblerRequestBuilder =
             dict
                 [ "pk", AttributeValue(S = $"{poolText}#{createPoolInput.PoolId}")
                   "sk", AttributeValue(S = $"{gamblerText}#{createPoolInput.OwnerGamblerId}")
-                  "poolId", AttributeValue(S = (createPoolInput.PoolId |> Ulid.value))
-                  "poolName", AttributeValue(S = (createPoolInput.PoolName |> NonEmptyString100.value))
-                  "gamblerId", AttributeValue(S = (createPoolInput.OwnerGamblerId |> Ulid.value))
-                  "gamblerUsername",
-                  AttributeValue(S = (createPoolInput.OwnerGamblerUsername |> NonEmptyString100.value))
+                  "poolId", AttributeValue(S = createPoolInput.PoolId.Value)
+                  "poolName", AttributeValue(S = createPoolInput.PoolName.Value)
+                  "gamblerId", AttributeValue(S = createPoolInput.OwnerGamblerId.Value)
+                  "gamblerUsername", AttributeValue(S = createPoolInput.OwnerGamblerUsername.Value)
                   "status", AttributeValue(S = "OPENED")
-                  "filter",
-                  AttributeValue(
-                      S =
-                          $"{createPoolInput.PoolName |> NonEmptyString100.value} {createPoolInput.OwnerGamblerUsername |> NonEmptyString100.value}"
-                  )
+                  "filter", AttributeValue(S = $"{createPoolInput.PoolName} {createPoolInput.OwnerGamblerUsername}")
                   "poolLayoutId", AttributeValue(S = (createPoolInput.PoolLayoutId |> Ulid.value))
-                  "getPoolGamblerScoresByGamblerSk", AttributeValue(N = "0")
-                  "getPoolGamblerScoresByPoolSk", AttributeValue(N = "0")
+                  "currentPosition", AttributeValue(N = "0")
+                  "beforePosition", AttributeValue(N = "0")
+                  "score", AttributeValue(N = "0")
                   "poolLayoutVersion", AttributeValue(N = initialPoolLayoutVersion.ToString()) ]
 
         Put(

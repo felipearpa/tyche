@@ -40,7 +40,7 @@ module PoolGamblerBetDictionaryTransformer =
                     { TeamScore.HomeTeamValue = homeTeamBet.N |> int |> BetScore.newOf
                       AwayTeamValue = awayTeamBet.N |> int |> BetScore.newOf }
             | _ -> None
-          Score = tryGetAttributeValueOrNone "score" dictionary |> Option.map (fun it -> int it.N)
+          Score = dictionary |> tryGetAttributeValueOrNone "score" |> noneIfZero
           MatchDateTime = matchDateTime
           isLocked = DateTime.Now >= matchDateTime }
 

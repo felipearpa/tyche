@@ -1,13 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net8.0</TargetFramework>
+        <TargetFramework>net10.0</TargetFramework>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
     </PropertyGroup>
 
     <ItemGroup>
         <Compile Include="Type\BetScore.fs" />
         <Compile Include="Type\TeamScore.fs" />
+        <Compile Include="Domain\AttributeValueTransformer.fs" />
         <Compile Include="Domain\PoolGamblerScore.fs" />
         <Compile Include="Domain\PoolGamblerBet.fs" />
         <Compile Include="Domain\InitialPoolGamblerBet.fs" />
@@ -24,6 +25,7 @@
         <Compile Include="Domain\IPoolRepository.fs" />
         <Compile Include="Domain\PoolDictionaryTransformer.fs" />
         <Compile Include="Domain\InitialPoolGamblerBetTransformer.fs" />
+        <Compile Include="Domain\BetEvaluator.fs" />
         <Compile Include="Infrastructure\GetGamblerScoresRequestBuilder.fs" />
         <Compile Include="Infrastructure\GetPoolScoresRequestBuilder.fs" />
         <Compile Include="Infrastructure\GetPoolGamblerScoreRequestBuilder.fs" />
@@ -31,6 +33,8 @@
         <Compile Include="Infrastructure\GetFinishedPoolGamblerBetsRequestBuilder.fs" />
         <Compile Include="Infrastructure\BetRequestBuilder.fs" />
         <Compile Include="Infrastructure\AddPoolGamblerMatchRequestBuilder.fs" />
+        <Compile Include="Infrastructure\GetBetPoolGamblerScoresByMatchRequestBuilder.fs" />
+        <Compile Include="Infrastructure\ComputePoolGamblerBetRequestBuilder.fs" />
         <Compile Include="Infrastructure\PoolGamblerScoreDynamoDbRepository.fs" />
         <Compile Include="Infrastructure\PoolGamblerBetDynamoDbRepository.fs" />
         <Compile Include="Infrastructure\GetPoolByIdRequestBuilder.fs" />
@@ -47,6 +51,7 @@
         <Compile Include="Application\JoinPoolCommand.fs" />
         <Compile Include="Application\GetPoolByIdQuery.fs" />
         <Compile Include="Application\AddMatchCommand.fs" />
+        <Compile Include="Application\ComputeBetsCommand.fs" />
         <Compile Include="Application\AddMatchesCommand.fs" />
     </ItemGroup>
 
@@ -54,10 +59,6 @@
       <ProjectReference Include="..\..\Felipearpa.Data.DynamoDb\src\Felipearpa.Data.DynamoDb.fsproj" />
       <ProjectReference Include="..\..\Felipearpa.Tyche.Account\src\Felipearpa.Tyche.Account.fsproj" />
       <ProjectReference Include="..\..\Felipearpa.Type\src\Felipearpa.Type.fsproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <PackageReference Update="FSharp.Core" Version="9.0.300" />
     </ItemGroup>
 
 </Project>

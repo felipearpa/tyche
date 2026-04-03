@@ -1,0 +1,21 @@
+<Solution>
+  <Project Path="Felipearpa.Core/src/Felipearpa.Core.fsproj" />
+  <Project Path="Felipearpa.Core/test/Felipearpa.Core.Test.fsproj" />
+  <Project Path="Felipearpa.Crypto/src/Felipearpa.Crypto.fsproj" />
+  <Project Path="Felipearpa.Crypto/test/Felipearpa.Crypto.Test.fsproj" />
+  <Project Path="Felipearpa.Data.DynamoDb/src/Felipearpa.Data.DynamoDb.fsproj" />
+  <Project Path="Felipearpa.Data.DynamoDb/test/Felipearpa.Data.DynamoDb.Test.fsproj" />
+  <Project Path="Felipearpa.Tyche.Account/src/Felipearpa.Tyche.Account.fsproj" />
+  <Project Path="Felipearpa.Tyche.Account/test/Felipearpa.Tyche.Account.Test.fsproj" />
+  <Project Path="Felipearpa.Tyche.AmazonLambda/src/Felipearpa.Tyche.AmazonLambda.fsproj" />
+  <Project Path="Felipearpa.Tyche.AmazonLambda/test/Felipearpa.Tyche.AmazonLambda.Tests.fsproj" />
+  <Project Path="Felipearpa.Tyche.Function/src/Felipearpa.Tyche.Function.fsproj" />
+  <Project Path="Felipearpa.Tyche.Function/test/Felipearpa.Tyche.Function.Test.fsproj" />
+  <Project Path="Felipearpa.Tyche.HttpApi/src/Felipearpa.Tyche.HttpApi.fsproj" />
+  <Project Path="Felipearpa.Tyche.Pool/src/Felipearpa.Tyche.Pool.fsproj" />
+  <Project Path="Felipearpa.Tyche.Pool/test/Felipearpa.Tyche.Pool.Test.fsproj" />
+  <Project Path="Felipearpa.Tyche.PoolLayout/src/Felipearpa.Tyche.PoolLayout.fsproj" />
+  <Project Path="Felipearpa.Tyche.PoolLayout/test/Felipearpa.Tyche.PoolLayout.Test.fsproj" />
+  <Project Path="Felipearpa.Type/src/Felipearpa.Type.fsproj" />
+  <Project Path="Felipearpa.Type/test/Felipearpa.Type.Test.fsproj" />
+</Solution>

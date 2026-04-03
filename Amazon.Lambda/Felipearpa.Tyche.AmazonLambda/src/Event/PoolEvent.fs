@@ -134,11 +134,9 @@ type PoolEvent(configureServices: IServiceCollection -> unit) =
 
     new() = PoolEvent(fun _ -> ())
 
-    member this.OnPoolChangedAsync(event: DynamoDBEvent, _: ILambdaContext) : Task =
+    member this.OnPoolChangeAsync(event: DynamoDBEvent, _: ILambdaContext) : Task =
         (async {
             use scope = serviceProvider.CreateScope()
-
-            let records = extractInsertedPoolGamblerRecords event
 
             let getPendingPoolLayoutMatchesQuery =
                 scope.ServiceProvider.GetRequiredService<GetPendingPoolLayoutMatchesQuery>()
@@ -147,7 +145,7 @@ type PoolEvent(configureServices: IServiceCollection -> unit) =
                 scope.ServiceProvider.GetRequiredService<AddMatchesCommand>()
 
             do!
-                records
+                extractInsertedPoolGamblerRecords event
                 |> Seq.iterAsync (applyPendingLayoutMatches getPendingPoolLayoutMatchesQuery addMatchesCommand)
 
             return ()

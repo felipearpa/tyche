@@ -4,29 +4,33 @@ open System.Collections.Generic
 open Amazon.DynamoDBv2.Model
 open Felipearpa.Type
 
-module GetPoolScoresRequestBuilder =
+module GetBetPoolGamblerScoresByMatchRequestBuilder =
+
     [<Literal>]
     let private tableName = "Pool"
 
     [<Literal>]
-    let poolText = "POOL"
+    let private matchKeyPrefix = "MATCH"
 
-    let build (poolId: Ulid) (maybeNext: IDictionary<string, AttributeValue> option) =
+    let build (matchId: Ulid) (maybeNext: IDictionary<string, AttributeValue> option) =
         let keyConditionExpression = "#pk = :pk"
 
-        let filterExpression = "#status = :status"
+        let filterExpression =
+            "attribute_not_exists(#computedAt) AND attribute_exists(#homeTeamBet) AND attribute_exists(#awayTeamBet)"
 
         let attributeValues =
-            dict
-                [ ":pk", AttributeValue($"{poolText}#{poolId}")
-                  ":status", AttributeValue("OPENED") ]
+            dict [ ":pk", AttributeValue(S = $"{matchKeyPrefix}#{matchId}") ]
 
-        let attributeNames = dict [ "#pk", "pk"; "#status", "status" ]
+        let attributeNames =
+            dict
+                [ "#pk", "pk"
+                  "#computedAt", "computedAt"
+                  "#homeTeamBet", "homeTeamBet"
+                  "#awayTeamBet", "awayTeamBet" ]
 
         QueryRequest(
             TableName = tableName,
-            IndexName = "GetPoolGamblerScoresByPool-index",
-            ScanIndexForward = false,
+            IndexName = "GetPoolGamblerScoresByMatch-index",
             KeyConditionExpression = keyConditionExpression,
             FilterExpression = filterExpression,
             ExpressionAttributeNames = Dictionary attributeNames,

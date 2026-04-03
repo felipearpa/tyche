@@ -26,6 +26,7 @@ module GetGamblerScoresRequestBuilder =
         QueryRequest(
             TableName = tableName,
             IndexName = "GetPoolGamblerScoresByGambler-index",
+            ScanIndexForward = false,
             KeyConditionExpression = keyConditionExpression,
             FilterExpression = filterExpression,
             ExpressionAttributeNames = Dictionary attributeNames,

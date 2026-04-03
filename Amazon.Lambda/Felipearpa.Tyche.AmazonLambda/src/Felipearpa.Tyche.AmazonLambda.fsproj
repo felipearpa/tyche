@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
     <AWSProjectType>Lambda</AWSProjectType>
     <!-- This property makes the build directory similar to a publish directory and helps the AWS .NET Lambda Mock Test Tool find project dependencies. -->
@@ -21,7 +21,10 @@
     <Compile Include="Function\BetFunction.fs" />
     <Compile Include="Function\PoolLayoutFunction.fs" />
     <Compile Include="Function\AccountFunction.fs" />
+    <Compile Include="Event\FieldResolver.fs" />
     <Compile Include="Event\PoolEvent.fs" />
+    <Compile Include="Event\PoolLayoutEventFilter.fs" />
+    <Compile Include="Event\PoolLayoutEvent.fs" />
     <Compile Include="Assembly.fs" />
   </ItemGroup>
   <ItemGroup>
@@ -32,11 +35,11 @@
     <ProjectReference Include="..\..\Felipearpa.Tyche.Function\src\Felipearpa.Tyche.Function.fsproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Amazon.Lambda.Core" Version="2.7.0"/>
-    <PackageReference Include="Amazon.Lambda.DynamoDBEvents" Version="3.1.1" />
-    <PackageReference Include="Amazon.Lambda.Logging.AspNetCore" Version="4.1.0" />
-    <PackageReference Include="Amazon.Lambda.Serialization.SystemTextJson" Version="2.4.4"/>
-    <PackageReference Include="Amazon.Lambda.APIGatewayEvents" Version="2.7.1"/>
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.7" />
+    <PackageReference Include="Amazon.Lambda.Core" Version="2.8.1" />
+    <PackageReference Include="Amazon.Lambda.DynamoDBEvents" Version="3.1.2" />
+    <PackageReference Include="Amazon.Lambda.Logging.AspNetCore" Version="4.1.1" />
+    <PackageReference Include="Amazon.Lambda.Serialization.SystemTextJson" Version="2.4.5" />
+    <PackageReference Include="Amazon.Lambda.APIGatewayEvents" Version="2.7.3" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.3" />
   </ItemGroup>
 </Project>
