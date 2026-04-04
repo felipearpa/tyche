@@ -85,7 +85,7 @@ dependencies {
     implementation(libs.hilt.navigation.compose)
     implementation(libs.constraint.layout.compose)
     implementation(libs.androidx.security.crypto)
-    implementation(libs.bundles.retrofit)
+    implementation(libs.bundles.ktor)
     implementation(libs.dagger.hilt.android)
     implementation(libs.hilt.navigation.compose)
     implementation(platform(libs.firebase.bom))

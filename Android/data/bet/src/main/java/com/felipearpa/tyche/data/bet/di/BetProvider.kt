@@ -11,7 +11,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import retrofit2.Retrofit
+import io.ktor.client.HttpClient
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -36,6 +36,6 @@ internal interface PoolRepositoryProvider {
 @InstallIn(SingletonComponent::class)
 internal object PoolDataSourceProvider {
     @Provides
-    fun providePoolGamblerScoreRemoteDataSource(@Auth retrofit: Retrofit): PoolGamblerBetRemoteDataSource =
-        retrofit.create(PoolGamblerBetRemoteDataSource::class.java)
+    fun providePoolGamblerScoreRemoteDataSource(@Auth httpClient: HttpClient): PoolGamblerBetRemoteDataSource =
+        PoolGamblerBetRemoteDataSource(httpClient = httpClient)
 }

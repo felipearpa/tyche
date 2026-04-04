@@ -1,21 +1,21 @@
-package com.felipearpa.network.retrofit
+package com.felipearpa.network.ktor
 
 import com.felipearpa.network.HttpStatus
 import com.felipearpa.network.NetworkException
 import com.felipearpa.network.NetworkExceptionHandler
-import retrofit2.HttpException
+import io.ktor.client.plugins.ResponseException
+import java.net.ConnectException
 import java.net.SocketTimeoutException
-import java.net.UnknownHostException
 
-class RetrofitExceptionHandler : NetworkExceptionHandler {
+class KtorExceptionHandler : NetworkExceptionHandler {
     override suspend fun <Value> handle(block: suspend () -> Value): Result<Value> {
         return try {
             Result.success(block())
-        } catch (httpException: HttpException) {
+        } catch (responseException: ResponseException) {
             Result.failure(
-                NetworkException.Http(httpStatus = HttpStatus(code = httpException.code())),
+                NetworkException.Http(httpStatus = HttpStatus(code = responseException.response.status.value)),
             )
-        } catch (_: UnknownHostException) {
+        } catch (_: ConnectException) {
             Result.failure(NetworkException.RemoteCommunication)
         } catch (_: SocketTimeoutException) {
             Result.failure(NetworkException.RemoteCommunication)

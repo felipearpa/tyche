@@ -1,13 +1,18 @@
 package com.felipearpa.tyche.data.pool.domain
 
 import com.felipearpa.tyche.core.paging.CursorPage
-import retrofit2.http.GET
-import retrofit2.http.Query
+import io.ktor.client.HttpClient
+import io.ktor.client.call.body
+import io.ktor.client.request.get
+import io.ktor.client.request.parameter
 
-internal interface PoolLayoutRemoteDataSource {
-    @GET("/pool-layouts/open")
+internal class PoolLayoutRemoteDataSource(private val httpClient: HttpClient) {
     suspend fun getOpenPoolLayouts(
-        @Query("next") next: String? = null,
-        @Query("searchText") searchText: String? = null,
-    ): CursorPage<PoolLayoutResponse>
+        next: String? = null,
+        searchText: String? = null,
+    ): CursorPage<PoolLayoutResponse> =
+        httpClient.get("pool-layouts/open") {
+            parameter("next", next)
+            parameter("searchText", searchText)
+        }.body()
 }

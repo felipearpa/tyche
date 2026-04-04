@@ -45,7 +45,8 @@ android {
 }
 
 dependencies {
-    implementation(libs.bundles.retrofit)
+    implementation(libs.bundles.ktor)
+    implementation(libs.ktor.client.auth)
     implementation(libs.dagger.hilt.android)
     implementation(libs.kotlinx.serialization.json)
     implementation(platform(libs.firebase.bom))

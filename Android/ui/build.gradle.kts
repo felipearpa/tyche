@@ -68,7 +68,6 @@ dependencies {
     implementation(libs.paging.compose)
     implementation(libs.navigation.compose)
     implementation(libs.google.accompanist.placeholder)
-    implementation(libs.bundles.retrofit)
     implementation(libs.felipearpa.foundation)
 
     testImplementation(platform(libs.junit5.bom))

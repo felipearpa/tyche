@@ -21,7 +21,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import retrofit2.Retrofit
+import io.ktor.client.HttpClient
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -63,8 +63,8 @@ internal interface AuthenticationRepositoryProvider {
 @InstallIn(SingletonComponent::class)
 internal object LoginDataSourceProvider {
     @Provides
-    fun provideAuthenticationNetworkDataSource(@Auth retrofit: Retrofit): AuthenticationRemoteDataSource =
-        retrofit.create(AuthenticationRemoteDataSource::class.java)
+    fun provideAuthenticationNetworkDataSource(@Auth httpClient: HttpClient): AuthenticationRemoteDataSource =
+        AuthenticationRemoteDataSource(httpClient = httpClient)
 
     @Provides
     fun provideAuthenticationExternalDataSource(

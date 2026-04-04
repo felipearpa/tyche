@@ -52,7 +52,6 @@ dependencies {
     implementation(libs.material3)
     implementation(libs.paging.compose)
     implementation(libs.navigation.compose)
-    implementation(libs.bundles.retrofit)
     implementation(libs.hilt.navigation.compose)
     implementation(libs.dagger.hilt.android)
     implementation(libs.androidx.security.crypto)

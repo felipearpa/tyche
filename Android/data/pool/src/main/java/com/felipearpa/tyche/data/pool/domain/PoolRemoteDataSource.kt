@@ -1,17 +1,27 @@
 package com.felipearpa.tyche.data.pool.domain
 
-import retrofit2.http.Body
-import retrofit2.http.GET
-import retrofit2.http.POST
-import retrofit2.http.Path
+import io.ktor.client.HttpClient
+import io.ktor.client.call.body
+import io.ktor.client.request.get
+import io.ktor.client.request.post
+import io.ktor.client.request.setBody
+import io.ktor.http.ContentType
+import io.ktor.http.contentType
 
-internal interface PoolRemoteDataSource {
-    @GET("pools/{poolId}")
-    suspend fun getPool(@Path("poolId") id: String): PoolResponse
+internal class PoolRemoteDataSource(private val httpClient: HttpClient) {
+    suspend fun getPool(id: String): PoolResponse =
+        httpClient.get("pools/$id").body()
 
-    @POST("pools")
-    suspend fun createPool(@Body createPoolRequest: CreatePoolRequest): CreatePoolResponse
+    suspend fun createPool(createPoolRequest: CreatePoolRequest): CreatePoolResponse =
+        httpClient.post("pools") {
+            contentType(ContentType.Application.Json)
+            setBody(createPoolRequest)
+        }.body()
 
-    @POST("pools/{poolId}/gamblers")
-    suspend fun joinPool(@Path("poolId") poolId: String, @Body joinPoolRequest: JoinPoolRequest)
+    suspend fun joinPool(poolId: String, joinPoolRequest: JoinPoolRequest) {
+        httpClient.post("pools/$poolId/gamblers") {
+            contentType(ContentType.Application.Json)
+            setBody(joinPoolRequest)
+        }
+    }
 }

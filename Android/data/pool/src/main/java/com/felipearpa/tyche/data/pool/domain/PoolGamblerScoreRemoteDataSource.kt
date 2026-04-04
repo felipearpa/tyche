@@ -1,28 +1,35 @@
 package com.felipearpa.tyche.data.pool.domain
 
 import com.felipearpa.tyche.core.paging.CursorPage
-import retrofit2.http.GET
-import retrofit2.http.Path
-import retrofit2.http.Query
+import io.ktor.client.HttpClient
+import io.ktor.client.call.body
+import io.ktor.client.request.get
+import io.ktor.client.request.parameter
 
-internal interface PoolGamblerScoreRemoteDataSource {
-    @GET("/gamblers/{gamblerId}/pools")
+internal class PoolGamblerScoreRemoteDataSource(private val httpClient: HttpClient) {
     suspend fun getPoolGamblerScoresByGambler(
-        @Path("gamblerId") gamblerId: String,
-        @Query("next") next: String? = null,
-        @Query("searchText") searchText: String? = null
-    ): CursorPage<PoolGamblerScoreResponse>
+        gamblerId: String,
+        next: String? = null,
+        searchText: String? = null,
+    ): CursorPage<PoolGamblerScoreResponse> =
+        httpClient.get("gamblers/$gamblerId/pools") {
+            parameter("next", next)
+            parameter("searchText", searchText)
+        }.body()
 
-    @GET("/pools/{poolId}/gamblers")
     suspend fun getPoolGamblerScoresByPool(
-        @Path("poolId") poolId: String,
-        @Query("next") next: String? = null,
-        @Query("searchText") searchText: String? = null
-    ): CursorPage<PoolGamblerScoreResponse>
+        poolId: String,
+        next: String? = null,
+        searchText: String? = null,
+    ): CursorPage<PoolGamblerScoreResponse> =
+        httpClient.get("pools/$poolId/gamblers") {
+            parameter("next", next)
+            parameter("searchText", searchText)
+        }.body()
 
-    @GET("/pools/{poolId}/gamblers/{gamblerId}")
     suspend fun getPoolGamblerScore(
-        @Path("poolId") poolId: String,
-        @Path("gamblerId") gamblerId: String
-    ): PoolGamblerScoreResponse
+        poolId: String,
+        gamblerId: String,
+    ): PoolGamblerScoreResponse =
+        httpClient.get("pools/$poolId/gamblers/$gamblerId").body()
 }

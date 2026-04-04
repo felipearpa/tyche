@@ -1,29 +1,41 @@
 package com.felipearpa.tyche.data.bet.domain
 
 import com.felipearpa.tyche.core.paging.CursorPage
-import retrofit2.http.Body
-import retrofit2.http.GET
-import retrofit2.http.PATCH
-import retrofit2.http.Path
-import retrofit2.http.Query
+import io.ktor.client.HttpClient
+import io.ktor.client.call.body
+import io.ktor.client.request.get
+import io.ktor.client.request.parameter
+import io.ktor.client.request.patch
+import io.ktor.client.request.setBody
+import io.ktor.http.ContentType
+import io.ktor.http.contentType
 
-internal interface PoolGamblerBetRemoteDataSource {
-    @GET("/pools/{poolId}/gamblers/{gamblerId}/bets/pending")
+internal class PoolGamblerBetRemoteDataSource(private val httpClient: HttpClient) {
     suspend fun getPendingPoolGamblerBets(
-        @Path("poolId") poolId: String,
-        @Path("gamblerId") gamblerId: String,
-        @Query("next") next: String? = null,
-        @Query("searchText") searchText: String? = null,
-    ): CursorPage<PoolGamblerBetResponse>
+        poolId: String,
+        gamblerId: String,
+        next: String? = null,
+        searchText: String? = null,
+    ): CursorPage<PoolGamblerBetResponse> =
+        httpClient.get("pools/$poolId/gamblers/$gamblerId/bets/pending") {
+            parameter("next", next)
+            parameter("searchText", searchText)
+        }.body()
 
-    @GET("/pools/{poolId}/gamblers/{gamblerId}/bets/finished")
     suspend fun getFinishedPoolGamblerBets(
-        @Path("poolId") poolId: String,
-        @Path("gamblerId") gamblerId: String,
-        @Query("next") next: String? = null,
-        @Query("searchText") searchText: String? = null,
-    ): CursorPage<PoolGamblerBetResponse>
+        poolId: String,
+        gamblerId: String,
+        next: String? = null,
+        searchText: String? = null,
+    ): CursorPage<PoolGamblerBetResponse> =
+        httpClient.get("pools/$poolId/gamblers/$gamblerId/bets/finished") {
+            parameter("next", next)
+            parameter("searchText", searchText)
+        }.body()
 
-    @PATCH("bets")
-    suspend fun bet(@Body betRequest: BetRequest): PoolGamblerBetResponse
+    suspend fun bet(betRequest: BetRequest): PoolGamblerBetResponse =
+        httpClient.patch("bets") {
+            contentType(ContentType.Application.Json)
+            setBody(betRequest)
+        }.body()
 }

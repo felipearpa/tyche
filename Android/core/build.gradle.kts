@@ -53,7 +53,7 @@ android {
 }
 
 dependencies {
-    implementation(libs.bundles.retrofit)
+    implementation(libs.bundles.ktor)
     implementation(libs.dagger.hilt.android)
     implementation(libs.androidx.security.crypto)
     implementation(libs.kotlinx.serialization.json)
@@ -73,5 +73,5 @@ dependencies {
 
 dependencies {
     implementation(project(":network:core"))
-    implementation(project(":network:retrofit"))
+    implementation(project(":network:ktor"))
 }

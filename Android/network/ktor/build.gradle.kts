@@ -14,7 +14,7 @@ kotlin {
 }
 
 android {
-    namespace = "com.felipearpa.network.serializer"
+    namespace = "com.felipearpa.network.ktor"
     compileSdk = projectCompileSdk.toInt()
     defaultConfig {
         minSdk = projectMinSdk.toInt()
@@ -50,7 +50,7 @@ android {
 
 dependencies {
     implementation(libs.core.ktx)
-    implementation(libs.retrofit)
+    implementation(libs.bundles.ktor)
 
     testImplementation(platform(libs.junit5.bom))
     testImplementation(libs.junit5.jupiter)
