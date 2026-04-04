@@ -11,9 +11,8 @@ import com.felipearpa.tyche.data.pool.domain.toCreatePoolOutput
 import com.felipearpa.tyche.data.pool.domain.toCreatePoolRequest
 import com.felipearpa.tyche.data.pool.domain.toJoinPoolRequest
 import com.felipearpa.tyche.data.pool.domain.toPool
-import javax.inject.Inject
 
-internal class PoolRemoteRepository @Inject constructor(
+internal class PoolRemoteRepository(
     private val poolRemoteDataSource: PoolDataSource,
     private val networkExceptionHandler: NetworkExceptionHandler,
 ) : PoolRepository {

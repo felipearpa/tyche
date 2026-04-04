@@ -1,42 +1,30 @@
 package com.felipearpa.tyche.data.bet.di
 
+import com.felipearpa.tyche.core.network.HttpClientQualifier
+import com.felipearpa.tyche.data.bet.application.BetUseCase
 import com.felipearpa.tyche.data.bet.application.GetFinishedPoolGamblerBetsUseCase
 import com.felipearpa.tyche.data.bet.application.GetPendingPoolGamblerBetsUseCase
 import com.felipearpa.tyche.data.bet.domain.PoolGamblerBetDataSource
 import com.felipearpa.tyche.data.bet.domain.PoolGamblerBetRepository
 import com.felipearpa.tyche.data.bet.infrastructure.PoolGamblerBetRemoteKtorDataSource
 import com.felipearpa.tyche.data.bet.infrastructure.PoolGamblerBetRemoteRepository
-import com.felipearpa.tyche.session.Auth
-import dagger.Binds
-import dagger.Module
-import dagger.Provides
-import dagger.hilt.InstallIn
-import dagger.hilt.components.SingletonComponent
 import io.ktor.client.HttpClient
+import org.koin.core.qualifier.named
+import org.koin.dsl.module
 
-@Module
-@InstallIn(SingletonComponent::class)
-internal object PoolUseCaseProvider {
-    @Provides
-    fun provideGetPendingPoolGamblerBetsUseCase(poolGamblerBetRepository: PoolGamblerBetRepository) =
-        GetPendingPoolGamblerBetsUseCase(poolGamblerBetRepository = poolGamblerBetRepository)
+val betDataModule = module {
+    factory { GetPendingPoolGamblerBetsUseCase(poolGamblerBetRepository = get()) }
+    factory { GetFinishedPoolGamblerBetsUseCase(poolGamblerBetRepository = get()) }
+    factory { BetUseCase(poolGamblerBetRepository = get()) }
 
-    @Provides
-    fun provideGetFinishedPoolGamblerBetsUseCase(poolGamblerBetRepository: PoolGamblerBetRepository) =
-        GetFinishedPoolGamblerBetsUseCase(poolGamblerBetRepository = poolGamblerBetRepository)
-}
+    factory<PoolGamblerBetRepository> {
+        PoolGamblerBetRemoteRepository(
+            poolGamblerBetRemoteDataSource = get(),
+            networkExceptionHandler = get(),
+        )
+    }
 
-@Module
-@InstallIn(SingletonComponent::class)
-internal interface PoolRepositoryProvider {
-    @Binds
-    fun providePoolGamblerScoreRepository(impl: PoolGamblerBetRemoteRepository): PoolGamblerBetRepository
-}
-
-@Module
-@InstallIn(SingletonComponent::class)
-internal object PoolDataSourceProvider {
-    @Provides
-    fun providePoolGamblerScoreRemoteDataSource(@Auth httpClient: HttpClient): PoolGamblerBetDataSource =
-        PoolGamblerBetRemoteKtorDataSource(httpClient = httpClient)
+    factory<PoolGamblerBetDataSource> {
+        PoolGamblerBetRemoteKtorDataSource(httpClient = get<HttpClient>(named(HttpClientQualifier.Auth)))
+    }
 }

@@ -7,14 +7,11 @@ import com.felipearpa.tyche.session.AccountBundle
 import com.felipearpa.tyche.session.authentication.application.SignInWithEmailAndPasswordUseCase
 import com.felipearpa.tyche.ui.exception.mapOrDefaultLocalized
 import com.felipearpa.ui.state.LoadableViewState
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
-@HiltViewModel
-class EmailAndPasswordSignInViewModel @Inject constructor(
+class EmailAndPasswordSignInViewModel(
     private val signInWithEmailAndPasswordUseCase: SignInWithEmailAndPasswordUseCase,
 ) : ViewModel() {
     private val _state =

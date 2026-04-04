@@ -23,17 +23,12 @@ import com.felipearpa.tyche.signin.signInWithEmailAndPasswordNavView
 import com.felipearpa.tyche.signin.signInWithEmailLinkNavView
 import com.felipearpa.tyche.signin.signInWithEmailNavView
 import com.felipearpa.tyche.ui.theme.TycheTheme
-import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.runBlocking
-import javax.inject.Inject
+import org.koin.android.ext.android.inject
 
-@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-    @Inject
-    lateinit var accountStorage: AccountStorage
-
-    @Inject
-    lateinit var joinUrlTemplate: JoinPoolUrlTemplateProvider
+    private val accountStorage: AccountStorage by inject()
+    private val joinUrlTemplate: JoinPoolUrlTemplateProvider by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

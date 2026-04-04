@@ -12,8 +12,6 @@ import com.felipearpa.tyche.data.bet.domain.BetException
 import com.felipearpa.tyche.ui.exception.mapOrDefaultLocalized
 import com.felipearpa.ui.state.EditableViewState
 import com.felipearpa.ui.state.relevantValue
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedInject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -21,8 +19,8 @@ import kotlinx.coroutines.flow.updateAndGet
 import kotlinx.coroutines.launch
 import java.util.UUID
 
-class PendingBetItemViewModel @AssistedInject constructor(
-    @Assisted poolGamblerBet: PoolGamblerBetModel,
+class PendingBetItemViewModel(
+    poolGamblerBet: PoolGamblerBetModel,
     private val betUseCase: BetUseCase,
 ) :
     ViewModel() {

@@ -6,14 +6,11 @@ import com.felipearpa.tyche.data.pool.application.GetPoolUseCase
 import com.felipearpa.tyche.data.pool.application.JoinPoolUseCase
 import com.felipearpa.tyche.data.pool.domain.JoinPoolInput
 import com.felipearpa.ui.state.LoadableViewState
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
-@HiltViewModel
-class PoolJoinerViewModel @Inject constructor(
+class PoolJoinerViewModel(
     private val getPoolUseCase: GetPoolUseCase,
     private val joinPoolUseCase: JoinPoolUseCase,
 ) : ViewModel() {

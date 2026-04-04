@@ -10,8 +10,6 @@ import com.felipearpa.foundation.emptyString
 import com.felipearpa.tyche.core.JoinPoolUrlTemplateProvider
 import com.felipearpa.tyche.data.pool.application.GetPoolGamblerScoresByGamblerUseCase
 import com.felipearpa.tyche.pool.PoolGamblerScorePagingSource
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedInject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -25,8 +23,8 @@ import kotlinx.coroutines.flow.stateIn
 private const val PAGE_SIZE = 50
 private const val PREFETCH_DISTANCE = 5
 
-class PoolScoreListViewModel @AssistedInject constructor(
-    @Assisted val gamblerId: String,
+class PoolScoreListViewModel(
+    val gamblerId: String,
     private val getPoolGamblerScoresByGamblerUseCase: GetPoolGamblerScoresByGamblerUseCase,
     private val joinPoolUrlTemplate: JoinPoolUrlTemplateProvider,
 ) :

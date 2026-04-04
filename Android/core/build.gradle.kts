@@ -5,9 +5,7 @@ val projectMinSdk: String by project
 
 plugins {
     alias(libs.plugins.android.library)
-    alias(libs.plugins.kotlin.ksp)
     alias(libs.plugins.kotlinx.serialization)
-    alias(libs.plugins.dagger.hilt)
 }
 
 kotlin {
@@ -54,7 +52,8 @@ android {
 
 dependencies {
     implementation(libs.bundles.ktor)
-    implementation(libs.dagger.hilt.android)
+    implementation(platform(libs.koin.bom))
+    implementation(libs.koin.core)
     implementation(libs.androidx.security.crypto)
     implementation(libs.kotlinx.serialization.json)
 
@@ -67,8 +66,6 @@ dependencies {
     testImplementation(libs.kotest.property)
 
     testRuntimeOnly(libs.bundles.junit5.runtime)
-
-    ksp(libs.dagger.hilt.compiler)
 }
 
 dependencies {

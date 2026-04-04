@@ -6,23 +6,10 @@ import com.felipearpa.tyche.config.LocalSignInLinkUrlTemplateProvider
 import com.felipearpa.tyche.core.IosBundleIdProvider
 import com.felipearpa.tyche.core.JoinPoolUrlTemplateProvider
 import com.felipearpa.tyche.session.SignInLinkUrlTemplateProvider
-import dagger.Module
-import dagger.Provides
-import dagger.hilt.InstallIn
-import dagger.hilt.components.SingletonComponent
+import org.koin.dsl.module
 
-@Module
-@InstallIn(SingletonComponent::class)
-object ConfigProvider {
-    @Provides
-    fun provideSignInLinkUrlTemplateProvider(): SignInLinkUrlTemplateProvider =
-        LocalSignInLinkUrlTemplateProvider()
-
-    @Provides
-    fun provideJoinPoolUrlTemplateProvider(): JoinPoolUrlTemplateProvider =
-        LocalJoinPoolUrlTemplateProvider()
-
-    @Provides
-    fun provideIosBundleIdProvider(): IosBundleIdProvider =
-        LocalIosBundleIdProvider()
+val configModule = module {
+    factory<SignInLinkUrlTemplateProvider> { LocalSignInLinkUrlTemplateProvider() }
+    factory<JoinPoolUrlTemplateProvider> { LocalJoinPoolUrlTemplateProvider() }
+    factory<IosBundleIdProvider> { LocalIosBundleIdProvider() }
 }

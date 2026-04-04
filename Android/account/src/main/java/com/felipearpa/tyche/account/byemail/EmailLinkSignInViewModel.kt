@@ -7,14 +7,11 @@ import com.felipearpa.tyche.session.AccountBundle
 import com.felipearpa.tyche.session.authentication.application.SignInWithEmailLinkUseCase
 import com.felipearpa.tyche.ui.exception.mapOrDefaultLocalized
 import com.felipearpa.ui.state.LoadableViewState
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
-@HiltViewModel
-class EmailLinkSignInViewModel @Inject constructor(
+class EmailLinkSignInViewModel(
     private val signInLinkToEmailUseCase: SignInWithEmailLinkUseCase,
 ) : ViewModel() {
     private val _state =

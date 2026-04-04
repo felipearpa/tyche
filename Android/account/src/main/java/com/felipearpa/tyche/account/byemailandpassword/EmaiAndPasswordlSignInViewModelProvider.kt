@@ -1,9 +1,7 @@
 package com.felipearpa.tyche.account.byemailandpassword
 
 import androidx.compose.runtime.Composable
-import androidx.hilt.navigation.compose.hiltViewModel
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-internal fun emailAndPasswordSignInViewModel(): EmailAndPasswordSignInViewModel {
-    return hiltViewModel()
-}
+internal fun emailAndPasswordSignInViewModel(): EmailAndPasswordSignInViewModel = koinViewModel()

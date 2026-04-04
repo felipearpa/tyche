@@ -1,11 +1,9 @@
 package com.felipearpa.tyche.session
 
 import com.felipearpa.tyche.core.data.StorageInKeyStore
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import javax.inject.Inject
 
-internal class AuthStorageInKeyStore @Inject constructor(private val storageInKeyStore: StorageInKeyStore) :
+internal class AuthStorageInKeyStore(private val storageInKeyStore: StorageInKeyStore) :
     AuthStorage {
     override suspend fun store(authBundle: AuthBundle) {
         storageInKeyStore.store(Json.encodeToString(authBundle))

@@ -3,15 +3,14 @@ package com.felipearpa.tyche.session.authentication.infrastructure
 import com.felipearpa.network.NetworkExceptionHandler
 import com.felipearpa.tyche.session.AccountBundle
 import com.felipearpa.tyche.session.authentication.domain.AccountLink
-import com.felipearpa.tyche.session.authentication.domain.AuthenticationExternalDataSource
 import com.felipearpa.tyche.session.authentication.domain.AuthenticationDataSource
+import com.felipearpa.tyche.session.authentication.domain.AuthenticationExternalDataSource
 import com.felipearpa.tyche.session.authentication.domain.AuthenticationRepository
-import com.felipearpa.tyche.session.authentication.domain.ExternalAccountId
 import com.felipearpa.tyche.session.authentication.domain.EmailLinkSignInException
+import com.felipearpa.tyche.session.authentication.domain.ExternalAccountId
 import com.felipearpa.tyche.session.authentication.domain.toLinkAccountRequest
-import javax.inject.Inject
 
-internal class AuthenticationRemoteRepository @Inject constructor(
+internal class AuthenticationRemoteRepository(
     private val authenticationExternalDataSource: AuthenticationExternalDataSource,
     private val authenticationRemoteDataSource: AuthenticationDataSource,
     private val networkExceptionHandler: NetworkExceptionHandler,

@@ -2,11 +2,10 @@ package com.felipearpa.tyche.session.authentication.application
 
 import com.felipearpa.tyche.session.AccountStorage
 import com.felipearpa.tyche.session.authentication.domain.AuthenticationRepository
-import javax.inject.Inject
 
-class LogOutUseCase @Inject constructor(
+class LogOutUseCase(
     private val authenticationRepository: AuthenticationRepository,
-    private val accountStorage: AccountStorage
+    private val accountStorage: AccountStorage,
 ) {
     suspend fun execute(): Result<Unit> {
         val logoutResult = authenticationRepository.logout()

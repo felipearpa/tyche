@@ -7,8 +7,6 @@ val projectMinSdk: String by project
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.compose)
-    alias(libs.plugins.kotlin.ksp)
-    alias(libs.plugins.dagger.hilt)
 }
 
 kotlin {
@@ -54,7 +52,8 @@ dependencies {
     implementation(libs.paging.compose)
     implementation(libs.constraint.layout.compose)
     implementation(libs.navigation.compose)
-    implementation(libs.dagger.hilt.android)
+    implementation(platform(libs.koin.bom))
+    implementation(libs.koin.compose.viewmodel)
     implementation(libs.felipearpa.viewing.state)
     implementation(libs.kotlinx.datetime)
     implementation(libs.felipearpa.foundation)
@@ -71,7 +70,6 @@ dependencies {
 
     debugImplementation(libs.bundles.compose.debug.test)
 
-    ksp(libs.dagger.hilt.compiler)
 }
 
 dependencies {

@@ -1,22 +1,9 @@
 package com.felipearpa.tyche.pool.gamblerscore
 
-import android.app.Activity
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.platform.LocalContext
-import androidx.lifecycle.viewmodel.compose.viewModel
-import dagger.hilt.android.EntryPointAccessors
+import org.koin.compose.viewmodel.koinViewModel
+import org.koin.core.parameter.parametersOf
 
 @Composable
-fun gamblerScoreListViewModel(poolId: String, gamblerId: String): GamblerScoreListViewModel {
-    val factory = EntryPointAccessors.fromActivity(
-        LocalContext.current as Activity,
-        GamblerScoreListViewModelFactoryProvider::class.java
-    ).gamblerScoreListViewModelFactory()
-    return viewModel(
-        factory = provideGamblerScoreListViewModelFactory(
-            assistedFactory = factory,
-            poolId = poolId,
-            gamblerId = gamblerId
-        )
-    )
-}
+fun gamblerScoreListViewModel(poolId: String, gamblerId: String): GamblerScoreListViewModel =
+    koinViewModel { parametersOf(poolId, gamblerId) }

@@ -8,17 +8,15 @@ import com.felipearpa.tyche.pool.toPoolGamblerScoreModel
 import com.felipearpa.tyche.session.authentication.application.LogOutUseCase
 import com.felipearpa.tyche.ui.exception.orDefaultLocalized
 import com.felipearpa.ui.state.LoadableViewState
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedInject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-class DrawerViewModel @AssistedInject constructor(
-    @Assisted("poolId") val poolId: String,
-    @Assisted("gamblerId") val gamblerId: String,
+class DrawerViewModel(
+    val poolId: String,
+    val gamblerId: String,
     private val logoutUseCase: LogOutUseCase,
-    private val getPoolGamblerScoreUseCase: GetPoolGamblerScoreUseCase
+    private val getPoolGamblerScoreUseCase: GetPoolGamblerScoreUseCase,
 ) : ViewModel() {
     private val _state =
         MutableStateFlow<LoadableViewState<PoolGamblerScoreModel>>(LoadableViewState.Initial)

@@ -8,16 +8,13 @@ import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.felipearpa.foundation.emptyString
 import com.felipearpa.tyche.data.pool.application.GetOpenPoolLayoutsUseCase
-import dagger.hilt.android.lifecycle.HiltViewModel
-import jakarta.inject.Inject
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
 
 private const val PAGE_SIZE = 50
 private const val PREFETCH_DISTANCE = 5
 
-@HiltViewModel
-internal class StepOneViewModel @Inject constructor(
+internal class StepOneViewModel(
     private val getOpenPoolLayoutsUseCase: GetOpenPoolLayoutsUseCase,
 ) : ViewModel() {
     val pageSize = PAGE_SIZE

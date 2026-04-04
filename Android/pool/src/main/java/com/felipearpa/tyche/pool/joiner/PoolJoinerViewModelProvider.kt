@@ -1,7 +1,7 @@
 package com.felipearpa.tyche.pool.joiner
 
 import androidx.compose.runtime.Composable
-import androidx.hilt.navigation.compose.hiltViewModel
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun poolJoinerViewModel(): PoolJoinerViewModel = hiltViewModel()
+fun poolJoinerViewModel(): PoolJoinerViewModel = koinViewModel()

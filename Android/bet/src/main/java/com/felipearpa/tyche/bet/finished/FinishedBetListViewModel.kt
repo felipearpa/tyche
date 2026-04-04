@@ -9,8 +9,6 @@ import androidx.paging.cachedIn
 import com.felipearpa.foundation.emptyString
 import com.felipearpa.tyche.bet.pending.PendingBetPagingSource
 import com.felipearpa.tyche.data.bet.application.GetFinishedPoolGamblerBetsUseCase
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedInject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -20,9 +18,9 @@ import kotlinx.coroutines.flow.stateIn
 private const val PAGE_SIZE = 50
 private const val PREFETCH_DISTANCE = 5
 
-class FinishedBetListViewModel @AssistedInject constructor(
-    @Assisted("poolId") private val poolId: String,
-    @Assisted("gamblerId") val gamblerId: String,
+class FinishedBetListViewModel(
+    private val poolId: String,
+    val gamblerId: String,
     private val getFinishedPoolGamblerBetsUseCase: GetFinishedPoolGamblerBetsUseCase,
 ) :
     ViewModel() {

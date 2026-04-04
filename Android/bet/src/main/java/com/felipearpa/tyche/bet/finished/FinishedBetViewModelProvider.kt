@@ -1,25 +1,11 @@
 package com.felipearpa.tyche.bet.finished
 
-import android.app.Activity
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.platform.LocalContext
-import androidx.lifecycle.viewmodel.compose.viewModel
-import dagger.hilt.android.EntryPointAccessors
+import org.koin.compose.viewmodel.koinViewModel
+import org.koin.core.parameter.parametersOf
 
 @Composable
 fun finishedBetListViewModel(
     poolId: String,
-    gamblerId: String
-): FinishedBetListViewModel {
-    val factory = EntryPointAccessors.fromActivity(
-        LocalContext.current as Activity,
-        FinishedBetViewModelFactoryProvider::class.java
-    ).finishedBetListViewModelFactory()
-    return viewModel(
-        factory = provideFinishedBetListViewModelFactory(
-            assistedFactory = factory,
-            poolId = poolId,
-            gamblerId = gamblerId
-        )
-    )
-}
+    gamblerId: String,
+): FinishedBetListViewModel = koinViewModel { parametersOf(poolId, gamblerId) }

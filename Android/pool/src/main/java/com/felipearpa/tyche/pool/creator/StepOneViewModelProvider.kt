@@ -1,7 +1,7 @@
 package com.felipearpa.tyche.pool.creator
 
 import androidx.compose.runtime.Composable
-import androidx.hilt.navigation.compose.hiltViewModel
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-internal fun stepOneViewModel(): StepOneViewModel = hiltViewModel()
+internal fun stepOneViewModel(): StepOneViewModel = koinViewModel()

@@ -6,8 +6,6 @@ val projectMinSdk: String by project
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlinx.serialization)
-    alias(libs.plugins.kotlin.ksp)
-    alias(libs.plugins.dagger.hilt)
 }
 
 kotlin {
@@ -50,7 +48,8 @@ android {
 
 dependencies {
     implementation(libs.bundles.ktor)
-    implementation(libs.dagger.hilt.android)
+    implementation(platform(libs.koin.bom))
+    implementation(libs.koin.core)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.kotlinx.datetime)
 
@@ -61,8 +60,6 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.espresso.core)
     androidTestImplementation(libs.io.mockk.android)
-
-    ksp(libs.dagger.hilt.compiler)
 }
 
 dependencies {

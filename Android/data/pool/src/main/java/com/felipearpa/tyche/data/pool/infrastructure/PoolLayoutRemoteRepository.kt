@@ -7,9 +7,8 @@ import com.felipearpa.tyche.data.pool.domain.PoolLayout
 import com.felipearpa.tyche.data.pool.domain.PoolLayoutDataSource
 import com.felipearpa.tyche.data.pool.domain.PoolLayoutRepository
 import com.felipearpa.tyche.data.pool.domain.toPoolLayout
-import javax.inject.Inject
 
-internal class PoolLayoutRemoteRepository @Inject constructor(
+internal class PoolLayoutRemoteRepository(
     private val poolLayoutRemoteDataSource: PoolLayoutDataSource,
     private val networkExceptionHandler: NetworkExceptionHandler,
 ) : PoolLayoutRepository {

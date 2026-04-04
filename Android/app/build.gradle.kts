@@ -13,7 +13,6 @@ plugins {
     alias(libs.plugins.google.gms.services)
     alias(libs.plugins.kotlinx.serialization)
     alias(libs.plugins.kotlin.ksp)
-    alias(libs.plugins.dagger.hilt)
 }
 
 kotlin {
@@ -82,12 +81,12 @@ dependencies {
     implementation(libs.material3)
     implementation(libs.paging.compose)
     implementation(libs.navigation.compose)
-    implementation(libs.hilt.navigation.compose)
     implementation(libs.constraint.layout.compose)
     implementation(libs.androidx.security.crypto)
     implementation(libs.bundles.ktor)
-    implementation(libs.dagger.hilt.android)
-    implementation(libs.hilt.navigation.compose)
+    implementation(platform(libs.koin.bom))
+    implementation(libs.koin.android)
+    implementation(libs.koin.compose.viewmodel)
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.auth)
     implementation(libs.felipearpa.viewing.state)
@@ -107,7 +106,6 @@ dependencies {
 
     debugImplementation(libs.bundles.compose.debug.test)
 
-    ksp(libs.dagger.hilt.compiler)
 }
 
 dependencies {

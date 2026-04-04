@@ -1,7 +1,7 @@
 package com.felipearpa.tyche.poolscore.drawer
 
 import androidx.compose.runtime.Composable
-import androidx.hilt.navigation.compose.hiltViewModel
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun drawerViewModel(): DrawerViewModel = hiltViewModel()
+fun drawerViewModel(): DrawerViewModel = koinViewModel()

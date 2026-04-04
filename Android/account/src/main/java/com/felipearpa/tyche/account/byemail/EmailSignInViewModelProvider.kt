@@ -1,9 +1,7 @@
 package com.felipearpa.tyche.account.byemail
 
 import androidx.compose.runtime.Composable
-import androidx.hilt.navigation.compose.hiltViewModel
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-internal fun emailSignInViewModel(): EmailSignInViewModel {
-    return hiltViewModel()
-}
+internal fun emailSignInViewModel(): EmailSignInViewModel = koinViewModel()

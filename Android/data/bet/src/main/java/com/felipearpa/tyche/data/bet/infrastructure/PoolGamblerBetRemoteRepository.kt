@@ -12,9 +12,8 @@ import com.felipearpa.tyche.data.bet.domain.PoolGamblerBetDataSource
 import com.felipearpa.tyche.data.bet.domain.PoolGamblerBetRepository
 import com.felipearpa.tyche.data.bet.domain.toBetRequest
 import com.felipearpa.tyche.data.bet.domain.toPoolGamblerBet
-import javax.inject.Inject
 
-internal class PoolGamblerBetRemoteRepository @Inject constructor(
+internal class PoolGamblerBetRemoteRepository(
     private val poolGamblerBetRemoteDataSource: PoolGamblerBetDataSource,
     private val networkExceptionHandler: NetworkExceptionHandler,
 ) : PoolGamblerBetRepository {

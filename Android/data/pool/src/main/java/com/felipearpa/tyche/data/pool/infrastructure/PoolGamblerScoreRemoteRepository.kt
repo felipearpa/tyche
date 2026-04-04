@@ -7,9 +7,8 @@ import com.felipearpa.tyche.data.pool.domain.PoolGamblerScore
 import com.felipearpa.tyche.data.pool.domain.PoolGamblerScoreDataSource
 import com.felipearpa.tyche.data.pool.domain.PoolGamblerScoreRepository
 import com.felipearpa.tyche.data.pool.domain.toPoolGamblerScore
-import javax.inject.Inject
 
-internal class PoolGamblerScoreRemoteRepository @Inject constructor(
+internal class PoolGamblerScoreRemoteRepository(
     private val poolGamblerScoreRemoteDataSource: PoolGamblerScoreDataSource,
     private val networkExceptionHandler: NetworkExceptionHandler,
 ) :

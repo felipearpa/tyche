@@ -6,8 +6,6 @@ val projectMinSdk: String by project
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlinx.serialization)
-    alias(libs.plugins.kotlin.ksp)
-    alias(libs.plugins.dagger.hilt)
 }
 
 kotlin {
@@ -47,7 +45,9 @@ android {
 dependencies {
     implementation(libs.bundles.ktor)
     implementation(libs.ktor.client.auth)
-    implementation(libs.dagger.hilt.android)
+    implementation(platform(libs.koin.bom))
+    implementation(libs.koin.core)
+    implementation(libs.koin.android)
     implementation(libs.kotlinx.serialization.json)
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.auth)
@@ -60,8 +60,6 @@ dependencies {
 
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.espresso.core)
-
-    ksp(libs.dagger.hilt.compiler)
 }
 
 dependencies {
