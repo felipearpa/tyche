@@ -19,7 +19,7 @@ val betDataModule = module {
 
     factory<PoolGamblerBetRepository> {
         PoolGamblerBetRemoteRepository(
-            poolGamblerBetRemoteDataSource = get(),
+            poolGamblerBetDataSource = get(),
             networkExceptionHandler = get(),
         )
     }

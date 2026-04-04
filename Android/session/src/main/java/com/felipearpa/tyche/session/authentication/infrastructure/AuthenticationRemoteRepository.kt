@@ -12,7 +12,7 @@ import com.felipearpa.tyche.session.authentication.domain.toLinkAccountRequest
 
 internal class AuthenticationRemoteRepository(
     private val authenticationExternalDataSource: AuthenticationExternalDataSource,
-    private val authenticationRemoteDataSource: AuthenticationDataSource,
+    private val authenticationDataSource: AuthenticationDataSource,
     private val networkExceptionHandler: NetworkExceptionHandler,
 ) : AuthenticationRepository {
     override suspend fun sendSignInLinkToEmail(email: String) =
@@ -58,7 +58,7 @@ internal class AuthenticationRemoteRepository(
 
     override suspend fun linkAccount(accountLink: AccountLink): Result<AccountBundle> =
         networkExceptionHandler.handle {
-            authenticationRemoteDataSource.linkAccount(request = accountLink.toLinkAccountRequest())
+            authenticationDataSource.linkAccount(request = accountLink.toLinkAccountRequest())
                 .run {
                     AccountBundle(
                         accountId = this.accountId,

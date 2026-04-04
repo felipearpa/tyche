@@ -9,7 +9,7 @@ import com.felipearpa.tyche.data.pool.domain.PoolGamblerScoreRepository
 import com.felipearpa.tyche.data.pool.domain.toPoolGamblerScore
 
 internal class PoolGamblerScoreRemoteRepository(
-    private val poolGamblerScoreRemoteDataSource: PoolGamblerScoreDataSource,
+    private val poolGamblerScoreDataSource: PoolGamblerScoreDataSource,
     private val networkExceptionHandler: NetworkExceptionHandler,
 ) :
     PoolGamblerScoreRepository {
@@ -20,7 +20,7 @@ internal class PoolGamblerScoreRemoteRepository(
         searchText: String?,
     ): Result<CursorPage<PoolGamblerScore>> {
         return networkExceptionHandler.handle {
-            poolGamblerScoreRemoteDataSource.getPoolGamblerScoresByGambler(
+            poolGamblerScoreDataSource.getPoolGamblerScoresByGambler(
                 gamblerId = gamblerId,
                 next = next,
                 searchText = searchText,
@@ -34,7 +34,7 @@ internal class PoolGamblerScoreRemoteRepository(
         searchText: String?,
     ): Result<CursorPage<PoolGamblerScore>> {
         return networkExceptionHandler.handle {
-            poolGamblerScoreRemoteDataSource.getPoolGamblerScoresByPool(
+            poolGamblerScoreDataSource.getPoolGamblerScoresByPool(
                 poolId = poolId,
                 next = next,
                 searchText = searchText,
@@ -47,7 +47,7 @@ internal class PoolGamblerScoreRemoteRepository(
         gamblerId: String,
     ): Result<PoolGamblerScore> {
         return networkExceptionHandler.handle {
-            poolGamblerScoreRemoteDataSource.getPoolGamblerScore(
+            poolGamblerScoreDataSource.getPoolGamblerScore(
                 poolId = poolId,
                 gamblerId = gamblerId,
             ).toPoolGamblerScore()

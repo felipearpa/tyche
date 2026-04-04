@@ -35,19 +35,19 @@ val poolDataModule = module {
 
     factory<PoolGamblerScoreRepository> {
         PoolGamblerScoreRemoteRepository(
-            poolGamblerScoreRemoteDataSource = get(),
+            poolGamblerScoreDataSource = get(),
             networkExceptionHandler = get(),
         )
     }
     factory<PoolLayoutRepository> {
         PoolLayoutRemoteRepository(
-            poolLayoutRemoteDataSource = get(),
+            poolLayoutDataSource = get(),
             networkExceptionHandler = get(),
         )
     }
     factory<PoolRepository> {
         PoolRemoteRepository(
-            poolRemoteDataSource = get(),
+            poolDataSource = get(),
             networkExceptionHandler = get(),
         )
     }

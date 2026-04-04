@@ -9,7 +9,7 @@ import com.felipearpa.tyche.data.pool.domain.PoolLayoutRepository
 import com.felipearpa.tyche.data.pool.domain.toPoolLayout
 
 internal class PoolLayoutRemoteRepository(
-    private val poolLayoutRemoteDataSource: PoolLayoutDataSource,
+    private val poolLayoutDataSource: PoolLayoutDataSource,
     private val networkExceptionHandler: NetworkExceptionHandler,
 ) : PoolLayoutRepository {
     override suspend fun getOpenPoolLayouts(
@@ -17,7 +17,7 @@ internal class PoolLayoutRemoteRepository(
         searchText: String?,
     ): Result<CursorPage<PoolLayout>> {
         return networkExceptionHandler.handle {
-            poolLayoutRemoteDataSource.getOpenPoolLayouts(next = next, searchText = searchText)
+            poolLayoutDataSource.getOpenPoolLayouts(next = next, searchText = searchText)
                 .map { poolLayoutResponse -> poolLayoutResponse.toPoolLayout() }
         }
     }

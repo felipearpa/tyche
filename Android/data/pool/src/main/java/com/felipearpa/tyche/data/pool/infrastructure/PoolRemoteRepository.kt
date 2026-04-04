@@ -13,25 +13,25 @@ import com.felipearpa.tyche.data.pool.domain.toJoinPoolRequest
 import com.felipearpa.tyche.data.pool.domain.toPool
 
 internal class PoolRemoteRepository(
-    private val poolRemoteDataSource: PoolDataSource,
+    private val poolDataSource: PoolDataSource,
     private val networkExceptionHandler: NetworkExceptionHandler,
 ) : PoolRepository {
     override suspend fun getPool(id: String): Result<Pool> {
         return networkExceptionHandler.handle {
-            poolRemoteDataSource.getPool(id = id).toPool()
+            poolDataSource.getPool(id = id).toPool()
         }
     }
 
     override suspend fun createPool(createPoolInput: CreatePoolInput): Result<CreatePoolOutput> {
         return networkExceptionHandler.handle {
-            poolRemoteDataSource.createPool(createPoolRequest = createPoolInput.toCreatePoolRequest())
+            poolDataSource.createPool(createPoolRequest = createPoolInput.toCreatePoolRequest())
                 .toCreatePoolOutput()
         }
     }
 
     override suspend fun joinPool(joinPoolInput: JoinPoolInput): Result<Unit> {
         return networkExceptionHandler.handle {
-            poolRemoteDataSource.joinPool(
+            poolDataSource.joinPool(
                 poolId = joinPoolInput.poolId,
                 joinPoolRequest = joinPoolInput.toJoinPoolRequest(),
             )

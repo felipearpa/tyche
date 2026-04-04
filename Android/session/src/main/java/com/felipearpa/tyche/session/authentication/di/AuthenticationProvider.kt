@@ -24,7 +24,7 @@ val authenticationModule = module {
     factory<AuthenticationRepository> {
         AuthenticationRemoteRepository(
             authenticationExternalDataSource = get(),
-            authenticationRemoteDataSource = get(),
+            authenticationDataSource = get(),
             networkExceptionHandler = get(),
         )
     }

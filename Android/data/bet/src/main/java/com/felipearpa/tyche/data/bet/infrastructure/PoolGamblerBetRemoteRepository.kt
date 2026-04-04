@@ -14,7 +14,7 @@ import com.felipearpa.tyche.data.bet.domain.toBetRequest
 import com.felipearpa.tyche.data.bet.domain.toPoolGamblerBet
 
 internal class PoolGamblerBetRemoteRepository(
-    private val poolGamblerBetRemoteDataSource: PoolGamblerBetDataSource,
+    private val poolGamblerBetDataSource: PoolGamblerBetDataSource,
     private val networkExceptionHandler: NetworkExceptionHandler,
 ) : PoolGamblerBetRepository {
 
@@ -25,7 +25,7 @@ internal class PoolGamblerBetRemoteRepository(
         searchText: String?,
     ): Result<CursorPage<PoolGamblerBet>> {
         return networkExceptionHandler.handle {
-            poolGamblerBetRemoteDataSource.getPendingPoolGamblerBets(
+            poolGamblerBetDataSource.getPendingPoolGamblerBets(
                 poolId = poolId,
                 gamblerId = gamblerId,
                 next = next,
@@ -41,7 +41,7 @@ internal class PoolGamblerBetRemoteRepository(
         searchText: String?,
     ): Result<CursorPage<PoolGamblerBet>> {
         return networkExceptionHandler.handle {
-            poolGamblerBetRemoteDataSource.getFinishedPoolGamblerBets(
+            poolGamblerBetDataSource.getFinishedPoolGamblerBets(
                 poolId = poolId,
                 gamblerId = gamblerId,
                 next = next,
@@ -52,7 +52,7 @@ internal class PoolGamblerBetRemoteRepository(
 
     override suspend fun bet(bet: Bet): Result<PoolGamblerBet> {
         return networkExceptionHandler.handle {
-            poolGamblerBetRemoteDataSource.bet(betRequest = bet.toBetRequest()).toPoolGamblerBet()
+            poolGamblerBetDataSource.bet(betRequest = bet.toBetRequest()).toPoolGamblerBet()
         }.recoverHttpException { exception ->
             when (exception.httpStatus) {
                 HttpStatus.FORBIDDEN -> BetException.Forbidden
