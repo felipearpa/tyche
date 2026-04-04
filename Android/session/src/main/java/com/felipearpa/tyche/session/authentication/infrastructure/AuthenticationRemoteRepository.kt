@@ -4,7 +4,7 @@ import com.felipearpa.network.NetworkExceptionHandler
 import com.felipearpa.tyche.session.AccountBundle
 import com.felipearpa.tyche.session.authentication.domain.AccountLink
 import com.felipearpa.tyche.session.authentication.domain.AuthenticationExternalDataSource
-import com.felipearpa.tyche.session.authentication.domain.AuthenticationRemoteDataSource
+import com.felipearpa.tyche.session.authentication.domain.AuthenticationDataSource
 import com.felipearpa.tyche.session.authentication.domain.AuthenticationRepository
 import com.felipearpa.tyche.session.authentication.domain.ExternalAccountId
 import com.felipearpa.tyche.session.authentication.domain.EmailLinkSignInException
@@ -13,7 +13,7 @@ import javax.inject.Inject
 
 internal class AuthenticationRemoteRepository @Inject constructor(
     private val authenticationExternalDataSource: AuthenticationExternalDataSource,
-    private val authenticationRemoteDataSource: AuthenticationRemoteDataSource,
+    private val authenticationRemoteDataSource: AuthenticationDataSource,
     private val networkExceptionHandler: NetworkExceptionHandler,
 ) : AuthenticationRepository {
     override suspend fun sendSignInLinkToEmail(email: String) =

@@ -7,14 +7,17 @@ import com.felipearpa.tyche.data.pool.application.GetPoolGamblerScoresByGamblerU
 import com.felipearpa.tyche.data.pool.application.GetPoolGamblerScoresByPoolUseCase
 import com.felipearpa.tyche.data.pool.application.GetPoolUseCase
 import com.felipearpa.tyche.data.pool.application.JoinPoolUseCase
-import com.felipearpa.tyche.data.pool.domain.PoolGamblerScoreRemoteDataSource
+import com.felipearpa.tyche.data.pool.domain.PoolGamblerScoreDataSource
 import com.felipearpa.tyche.data.pool.domain.PoolGamblerScoreRepository
-import com.felipearpa.tyche.data.pool.domain.PoolLayoutRemoteDataSource
+import com.felipearpa.tyche.data.pool.domain.PoolLayoutDataSource
 import com.felipearpa.tyche.data.pool.domain.PoolLayoutRepository
-import com.felipearpa.tyche.data.pool.domain.PoolRemoteDataSource
+import com.felipearpa.tyche.data.pool.domain.PoolDataSource
 import com.felipearpa.tyche.data.pool.domain.PoolRepository
+import com.felipearpa.tyche.data.pool.infrastructure.PoolGamblerScoreRemoteKtorDataSource
 import com.felipearpa.tyche.data.pool.infrastructure.PoolGamblerScoreRemoteRepository
+import com.felipearpa.tyche.data.pool.infrastructure.PoolLayoutRemoteKtorDataSource
 import com.felipearpa.tyche.data.pool.infrastructure.PoolLayoutRemoteRepository
+import com.felipearpa.tyche.data.pool.infrastructure.PoolRemoteKtorDataSource
 import com.felipearpa.tyche.data.pool.infrastructure.PoolRemoteRepository
 import com.felipearpa.tyche.session.Auth
 import dagger.Binds
@@ -73,14 +76,14 @@ internal interface PoolRepositoryProvider {
 @InstallIn(SingletonComponent::class)
 internal object PoolDataSourceProvider {
     @Provides
-    fun providePoolGamblerScoreRemoteDataSource(@Auth httpClient: HttpClient): PoolGamblerScoreRemoteDataSource =
-        PoolGamblerScoreRemoteDataSource(httpClient = httpClient)
+    fun providePoolGamblerScoreDataSource(@Auth httpClient: HttpClient): PoolGamblerScoreDataSource =
+        PoolGamblerScoreRemoteKtorDataSource(httpClient = httpClient)
 
     @Provides
-    fun providePoolLayoutRemoteDataSource(@Auth httpClient: HttpClient): PoolLayoutRemoteDataSource =
-        PoolLayoutRemoteDataSource(httpClient = httpClient)
+    fun providePoolLayoutDataSource(@Auth httpClient: HttpClient): PoolLayoutDataSource =
+        PoolLayoutRemoteKtorDataSource(httpClient = httpClient)
 
     @Provides
-    fun providePoolRemoteDataSource(@Auth httpClient: HttpClient): PoolRemoteDataSource =
-        PoolRemoteDataSource(httpClient = httpClient)
+    fun providePoolDataSource(@Auth httpClient: HttpClient): PoolDataSource =
+        PoolRemoteKtorDataSource(httpClient = httpClient)
 }

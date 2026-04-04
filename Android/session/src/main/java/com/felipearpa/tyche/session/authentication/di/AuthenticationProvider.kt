@@ -10,9 +10,10 @@ import com.felipearpa.tyche.session.authentication.application.SendSignInLinkToE
 import com.felipearpa.tyche.session.authentication.application.SignInWithEmailAndPasswordUseCase
 import com.felipearpa.tyche.session.authentication.application.SignInWithEmailLinkUseCase
 import com.felipearpa.tyche.session.authentication.domain.AuthenticationExternalDataSource
-import com.felipearpa.tyche.session.authentication.domain.AuthenticationRemoteDataSource
+import com.felipearpa.tyche.session.authentication.domain.AuthenticationDataSource
 import com.felipearpa.tyche.session.authentication.domain.AuthenticationRepository
 import com.felipearpa.tyche.session.authentication.infrastructure.AuthenticationFirebaseDataSource
+import com.felipearpa.tyche.session.authentication.infrastructure.AuthenticationRemoteKtorDataSource
 import com.felipearpa.tyche.session.authentication.infrastructure.AuthenticationRemoteRepository
 import com.google.firebase.auth.FirebaseAuth
 import dagger.Binds
@@ -63,8 +64,8 @@ internal interface AuthenticationRepositoryProvider {
 @InstallIn(SingletonComponent::class)
 internal object LoginDataSourceProvider {
     @Provides
-    fun provideAuthenticationNetworkDataSource(@Auth httpClient: HttpClient): AuthenticationRemoteDataSource =
-        AuthenticationRemoteDataSource(httpClient = httpClient)
+    fun provideAuthenticationNetworkDataSource(@Auth httpClient: HttpClient): AuthenticationDataSource =
+        AuthenticationRemoteKtorDataSource(httpClient = httpClient)
 
     @Provides
     fun provideAuthenticationExternalDataSource(

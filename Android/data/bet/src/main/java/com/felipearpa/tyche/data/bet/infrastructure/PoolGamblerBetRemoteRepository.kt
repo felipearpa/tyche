@@ -8,14 +8,14 @@ import com.felipearpa.tyche.core.paging.map
 import com.felipearpa.tyche.data.bet.domain.Bet
 import com.felipearpa.tyche.data.bet.domain.BetException
 import com.felipearpa.tyche.data.bet.domain.PoolGamblerBet
-import com.felipearpa.tyche.data.bet.domain.PoolGamblerBetRemoteDataSource
+import com.felipearpa.tyche.data.bet.domain.PoolGamblerBetDataSource
 import com.felipearpa.tyche.data.bet.domain.PoolGamblerBetRepository
 import com.felipearpa.tyche.data.bet.domain.toBetRequest
 import com.felipearpa.tyche.data.bet.domain.toPoolGamblerBet
 import javax.inject.Inject
 
 internal class PoolGamblerBetRemoteRepository @Inject constructor(
-    private val poolGamblerBetRemoteDataSource: PoolGamblerBetRemoteDataSource,
+    private val poolGamblerBetRemoteDataSource: PoolGamblerBetDataSource,
     private val networkExceptionHandler: NetworkExceptionHandler,
 ) : PoolGamblerBetRepository {
 
