@@ -1,12 +1,19 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 val projectCompileSdk: String by project
 val projectMinSdk: String by project
 
 plugins {
     alias(libs.plugins.android.library)
-    alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlinx.serialization)
-    alias(libs.plugins.kotlin.kapt)
+    alias(libs.plugins.kotlin.ksp)
     alias(libs.plugins.dagger.hilt)
+}
+
+kotlin {
+    compilerOptions {
+        jvmTarget.set(JvmTarget.JVM_17)
+    }
 }
 
 android {
@@ -26,9 +33,6 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
-    }
-    kotlinOptions {
-        jvmTarget = "17"
     }
     packaging {
         jniLibs {
@@ -56,14 +60,10 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.espresso.core)
 
-    kapt(libs.dagger.hilt.compiler)
+    ksp(libs.dagger.hilt.compiler)
 }
 
 dependencies {
     implementation(project(":core"))
     implementation(project(":network:core"))
-}
-
-kapt {
-    correctErrorTypes = true
 }

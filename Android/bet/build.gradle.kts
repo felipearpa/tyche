@@ -1,13 +1,20 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 val projectCompileSdk: String by project
 val projectMinSdk: String by project
 
 @Suppress("DSL_SCOPE_VIOLATION")
 plugins {
     alias(libs.plugins.android.library)
-    alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
-    alias(libs.plugins.kotlin.kapt)
+    alias(libs.plugins.kotlin.ksp)
     alias(libs.plugins.dagger.hilt)
+}
+
+kotlin {
+    compilerOptions {
+        jvmTarget.set(JvmTarget.JVM_17)
+    }
 }
 
 android {
@@ -28,9 +35,6 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
-    }
-    kotlinOptions {
-        jvmTarget = "17"
     }
     packaging {
         jniLibs {
@@ -68,15 +72,11 @@ dependencies {
 
     debugImplementation(libs.bundles.compose.debug.test)
 
-    kapt(libs.dagger.hilt.compiler)
+    ksp(libs.dagger.hilt.compiler)
 }
 
 dependencies {
     implementation(project(":core"))
     implementation(project(":ui"))
     implementation(project(":data:bet"))
-}
-
-kapt {
-    correctErrorTypes = true
 }

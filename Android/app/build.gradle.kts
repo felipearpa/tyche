@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 val projectCompileSdk: String by project
 val projectMinSdk: String by project
 val urlBasePath: String by project
@@ -7,12 +9,17 @@ val iosBundleId: String by project
 
 plugins {
     alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.google.gms.services)
     alias(libs.plugins.kotlinx.serialization)
-    alias(libs.plugins.kotlin.kapt)
+    alias(libs.plugins.kotlin.ksp)
     alias(libs.plugins.dagger.hilt)
+}
+
+kotlin {
+    compilerOptions {
+        jvmTarget.set(JvmTarget.JVM_17)
+    }
 }
 
 android {
@@ -46,9 +53,6 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
-    }
-    kotlinOptions {
-        jvmTarget = "17"
     }
     buildFeatures {
         buildConfig = true
@@ -103,7 +107,7 @@ dependencies {
 
     debugImplementation(libs.bundles.compose.debug.test)
 
-    kapt(libs.dagger.hilt.compiler)
+    ksp(libs.dagger.hilt.compiler)
 }
 
 dependencies {
@@ -116,8 +120,4 @@ dependencies {
     implementation(project(":data:pool"))
     implementation(project(":data:bet"))
     implementation(project(":network:core"))
-}
-
-kapt {
-    correctErrorTypes = true
 }
