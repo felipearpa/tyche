@@ -114,7 +114,7 @@ type PoolEvent(configureServices: IServiceCollection -> unit) =
                     |> Seq.map (fun m ->
                         { InitialPoolGamblerBet.PoolId = poolId
                           GamblerId = gamblerId
-                          MatchId = Ulid.random ()
+                          MatchId = m.MatchId
                           PoolLayoutId = poolLayoutId
                           HomeTeamId = m.HomeTeamId
                           HomeTeamName = m.HomeTeamName

@@ -8,6 +8,7 @@ open Amazon.Lambda.Core
 open Amazon.Lambda.DynamoDBEvents
 open Felipearpa.Core
 open Felipearpa.Core.Json
+open Felipearpa.Data.DynamoDb
 open Felipearpa.Tyche.Pool.Application
 open Felipearpa.Tyche.Pool.Domain
 open Felipearpa.Tyche.Pool.Infrastructure
@@ -23,6 +24,7 @@ type PoolLayoutEvent(configureServices: IServiceCollection -> unit) =
             .AddAWSService<IAmazonDynamoDB>()
             .AddLogging(fun builder -> builder.AddLambdaLogger() |> ignore)
             .AddSingleton<ISerializer, JsonSerializer>()
+            .AddSingleton<IKeySerializer, DynamoDbKeySerializer>()
             .AddSingleton<IPoolGamblerScoreRepository, PoolGamblerScoreDynamoDbRepository>()
             .AddSingleton<ComputeBetsCommand>()
         |> ignore

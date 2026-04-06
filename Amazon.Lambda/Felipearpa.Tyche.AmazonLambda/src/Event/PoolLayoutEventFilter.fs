@@ -9,7 +9,7 @@ open Felipearpa.Type
 module PoolLayoutEventFilter =
 
     [<Literal>]
-    let private updateEventName = "UPDATE"
+    let private updateEventName = "MODIFY"
 
     [<Literal>]
     let private matchIdAttributeKey = "matchId"

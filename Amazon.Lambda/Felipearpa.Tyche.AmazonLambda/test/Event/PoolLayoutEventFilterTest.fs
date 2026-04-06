@@ -38,7 +38,7 @@ module PoolLayoutEventFilterTest =
 
     let private ``given an update record with new scores and no old scores`` () =
         makeRecord
-            "UPDATE"
+            "MODIFY"
             (dict [])
             (dict
                 [ "matchId", stringAttr matchId
@@ -47,7 +47,7 @@ module PoolLayoutEventFilterTest =
 
     let private ``given an update record with both old and new scores`` () =
         makeRecord
-            "UPDATE"
+            "MODIFY"
             (dict [ "homeTeamScore", intAttr 0; "awayTeamScore", intAttr 0 ])
             (dict
                 [ "matchId", stringAttr matchId
@@ -64,10 +64,10 @@ module PoolLayoutEventFilterTest =
                   "awayTeamScore", intAttr 1 ])
 
     let private ``given an update record without matchId`` () =
-        makeRecord "UPDATE" (dict []) (dict [ "homeTeamScore", intAttr 2; "awayTeamScore", intAttr 1 ])
+        makeRecord "MODIFY" (dict []) (dict [ "homeTeamScore", intAttr 2; "awayTeamScore", intAttr 1 ])
 
     let private ``given an update record with new scores but missing away score`` () =
-        makeRecord "UPDATE" (dict []) (dict [ "matchId", stringAttr matchId; "homeTeamScore", intAttr 2 ])
+        makeRecord "MODIFY" (dict []) (dict [ "matchId", stringAttr matchId; "homeTeamScore", intAttr 2 ])
 
     [<Fact>]
     let ``given an update with new scores when extracting then the match is returned`` () =

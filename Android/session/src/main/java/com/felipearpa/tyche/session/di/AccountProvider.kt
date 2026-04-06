@@ -2,6 +2,7 @@ package com.felipearpa.tyche.session.di
 
 import com.felipearpa.network.serializer.LocalDateTimeSerializer
 import com.felipearpa.tyche.core.data.StorageInKeyStore
+import com.felipearpa.tyche.core.network.HttpClientQualifier
 import com.felipearpa.tyche.core.network.UrlBasePathProvider
 import com.felipearpa.tyche.session.AccountStorage
 import com.felipearpa.tyche.session.AccountStorageInKeyStore
@@ -14,13 +15,14 @@ import io.ktor.client.plugins.auth.providers.BearerTokens
 import io.ktor.client.plugins.auth.providers.bearer
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
+import io.ktor.client.plugins.logging.ANDROID
 import io.ktor.client.plugins.logging.LogLevel
+import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.Logging
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.datetime.LocalDateTime
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
-import com.felipearpa.tyche.core.network.HttpClientQualifier
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 import io.ktor.client.plugins.auth.Auth as KtorAuth
@@ -60,6 +62,7 @@ val sessionModule = module {
                 )
             }
             install(Logging) {
+                logger = Logger.ANDROID
                 level = LogLevel.ALL
             }
             install(KtorAuth) {

@@ -24,9 +24,7 @@ module GetPendingPoolGamblerBetsRequestBuilder =
         (maybeNext: string option)
         (deserialize: string -> IDictionary<string, AttributeValue>)
         =
-        let keyConditionExpression = "#pk = :pk"
-
-        let defaultFilterConditionExpression = ":now < #matchDateTime"
+        let keyConditionExpression = "#pk = :pk and #matchDateTime > :now"
 
         let defaultAttributeValues =
             dict
@@ -37,9 +35,9 @@ module GetPendingPoolGamblerBetsRequestBuilder =
 
         let filterExpression, attributeValues, attributeNames =
             match maybeSearchText with
-            | None -> (defaultFilterConditionExpression, defaultAttributeValues, defaultAttributeNames)
+            | None -> (null, defaultAttributeValues, defaultAttributeNames)
             | Some filterText ->
-                ($"{defaultFilterConditionExpression} and contains(#filter, :filter)",
+                ("contains(#filter, :filter)",
                  defaultAttributeValues
                  |> Dictionary.union (dict [ ":filter", AttributeValue(filterText.ToLower()) ])
                  :> IDictionary<_, _>,

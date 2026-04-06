@@ -33,7 +33,6 @@ module InitialPoolGamblerBetTransformer =
               "matchDateTime", AttributeValue(S = matchDateTime)
               "poolLayoutId", AttributeValue(S = poolGamblerBet.PoolLayoutId.Value)
               "poolLayoutVersion", AttributeValue(N = poolGamblerBet.PoolLayoutVersion.ToString())
-              "computed", AttributeValue(BOOL = false)
               "getPoolGamblerScoresByMatchPk", AttributeValue(S = $"{matchKeyPrefix}#{poolGamblerBet.MatchId}")
               "getPoolGamblerScoresByMatchSk",
               AttributeValue(

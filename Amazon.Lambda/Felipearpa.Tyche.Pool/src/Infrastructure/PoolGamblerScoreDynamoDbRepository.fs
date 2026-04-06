@@ -65,15 +65,15 @@ type PoolGamblerScoreDynamoDbRepository(keySerializer: IKeySerializer, client: I
         member this.Compute(matchId, matchScore) =
             async {
                 let requestId = Ulid.random().ToString()
-                let affectedPoolIds = HashSet<string>()
 
                 let toUpdateAction (attr: Dictionary<string, AttributeValue>) : Async<unit> =
-                    affectedPoolIds.Add(attr["poolId"].S) |> ignore
-
                     let updateRequest =
                         ComputePoolGamblerBetRequestBuilder.build (attr |> toPoolGamblerBet) matchScore requestId
 
-                    client.UpdateItemAsync updateRequest |> Async.AwaitTask |> Async.Ignore
+                    client.UpdateItemAsync updateRequest
+                    |> Async.AwaitTask
+                    |> Async.Ignore
+                    |> ConditionalUpdate.ignoreAlreadyApplied
 
                 let rec loop maybeNext =
                     async {
@@ -98,8 +98,6 @@ type PoolGamblerScoreDynamoDbRepository(keySerializer: IKeySerializer, client: I
                     }
 
                 do! loop None
-
-                return affectedPoolIds |> Seq.map Ulid.newOf |> Set.ofSeq
             }
 
         member this.UpdatePositions(poolId: Ulid) =

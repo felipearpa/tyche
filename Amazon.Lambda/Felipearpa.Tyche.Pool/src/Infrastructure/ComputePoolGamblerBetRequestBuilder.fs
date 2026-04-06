@@ -22,19 +22,17 @@ module ComputePoolGamblerBetRequestBuilder =
     let private gamblerKeyPrefix = "GAMBLER"
 
     let build (poolGamblerBet: PoolGamblerBet) (matchScore: TeamScore<int>) (requestId: String) =
-        let pk = $"{matchKeyPrefix}#{poolGamblerBet.MatchId}"
+        let pk =
+            $"{gamblerKeyPrefix}#{poolGamblerBet.GamblerId}#{poolKeyPrefix}#{poolGamblerBet.PoolId}"
 
-        let sk =
-            $"{poolKeyPrefix}#{poolGamblerBet.PoolId}#{gamblerKeyPrefix}#{poolGamblerBet.GamblerId}"
+        let sk = $"{matchKeyPrefix}#{poolGamblerBet.MatchId}"
 
         let key = dict [ "pk", AttributeValue(pk); "sk", AttributeValue(sk) ]
 
         let updateExpression =
             "SET #homeTeamScore = :homeTeamScore, \
              #awayTeamScore = :awayTeamScore, \
-             #score = if_not_exists(#score, 0) + :delta, \
-             #beforePosition = #currentPosition, \
-             #delta = :delta, \
+             #score = :delta, \
              #computedAt = :now, \
              #requestId = :requestId"
 
@@ -46,9 +44,6 @@ module ComputePoolGamblerBetRequestBuilder =
                 [ "#homeTeamScore", "homeTeamScore"
                   "#awayTeamScore", "awayTeamScore"
                   "#score", "score"
-                  "#currentPosition", "currentPosition"
-                  "#beforePosition", "beforePosition"
-                  "#delta", "delta"
                   "#computedAt", "computedAt"
                   "#requestId", "requestId" ]
 

@@ -13,17 +13,18 @@ module GetBetPoolGamblerScoresByMatchRequestBuilder =
     let private matchKeyPrefix = "MATCH"
 
     let build (matchId: Ulid) (maybeNext: IDictionary<string, AttributeValue> option) =
-        let keyConditionExpression = "#pk = :pk"
+        let keyConditionExpression =
+            "#getPoolGamblerScoresByMatchPk = :getPoolGamblerScoresByMatchPk"
 
         let filterExpression =
             "attribute_not_exists(#computedAt) AND attribute_exists(#homeTeamBet) AND attribute_exists(#awayTeamBet)"
 
         let attributeValues =
-            dict [ ":pk", AttributeValue(S = $"{matchKeyPrefix}#{matchId}") ]
+            dict [ ":getPoolGamblerScoresByMatchPk", AttributeValue(S = $"{matchKeyPrefix}#{matchId}") ]
 
         let attributeNames =
             dict
-                [ "#pk", "pk"
+                [ "#getPoolGamblerScoresByMatchPk", "getPoolGamblerScoresByMatchPk"
                   "#computedAt", "computedAt"
                   "#homeTeamBet", "homeTeamBet"
                   "#awayTeamBet", "awayTeamBet" ]
