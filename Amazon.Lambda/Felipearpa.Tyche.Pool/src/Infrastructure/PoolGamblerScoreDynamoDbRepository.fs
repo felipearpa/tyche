@@ -62,8 +62,7 @@ type PoolGamblerScoreDynamoDbRepository(keySerializer: IKeySerializer, client: I
                     |> Ok
             }
 
-        member this.Compute(matchId, matchScore) =
-            let repo = this :> IPoolGamblerScoreRepository
+        member this.Compute(matchId, matchScore, onPoolScored) =
             let computedRequestId = Ulid.random().ToString()
 
             let computeScore (poolGamblerBet: PoolGamblerBet) =
@@ -92,10 +91,10 @@ type PoolGamblerScoreDynamoDbRepository(keySerializer: IKeySerializer, client: I
                 |> Async.Ignore
                 |> ConditionalUpdate.ignoreTransactionConflict
 
-            let updatePositionsIfPoolChanged (previousPoolId: Ulid option) (currentPoolId: Ulid) =
+            let notifyIfPoolChanged (previousPoolId: Ulid option) (currentPoolId: Ulid) =
                 async {
                     match previousPoolId with
-                    | Some poolId when poolId <> currentPoolId -> do! repo.UpdatePositions(poolId, matchId)
+                    | Some poolId when poolId <> currentPoolId -> do! onPoolScored poolId
                     | _ -> ()
                 }
 
@@ -115,7 +114,7 @@ type PoolGamblerScoreDynamoDbRepository(keySerializer: IKeySerializer, client: I
                             (fun (state: Async<Ulid option>) bet ->
                                 async {
                                     let! previousPoolId = state
-                                    do! updatePositionsIfPoolChanged previousPoolId bet.PoolId
+                                    do! notifyIfPoolChanged previousPoolId bet.PoolId
                                     do! computeScore bet
                                     return Some bet.PoolId
                                 })
@@ -132,7 +131,7 @@ type PoolGamblerScoreDynamoDbRepository(keySerializer: IKeySerializer, client: I
                 let! lastPoolId = loop None None
 
                 match lastPoolId with
-                | Some poolId -> do! repo.UpdatePositions(poolId, matchId)
+                | Some poolId -> do! onPoolScored poolId
                 | None -> ()
             }
 

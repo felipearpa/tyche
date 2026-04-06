@@ -25,10 +25,11 @@
     <Compile Include="Event\PoolEvent.fs" />
     <Compile Include="Event\PoolLayoutEventFilter.fs" />
     <Compile Include="Event\PoolLayoutEvent.fs" />
+    <Compile Include="Event\UpdatePositionsEvent.fs" />
     <Compile Include="Assembly.fs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="aws-lambda-tools-defaults.json"/>
+    <Content Include="aws-lambda-tools-defaults.json" />
     <None Include="serverless.template.yaml" />
   </ItemGroup>
   <ItemGroup>
@@ -40,6 +41,7 @@
     <PackageReference Include="Amazon.Lambda.Logging.AspNetCore" Version="4.1.1" />
     <PackageReference Include="Amazon.Lambda.Serialization.SystemTextJson" Version="2.4.5" />
     <PackageReference Include="Amazon.Lambda.APIGatewayEvents" Version="2.7.3" />
+    <PackageReference Include="Amazon.Lambda.SQSEvents" Version="2.2.1" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.3" />
   </ItemGroup>
 </Project>

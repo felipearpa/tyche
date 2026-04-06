@@ -16,6 +16,7 @@
         <Compile Include="Domain\PoolGamblerBetDictionaryTransformer.fs" />
         <Compile Include="Domain\IPoolGamblerScoreRepository.fs" />
         <Compile Include="Domain\IPoolGamblerBetRepository.fs" />
+        <Compile Include="Domain\IUpdatePositionsPublisher.fs" />
         <Compile Include="Domain\CreatePoolInput.fs" />
         <Compile Include="Domain\ResolvedCreatePoolInput.fs" />
         <Compile Include="Domain\CreatePoolOutput.fs" />
@@ -38,6 +39,7 @@
         <Compile Include="Infrastructure\ComputePoolGamblerScoreRequestBuilder.fs" />
         <Compile Include="Infrastructure\UpdateCurrentPositionRequestBuilder.fs" />
         <Compile Include="Infrastructure\UpdateMatchPositionRequestBuilder.fs" />
+        <Compile Include="Infrastructure\UpdatePositionsSqsPublisher.fs" />
         <Compile Include="Infrastructure\PoolGamblerScoreDynamoDbRepository.fs" />
         <Compile Include="Infrastructure\PoolGamblerBetDynamoDbRepository.fs" />
         <Compile Include="Infrastructure\GetPoolByIdRequestBuilder.fs" />
@@ -55,6 +57,7 @@
         <Compile Include="Application\GetPoolByIdQuery.fs" />
         <Compile Include="Application\AddMatchCommand.fs" />
         <Compile Include="Application\ComputeBetsCommand.fs" />
+        <Compile Include="Application\UpdatePositionsCommand.fs" />
         <Compile Include="Application\AddMatchesCommand.fs" />
     </ItemGroup>
 
@@ -62,6 +65,10 @@
       <ProjectReference Include="..\..\Felipearpa.Data.DynamoDb\src\Felipearpa.Data.DynamoDb.fsproj" />
       <ProjectReference Include="..\..\Felipearpa.Tyche.Account\src\Felipearpa.Tyche.Account.fsproj" />
       <ProjectReference Include="..\..\Felipearpa.Type\src\Felipearpa.Type.fsproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="AWSSDK.SQS" Version="4.0.2.24" />
     </ItemGroup>
 
 </Project>

@@ -339,6 +339,14 @@ Resources:
             MaximumBatchingWindowInSeconds: 1
             Enabled: true
             
+  UpdatePositionsQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: UpdatePositionsQueue.fifo
+      FifoQueue: true
+      ContentBasedDeduplication: false
+      VisibilityTimeout: 120
+
   OnPoolLayoutChange:
     Type: AWS::Serverless::Function
     Properties:
@@ -347,6 +355,9 @@ Resources:
       CodeUri: .
       MemorySize: 256
       Timeout: 60
+      Environment:
+        Variables:
+          UPDATE_POSITIONS_QUEUE_URL: !Ref UpdatePositionsQueue
       Policies:
         - AWSLambdaBasicExecutionRole
         - Statement:
@@ -359,11 +370,16 @@ Resources:
                 - dynamodb:Query
                 - dynamodb:PutItem
                 - dynamodb:UpdateItem
+                - dynamodb:TransactWriteItems
               Resource:
                 - arn:aws:dynamodb:us-east-2:567776770335:table/PoolLayout/stream/2025-09-27T02:24:29.497
                 - arn:aws:dynamodb:us-east-2:567776770335:table/PoolLayout
                 - arn:aws:dynamodb:us-east-2:567776770335:table/Pool
                 - arn:aws:dynamodb:us-east-2:567776770335:table/Pool/index/GetPoolGamblerScoresByMatch-index
+            - Effect: Allow
+              Action:
+                - sqs:SendMessage
+              Resource: !GetAtt UpdatePositionsQueue.Arn
       Architectures: [ arm64 ]
       Events:
         PoolStream:
@@ -373,6 +389,39 @@ Resources:
             StartingPosition: LATEST
             BatchSize: 100
             MaximumBatchingWindowInSeconds: 1
+            Enabled: true
+
+  OnUpdatePositions:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: Felipearpa.Tyche.AmazonLambda::Felipearpa.Tyche.AmazonLambda.Event.UpdatePositionsEvent::OnUpdatePositionsAsync
+      Runtime: dotnet10
+      CodeUri: .
+      MemorySize: 256
+      Timeout: 60
+      Policies:
+        - AWSLambdaBasicExecutionRole
+        - Statement:
+            - Effect: Allow
+              Action:
+                - sqs:ReceiveMessage
+                - sqs:DeleteMessage
+                - sqs:GetQueueAttributes
+              Resource: !GetAtt UpdatePositionsQueue.Arn
+            - Effect: Allow
+              Action:
+                - dynamodb:Query
+                - dynamodb:UpdateItem
+              Resource:
+                - arn:aws:dynamodb:us-east-2:567776770335:table/Pool
+                - arn:aws:dynamodb:us-east-2:567776770335:table/Pool/index/GetPoolGamblerScoresByPool-index
+      Architectures: [ arm64 ]
+      Events:
+        SqsEvent:
+          Type: SQS
+          Properties:
+            Queue: !GetAtt UpdatePositionsQueue.Arn
+            BatchSize: 1
             Enabled: true
 
 Outputs:
