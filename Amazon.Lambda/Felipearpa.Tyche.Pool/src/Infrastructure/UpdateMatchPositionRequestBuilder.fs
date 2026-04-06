@@ -4,10 +4,13 @@ open System.Collections.Generic
 open Amazon.DynamoDBv2.Model
 open Felipearpa.Type
 
-module UpdateCurrentPositionRequestBuilder =
+module UpdateMatchPositionRequestBuilder =
 
     [<Literal>]
     let private tableName = "Pool"
+
+    [<Literal>]
+    let private matchKeyPrefix = "MATCH"
 
     [<Literal>]
     let private poolKeyPrefix = "POOL"
@@ -15,21 +18,24 @@ module UpdateCurrentPositionRequestBuilder =
     [<Literal>]
     let private gamblerKeyPrefix = "GAMBLER"
 
-    let build (poolId: Ulid) (gamblerId: Ulid) (position: int) =
-        let key =
-            dict
-                [ "pk", AttributeValue(S = $"{poolKeyPrefix}#{poolId}")
-                  "sk", AttributeValue(S = $"{gamblerKeyPrefix}#{gamblerId}") ]
+    let build (poolId: Ulid) (gamblerId: Ulid) (matchId: Ulid) (currentPosition: int) (beforePosition: int) =
+        let pk = $"{gamblerKeyPrefix}#{gamblerId}#{poolKeyPrefix}#{poolId}"
+
+        let sk = $"{matchKeyPrefix}#{matchId}"
+
+        let key = dict [ "pk", AttributeValue(pk); "sk", AttributeValue(sk) ]
 
         let updateExpression =
-            "SET #beforePosition = #currentPosition, \
-             #currentPosition = :currentPosition"
+            "SET #currentPosition = :currentPosition, \
+             #beforePosition = :beforePosition"
 
         let attributeNames =
             dict [ "#currentPosition", "currentPosition"; "#beforePosition", "beforePosition" ]
 
         let attributeValues =
-            dict [ ":currentPosition", AttributeValue(N = position.ToString()) ]
+            dict
+                [ ":currentPosition", AttributeValue(N = currentPosition.ToString())
+                  ":beforePosition", AttributeValue(N = beforePosition.ToString()) ]
 
         UpdateItemRequest(
             TableName = tableName,

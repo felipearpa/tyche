@@ -2,7 +2,6 @@ namespace Felipearpa.Tyche.Pool.Infrastructure
 
 #nowarn "3536"
 
-open System.Collections.Generic
 open System.Linq
 open Amazon.DynamoDBv2
 open Amazon.DynamoDBv2.Model
@@ -64,62 +63,80 @@ type PoolGamblerScoreDynamoDbRepository(keySerializer: IKeySerializer, client: I
             }
 
         member this.Compute(matchId, matchScore) =
+            let repo = this :> IPoolGamblerScoreRepository
+            let computedRequestId = Ulid.random().ToString()
+
+            let computeScore (poolGamblerBet: PoolGamblerBet) =
+                let scoreDelta = delta poolGamblerBet.BetScore matchScore
+
+                let detailUpdate =
+                    ComputePoolGamblerBetRequestBuilder.build poolGamblerBet matchScore computedRequestId
+
+                let masterUpdate =
+                    ComputePoolGamblerScoreRequestBuilder.build
+                        poolGamblerBet.PoolId
+                        poolGamblerBet.GamblerId
+                        scoreDelta
+
+                let transactRequest =
+                    TransactWriteItemsRequest(
+                        TransactItems =
+                            ResizeArray(
+                                [ TransactWriteItem(Update = detailUpdate)
+                                  TransactWriteItem(Update = masterUpdate) ]
+                            )
+                    )
+
+                client.TransactWriteItemsAsync transactRequest
+                |> Async.AwaitTask
+                |> Async.Ignore
+                |> ConditionalUpdate.ignoreTransactionConflict
+
+            let updatePositionsIfPoolChanged (previousPoolId: Ulid option) (currentPoolId: Ulid) =
+                async {
+                    match previousPoolId with
+                    | Some poolId when poolId <> currentPoolId -> do! repo.UpdatePositions(poolId, matchId)
+                    | _ -> ()
+                }
+
+            let rec loop (lastPoolId: Ulid option) maybeNext =
+                async {
+                    let request =
+                        GetBetPoolGamblerScoresByMatchRequestBuilder.build
+                            matchId
+                            (maybeNext |> Option.map keySerializer.Deserialize)
+
+                    let! response = client.QueryAsync(request) |> Async.AwaitTask
+
+                    let! lastPoolId =
+                        response.Items
+                        |> Seq.map toPoolGamblerBet
+                        |> Seq.fold
+                            (fun (state: Async<Ulid option>) bet ->
+                                async {
+                                    let! previousPoolId = state
+                                    do! updatePositionsIfPoolChanged previousPoolId bet.PoolId
+                                    do! computeScore bet
+                                    return Some bet.PoolId
+                                })
+                            (async { return lastPoolId })
+
+                    match response.LastEvaluatedKey |> Option.ofObj with
+                    | Some lek ->
+                        let serialized = keySerializer.Serialize(lek)
+                        return! loop lastPoolId (Some serialized)
+                    | None -> return lastPoolId
+                }
+
             async {
-                let computedRequestId = Ulid.random().ToString()
+                let! lastPoolId = loop None None
 
-                let toUpdateAction (attr: Dictionary<string, AttributeValue>) : Async<unit> =
-                    let poolGamblerBet = attr |> toPoolGamblerBet
-                    let scoreDelta = delta poolGamblerBet.BetScore matchScore
-
-                    let detailUpdate =
-                        ComputePoolGamblerBetRequestBuilder.build poolGamblerBet matchScore computedRequestId
-
-                    let masterUpdate =
-                        ComputePoolGamblerScoreRequestBuilder.build
-                            poolGamblerBet.PoolId
-                            poolGamblerBet.GamblerId
-                            scoreDelta
-
-                    let transactRequest =
-                        TransactWriteItemsRequest(
-                            TransactItems =
-                                ResizeArray(
-                                    [ TransactWriteItem(Update = detailUpdate)
-                                      TransactWriteItem(Update = masterUpdate) ]
-                                )
-                        )
-
-                    client.TransactWriteItemsAsync transactRequest
-                    |> Async.AwaitTask
-                    |> Async.Ignore
-                    |> ConditionalUpdate.ignoreTransactionConflict
-
-                let rec loop maybeNext =
-                    async {
-                        let poolGamblerScoresByMatchRequest =
-                            GetBetPoolGamblerScoresByMatchRequestBuilder.build
-                                matchId
-                                (maybeNext |> Option.map keySerializer.Deserialize)
-
-                        let! poolGamblerScoresByMatchResponse =
-                            client.QueryAsync(poolGamblerScoresByMatchRequest) |> Async.AwaitTask
-
-                        do!
-                            poolGamblerScoresByMatchResponse.Items
-                            |> Seq.map toUpdateAction
-                            |> Seq.iterAsync id
-
-                        match poolGamblerScoresByMatchResponse.LastEvaluatedKey |> Option.ofObj with
-                        | Some lek ->
-                            let serialized = keySerializer.Serialize(lek)
-                            return! loop (Some serialized)
-                        | None -> return ()
-                    }
-
-                do! loop None
+                match lastPoolId with
+                | Some poolId -> do! repo.UpdatePositions(poolId, matchId)
+                | None -> ()
             }
 
-        member this.UpdatePositions(poolId: Ulid) =
+        member this.UpdatePositions(poolId: Ulid, matchId: Ulid) =
             let rec loop (position: int) (maybeNext: string option) =
                 async {
                     let request =
@@ -131,12 +148,27 @@ type PoolGamblerScoreDynamoDbRepository(keySerializer: IKeySerializer, client: I
                         response.Items
                         |> Seq.mapi (fun i item ->
                             let gamblerId = item["gamblerId"].S |> Ulid.newOf
-                            let currentPosition = position + i + 1
+                            let beforePosition = item["currentPosition"].N |> int
+                            let newPosition = position + i + 1
 
-                            let updateRequest =
-                                UpdateCurrentPositionRequestBuilder.build poolId gamblerId currentPosition
+                            let masterUpdate =
+                                UpdateCurrentPositionRequestBuilder.build poolId gamblerId newPosition
 
-                            client.UpdateItemAsync updateRequest |> Async.AwaitTask |> Async.Ignore)
+                            let detailUpdate =
+                                UpdateMatchPositionRequestBuilder.build
+                                    poolId
+                                    gamblerId
+                                    matchId
+                                    newPosition
+                                    beforePosition
+
+                            async {
+                                do!
+                                    [ client.UpdateItemAsync masterUpdate |> Async.AwaitTask |> Async.Ignore
+                                      client.UpdateItemAsync detailUpdate |> Async.AwaitTask |> Async.Ignore ]
+                                    |> Async.Parallel
+                                    |> Async.Ignore
+                            })
                         |> Seq.iterAsync id
 
                     match response.LastEvaluatedKey |> Option.ofObj with

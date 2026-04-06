@@ -14,4 +14,4 @@ type IPoolGamblerScoreRepository =
 
     abstract Compute: Ulid * TeamScore<int> -> unit Async
 
-    abstract UpdatePositions: Ulid -> unit Async
+    abstract UpdatePositions: Ulid * Ulid -> unit Async
