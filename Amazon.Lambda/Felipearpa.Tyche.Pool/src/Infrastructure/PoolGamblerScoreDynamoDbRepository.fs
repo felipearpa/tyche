@@ -10,6 +10,7 @@ open Felipearpa.Core
 open Felipearpa.Core.Paging
 open Felipearpa.Data.DynamoDb
 open Felipearpa.Tyche.Pool.Domain
+open Felipearpa.Tyche.Pool.Domain.BetEvaluator
 open Felipearpa.Tyche.Pool.Domain.PoolGamblerBetDictionaryTransformer
 open Felipearpa.Tyche.Pool.Domain.PoolGamblerScoreDictionaryTransformer
 open Felipearpa.Type
@@ -64,13 +65,31 @@ type PoolGamblerScoreDynamoDbRepository(keySerializer: IKeySerializer, client: I
 
         member this.Compute(matchId, matchScore) =
             async {
-                let requestId = Ulid.random().ToString()
+                let computedRequestId = Ulid.random().ToString()
 
                 let toUpdateAction (attr: Dictionary<string, AttributeValue>) : Async<unit> =
-                    let updateRequest =
-                        ComputePoolGamblerBetRequestBuilder.build (attr |> toPoolGamblerBet) matchScore requestId
+                    let poolGamblerBet = attr |> toPoolGamblerBet
+                    let scoreDelta = delta poolGamblerBet.BetScore matchScore
 
-                    client.UpdateItemAsync updateRequest
+                    let detailUpdate =
+                        ComputePoolGamblerBetRequestBuilder.build poolGamblerBet matchScore computedRequestId
+
+                    let masterUpdate =
+                        ComputePoolGamblerScoreRequestBuilder.build
+                            poolGamblerBet.PoolId
+                            poolGamblerBet.GamblerId
+                            scoreDelta
+
+                    let transactRequest =
+                        TransactWriteItemsRequest(
+                            TransactItems =
+                                ResizeArray(
+                                    [ TransactWriteItem(Update = detailUpdate)
+                                      TransactWriteItem(Update = masterUpdate) ]
+                                )
+                        )
+
+                    client.TransactWriteItemsAsync transactRequest
                     |> Async.AwaitTask
                     |> Async.Ignore
                     |> ConditionalUpdate.ignoreAlreadyApplied

@@ -8,6 +8,8 @@ module ConditionalUpdate =
         async {
             try
                 do! action
-            with :? System.AggregateException as error when (error.InnerException :? ConditionalCheckFailedException) ->
+            with :? System.AggregateException as error when
+                (error.InnerException :? ConditionalCheckFailedException
+                 || error.InnerException :? TransactionCanceledException) ->
                 ()
         }

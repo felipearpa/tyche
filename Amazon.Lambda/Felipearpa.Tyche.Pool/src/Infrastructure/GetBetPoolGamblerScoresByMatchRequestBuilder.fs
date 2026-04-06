@@ -17,7 +17,7 @@ module GetBetPoolGamblerScoresByMatchRequestBuilder =
             "#getPoolGamblerScoresByMatchPk = :getPoolGamblerScoresByMatchPk"
 
         let filterExpression =
-            "attribute_not_exists(#computedAt) AND attribute_exists(#homeTeamBet) AND attribute_exists(#awayTeamBet)"
+            "attribute_not_exists(#computedRequestId) AND attribute_exists(#homeTeamBet) AND attribute_exists(#awayTeamBet)"
 
         let attributeValues =
             dict [ ":getPoolGamblerScoresByMatchPk", AttributeValue(S = $"{matchKeyPrefix}#{matchId}") ]
@@ -25,7 +25,7 @@ module GetBetPoolGamblerScoresByMatchRequestBuilder =
         let attributeNames =
             dict
                 [ "#getPoolGamblerScoresByMatchPk", "getPoolGamblerScoresByMatchPk"
-                  "#computedAt", "computedAt"
+                  "#computedRequestId", "computedRequestId"
                   "#homeTeamBet", "homeTeamBet"
                   "#awayTeamBet", "awayTeamBet" ]
 

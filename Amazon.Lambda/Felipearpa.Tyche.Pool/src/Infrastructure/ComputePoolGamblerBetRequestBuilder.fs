@@ -21,7 +21,7 @@ module ComputePoolGamblerBetRequestBuilder =
     [<Literal>]
     let private gamblerKeyPrefix = "GAMBLER"
 
-    let build (poolGamblerBet: PoolGamblerBet) (matchScore: TeamScore<int>) (requestId: String) =
+    let build (poolGamblerBet: PoolGamblerBet) (matchScore: TeamScore<int>) (computedRequestId: String) =
         let pk =
             $"{gamblerKeyPrefix}#{poolGamblerBet.GamblerId}#{poolKeyPrefix}#{poolGamblerBet.PoolId}"
 
@@ -33,19 +33,18 @@ module ComputePoolGamblerBetRequestBuilder =
             "SET #homeTeamScore = :homeTeamScore, \
              #awayTeamScore = :awayTeamScore, \
              #score = :delta, \
-             #computedAt = :now, \
-             #requestId = :requestId"
+             #computedDateTime = :now, \
+             #computedRequestId = :computedRequestId"
 
-        let conditionExpression =
-            "attribute_not_exists(#computedAt) AND attribute_not_exists(#requestId)"
+        let conditionExpression = "attribute_not_exists(#computedRequestId)"
 
         let mutable attributeNames =
             dict
                 [ "#homeTeamScore", "homeTeamScore"
                   "#awayTeamScore", "awayTeamScore"
                   "#score", "score"
-                  "#computedAt", "computedAt"
-                  "#requestId", "requestId" ]
+                  "#computedDateTime", "computedDateTime"
+                  "#computedRequestId", "computedRequestId" ]
 
         let mutable attributeValues =
             dict
@@ -53,14 +52,13 @@ module ComputePoolGamblerBetRequestBuilder =
                   ":awayTeamScore", AttributeValue(N = matchScore.AwayTeamValue.ToString())
                   ":delta", AttributeValue(N = (delta poolGamblerBet.BetScore matchScore).ToString())
                   ":now", AttributeValue(S = DateTime.UtcNow.ToString("o"))
-                  ":requestId", AttributeValue(S = requestId) ]
+                  ":computedRequestId", AttributeValue(S = computedRequestId) ]
 
-        UpdateItemRequest(
+        Update(
             TableName = tableName,
             Key = Dictionary key,
             ExpressionAttributeNames = Dictionary attributeNames,
             ExpressionAttributeValues = Dictionary attributeValues,
             UpdateExpression = updateExpression,
-            ConditionExpression = conditionExpression,
-            ReturnValues = "ALL_NEW"
+            ConditionExpression = conditionExpression
         )
