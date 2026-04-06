@@ -92,7 +92,7 @@ type PoolGamblerScoreDynamoDbRepository(keySerializer: IKeySerializer, client: I
                     client.TransactWriteItemsAsync transactRequest
                     |> Async.AwaitTask
                     |> Async.Ignore
-                    |> ConditionalUpdate.ignoreAlreadyApplied
+                    |> ConditionalUpdate.ignoreTransactionConflict
 
                 let rec loop maybeNext =
                     async {

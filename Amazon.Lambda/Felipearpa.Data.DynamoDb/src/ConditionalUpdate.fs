@@ -4,7 +4,7 @@ open Amazon.DynamoDBv2.Model
 
 module ConditionalUpdate =
 
-    let ignoreAlreadyApplied (action: Async<unit>) : Async<unit> =
+    let ignoreTransactionConflict (action: Async<unit>) : Async<unit> =
         async {
             try
                 do! action
