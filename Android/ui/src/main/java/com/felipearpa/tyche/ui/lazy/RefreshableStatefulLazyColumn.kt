@@ -79,7 +79,7 @@ fun <Item : Any> RefreshableStatefulLazyColumn(
         }
 
         LaunchedEffect(refreshLoadState, statefulLazyColumnState) {
-            if (isRefreshing && refreshLoadState is LoadState.NotLoading) {
+            if (isRefreshing && refreshLoadState !is LoadState.Loading) {
                 isRefreshing = false
             }
         }
