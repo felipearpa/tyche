@@ -2,8 +2,8 @@ namespace Felipearpa.Tyche.Account.Application
 
 open Felipearpa.Tyche.Account.Domain
 
-module LinkAccountCommandTransformer =
-    type LinkAccountCommandInput with
+module LinkAccountTransformer =
+    type LinkAccountInput with
 
         member this.ToAccountLink() =
             { AccountLink.Email = this.Email

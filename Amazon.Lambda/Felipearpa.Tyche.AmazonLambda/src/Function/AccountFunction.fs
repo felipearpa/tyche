@@ -29,7 +29,7 @@ type AccountFunction(configureServices: IServiceCollection -> unit) =
             .AddSingleton<ISerializer, JsonSerializer>()
             .AddSingleton<IKeySerializer, DynamoDbKeySerializer>()
             .AddScoped<IAccountRepository, AccountDynamoDbRepository>()
-            .AddScoped<LinkAccountCommand>()
+            .AddScoped<LinkAccount>()
         |> ignore
 
         configureServices services
@@ -52,8 +52,7 @@ type AccountFunction(configureServices: IServiceCollection -> unit) =
             match linkAccountRequestResult with
             | Error error -> return [ error ] |> BadRequestResponseFactory.create
             | Ok linkAccountRequest ->
-                let! response =
-                    linkAccountAsync linkAccountRequest (scope.ServiceProvider.GetService<LinkAccountCommand>())
+                let! response = linkAccountAsync linkAccountRequest (scope.ServiceProvider.GetService<LinkAccount>())
 
                 return! response.ToAmazonProxyResponse()
         }

@@ -7,10 +7,7 @@ open Microsoft.AspNetCore.Http
 
 module PoolLayoutFunction =
 
-    let getOpenPoolLayoutsAsync
-        (next: string option)
-        (getOpenedPoolLayoutsQuery: GetOpenPoolLayoutsQuery)
-        : IResult Async =
+    let getOpenPoolLayoutsAsync (next: string option) (getOpenedPoolLayoutsQuery: GetOpenPoolLayouts) : IResult Async =
         async {
             let! page = getOpenedPoolLayoutsQuery.ExecuteAsync next
             return Results.Ok(page |> CursorPage.map PoolLayoutTransformer.toPoolLayoutResponse)

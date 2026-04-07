@@ -47,19 +47,19 @@
         <Compile Include="Infrastructure\CreatePoolRequestBuilder.fs" />
         <Compile Include="Infrastructure\JoinPoolGamblerRequestBuilder.fs" />
         <Compile Include="Infrastructure\PoolDynamoDBRepository.fs" />
-        <Compile Include="Application\GetPoolGamblerScoresByGamblerQuery.fs" />
-        <Compile Include="Application\GetPoolGamblerScoresByPoolQuery.fs" />
-        <Compile Include="Application\BetCommand.fs" />
-        <Compile Include="Application\GetFinishedPoolGamblerBetsQuery.fs" />
-        <Compile Include="Application\GetPendingPoolGamblerBetsQuery.fs" />
-        <Compile Include="Application\GetPoolGamblerScoreByIdQuery.fs" />
-        <Compile Include="Application\CreatePoolCommand.fs" />
-        <Compile Include="Application\JoinPoolCommand.fs" />
-        <Compile Include="Application\GetPoolByIdQuery.fs" />
-        <Compile Include="Application\AddMatchCommand.fs" />
-        <Compile Include="Application\ComputeBetsCommand.fs" />
-        <Compile Include="Application\UpdatePositionsCommand.fs" />
-        <Compile Include="Application\AddMatchesCommand.fs" />
+        <Compile Include="Application\GetPoolGamblerScoresByGambler.fs" />
+        <Compile Include="Application\GetPoolGamblerScoresByPool.fs" />
+        <Compile Include="Application\Bet.fs" />
+        <Compile Include="Application\GetFinishedPoolGamblerBets.fs" />
+        <Compile Include="Application\GetPendingPoolGamblerBets.fs" />
+        <Compile Include="Application\GetPoolGamblerScoreById.fs" />
+        <Compile Include="Application\CreatePool.fs" />
+        <Compile Include="Application\JoinPool.fs" />
+        <Compile Include="Application\GetPoolById.fs" />
+        <Compile Include="Application\AddMatch.fs" />
+        <Compile Include="Application\ComputeBets.fs" />
+        <Compile Include="Application\UpdatePositions.fs" />
+        <Compile Include="Application\AddMatches.fs" />
     </ItemGroup>
 
     <ItemGroup>

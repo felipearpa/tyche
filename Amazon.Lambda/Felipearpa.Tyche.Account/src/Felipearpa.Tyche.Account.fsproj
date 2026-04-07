@@ -17,10 +17,10 @@
         <Compile Include="Infrastructure\GetByIdRequestBuilder.fs" />
         <Compile Include="Infrastructure\AccountDynamoDbRepository.fs" />
         <Compile Include="Application\IGetAccountById.fs" />
-        <Compile Include="Application\GetAccountByIdQuery.fs" />
-        <Compile Include="Application\LinkAccountCommandInput.fs" />
-        <Compile Include="Application\LinkAccountCommandTransformer.fs" />
-        <Compile Include="Application\LinkAccountCommand.fs" />
+        <Compile Include="Application\GetAccountById.fs" />
+        <Compile Include="Application\LinkAccountInput.fs" />
+        <Compile Include="Application\LinkAccountTransformer.fs" />
+        <Compile Include="Application\LinkAccount.fs" />
     </ItemGroup>
 
     <ItemGroup>

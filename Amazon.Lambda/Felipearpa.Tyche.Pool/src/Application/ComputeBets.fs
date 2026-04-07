@@ -4,7 +4,7 @@ open Felipearpa.Tyche.Pool.Domain
 open Felipearpa.Tyche.Pool.Type
 open Felipearpa.Type
 
-type ComputeBetsCommand
+type ComputeBets
     (poolGamblerScoreRepository: IPoolGamblerScoreRepository, updatePositionsPublisher: IUpdatePositionsPublisher) =
 
     member this.ExecuteAsync(matchId: Ulid, matchScore: TeamScore<int>) =

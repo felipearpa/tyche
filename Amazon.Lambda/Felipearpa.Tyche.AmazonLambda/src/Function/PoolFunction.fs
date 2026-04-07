@@ -46,17 +46,17 @@ type PoolFunction(configureServices: IServiceCollection -> unit) =
             .AddScoped<IPoolGamblerScoreRepository, PoolGamblerScoreDynamoDbRepository>()
             .AddScoped<IPoolGamblerBetRepository, PoolGamblerBetDynamoDbRepository>()
             .AddScoped<IPoolRepository, PoolDynamoDbRepository>()
-            .AddScoped<GetPoolGamblerScoresByGamblerQuery>()
-            .AddScoped<GetPoolGamblerScoresByPoolQuery>()
-            .AddScoped<GetPendingPoolGamblerBetsQuery>()
-            .AddScoped<GetFinishedPoolGamblerBetsQuery>()
-            .AddScoped<GetPoolGamblerScoreByIdQuery>()
-            .AddScoped<GetPoolByIdQuery>()
-            .AddScoped<BetCommand>()
-            .AddScoped<CreatePoolCommand>()
-            .AddScoped<JoinPoolCommand>()
+            .AddScoped<GetPoolGamblerScoresByGambler>()
+            .AddScoped<GetPoolGamblerScoresByPool>()
+            .AddScoped<GetPendingPoolGamblerBets>()
+            .AddScoped<GetFinishedPoolGamblerBets>()
+            .AddScoped<GetPoolGamblerScoreById>()
+            .AddScoped<GetPoolById>()
+            .AddScoped<Bet>()
+            .AddScoped<CreatePool>()
+            .AddScoped<JoinPool>()
             .AddScoped<IAccountRepository, AccountDynamoDbRepository>()
-            .AddScoped<IGetAccountById, GetAccountByIdQuery>()
+            .AddScoped<IGetAccountById, GetAccountById>()
         |> ignore
 
         configureServices services
@@ -83,7 +83,7 @@ type PoolFunction(configureServices: IServiceCollection -> unit) =
             match poolIdResult with
             | Error error -> return [ error ] |> BadRequestResponseFactory.create
             | Ok poolId ->
-                let! response = getPoolByIdAsync poolId (scope.ServiceProvider.GetService<GetPoolByIdQuery>())
+                let! response = getPoolByIdAsync poolId (scope.ServiceProvider.GetService<GetPoolById>())
                 return! response.ToAmazonProxyResponse()
         }
         |> Async.StartAsTask
@@ -113,7 +113,7 @@ type PoolFunction(configureServices: IServiceCollection -> unit) =
                     getGamblersByPoolIdAsync
                         poolId
                         (next |> Option.bind noneIfEmpty)
-                        (scope.ServiceProvider.GetService<GetPoolGamblerScoresByPoolQuery>())
+                        (scope.ServiceProvider.GetService<GetPoolGamblerScoresByPool>())
 
                 return! response.ToAmazonProxyResponse()
             | _ ->
@@ -148,7 +148,7 @@ type PoolFunction(configureServices: IServiceCollection -> unit) =
                     getPoolGamblerScoreByIdAsync
                         poolId
                         gamblerId
-                        (scope.ServiceProvider.GetService<GetPoolGamblerScoreByIdQuery>())
+                        (scope.ServiceProvider.GetService<GetPoolGamblerScoreById>())
 
                 return! response.ToAmazonProxyResponse()
             | _ ->
@@ -198,7 +198,7 @@ type PoolFunction(configureServices: IServiceCollection -> unit) =
                         gamblerId
                         searchText
                         next
-                        (scope.ServiceProvider.GetService<GetPendingPoolGamblerBetsQuery>())
+                        (scope.ServiceProvider.GetService<GetPendingPoolGamblerBets>())
 
                 return! response.ToAmazonProxyResponse()
             | _ ->
@@ -248,7 +248,7 @@ type PoolFunction(configureServices: IServiceCollection -> unit) =
                         gamblerId
                         searchText
                         next
-                        (scope.ServiceProvider.GetService<GetFinishedPoolGamblerBetsQuery>())
+                        (scope.ServiceProvider.GetService<GetFinishedPoolGamblerBets>())
 
                 return! response.ToAmazonProxyResponse()
             | _ ->
@@ -271,8 +271,7 @@ type PoolFunction(configureServices: IServiceCollection -> unit) =
             match createPoolRequestResult with
             | Error error -> return [ error ] |> BadRequestResponseFactory.create
             | Ok createPoolRequest ->
-                let! response =
-                    createPoolAsync createPoolRequest (scope.ServiceProvider.GetService<CreatePoolCommand>())
+                let! response = createPoolAsync createPoolRequest (scope.ServiceProvider.GetService<CreatePool>())
 
                 return! response.ToAmazonProxyResponse()
         }
@@ -295,8 +294,7 @@ type PoolFunction(configureServices: IServiceCollection -> unit) =
 
             match poolIdResult, joinPoolRequestResult with
             | Ok poolId, Ok joinPoolRequest ->
-                let! response =
-                    joinPoolAsync poolId joinPoolRequest (scope.ServiceProvider.GetService<JoinPoolCommand>())
+                let! response = joinPoolAsync poolId joinPoolRequest (scope.ServiceProvider.GetService<JoinPool>())
 
                 return! response.ToAmazonProxyResponse()
             | _ ->

@@ -18,13 +18,13 @@ module GamblerRouter =
                         (fun
                             (poolId: string)
                             (next: string)
-                            (getPoolGamblerScoresByGamblerQuery: GetPoolGamblerScoresByGamblerQuery) ->
+                            (getPoolGamblerScoresByGambler: GetPoolGamblerScoresByGambler) ->
                             async {
                                 return!
                                     getPoolsByGamblerIdAsync
                                         poolId
                                         (next |> Option.ofObj)
-                                        getPoolGamblerScoresByGamblerQuery
+                                        getPoolGamblerScoresByGambler
                             }
                             |> Async.StartAsTask)
 

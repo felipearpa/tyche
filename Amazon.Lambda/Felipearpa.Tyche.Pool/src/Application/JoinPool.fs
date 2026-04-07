@@ -9,7 +9,7 @@ type JoinPoolFailure =
     | PoolNotFound
     | GamblerNotFound
 
-type JoinPoolCommand(poolRepository: IPoolRepository, getAccountById: IGetAccountById) =
+type JoinPool(poolRepository: IPoolRepository, getAccountById: IGetAccountById) =
 
     member this.ExecuteAsync(joinPoolInput: JoinPoolInput) : Result<unit, JoinPoolFailure> Async =
         async {

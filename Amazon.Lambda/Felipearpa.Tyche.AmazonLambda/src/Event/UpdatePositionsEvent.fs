@@ -27,7 +27,7 @@ type UpdatePositionsEvent(configureServices: IServiceCollection -> unit) =
             .AddSingleton<ISerializer, JsonSerializer>()
             .AddSingleton<IKeySerializer, DynamoDbKeySerializer>()
             .AddSingleton<IPoolGamblerScoreRepository, PoolGamblerScoreDynamoDbRepository>()
-            .AddScoped<UpdatePositionsCommand>()
+            .AddScoped<UpdatePositions>()
         |> ignore
 
         configureServices services
@@ -46,14 +46,13 @@ type UpdatePositionsEvent(configureServices: IServiceCollection -> unit) =
         (async {
             use scope = serviceProvider.CreateScope()
 
-            let updatePositionsCommand =
-                scope.ServiceProvider.GetRequiredService<UpdatePositionsCommand>()
+            let updatePositions = scope.ServiceProvider.GetRequiredService<UpdatePositions>()
 
             do!
                 event.Records
                 |> Seq.map (fun record ->
                     let (poolId, matchId) = parseMessage record.Body
-                    updatePositionsCommand.ExecuteAsync(poolId, matchId))
+                    updatePositions.ExecuteAsync(poolId, matchId))
                 |> Seq.iterAsync id
          }
          |> Async.StartAsTask

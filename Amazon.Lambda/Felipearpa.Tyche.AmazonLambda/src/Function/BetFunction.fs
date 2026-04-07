@@ -31,15 +31,15 @@ type BetFunction(configureServices: IServiceCollection -> unit) =
             .AddScoped<IPoolGamblerScoreRepository, PoolGamblerScoreDynamoDbRepository>()
             .AddScoped<IPoolGamblerBetRepository, PoolGamblerBetDynamoDbRepository>()
             .AddScoped<IPoolRepository, PoolDynamoDbRepository>()
-            .AddScoped<GetPoolGamblerScoresByGamblerQuery>()
-            .AddScoped<GetPoolGamblerScoresByPoolQuery>()
-            .AddScoped<GetPendingPoolGamblerBetsQuery>()
-            .AddScoped<GetFinishedPoolGamblerBetsQuery>()
-            .AddScoped<GetPoolGamblerScoreByIdQuery>()
-            .AddScoped<GetPoolByIdQuery>()
-            .AddScoped<BetCommand>()
-            .AddScoped<CreatePoolCommand>()
-            .AddScoped<JoinPoolCommand>()
+            .AddScoped<GetPoolGamblerScoresByGambler>()
+            .AddScoped<GetPoolGamblerScoresByPool>()
+            .AddScoped<GetPendingPoolGamblerBets>()
+            .AddScoped<GetFinishedPoolGamblerBets>()
+            .AddScoped<GetPoolGamblerScoreById>()
+            .AddScoped<GetPoolById>()
+            .AddScoped<Bet>()
+            .AddScoped<CreatePool>()
+            .AddScoped<JoinPool>()
         |> ignore
 
         configureServices services
@@ -62,7 +62,7 @@ type BetFunction(configureServices: IServiceCollection -> unit) =
             match betRequestResult with
             | Error error -> return [ error ] |> BadRequestResponseFactory.create
             | Ok betPoolRequest ->
-                let! response = betAsync betPoolRequest (scope.ServiceProvider.GetService<BetCommand>())
+                let! response = betAsync betPoolRequest (scope.ServiceProvider.GetService<Bet>())
                 return! response.ToAmazonProxyResponse()
         }
         |> Async.StartAsTask

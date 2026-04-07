@@ -57,8 +57,8 @@ type PoolEvent(configureServices: IServiceCollection -> unit) =
             .AddSingleton<IKeySerializer, DynamoDbKeySerializer>()
             .AddScoped<IPoolLayoutRepository, PoolLayoutDynamoDbRepository>()
             .AddScoped<IPoolGamblerBetRepository, PoolGamblerBetDynamoDbRepository>()
-            .AddScoped<GetPendingPoolLayoutMatchesQuery>()
-            .AddScoped<AddMatchesCommand>()
+            .AddScoped<GetPendingPoolLayoutMatches>()
+            .AddScoped<AddMatches>()
         |> ignore
 
         configureServices services
@@ -101,13 +101,13 @@ type PoolEvent(configureServices: IServiceCollection -> unit) =
                     None)
 
     let applyPendingLayoutMatches
-        (getPendingPoolLayoutMatchesQuery: GetPendingPoolLayoutMatchesQuery)
-        (addMatchesCommand: AddMatchesCommand)
+        (getPendingPoolLayoutMatches: GetPendingPoolLayoutMatches)
+        (addMatches: AddMatches)
         (poolId, gamblerId, poolLayoutId, poolLayoutVersion)
         : Async<unit> =
         let rec loop (next: string option) : Async<unit> =
             async {
-                let! page = getPendingPoolLayoutMatchesQuery.ExecuteAsync(poolLayoutId, poolLayoutVersion, next)
+                let! page = getPendingPoolLayoutMatches.ExecuteAsync(poolLayoutId, poolLayoutVersion, next)
 
                 let poolGamblerBets: InitialPoolGamblerBet seq =
                     page.Items
@@ -123,7 +123,7 @@ type PoolEvent(configureServices: IServiceCollection -> unit) =
                           MatchDateTime = m.MatchDateTime
                           PoolLayoutVersion = m.PoolLayoutVersion })
 
-                let! _ = addMatchesCommand.ExecuteAsync poolGamblerBets
+                let! _ = addMatches.ExecuteAsync poolGamblerBets
 
                 match page.Next with
                 | Some n -> return! loop (Some n)
@@ -138,15 +138,14 @@ type PoolEvent(configureServices: IServiceCollection -> unit) =
         (async {
             use scope = serviceProvider.CreateScope()
 
-            let getPendingPoolLayoutMatchesQuery =
-                scope.ServiceProvider.GetRequiredService<GetPendingPoolLayoutMatchesQuery>()
+            let getPendingPoolLayoutMatches =
+                scope.ServiceProvider.GetRequiredService<GetPendingPoolLayoutMatches>()
 
-            let addMatchesCommand =
-                scope.ServiceProvider.GetRequiredService<AddMatchesCommand>()
+            let addMatches = scope.ServiceProvider.GetRequiredService<AddMatches>()
 
             do!
                 extractInsertedPoolGamblerRecords event
-                |> Seq.iterAsync (applyPendingLayoutMatches getPendingPoolLayoutMatchesQuery addMatchesCommand)
+                |> Seq.iterAsync (applyPendingLayoutMatches getPendingPoolLayoutMatches addMatches)
 
             return ()
          }

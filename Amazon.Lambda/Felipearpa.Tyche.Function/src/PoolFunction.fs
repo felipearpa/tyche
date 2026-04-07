@@ -9,9 +9,9 @@ open Microsoft.AspNetCore.Http
 
 module PoolFunction =
 
-    let getPoolByIdAsync (poolId: string) (getPoolByIdQuery: GetPoolByIdQuery) : IResult Async =
+    let getPoolByIdAsync (poolId: string) (getPoolById: GetPoolById) : IResult Async =
         async {
-            let! result = getPoolByIdQuery.ExecuteAsync(poolId |> Ulid.newOf)
+            let! result = getPoolById.ExecuteAsync(poolId |> Ulid.newOf)
 
             return
                 match result with
@@ -25,20 +25,20 @@ module PoolFunction =
     let getGamblersByPoolIdAsync
         (poolId: string)
         (next: string option)
-        (getPoolGamblerScoresByPoolQuery: GetPoolGamblerScoresByPoolQuery)
+        (getPoolGamblerScoresByPool: GetPoolGamblerScoresByPool)
         : IResult Async =
         async {
-            let! page = getPoolGamblerScoresByPoolQuery.ExecuteAsync(poolId |> Ulid.newOf, next)
+            let! page = getPoolGamblerScoresByPool.ExecuteAsync(poolId |> Ulid.newOf, next)
             return Results.Ok(page |> CursorPage.map PoolGamblerScoreTransformer.toResponse)
         }
 
     let getPoolGamblerScoreByIdAsync
         (poolId: string)
         (gamblerId: string)
-        (getPoolGamblerScoreByIdQuery: GetPoolGamblerScoreByIdQuery)
+        (getPoolGamblerScoreById: GetPoolGamblerScoreById)
         : IResult Async =
         async {
-            let! result = getPoolGamblerScoreByIdQuery.ExecuteAsync(poolId |> Ulid.newOf, gamblerId |> Ulid.newOf)
+            let! result = getPoolGamblerScoreById.ExecuteAsync(poolId |> Ulid.newOf, gamblerId |> Ulid.newOf)
 
             return
                 match result with
@@ -54,16 +54,11 @@ module PoolFunction =
         (gamblerId: string)
         (searchText: string option)
         (next: string option)
-        (getPendingPoolGamblerBetsQuery: GetPendingPoolGamblerBetsQuery)
+        (getPendingPoolGamblerBets: GetPendingPoolGamblerBets)
         : IResult Async =
         async {
             let! page =
-                getPendingPoolGamblerBetsQuery.ExecuteAsync(
-                    poolId |> Ulid.newOf,
-                    gamblerId |> Ulid.newOf,
-                    searchText,
-                    next
-                )
+                getPendingPoolGamblerBets.ExecuteAsync(poolId |> Ulid.newOf, gamblerId |> Ulid.newOf, searchText, next)
 
             return Results.Ok(page |> CursorPage.map PoolGamblerBetTransformer.toResponse)
         }
@@ -73,24 +68,18 @@ module PoolFunction =
         (gamblerId: string)
         (searchText: string option)
         (next: string option)
-        (getFinishedPoolGamblerBetsQuery: GetFinishedPoolGamblerBetsQuery)
+        (getFinishedPoolGamblerBets: GetFinishedPoolGamblerBets)
         : IResult Async =
         async {
             let! page =
-                getFinishedPoolGamblerBetsQuery.ExecuteAsync(
-                    poolId |> Ulid.newOf,
-                    gamblerId |> Ulid.newOf,
-                    searchText,
-                    next
-                )
+                getFinishedPoolGamblerBets.ExecuteAsync(poolId |> Ulid.newOf, gamblerId |> Ulid.newOf, searchText, next)
 
             return Results.Ok(page |> CursorPage.map PoolGamblerBetTransformer.toResponse)
         }
 
-    let createPoolAsync (createPoolRequest: CreatePoolRequest) (createPoolCommand: CreatePoolCommand) : IResult Async =
+    let createPoolAsync (createPoolRequest: CreatePoolRequest) (createPool: CreatePool) : IResult Async =
         async {
-            let! result =
-                createPoolCommand.ExecuteAsync(createPoolRequest |> CreatePoolRequestTransformer.toCreatePoolInput)
+            let! result = createPool.ExecuteAsync(createPoolRequest |> CreatePoolRequestTransformer.toCreatePoolInput)
 
             return
                 match result with
@@ -98,14 +87,9 @@ module PoolFunction =
                 | Error _ -> Results.NotFound("Gambler not found")
         }
 
-    let joinPoolAsync
-        (poolId: string)
-        (joinPoolRequest: JoinPoolRequest)
-        (joinPoolCommand: JoinPoolCommand)
-        : IResult Async =
+    let joinPoolAsync (poolId: string) (joinPoolRequest: JoinPoolRequest) (joinPool: JoinPool) : IResult Async =
         async {
-            let! result =
-                joinPoolCommand.ExecuteAsync(joinPoolRequest |> JoinPoolRequestTransformer.toJoinPoolInput poolId)
+            let! result = joinPool.ExecuteAsync(joinPoolRequest |> JoinPoolRequestTransformer.toJoinPoolInput poolId)
 
             return
                 match result with

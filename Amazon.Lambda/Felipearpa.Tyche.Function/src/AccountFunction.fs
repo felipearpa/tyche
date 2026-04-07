@@ -8,12 +8,9 @@ open Microsoft.AspNetCore.Http
 
 module AccountFunction =
 
-    let linkAccountAsync
-        (linkAccountRequest: LinkAccountRequest)
-        (linkAccountCommand: LinkAccountCommand)
-        : IResult Async =
+    let linkAccountAsync (linkAccountRequest: LinkAccountRequest) (linkAccount: LinkAccount) : IResult Async =
         async {
-            let! result = linkAccountCommand.ExecuteAsync(linkAccountRequest.ToLinkAccountCommandInput())
+            let! result = linkAccount.ExecuteAsync(linkAccountRequest.ToLinkAccountInput())
 
             return
                 match result with

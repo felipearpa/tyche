@@ -6,7 +6,7 @@ open Felipearpa.Type
 
 type CreatePoolFailure = | GamblerNotFound
 
-type CreatePoolCommand(poolRepository: IPoolRepository, getAccountById: IGetAccountById) =
+type CreatePool(poolRepository: IPoolRepository, getAccountById: IGetAccountById) =
 
     member this.ExecuteAsync(createPoolInput: CreatePoolInput) : Result<CreatePoolOutput, CreatePoolFailure> Async =
         async {

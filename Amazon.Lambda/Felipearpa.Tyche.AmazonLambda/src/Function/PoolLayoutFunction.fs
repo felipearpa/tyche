@@ -31,7 +31,7 @@ type PoolLayoutFunction(configureServices: IServiceCollection -> unit) =
             .AddSingleton<ISerializer, JsonSerializer>()
             .AddSingleton<IKeySerializer, DynamoDbKeySerializer>()
             .AddScoped<IPoolLayoutRepository, PoolLayoutDynamoDbRepository>()
-            .AddScoped<GetOpenPoolLayoutsQuery>()
+            .AddScoped<GetOpenPoolLayouts>()
         |> ignore
 
         configureServices services
@@ -58,7 +58,7 @@ type PoolLayoutFunction(configureServices: IServiceCollection -> unit) =
             let! response =
                 getOpenPoolLayoutsAsync
                     (maybeNext |> Option.bind noneIfEmpty)
-                    (scope.ServiceProvider.GetService<GetOpenPoolLayoutsQuery>())
+                    (scope.ServiceProvider.GetService<GetOpenPoolLayouts>())
 
             return! response.ToAmazonProxyResponse()
         }

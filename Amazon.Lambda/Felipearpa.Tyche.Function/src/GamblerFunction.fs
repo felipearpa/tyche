@@ -11,10 +11,10 @@ module GamblerFunction =
     let getPoolsByGamblerIdAsync
         (gamblerId: string)
         (next: string option)
-        (getPoolGamblerScoresByGamblerQuery: GetPoolGamblerScoresByGamblerQuery)
+        (getPoolGamblerScoresByGambler: GetPoolGamblerScoresByGambler)
         : IResult Async =
         async {
-            let! page = getPoolGamblerScoresByGamblerQuery.ExecuteAsync(gamblerId |> Ulid.newOf, next)
+            let! page = getPoolGamblerScoresByGambler.ExecuteAsync(gamblerId |> Ulid.newOf, next)
 
             return Results.Ok(page |> CursorPage.map PoolGamblerScoreTransformer.toResponse)
         }

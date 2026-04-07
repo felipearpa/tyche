@@ -16,8 +16,8 @@
         <Compile Include="Infrastructure\GetOpenPoolLayoutRequestBuilder.fs" />
         <Compile Include="Infrastructure\GetPendingPoolLayoutMatchesRequestBuilder.fs" />
         <Compile Include="Infrastructure\PoolLayoutDynamoDbRepository.fs" />
-        <Compile Include="Application\GetOpenPoolLayoutsQuery.fs" />
-        <Compile Include="Application\GetPendingPoolLayoutMatchesQuery.fs" />
+        <Compile Include="Application\GetOpenPoolLayouts.fs" />
+        <Compile Include="Application\GetPendingPoolLayoutMatches.fs" />
     </ItemGroup>
 
     <ItemGroup>

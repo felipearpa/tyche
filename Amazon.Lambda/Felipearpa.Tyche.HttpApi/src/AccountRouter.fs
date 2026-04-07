@@ -15,10 +15,9 @@ module AccountRouter =
             this
                 .MapPost(
                     "/accounts",
-                    Func<_, _, _>
-                        (fun (linkAccountRequest: LinkAccountRequest) (linkAccountCommand: LinkAccountCommand) ->
-                            async { return! linkAccountAsync linkAccountRequest linkAccountCommand }
-                            |> Async.StartAsTask)
+                    Func<_, _, _>(fun (linkAccountRequest: LinkAccountRequest) (linkAccount: LinkAccount) ->
+                        async { return! linkAccountAsync linkAccountRequest linkAccount }
+                        |> Async.StartAsTask)
                 )
                 .RequireAuthorization()
             |> ignore

@@ -36,15 +36,15 @@ type GamblerFunction(configureServices: IServiceCollection -> unit) =
             .AddScoped<IPoolGamblerScoreRepository, PoolGamblerScoreDynamoDbRepository>()
             .AddScoped<IPoolGamblerBetRepository, PoolGamblerBetDynamoDbRepository>()
             .AddScoped<IPoolRepository, PoolDynamoDbRepository>()
-            .AddScoped<GetPoolGamblerScoresByGamblerQuery>()
-            .AddScoped<GetPoolGamblerScoresByPoolQuery>()
-            .AddScoped<GetPendingPoolGamblerBetsQuery>()
-            .AddScoped<GetFinishedPoolGamblerBetsQuery>()
-            .AddScoped<GetPoolGamblerScoreByIdQuery>()
-            .AddScoped<GetPoolByIdQuery>()
-            .AddScoped<BetCommand>()
-            .AddScoped<CreatePoolCommand>()
-            .AddScoped<JoinPoolCommand>()
+            .AddScoped<GetPoolGamblerScoresByGambler>()
+            .AddScoped<GetPoolGamblerScoresByPool>()
+            .AddScoped<GetPendingPoolGamblerBets>()
+            .AddScoped<GetFinishedPoolGamblerBets>()
+            .AddScoped<GetPoolGamblerScoreById>()
+            .AddScoped<GetPoolById>()
+            .AddScoped<Bet>()
+            .AddScoped<CreatePool>()
+            .AddScoped<JoinPool>()
         |> ignore
 
         configureServices services
@@ -80,7 +80,7 @@ type GamblerFunction(configureServices: IServiceCollection -> unit) =
                     getPoolsByGamblerIdAsync
                         gamblerId
                         (next |> Option.bind noneIfEmpty)
-                        (scope.ServiceProvider.GetService<GetPoolGamblerScoresByGamblerQuery>())
+                        (scope.ServiceProvider.GetService<GetPoolGamblerScoresByGambler>())
 
                 return! response.ToAmazonProxyResponse()
             | _ ->

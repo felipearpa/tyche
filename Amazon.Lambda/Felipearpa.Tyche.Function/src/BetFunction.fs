@@ -9,14 +9,14 @@ open Microsoft.AspNetCore.Http
 
 module BetFunction =
 
-    let betAsync (betRequest: BetRequest) (betCommand: BetCommand) : IResult Async =
+    let betAsync (betRequest: BetRequest) (bet: Bet) : IResult Async =
         async {
             let betScore =
                 { TeamScore.HomeTeamValue = betRequest.HomeTeamBet |> BetScore.newOf
                   AwayTeamValue = betRequest.AwayTeamBet |> BetScore.newOf }
 
             let! result =
-                betCommand.ExecuteAsync(
+                bet.ExecuteAsync(
                     betRequest.PoolId |> Ulid.newOf,
                     betRequest.GamblerId |> Ulid.newOf,
                     betRequest.MatchId |> Ulid.newOf,
