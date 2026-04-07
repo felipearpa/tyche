@@ -7,6 +7,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <Compile Include="Infrastructure\PoolLayoutTable.fs" />
         <Compile Include="Domain\PoolLayout.fs" />
         <Compile Include="Domain\PoolLayoutMatch.fs" />
         <Compile Include="Domain\PoolLayoutDictionaryTransformer.fs" />

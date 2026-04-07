@@ -2,39 +2,35 @@ namespace Felipearpa.Tyche.Pool.Domain
 
 open System.Collections.Generic
 open Amazon.DynamoDBv2.Model
+open Felipearpa.Data.DynamoDb
+open Felipearpa.Tyche.Pool.Infrastructure
 
 module InitialPoolGamblerBetTransformer =
-
-    [<Literal>]
-    let poolKeyPrefix = "POOL"
-
-    [<Literal>]
-    let gamblerKeyPrefix = "GAMBLER"
-
-    [<Literal>]
-    let matchKeyPrefix = "MATCH"
 
     let toAmazonItem (poolGamblerBet: InitialPoolGamblerBet) : IDictionary<string, AttributeValue> =
         let matchDateTime = poolGamblerBet.MatchDateTime.ToUniversalTime().ToString("o")
 
         dict
-            [ "pk",
+            [ Key.pk,
               AttributeValue(
-                  S = $"{gamblerKeyPrefix}#{poolGamblerBet.GamblerId}#{poolKeyPrefix}#{poolGamblerBet.PoolId}"
+                  S =
+                      $"{KeyPrefix.build PoolTable.Prefix.gambler poolGamblerBet.GamblerId.Value}#{KeyPrefix.build PoolTable.Prefix.pool poolGamblerBet.PoolId.Value}"
               )
-              "sk", AttributeValue(S = $"{matchKeyPrefix}#{poolGamblerBet.MatchId}")
-              "poolId", AttributeValue(S = poolGamblerBet.PoolId.Value)
-              "gamblerId", AttributeValue(S = poolGamblerBet.GamblerId.Value)
-              "matchId", AttributeValue(S = poolGamblerBet.MatchId.Value)
-              "homeTeamId", AttributeValue(S = poolGamblerBet.HomeTeamId.Value)
-              "homeTeamName", AttributeValue(S = poolGamblerBet.HomeTeamName.Value)
-              "awayTeamId", AttributeValue(S = poolGamblerBet.AwayTeamId.Value)
-              "awayTeamName", AttributeValue(S = poolGamblerBet.AwayTeamName.Value)
-              "matchDateTime", AttributeValue(S = matchDateTime)
-              "poolLayoutId", AttributeValue(S = poolGamblerBet.PoolLayoutId.Value)
-              "poolLayoutVersion", AttributeValue(N = poolGamblerBet.PoolLayoutVersion.ToString())
-              "getPoolGamblerScoresByMatchPk", AttributeValue(S = $"{matchKeyPrefix}#{poolGamblerBet.MatchId}")
-              "getPoolGamblerScoresByMatchSk",
+              Key.sk, AttributeValue(S = KeyPrefix.build PoolTable.Prefix.match' poolGamblerBet.MatchId.Value)
+              PoolTable.Attribute.poolId, AttributeValue(S = poolGamblerBet.PoolId.Value)
+              PoolTable.Attribute.gamblerId, AttributeValue(S = poolGamblerBet.GamblerId.Value)
+              PoolTable.Attribute.matchId, AttributeValue(S = poolGamblerBet.MatchId.Value)
+              PoolTable.Attribute.homeTeamId, AttributeValue(S = poolGamblerBet.HomeTeamId.Value)
+              PoolTable.Attribute.homeTeamName, AttributeValue(S = poolGamblerBet.HomeTeamName.Value)
+              PoolTable.Attribute.awayTeamId, AttributeValue(S = poolGamblerBet.AwayTeamId.Value)
+              PoolTable.Attribute.awayTeamName, AttributeValue(S = poolGamblerBet.AwayTeamName.Value)
+              PoolTable.Attribute.matchDateTime, AttributeValue(S = matchDateTime)
+              PoolTable.Attribute.poolLayoutId, AttributeValue(S = poolGamblerBet.PoolLayoutId.Value)
+              PoolTable.Attribute.poolLayoutVersion, AttributeValue(N = poolGamblerBet.PoolLayoutVersion.ToString())
+              PoolTable.Attribute.getPoolGamblerScoresByMatchPk,
+              AttributeValue(S = KeyPrefix.build PoolTable.Prefix.match' poolGamblerBet.MatchId.Value)
+              PoolTable.Attribute.getPoolGamblerScoresByMatchSk,
               AttributeValue(
-                  S = $"{poolKeyPrefix}#{poolGamblerBet.PoolId}#{gamblerKeyPrefix}#{poolGamblerBet.GamblerId}"
+                  S =
+                      $"{KeyPrefix.build PoolTable.Prefix.pool poolGamblerBet.PoolId.Value}#{KeyPrefix.build PoolTable.Prefix.gambler poolGamblerBet.GamblerId.Value}"
               ) ]

@@ -2,24 +2,24 @@ namespace Felipearpa.Tyche.Pool.Infrastructure
 
 open System.Collections.Generic
 open Amazon.DynamoDBv2.Model
+open Felipearpa.Data.DynamoDb
 open Felipearpa.Tyche.Pool.Domain
 open Felipearpa.Type
 
 module CreatePoolRequestBuilder =
-    [<Literal>]
-    let private tableName = "Pool"
-
-    [<Literal>]
-    let private poolText = "POOL"
 
     let build (createPoolInput: ResolvedCreatePoolInput) =
+        let poolKey =
+            KeyPrefix.build PoolTable.Prefix.pool (createPoolInput.PoolId |> Ulid.value)
+
         let mutable attributeValues =
             dict
-                [ "pk", AttributeValue(S = $"{poolText}#{createPoolInput.PoolId |> Ulid.value}")
-                  "sk", AttributeValue(S = $"{poolText}#{createPoolInput.PoolId |> Ulid.value}")
-                  "poolId", AttributeValue(S = (createPoolInput.PoolId |> Ulid.value))
-                  "poolName", AttributeValue(S = (createPoolInput.PoolName |> NonEmptyString100.value))
-                  "filter", AttributeValue(S = (createPoolInput.PoolName |> NonEmptyString100.value))
-                  "poolLayoutId", AttributeValue(S = (createPoolInput.PoolLayoutId |> Ulid.value)) ]
+                [ Key.pk, AttributeValue(S = poolKey)
+                  Key.sk, AttributeValue(S = poolKey)
+                  PoolTable.Attribute.poolId, AttributeValue(S = (createPoolInput.PoolId |> Ulid.value))
+                  PoolTable.Attribute.poolName,
+                  AttributeValue(S = (createPoolInput.PoolName |> NonEmptyString100.value))
+                  PoolTable.Attribute.filter, AttributeValue(S = (createPoolInput.PoolName |> NonEmptyString100.value))
+                  PoolTable.Attribute.poolLayoutId, AttributeValue(S = (createPoolInput.PoolLayoutId |> Ulid.value)) ]
 
-        Put(TableName = tableName, Item = (attributeValues |> Dictionary))
+        Put(TableName = PoolTable.name, Item = (attributeValues |> Dictionary))

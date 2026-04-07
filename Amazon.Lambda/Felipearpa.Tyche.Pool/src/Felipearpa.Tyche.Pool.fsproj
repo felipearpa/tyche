@@ -8,6 +8,7 @@
     <ItemGroup>
         <Compile Include="Type\BetScore.fs" />
         <Compile Include="Type\TeamScore.fs" />
+        <Compile Include="Infrastructure\PoolTable.fs" />
         <Compile Include="Domain\AttributeValueTransformer.fs" />
         <Compile Include="Domain\PoolGamblerScore.fs" />
         <Compile Include="Domain\PoolGamblerBet.fs" />

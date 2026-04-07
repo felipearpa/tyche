@@ -2,24 +2,23 @@ namespace Felipearpa.Tyche.Account.Infrastructure
 
 open System.Collections.Generic
 open Amazon.DynamoDBv2.Model
+open Felipearpa.Data.DynamoDb
 
 module GetByEmailRequestBuilder =
-    [<Literal>]
-    let private accountTableName = "Account"
-
-    [<Literal>]
-    let private emailIndex = "GetByEmail-index"
 
     let build (email: string) =
-        let keyConditionExpression = "#email = :email"
+        let keyConditionExpression =
+            $"{ExpressionAttribute.name AccountTable.Attribute.email} = :{AccountTable.Attribute.email}"
 
-        let mutable attributeValues = dict [ ":email", AttributeValue(email) ]
+        let mutable attributeValues =
+            dict [ $":{AccountTable.Attribute.email}", AttributeValue(email) ]
 
-        let mutable attributeNames = dict [ "#email", "email" ]
+        let mutable attributeNames =
+            ExpressionAttribute.names [ AccountTable.Attribute.email ]
 
         QueryRequest(
-            TableName = accountTableName,
-            IndexName = emailIndex,
+            TableName = AccountTable.name,
+            IndexName = AccountTable.Index.getByEmail,
             KeyConditionExpression = keyConditionExpression,
             ExpressionAttributeNames = Dictionary attributeNames,
             ExpressionAttributeValues = Dictionary attributeValues

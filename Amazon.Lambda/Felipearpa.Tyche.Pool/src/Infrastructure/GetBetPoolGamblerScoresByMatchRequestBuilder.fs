@@ -2,36 +2,35 @@ namespace Felipearpa.Tyche.Pool.Infrastructure
 
 open System.Collections.Generic
 open Amazon.DynamoDBv2.Model
+open Felipearpa.Data.DynamoDb
 open Felipearpa.Type
 
 module GetBetPoolGamblerScoresByMatchRequestBuilder =
 
-    [<Literal>]
-    let private tableName = "Pool"
-
-    [<Literal>]
-    let private matchKeyPrefix = "MATCH"
-
     let build (matchId: Ulid) (maybeNext: IDictionary<string, AttributeValue> option) =
         let keyConditionExpression =
-            "#getPoolGamblerScoresByMatchPk = :getPoolGamblerScoresByMatchPk"
+            $"{ExpressionAttribute.name PoolTable.Attribute.getPoolGamblerScoresByMatchPk} = :{PoolTable.Attribute.getPoolGamblerScoresByMatchPk}"
 
         let filterExpression =
-            "attribute_not_exists(#computedRequestId) AND attribute_exists(#homeTeamBet) AND attribute_exists(#awayTeamBet)"
+            $"attribute_not_exists({ExpressionAttribute.name PoolTable.Attribute.computedRequestId}) \
+             AND attribute_exists({ExpressionAttribute.name PoolTable.Attribute.homeTeamBet}) \
+             AND attribute_exists({ExpressionAttribute.name PoolTable.Attribute.awayTeamBet})"
 
         let attributeValues =
-            dict [ ":getPoolGamblerScoresByMatchPk", AttributeValue(S = $"{matchKeyPrefix}#{matchId}") ]
+            dict
+                [ $":{PoolTable.Attribute.getPoolGamblerScoresByMatchPk}",
+                  AttributeValue(S = KeyPrefix.build PoolTable.Prefix.match' matchId.Value) ]
 
         let attributeNames =
-            dict
-                [ "#getPoolGamblerScoresByMatchPk", "getPoolGamblerScoresByMatchPk"
-                  "#computedRequestId", "computedRequestId"
-                  "#homeTeamBet", "homeTeamBet"
-                  "#awayTeamBet", "awayTeamBet" ]
+            ExpressionAttribute.names
+                [ PoolTable.Attribute.getPoolGamblerScoresByMatchPk
+                  PoolTable.Attribute.computedRequestId
+                  PoolTable.Attribute.homeTeamBet
+                  PoolTable.Attribute.awayTeamBet ]
 
         QueryRequest(
-            TableName = tableName,
-            IndexName = "GetPoolGamblerScoresByMatch-index",
+            TableName = PoolTable.name,
+            IndexName = PoolTable.Index.scoresByMatch,
             KeyConditionExpression = keyConditionExpression,
             FilterExpression = filterExpression,
             ExpressionAttributeNames = Dictionary attributeNames,

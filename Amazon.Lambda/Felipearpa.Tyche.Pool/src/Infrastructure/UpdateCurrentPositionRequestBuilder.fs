@@ -2,37 +2,29 @@ namespace Felipearpa.Tyche.Pool.Infrastructure
 
 open System.Collections.Generic
 open Amazon.DynamoDBv2.Model
+open Felipearpa.Data.DynamoDb
 open Felipearpa.Type
 
 module UpdateCurrentPositionRequestBuilder =
 
-    [<Literal>]
-    let private tableName = "Pool"
-
-    [<Literal>]
-    let private poolKeyPrefix = "POOL"
-
-    [<Literal>]
-    let private gamblerKeyPrefix = "GAMBLER"
-
     let build (poolId: Ulid) (gamblerId: Ulid) (position: int) =
         let key =
             dict
-                [ "pk", AttributeValue(S = $"{poolKeyPrefix}#{poolId}")
-                  "sk", AttributeValue(S = $"{gamblerKeyPrefix}#{gamblerId}") ]
+                [ Key.pk, AttributeValue(S = KeyPrefix.build PoolTable.Prefix.pool poolId.Value)
+                  Key.sk, AttributeValue(S = KeyPrefix.build PoolTable.Prefix.gambler gamblerId.Value) ]
 
         let updateExpression =
-            "SET #beforePosition = #currentPosition, \
-             #currentPosition = :currentPosition"
+            $"SET {ExpressionAttribute.name PoolTable.Attribute.beforePosition} = {ExpressionAttribute.name PoolTable.Attribute.currentPosition}, \
+             {ExpressionAttribute.name PoolTable.Attribute.currentPosition} = :{PoolTable.Attribute.currentPosition}"
 
         let attributeNames =
-            dict [ "#currentPosition", "currentPosition"; "#beforePosition", "beforePosition" ]
+            ExpressionAttribute.names [ PoolTable.Attribute.currentPosition; PoolTable.Attribute.beforePosition ]
 
         let attributeValues =
-            dict [ ":currentPosition", AttributeValue(N = position.ToString()) ]
+            dict [ $":{PoolTable.Attribute.currentPosition}", AttributeValue(N = position.ToString()) ]
 
         UpdateItemRequest(
-            TableName = tableName,
+            TableName = PoolTable.name,
             Key = Dictionary key,
             UpdateExpression = updateExpression,
             ExpressionAttributeNames = Dictionary attributeNames,

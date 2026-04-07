@@ -2,33 +2,26 @@ namespace Felipearpa.Tyche.Pool.Infrastructure
 
 open System.Collections.Generic
 open Amazon.DynamoDBv2.Model
+open Felipearpa.Data.DynamoDb
 open Felipearpa.Type
 
 module ComputePoolGamblerScoreRequestBuilder =
 
-    [<Literal>]
-    let private tableName = "Pool"
-
-    [<Literal>]
-    let private poolKeyPrefix = "POOL"
-
-    [<Literal>]
-    let private gamblerKeyPrefix = "GAMBLER"
-
     let build (poolId: Ulid) (gamblerId: Ulid) (delta: int) =
         let key =
             dict
-                [ "pk", AttributeValue(S = $"{poolKeyPrefix}#{poolId}")
-                  "sk", AttributeValue(S = $"{gamblerKeyPrefix}#{gamblerId}") ]
+                [ Key.pk, AttributeValue(S = KeyPrefix.build PoolTable.Prefix.pool poolId.Value)
+                  Key.sk, AttributeValue(S = KeyPrefix.build PoolTable.Prefix.gambler gamblerId.Value) ]
 
-        let updateExpression = "ADD #score :delta"
+        let updateExpression =
+            $"ADD {ExpressionAttribute.name PoolTable.Attribute.score} :delta"
 
-        let attributeNames = dict [ "#score", "score" ]
+        let attributeNames = ExpressionAttribute.names [ PoolTable.Attribute.score ]
 
         let attributeValues = dict [ ":delta", AttributeValue(N = delta.ToString()) ]
 
         Update(
-            TableName = tableName,
+            TableName = PoolTable.name,
             Key = Dictionary key,
             UpdateExpression = updateExpression,
             ExpressionAttributeNames = Dictionary attributeNames,

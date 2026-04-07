@@ -2,38 +2,31 @@ namespace Felipearpa.Tyche.Account.Infrastructure
 
 open System.Collections.Generic
 open Amazon.DynamoDBv2.Model
+open Felipearpa.Data.DynamoDb
 open Felipearpa.Tyche.Account.Domain
 open Felipearpa.Type
 
 module LinkRequestBuilder =
-    [<Literal>]
-    let private accountTableName = "Account"
-
-    [<Literal>]
-    let private userNameText = "EMAIL"
-
-    [<Literal>]
-    let private prefixAccount = "ACCOUNT"
 
     let private buildAccountMap (account: AccountLink) (newAccountId: Ulid) =
         dict
-            [ "pk", AttributeValue(S = $"{prefixAccount}#{newAccountId}")
-              "accountId", AttributeValue(S = newAccountId.Value)
-              "email", AttributeValue(S = account.Email.Value)
-              "externalAccountId", AttributeValue(S = account.ExternalAccountId) ]
+            [ Key.pk, AttributeValue(S = KeyPrefix.build AccountTable.Prefix.account newAccountId.Value)
+              AccountTable.Attribute.accountId, AttributeValue(S = newAccountId.Value)
+              AccountTable.Attribute.email, AttributeValue(S = account.Email.Value)
+              AccountTable.Attribute.externalAccountId, AttributeValue(S = account.ExternalAccountId) ]
 
     let private buildUniqueEmailMap (accountLink: AccountLink) =
-        dict [ "pk", AttributeValue($"{userNameText}#{accountLink.Email}") ]
+        dict [ Key.pk, AttributeValue(KeyPrefix.build AccountTable.Prefix.email accountLink.Email.Value) ]
 
     let build (accountLink: AccountLink) (newAccountId: Ulid) =
         let accountMap = buildAccountMap accountLink newAccountId
-        Put(TableName = accountTableName, Item = (accountMap |> Dictionary))
+        Put(TableName = AccountTable.name, Item = (accountMap |> Dictionary))
 
     let buildUniqueEmail (accountLink: AccountLink) =
         let uniqueEmailMap = buildUniqueEmailMap accountLink
 
         Put(
-            TableName = accountTableName,
+            TableName = AccountTable.name,
             Item = (uniqueEmailMap |> Dictionary),
-            ConditionExpression = "attribute_not_exists(pk)"
+            ConditionExpression = $"attribute_not_exists({Key.pk})"
         )

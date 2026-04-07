@@ -2,18 +2,11 @@ namespace Felipearpa.Tyche.Pool.Infrastructure
 
 open System.Collections.Generic
 open Amazon.DynamoDBv2.Model
+open Felipearpa.Data.DynamoDb
 open Felipearpa.Tyche.Pool.Domain
 open Felipearpa.Type
 
 module JoinPoolGamblerRequestBuilder =
-    [<Literal>]
-    let private tableName = "Pool"
-
-    [<Literal>]
-    let private poolText = "POOL"
-
-    [<Literal>]
-    let private gamblerText = "GAMBLER"
 
     [<Literal>]
     let private initialPoolLayoutVersion = 1
@@ -21,22 +14,24 @@ module JoinPoolGamblerRequestBuilder =
     let build (createPoolInput: ResolvedCreatePoolInput) =
         let mutable attributeValues =
             dict
-                [ "pk", AttributeValue(S = $"{poolText}#{createPoolInput.PoolId}")
-                  "sk", AttributeValue(S = $"{gamblerText}#{createPoolInput.OwnerGamblerId}")
-                  "poolId", AttributeValue(S = createPoolInput.PoolId.Value)
-                  "poolName", AttributeValue(S = createPoolInput.PoolName.Value)
-                  "gamblerId", AttributeValue(S = createPoolInput.OwnerGamblerId.Value)
-                  "gamblerUsername", AttributeValue(S = createPoolInput.OwnerGamblerUsername.Value)
-                  "status", AttributeValue(S = "OPENED")
-                  "filter", AttributeValue(S = $"{createPoolInput.PoolName} {createPoolInput.OwnerGamblerUsername}")
-                  "poolLayoutId", AttributeValue(S = (createPoolInput.PoolLayoutId |> Ulid.value))
-                  "currentPosition", AttributeValue(N = "0")
-                  "beforePosition", AttributeValue(N = "0")
-                  "score", AttributeValue(N = "0")
-                  "poolLayoutVersion", AttributeValue(N = initialPoolLayoutVersion.ToString()) ]
+                [ Key.pk, AttributeValue(S = KeyPrefix.build PoolTable.Prefix.pool createPoolInput.PoolId.Value)
+                  Key.sk,
+                  AttributeValue(S = KeyPrefix.build PoolTable.Prefix.gambler createPoolInput.OwnerGamblerId.Value)
+                  PoolTable.Attribute.poolId, AttributeValue(S = createPoolInput.PoolId.Value)
+                  PoolTable.Attribute.poolName, AttributeValue(S = createPoolInput.PoolName.Value)
+                  PoolTable.Attribute.gamblerId, AttributeValue(S = createPoolInput.OwnerGamblerId.Value)
+                  PoolTable.Attribute.gamblerUsername, AttributeValue(S = createPoolInput.OwnerGamblerUsername.Value)
+                  PoolTable.Attribute.status, AttributeValue(S = "OPENED")
+                  PoolTable.Attribute.filter,
+                  AttributeValue(S = $"{createPoolInput.PoolName} {createPoolInput.OwnerGamblerUsername}")
+                  PoolTable.Attribute.poolLayoutId, AttributeValue(S = (createPoolInput.PoolLayoutId |> Ulid.value))
+                  PoolTable.Attribute.currentPosition, AttributeValue(N = "0")
+                  PoolTable.Attribute.beforePosition, AttributeValue(N = "0")
+                  PoolTable.Attribute.score, AttributeValue(N = "0")
+                  PoolTable.Attribute.poolLayoutVersion, AttributeValue(N = initialPoolLayoutVersion.ToString()) ]
 
         Put(
-            TableName = tableName,
+            TableName = PoolTable.name,
             Item = (attributeValues |> Dictionary),
-            ConditionExpression = "attribute_not_exists(pk) AND attribute_not_exists(sk)"
+            ConditionExpression = $"attribute_not_exists({Key.pk}) AND attribute_not_exists({Key.sk})"
         )

@@ -2,43 +2,33 @@ namespace Felipearpa.Tyche.Pool.Infrastructure
 
 open System.Collections.Generic
 open Amazon.DynamoDBv2.Model
+open Felipearpa.Data.DynamoDb
 open Felipearpa.Type
 
 module UpdateMatchPositionRequestBuilder =
 
-    [<Literal>]
-    let private tableName = "Pool"
-
-    [<Literal>]
-    let private matchKeyPrefix = "MATCH"
-
-    [<Literal>]
-    let private poolKeyPrefix = "POOL"
-
-    [<Literal>]
-    let private gamblerKeyPrefix = "GAMBLER"
-
     let build (poolId: Ulid) (gamblerId: Ulid) (matchId: Ulid) (currentPosition: int) (beforePosition: int) =
-        let pk = $"{gamblerKeyPrefix}#{gamblerId}#{poolKeyPrefix}#{poolId}"
+        let pk =
+            $"{KeyPrefix.build PoolTable.Prefix.gambler gamblerId.Value}#{KeyPrefix.build PoolTable.Prefix.pool poolId.Value}"
 
-        let sk = $"{matchKeyPrefix}#{matchId}"
+        let sk = KeyPrefix.build PoolTable.Prefix.match' matchId.Value
 
-        let key = dict [ "pk", AttributeValue(pk); "sk", AttributeValue(sk) ]
+        let key = dict [ Key.pk, AttributeValue(pk); Key.sk, AttributeValue(sk) ]
 
         let updateExpression =
-            "SET #currentPosition = :currentPosition, \
-             #beforePosition = :beforePosition"
+            $"SET {ExpressionAttribute.name PoolTable.Attribute.currentPosition} = :{PoolTable.Attribute.currentPosition}, \
+             {ExpressionAttribute.name PoolTable.Attribute.beforePosition} = :{PoolTable.Attribute.beforePosition}"
 
         let attributeNames =
-            dict [ "#currentPosition", "currentPosition"; "#beforePosition", "beforePosition" ]
+            ExpressionAttribute.names [ PoolTable.Attribute.currentPosition; PoolTable.Attribute.beforePosition ]
 
         let attributeValues =
             dict
-                [ ":currentPosition", AttributeValue(N = currentPosition.ToString())
-                  ":beforePosition", AttributeValue(N = beforePosition.ToString()) ]
+                [ $":{PoolTable.Attribute.currentPosition}", AttributeValue(N = currentPosition.ToString())
+                  $":{PoolTable.Attribute.beforePosition}", AttributeValue(N = beforePosition.ToString()) ]
 
         UpdateItemRequest(
-            TableName = tableName,
+            TableName = PoolTable.name,
             Key = Dictionary key,
             UpdateExpression = updateExpression,
             ExpressionAttributeNames = Dictionary attributeNames,

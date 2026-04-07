@@ -2,33 +2,29 @@ namespace Felipearpa.Tyche.PoolLayout.Infrastructure
 
 open System.Collections.Generic
 open Amazon.DynamoDBv2.Model
+open Felipearpa.Data.DynamoDb
 open Felipearpa.Type
 
 module GetPendingPoolLayoutMatchesRequestBuilder =
-    [<Literal>]
-    let private tableName = "PoolLayout"
-
-    [<Literal>]
-    let poolText = "POOLLAYOUT"
-
-    [<Literal>]
-    let private matchText = "MATCH"
 
     let build (poolLayoutId: Ulid) (poolLayoutVersion: int) (maybeNext: IDictionary<string, AttributeValue> option) =
-        let keyConditionExpression = "#pk = :pk AND begins_with(#sk, :matchPrefix)"
-        let filterExpression = "#poolLayoutVersion <= :poolLayoutVersion"
+        let keyConditionExpression =
+            $"{ExpressionAttribute.name Key.pk} = :pk AND begins_with({ExpressionAttribute.name Key.sk}, :matchPrefix)"
+
+        let filterExpression =
+            $"{ExpressionAttribute.name PoolLayoutTable.Attribute.poolLayoutVersion} <= :{PoolLayoutTable.Attribute.poolLayoutVersion}"
 
         let attributeValues =
             dict
-                [ ":pk", AttributeValue(S = $"{poolText}#{poolLayoutId}")
-                  ":matchPrefix", AttributeValue(S = $"{matchText}#")
-                  ":poolLayoutVersion", AttributeValue(N = poolLayoutVersion.ToString()) ]
+                [ ":pk", AttributeValue(S = KeyPrefix.build PoolLayoutTable.Prefix.poolLayout poolLayoutId.Value)
+                  ":matchPrefix", AttributeValue(S = KeyPrefix.build PoolLayoutTable.Prefix.match' "")
+                  $":{PoolLayoutTable.Attribute.poolLayoutVersion}", AttributeValue(N = poolLayoutVersion.ToString()) ]
 
         let attributeNames =
-            dict [ "#pk", "pk"; "#sk", "sk"; "#poolLayoutVersion", "poolLayoutVersion" ]
+            ExpressionAttribute.names [ Key.pk; Key.sk; PoolLayoutTable.Attribute.poolLayoutVersion ]
 
         QueryRequest(
-            TableName = tableName,
+            TableName = PoolLayoutTable.name,
             KeyConditionExpression = keyConditionExpression,
             FilterExpression = filterExpression,
             ExpressionAttributeNames = Dictionary attributeNames,

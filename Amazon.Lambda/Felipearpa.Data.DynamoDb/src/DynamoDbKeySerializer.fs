@@ -16,13 +16,13 @@ type DynamoDbKeySerializer(serializer: ISerializer) =
 
         member this.Serialize dictionary =
             serializer.Serialize(
-                {| Pk = dictionary["pk"].S
-                   Sk = dictionary["sk"].S |}
+                {| Pk = dictionary[Key.pk].S
+                   Sk = dictionary[Key.sk].S |}
             )
 
         member this.Deserialize value =
-            let dictionary =
-                serializer.Deserialize<IDictionary<string, obj>>(value)
+            let dictionary = serializer.Deserialize<IDictionary<string, obj>>(value)
 
-            dict [ "pk", AttributeValue(dictionary[ "pk" ].ToString())
-                   "sk", AttributeValue(dictionary[ "sk" ].ToString()) ]
+            dict
+                [ Key.pk, AttributeValue(dictionary[Key.pk].ToString())
+                  Key.sk, AttributeValue(dictionary[Key.sk].ToString()) ]

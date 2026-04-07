@@ -146,8 +146,8 @@ type PoolGamblerScoreDynamoDbRepository(keySerializer: IKeySerializer, client: I
                     do!
                         response.Items
                         |> Seq.mapi (fun i item ->
-                            let gamblerId = item["gamblerId"].S |> Ulid.newOf
-                            let beforePosition = item["currentPosition"].N |> int
+                            let gamblerId = item[PoolTable.Attribute.gamblerId].S |> Ulid.newOf
+                            let beforePosition = item[PoolTable.Attribute.currentPosition].N |> int
                             let newPosition = position + i + 1
 
                             let masterUpdate =

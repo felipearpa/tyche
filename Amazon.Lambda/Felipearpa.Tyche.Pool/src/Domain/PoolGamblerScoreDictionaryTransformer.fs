@@ -4,18 +4,28 @@ open System.Collections.Generic
 open System.Runtime.CompilerServices
 open Amazon.DynamoDBv2.Model
 open Felipearpa.Data.DynamoDb.Dictionary
+open Felipearpa.Tyche.Pool.Infrastructure
 open Felipearpa.Type
 
 module PoolGamblerScoreDictionaryTransformer =
 
     let toPoolGamblerScore (dictionary: IDictionary<string, AttributeValue>) =
-        { PoolGamblerScore.PoolId = dictionary["poolId"].S |> Ulid.newOf
-          GamblerId = dictionary["gamblerId"].S |> Ulid.newOf
-          PoolName = dictionary["poolName"].S |> NonEmptyString100.newOf
-          GamblerUsername = dictionary["gamblerUsername"].S |> NonEmptyString100.newOf
-          CurrentPosition = dictionary |> tryGetAttributeValueOrNone "currentPosition" |> noneIfZero
-          BeforePosition = dictionary |> tryGetAttributeValueOrNone "beforePosition" |> noneIfZero
-          Score = dictionary |> tryGetAttributeValueOrNone "score" |> noneIfZero }
+        { PoolGamblerScore.PoolId = dictionary[PoolTable.Attribute.poolId].S |> Ulid.newOf
+          GamblerId = dictionary[PoolTable.Attribute.gamblerId].S |> Ulid.newOf
+          PoolName = dictionary[PoolTable.Attribute.poolName].S |> NonEmptyString100.newOf
+          GamblerUsername = dictionary[PoolTable.Attribute.gamblerUsername].S |> NonEmptyString100.newOf
+          CurrentPosition =
+            dictionary
+            |> tryGetAttributeValueOrNone (PoolTable.Attribute.currentPosition)
+            |> noneIfZero
+          BeforePosition =
+            dictionary
+            |> tryGetAttributeValueOrNone (PoolTable.Attribute.beforePosition)
+            |> noneIfZero
+          Score =
+            dictionary
+            |> tryGetAttributeValueOrNone (PoolTable.Attribute.score)
+            |> noneIfZero }
 
     type Extensions =
         [<Extension>]

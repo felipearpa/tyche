@@ -2,30 +2,28 @@ namespace Felipearpa.Tyche.Pool.Infrastructure
 
 open System.Collections.Generic
 open Amazon.DynamoDBv2.Model
+open Felipearpa.Data.DynamoDb
 open Felipearpa.Type
 
 module GetGamblerScoresRequestBuilder =
-    [<Literal>]
-    let private tableName = "Pool"
-
-    [<Literal>]
-    let private gamblerText = "GAMBLER"
 
     let build (gamblerId: Ulid) (maybeNext: IDictionary<string, AttributeValue> option) =
-        let keyConditionExpression = "#sk = :sk"
+        let keyConditionExpression = $"{ExpressionAttribute.name Key.sk} = :sk"
 
-        let filterExpression = "#status = :status"
+        let filterExpression =
+            $"{ExpressionAttribute.name PoolTable.Attribute.status} = :status"
 
         let attributeValues =
             dict
-                [ ":sk", AttributeValue($"{gamblerText}#{gamblerId.Value}")
+                [ ":sk", AttributeValue(KeyPrefix.build PoolTable.Prefix.gambler gamblerId.Value)
                   ":status", AttributeValue("OPENED") ]
 
-        let attributeNames = dict [ "#sk", "sk"; "#status", "status" ]
+        let attributeNames =
+            ExpressionAttribute.names [ Key.sk; PoolTable.Attribute.status ]
 
         QueryRequest(
-            TableName = tableName,
-            IndexName = "GetPoolGamblerScoresByGambler-index",
+            TableName = PoolTable.name,
+            IndexName = PoolTable.Index.scoresByGambler,
             ScanIndexForward = false,
             KeyConditionExpression = keyConditionExpression,
             FilterExpression = filterExpression,

@@ -6,6 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="AttributeName.fs" />
     <Compile Include="ConditionalUpdate.fs" />
     <Compile Include="DynamoDbKeySerializer.fs" />
     <Compile Include="Dictionary.fs" />

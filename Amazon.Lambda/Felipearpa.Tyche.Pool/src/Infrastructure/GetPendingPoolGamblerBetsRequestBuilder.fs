@@ -4,18 +4,10 @@ open System
 open System.Collections.Generic
 open Amazon.DynamoDBv2.Model
 open Felipearpa.Core
+open Felipearpa.Data.DynamoDb
 open Felipearpa.Type
 
 module GetPendingPoolGamblerBetsRequestBuilder =
-
-    [<Literal>]
-    let tableName = "Pool"
-
-    [<Literal>]
-    let poolKeyPrefix = "POOL"
-
-    [<Literal>]
-    let gamblerKeyPrefix = "GAMBLER"
 
     let build
         (poolId: Ulid)
@@ -24,28 +16,35 @@ module GetPendingPoolGamblerBetsRequestBuilder =
         (maybeNext: string option)
         (deserialize: string -> IDictionary<string, AttributeValue>)
         =
-        let keyConditionExpression = "#pk = :pk and #matchDateTime > :now"
+        let keyConditionExpression =
+            $"{ExpressionAttribute.name Key.pk} = :pk and {ExpressionAttribute.name PoolTable.Attribute.matchDateTime} > :now"
 
         let defaultAttributeValues =
             dict
-                [ ":pk", AttributeValue($"{gamblerKeyPrefix}#{gamblerId}#{poolKeyPrefix}#{poolId}")
+                [ ":pk",
+                  AttributeValue(
+                      $"{KeyPrefix.build PoolTable.Prefix.gambler gamblerId.Value}#{KeyPrefix.build PoolTable.Prefix.pool poolId.Value}"
+                  )
                   ":now", AttributeValue(DateTime.Now.ToUniversalTime().ToString("o")) ]
 
-        let defaultAttributeNames = dict [ "#pk", "pk"; "#matchDateTime", "matchDateTime" ]
+        let defaultAttributeNames =
+            ExpressionAttribute.names [ Key.pk; PoolTable.Attribute.matchDateTime ]
 
         let filterExpression, attributeValues, attributeNames =
             match maybeSearchText with
             | None -> (null, defaultAttributeValues, defaultAttributeNames)
             | Some filterText ->
-                ("contains(#filter, :filter)",
+                ($"contains({ExpressionAttribute.name PoolTable.Attribute.filter}, :{PoolTable.Attribute.filter})",
                  defaultAttributeValues
-                 |> Dictionary.union (dict [ ":filter", AttributeValue(filterText.ToLower()) ])
+                 |> Dictionary.union (dict [ $":{PoolTable.Attribute.filter}", AttributeValue(filterText.ToLower()) ])
                  :> IDictionary<_, _>,
-                 defaultAttributeNames |> Dictionary.union (dict [ "#filter", "filter" ]) :> IDictionary<_, _>)
+                 defaultAttributeNames
+                 |> Dictionary.union (ExpressionAttribute.names [ PoolTable.Attribute.filter ] |> Dictionary)
+                 :> IDictionary<_, _>)
 
         QueryRequest(
-            TableName = tableName,
-            IndexName = "GetPendingPoolGamblerBets-index",
+            TableName = PoolTable.name,
+            IndexName = PoolTable.Index.pendingPoolGamblerBets,
             KeyConditionExpression = keyConditionExpression,
             FilterExpression = filterExpression,
             ExpressionAttributeNames = Dictionary attributeNames,

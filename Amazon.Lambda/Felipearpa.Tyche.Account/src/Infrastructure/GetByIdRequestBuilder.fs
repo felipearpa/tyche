@@ -2,24 +2,20 @@ namespace Felipearpa.Tyche.Account.Infrastructure
 
 open System.Collections.Generic
 open Amazon.DynamoDBv2.Model
+open Felipearpa.Data.DynamoDb
 
 module GetByIdRequestBuilder =
-    [<Literal>]
-    let private accountTableName = "Account"
-
-    [<Literal>]
-    let private accountText = "ACCOUNT"
 
     let build (id: string) =
-        let keyConditionExpression = "#pk = :pk"
+        let keyConditionExpression = $"{ExpressionAttribute.name Key.pk} = :pk"
 
         let mutable attributeValues =
-            dict [ ":pk", AttributeValue(S = $"{accountText}#{id}") ]
+            dict [ ":pk", AttributeValue(S = KeyPrefix.build AccountTable.Prefix.account id) ]
 
-        let mutable attributeNames = dict [ "#pk", "pk" ]
+        let mutable attributeNames = ExpressionAttribute.names [ Key.pk ]
 
         QueryRequest(
-            TableName = accountTableName,
+            TableName = AccountTable.name,
             KeyConditionExpression = keyConditionExpression,
             ExpressionAttributeNames = Dictionary attributeNames,
             ExpressionAttributeValues = Dictionary attributeValues

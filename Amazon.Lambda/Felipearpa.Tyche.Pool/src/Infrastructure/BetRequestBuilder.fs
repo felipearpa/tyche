@@ -3,48 +3,42 @@ namespace Felipearpa.Tyche.Pool.Infrastructure
 open System
 open System.Collections.Generic
 open Amazon.DynamoDBv2.Model
+open Felipearpa.Data.DynamoDb
 open Felipearpa.Tyche.Pool.Type
 open Felipearpa.Type
 
 module BetRequestBuilder =
 
-    [<Literal>]
-    let tableName = "Pool"
-
-    [<Literal>]
-    let poolKeyPrefix = "POOL"
-
-    [<Literal>]
-    let gamblerKeyPrefix = "GAMBLER"
-
-    [<Literal>]
-    let matchKeyPrefix = "MATCH"
-
     let build (poolId: Ulid) (gamblerId: Ulid) (matchId: Ulid) (betScore: TeamScore<BetScore>) =
         let key =
             dict
-                [ "pk", AttributeValue($"{gamblerKeyPrefix}#{gamblerId}#{poolKeyPrefix}#{poolId}")
-                  "sk", AttributeValue($"{matchKeyPrefix}#{matchId}") ]
+                [ Key.pk,
+                  AttributeValue(
+                      $"{KeyPrefix.build PoolTable.Prefix.gambler gamblerId.Value}#{KeyPrefix.build PoolTable.Prefix.pool poolId.Value}"
+                  )
+                  Key.sk, AttributeValue(KeyPrefix.build PoolTable.Prefix.match' matchId.Value) ]
 
         let updateExpression =
-            "SET #homeTeamBet = :homeTeamBet, #awayTeamBet = :awayTeamBet"
+            $"SET {ExpressionAttribute.name PoolTable.Attribute.homeTeamBet} = :{PoolTable.Attribute.homeTeamBet}, \
+             {ExpressionAttribute.name PoolTable.Attribute.awayTeamBet} = :{PoolTable.Attribute.awayTeamBet}"
 
-        let conditionExpression = ":now < #matchDateTime"
+        let conditionExpression =
+            $":now < {ExpressionAttribute.name PoolTable.Attribute.matchDateTime}"
 
         let mutable attributeNames =
-            dict
-                [ "#homeTeamBet", "homeTeamBet"
-                  "#awayTeamBet", "awayTeamBet"
-                  "#matchDateTime", "matchDateTime" ]
+            ExpressionAttribute.names
+                [ PoolTable.Attribute.homeTeamBet
+                  PoolTable.Attribute.awayTeamBet
+                  PoolTable.Attribute.matchDateTime ]
 
         let mutable attributeValues =
             dict
-                [ ":homeTeamBet", AttributeValue(N = betScore.HomeTeamValue.ToString())
-                  ":awayTeamBet", AttributeValue(N = betScore.AwayTeamValue.ToString())
+                [ $":{PoolTable.Attribute.homeTeamBet}", AttributeValue(N = betScore.HomeTeamValue.ToString())
+                  $":{PoolTable.Attribute.awayTeamBet}", AttributeValue(N = betScore.AwayTeamValue.ToString())
                   ":now", AttributeValue(S = DateTime.Now.ToUniversalTime().ToString("o")) ]
 
         UpdateItemRequest(
-            TableName = tableName,
+            TableName = PoolTable.name,
             Key = Dictionary key,
             ExpressionAttributeNames = Dictionary attributeNames,
             ExpressionAttributeValues = Dictionary attributeValues,

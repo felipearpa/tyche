@@ -3,59 +3,49 @@ namespace Felipearpa.Tyche.Pool.Infrastructure
 open System
 open System.Collections.Generic
 open Amazon.DynamoDBv2.Model
+open Felipearpa.Data.DynamoDb
 open Felipearpa.Tyche.Pool.Domain
 open Felipearpa.Tyche.Pool.Domain.BetEvaluator
 open Felipearpa.Tyche.Pool.Type
 
 module ComputePoolGamblerBetRequestBuilder =
 
-    [<Literal>]
-    let private tableName = "Pool"
-
-    [<Literal>]
-    let private matchKeyPrefix = "MATCH"
-
-    [<Literal>]
-    let private poolKeyPrefix = "POOL"
-
-    [<Literal>]
-    let private gamblerKeyPrefix = "GAMBLER"
-
     let build (poolGamblerBet: PoolGamblerBet) (matchScore: TeamScore<int>) (computedRequestId: String) =
         let pk =
-            $"{gamblerKeyPrefix}#{poolGamblerBet.GamblerId}#{poolKeyPrefix}#{poolGamblerBet.PoolId}"
+            $"{KeyPrefix.build PoolTable.Prefix.gambler poolGamblerBet.GamblerId.Value}#{KeyPrefix.build PoolTable.Prefix.pool poolGamblerBet.PoolId.Value}"
 
-        let sk = $"{matchKeyPrefix}#{poolGamblerBet.MatchId}"
+        let sk = KeyPrefix.build PoolTable.Prefix.match' poolGamblerBet.MatchId.Value
 
-        let key = dict [ "pk", AttributeValue(pk); "sk", AttributeValue(sk) ]
+        let key = dict [ Key.pk, AttributeValue(pk); Key.sk, AttributeValue(sk) ]
 
         let updateExpression =
-            "SET #homeTeamScore = :homeTeamScore, \
-             #awayTeamScore = :awayTeamScore, \
-             #score = :delta, \
-             #computedDateTime = :now, \
-             #computedRequestId = :computedRequestId"
+            $"SET {ExpressionAttribute.name PoolTable.Attribute.homeTeamScore} = :{PoolTable.Attribute.homeTeamScore}, \
+             {ExpressionAttribute.name PoolTable.Attribute.awayTeamScore} = :{PoolTable.Attribute.awayTeamScore}, \
+             {ExpressionAttribute.name PoolTable.Attribute.score} = :delta, \
+             {ExpressionAttribute.name PoolTable.Attribute.computedDateTime} = :now, \
+             {ExpressionAttribute.name PoolTable.Attribute.computedRequestId} = :{PoolTable.Attribute.computedRequestId}"
 
-        let conditionExpression = "attribute_not_exists(#computedRequestId)"
+        let conditionExpression =
+            $"attribute_not_exists({ExpressionAttribute.name PoolTable.Attribute.computedRequestId})"
 
         let mutable attributeNames =
-            dict
-                [ "#homeTeamScore", "homeTeamScore"
-                  "#awayTeamScore", "awayTeamScore"
-                  "#score", "score"
-                  "#computedDateTime", "computedDateTime"
-                  "#computedRequestId", "computedRequestId" ]
+            ExpressionAttribute.names
+                [ PoolTable.Attribute.homeTeamScore
+                  PoolTable.Attribute.awayTeamScore
+                  PoolTable.Attribute.score
+                  PoolTable.Attribute.computedDateTime
+                  PoolTable.Attribute.computedRequestId ]
 
         let mutable attributeValues =
             dict
-                [ ":homeTeamScore", AttributeValue(N = matchScore.HomeTeamValue.ToString())
-                  ":awayTeamScore", AttributeValue(N = matchScore.AwayTeamValue.ToString())
+                [ $":{PoolTable.Attribute.homeTeamScore}", AttributeValue(N = matchScore.HomeTeamValue.ToString())
+                  $":{PoolTable.Attribute.awayTeamScore}", AttributeValue(N = matchScore.AwayTeamValue.ToString())
                   ":delta", AttributeValue(N = (delta poolGamblerBet.BetScore matchScore).ToString())
                   ":now", AttributeValue(S = DateTime.UtcNow.ToString("o"))
-                  ":computedRequestId", AttributeValue(S = computedRequestId) ]
+                  $":{PoolTable.Attribute.computedRequestId}", AttributeValue(S = computedRequestId) ]
 
         Update(
-            TableName = tableName,
+            TableName = PoolTable.name,
             Key = Dictionary key,
             ExpressionAttributeNames = Dictionary attributeNames,
             ExpressionAttributeValues = Dictionary attributeValues,
