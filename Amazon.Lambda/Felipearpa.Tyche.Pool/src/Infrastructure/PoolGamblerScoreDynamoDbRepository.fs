@@ -110,13 +110,14 @@ type PoolGamblerScoreDynamoDbRepository(keySerializer: IKeySerializer, client: I
                     let! lastPoolId =
                         response.Items
                         |> Seq.map toPoolGamblerBet
+                        |> Seq.chunkByKey _.PoolId
                         |> Seq.fold
-                            (fun (state: Async<Ulid option>) bet ->
+                            (fun (state: Async<Ulid option>) (poolId, bets) ->
                                 async {
                                     let! previousPoolId = state
-                                    do! notifyIfPoolChanged previousPoolId bet.PoolId
-                                    do! computeScore bet
-                                    return Some bet.PoolId
+                                    do! notifyIfPoolChanged previousPoolId poolId
+                                    do! bets |> Seq.map computeScore |> Async.Parallel |> Async.Ignore
+                                    return Some poolId
                                 })
                             (async { return lastPoolId })
 
@@ -168,7 +169,8 @@ type PoolGamblerScoreDynamoDbRepository(keySerializer: IKeySerializer, client: I
                                     |> Async.Parallel
                                     |> Async.Ignore
                             })
-                        |> Seq.iterAsync id
+                        |> Async.Parallel
+                        |> Async.Ignore
 
                     match response.LastEvaluatedKey |> Option.ofObj with
                     | Some lek ->
