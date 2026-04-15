@@ -9,7 +9,7 @@ struct GamblerScoreItem: View {
 
     var body: some View {
         HStack(spacing: boxSpacing.medium) {
-            if let currentPosition = poolGamblerScore.currentPosition {
+            if let currentPosition = poolGamblerScore.position {
                 ZStack {
                     Text(String(currentPosition))
                 }

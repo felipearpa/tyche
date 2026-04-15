@@ -4,7 +4,7 @@ func dummyPoolGamblerScore() -> PoolGamblerScore {
         poolName: "Neptune World Series 2023",
         gamblerId: "YF23H1",
         gamblerUsername: "neptune-player",
-        currentPosition: 4,
+        position: 4,
         beforePosition: 3,
         score: 8
     )
@@ -17,7 +17,7 @@ func dummyPoolGamblerScores() -> [PoolGamblerScore] {
             poolName: "Neptune World Series 2023",
             gamblerId: "YF23H1",
             gamblerUsername: "neptune-player",
-            currentPosition: 4,
+            position: 4,
             beforePosition: 3,
             score: 8
         ),
@@ -26,7 +26,7 @@ func dummyPoolGamblerScores() -> [PoolGamblerScore] {
             poolName: "Ares Euro Championship 2024",
             gamblerId: "ZT94Q5",
             gamblerUsername: "ares-bettor",
-            currentPosition: 2,
+            position: 2,
             beforePosition: nil,
             score: 10
         ),
@@ -35,7 +35,7 @@ func dummyPoolGamblerScores() -> [PoolGamblerScore] {
             poolName: "Hermes International Cup 2023",
             gamblerId: "XN28J4",
             gamblerUsername: "hermes-punter",
-            currentPosition: 1,
+            position: 1,
             beforePosition: 4,
             score: 6
         ),
@@ -44,7 +44,7 @@ func dummyPoolGamblerScores() -> [PoolGamblerScore] {
             poolName: "Athena Olympics 2024",
             gamblerId: "M9L2S7",
             gamblerUsername: "athena-challenger",
-            currentPosition: nil,
+            position: nil,
             beforePosition: nil,
             score: nil
         )

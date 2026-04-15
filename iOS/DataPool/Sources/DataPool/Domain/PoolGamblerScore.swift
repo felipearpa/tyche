@@ -3,7 +3,7 @@ public struct PoolGamblerScore: Codable {
     public let poolName: String
     public let gamblerId: String
     public let gamblerUsername: String
-    public let currentPosition: Int?
+    public let position: Int?
     public let beforePosition: Int?
     public let score: Int?
 }

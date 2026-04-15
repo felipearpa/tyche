@@ -1,11 +1,16 @@
 package com.felipearpa.tyche
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import com.felipearpa.foundation.emptyString
@@ -30,6 +35,8 @@ class MainActivity : ComponentActivity() {
     private val accountStorage: AccountStorage by inject()
     private val joinUrlTemplate: JoinPoolUrlTemplateProvider by inject()
 
+    private var deepLinkIntent by mutableStateOf<Intent?>(null)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -45,10 +52,17 @@ class MainActivity : ComponentActivity() {
                         accountBundle = accountBundle,
                         intentData = intentData,
                         joinPoolUrlTemplate = joinUrlTemplate,
+                        deepLinkIntent = deepLinkIntent,
+                        onHandleDeepLink = { deepLinkIntent = null },
                     )
                 }
             }
         }
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        deepLinkIntent = intent
     }
 }
 
@@ -57,11 +71,15 @@ fun Content(
     accountBundle: AccountBundle?,
     intentData: String?,
     joinPoolUrlTemplate: JoinPoolUrlTemplateProvider,
+    deepLinkIntent: Intent?,
+    onHandleDeepLink: () -> Unit,
 ) {
     Outlet(
         accountBundle = accountBundle,
         intentData = intentData,
         joinPoolUrlTemplate = joinPoolUrlTemplate,
+        deepLinkIntent = deepLinkIntent,
+        onDeepLinkHandled = onHandleDeepLink,
     )
 }
 
@@ -70,11 +88,20 @@ fun Outlet(
     accountBundle: AccountBundle?,
     intentData: String?,
     joinPoolUrlTemplate: JoinPoolUrlTemplateProvider,
+    deepLinkIntent: Intent?,
+    onDeepLinkHandled: () -> Unit,
 ) {
     val maybeGamblerId = accountBundle?.accountId
     val initialRoute: Any =
         if (maybeGamblerId == null) HomeRoute else PoolScoreListRoute(gamblerId = maybeGamblerId)
     val navController = rememberNavController()
+
+    LaunchedEffect(deepLinkIntent) {
+        deepLinkIntent?.let { intent ->
+            navController.handleDeepLink(intent)
+            onDeepLinkHandled()
+        }
+    }
 
     NavHost(navController = navController, startDestination = initialRoute) {
         homeNavView(navController = navController)

@@ -3,7 +3,7 @@ struct PoolGamblerScoreResponse : Codable {
     let poolName: String
     let gamblerId: String
     let gamblerUsername: String
-    let currentPosition: Int?
+    let position: Int?
     let beforePosition: Int?
     let score: Int?
 }
@@ -15,7 +15,7 @@ extension PoolGamblerScoreResponse {
             poolName: self.poolName,
             gamblerId: self.gamblerId,
             gamblerUsername: self.gamblerUsername,
-            currentPosition: self.currentPosition,
+            position: self.position,
             beforePosition: self.beforePosition,
             score: self.score
         )

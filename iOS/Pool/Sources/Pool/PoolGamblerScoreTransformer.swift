@@ -7,7 +7,7 @@ public extension PoolGamblerScore {
             poolName: self.poolName,
             gamblerId: self.gamblerId,
             gamblerUsername: self.gamblerUsername,
-            currentPosition: self.currentPosition,
+            position: self.position,
             beforePosition: self.beforePosition,
             score: self.score
         )

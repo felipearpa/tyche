@@ -8,7 +8,7 @@ public struct PoolGamblerScoreModel: Identifiable, Hashable, Codable {
     public let poolName: String
     public let gamblerId: String
     public let gamblerUsername: String
-    public let currentPosition: Int?
+    public let position: Int?
     public let beforePosition: Int?
     public let score: Int?
 
@@ -19,7 +19,7 @@ public struct PoolGamblerScoreModel: Identifiable, Hashable, Codable {
 
 public extension PoolGamblerScoreModel {
     func difference() -> Int? {
-        guard let currentPosition = self.currentPosition else {
+        guard let currentPosition = self.position else {
             return nil
         }
         
