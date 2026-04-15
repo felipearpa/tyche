@@ -7,7 +7,7 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.felipearpa.foundation.emptyString
-import com.felipearpa.tyche.data.bet.application.GetPendingPoolGamblerBetsUseCase
+import com.felipearpa.tyche.data.bet.application.GetPendingPoolGamblerBets
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -20,7 +20,7 @@ private const val PREFETCH_DISTANCE = 5
 class PendingBetListViewModel(
     private val poolId: String,
     val gamblerId: String,
-    private val getPendingPoolGamblerBetsUseCase: GetPendingPoolGamblerBetsUseCase,
+    private val getPendingPoolGamblerBets: GetPendingPoolGamblerBets,
 ) :
     ViewModel() {
 
@@ -51,7 +51,7 @@ class PendingBetListViewModel(
                             poolId = poolId,
                             gamblerId = gamblerId,
                             search = { searchText.ifEmpty { null } },
-                            getPendingPoolGamblerBetsUseCase = getPendingPoolGamblerBetsUseCase,
+                            getPendingPoolGamblerBets = getPendingPoolGamblerBets,
                         )
                     },
                 )

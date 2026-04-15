@@ -8,7 +8,7 @@ internal data class PoolGamblerScoreResponse(
     val poolName: String,
     val gamblerId: String,
     val gamblerUsername: String,
-    val currentPosition: Int?,
+    val position: Int?,
     val beforePosition: Int?,
     val score: Int?,
 )

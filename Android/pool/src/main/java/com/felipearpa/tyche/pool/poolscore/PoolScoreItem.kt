@@ -81,7 +81,7 @@ fun PoolScoreItem(
             ) {
                 Column(verticalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.small)) {
                     Text(text = poolGamblerScore.poolName, modifier = shimmerModifier)
-                    poolGamblerScore.currentPosition?.let {
+                    poolGamblerScore.position?.let {
                         Text(
                             text = stringResource(R.string.position_label, it),
                             modifier = shimmerModifier,

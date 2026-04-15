@@ -2,8 +2,8 @@ package com.felipearpa.tyche.pool.joiner
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.felipearpa.tyche.data.pool.application.GetPoolUseCase
-import com.felipearpa.tyche.data.pool.application.JoinPoolUseCase
+import com.felipearpa.tyche.data.pool.application.GetPool
+import com.felipearpa.tyche.data.pool.application.JoinPool
 import com.felipearpa.tyche.data.pool.domain.JoinPoolInput
 import com.felipearpa.ui.state.LoadableViewState
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -11,8 +11,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class PoolJoinerViewModel(
-    private val getPoolUseCase: GetPoolUseCase,
-    private val joinPoolUseCase: JoinPoolUseCase,
+    private val getPool: GetPool,
+    private val joinPoolAction: JoinPool,
 ) : ViewModel() {
     private val _poolState =
         MutableStateFlow<LoadableViewState<PoolModel>>(LoadableViewState.Initial)
@@ -25,7 +25,7 @@ class PoolJoinerViewModel(
     fun loadPool(poolId: String) {
         viewModelScope.launch {
             _poolState.emit(LoadableViewState.Loading)
-            val result = getPoolUseCase.execute(poolId = poolId)
+            val result = getPool.execute(poolId = poolId)
             result.onSuccess { pool ->
                 _poolState.emit(LoadableViewState.Success(pool.toPoolModel()))
             }.onFailure {
@@ -38,7 +38,7 @@ class PoolJoinerViewModel(
         viewModelScope.launch {
             _joinPoolState.emit(LoadableViewState.Loading)
             val result =
-                joinPoolUseCase.execute(JoinPoolInput(poolId = poolId, gamblerId = gamblerId))
+                joinPoolAction.execute(JoinPoolInput(poolId = poolId, gamblerId = gamblerId))
             result.onSuccess {
                 _joinPoolState.emit(LoadableViewState.Success(Unit))
             }.onFailure {

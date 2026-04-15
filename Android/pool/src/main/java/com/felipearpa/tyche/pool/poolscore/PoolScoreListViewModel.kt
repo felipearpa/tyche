@@ -8,7 +8,7 @@ import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.felipearpa.foundation.emptyString
 import com.felipearpa.tyche.core.JoinPoolUrlTemplateProvider
-import com.felipearpa.tyche.data.pool.application.GetPoolGamblerScoresByGamblerUseCase
+import com.felipearpa.tyche.data.pool.application.GetPoolGamblerScoresByGambler
 import com.felipearpa.tyche.pool.PoolGamblerScorePagingSource
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.BufferOverflow
@@ -25,7 +25,7 @@ private const val PREFETCH_DISTANCE = 5
 
 class PoolScoreListViewModel(
     val gamblerId: String,
-    private val getPoolGamblerScoresByGamblerUseCase: GetPoolGamblerScoresByGamblerUseCase,
+    private val getPoolGamblerScoresByGambler: GetPoolGamblerScoresByGambler,
     private val joinPoolUrlTemplate: JoinPoolUrlTemplateProvider,
 ) :
     ViewModel() {
@@ -67,7 +67,7 @@ class PoolScoreListViewModel(
                             next = next,
                             gamblerId = gamblerId,
                             search = { searchText.ifEmpty { null } },
-                            getPoolGamblerScoresByGamblerUseCase = getPoolGamblerScoresByGamblerUseCase,
+                            getPoolGamblerScoresByGambler = getPoolGamblerScoresByGambler,
                         )
                     },
                 ).also { pagingSource = it }

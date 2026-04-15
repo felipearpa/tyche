@@ -8,7 +8,7 @@ import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.felipearpa.foundation.emptyString
 import com.felipearpa.tyche.bet.pending.PendingBetPagingSource
-import com.felipearpa.tyche.data.bet.application.GetFinishedPoolGamblerBetsUseCase
+import com.felipearpa.tyche.data.bet.application.GetFinishedPoolGamblerBets
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -21,7 +21,7 @@ private const val PREFETCH_DISTANCE = 5
 class FinishedBetListViewModel(
     private val poolId: String,
     val gamblerId: String,
-    private val getFinishedPoolGamblerBetsUseCase: GetFinishedPoolGamblerBetsUseCase,
+    private val getFinishedPoolGamblerBets: GetFinishedPoolGamblerBets,
 ) :
     ViewModel() {
 
@@ -52,7 +52,7 @@ class FinishedBetListViewModel(
                             poolId = poolId,
                             gamblerId = gamblerId,
                             search = { searchText.ifEmpty { null } },
-                            getFinishedPoolGamblerBetsUseCase = getFinishedPoolGamblerBetsUseCase,
+                            getFinishedPoolGamblerBets = getFinishedPoolGamblerBets,
                         )
                     },
                 )

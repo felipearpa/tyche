@@ -11,7 +11,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.composed
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
@@ -85,23 +84,21 @@ private fun LazyListScope.finishedPoolGamblerBetFakeList(count: Int) {
 
 private fun LazyListScope.finishedPoolGamblerBetPlaceholderItem() {
     item {
-        PendingBetPlaceholderItem(modifier = Modifier.fillMaxWidth())
+        PendingBetPlaceholderItem(modifier = Modifier.finishedBetItem())
         HorizontalDivider(modifier = Modifier.padding(horizontal = LocalBoxSpacing.current.large))
     }
 }
 
-private fun Modifier.finishedBetItem() = composed {
-    this
-        .fillMaxWidth()
+@Composable
+private fun Modifier.finishedBetItem() =
+    fillMaxWidth()
         .padding(all = LocalBoxSpacing.current.large)
-}
 
-private fun Modifier.finishedHeaderBetItem() = composed {
-    this
-        .fillMaxWidth()
+@Composable
+private fun Modifier.finishedHeaderBetItem() =
+    fillMaxWidth()
         .padding(horizontal = LocalBoxSpacing.current.medium)
         .padding(top = LocalBoxSpacing.current.medium)
-}
 
 @Preview(showBackground = true)
 @Composable

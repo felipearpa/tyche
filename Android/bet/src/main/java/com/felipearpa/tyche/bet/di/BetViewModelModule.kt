@@ -11,7 +11,7 @@ val betViewModelModule = module {
         PendingBetListViewModel(
             poolId = params.get(),
             gamblerId = params.get(),
-            getPendingPoolGamblerBetsUseCase = get(),
+            getPendingPoolGamblerBets = get(),
         )
     }
 
@@ -19,14 +19,14 @@ val betViewModelModule = module {
         FinishedBetListViewModel(
             poolId = params.get(),
             gamblerId = params.get(),
-            getFinishedPoolGamblerBetsUseCase = get(),
+            getFinishedPoolGamblerBets = get(),
         )
     }
 
     viewModel { params ->
         PendingBetItemViewModel(
             poolGamblerBet = params.get(),
-            betUseCase = get(),
+            placeBet = get(),
         )
     }
 }

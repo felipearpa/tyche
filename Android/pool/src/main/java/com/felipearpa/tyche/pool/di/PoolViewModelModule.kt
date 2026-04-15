@@ -9,13 +9,13 @@ import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
 val poolViewModelModule = module {
-    viewModel { PoolJoinerViewModel(getPoolUseCase = get(), joinPoolUseCase = get()) }
-    viewModel { StepOneViewModel(getOpenPoolLayoutsUseCase = get()) }
+    viewModel { PoolJoinerViewModel(getPool = get(), joinPoolAction = get()) }
+    viewModel { StepOneViewModel(getOpenPoolLayouts = get()) }
 
     viewModel { params ->
         PoolScoreListViewModel(
             gamblerId = params.get(),
-            getPoolGamblerScoresByGamblerUseCase = get(),
+            getPoolGamblerScoresByGambler = get(),
             joinPoolUrlTemplate = get(),
         )
     }
@@ -24,13 +24,13 @@ val poolViewModelModule = module {
         GamblerScoreListViewModel(
             poolId = params.get(),
             gamblerId = params.get(),
-            getPoolGamblerScoresByPoolUseCase = get(),
+            getPoolGamblerScoresByPool = get(),
         )
     }
 
     viewModel { params ->
         PoolFromLayoutCreatorViewModel(
-            createPoolUseCase = get(),
+            createPool = get(),
             gamblerId = params.get(),
         )
     }

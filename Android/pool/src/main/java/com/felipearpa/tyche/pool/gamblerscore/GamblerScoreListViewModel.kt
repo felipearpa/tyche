@@ -7,7 +7,7 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.felipearpa.foundation.emptyString
-import com.felipearpa.tyche.data.pool.application.GetPoolGamblerScoresByPoolUseCase
+import com.felipearpa.tyche.data.pool.application.GetPoolGamblerScoresByPool
 import com.felipearpa.tyche.pool.PoolGamblerScorePagingSource
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,7 +21,7 @@ private const val PREFETCH_DISTANCE = 5
 class GamblerScoreListViewModel(
     private val poolId: String,
     val gamblerId: String,
-    private val getPoolGamblerScoresByPoolUseCase: GetPoolGamblerScoresByPoolUseCase,
+    private val getPoolGamblerScoresByPool: GetPoolGamblerScoresByPool,
 ) : ViewModel() {
 
     val pageSize = PAGE_SIZE
@@ -50,7 +50,7 @@ class GamblerScoreListViewModel(
                             next = next,
                             poolId = poolId,
                             search = { searchText.ifEmpty { null } },
-                            getPoolGamblerScoresByPoolUseCase = getPoolGamblerScoresByPoolUseCase,
+                            getPoolGamblerScoresByPool = getPoolGamblerScoresByPool,
                         )
                     },
                 )

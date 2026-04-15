@@ -97,15 +97,14 @@ fun Outlet(
             initialRoute = initialRoute,
         )
 
+        poolHomeNavView(
+            navController = navController,
+            initialRoute = initialRoute,
+        )
+
+        poolFromLayoutCreatorNavView(navController = navController)
+
         maybeGamblerId?.let { gamblerId ->
-            poolHomeNavView(
-                navController = navController,
-                initialRoute = initialRoute,
-                gamblerId = gamblerId,
-            )
-
-            poolFromLayoutCreatorNavView(navController = navController, gamblerId = gamblerId)
-
             poolJoinerView(
                 navController = navController,
                 gamblerId = gamblerId,

@@ -6,24 +6,23 @@ import com.felipearpa.tyche.session.AccountStorage
 import com.felipearpa.tyche.session.authentication.domain.AccountLink
 import com.felipearpa.tyche.session.authentication.domain.AuthenticationRepository
 
-class SignInWithEmailAndPasswordUseCase(
+class SignInWithEmailLink(
     private val authenticationRepository: AuthenticationRepository,
-    private val accountStorage: AccountStorage,
+    private val accountStorage: AccountStorage
 ) {
-    suspend fun execute(email: Email, password: String): Result<AccountBundle> {
+    suspend fun execute(email: Email, emailLink: String): Result<AccountBundle> {
         val externalAccountId =
-            authenticationRepository.signInWithEmailAndPassword(
-                email = email.value,
-                password = password,
-            ).onFailure { exception -> return Result.failure(exception) }
+            authenticationRepository.signInWithEmailLink(email = email.value, emailLink = emailLink)
+                .onFailure { exception -> return Result.failure(exception) }
                 .getOrNull()!!
 
         val accountBundle = authenticationRepository.linkAccount(
             accountLink = AccountLink(
                 email = email,
-                externalAccountId = externalAccountId,
-            ),
-        ).onFailure { exception -> return Result.failure(exception) }
+                externalAccountId = externalAccountId
+            )
+        )
+            .onFailure { exception -> return Result.failure(exception) }
             .getOrNull()!!
 
         accountStorage.store(accountBundle = accountBundle)

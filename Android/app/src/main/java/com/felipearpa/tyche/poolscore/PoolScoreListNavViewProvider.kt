@@ -58,7 +58,7 @@ fun NavGraphBuilder.poolScoreListNavView(
                     ),
                 ) { popUpTo(route = initialRoute) { inclusive = true } }
             },
-            onPoolCreate = { navController.navigate(route = PoolFromLayoutCreatorRoute) },
+            onPoolCreate = { navController.navigate(route = PoolFromLayoutCreatorRoute(gamblerId = poolScoreListRoute.gamblerId)) },
         )
     }
 }

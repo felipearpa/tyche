@@ -7,7 +7,7 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.felipearpa.foundation.emptyString
-import com.felipearpa.tyche.data.pool.application.GetOpenPoolLayoutsUseCase
+import com.felipearpa.tyche.data.pool.application.GetOpenPoolLayouts
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
 
@@ -15,7 +15,7 @@ private const val PAGE_SIZE = 50
 private const val PREFETCH_DISTANCE = 5
 
 internal class StepOneViewModel(
-    private val getOpenPoolLayoutsUseCase: GetOpenPoolLayoutsUseCase,
+    private val getOpenPoolLayouts: GetOpenPoolLayouts,
 ) : ViewModel() {
     val pageSize = PAGE_SIZE
 
@@ -38,7 +38,7 @@ internal class StepOneViewModel(
                         getOpenPoolLayoutsPagingQuery(
                             next = next,
                             search = { searchText.ifEmpty { null } },
-                            getOpenPoolLayoutsUseCase = getOpenPoolLayoutsUseCase,
+                            getOpenPoolLayouts = getOpenPoolLayouts,
                         )
                     },
                 )

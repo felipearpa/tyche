@@ -6,7 +6,7 @@ internal fun PoolGamblerScoreResponse.toPoolGamblerScore() =
         poolName = this.poolName,
         gamblerId = this.gamblerId,
         gamblerUsername = this.gamblerUsername,
-        currentPosition = this.currentPosition,
+        position = this.position,
         beforePosition = this.beforePosition,
-        score = this.score
+        score = this.score,
     )

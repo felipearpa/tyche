@@ -1,6 +1,6 @@
 package com.felipearpa.tyche.bet.finished
 
-import com.felipearpa.tyche.data.bet.application.GetFinishedPoolGamblerBetsUseCase
+import com.felipearpa.tyche.data.bet.application.GetFinishedPoolGamblerBets
 import com.felipearpa.tyche.bet.toPoolGamblerBetModel
 import com.felipearpa.tyche.core.paging.map
 
@@ -9,8 +9,8 @@ suspend fun getFinishedBetsPagingQuery(
     poolId: String,
     gamblerId: String,
     search: () -> String?,
-    getFinishedPoolGamblerBetsUseCase: GetFinishedPoolGamblerBetsUseCase,
-) = getFinishedPoolGamblerBetsUseCase.execute(
+    getFinishedPoolGamblerBets: GetFinishedPoolGamblerBets,
+) = getFinishedPoolGamblerBets.execute(
     poolId = poolId,
     gamblerId = gamblerId,
     next = next,

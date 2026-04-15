@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.felipearpa.tyche.core.type.Email
 import com.felipearpa.tyche.session.AccountBundle
-import com.felipearpa.tyche.session.authentication.application.SignInWithEmailLinkUseCase
+import com.felipearpa.tyche.session.authentication.application.SignInWithEmailLink
 import com.felipearpa.tyche.ui.exception.mapOrDefaultLocalized
 import com.felipearpa.ui.state.LoadableViewState
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class EmailLinkSignInViewModel(
-    private val signInLinkToEmailUseCase: SignInWithEmailLinkUseCase,
+    private val signInLinkToEmail: SignInWithEmailLink,
 ) : ViewModel() {
     private val _state =
         MutableStateFlow<LoadableViewState<AccountBundle>>(LoadableViewState.Initial)
@@ -25,7 +25,7 @@ class EmailLinkSignInViewModel(
     fun signInWithEmailLink(email: String, emailLink: String) {
         viewModelScope.launch {
             _state.emit(LoadableViewState.Loading)
-            signInLinkToEmailUseCase.execute(email = Email(email), emailLink = emailLink)
+            signInLinkToEmail.execute(email = Email(email), emailLink = emailLink)
                 .onSuccess { accountBundle -> _state.emit(LoadableViewState.Success(accountBundle)) }
                 .onFailure { exception ->
                     _state.emit(

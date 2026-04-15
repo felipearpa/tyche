@@ -7,7 +7,7 @@ import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
 val accountViewModelModule = module {
-    viewModel { EmailSignInViewModel(sendSignInLinkToEmailUseCase = get()) }
-    viewModel { EmailAndPasswordSignInViewModel(signInWithEmailAndPasswordUseCase = get()) }
-    viewModel { EmailLinkSignInViewModel(signInLinkToEmailUseCase = get()) }
+    viewModel { EmailSignInViewModel(sendSignInLinkToEmail = get()) }
+    viewModel { EmailAndPasswordSignInViewModel(signInWithEmailAndPassword = get()) }
+    viewModel { EmailLinkSignInViewModel(signInLinkToEmail = get()) }
 }

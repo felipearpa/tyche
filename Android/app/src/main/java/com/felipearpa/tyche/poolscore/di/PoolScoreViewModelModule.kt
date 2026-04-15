@@ -5,5 +5,5 @@ import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
 val poolScoreViewModelModule = module {
-    viewModel { DrawerViewModel(logoutUseCase = get()) }
+    viewModel { DrawerViewModel(logOut = get()) }
 }

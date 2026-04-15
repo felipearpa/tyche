@@ -2,7 +2,7 @@ package com.felipearpa.tyche.pool.creator
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.felipearpa.tyche.data.pool.application.CreatePoolUseCase
+import com.felipearpa.tyche.data.pool.application.CreatePool
 import com.felipearpa.ui.state.EditableViewState
 import com.felipearpa.ui.state.relevantValue
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class PoolFromLayoutCreatorViewModel(
-    private val createPoolUseCase: CreatePoolUseCase,
+    private val createPool: CreatePool,
     private val gamblerId: String,
 ) : ViewModel() {
     private val _state = MutableStateFlow<EditableViewState<CreatePoolModel>>(
@@ -25,7 +25,7 @@ class PoolFromLayoutCreatorViewModel(
             EditableViewState.Saving(current = currentCreatePoolModel, target = createPoolModel)
         viewModelScope.launch {
             val result =
-                createPoolUseCase.execute(
+                createPool.execute(
                     createPoolInput = createPoolModel.toCreatePoolInput(
                         ownerGamblerId = gamblerId,
                     ),

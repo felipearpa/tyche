@@ -1,12 +1,12 @@
 package com.felipearpa.tyche.data.pool.di
 
-import com.felipearpa.tyche.data.pool.application.CreatePoolUseCase
-import com.felipearpa.tyche.data.pool.application.GetOpenPoolLayoutsUseCase
-import com.felipearpa.tyche.data.pool.application.GetPoolGamblerScoreUseCase
-import com.felipearpa.tyche.data.pool.application.GetPoolGamblerScoresByGamblerUseCase
-import com.felipearpa.tyche.data.pool.application.GetPoolGamblerScoresByPoolUseCase
-import com.felipearpa.tyche.data.pool.application.GetPoolUseCase
-import com.felipearpa.tyche.data.pool.application.JoinPoolUseCase
+import com.felipearpa.tyche.data.pool.application.CreatePool
+import com.felipearpa.tyche.data.pool.application.GetOpenPoolLayouts
+import com.felipearpa.tyche.data.pool.application.GetPoolGamblerScore
+import com.felipearpa.tyche.data.pool.application.GetPoolGamblerScoresByGambler
+import com.felipearpa.tyche.data.pool.application.GetPoolGamblerScoresByPool
+import com.felipearpa.tyche.data.pool.application.GetPool
+import com.felipearpa.tyche.data.pool.application.JoinPool
 import com.felipearpa.tyche.data.pool.domain.PoolDataSource
 import com.felipearpa.tyche.data.pool.domain.PoolGamblerScoreDataSource
 import com.felipearpa.tyche.data.pool.domain.PoolGamblerScoreRepository
@@ -25,13 +25,13 @@ import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
 val poolDataModule = module {
-    factory { GetPoolGamblerScoresByGamblerUseCase(poolGamblerScoreRepository = get()) }
-    factory { GetPoolGamblerScoresByPoolUseCase(poolGamblerScoreRepository = get()) }
-    factory { GetPoolGamblerScoreUseCase(poolGamblerScoreRepository = get()) }
-    factory { GetOpenPoolLayoutsUseCase(poolLayoutRepository = get()) }
-    factory { CreatePoolUseCase(poolRepository = get()) }
-    factory { JoinPoolUseCase(poolRepository = get()) }
-    factory { GetPoolUseCase(poolRepository = get()) }
+    factory { GetPoolGamblerScoresByGambler(poolGamblerScoreRepository = get()) }
+    factory { GetPoolGamblerScoresByPool(poolGamblerScoreRepository = get()) }
+    factory { GetPoolGamblerScore(poolGamblerScoreRepository = get()) }
+    factory { GetOpenPoolLayouts(poolLayoutRepository = get()) }
+    factory { CreatePool(poolRepository = get()) }
+    factory { JoinPool(poolRepository = get()) }
+    factory { GetPool(poolRepository = get()) }
 
     factory<PoolGamblerScoreRepository> {
         PoolGamblerScoreRemoteRepository(

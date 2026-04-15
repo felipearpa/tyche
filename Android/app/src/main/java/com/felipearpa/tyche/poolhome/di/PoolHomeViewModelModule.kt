@@ -9,8 +9,8 @@ val poolHomeViewModelModule = module {
         DrawerViewModel(
             poolId = params.get(),
             gamblerId = params.get(),
-            logoutUseCase = get(),
-            getPoolGamblerScoreUseCase = get(),
+            logOut = get(),
+            getPoolGamblerScore = get(),
         )
     }
 }

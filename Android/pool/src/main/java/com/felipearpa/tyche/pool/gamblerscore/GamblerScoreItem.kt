@@ -44,9 +44,9 @@ fun GamblerScoreItem(
             horizontalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.medium),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            if (poolGamblerScore.currentPosition != null) {
+            if (poolGamblerScore.position != null) {
                 Position(
-                    position = poolGamblerScore.currentPosition,
+                    position = poolGamblerScore.position,
                     isCurrentUser = isCurrentUser,
                     shimmerModifier = shimmerModifier,
                 )
@@ -143,7 +143,7 @@ private fun CurrentUserGamblerScoreItemPreview() {
                     poolName = "Tyche American Cup YYYY",
                     gamblerId = "X".repeat(15),
                     gamblerUsername = "user-tyche",
-                    currentPosition = 1,
+                    position = 1,
                     beforePosition = 2,
                     score = 10,
                 ),

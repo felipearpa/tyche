@@ -1,9 +1,9 @@
 package com.felipearpa.tyche.data.bet.di
 
 import com.felipearpa.tyche.core.network.HttpClientQualifier
-import com.felipearpa.tyche.data.bet.application.BetUseCase
-import com.felipearpa.tyche.data.bet.application.GetFinishedPoolGamblerBetsUseCase
-import com.felipearpa.tyche.data.bet.application.GetPendingPoolGamblerBetsUseCase
+import com.felipearpa.tyche.data.bet.application.PlaceBet
+import com.felipearpa.tyche.data.bet.application.GetFinishedPoolGamblerBets
+import com.felipearpa.tyche.data.bet.application.GetPendingPoolGamblerBets
 import com.felipearpa.tyche.data.bet.domain.PoolGamblerBetDataSource
 import com.felipearpa.tyche.data.bet.domain.PoolGamblerBetRepository
 import com.felipearpa.tyche.data.bet.infrastructure.PoolGamblerBetRemoteKtorDataSource
@@ -13,9 +13,9 @@ import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
 val betDataModule = module {
-    factory { GetPendingPoolGamblerBetsUseCase(poolGamblerBetRepository = get()) }
-    factory { GetFinishedPoolGamblerBetsUseCase(poolGamblerBetRepository = get()) }
-    factory { BetUseCase(poolGamblerBetRepository = get()) }
+    factory { GetPendingPoolGamblerBets(poolGamblerBetRepository = get()) }
+    factory { GetFinishedPoolGamblerBets(poolGamblerBetRepository = get()) }
+    factory { PlaceBet(poolGamblerBetRepository = get()) }
 
     factory<PoolGamblerBetRepository> {
         PoolGamblerBetRemoteRepository(

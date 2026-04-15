@@ -10,7 +10,6 @@ import com.felipearpa.tyche.pool.poolscore.PoolScoreListRoute
 fun NavGraphBuilder.poolHomeNavView(
     navController: NavController,
     initialRoute: Any,
-    gamblerId: String,
 ) {
     composable<PoolHomeViewRoute> { navBackStackEntry ->
         val route: PoolHomeViewRoute = navBackStackEntry.toRoute()
@@ -18,7 +17,7 @@ fun NavGraphBuilder.poolHomeNavView(
             poolId = route.poolId,
             gamblerId = route.gamblerId,
             onPoolChange = {
-                navController.navigate(route = PoolScoreListRoute(gamblerId = gamblerId)) {
+                navController.navigate(route = PoolScoreListRoute(gamblerId = route.gamblerId)) {
                     popUpTo(route = PoolHomeViewRoute) { inclusive = true }
                 }
             },

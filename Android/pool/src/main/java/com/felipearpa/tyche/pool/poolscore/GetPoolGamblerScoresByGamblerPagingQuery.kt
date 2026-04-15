@@ -1,6 +1,6 @@
 package com.felipearpa.tyche.pool.poolscore
 
-import com.felipearpa.tyche.data.pool.application.GetPoolGamblerScoresByGamblerUseCase
+import com.felipearpa.tyche.data.pool.application.GetPoolGamblerScoresByGambler
 import com.felipearpa.tyche.core.paging.map
 import com.felipearpa.tyche.pool.toPoolGamblerScoreModel
 
@@ -8,8 +8,8 @@ suspend fun getPoolGamblerScoresByGamblerPagingQuery(
     next: String?,
     gamblerId: String,
     search: () -> String?,
-    getPoolGamblerScoresByGamblerUseCase: GetPoolGamblerScoresByGamblerUseCase,
-) = getPoolGamblerScoresByGamblerUseCase.execute(
+    getPoolGamblerScoresByGambler: GetPoolGamblerScoresByGambler,
+) = getPoolGamblerScoresByGambler.execute(
     gamblerId = gamblerId,
     next = next,
     searchText = search(),

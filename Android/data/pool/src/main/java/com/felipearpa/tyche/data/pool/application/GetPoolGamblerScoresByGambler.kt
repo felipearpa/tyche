@@ -2,7 +2,7 @@ package com.felipearpa.tyche.data.pool.application
 
 import com.felipearpa.tyche.data.pool.domain.PoolGamblerScoreRepository
 
-class GetPoolGamblerScoresByGamblerUseCase(private val poolGamblerScoreRepository: PoolGamblerScoreRepository) {
+class GetPoolGamblerScoresByGambler(private val poolGamblerScoreRepository: PoolGamblerScoreRepository) {
     suspend fun execute(gamblerId: String, next: String? = null, searchText: String? = null) =
         poolGamblerScoreRepository.getPoolGamblerScoresByGambler(
             gamblerId = gamblerId,

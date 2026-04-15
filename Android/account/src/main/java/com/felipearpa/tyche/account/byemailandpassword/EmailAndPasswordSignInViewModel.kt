@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.felipearpa.tyche.core.type.Email
 import com.felipearpa.tyche.session.AccountBundle
-import com.felipearpa.tyche.session.authentication.application.SignInWithEmailAndPasswordUseCase
+import com.felipearpa.tyche.session.authentication.application.SignInWithEmailAndPassword
 import com.felipearpa.tyche.ui.exception.mapOrDefaultLocalized
 import com.felipearpa.ui.state.LoadableViewState
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class EmailAndPasswordSignInViewModel(
-    private val signInWithEmailAndPasswordUseCase: SignInWithEmailAndPasswordUseCase,
+    private val signInWithEmailAndPassword: SignInWithEmailAndPassword,
 ) : ViewModel() {
     private val _state =
         MutableStateFlow<LoadableViewState<AccountBundle>>(LoadableViewState.Initial)
@@ -25,7 +25,7 @@ class EmailAndPasswordSignInViewModel(
     fun signInWithEmailAndPassword(email: String, password: String) {
         viewModelScope.launch {
             _state.emit(LoadableViewState.Loading)
-            signInWithEmailAndPasswordUseCase.execute(email = Email(email), password = password)
+            signInWithEmailAndPassword.execute(email = Email(email), password = password)
                 .onSuccess { accountBundle -> _state.emit(LoadableViewState.Success(accountBundle)) }
                 .onFailure { exception ->
                     _state.emit(

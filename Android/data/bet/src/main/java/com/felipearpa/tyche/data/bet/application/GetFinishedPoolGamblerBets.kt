@@ -2,7 +2,7 @@ package com.felipearpa.tyche.data.bet.application
 
 import com.felipearpa.tyche.data.bet.domain.PoolGamblerBetRepository
 
-class GetFinishedPoolGamblerBetsUseCase(private val poolGamblerBetRepository: PoolGamblerBetRepository) {
+class GetFinishedPoolGamblerBets(private val poolGamblerBetRepository: PoolGamblerBetRepository) {
     suspend fun execute(
         poolId: String,
         gamblerId: String,

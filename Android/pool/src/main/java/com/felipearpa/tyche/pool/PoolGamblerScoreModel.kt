@@ -5,13 +5,13 @@ data class PoolGamblerScoreModel(
     val poolName: String,
     val gamblerId: String,
     val gamblerUsername: String,
-    val currentPosition: Int?,
+    val position: Int?,
     val beforePosition: Int?,
-    val score: Int?
+    val score: Int?,
 )
 
 fun PoolGamblerScoreModel.difference(): Int? {
-    val currentPosition = this.currentPosition ?: return null
+    val currentPosition = this.position ?: return null
     val beforePosition = this.beforePosition ?: return null
     return beforePosition - currentPosition
 }

@@ -6,7 +6,7 @@ import com.felipearpa.tyche.bet.PoolGamblerBetModel
 import com.felipearpa.tyche.bet.toPoolGamblerBetModel
 import com.felipearpa.tyche.core.type.BetScore
 import com.felipearpa.tyche.core.type.TeamScore
-import com.felipearpa.tyche.data.bet.application.BetUseCase
+import com.felipearpa.tyche.data.bet.application.PlaceBet
 import com.felipearpa.tyche.data.bet.domain.Bet
 import com.felipearpa.tyche.data.bet.domain.BetException
 import com.felipearpa.tyche.ui.exception.mapOrDefaultLocalized
@@ -21,7 +21,7 @@ import java.util.UUID
 
 class PendingBetItemViewModel(
     poolGamblerBet: PoolGamblerBetModel,
-    private val betUseCase: BetUseCase,
+    private val placeBet: PlaceBet,
 ) :
     ViewModel() {
 
@@ -59,7 +59,7 @@ class PendingBetItemViewModel(
                 awayTeamBet = BetScore(betScore.awayTeamValue),
             )
 
-            betUseCase.execute(bet = bet)
+            placeBet.execute(bet = bet)
                 .onSuccess { updatedPoolGamblerBet ->
                     _state.emit(
                         EditableViewState.Success(
