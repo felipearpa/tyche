@@ -14,6 +14,7 @@
 		558C522E2B40A046004AF956 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 558C522D2B40A046004AF956 /* FirebaseAuth */; };
 		55905C322B168C9F003EB79F /* Account in Frameworks */ = {isa = PBXBuildFile; productRef = 55905C312B168C9F003EB79F /* Account */; };
 		55905C362B16C23E003EB79F /* DataPool in Frameworks */ = {isa = PBXBuildFile; productRef = 55905C352B16C23E003EB79F /* DataPool */; };
+		55921B2C2F8FC85100BF5C43 /* tyche.icon in Resources */ = {isa = PBXBuildFile; fileRef = 55921B2B2F8FC85100BF5C43 /* tyche.icon */; };
 		55ACE9FF2E634A5C000CEF99 /* UrlMatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55ACE9FE2E634A51000CEF99 /* UrlMatcher.swift */; };
 		55B782CD2E2D449C00E78408 /* AppConfig.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 55B782CC2E2D449C00E78408 /* AppConfig.xcconfig */; };
 		55F9FDCA2B56EAD500066BBA /* EmailLinkSignInRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55F9FDC92B56EAD500066BBA /* EmailLinkSignInRouter.swift */; };
@@ -54,6 +55,7 @@
 		5556C5162E51542F004F34D5 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		557942532B4C413400B1B3DA /* Tyche.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Tyche.entitlements; sourceTree = "<group>"; };
 		557D1EA92B40AD2B000FF9F9 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		55921B2B2F8FC85100BF5C43 /* tyche.icon */ = {isa = PBXFileReference; lastKnownFileType = folder.iconcomposer.icon; path = tyche.icon; sourceTree = "<group>"; };
 		55ACE9FE2E634A51000CEF99 /* UrlMatcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UrlMatcher.swift; sourceTree = "<group>"; };
 		55B782CC2E2D449C00E78408 /* AppConfig.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = AppConfig.xcconfig; sourceTree = "<group>"; };
 		55F9FDC92B56EAD500066BBA /* EmailLinkSignInRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmailLinkSignInRouter.swift; sourceTree = "<group>"; };
@@ -139,6 +141,7 @@
 		D2127F372A2C2F240047DED7 /* Tyche */ = {
 			isa = PBXGroup;
 			children = (
+				55921B2B2F8FC85100BF5C43 /* tyche.icon */,
 				55ACE9FE2E634A51000CEF99 /* UrlMatcher.swift */,
 				55BC17DE2E2D55F80078BE7F /* Config */,
 				55B782D02E2D46CB00E78408 /* DI */,
@@ -340,6 +343,7 @@
 				55B782CD2E2D449C00E78408 /* AppConfig.xcconfig in Resources */,
 				557D1EAA2B40AD2B000FF9F9 /* GoogleService-Info.plist in Resources */,
 				D2A7804D2AC8BB1A00F01A02 /* Localizable.xcstrings in Resources */,
+				55921B2C2F8FC85100BF5C43 /* tyche.icon in Resources */,
 				D2127F3D2A2C2F260047DED7 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -535,8 +539,9 @@
 		D2127F5F2A2C2F270047DED7 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_APPICON_NAME = tyche;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_ENTITLEMENTS = Tyche/Tyche.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
@@ -567,8 +572,9 @@
 		D2127F602A2C2F270047DED7 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_APPICON_NAME = tyche;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_ENTITLEMENTS = Tyche/Tyche.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
