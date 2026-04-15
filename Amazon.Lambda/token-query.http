@@ -1,9 +1,0 @@
-### Get Id Token
-POST https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyARZRc1-FcahsPXTgjaA-iTgZQxLA2BLHE
-Content-Type: application/json
-
-{
-    "email": "tyche-android@tyche.com",
-    "password": "tyche-key",
-    "returnSecureToken": true
-}

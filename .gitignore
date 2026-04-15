@@ -1,3 +1,9 @@
+# secrets
+Amazon.Lambda/token-query.http
+
+#claude
+.claude/settings.local.json
+
 # globs
 Makefile.in
 *.userprefs
