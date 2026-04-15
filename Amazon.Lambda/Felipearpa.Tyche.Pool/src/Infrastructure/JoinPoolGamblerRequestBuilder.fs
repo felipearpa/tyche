@@ -25,9 +25,10 @@ module JoinPoolGamblerRequestBuilder =
                   PoolTable.Attribute.filter,
                   AttributeValue(S = $"{createPoolInput.PoolName} {createPoolInput.OwnerGamblerUsername}")
                   PoolTable.Attribute.poolLayoutId, AttributeValue(S = (createPoolInput.PoolLayoutId |> Ulid.value))
-                  PoolTable.Attribute.currentPosition, AttributeValue(N = "0")
+                  PoolTable.Attribute.position, AttributeValue(N = "0")
                   PoolTable.Attribute.beforePosition, AttributeValue(N = "0")
                   PoolTable.Attribute.score, AttributeValue(N = "0")
+                  PoolTable.Attribute.beforeScore, AttributeValue(N = "0")
                   PoolTable.Attribute.poolLayoutVersion, AttributeValue(N = initialPoolLayoutVersion.ToString()) ]
 
         Put(

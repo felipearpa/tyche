@@ -14,9 +14,11 @@ module ComputePoolGamblerScoreRequestBuilder =
                   Key.sk, AttributeValue(S = KeyPrefix.build PoolTable.Prefix.gambler gamblerId.Value) ]
 
         let updateExpression =
-            $"ADD {ExpressionAttribute.name PoolTable.Attribute.score} :delta"
+            $"SET {ExpressionAttribute.name PoolTable.Attribute.beforeScore} = {ExpressionAttribute.name PoolTable.Attribute.score} \
+             ADD {ExpressionAttribute.name PoolTable.Attribute.score} :delta"
 
-        let attributeNames = ExpressionAttribute.names [ PoolTable.Attribute.score ]
+        let attributeNames =
+            ExpressionAttribute.names [ PoolTable.Attribute.score; PoolTable.Attribute.beforeScore ]
 
         let attributeValues = dict [ ":delta", AttributeValue(N = delta.ToString()) ]
 

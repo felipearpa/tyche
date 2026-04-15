@@ -1,6 +1,5 @@
 namespace Felipearpa.Tyche.Pool.Infrastructure
 
-open System
 open System.Collections.Generic
 open Amazon.DynamoDBv2.Model
 open Felipearpa.Core
@@ -18,25 +17,20 @@ module GetFinishedPoolGamblerBetsRequestBuilder =
         =
         let keyConditionExpression = $"{ExpressionAttribute.name Key.pk} = :pk"
 
-        let defaultFilterConditionExpression =
-            $":now >= {ExpressionAttribute.name PoolTable.Attribute.matchDateTime}"
-
         let defaultAttributeValues =
             dict
                 [ ":pk",
                   AttributeValue(
                       $"{KeyPrefix.build PoolTable.Prefix.gambler gamblerId.Value}#{KeyPrefix.build PoolTable.Prefix.pool poolId.Value}"
-                  )
-                  ":now", AttributeValue(DateTime.Now.ToUniversalTime().ToString("o")) ]
+                  ) ]
 
-        let defaultAttributeNames =
-            ExpressionAttribute.names [ Key.pk; PoolTable.Attribute.matchDateTime ]
+        let defaultAttributeNames = ExpressionAttribute.names [ Key.pk ]
 
         let filterExpression, attributeValues, attributeNames =
             match maybeSearchText with
-            | None -> (defaultFilterConditionExpression, defaultAttributeValues, defaultAttributeNames)
+            | None -> (null, defaultAttributeValues, defaultAttributeNames)
             | Some filterText ->
-                ($"{defaultFilterConditionExpression} and contains({ExpressionAttribute.name PoolTable.Attribute.filter}, :{PoolTable.Attribute.filter})",
+                ($"contains({ExpressionAttribute.name PoolTable.Attribute.filter}, :{PoolTable.Attribute.filter})",
                  defaultAttributeValues
                  |> Dictionary.union (dict [ $":{PoolTable.Attribute.filter}", AttributeValue(filterText.ToLower()) ])
                  :> IDictionary<_, _>,
@@ -46,7 +40,7 @@ module GetFinishedPoolGamblerBetsRequestBuilder =
 
         QueryRequest(
             TableName = PoolTable.name,
-            IndexName = PoolTable.Index.pendingPoolGamblerBets,
+            IndexName = PoolTable.Index.finishedPoolGamblerBets,
             KeyConditionExpression = keyConditionExpression,
             FilterExpression = filterExpression,
             ExpressionAttributeNames = Dictionary attributeNames,

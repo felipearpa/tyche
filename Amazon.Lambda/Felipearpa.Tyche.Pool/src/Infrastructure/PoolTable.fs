@@ -40,7 +40,10 @@ module PoolTable =
         let score = "score"
 
         [<Literal>]
-        let currentPosition = "currentPosition"
+        let beforeScore = "beforeScore"
+
+        [<Literal>]
+        let position = "position"
 
         [<Literal>]
         let beforePosition = "beforePosition"
@@ -97,6 +100,9 @@ module PoolTable =
 
         [<Literal>]
         let pendingPoolGamblerBets = "GetPendingPoolGamblerBets-index"
+
+        [<Literal>]
+        let finishedPoolGamblerBets = "GetFinishedPoolGamblerBets-index"
 
         [<Literal>]
         let scoresByGambler = "GetPoolGamblerScoresByGambler-index"

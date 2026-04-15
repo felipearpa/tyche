@@ -6,6 +6,7 @@ type PoolGamblerScoreResponse =
       PoolName: string
       GamblerId: string
       GamblerUsername: string
-      CurrentPosition: int option
+      Position: int option
       BeforePosition: int option
-      Score: int option }
+      Score: int option
+      BeforeScore: int option }

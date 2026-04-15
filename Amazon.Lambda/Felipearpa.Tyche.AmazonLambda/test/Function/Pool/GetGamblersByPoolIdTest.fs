@@ -31,17 +31,19 @@ module GetGamblersByPoolIdTest =
                       PoolName = "Hello world"
                       GamblerId = "01H1CMCDHH99FH8FDY36S0YH3A"
                       GamblerUsername = "felipearcila@gmail.com"
-                      CurrentPosition = None
+                      Position = None
                       BeforePosition = None
-                      Score = None }
+                      Score = None
+                      BeforeScore = None }
 
                     { PoolId = "01KZXZNSK2WT2BVRZBW1H7E92Y"
                       PoolName = "Hola mundo"
                       GamblerId = "01HZX6WDB4WF5D6EWFDRKHYM2P"
                       GamblerUsername = "second@example.com"
-                      CurrentPosition = None
+                      Position = None
                       BeforePosition = None
-                      Score = None }
+                      Score = None
+                      BeforeScore = None }
                 }
               Next = None }
 

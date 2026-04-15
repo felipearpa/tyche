@@ -7,7 +7,7 @@ open Felipearpa.Type
 
 module UpdateMatchPositionRequestBuilder =
 
-    let build (poolId: Ulid) (gamblerId: Ulid) (matchId: Ulid) (currentPosition: int) (beforePosition: int) =
+    let build (poolId: Ulid) (gamblerId: Ulid) (matchId: Ulid) (position: int) (beforePosition: int) =
         let pk =
             $"{KeyPrefix.build PoolTable.Prefix.gambler gamblerId.Value}#{KeyPrefix.build PoolTable.Prefix.pool poolId.Value}"
 
@@ -16,15 +16,15 @@ module UpdateMatchPositionRequestBuilder =
         let key = dict [ Key.pk, AttributeValue(pk); Key.sk, AttributeValue(sk) ]
 
         let updateExpression =
-            $"SET {ExpressionAttribute.name PoolTable.Attribute.currentPosition} = :{PoolTable.Attribute.currentPosition}, \
+            $"SET {ExpressionAttribute.name PoolTable.Attribute.position} = :{PoolTable.Attribute.position}, \
              {ExpressionAttribute.name PoolTable.Attribute.beforePosition} = :{PoolTable.Attribute.beforePosition}"
 
         let attributeNames =
-            ExpressionAttribute.names [ PoolTable.Attribute.currentPosition; PoolTable.Attribute.beforePosition ]
+            ExpressionAttribute.names [ PoolTable.Attribute.position; PoolTable.Attribute.beforePosition ]
 
         let attributeValues =
             dict
-                [ $":{PoolTable.Attribute.currentPosition}", AttributeValue(N = currentPosition.ToString())
+                [ $":{PoolTable.Attribute.position}", AttributeValue(N = position.ToString())
                   $":{PoolTable.Attribute.beforePosition}", AttributeValue(N = beforePosition.ToString()) ]
 
         UpdateItemRequest(

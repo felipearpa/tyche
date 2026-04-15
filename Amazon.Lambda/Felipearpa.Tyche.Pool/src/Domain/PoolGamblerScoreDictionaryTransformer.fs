@@ -14,9 +14,9 @@ module PoolGamblerScoreDictionaryTransformer =
           GamblerId = dictionary[PoolTable.Attribute.gamblerId].S |> Ulid.newOf
           PoolName = dictionary[PoolTable.Attribute.poolName].S |> NonEmptyString100.newOf
           GamblerUsername = dictionary[PoolTable.Attribute.gamblerUsername].S |> NonEmptyString100.newOf
-          CurrentPosition =
+          Position =
             dictionary
-            |> tryGetAttributeValueOrNone (PoolTable.Attribute.currentPosition)
+            |> tryGetAttributeValueOrNone (PoolTable.Attribute.position)
             |> noneIfZero
           BeforePosition =
             dictionary
@@ -25,6 +25,10 @@ module PoolGamblerScoreDictionaryTransformer =
           Score =
             dictionary
             |> tryGetAttributeValueOrNone (PoolTable.Attribute.score)
+            |> noneIfZero
+          BeforeScore =
+            dictionary
+            |> tryGetAttributeValueOrNone (PoolTable.Attribute.beforeScore)
             |> noneIfZero }
 
     type Extensions =

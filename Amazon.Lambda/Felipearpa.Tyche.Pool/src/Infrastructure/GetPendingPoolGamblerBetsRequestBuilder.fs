@@ -19,6 +19,9 @@ module GetPendingPoolGamblerBetsRequestBuilder =
         let keyConditionExpression =
             $"{ExpressionAttribute.name Key.pk} = :pk and {ExpressionAttribute.name PoolTable.Attribute.matchDateTime} > :now"
 
+        let defaultFilterConditionExpression =
+            $"attribute_not_exists({ExpressionAttribute.name PoolTable.Attribute.computedRequestId})"
+
         let defaultAttributeValues =
             dict
                 [ ":pk",
@@ -28,13 +31,16 @@ module GetPendingPoolGamblerBetsRequestBuilder =
                   ":now", AttributeValue(DateTime.Now.ToUniversalTime().ToString("o")) ]
 
         let defaultAttributeNames =
-            ExpressionAttribute.names [ Key.pk; PoolTable.Attribute.matchDateTime ]
+            ExpressionAttribute.names
+                [ Key.pk
+                  PoolTable.Attribute.matchDateTime
+                  PoolTable.Attribute.computedRequestId ]
 
         let filterExpression, attributeValues, attributeNames =
             match maybeSearchText with
-            | None -> (null, defaultAttributeValues, defaultAttributeNames)
+            | None -> (defaultFilterConditionExpression, defaultAttributeValues, defaultAttributeNames)
             | Some filterText ->
-                ($"contains({ExpressionAttribute.name PoolTable.Attribute.filter}, :{PoolTable.Attribute.filter})",
+                ($"{defaultFilterConditionExpression} and contains({ExpressionAttribute.name PoolTable.Attribute.filter}, :{PoolTable.Attribute.filter})",
                  defaultAttributeValues
                  |> Dictionary.union (dict [ $":{PoolTable.Attribute.filter}", AttributeValue(filterText.ToLower()) ])
                  :> IDictionary<_, _>,

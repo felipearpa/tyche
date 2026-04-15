@@ -7,6 +7,7 @@ type PoolGamblerScore =
       PoolName: NonEmptyString100
       GamblerId: Ulid
       GamblerUsername: NonEmptyString100
-      CurrentPosition: int option
+      Position: int option
       BeforePosition: int option
-      Score: int option }
+      Score: int option
+      BeforeScore: int option }

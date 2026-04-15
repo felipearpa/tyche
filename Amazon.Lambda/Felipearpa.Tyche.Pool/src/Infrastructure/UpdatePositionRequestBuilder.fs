@@ -5,7 +5,7 @@ open Amazon.DynamoDBv2.Model
 open Felipearpa.Data.DynamoDb
 open Felipearpa.Type
 
-module UpdateCurrentPositionRequestBuilder =
+module UpdatePositionRequestBuilder =
 
     let build (poolId: Ulid) (gamblerId: Ulid) (position: int) =
         let key =
@@ -14,14 +14,14 @@ module UpdateCurrentPositionRequestBuilder =
                   Key.sk, AttributeValue(S = KeyPrefix.build PoolTable.Prefix.gambler gamblerId.Value) ]
 
         let updateExpression =
-            $"SET {ExpressionAttribute.name PoolTable.Attribute.beforePosition} = {ExpressionAttribute.name PoolTable.Attribute.currentPosition}, \
-             {ExpressionAttribute.name PoolTable.Attribute.currentPosition} = :{PoolTable.Attribute.currentPosition}"
+            $"SET {ExpressionAttribute.name PoolTable.Attribute.beforePosition} = {ExpressionAttribute.name PoolTable.Attribute.position}, \
+             {ExpressionAttribute.name PoolTable.Attribute.position} = :{PoolTable.Attribute.position}"
 
         let attributeNames =
-            ExpressionAttribute.names [ PoolTable.Attribute.currentPosition; PoolTable.Attribute.beforePosition ]
+            ExpressionAttribute.names [ PoolTable.Attribute.position; PoolTable.Attribute.beforePosition ]
 
         let attributeValues =
-            dict [ $":{PoolTable.Attribute.currentPosition}", AttributeValue(N = position.ToString()) ]
+            dict [ $":{PoolTable.Attribute.position}", AttributeValue(N = position.ToString()) ]
 
         UpdateItemRequest(
             TableName = PoolTable.name,

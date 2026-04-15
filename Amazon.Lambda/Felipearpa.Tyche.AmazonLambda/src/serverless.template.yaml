@@ -133,7 +133,7 @@ Resources:
                 - dynamodb:Query
               Resource:
                 - arn:aws:dynamodb:us-east-2:567776770335:table/Pool
-                - arn:aws:dynamodb:us-east-2:567776770335:table/Pool/index/GetPendingPoolGamblerBets-index
+                - arn:aws:dynamodb:us-east-2:567776770335:table/Pool/index/GetFinishedPoolGamblerBets-index
       Architectures: [ arm64 ]
       Events:
         HttpApi:

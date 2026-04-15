@@ -31,17 +31,19 @@ module GetOpenPoolLayoutsTest =
                       PoolName = "Hello world"
                       GamblerId = "01H1CMCDHH99FH8FDY36S0YH3A"
                       GamblerUsername = "felipearcila@gmail.com"
-                      CurrentPosition = Some 1
+                      Position = Some 1
                       BeforePosition = Some 2
-                      Score = Some 15 }
+                      Score = Some 15
+                      BeforeScore = Some 10 }
 
                     { PoolId = "01KZXZNSK2WT2BVRZBW1H7E92Y"
                       PoolName = "Hola mundo"
                       GamblerId = "01HZX6WDB4WF5D6EWFDRKHYM2P"
                       GamblerUsername = "second@example.com"
-                      CurrentPosition = Some 3
+                      Position = Some 3
                       BeforePosition = Some 4
-                      Score = Some 20 }
+                      Score = Some 20
+                      BeforeScore = Some 12 }
                 }
               Next = None }
 
@@ -53,17 +55,19 @@ module GetOpenPoolLayoutsTest =
                     "gamblerId", AttributeValue(S = "01H1CMCDHH99FH8FDY36S0YH3A")
                     "poolName", AttributeValue(S = "Hello world")
                     "gamblerUsername", AttributeValue(S = "felipearcila@gmail.com")
-                    "currentPosition", AttributeValue(N = "1")
+                    "position", AttributeValue(N = "1")
                     "beforePosition", AttributeValue(N = "2")
-                    "score", AttributeValue(N = "15") ]
+                    "score", AttributeValue(N = "15")
+                    "beforeScore", AttributeValue(N = "10") ]
               dict
                   [ "poolId", AttributeValue(S = "01KZXZNSK2WT2BVRZBW1H7E92Y")
                     "gamblerId", AttributeValue(S = "01HZX6WDB4WF5D6EWFDRKHYM2P")
                     "poolName", AttributeValue(S = "Hola mundo")
                     "gamblerUsername", AttributeValue(S = "second@example.com")
-                    "currentPosition", AttributeValue(N = "3")
+                    "position", AttributeValue(N = "3")
                     "beforePosition", AttributeValue(N = "4")
-                    "score", AttributeValue(N = "20") ] ]
+                    "score", AttributeValue(N = "20")
+                    "beforeScore", AttributeValue(N = "12") ] ]
 
         client
             .Setup(_.QueryAsync(It.IsAny<QueryRequest>()))
