@@ -8,10 +8,12 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
@@ -22,7 +24,7 @@ import com.felipearpa.tyche.bet.poolGamblerBetDummyModels
 import com.felipearpa.tyche.ui.lazy.RefreshableStatefulLazyColumn
 import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
 import com.felipearpa.tyche.ui.theme.TycheTheme
-import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.datetime.LocalDate
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -100,12 +102,17 @@ private fun Modifier.finishedHeaderBetItem() =
         .padding(horizontal = LocalBoxSpacing.current.medium)
         .padding(top = LocalBoxSpacing.current.medium)
 
-@Preview(showBackground = true)
+@PreviewLightDark
 @Composable
 private fun FinishedBetListPreview() {
-    val items = flowOf(PagingData.from(poolGamblerBetDummyModels())).collectAsLazyPagingItems()
+    val items = MutableStateFlow(PagingData.from(poolGamblerBetDummyModels())).collectAsLazyPagingItems()
     TycheTheme {
-        FinishedBetList(lazyPoolGamblerBets = items)
+        Surface {
+            FinishedBetList(
+                lazyPoolGamblerBets = items,
+                modifier = Modifier.fillMaxSize(),
+            )
+        }
     }
 }
 

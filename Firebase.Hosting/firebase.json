@@ -1,5 +1,6 @@
 {
   "hosting": {
+    "site": "tyche-588ce",
     "public": "public",
     "ignore": [
       "firebase.json",
