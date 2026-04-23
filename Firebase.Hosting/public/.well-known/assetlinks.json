@@ -2,8 +2,10 @@
   "relation": ["delegate_permission/common.handle_all_urls"],
   "target": {
     "namespace": "android_app",
-    "package_name": "com.felipearpa.tyche",
-    "sha256_cert_fingerprints":
-    ["3A:58:57:3B:2C:BA:42:E7:A6:03:CA:50:D9:9B:0B:EF:EA:F2:23:17:24:9B:7B:C9:79:30:34:15:14:B6:AD:AA"]
+    "package_name": "com.felipearpa.fortuna",
+    "sha256_cert_fingerprints": [
+      "3A:58:57:3B:2C:BA:42:E7:A6:03:CA:50:D9:9B:0B:EF:EA:F2:23:17:24:9B:7B:C9:79:30:34:15:14:B6:AD:AA",
+      "24:15:2F:B4:BD:6A:1E:CA:09:2A:F3:B9:AD:87:35:63:6F:3D:D7:E6:93:8D:25:3C:0F:24:86:57:49:81:BC:25"
+    ]
   }
 }]

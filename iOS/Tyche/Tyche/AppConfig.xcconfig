@@ -10,5 +10,5 @@
 
 SIGN_IN_URL_TEMPLATE = https:/$()/tyche-588ce.web.app/sign-in/%@
 JOIN_POOL_URL_TEMPLATE = https:/$()/tyche-588ce.web.app/pools/%@/join
-ANDROID_PACKAGE_NAME = com.felipearpa.tyche
+ANDROID_PACKAGE_NAME = com.felipearpa.fortuna
 URL_BASE_PATH = https:/$()/tyche-api.felipearpa.com

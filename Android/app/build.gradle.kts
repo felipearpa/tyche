@@ -25,7 +25,7 @@ android {
     namespace = "com.felipearpa.tyche"
     compileSdk = projectCompileSdk.toInt()
     defaultConfig {
-        applicationId = "com.felipearpa.tyche"
+        applicationId = "com.felipearpa.fortuna"
         minSdk = projectMinSdk.toInt()
         versionCode = 1
         versionName = "1.0"

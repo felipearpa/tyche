@@ -10,5 +10,7 @@
 	<string>$(ANDROID_PACKAGE_NAME)</string>
 	<key>SIGN_IN_URL_TEMPLATE</key>
 	<string>$(SIGN_IN_URL_TEMPLATE)</string>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
 </dict>
 </plist>

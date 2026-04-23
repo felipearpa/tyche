@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Tyche</string>
+    <string name="app_name">Fortuna</string>
     <string name="create_account_action">Crear cuenta</string>
     <string name="account_exists_text">¿Ya tienes una cuenta?</string>
     <string name="sign_in_with_email_action">Correo electrónico</string>
