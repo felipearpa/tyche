@@ -88,6 +88,7 @@ private fun HeaderSection() {
             LocalBoxSpacing.current.small,
             Alignment.CenterHorizontally,
         ),
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         Icon(
             painter = painterResource(id = R.drawable.ic_tyche_logo),
@@ -97,9 +98,9 @@ private fun HeaderSection() {
 
         Box(contentAlignment = Alignment.Center) {
             Icon(
-                painter = painterResource(id = R.drawable.ic_tyche_title),
+                painter = painterResource(id = R.drawable.tyche_title),
                 contentDescription = emptyString(),
-                modifier = Modifier.height(titleIconSize),
+                modifier = Modifier.height(titleIconSize / 2),
             )
         }
     }

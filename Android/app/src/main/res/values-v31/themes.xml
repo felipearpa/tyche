@@ -1,10 +1,9 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
-    <style name="Theme.Tyche" parent="android:Theme.Material.Light.NoActionBar" />
-
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
     <style name="Theme.Tyche.Starting" parent="Theme.SplashScreen">
         <item name="windowSplashScreenBackground">@color/splash_background</item>
         <item name="windowSplashScreenAnimatedIcon">@drawable/ic_tyche_logo_splash</item>
+        <item name="android:windowSplashScreenBrandingImage">@drawable/felipearpa_brand</item>
         <item name="postSplashScreenTheme">@style/Theme.Tyche</item>
     </style>
 </resources>

@@ -146,6 +146,7 @@ internal struct StatefulObservedLazyVStack
                     lazyPagingItems: lazyPagingItems
                 )
             }
+            .withDisableGestures(when: statefulLazyVStackState.isLoading)
         }
         .task { await lazyPagingItems.refresh() }
         .onChange(of: shouldShowRefreshIndicator) { newShouldShowRefreshIndicator in
@@ -235,8 +236,8 @@ where ErrorContentOnConcatenate == StatefulLazyVStackError {
 }
 
 private extension View {
-    func withDisableGestures() -> some View {
-        self.allowsHitTesting(false).scrollDisabled(true)
+    func withDisableGestures(when isDisabled: Bool = true) -> some View {
+        self.allowsHitTesting(!isDisabled).scrollDisabled(isDisabled)
     }
 }
 

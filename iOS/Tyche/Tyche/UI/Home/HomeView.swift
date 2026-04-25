@@ -40,7 +40,7 @@ struct HomeView: View {
             Image(.tycheTitle)
                 .resizable()
                 .scaledToFit()
-                .frame(height: titleIconSize)
+                .frame(height: titleIconSize / 2)
         }
         .frame(maxWidth: .infinity, alignment: .center)
     }

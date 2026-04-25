@@ -23,7 +23,10 @@ struct PendingBetItemView: View {
                 )
             },
             retryBet: viewModel.retryBet,
-            reset: viewModel.reset,
+            reset: {
+                viewState = .visualization(viewState.value)
+                viewModel.reset()
+            },
             edit: { viewState = .edition(viewState.value) }
         ).onReceive(viewModel.$state) { state in
             viewState = switch state {
