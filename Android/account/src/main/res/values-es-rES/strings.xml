@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="sign_in_title">Iniciar sesión</string>
+    <string name="back_action">Atrás</string>
+    <string name="done_action">Hecho</string>
+    <string name="create_action">Crear</string>
+    <string name="sign_in_action">Entrar</string>
+    <string name="email_label">Correo electrónico</string>
+    <string name="email_validation_failure_message">Debe ser un correo electrónico válido</string>
+    <string name="password_label">Contraseña</string>
+    <string name="password_validation_failure_message">La contraseña debe tener entre 8 y 16 caracteres e incluir al menos una letra mayúscula, una letra minúscula, un número y un carácter especial</string>
+    <string name="invalid_credential_failure_description">Inicio de sesión fallido</string>
+    <string name="invalid_credential_failure_reason">Usuario o contraseña incorrectos</string>
+    <string name="invalid_credential_recovery_suggestion">Por favor, comprueba tu nombre de usuario y contraseña, y vuelve a intentarlo. Si has olvidado tu contraseña, puedes restablecerla utilizando el enlace \'¿Olvidaste tu contraseña?\'</string>
+    <string name="user_success_login_message">¡Enhorabuena! Has iniciado sesión correctamente y ya puedes hacer tu apuesta. ¡Que empiece la diversión!</string>
+    <string name="account_verified_title">Correo electrónico verificado: ¡Que empiecen los juegos!</string>
+    <string name="account_verified_description">¡Enhorabuena, tu verificación de correo está completa! Ya puedes unirte a la diversión y poner a prueba tus predicciones</string>
+    <string name="start_action">Empezar</string>
+    <string name="verification_email_sent_title">Enlace de verificación enviado</string>
+    <string name="verification_email_sent_description">Se ha enviado un enlace de verificación a tu correo electrónico. Por favor, revisa tu bandeja de entrada y abre el enlace en el mismo dispositivo para completar el proceso, ya que es necesario para la verificación</string>
+    <string name="invalid_email_link_sign_in_failure_description">Enlace de inicio de sesión no válido</string>
+    <string name="invalid_email_link_sign_in_failure_reason">El enlace de inicio de sesión en el que has hecho clic no es válido o ha caducado</string>
+    <string name="invalid_email_link_sign_in_failure_recovery_suggestion">Por favor, solicita un nuevo enlace de inicio de sesión. Si el problema se repite, contacta con nuestro equipo de soporte para obtener más ayuda</string>
+    <string name="invalid_credential_sign_in_failure_description">Credenciales no válidas</string>
+    <string name="invalid_credential_sign_in_failure_reason">Parece que ese correo o esa contraseña no son correctos</string>
+    <string name="invalid_credential_sign_in_failure_recovery_suggestion">Comprueba tus credenciales y vuelve a intentarlo</string>
+    <string name="no_recovery_password_warning">Si has olvidado tu contraseña, aún no puedo ayudarte con la recuperación</string>
+    <string name="send_sign_in_link_to_email_too_many_requests_failure_description">El inicio de sesión por correo no está disponible temporalmente</string>
+    <string name="send_sign_in_link_to_email_too_many_requests_failure_reason">Has superado el límite diario de solicitudes de inicio de sesión por correo</string>
+    <string name="send_sign_in_link_to_email_too_many_requests_failure_recovery_suggestion">Vuelve a intentarlo dentro de unas horas</string>
+</resources>

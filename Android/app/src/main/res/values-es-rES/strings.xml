@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">Fortuna</string>
+    <string name="create_account_action">Crear cuenta</string>
+    <string name="account_exists_text">¿Ya tienes una cuenta?</string>
+    <string name="sign_in_with_email_action">Correo electrónico</string>
+    <string name="sign_out_action">Cerrar sesión</string>
+    <string name="play_pool_text">Mira quién ha acertado más resultados y atrévete a retarlo ahora</string>
+    <string name="score_tab">Puntuaciones</string>
+    <string name="bet_tab">Apuestas</string>
+    <string name="history_bets_tab">Historial</string>
+    <string name="change_pool_action">Cambiar quiniela</string>
+    <string name="sign_in_with_email_and_password">Correo electrónico y contraseña</string>
+    <string name="continue_with_text">Continuar con:</string>
+</resources>

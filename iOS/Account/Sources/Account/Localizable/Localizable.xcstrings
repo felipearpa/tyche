@@ -15,6 +15,12 @@
             "state" : "translated",
             "value" : "¡Felicidades, tu verificación de correo está completa! Ya puedes unirte a la diversión y poner a prueba tus predicciones"
           }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "¡Enhorabuena, tu verificación de correo está completa! Ya puedes unirte a la diversión y poner a prueba tus predicciones"
+          }
         }
       }
     },
@@ -32,6 +38,12 @@
             "state" : "translated",
             "value" : "Correo electrónico verificado: ¡Que comiencen los juegos!"
           }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Correo electrónico verificado: ¡Que empiecen los juegos!"
+          }
         }
       }
     },
@@ -45,6 +57,12 @@
           }
         },
         "es-CO" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Continuar"
+          }
+        },
+        "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Continuar"
@@ -66,6 +84,12 @@
             "state" : "translated",
             "value" : "Correo electrónico"
           }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Correo electrónico"
+          }
         }
       }
     },
@@ -79,6 +103,12 @@
           }
         },
         "es-CO" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Debe ser un correo electrónico válido"
+          }
+        },
+        "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Debe ser un correo electrónico válido"
@@ -100,6 +130,12 @@
             "state" : "translated",
             "value" : "Credenciales inválidas"
           }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Credenciales no válidas"
+          }
         }
       }
     },
@@ -116,6 +152,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Parece que ese correo o contraseña no es correcto"
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Parece que ese correo o esa contraseña no son correctos"
           }
         }
       }
@@ -134,6 +176,12 @@
             "state" : "translated",
             "value" : "Verifica que tu correo y contraseña estén bien escritos"
           }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Comprueba que tu correo y contraseña estén bien escritos"
+          }
         }
       }
     },
@@ -149,6 +197,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Enlace de inicio de sesión inválido"
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enlace de inicio de sesión no válido"
           }
         }
       }
@@ -166,6 +220,12 @@
             "state" : "translated",
             "value" : "El enlace de inicio de sesión en el que hiciste clic es inválido o ha expirado"
           }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El enlace de inicio de sesión en el que has hecho clic no es válido o ha caducado"
+          }
         }
       }
     },
@@ -181,6 +241,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Por favor, solicita un nuevo enlace de inicio de sesión. Si este problema se repite, contacta a nuestro equipo de soporte para obtener más ayuda"
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Por favor, solicita un nuevo enlace de inicio de sesión. Si el problema se repite, contacta con nuestro equipo de soporte para obtener más ayuda"
           }
         }
       }
@@ -199,6 +265,12 @@
             "state" : "translated",
             "value" : "Si olvidaste tu contraseña, aún no puedo ayudarte con eso"
           }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Si has olvidado tu contraseña, aún no puedo ayudarte con la recuperación"
+          }
         }
       }
     },
@@ -212,6 +284,12 @@
           }
         },
         "es-CO" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Contraseña"
+          }
+        },
+        "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Contraseña"
@@ -233,6 +311,12 @@
             "state" : "translated",
             "value" : "La contraseña debe tener entre 8 y 16 caracteres e incluir al menos una letra mayúscula, una letra minúscula, un número y un carácter especial"
           }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La contraseña debe tener entre 8 y 16 caracteres e incluir al menos una letra mayúscula, una letra minúscula, un número y un carácter especial"
+          }
         }
       }
     },
@@ -246,6 +330,12 @@
           }
         },
         "es-CO" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El inicio de sesión por correo no está disponible temporalmente"
+          }
+        },
+        "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "El inicio de sesión por correo no está disponible temporalmente"
@@ -267,6 +357,12 @@
             "state" : "translated",
             "value" : "Has superado el límite diario de solicitudes de inicio de sesión por correo"
           }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Has superado el límite diario de solicitudes de inicio de sesión por correo"
+          }
         }
       }
     },
@@ -284,6 +380,12 @@
             "state" : "translated",
             "value" : "Inténtalo de nuevo en unas horas"
           }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vuelve a intentarlo dentro de unas horas"
+          }
         }
       }
     },
@@ -297,6 +399,12 @@
           }
         },
         "es-CO" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Iniciar sesión"
+          }
+        },
+        "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Iniciar sesión"
@@ -318,6 +426,12 @@
             "state" : "translated",
             "value" : "Iniciar sesión"
           }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Iniciar sesión"
+          }
         }
       }
     },
@@ -334,6 +448,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Iniciar"
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Empezar"
           }
         }
       }
@@ -352,6 +472,12 @@
             "state" : "translated",
             "value" : "¡Felicidades! Has iniciado sesión correctamente y estás listo para hacer tu apuesta. ¡Que empiece la diversión!"
           }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "¡Enhorabuena! Has iniciado sesión correctamente y ya puedes hacer tu apuesta. ¡Que empiece la diversión!"
+          }
         }
       }
     },
@@ -369,6 +495,12 @@
             "state" : "translated",
             "value" : "Se ha enviado un enlace de verificación a tu correo electrónico. Por favor, revisa tu bandeja de entrada y abre el enlace en el mismo dispositivo para completar el proceso, ya que es necesario para la verificación"
           }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Se ha enviado un enlace de verificación a tu correo electrónico. Por favor, revisa tu bandeja de entrada y abre el enlace en el mismo dispositivo para completar el proceso, ya que es necesario para la verificación"
+          }
         }
       }
     },
@@ -382,6 +514,12 @@
           }
         },
         "es-CO" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enlace de verificación enviado"
+          }
+        },
+        "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Enlace de verificación enviado"

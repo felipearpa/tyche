@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="position_label">Posición %d</string>
+    <string name="gambler_pool_list_title">Mis quinielas</string>
+    <string name="pool_from_layout_creator_title">Quiniela desde plantilla</string>
+    <string name="starting_from_date_text">Empieza el %1$s</string>
+    <string name="choose_pool_layout_text">Elige una plantilla para crear tu quiniela</string>
+    <string name="pool_name_label">Introduce el nombre de la quiniela</string>
+    <string name="fill_pool_fields_title">Rellena los campos para crear tu quiniela</string>
+    <string name="pool_name_length_validation_error">El nombre de la quiniela debe tener entre 1 y 100 caracteres</string>
+    <string name="ready_to_join_title">¿Listo para unirte a “%1$s”?</string>
+    <string name="ready_to_join_subtitle">¡Te han invitado a la emocionante quiniela “%1$s”! ¿Quieres unirte y jugar con los demás?</string>
+    <string name="join_pool_action">Unirse</string>
+    <string name="pool_score_empty_list_title">Tus quinielas te esperan</string>
+    <string name="pool_score_empty_list_subtitle">Sé el primero en crear una e invita a otros a participar</string>
+    <string name="create_pool_action">Crear</string>
+    <string name="go_to_my_pools_action">Ir a mis quinielas</string>
+</resources>

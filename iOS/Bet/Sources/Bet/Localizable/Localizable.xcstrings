@@ -18,6 +18,12 @@
             "state" : "translated",
             "value" : "Apuesta no permitida"
           }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apuesta no permitida"
+          }
         }
       }
     },
@@ -34,6 +40,12 @@
           "stringUnit" : {
             "state" : "needs_review",
             "value" : "Las apuestas están actualmente deshabilitadas"
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Las apuestas no están disponibles ahora mismo"
           }
         }
       }

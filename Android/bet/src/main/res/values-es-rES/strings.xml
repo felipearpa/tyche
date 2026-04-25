@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="score_label">%d puntos</string>
+    <string name="retry_action">Reintentar</string>
+    <string name="cancel_action">Cancelar</string>
+    <string name="searching_label">Escribe para buscar</string>
+    <string name="forbidden_bet_title">Apuesta no permitida</string>
+    <string name="forbidden_bet_message">¡Vaya! Las apuestas no están disponibles ahora mismo</string>
+</resources>

@@ -15,6 +15,12 @@
             "state" : "translated",
             "value" : "¿Ya tienes una cuenta?"
           }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "¿Ya tienes una cuenta?"
+          }
         }
       }
     },
@@ -28,6 +34,12 @@
           }
         },
         "es-CO" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apuestas"
+          }
+        },
+        "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Apuestas"
@@ -49,6 +61,12 @@
             "state" : "translated",
             "value" : "Cambiar polla"
           }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cambiar quiniela"
+          }
         }
       }
     },
@@ -62,6 +80,12 @@
           }
         },
         "es-CO" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Continuar con:"
+          }
+        },
+        "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Continuar con:"
@@ -83,6 +107,12 @@
             "state" : "translated",
             "value" : "Crear cuenta"
           }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Crear cuenta"
+          }
         }
       }
     },
@@ -96,6 +126,12 @@
           }
         },
         "es-CO" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Historial"
+          }
+        },
+        "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Historial"
@@ -117,6 +153,12 @@
             "state" : "translated",
             "value" : "Inicia sesión"
           }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Inicia sesión"
+          }
         }
       }
     },
@@ -130,6 +172,12 @@
           }
         },
         "es-CO" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cerrar sesión"
+          }
+        },
+        "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Cerrar sesión"
@@ -151,6 +199,12 @@
             "state" : "translated",
             "value" : "Mira quién ha acertado más resultados y atrévete a retarlo ahora"
           }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mira quién ha acertado más resultados y atrévete a retarlo ahora"
+          }
         }
       }
     },
@@ -167,6 +221,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Puntajes"
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Puntuaciones"
           }
         }
       }
@@ -185,6 +245,12 @@
             "state" : "translated",
             "value" : "Correo electrónico"
           }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Correo electrónico"
+          }
         }
       }
     },
@@ -198,6 +264,12 @@
           }
         },
         "es-CO" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Correo electrónico y contraseña"
+          }
+        },
+        "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Correo electrónico y contraseña"

@@ -14,6 +14,12 @@
             "state" : "translated",
             "value" : "Elige una plantilla para crear tu polla"
           }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Elige una plantilla para crear tu quiniela"
+          }
         }
       }
     },
@@ -27,6 +33,12 @@
           }
         },
         "es-CO" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Crear"
+          }
+        },
+        "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Crear"
@@ -47,6 +59,12 @@
             "state" : "translated",
             "value" : "Completa los campos para crear tu polla"
           }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rellena los campos para crear tu quiniela"
+          }
         }
       }
     },
@@ -63,6 +81,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Mis pollas"
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mis quinielas"
           }
         }
       }
@@ -81,6 +105,12 @@
             "state" : "translated",
             "value" : "Ir a mis pollas"
           }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ir a mis quinielas"
+          }
         }
       }
     },
@@ -94,6 +124,12 @@
           }
         },
         "es-CO" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Invitar"
+          }
+        },
+        "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Invitar"
@@ -115,6 +151,12 @@
             "state" : "translated",
             "value" : "Unirte"
           }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unirse"
+          }
         }
       }
     },
@@ -132,6 +174,12 @@
             "state" : "translated",
             "value" : "Polla desde plantilla"
           }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quiniela desde plantilla"
+          }
         }
       }
     },
@@ -147,6 +195,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Ingresa el nombre para la polla"
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Introduce el nombre de la quiniela"
           }
         }
       }
@@ -165,6 +219,12 @@
             "state" : "translated",
             "value" : "El nombre de la polla debe tener entre 1 y 100 caracteres"
           }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El nombre de la quiniela debe tener entre 1 y 100 caracteres"
+          }
         }
       }
     },
@@ -178,6 +238,12 @@
           }
         },
         "es-CO" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sé el primero en crear una e invita a otros a participar"
+          }
+        },
+        "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Sé el primero en crear una e invita a otros a participar"
@@ -199,6 +265,12 @@
             "state" : "translated",
             "value" : "Tus pollas te esperan"
           }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tus quinielas te esperan"
+          }
         }
       }
     },
@@ -212,6 +284,12 @@
           }
         },
         "es-CO" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Posición %@"
+          }
+        },
+        "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Posición %@"
@@ -233,6 +311,12 @@
             "state" : "translated",
             "value" : "¡Te han invitado a la emocionante polla “%@”! ¿Quieres unirte y jugar con los demás?"
           }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "¡Te han invitado a la emocionante quiniela “%@”! ¿Quieres unirte y jugar con los demás?"
+          }
         }
       }
     },
@@ -246,6 +330,12 @@
           }
         },
         "es-CO" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "¿Listo para unirte a “%@”?"
+          }
+        },
+        "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "¿Listo para unirte a “%@”?"
@@ -266,6 +356,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Inicia el %@"
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Empieza el %@"
           }
         }
       }

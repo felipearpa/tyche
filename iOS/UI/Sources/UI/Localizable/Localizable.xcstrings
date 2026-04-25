@@ -15,6 +15,12 @@
             "state" : "translated",
             "value" : "Cancelar"
           }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cancelar"
+          }
         }
       }
     },
@@ -28,6 +34,12 @@
           }
         },
         "es-CO" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hecho"
+          }
+        },
+        "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Hecho"
@@ -49,6 +61,12 @@
             "state" : "translated",
             "value" : "Modificar"
           }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Editar"
+          }
         }
       }
     },
@@ -65,6 +83,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Nada para mostrar"
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nada que mostrar"
           }
         }
       }
@@ -83,6 +107,12 @@
             "state" : "translated",
             "value" : "¡Vaya! En este momento tenemos problemas para conectarnos a nuestros servidores. Por favor, revise su conexión a Internet y vuelva a intentarlo más tarde"
           }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "¡Vaya! Ahora mismo tenemos problemas para conectar con nuestros servidores. Por favor, comprueba tu conexión a Internet y vuelve a intentarlo más tarde"
+          }
         }
       }
     },
@@ -96,6 +126,12 @@
           }
         },
         "es-CO" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Error de red"
+          }
+        },
+        "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Error de red"
@@ -117,6 +153,12 @@
             "state" : "translated",
             "value" : "Reintentar"
           }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reintentar"
+          }
         }
       }
     },
@@ -130,6 +172,12 @@
           }
         },
         "es-CO" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Guardar"
+          }
+        },
+        "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Guardar"
@@ -151,6 +199,12 @@
             "state" : "translated",
             "value" : "Escriba para buscar"
           }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Escribe para buscar"
+          }
         }
       }
     },
@@ -164,6 +218,12 @@
           }
         },
         "es-CO" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Error inesperado"
+          }
+        },
+        "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Error inesperado"
@@ -185,6 +245,12 @@
             "state" : "translated",
             "value" : "Algo ha salido mal y no estamos seguros de qué es"
           }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Algo ha salido mal y no estamos seguros de qué ha sido"
+          }
         }
       }
     },
@@ -201,6 +267,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Si el problema persiste, contacta a nuestro equipo de soporte para obtener ayuda"
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Si el problema persiste, contacta con nuestro equipo de soporte para obtener ayuda"
           }
         }
       }

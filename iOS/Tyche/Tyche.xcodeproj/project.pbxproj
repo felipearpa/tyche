@@ -320,6 +320,7 @@
 			knownRegions = (
 				en,
 				"es-CO",
+				"es-ES",
 				Base,
 			);
 			mainGroup = D2127F2C2A2C2F240047DED7;
