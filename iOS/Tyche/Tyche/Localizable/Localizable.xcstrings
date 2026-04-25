@@ -10,7 +10,7 @@
             "value" : "Do you have an account already?"
           }
         },
-        "es-CO" : {
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "¿Ya tienes una cuenta?"
@@ -33,7 +33,7 @@
             "value" : "Bets"
           }
         },
-        "es-CO" : {
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Apuestas"
@@ -56,7 +56,7 @@
             "value" : "Change pool"
           }
         },
-        "es-CO" : {
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Cambiar polla"
@@ -79,7 +79,7 @@
             "value" : "Continue with:"
           }
         },
-        "es-CO" : {
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Continuar con:"
@@ -102,7 +102,7 @@
             "value" : "Create account"
           }
         },
-        "es-CO" : {
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Crear cuenta"
@@ -125,7 +125,7 @@
             "value" : "History"
           }
         },
-        "es-CO" : {
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Historial"
@@ -148,7 +148,7 @@
             "value" : "Log in"
           }
         },
-        "es-CO" : {
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Inicia sesión"
@@ -171,7 +171,7 @@
             "value" : "Log out"
           }
         },
-        "es-CO" : {
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Cerrar sesión"
@@ -194,7 +194,7 @@
             "value" : "See who’s guessed the most scores and challenge them now"
           }
         },
-        "es-CO" : {
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Mira quién ha acertado más resultados y atrévete a retarlo ahora"
@@ -217,7 +217,7 @@
             "value" : "Scores"
           }
         },
-        "es-CO" : {
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Puntajes"
@@ -240,7 +240,7 @@
             "value" : "Email"
           }
         },
-        "es-CO" : {
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Correo electrónico"
@@ -263,7 +263,7 @@
             "value" : "Email and password"
           }
         },
-        "es-CO" : {
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Correo electrónico y contraseña"

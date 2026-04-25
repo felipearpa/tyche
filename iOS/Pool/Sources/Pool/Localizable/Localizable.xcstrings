@@ -9,7 +9,7 @@
             "value" : "Choose a template to create your pool"
           }
         },
-        "es-CO" : {
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Elige una plantilla para crear tu polla"
@@ -32,7 +32,7 @@
             "value" : "Create"
           }
         },
-        "es-CO" : {
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Crear"
@@ -54,7 +54,7 @@
             "value" : "Fill out the fields to create your pool"
           }
         },
-        "es-CO" : {
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Completa los campos para crear tu polla"
@@ -77,7 +77,7 @@
             "value" : "My pools"
           }
         },
-        "es-CO" : {
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Mis pollas"
@@ -100,7 +100,7 @@
             "value" : "Go to my pools"
           }
         },
-        "es-CO" : {
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Ir a mis pollas"
@@ -123,7 +123,7 @@
             "value" : "Invite"
           }
         },
-        "es-CO" : {
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Invitar"
@@ -146,7 +146,7 @@
             "value" : "Join"
           }
         },
-        "es-CO" : {
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Unirte"
@@ -169,7 +169,7 @@
             "value" : "Pool from layout"
           }
         },
-        "es-CO" : {
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Polla desde plantilla"
@@ -191,7 +191,7 @@
             "value" : "Type the name for the pool"
           }
         },
-        "es-CO" : {
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Ingresa el nombre para la polla"
@@ -214,7 +214,7 @@
             "value" : "The pool name must be between 1 and 100 characters"
           }
         },
-        "es-CO" : {
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "El nombre de la polla debe tener entre 1 y 100 caracteres"
@@ -237,7 +237,7 @@
             "value" : "Be the first to create one and invite others to join"
           }
         },
-        "es-CO" : {
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Sé el primero en crear una e invita a otros a participar"
@@ -260,7 +260,7 @@
             "value" : "Your pools are waiting"
           }
         },
-        "es-CO" : {
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Tus pollas te esperan"
@@ -283,7 +283,7 @@
             "value" : "Position %@"
           }
         },
-        "es-CO" : {
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Posición %@"
@@ -306,7 +306,7 @@
             "value" : "You’ve been invited to join the “%@”! Want to jump in and play alongside others?"
           }
         },
-        "es-CO" : {
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "¡Te han invitado a la emocionante polla “%@”! ¿Quieres unirte y jugar con los demás?"
@@ -329,7 +329,7 @@
             "value" : "Ready to join “%@”?"
           }
         },
-        "es-CO" : {
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "¿Listo para unirte a “%@”?"
@@ -352,7 +352,7 @@
             "value" : "Starting %@"
           }
         },
-        "es-CO" : {
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Inicia el %@"

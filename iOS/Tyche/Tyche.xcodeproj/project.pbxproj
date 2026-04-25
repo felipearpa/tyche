@@ -319,7 +319,7 @@
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
-				"es-CO",
+				es,
 				"es-ES",
 				Base,
 			);

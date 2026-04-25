@@ -10,7 +10,7 @@
             "value" : "Congratulations, your email verification is complete! You're ready to join the fun and challenge your predictions"
           }
         },
-        "es-CO" : {
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "¡Felicidades, tu verificación de correo está completa! Ya puedes unirte a la diversión y poner a prueba tus predicciones"
@@ -33,7 +33,7 @@
             "value" : "Email verified: Let the games begin!"
           }
         },
-        "es-CO" : {
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Correo electrónico verificado: ¡Que comiencen los juegos!"
@@ -56,7 +56,7 @@
             "value" : "Continue"
           }
         },
-        "es-CO" : {
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Continuar"
@@ -79,7 +79,7 @@
             "value" : "Email"
           }
         },
-        "es-CO" : {
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Correo electrónico"
@@ -102,7 +102,7 @@
             "value" : "Must be a valid email"
           }
         },
-        "es-CO" : {
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Debe ser un correo electrónico válido"
@@ -125,7 +125,7 @@
             "value" : "Invalid credentials provided"
           }
         },
-        "es-CO" : {
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Credenciales inválidas"
@@ -148,7 +148,7 @@
             "value" : "That email or password doesn’t seem right"
           }
         },
-        "es-CO" : {
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Parece que ese correo o contraseña no es correcto"
@@ -171,7 +171,7 @@
             "value" : "Double-check your credentials and give it another go"
           }
         },
-        "es-CO" : {
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Verifica que tu correo y contraseña estén bien escritos"
@@ -193,7 +193,7 @@
             "value" : "Invalid sign-in link"
           }
         },
-        "es-CO" : {
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Enlace de inicio de sesión inválido"
@@ -215,7 +215,7 @@
             "value" : "The sign-in link you clicked is either invalid or has expired"
           }
         },
-        "es-CO" : {
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "El enlace de inicio de sesión en el que hiciste clic es inválido o ha expirado"
@@ -237,7 +237,7 @@
             "value" : "Please request a new sign-in link. If you're experiencing issues repeatedly, contact our support team for further assistance"
           }
         },
-        "es-CO" : {
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Por favor, solicita un nuevo enlace de inicio de sesión. Si este problema se repite, contacta a nuestro equipo de soporte para obtener más ayuda"
@@ -260,7 +260,7 @@
             "value" : "If you forgot your password, I can’t help with recovery just yet."
           }
         },
-        "es-CO" : {
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Si olvidaste tu contraseña, aún no puedo ayudarte con eso"
@@ -283,7 +283,7 @@
             "value" : "Password"
           }
         },
-        "es-CO" : {
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Contraseña"
@@ -306,7 +306,7 @@
             "value" : "Password must be between 8–16 characters and include at least one uppercase letter, one lowercase letter, one number, and one special character"
           }
         },
-        "es-CO" : {
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "La contraseña debe tener entre 8 y 16 caracteres e incluir al menos una letra mayúscula, una letra minúscula, un número y un carácter especial"
@@ -329,7 +329,7 @@
             "value" : "Email sign-in is temporarily unavailable"
           }
         },
-        "es-CO" : {
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "El inicio de sesión por correo no está disponible temporalmente"
@@ -352,7 +352,7 @@
             "value" : "You have exceeded the daily limit for email sign-in requests"
           }
         },
-        "es-CO" : {
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Has superado el límite diario de solicitudes de inicio de sesión por correo"
@@ -375,7 +375,7 @@
             "value" : "Please try again in a few hours"
           }
         },
-        "es-CO" : {
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Inténtalo de nuevo en unas horas"
@@ -398,7 +398,7 @@
             "value" : "Sign in"
           }
         },
-        "es-CO" : {
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Iniciar sesión"
@@ -421,7 +421,7 @@
             "value" : "Sign in"
           }
         },
-        "es-CO" : {
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Iniciar sesión"
@@ -444,7 +444,7 @@
             "value" : "Get started"
           }
         },
-        "es-CO" : {
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Iniciar"
@@ -467,7 +467,7 @@
             "value" : "Congratulations! You\\'re in the game and ready to place your bet. Let the fun begin!"
           }
         },
-        "es-CO" : {
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "¡Felicidades! Has iniciado sesión correctamente y estás listo para hacer tu apuesta. ¡Que empiece la diversión!"
@@ -490,7 +490,7 @@
             "value" : "A verification link has been sent to your email. Please check your inbox and open the link on the same device to complete the process, as it's necessary for verification"
           }
         },
-        "es-CO" : {
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Se ha enviado un enlace de verificación a tu correo electrónico. Por favor, revisa tu bandeja de entrada y abre el enlace en el mismo dispositivo para completar el proceso, ya que es necesario para la verificación"
@@ -513,7 +513,7 @@
             "value" : "Verification link sent"
           }
         },
-        "es-CO" : {
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Enlace de verificación enviado"

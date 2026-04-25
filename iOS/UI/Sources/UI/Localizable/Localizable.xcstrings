@@ -10,7 +10,7 @@
             "value" : "Cancel"
           }
         },
-        "es-CO" : {
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Cancelar"
@@ -33,7 +33,7 @@
             "value" : "Done"
           }
         },
-        "es-CO" : {
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Hecho"
@@ -56,7 +56,7 @@
             "value" : "Edit"
           }
         },
-        "es-CO" : {
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Modificar"
@@ -79,7 +79,7 @@
             "value" : "Nothing to show"
           }
         },
-        "es-CO" : {
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Nada para mostrar"
@@ -102,7 +102,7 @@
             "value" : "Oops! We're having trouble connecting to our servers right now. Please check your internet connection and give it another shot later"
           }
         },
-        "es-CO" : {
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "¡Vaya! En este momento tenemos problemas para conectarnos a nuestros servidores. Por favor, revise su conexión a Internet y vuelva a intentarlo más tarde"
@@ -125,7 +125,7 @@
             "value" : "Network error"
           }
         },
-        "es-CO" : {
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Error de red"
@@ -148,7 +148,7 @@
             "value" : "Retry"
           }
         },
-        "es-CO" : {
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Reintentar"
@@ -171,7 +171,7 @@
             "value" : "Save"
           }
         },
-        "es-CO" : {
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Guardar"
@@ -194,7 +194,7 @@
             "value" : "Type to search"
           }
         },
-        "es-CO" : {
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Escriba para buscar"
@@ -217,7 +217,7 @@
             "value" : "Unexpected error"
           }
         },
-        "es-CO" : {
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Error inesperado"
@@ -240,7 +240,7 @@
             "value" : "Something went wrong and we're not sure what"
           }
         },
-        "es-CO" : {
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Algo ha salido mal y no estamos seguros de qué es"
@@ -263,7 +263,7 @@
             "value" : "Please try again. If the problem continues, please contact our support team for assistance"
           }
         },
-        "es-CO" : {
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Si el problema persiste, contacta a nuestro equipo de soporte para obtener ayuda"
