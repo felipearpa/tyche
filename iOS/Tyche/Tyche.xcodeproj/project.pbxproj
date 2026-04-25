@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		550F21DD2B16C7EF004D5A51 /* DataBet in Frameworks */ = {isa = PBXBuildFile; productRef = 550F21DC2B16C7EF004D5A51 /* DataBet */; };
 		5556C5172E515434004F34D5 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5556C5162E51542F004F34D5 /* AppDelegate.swift */; };
+		55BE0001A0001A002B0CDEF2 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 55BE0001A0001A002B0CDEF1 /* LaunchScreen.storyboard */; };
 		556EBA612B16CB8F008D4ABD /* Session in Frameworks */ = {isa = PBXBuildFile; productRef = 556EBA602B16CB8F008D4ABD /* Session */; };
 		557D1EAA2B40AD2B000FF9F9 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 557D1EA92B40AD2B000FF9F9 /* GoogleService-Info.plist */; };
 		558C522E2B40A046004AF956 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 558C522D2B40A046004AF956 /* FirebaseAuth */; };
@@ -53,6 +54,7 @@
 
 /* Begin PBXFileReference section */
 		5556C5162E51542F004F34D5 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		55BE0001A0001A002B0CDEF1 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		557942532B4C413400B1B3DA /* Tyche.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Tyche.entitlements; sourceTree = "<group>"; };
 		557D1EA92B40AD2B000FF9F9 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		55921B2B2F8FC85100BF5C43 /* tyche.icon */ = {isa = PBXFileReference; lastKnownFileType = folder.iconcomposer.icon; path = tyche.icon; sourceTree = "<group>"; };
@@ -148,6 +150,7 @@
 				557942532B4C413400B1B3DA /* Tyche.entitlements */,
 				D204461A2A367F1400390319 /* Info.plist */,
 				557D1EA92B40AD2B000FF9F9 /* GoogleService-Info.plist */,
+				55BE0001A0001A002B0CDEF1 /* LaunchScreen.storyboard */,
 				D2A7804E2AC8BBD700F01A02 /* Localizable */,
 				D2127F762A2C33340047DED7 /* UI */,
 				D2127F382A2C2F240047DED7 /* TycheApp.swift */,
@@ -345,6 +348,7 @@
 				D2A7804D2AC8BB1A00F01A02 /* Localizable.xcstrings in Resources */,
 				55921B2C2F8FC85100BF5C43 /* tyche.icon in Resources */,
 				D2127F3D2A2C2F260047DED7 /* Assets.xcassets in Resources */,
+				55BE0001A0001A002B0CDEF2 /* LaunchScreen.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -553,7 +557,7 @@
 				INFOPLIST_KEY_CFBundleDisplayName = Fortuna;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
@@ -587,7 +591,7 @@
 				INFOPLIST_KEY_CFBundleDisplayName = Fortuna;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;

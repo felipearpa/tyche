@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="22154" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" launchScreen="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="01J-lp-oVM">
+    <device id="retina6_12" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22131"/>
+        <capability name="Named colors" minToolsVersion="9.0"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <scene sceneID="EHf-IW-A2E">
+            <objects>
+                <viewController id="01J-lp-oVM" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="Ze5-6b-2t3">
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="TycheLogoSplash" translatesAutoresizingMaskIntoConstraints="NO" id="lOg-So-pLs">
+                                <rect key="frame" x="52.5" y="282" width="288" height="288"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="288" id="L01-w1-001"/>
+                                    <constraint firstAttribute="height" constant="288" id="L02-h1-001"/>
+                                </constraints>
+                            </imageView>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="FelipearpaBrand" translatesAutoresizingMaskIntoConstraints="NO" id="brA-nd-img">
+                                <rect key="frame" x="96.5" y="720" width="200" height="80"/>
+                                <color key="tintColor" name="SplashForeground"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="200" id="B01-w1-002"/>
+                                    <constraint firstAttribute="height" constant="80" id="B02-h1-002"/>
+                                </constraints>
+                            </imageView>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="vDu-zF-Fre"/>
+                        <color key="backgroundColor" name="SplashBackground"/>
+                        <constraints>
+                            <constraint firstItem="lOg-So-pLs" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="C01-cX-log"/>
+                            <constraint firstItem="lOg-So-pLs" firstAttribute="centerY" secondItem="Ze5-6b-2t3" secondAttribute="centerY" id="C02-cY-log"/>
+                            <constraint firstItem="brA-nd-img" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="C03-cX-bra"/>
+                            <constraint firstItem="vDu-zF-Fre" firstAttribute="bottom" secondItem="brA-nd-img" secondAttribute="bottom" constant="32" id="C04-bo-bra"/>
+                        </constraints>
+                        <point key="canvasLocation" x="139" y="-78"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="iYj-Kq-Ea1" sceneMemberID="firstResponder"/>
+            </objects>
+        </scene>
+    </scenes>
+    <resources>
+        <image name="FelipearpaBrand" width="200" height="80"/>
+        <image name="TycheLogoSplash" width="288" height="288"/>
+        <namedColor name="SplashBackground">
+            <color red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
+        <namedColor name="SplashForeground">
+            <color red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
+    </resources>
+</document>
