@@ -41,6 +41,8 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import com.felipearpa.foundation.emptyString
 import com.felipearpa.tyche.pool.PoolGamblerScoreModel
 import com.felipearpa.tyche.pool.R
+import com.felipearpa.tyche.pool.creator.PoolLayoutModel
+import com.felipearpa.tyche.pool.creator.poolLayoutDummyModels
 import com.felipearpa.tyche.pool.poolGamblerScoreDummyModels
 import com.felipearpa.tyche.ui.theme.TycheTheme
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -53,18 +55,22 @@ fun PoolScoreListView(
     drawerView: @Composable () -> Unit,
     onPoolOpen: (poolId: String, gamblerId: String) -> Unit,
     onPoolCreate: () -> Unit,
+    onPoolLayoutSelect: (PoolLayoutModel) -> Unit,
 ) {
     val lazyItems = viewModel.poolGamblerScores.collectAsLazyPagingItems()
+    val lazyPoolLayouts = viewModel.poolLayouts.collectAsLazyPagingItems()
     val pageSize = viewModel.pageSize
     var invitePoolUrl by remember { mutableStateOf(emptyString()) }
     val refreshEvent = viewModel.refreshEvents.collectAsState(Unit)
 
     PoolScoreListView(
         lazyItems = lazyItems,
+        lazyPoolLayouts = lazyPoolLayouts,
         pageSize = pageSize,
         drawerView = drawerView,
         onPoolOpen = onPoolOpen,
         onPoolCreate = onPoolCreate,
+        onPoolLayoutSelect = onPoolLayoutSelect,
         onPoolJoin = { poolId ->
             invitePoolUrl = viewModel.createUrlForJoining(poolId = poolId)
         },
@@ -97,11 +103,13 @@ private fun InvitePoolSharer(url: String, onClose: () -> Unit) {
 @Composable
 private fun PoolScoreListView(
     lazyItems: LazyPagingItems<PoolGamblerScoreModel>,
+    lazyPoolLayouts: LazyPagingItems<PoolLayoutModel>,
     pageSize: Int = 50,
     drawerView: @Composable () -> Unit,
     onPoolOpen: (poolId: String, gamblerId: String) -> Unit,
     onPoolJoin: (poolId: String) -> Unit,
     onPoolCreate: () -> Unit,
+    onPoolLayoutSelect: (PoolLayoutModel) -> Unit,
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val coroutineScope = rememberCoroutineScope()
@@ -133,10 +141,12 @@ private fun PoolScoreListView(
         ) { paddingValues ->
             PoolScoreList(
                 lazyPoolGamblerScores = lazyItems,
+                lazyPoolLayouts = lazyPoolLayouts,
                 fakeItemCount = pageSize,
                 onPoolOpen = onPoolOpen,
                 onPoolJoin = onPoolJoin,
-                onPoolCreate = onPoolCreate,
+                onPoolLayoutSelect = onPoolLayoutSelect,
+                onSeeAllTemplates = onPoolCreate,
                 modifier = Modifier
                     .padding(paddingValues = paddingValues)
                     .fillMaxSize(),
@@ -184,14 +194,18 @@ private val createIconSize = 32.dp
 private fun PoolScoreListViewPreview() {
     val items =
         MutableStateFlow(PagingData.from(poolGamblerScoreDummyModels())).collectAsLazyPagingItems()
+    val layouts =
+        MutableStateFlow(PagingData.from(poolLayoutDummyModels())).collectAsLazyPagingItems()
     TycheTheme {
         Surface {
             PoolScoreListView(
                 lazyItems = items,
+                lazyPoolLayouts = layouts,
                 drawerView = {},
                 onPoolOpen = { _, _ -> },
                 onPoolJoin = {},
                 onPoolCreate = {},
+                onPoolLayoutSelect = {},
             )
         }
     }

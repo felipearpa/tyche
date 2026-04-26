@@ -6,15 +6,21 @@ import DataPool
 public struct PoolFromLayoutCreatorView: View {
     @StateObject var viewModel: PoolFromLayoutCreatorViewModel
     let onPoolCreated: (String) -> Void
+    let preselectedPoolLayoutId: String?
+    let preselectedPoolName: String?
 
     @Environment(\.boxSpacing) private var boxSpacing
 
     public init(
         viewModel: @autoclosure @escaping () -> PoolFromLayoutCreatorViewModel,
         onPoolCreated: @escaping (String) -> Void,
+        preselectedPoolLayoutId: String? = nil,
+        preselectedPoolName: String? = nil,
     ) {
         self._viewModel = .init(wrappedValue: viewModel())
         self.onPoolCreated = onPoolCreated
+        self.preselectedPoolLayoutId = preselectedPoolLayoutId
+        self.preselectedPoolName = preselectedPoolName
     }
 
     public var body: some View {
@@ -22,7 +28,9 @@ public struct PoolFromLayoutCreatorView: View {
             state: viewModel.state,
             onSaveClick: viewModel.createPool,
             onPoolCreated: onPoolCreated,
-            reset: viewModel.reset
+            reset: viewModel.reset,
+            preselectedPoolLayoutId: preselectedPoolLayoutId,
+            preselectedPoolName: preselectedPoolName,
         )
         .navigationTitle(String(.poolFromLayoutCreatorTitle))
         .padding(boxSpacing.medium)
@@ -34,9 +42,37 @@ private struct PoolFromLayoutCreatorStatefulView: View {
     let onSaveClick: (CreatePoolModel) -> Void
     let onPoolCreated: (String) -> Void
     let reset: () -> Void
+    let preselectedPoolLayoutId: String?
+    let preselectedPoolName: String?
 
     @Environment(\.diResolver) private var diResolver: DIResolver
-    @State private var step: Step = .one
+    @State private var step: Step
+
+    init(
+        state: EditableViewState<CreatePoolModel>,
+        onSaveClick: @escaping (CreatePoolModel) -> Void,
+        onPoolCreated: @escaping (String) -> Void,
+        reset: @escaping () -> Void,
+        preselectedPoolLayoutId: String?,
+        preselectedPoolName: String?,
+    ) {
+        self.state = state
+        self.onSaveClick = onSaveClick
+        self.onPoolCreated = onPoolCreated
+        self.reset = reset
+        self.preselectedPoolLayoutId = preselectedPoolLayoutId
+        self.preselectedPoolName = preselectedPoolName
+        self._step = State(initialValue: preselectedPoolLayoutId != nil ? .two : .one)
+    }
+
+    private var initialCreatePoolModel: CreatePoolModel {
+        guard let preselectedPoolLayoutId else { return emptyCreatePoolModel() }
+        return CreatePoolModel(
+            poolLayoutId: preselectedPoolLayoutId,
+            poolName: preselectedPoolName ?? "",
+            poolId: nil,
+        )
+    }
 
     var body: some View {
         switch state {
@@ -49,6 +85,7 @@ private struct PoolFromLayoutCreatorStatefulView: View {
                 onSaveClick: { createPoolModel in
                     onSaveClick(createPoolModel)
                 },
+                initialCreatePoolModel: initialCreatePoolModel,
             )
 
         case .saving:
@@ -59,6 +96,7 @@ private struct PoolFromLayoutCreatorStatefulView: View {
                     ),
                     step: $step,
                     onSaveClick: { createPoolModel in },
+                    initialCreatePoolModel: initialCreatePoolModel,
                 )
             }
 
@@ -72,6 +110,7 @@ private struct PoolFromLayoutCreatorStatefulView: View {
                     onSaveClick: { createPoolModel in
                         onSaveClick(createPoolModel)
                     },
+                    initialCreatePoolModel: initialCreatePoolModel,
                 )
             }.onAppear {
                 guard let poolId = succededCreatePoolModel.poolId else { return }
@@ -87,6 +126,7 @@ private struct PoolFromLayoutCreatorStatefulView: View {
                 onSaveClick: { createPoolModel in
                     onSaveClick(createPoolModel)
                 },
+                initialCreatePoolModel: initialCreatePoolModel,
             )
             .errorAlert(.constant(error.localizedErrorOrNil()!), onDismiss: reset)
         }
@@ -98,8 +138,20 @@ private struct StepperView: View {
     @Binding var step: Step
     let onSaveClick: (CreatePoolModel) -> Void
 
-    @State var createPoolModel: CreatePoolModel = emptyCreatePoolModel()
+    @State var createPoolModel: CreatePoolModel
     @State var previousStep: Step? = nil
+
+    init(
+        poolFromLayoutCreatorStepOneViewModel: @autoclosure @escaping () -> PoolFromLayoutCreatorStepOneViewModel,
+        step: Binding<Step>,
+        onSaveClick: @escaping (CreatePoolModel) -> Void,
+        initialCreatePoolModel: CreatePoolModel = emptyCreatePoolModel(),
+    ) {
+        self._poolFromLayoutCreatorStepOneViewModel = .init(wrappedValue: poolFromLayoutCreatorStepOneViewModel())
+        self._step = step
+        self.onSaveClick = onSaveClick
+        self._createPoolModel = State(initialValue: initialCreatePoolModel)
+    }
 
     var body: some View {
         VStack {

@@ -16,6 +16,7 @@ val poolViewModelModule = module {
         PoolScoreListViewModel(
             gamblerId = params.get(),
             getPoolGamblerScoresByGambler = get(),
+            getOpenPoolLayouts = get(),
             joinPoolUrlTemplate = get(),
         )
     }

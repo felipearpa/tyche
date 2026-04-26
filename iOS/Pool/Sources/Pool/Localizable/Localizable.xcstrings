@@ -234,19 +234,42 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Be the first to create one and invite others to join"
+            "value" : "Pick a tournament template, create your pool and invite your friends."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sé el primero en crear una e invita a otros a participar"
+            "value" : "Elige una plantilla, crea tu polla e invita a tus amigos."
           }
         },
         "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sé el primero en crear una e invita a otros a participar"
+            "value" : "Elige una plantilla, crea tu quiniela e invita a tus amigos."
+          }
+        }
+      }
+    },
+    "pool_score_empty_list_templates_section" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Popular templates"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Plantillas populares"
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Plantillas populares"
           }
         }
       }
@@ -257,19 +280,42 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Your pools are waiting"
+            "value" : "You're not in any pools yet"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tus pollas te esperan"
+            "value" : "Aún no estás en ninguna polla"
           }
         },
         "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tus quinielas te esperan"
+            "value" : "Aún no estás en ninguna quiniela"
+          }
+        }
+      }
+    },
+    "see_all_templates_action" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "See all templates"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ver todas las plantillas"
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ver todas las plantillas"
           }
         }
       }

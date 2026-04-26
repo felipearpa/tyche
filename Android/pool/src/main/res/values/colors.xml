@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="people_playing_outline">#212121</color>
+    <color name="people_playing_highlight">#FAFAFA</color>
+    <color name="people_playing_body">#4CAF50</color>
+</resources>

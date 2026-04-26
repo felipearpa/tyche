@@ -136,6 +136,7 @@
             justify-content: space-between;
             gap: 12px;
             height: 72px;
+            min-width: 0;
         }
         .brand {
             display: inline-flex;
@@ -145,16 +146,24 @@
             font-weight: 700;
             font-size: 20px;
             letter-spacing: -0.02em;
+            min-width: 0;
+            flex-shrink: 1;
         }
         .brand .brand-mark {
             width: 32px;
             height: 32px;
             color: var(--green-accent);
+            flex-shrink: 0;
         }
         .topbar-actions {
             display: flex;
             align-items: center;
             gap: 10px;
+            flex-shrink: 0;
+        }
+        .topbar-actions .btn-onsurface { display: none; }
+        @media (min-width: 720px) {
+            .topbar-actions .btn-onsurface { display: inline-flex; }
         }
         @media (min-width: 1024px) {
             .topbar-inner { height: 84px; }

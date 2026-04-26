@@ -8,8 +8,11 @@ import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.felipearpa.foundation.emptyString
 import com.felipearpa.tyche.core.JoinPoolUrlTemplateProvider
+import com.felipearpa.tyche.data.pool.application.GetOpenPoolLayouts
 import com.felipearpa.tyche.data.pool.application.GetPoolGamblerScoresByGambler
 import com.felipearpa.tyche.pool.PoolGamblerScorePagingSource
+import com.felipearpa.tyche.pool.creator.PoolLayoutPagingSource
+import com.felipearpa.tyche.pool.creator.getOpenPoolLayoutsPagingQuery
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -26,6 +29,7 @@ private const val PREFETCH_DISTANCE = 5
 class PoolScoreListViewModel(
     val gamblerId: String,
     private val getPoolGamblerScoresByGambler: GetPoolGamblerScoresByGambler,
+    private val getOpenPoolLayouts: GetOpenPoolLayouts,
     private val joinPoolUrlTemplate: JoinPoolUrlTemplateProvider,
 ) :
     ViewModel() {
@@ -37,6 +41,12 @@ class PoolScoreListViewModel(
     val poolGamblerScores = _searchText.flatMapLatest { newSearchText ->
         buildPager(searchText = newSearchText).flow.cachedIn(viewModelScope)
     }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.Lazily,
+        initialValue = PagingData.empty(),
+    )
+
+    val poolLayouts = buildPoolLayoutsPager().flow.cachedIn(viewModelScope).stateIn(
         scope = viewModelScope,
         started = SharingStarted.Lazily,
         initialValue = PagingData.empty(),
@@ -71,6 +81,26 @@ class PoolScoreListViewModel(
                         )
                     },
                 ).also { pagingSource = it }
+            },
+        )
+
+    private fun buildPoolLayoutsPager() =
+        Pager(
+            config = PagingConfig(
+                pageSize = pageSize,
+                prefetchDistance = PREFETCH_DISTANCE,
+                enablePlaceholders = true,
+            ),
+            pagingSourceFactory = {
+                PoolLayoutPagingSource(
+                    pagingQuery = { next ->
+                        getOpenPoolLayoutsPagingQuery(
+                            next = next,
+                            search = { null },
+                            getOpenPoolLayouts = getOpenPoolLayouts,
+                        )
+                    },
+                )
             },
         )
 

@@ -11,8 +11,10 @@
     <string name="ready_to_join_title">Ready to join “%1$s”?</string>
     <string name="ready_to_join_subtitle">You’ve been invited to join the “%1$s”! Want to jump in and play alongside others?</string>
     <string name="join_pool_action">Join</string>
-    <string name="pool_score_empty_list_title">Your pools are waiting</string>
-    <string name="pool_score_empty_list_subtitle">Be the first to create one and invite others to join</string>
+    <string name="pool_score_empty_list_title">You\'re not in any pools yet</string>
+    <string name="pool_score_empty_list_subtitle">Pick a tournament template, create your pool and invite your friends.</string>
+    <string name="pool_score_empty_list_templates_section">Popular templates</string>
+    <string name="see_all_templates_action">See all templates</string>
     <string name="create_pool_action">Create</string>
     <string name="go_to_my_pools_action">Go to my pools</string>
 </resources>

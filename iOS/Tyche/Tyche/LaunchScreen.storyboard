@@ -17,10 +17,10 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="TycheLogoSplash" translatesAutoresizingMaskIntoConstraints="NO" id="lOg-So-pLs">
-                                <rect key="frame" x="52.5" y="282" width="288" height="288"/>
+                                <rect key="frame" x="116.5" y="346" width="160" height="160"/>
                                 <constraints>
-                                    <constraint firstAttribute="width" constant="288" id="L01-w1-001"/>
-                                    <constraint firstAttribute="height" constant="288" id="L02-h1-001"/>
+                                    <constraint firstAttribute="width" constant="160" id="L01-w1-001"/>
+                                    <constraint firstAttribute="height" constant="160" id="L02-h1-001"/>
                                 </constraints>
                             </imageView>
                             <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="FelipearpaBrand" translatesAutoresizingMaskIntoConstraints="NO" id="brA-nd-img">

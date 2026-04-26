@@ -76,6 +76,7 @@ struct PoolContent: View {
                     getPoolGamblerScoresByGamblerUseCase: GetPoolGamblerScoresByGamblerUseCase(
                         poolGamblerScoreRepository: diResolver.resolve(PoolGamblerScoreRepository.self)!
                     ),
+                    getOpenPoolLayoutsUseCase: diResolver.resolve(GetOpenPoolLayoutsUseCase.self)!,
                     joinPoolUrlTemplate: diResolver.resolve(JoinPoolUrlTemplateProvider.self)!,
                     gamblerId: accountBundle.accountId
                 )

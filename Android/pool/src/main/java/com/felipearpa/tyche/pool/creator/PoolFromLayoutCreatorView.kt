@@ -48,6 +48,8 @@ fun PoolFromLayoutCreatorView(
     viewModel: PoolFromLayoutCreatorViewModel,
     onPoolCreated: (poolId: String) -> Unit,
     onBackClick: () -> Unit,
+    preselectedPoolLayoutId: String? = null,
+    preselectedPoolName: String? = null,
 ) {
     val state by viewModel.state.collectAsState()
     PoolFromLayoutCreatorView(
@@ -58,6 +60,8 @@ fun PoolFromLayoutCreatorView(
         onPoolCreated = onPoolCreated,
         onBackClick = onBackClick,
         reset = viewModel::reset,
+        preselectedPoolLayoutId = preselectedPoolLayoutId,
+        preselectedPoolName = preselectedPoolName,
     )
 }
 
@@ -69,10 +73,26 @@ private fun PoolFromLayoutCreatorView(
     onPoolCreated: (poolId: String) -> Unit,
     onBackClick: () -> Unit,
     reset: () -> Unit,
+    preselectedPoolLayoutId: String? = null,
+    preselectedPoolName: String? = null,
 ) {
-    var step by remember { mutableStateOf<Step>(Step.One) }
+    val hasPreselection = preselectedPoolLayoutId != null
+    var step by remember {
+        mutableStateOf<Step>(if (hasPreselection) Step.Two else Step.One)
+    }
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
-    var createPoolModel by remember { mutableStateOf(emptyCreatePoolModel()) }
+    var createPoolModel by remember {
+        mutableStateOf(
+            if (hasPreselection) {
+                emptyCreatePoolModel().copy(
+                    poolLayoutId = preselectedPoolLayoutId.orEmpty(),
+                    poolName = preselectedPoolName.orEmpty(),
+                )
+            } else {
+                emptyCreatePoolModel()
+            },
+        )
+    }
 
     Scaffold(
         modifier = Modifier

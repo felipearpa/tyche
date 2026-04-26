@@ -11,8 +11,10 @@
     <string name="ready_to_join_title">¿Listo para unirte a “%1$s”?</string>
     <string name="ready_to_join_subtitle">¡Te han invitado a la emocionante quiniela “%1$s”! ¿Quieres unirte y jugar con los demás?</string>
     <string name="join_pool_action">Unirse</string>
-    <string name="pool_score_empty_list_title">Tus quinielas te esperan</string>
-    <string name="pool_score_empty_list_subtitle">Sé el primero en crear una e invita a otros a participar</string>
+    <string name="pool_score_empty_list_title">Aún no estás en ninguna quiniela</string>
+    <string name="pool_score_empty_list_subtitle">Elige una plantilla, crea tu quiniela e invita a tus amigos.</string>
+    <string name="pool_score_empty_list_templates_section">Plantillas populares</string>
+    <string name="see_all_templates_action">Ver todas las plantillas</string>
     <string name="create_pool_action">Crear</string>
     <string name="go_to_my_pools_action">Ir a mis quinielas</string>
 </resources>

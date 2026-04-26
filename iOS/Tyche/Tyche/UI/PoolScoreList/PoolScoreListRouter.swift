@@ -34,7 +34,13 @@ struct PoolScoreListRouter: View {
             PoolScoreListObservedView(
                 viewModel: poolScoreViewModel,
                 onPoolOpen: { pool in onPoolSelect(pool) },
-                onPoolCreate: { path.append(PoolFromLayoutCreatorRoute()) }
+                onPoolCreate: { path.append(PoolFromLayoutCreatorRoute()) },
+                onPoolLayoutSelect: { layoutId, layoutName in
+                    path.append(PoolFromLayoutCreatorRoute(
+                        preselectedPoolLayoutId: layoutId,
+                        preselectedPoolName: layoutName,
+                    ))
+                },
             )
             .onAppear {
                 if wasPoolCreated {
@@ -53,6 +59,8 @@ struct PoolScoreListRouter: View {
                         wasPoolCreated = true
                         path = NavigationPath()
                     },
+                    preselectedPoolLayoutId: route.preselectedPoolLayoutId,
+                    preselectedPoolName: route.preselectedPoolName,
                 )
             }
         }

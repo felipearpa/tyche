@@ -14,6 +14,8 @@ fun NavGraphBuilder.poolFromLayoutCreatorView(
             viewModel = poolFromLayoutCreatorViewModel(gamblerId = route.gamblerId),
             onPoolCreated = onPoolCreated,
             onBackClick = onBackClick,
+            preselectedPoolLayoutId = route.preselectedPoolLayoutId,
+            preselectedPoolName = route.preselectedPoolName,
         )
     }
 }
