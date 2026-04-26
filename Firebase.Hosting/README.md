@@ -26,4 +26,8 @@ From this directory (`Firebase.Hosting/`):
 firebase deploy --only hosting
 ```
 
-The site will be available at: https://tyche-588ce.web.app
+The site will be available at: https://fortuna.felipearpa.com
+
+## Release notes
+
+See [`CHANGELOG.md`](CHANGELOG.md).

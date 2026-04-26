@@ -1,33 +1,480 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8">
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Page Not Found</title>
+    <title>Fortuna · Página no encontrada</title>
+    <meta name="description" content="La página que buscas no existe. Vuelve al inicio o descarga Fortuna para tu polla del Mundial 2026.">
+    <meta name="robots" content="noindex">
+    <meta name="theme-color" content="#0A140C">
+    <meta name="color-scheme" content="dark">
 
-    <style media="screen">
-      body { background: #ECEFF1; color: rgba(0,0,0,0.87); font-family: Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 0; }
-      #message { background: white; max-width: 360px; margin: 100px auto 16px; padding: 32px 24px 16px; border-radius: 3px; }
-      #message h3 { color: #888; font-weight: normal; font-size: 16px; margin: 16px 0 12px; }
-      #message h2 { color: #ffa100; font-weight: bold; font-size: 16px; margin: 0 0 8px; }
-      #message h1 { font-size: 22px; font-weight: 300; color: rgba(0,0,0,0.6); margin: 0 0 16px;}
-      #message p { line-height: 140%; margin: 16px 0 24px; font-size: 14px; }
-      #message a { display: block; text-align: center; background: #039be5; text-transform: uppercase; text-decoration: none; color: white; padding: 16px; border-radius: 4px; }
-      #message, #message a { box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24); }
-      #load { color: rgba(0,0,0,0.4); text-align: center; font-size: 13px; }
-      @media (max-width: 600px) {
-        body, #message { margin-top: 0; background: white; box-shadow: none; }
-        body { border-top: 16px solid #ffa100; }
-      }
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="apple-touch-icon" href="/favicon.svg">
+    <link rel="mask-icon" href="/favicon.svg" color="#4CAF50">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-canvas: #0E1A12;
+            --bg-card: #182A1D;
+            --bg-card-elevated: #1F3325;
+            --bg-footer: #07100A;
+
+            --green-headline: #66BB6A;
+            --green-accent: #4CAF50;
+            --green-accent-hover: #66BB6A;
+            --green-deep: #1B5E20;
+            --green-tint: rgba(76, 175, 80, 0.14);
+            --green-tint-strong: rgba(76, 175, 80, 0.22);
+
+            --text-primary: rgba(255, 255, 255, 0.94);
+            --text-secondary: rgba(255, 255, 255, 0.62);
+            --text-tertiary: rgba(255, 255, 255, 0.45);
+            --text-on-band: #FFFFFF;
+            --text-on-band-soft: rgba(255, 255, 255, 0.74);
+
+            --border-soft: rgba(255, 255, 255, 0.08);
+            --border-medium: rgba(255, 255, 255, 0.16);
+
+            --pill: 999px;
+            --card-radius: 14px;
+            --card-shadow: 0 0 0 1px var(--border-soft), 0 16px 32px rgba(0, 0, 0, 0.40);
+            --card-shadow-soft: 0 0 0 1px var(--border-soft), 0 4px 14px rgba(0, 0, 0, 0.25);
+            --nav-shadow: 0 1px 0 var(--border-soft);
+
+            --space-3: 16px;
+            --space-4: 24px;
+            --space-5: 32px;
+            --space-6: 40px;
+            --space-7: 48px;
+            --space-9: 64px;
+
+            --container: 1200px;
+            --gutter: 24px;
+            --button-active-scale: 0.96;
+        }
+
+        @media (min-width: 1024px) {
+            :root { --gutter: 40px; }
+        }
+
+        *, *::before, *::after { box-sizing: border-box; }
+
+        html, body { height: 100%; }
+        html { scroll-behavior: smooth; }
+
+        body {
+            margin: 0;
+            background: var(--bg-canvas);
+            color: var(--text-primary);
+            font-family: 'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            font-size: 16px;
+            line-height: 1.5;
+            letter-spacing: -0.01em;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizeLegibility;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Ambient glow — same as homepage, atmospheric only (no surface gradients) */
+        body::before {
+            content: "";
+            position: fixed;
+            inset: -10% -10% auto -10%;
+            height: 60vh;
+            background:
+                radial-gradient(60% 50% at 30% 0%, rgba(76, 175, 80, 0.08) 0%, transparent 70%),
+                radial-gradient(40% 40% at 80% 10%, rgba(102, 187, 106, 0.06) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        a { color: inherit; text-decoration: none; }
+        h1, h2, h3 { margin: 0; letter-spacing: -0.02em; line-height: 1.15; }
+        p { margin: 0; }
+        ul { margin: 0; padding: 0; list-style: none; }
+        img, svg { display: block; }
+
+        .container {
+            max-width: var(--container);
+            margin: 0 auto;
+            padding-left: var(--gutter);
+            padding-right: var(--gutter);
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ---------- Top bar ---------- */
+        .topbar {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            background: rgba(14, 26, 18, 0.85);
+            backdrop-filter: saturate(180%) blur(18px);
+            -webkit-backdrop-filter: saturate(180%) blur(18px);
+            box-shadow: var(--nav-shadow);
+        }
+        .topbar-inner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            height: 72px;
+            min-width: 0;
+        }
+        .brand {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--text-primary);
+            font-weight: 700;
+            font-size: 20px;
+            letter-spacing: -0.02em;
+            min-width: 0;
+            flex-shrink: 1;
+        }
+        .brand .brand-mark {
+            width: 32px;
+            height: 32px;
+            color: var(--green-accent);
+            flex-shrink: 0;
+        }
+        @media (min-width: 1024px) {
+            .topbar-inner { height: 84px; }
+        }
+
+        /* ---------- Buttons ---------- */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-family: inherit;
+            font-size: 15px;
+            font-weight: 600;
+            line-height: 1.2;
+            letter-spacing: -0.01em;
+            padding: 12px 22px;
+            border-radius: var(--pill);
+            border: 1px solid transparent;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
+            white-space: nowrap;
+        }
+        .btn:active { transform: scale(var(--button-active-scale)); }
+
+        .btn-primary {
+            background: var(--green-accent);
+            color: #07100A;
+            border-color: var(--green-accent);
+        }
+        .btn-primary:hover { background: var(--green-accent-hover); border-color: var(--green-accent-hover); }
+
+        .btn-outlined {
+            background: transparent;
+            color: var(--green-headline);
+            border-color: var(--green-accent);
+        }
+        .btn-outlined:hover { background: var(--green-tint); }
+
+        .btn-lg { padding: 14px 28px; font-size: 16px; }
+
+        /* ---------- 404 hero ---------- */
+        main {
+            flex: 1 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: var(--space-9) 0;
+        }
+        .lost {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: var(--space-4);
+            max-width: 640px;
+        }
+
+        /* Signature anchor — circular green-tinted badge with a layered halo.
+           Borrows the "Frap" spirit from DESIGN.md: solid green, layered
+           whisper-soft shadows, no gradient surface. */
+        .badge-404 {
+            position: relative;
+            width: clamp(168px, 28vw, 220px);
+            aspect-ratio: 1;
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            background: var(--bg-card);
+            color: var(--green-headline);
+            font-weight: 800;
+            letter-spacing: -0.04em;
+            font-size: clamp(56px, 9vw, 88px);
+            box-shadow:
+                inset 0 0 0 1px var(--green-tint-strong),
+                0 0 0 8px var(--green-tint),
+                0 24px 48px rgba(0, 0, 0, 0.45);
+            margin-bottom: var(--space-3);
+        }
+        .badge-404::before {
+            content: "";
+            position: absolute;
+            inset: -28px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 50% 40%, rgba(76, 175, 80, 0.22) 0%, transparent 65%);
+            filter: blur(8px);
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .lost-eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--green-headline);
+            background: var(--green-tint);
+            border: 1px solid var(--green-tint-strong);
+            border-radius: var(--pill);
+            padding: 8px 16px;
+        }
+        .lost-eyebrow .dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--green-accent);
+            box-shadow: 0 0 0 4px rgba(76, 175, 80, 0.20);
+        }
+
+        .lost h1 {
+            font-size: clamp(28px, 4.6vw, 44px);
+            font-weight: 800;
+            color: var(--text-primary);
+        }
+        .lost h1 .accent { color: var(--green-headline); }
+
+        .lost-sub {
+            color: var(--text-secondary);
+            font-size: clamp(16px, 1.6vw, 18px);
+            line-height: 1.6;
+            max-width: 520px;
+        }
+
+        .lost-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
+            margin-top: var(--space-3);
+        }
+
+        /* ---------- Footer ---------- */
+        footer {
+            background: var(--bg-footer);
+            color: var(--text-on-band);
+            padding: var(--space-7) 0 var(--space-5);
+            border-top: 1px solid var(--border-soft);
+            flex-shrink: 0;
+        }
+        .footer-inner {
+            display: grid;
+            gap: var(--space-5);
+            grid-template-columns: 1fr;
+            align-items: start;
+        }
+        @media (min-width: 720px) {
+            .footer-inner { grid-template-columns: 1fr auto; align-items: center; }
+        }
+        .footer-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--text-on-band);
+            font-weight: 700;
+            font-size: 18px;
+        }
+        .footer-brand .brand-mark { color: var(--green-accent); width: 28px; height: 28px; }
+        .footer-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--space-4);
+        }
+        .footer-links a {
+            color: var(--text-on-band-soft);
+            font-size: 14px;
+            transition: color 0.2s ease;
+        }
+        .footer-links a:hover { color: var(--text-on-band); }
+        .footer-copy {
+            color: var(--text-tertiary);
+            font-size: 13px;
+            margin-top: var(--space-5);
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+                scroll-behavior: auto !important;
+            }
+        }
     </style>
-  </head>
-  <body>
-    <div id="message">
-      <h2>404</h2>
-      <h1>Page Not Found</h1>
-      <p>The specified file was not found on this website. Please check the URL for mistakes and try again.</p>
-      <h3>Why am I seeing this?</h3>
-      <p>This page was generated by the Firebase Command-Line Interface. To modify it, edit the <code>404.html</code> file in your project's configured <code>public</code> directory.</p>
-    </div>
-  </body>
+</head>
+<body>
+    <header class="topbar">
+        <div class="container topbar-inner">
+            <a class="brand" href="/">
+                <svg class="brand-mark" viewBox="0 0 500 499" aria-hidden="true">
+                    <path fill="currentColor" d="M19.5,168.25Q35.62,124.91 65.77,89.9Q72.32,82.29 79.47,75.32Q133.33,22.8 208.31,10.31Q238.44,5.3 270.23,8.21Q358.98,16.33 420.56,77.44Q437.02,93.77 451.53,116.2Q458.03,126.27 462.08,133.19Q474.57,154.56 482.5,180.5Q489.73,204.15 492,232.25Q493.34,248.82 492.6,260.51Q486.87,351.09 426.11,417.61Q398.64,447.69 362.51,466.53Q317.36,490.07 267.5,493.5Q242.06,495.25 215.41,492.09Q205.04,490.86 195.7,488.78Q157.16,480.21 122.94,459.31Q87.72,437.8 61.87,406.37Q16.31,350.99 7,281.75Q0.69,234.78 13.42,187.29Q16.01,177.63 19.5,168.25ZM448.45,114.1Q436.25,98.02 422.42,87.35Q415.98,82.39 409.44,77.55Q408.97,77.2 408.85,77.37A0.5,0.28 39.9 0 0 409.05,77.89Q416.12,84.01 420.69,94.56Q426.19,107.27 424.57,119.26Q422.29,136.11 410.26,148.01Q405.09,153.13 398.75,158Q397.16,159.21 398.72,160.46Q427.35,183.36 440.63,216.74Q443.19,223.17 445.25,232Q454.03,269.61 443.88,306.57Q443.28,308.75 444.8,307.08Q449.92,301.43 454.22,295.19Q458.34,289.22 461.71,282.05Q470.62,263.12 473.65,242.44Q474.93,233.65 474.95,222.51Q474.97,207.61 473.25,196.25Q466.91,154.46 449.62,116.07Q449.15,115.02 448.45,114.1ZM243.06,144.44Q203.4,107.98 152,91.5Q138.43,87.15 131.45,85.17Q131.33,85.14 126.57,83.7Q121.96,82.31 116.98,81.72A1.07,1.06 23.1 0 0 116.03,82.1Q69.79,137.76 55.65,208.98Q49.29,241.05 48.76,273.36A2.95,2.95 -66 0 0 49.55,275.42Q53.98,280.16 58.93,284.32Q88.34,309.07 123.3,324.61Q132.73,328.8 141.9,331.92Q172.66,342.37 204.5,343.75Q223.08,344.55 228.44,344.9A1,0.99 -67.2 0 0 229.27,344.56Q233.51,339.56 237.56,331.81Q274.72,260.81 274.75,181.51A1.67,1.59 -63.3 0 0 274.47,180.59Q260.8,160.75 243.06,144.44ZM239.43,481.81Q242.06,482.86 244.86,482.81Q246.99,482.78 247.14,482.78Q268.13,483.32 291,479.75Q314.03,476.15 334.56,467.73Q345.27,463.34 352.28,458.58Q366.03,449.25 376.31,434.31Q392.33,411.04 398.75,383.49Q399.03,382.29 398.04,383.01Q387.82,390.47 377.13,397.85Q328.39,431.54 268.76,432.25A0.52,0.52 -88.8 0 0 268.25,432.74Q266.77,456.1 251.39,472.89Q248.76,475.76 245.98,477.37Q242.91,479.16 239.48,480.26Q237.3,480.96 239.43,481.81Z"/>
+                </svg>
+                <span>Fortuna</span>
+            </a>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <div class="lost">
+                <div class="badge-404" aria-hidden="true">404</div>
+
+                <span class="lost-eyebrow">
+                    <span class="dot" aria-hidden="true"></span>
+                    <span data-i18n="eyebrow">Página no encontrada</span>
+                </span>
+
+                <h1 data-i18n-html="headline">Esta predicción <span class="accent">no acertó.</span></h1>
+
+                <p class="lost-sub" data-i18n="sub">
+                    El enlace que seguiste ya no existe o nunca lo hizo. Pero no todo está perdido: vuelve al inicio o descarga Fortuna y arma tu polla del Mundial 2026.
+                </p>
+
+                <div class="lost-actions">
+                    <a class="btn btn-primary btn-lg" href="/" data-i18n="cta_primary">Volver al inicio</a>
+                    <a class="btn btn-outlined btn-lg" href="/#descargar" data-i18n="cta_secondary">Descargar Fortuna</a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container footer-inner">
+            <div class="footer-brand">
+                <svg class="brand-mark" viewBox="0 0 500 499" aria-hidden="true">
+                    <path fill="currentColor" d="M19.5,168.25Q35.62,124.91 65.77,89.9Q72.32,82.29 79.47,75.32Q133.33,22.8 208.31,10.31Q238.44,5.3 270.23,8.21Q358.98,16.33 420.56,77.44Q437.02,93.77 451.53,116.2Q458.03,126.27 462.08,133.19Q474.57,154.56 482.5,180.5Q489.73,204.15 492,232.25Q493.34,248.82 492.6,260.51Q486.87,351.09 426.11,417.61Q398.64,447.69 362.51,466.53Q317.36,490.07 267.5,493.5Q242.06,495.25 215.41,492.09Q205.04,490.86 195.7,488.78Q157.16,480.21 122.94,459.31Q87.72,437.8 61.87,406.37Q16.31,350.99 7,281.75Q0.69,234.78 13.42,187.29Q16.01,177.63 19.5,168.25ZM448.45,114.1Q436.25,98.02 422.42,87.35Q415.98,82.39 409.44,77.55Q408.97,77.2 408.85,77.37A0.5,0.28 39.9 0 0 409.05,77.89Q416.12,84.01 420.69,94.56Q426.19,107.27 424.57,119.26Q422.29,136.11 410.26,148.01Q405.09,153.13 398.75,158Q397.16,159.21 398.72,160.46Q427.35,183.36 440.63,216.74Q443.19,223.17 445.25,232Q454.03,269.61 443.88,306.57Q443.28,308.75 444.8,307.08Q449.92,301.43 454.22,295.19Q458.34,289.22 461.71,282.05Q470.62,263.12 473.65,242.44Q474.93,233.65 474.95,222.51Q474.97,207.61 473.25,196.25Q466.91,154.46 449.62,116.07Q449.15,115.02 448.45,114.1ZM243.06,144.44Q203.4,107.98 152,91.5Q138.43,87.15 131.45,85.17Q131.33,85.14 126.57,83.7Q121.96,82.31 116.98,81.72A1.07,1.06 23.1 0 0 116.03,82.1Q69.79,137.76 55.65,208.98Q49.29,241.05 48.76,273.36A2.95,2.95 -66 0 0 49.55,275.42Q53.98,280.16 58.93,284.32Q88.34,309.07 123.3,324.61Q132.73,328.8 141.9,331.92Q172.66,342.37 204.5,343.75Q223.08,344.55 228.44,344.9A1,0.99 -67.2 0 0 229.27,344.56Q233.51,339.56 237.56,331.81Q274.72,260.81 274.75,181.51A1.67,1.59 -63.3 0 0 274.47,180.59Q260.8,160.75 243.06,144.44ZM239.43,481.81Q242.06,482.86 244.86,482.81Q246.99,482.78 247.14,482.78Q268.13,483.32 291,479.75Q314.03,476.15 334.56,467.73Q345.27,463.34 352.28,458.58Q366.03,449.25 376.31,434.31Q392.33,411.04 398.75,383.49Q399.03,382.29 398.04,383.01Q387.82,390.47 377.13,397.85Q328.39,431.54 268.76,432.25A0.52,0.52 -88.8 0 0 268.25,432.74Q266.77,456.1 251.39,472.89Q248.76,475.76 245.98,477.37Q242.91,479.16 239.48,480.26Q237.3,480.96 239.43,481.81Z"/>
+                </svg>
+                <span>Fortuna</span>
+            </div>
+            <ul class="footer-links">
+                <li><a href="/" data-i18n="footer_home">Inicio</a></li>
+                <li><a href="/privacy-policy.html" data-i18n="footer_privacy">Política de privacidad</a></li>
+                <li><a href="/support.html" data-i18n="footer_support">Soporte</a></li>
+            </ul>
+        </div>
+        <div class="container">
+            <p class="footer-copy" data-i18n="footer_copy">© 2026 felipearpa · Hecho con pasión por el fútbol.</p>
+        </div>
+    </footer>
+
+    <script>
+    (function () {
+        const i18n = {
+            "es": {
+                lang_html: "es",
+                page_title: "Fortuna · Página no encontrada",
+                page_description: "La página que buscas no existe. Vuelve al inicio o descarga Fortuna para tu polla del Mundial 2026.",
+                eyebrow: "Página no encontrada",
+                headline: 'Esta predicción <span class="accent">no acertó.</span>',
+                sub: "El enlace que seguiste ya no existe o nunca lo hizo. Pero no todo está perdido: vuelve al inicio o descarga Fortuna y arma tu polla del Mundial 2026.",
+                cta_primary: "Volver al inicio",
+                cta_secondary: "Descargar Fortuna",
+                footer_home: "Inicio",
+                footer_privacy: "Política de privacidad",
+                footer_support: "Soporte",
+                footer_copy: "© 2026 felipearpa · Hecho con pasión por el fútbol."
+            },
+            "es-ES": {
+                lang_html: "es-ES",
+                page_title: "Fortuna · Página no encontrada",
+                page_description: "La página que buscas no existe. Vuelve al inicio o descarga Fortuna para tu quiniela del Mundial 2026.",
+                eyebrow: "Página no encontrada",
+                headline: 'Esta predicción <span class="accent">no ha acertado.</span>',
+                sub: "El enlace que seguiste ya no existe o nunca lo hizo. Pero no todo está perdido: vuelve al inicio o descarga Fortuna y monta tu quiniela del Mundial 2026.",
+                cta_primary: "Volver al inicio",
+                cta_secondary: "Descargar Fortuna",
+                footer_home: "Inicio",
+                footer_privacy: "Política de privacidad",
+                footer_support: "Soporte",
+                footer_copy: "© 2026 felipearpa · Hecho con pasión por el fútbol."
+            },
+            "en": {
+                lang_html: "en",
+                page_title: "Fortuna · Page not found",
+                page_description: "The page you're looking for doesn't exist. Head back home or download Fortuna for your World Cup 2026 pool.",
+                eyebrow: "Page not found",
+                headline: 'This prediction <span class="accent">missed the mark.</span>',
+                sub: "The link you followed doesn't exist — or doesn't anymore. But all isn't lost: head home or grab Fortuna and start your World Cup 2026 pool.",
+                cta_primary: "Back to home",
+                cta_secondary: "Get Fortuna",
+                footer_home: "Home",
+                footer_privacy: "Privacy policy",
+                footer_support: "Support",
+                footer_copy: "© 2026 felipearpa · Built with a passion for football."
+            }
+        };
+
+        const SUPPORTED = ["es", "es-ES", "en"];
+        const STORAGE_KEY = "fortuna.lang";
+
+        function detectLanguage() {
+            try {
+                const saved = localStorage.getItem(STORAGE_KEY);
+                if (saved && SUPPORTED.includes(saved)) return saved;
+            } catch (_) {}
+
+            const candidates = (navigator.languages && navigator.languages.length) ? navigator.languages : [navigator.language];
+            for (const raw of candidates) {
+                if (!raw) continue;
+                const lower = raw.toLowerCase();
+                if (lower === "es-es" || lower.startsWith("es-es")) return "es-ES";
+                if (lower === "en" || lower.startsWith("en")) return "en";
+                if (lower === "es" || lower.startsWith("es")) return "es";
+            }
+            return "es";
+        }
+
+        function applyLanguage(lang) {
+            const dict = i18n[lang] || i18n["es"];
+            document.documentElement.lang = dict.lang_html;
+            document.title = dict.page_title;
+
+            const meta = document.querySelector('meta[name="description"]');
+            if (meta) meta.setAttribute("content", dict.page_description);
+
+            document.querySelectorAll("[data-i18n]").forEach(el => {
+                const key = el.getAttribute("data-i18n");
+                if (dict[key] !== undefined) el.textContent = dict[key];
+            });
+            document.querySelectorAll("[data-i18n-html]").forEach(el => {
+                const key = el.getAttribute("data-i18n-html");
+                if (dict[key] !== undefined) el.innerHTML = dict[key];
+            });
+        }
+
+        applyLanguage(detectLanguage());
+    })();
+    </script>
+</body>
 </html>
