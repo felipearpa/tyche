@@ -204,7 +204,8 @@ private let popularTemplatesCount: Int = 3
     )
 }
 
-#Preview("PoolScoreEmptyList") {
+@ViewBuilder
+private func poolScoreEmptyListPreview() -> some View {
     NavigationStack {
         PoolScoreList(
             lazyPagingItems: LazyPagingItems(
@@ -234,6 +235,16 @@ private let popularTemplatesCount: Int = 3
         )
         .withParentGeometryProxy()
     }
+}
+
+#Preview("PoolScoreEmptyList - Light") {
+    poolScoreEmptyListPreview()
+        .preferredColorScheme(.light)
+}
+
+#Preview("PoolScoreEmptyList - Dark") {
+    poolScoreEmptyListPreview()
+        .preferredColorScheme(.dark)
 }
 
 #Preview("PoolScorePlaceholderList") {
