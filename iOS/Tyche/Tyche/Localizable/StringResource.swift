@@ -14,6 +14,7 @@ extension StringResource {
     static let accountExistsText = StringResource(name: "account_exists_text")
     static let logInAction = StringResource(name: "log_in_action")
     static let logOutAction = StringResource(name: "log_out_action")
+    static let connectedAccountText = StringResource(name: "connected_account_text")
     static let scoreTab = StringResource(name: "score_tab")
     static let betTab = StringResource(name: "bet_tab")
     static let signInWithEmailAction = StringResource(name: "sign_in_with_email_action")

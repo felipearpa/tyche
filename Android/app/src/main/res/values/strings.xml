@@ -4,6 +4,7 @@
     <string name="account_exists_text">Do you have an account already?</string>
     <string name="sign_in_with_email_action">Email</string>
     <string name="sign_out_action">Log out</string>
+    <string name="connected_account_text">Connected account</string>
     <string name="play_pool_text">See who’s guessed the most scores and challenge them now</string>
     <string name="score_tab">Scores</string>
     <string name="bet_tab">Bets</string>

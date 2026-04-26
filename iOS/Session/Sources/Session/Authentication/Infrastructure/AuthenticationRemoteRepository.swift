@@ -49,7 +49,11 @@ class AuthenticationRemoteRepository: AuthenticationRepository {
     func linkAccount(accountLink: AccountLink) async -> Result<AccountBundle, Error> {
         return await networkErrorHandler.handle {
             let linkAccountResponse = try await authenticationRemoteDataSource.linkAccount(request: accountLink.toLinkAccountRequest())
-            return AccountBundle(accountId: linkAccountResponse.accountId, externalAccountId: accountLink.externalAccountId)
+            return AccountBundle(
+                accountId: linkAccountResponse.accountId,
+                externalAccountId: accountLink.externalAccountId,
+                email: accountLink.email.value
+            )
         }
     }
 }

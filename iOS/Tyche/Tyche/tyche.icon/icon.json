@@ -4,8 +4,11 @@
   },
   "groups" : [
     {
+      "blur-material" : null,
       "layers" : [
         {
+          "glass" : false,
+          "hidden" : false,
           "image-name" : "Icon-App-1024x1024@1x.png",
           "name" : "Icon-App-1024x1024@1x",
           "position" : {
@@ -22,7 +25,7 @@
         "opacity" : 0.5
       },
       "translucency" : {
-        "enabled" : true,
+        "enabled" : false,
         "value" : 0.5
       }
     }

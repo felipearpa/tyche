@@ -142,7 +142,7 @@ private struct SignInContent: View {
 
 #Preview("success") {
     EmailAndPasswordSignInStatefulView(
-        viewState: .success(AccountBundle(accountId: "", externalAccountId: "")),
+        viewState: .success(AccountBundle(accountId: "", externalAccountId: "", email: "")),
         onSignIn: {_,_ in },
         onReset: {},
         onAuthenticate: { _ in },

@@ -18,7 +18,7 @@ fun NavGraphBuilder.poolHomeNavView(
             gamblerId = route.gamblerId,
             onPoolChange = {
                 navController.navigate(route = PoolScoreListRoute(gamblerId = route.gamblerId)) {
-                    popUpTo(route = PoolHomeViewRoute) { inclusive = true }
+                    popUpTo<PoolHomeViewRoute> { inclusive = true }
                 }
             },
             onSignOut = {

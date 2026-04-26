@@ -63,6 +63,7 @@ internal class AuthenticationRemoteRepository(
                     AccountBundle(
                         accountId = this.accountId,
                         externalAccountId = accountLink.externalAccountId,
+                        email = accountLink.email.value,
                     )
                 }
         }

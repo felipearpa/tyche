@@ -124,7 +124,7 @@ private let ICON_SIZE: CGFloat = 64
 
 #Preview("success") {
     EmailLinkSignInStatefulView(
-        viewState: .success(AccountBundle(accountId: "", externalAccountId: "")),
+        viewState: .success(AccountBundle(accountId: "", externalAccountId: "", email: "")),
         onRetry: {},
     )
 }
