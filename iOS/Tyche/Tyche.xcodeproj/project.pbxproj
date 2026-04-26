@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		550F21DD2B16C7EF004D5A51 /* DataBet in Frameworks */ = {isa = PBXBuildFile; productRef = 550F21DC2B16C7EF004D5A51 /* DataBet */; };
 		5556C5172E515434004F34D5 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5556C5162E51542F004F34D5 /* AppDelegate.swift */; };
-		55BE0001A0001A002B0CDEF2 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 55BE0001A0001A002B0CDEF1 /* LaunchScreen.storyboard */; };
 		556EBA612B16CB8F008D4ABD /* Session in Frameworks */ = {isa = PBXBuildFile; productRef = 556EBA602B16CB8F008D4ABD /* Session */; };
 		557D1EAA2B40AD2B000FF9F9 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 557D1EA92B40AD2B000FF9F9 /* GoogleService-Info.plist */; };
 		558C522E2B40A046004AF956 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 558C522D2B40A046004AF956 /* FirebaseAuth */; };
@@ -18,6 +17,7 @@
 		55921B2C2F8FC85100BF5C43 /* tyche.icon in Resources */ = {isa = PBXBuildFile; fileRef = 55921B2B2F8FC85100BF5C43 /* tyche.icon */; };
 		55ACE9FF2E634A5C000CEF99 /* UrlMatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55ACE9FE2E634A51000CEF99 /* UrlMatcher.swift */; };
 		55B782CD2E2D449C00E78408 /* AppConfig.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 55B782CC2E2D449C00E78408 /* AppConfig.xcconfig */; };
+		55BE0001A0001A002B0CDEF2 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 55BE0001A0001A002B0CDEF1 /* LaunchScreen.storyboard */; };
 		55F9FDCA2B56EAD500066BBA /* EmailLinkSignInRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55F9FDC92B56EAD500066BBA /* EmailLinkSignInRouter.swift */; };
 		D2127F392A2C2F240047DED7 /* TycheApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2127F382A2C2F240047DED7 /* TycheApp.swift */; };
 		D2127F3D2A2C2F260047DED7 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D2127F3C2A2C2F260047DED7 /* Assets.xcassets */; };
@@ -54,12 +54,12 @@
 
 /* Begin PBXFileReference section */
 		5556C5162E51542F004F34D5 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		55BE0001A0001A002B0CDEF1 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		557942532B4C413400B1B3DA /* Tyche.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Tyche.entitlements; sourceTree = "<group>"; };
 		557D1EA92B40AD2B000FF9F9 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		55921B2B2F8FC85100BF5C43 /* tyche.icon */ = {isa = PBXFileReference; lastKnownFileType = folder.iconcomposer.icon; path = tyche.icon; sourceTree = "<group>"; };
 		55ACE9FE2E634A51000CEF99 /* UrlMatcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UrlMatcher.swift; sourceTree = "<group>"; };
 		55B782CC2E2D449C00E78408 /* AppConfig.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = AppConfig.xcconfig; sourceTree = "<group>"; };
+		55BE0001A0001A002B0CDEF1 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		55F9FDC92B56EAD500066BBA /* EmailLinkSignInRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmailLinkSignInRouter.swift; sourceTree = "<group>"; };
 		D204461A2A367F1400390319 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		D2127F352A2C2F240047DED7 /* Tyche.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Tyche.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -549,7 +549,7 @@
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_ENTITLEMENTS = Tyche/Tyche.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 3;
 				DEVELOPMENT_ASSET_PATHS = "\"Tyche/Preview Content\"";
 				DEVELOPMENT_TEAM = H7N4H27ULJ;
 				ENABLE_PREVIEWS = YES;
@@ -583,7 +583,7 @@
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_ENTITLEMENTS = Tyche/Tyche.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 3;
 				DEVELOPMENT_ASSET_PATHS = "\"Tyche/Preview Content\"";
 				DEVELOPMENT_TEAM = H7N4H27ULJ;
 				ENABLE_PREVIEWS = YES;
