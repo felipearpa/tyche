@@ -6,7 +6,8 @@
         "appID": "H7N4H27ULJ.com.felipearpa.tyche",
         "paths": [
           "/sign-in/*",
-          "/pools/*/join"
+          "/pools/*/join",
+          "/__/auth/links*"
         ]
       }
     ]

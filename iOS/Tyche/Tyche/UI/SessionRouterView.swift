@@ -21,9 +21,10 @@ struct SessionRouterView: View {
                 let signInLinkUrlTemplate = diResolver.resolve(SignInLinkUrlTemplateProvider.self)!
 
                 if let url = universalLink,
-                   let params = matchURL(url.absoluteString, to: String(format: signInLinkUrlTemplate(), "{email}")),
-                   let email = params["email"] {
-
+                   let email = extractSignInEmail(
+                       from: url.absoluteString,
+                       template: String(format: signInLinkUrlTemplate(), "{email}"),
+                   ) {
                     EmailLinkSignInRouter(email: email, emailLink: url.absoluteString)
                 } else {
                     HomeRouter(onSignIn: { accountBundle in signedInAccountBundle = accountBundle })
@@ -57,6 +58,20 @@ struct SessionRouterView: View {
             universalLink = url
         }
     }
+}
+
+private func extractSignInEmail(from urlString: String, template: String, depth: Int = 0) -> String? {
+    if let params = matchURL(urlString, to: template), let email = params["email"] {
+        return email
+    }
+    guard depth < 3, let components = URLComponents(string: urlString) else { return nil }
+    for key in ["continueUrl", "link"] {
+        if let nested = components.queryItems?.first(where: { $0.name == key })?.value,
+           let email = extractSignInEmail(from: nested, template: template, depth: depth + 1) {
+            return email
+        }
+    }
+    return nil
 }
 
 struct PoolContent: View {
