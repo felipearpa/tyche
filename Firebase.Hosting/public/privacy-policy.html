@@ -1,154 +1,592 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
-    <meta charset="utf-8">
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Tyche - Privacy Policy / Pol&iacute;tica de Privacidad</title>
+    <title>Fortuna · Política de privacidad</title>
+    <meta name="description" content="Política de privacidad de Fortuna: qué información recopilamos, cómo la usamos y cómo protegemos tus datos.">
+    <meta name="theme-color" content="#0A140C">
+    <meta name="color-scheme" content="dark">
+
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="apple-touch-icon" href="/favicon.svg">
+    <link rel="mask-icon" href="/favicon.svg" color="#4CAF50">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
     <style>
+        :root {
+            --bg-canvas: #0E1A12;
+            --bg-section-alt: #0B1510;
+            --bg-card: #182A1D;
+            --bg-card-elevated: #1F3325;
+            --bg-band: #0F3014;
+            --bg-footer: #07100A;
+
+            --green-headline: #66BB6A;
+            --green-accent: #4CAF50;
+            --green-accent-hover: #66BB6A;
+            --green-deep: #1B5E20;
+            --green-tint: rgba(76, 175, 80, 0.14);
+            --green-tint-strong: rgba(76, 175, 80, 0.22);
+
+            --text-primary: rgba(255, 255, 255, 0.94);
+            --text-secondary: rgba(255, 255, 255, 0.72);
+            --text-tertiary: rgba(255, 255, 255, 0.45);
+            --text-on-band: #FFFFFF;
+            --text-on-band-soft: rgba(255, 255, 255, 0.74);
+
+            --border-soft: rgba(255, 255, 255, 0.08);
+            --border-medium: rgba(255, 255, 255, 0.16);
+
+            --pill: 999px;
+            --card-radius: 14px;
+            --card-shadow: 0 0 0 1px var(--border-soft), 0 16px 32px rgba(0, 0, 0, 0.40);
+            --card-shadow-soft: 0 0 0 1px var(--border-soft), 0 4px 14px rgba(0, 0, 0, 0.25);
+            --nav-shadow: 0 1px 0 var(--border-soft);
+
+            --space-3: 16px;
+            --space-4: 24px;
+            --space-5: 32px;
+            --space-6: 40px;
+            --space-7: 48px;
+            --space-8: 56px;
+            --space-9: 64px;
+
+            --container: 1200px;
+            --gutter: 24px;
+            --button-active-scale: 0.96;
+        }
+
+        @media (min-width: 1024px) { :root { --gutter: 40px; } }
+
+        *, *::before, *::after { box-sizing: border-box; }
+
+        html { scroll-behavior: smooth; }
+
         body {
-            background: #ECEFF1;
-            color: rgba(0,0,0,0.87);
-            font-family: Roboto, Helvetica, Arial, sans-serif;
             margin: 0;
-            padding: 0;
+            background: var(--bg-canvas);
+            color: var(--text-primary);
+            font-family: 'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            font-size: 16px;
+            line-height: 1.5;
+            letter-spacing: -0.01em;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizeLegibility;
         }
+
+        body::before {
+            content: "";
+            position: fixed;
+            inset: -10% -10% auto -10%;
+            height: 60vh;
+            background:
+                radial-gradient(60% 50% at 30% 0%, rgba(76, 175, 80, 0.08) 0%, transparent 70%),
+                radial-gradient(40% 40% at 80% 10%, rgba(102, 187, 106, 0.06) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        a { color: inherit; text-decoration: none; }
+        h1, h2, h3 { margin: 0; letter-spacing: -0.02em; line-height: 1.2; }
+        p { margin: 0; }
+        ul { margin: 0; padding: 0; list-style: none; }
+        img, svg { display: block; }
+
         .container {
-            background: white;
-            max-width: 720px;
-            margin: 40px auto;
-            padding: 32px 24px;
-            border-radius: 3px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+            max-width: var(--container);
+            margin: 0 auto;
+            padding-left: var(--gutter);
+            padding-right: var(--gutter);
+            position: relative;
+            z-index: 1;
         }
-        h1 { font-size: 24px; font-weight: bold; color: #333; margin: 0 0 8px; }
-        h2 { font-size: 18px; color: #555; margin: 24px 0 8px; }
-        p, li { line-height: 160%; font-size: 14px; color: #555; }
-        ul { padding-left: 20px; }
-        a { color: #039be5; text-decoration: none; }
-        .lang-toggle {
-            text-align: right;
-            margin-bottom: 16px;
-            font-size: 14px;
+
+        /* ---------- Topbar ---------- */
+        .topbar {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            background: rgba(14, 26, 18, 0.85);
+            backdrop-filter: saturate(180%) blur(18px);
+            -webkit-backdrop-filter: saturate(180%) blur(18px);
+            box-shadow: var(--nav-shadow);
         }
-        .lang-toggle button {
-            background: #039be5;
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 4px;
+        .topbar-inner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            height: 72px;
+        }
+        .brand {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--text-primary);
+            font-weight: 700;
+            font-size: 20px;
+            letter-spacing: -0.02em;
+        }
+        .brand .brand-mark {
+            width: 32px;
+            height: 32px;
+            color: var(--green-accent);
+        }
+        .topbar-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        @media (min-width: 1024px) { .topbar-inner { height: 84px; } }
+
+        .lang-switcher {
+            appearance: none;
+            -webkit-appearance: none;
+            background-color: transparent;
+            background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8' fill='none' stroke='rgba(255,255,255,0.62)' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'><path d='M1 1.5l5 5 5-5'/></svg>");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 11px;
+            border: 1px solid var(--border-medium);
+            color: var(--text-primary);
+            padding: 8px 30px 8px 14px;
+            border-radius: var(--pill);
+            font-family: inherit;
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: -0.01em;
             cursor: pointer;
-            font-size: 14px;
+            transition: all 0.2s ease;
         }
-        .section { display: none; }
-        .section.active { display: block; }
-        .updated { font-size: 12px; color: #999; margin-bottom: 24px; }
-        @media (max-width: 600px) {
-            body { background: white; }
-            .container { margin: 0; box-shadow: none; padding: 16px; }
+        .lang-switcher:hover { border-color: var(--green-accent); }
+        .lang-switcher:focus-visible {
+            outline: 2px solid var(--green-accent);
+            outline-offset: 2px;
+        }
+        .lang-switcher option {
+            background: var(--bg-card);
+            color: var(--text-primary);
+        }
+
+        /* ---------- Page content ---------- */
+        .page {
+            padding: var(--space-7) 0 var(--space-9);
+            position: relative;
+            z-index: 1;
+        }
+        .page-inner { max-width: 760px; margin: 0 auto; }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--green-headline);
+            font-weight: 600;
+            font-size: 14px;
+            letter-spacing: -0.01em;
+            margin-bottom: var(--space-5);
+            transition: color 0.2s ease;
+        }
+        .back-link:hover { color: var(--green-accent); }
+        .back-link svg { width: 14px; height: 14px; }
+
+        .content-card {
+            background: var(--bg-card);
+            border-radius: var(--card-radius);
+            box-shadow: var(--card-shadow-soft);
+            padding: var(--space-6) var(--space-5);
+        }
+        @media (min-width: 720px) {
+            .content-card { padding: var(--space-8) var(--space-7); }
+        }
+
+        .content-card h1 {
+            font-size: clamp(28px, 4vw, 40px);
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+        .content-card .updated {
+            color: var(--text-tertiary);
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 0.10em;
+            text-transform: uppercase;
+            margin-bottom: var(--space-5);
+        }
+        .content-card h2 {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--green-headline);
+            letter-spacing: -0.01em;
+            margin: var(--space-5) 0 12px;
+        }
+        .content-card p,
+        .content-card li {
+            color: var(--text-secondary);
+            font-size: 16px;
+            line-height: 1.75;
+        }
+        .content-card p { margin: 0 0 var(--space-3); }
+        .content-card ul {
+            margin: 0 0 var(--space-3);
+            padding-left: 22px;
+            list-style: disc;
+            list-style-position: outside;
+        }
+        .content-card li { margin-bottom: 8px; }
+        .content-card li::marker { color: var(--green-accent); }
+        .content-card strong { color: var(--text-primary); font-weight: 600; }
+        .content-card a {
+            color: var(--green-headline);
+            text-decoration: underline;
+            text-decoration-color: var(--green-tint-strong);
+            text-underline-offset: 3px;
+            transition: text-decoration-color 0.2s ease, color 0.2s ease;
+        }
+        .content-card a:hover {
+            color: var(--green-accent);
+            text-decoration-color: var(--green-accent);
+        }
+
+        .lang-section { display: none; }
+        .lang-section.is-active { display: block; }
+
+        .contact-box {
+            background: var(--green-tint);
+            border: 1px solid var(--green-tint-strong);
+            border-left: 3px solid var(--green-accent);
+            padding: var(--space-3) var(--space-4);
+            border-radius: 10px;
+            margin: var(--space-3) 0 var(--space-4);
+        }
+        .contact-box p { margin: 0 0 6px; color: var(--text-primary); font-size: 15px; }
+        .contact-box p:last-child { margin: 0; color: var(--text-secondary); font-size: 14px; }
+
+        /* ---------- Footer ---------- */
+        footer {
+            background: var(--bg-footer);
+            color: var(--text-on-band);
+            padding: var(--space-7) 0 var(--space-5);
+            border-top: 1px solid var(--border-soft);
+        }
+        .footer-inner {
+            display: grid;
+            gap: var(--space-5);
+            grid-template-columns: 1fr;
+            align-items: start;
+        }
+        @media (min-width: 720px) {
+            .footer-inner { grid-template-columns: 1fr auto; align-items: center; }
+        }
+        .footer-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--text-on-band);
+            font-weight: 700;
+            font-size: 18px;
+        }
+        .footer-brand .brand-mark { color: var(--green-accent); width: 28px; height: 28px; }
+        .footer-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--space-4);
+        }
+        .footer-links a {
+            color: var(--text-on-band-soft);
+            font-size: 14px;
+            transition: color 0.2s ease;
+        }
+        .footer-links a:hover { color: var(--text-on-band); }
+        .footer-copy {
+            color: var(--text-tertiary);
+            font-size: 13px;
+            margin-top: var(--space-5);
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+                scroll-behavior: auto !important;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="lang-toggle">
-            <button onclick="toggleLang('en')">English</button>
-            <button onclick="toggleLang('es')">Espa&ntilde;ol</button>
+    <header class="topbar">
+        <div class="container topbar-inner">
+            <a class="brand" href="/">
+                <svg class="brand-mark" viewBox="0 0 500 499" aria-hidden="true">
+                    <path fill="currentColor" d="M19.5,168.25Q35.62,124.91 65.77,89.9Q72.32,82.29 79.47,75.32Q133.33,22.8 208.31,10.31Q238.44,5.3 270.23,8.21Q358.98,16.33 420.56,77.44Q437.02,93.77 451.53,116.2Q458.03,126.27 462.08,133.19Q474.57,154.56 482.5,180.5Q489.73,204.15 492,232.25Q493.34,248.82 492.6,260.51Q486.87,351.09 426.11,417.61Q398.64,447.69 362.51,466.53Q317.36,490.07 267.5,493.5Q242.06,495.25 215.41,492.09Q205.04,490.86 195.7,488.78Q157.16,480.21 122.94,459.31Q87.72,437.8 61.87,406.37Q16.31,350.99 7,281.75Q0.69,234.78 13.42,187.29Q16.01,177.63 19.5,168.25ZM448.45,114.1Q436.25,98.02 422.42,87.35Q415.98,82.39 409.44,77.55Q408.97,77.2 408.85,77.37A0.5,0.28 39.9 0 0 409.05,77.89Q416.12,84.01 420.69,94.56Q426.19,107.27 424.57,119.26Q422.29,136.11 410.26,148.01Q405.09,153.13 398.75,158Q397.16,159.21 398.72,160.46Q427.35,183.36 440.63,216.74Q443.19,223.17 445.25,232Q454.03,269.61 443.88,306.57Q443.28,308.75 444.8,307.08Q449.92,301.43 454.22,295.19Q458.34,289.22 461.71,282.05Q470.62,263.12 473.65,242.44Q474.93,233.65 474.95,222.51Q474.97,207.61 473.25,196.25Q466.91,154.46 449.62,116.07Q449.15,115.02 448.45,114.1ZM243.06,144.44Q203.4,107.98 152,91.5Q138.43,87.15 131.45,85.17Q131.33,85.14 126.57,83.7Q121.96,82.31 116.98,81.72A1.07,1.06 23.1 0 0 116.03,82.1Q69.79,137.76 55.65,208.98Q49.29,241.05 48.76,273.36A2.95,2.95 -66 0 0 49.55,275.42Q53.98,280.16 58.93,284.32Q88.34,309.07 123.3,324.61Q132.73,328.8 141.9,331.92Q172.66,342.37 204.5,343.75Q223.08,344.55 228.44,344.9A1,0.99 -67.2 0 0 229.27,344.56Q233.51,339.56 237.56,331.81Q274.72,260.81 274.75,181.51A1.67,1.59 -63.3 0 0 274.47,180.59Q260.8,160.75 243.06,144.44ZM239.43,481.81Q242.06,482.86 244.86,482.81Q246.99,482.78 247.14,482.78Q268.13,483.32 291,479.75Q314.03,476.15 334.56,467.73Q345.27,463.34 352.28,458.58Q366.03,449.25 376.31,434.31Q392.33,411.04 398.75,383.49Q399.03,382.29 398.04,383.01Q387.82,390.47 377.13,397.85Q328.39,431.54 268.76,432.25A0.52,0.52 -88.8 0 0 268.25,432.74Q266.77,456.1 251.39,472.89Q248.76,475.76 245.98,477.37Q242.91,479.16 239.48,480.26Q237.3,480.96 239.43,481.81Z"/>
+                </svg>
+                <span>Fortuna</span>
+            </a>
+            <div class="topbar-actions">
+                <select class="lang-switcher" id="lang-switcher" aria-label="Language">
+                    <option value="es">Español</option>
+                    <option value="es-ES">Español (España)</option>
+                    <option value="en">English</option>
+                </select>
+            </div>
         </div>
+    </header>
 
-        <!-- English -->
-        <div id="en" class="section active">
-            <h1>Privacy Policy</h1>
-            <p class="updated">Last updated: April 15, 2026</p>
+    <main>
+        <section class="page">
+            <div class="container">
+                <div class="page-inner">
+                    <a class="back-link" href="/">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M19 12H5M12 19l-7-7 7-7"/>
+                        </svg>
+                        <span data-label="back_home">Volver al inicio</span>
+                    </a>
 
-            <h2>1. Introduction</h2>
-            <p>Tyche ("we", "our", "the app") is a sports prediction game where users compete by guessing match scores. This privacy policy explains how we collect, use, and protect your information.</p>
+                    <div class="content-card">
+                        <article class="lang-section" data-section="en">
+                            <h1>Privacy policy</h1>
+                            <p class="updated">Last updated · April 15, 2026</p>
 
-            <h2>2. Information We Collect</h2>
-            <ul>
-                <li><strong>Email address:</strong> used for account creation and authentication.</li>
-                <li><strong>Prediction data:</strong> the scores you submit for each match.</li>
-                <li><strong>Pool participation:</strong> which pools you create or join, and your ranking within them.</li>
+                            <h2>1. Introduction</h2>
+                            <p>Fortuna ("we", "our", "the app") is a sports prediction game where users compete by guessing match scores. This privacy policy explains how we collect, use, and protect your information.</p>
+
+                            <h2>2. Information we collect</h2>
+                            <ul>
+                                <li><strong>Email address</strong> — used for account creation and authentication.</li>
+                                <li><strong>Prediction data</strong> — the scores you submit for each match.</li>
+                                <li><strong>Pool participation</strong> — which pools you create or join, and your ranking within them.</li>
+                            </ul>
+
+                            <h2>3. How we use your information</h2>
+                            <ul>
+                                <li>To authenticate your identity and manage your account.</li>
+                                <li>To calculate scores, rankings, and leaderboards.</li>
+                                <li>To allow you to create and join prediction pools.</li>
+                            </ul>
+
+                            <h2>4. Data sharing</h2>
+                            <p>We do not sell, trade, or share your personal information with third parties. Your email is used solely for authentication. Other participants in your pools can see your predictions and ranking, but not your email address.</p>
+
+                            <h2>5. Infrastructure</h2>
+                            <p>We use Firebase (Google) for authentication and hosting, and Amazon Web Services (AWS) for data storage and processing. These providers may process data in accordance with their own privacy policies.</p>
+
+                            <h2>6. Data retention</h2>
+                            <p>Your data is retained as long as your account is active. You can request deletion of your account and associated data at any time by contacting us.</p>
+
+                            <h2>7. Security</h2>
+                            <p>We implement industry-standard security measures to protect your information, including encrypted connections (HTTPS) and secure authentication via Firebase.</p>
+
+                            <h2>8. Children's privacy</h2>
+                            <p>Fortuna does not knowingly collect information from children under 13. The app does not involve real-money gambling.</p>
+
+                            <h2>9. Changes to this policy</h2>
+                            <p>We may update this privacy policy from time to time. Changes will be posted on this page with an updated date.</p>
+
+                            <h2>10. Contact</h2>
+                            <p>If you have questions about this privacy policy or wish to request data deletion, contact us at <a href="mailto:felipearcila@gmail.com">felipearcila@gmail.com</a>.</p>
+                        </article>
+
+                        <article class="lang-section" data-section="es">
+                            <h1>Política de privacidad</h1>
+                            <p class="updated">Última actualización · 15 de abril de 2026</p>
+
+                            <h2>1. Introducción</h2>
+                            <p>Fortuna ("nosotros", "la app") es un juego de predicciones deportivas en el que los usuarios compiten adivinando los marcadores de los partidos. Esta política de privacidad explica cómo recopilamos, usamos y protegemos tu información.</p>
+
+                            <h2>2. Información que recopilamos</h2>
+                            <ul>
+                                <li><strong>Correo electrónico</strong> — utilizado para la creación de cuenta y autenticación.</li>
+                                <li><strong>Datos de predicciones</strong> — los marcadores que envías para cada partido.</li>
+                                <li><strong>Participación en pollas</strong> — las pollas que creas o a las que te unes, y tu posición en ellas.</li>
+                            </ul>
+
+                            <h2>3. Cómo usamos tu información</h2>
+                            <ul>
+                                <li>Para autenticar tu identidad y gestionar tu cuenta.</li>
+                                <li>Para calcular puntajes, posiciones y tablas de clasificación.</li>
+                                <li>Para permitirte crear y unirte a pollas de predicciones.</li>
+                            </ul>
+
+                            <h2>4. Compartir datos</h2>
+                            <p>No vendemos, intercambiamos ni compartimos tu información personal con terceros. Tu correo electrónico se usa únicamente para autenticación. Los demás participantes de tus pollas pueden ver tus predicciones y posición, pero no tu correo electrónico.</p>
+
+                            <h2>5. Infraestructura</h2>
+                            <p>Usamos Firebase (Google) para autenticación y hosting, y Amazon Web Services (AWS) para almacenamiento y procesamiento de datos. Estos proveedores pueden procesar datos de acuerdo con sus propias políticas de privacidad.</p>
+
+                            <h2>6. Retención de datos</h2>
+                            <p>Tus datos se conservan mientras tu cuenta esté activa. Puedes solicitar la eliminación de tu cuenta y de los datos asociados en cualquier momento contactándonos.</p>
+
+                            <h2>7. Seguridad</h2>
+                            <p>Implementamos medidas de seguridad estándar de la industria para proteger tu información, incluyendo conexiones cifradas (HTTPS) y autenticación segura a través de Firebase.</p>
+
+                            <h2>8. Privacidad de menores</h2>
+                            <p>Fortuna no recopila intencionalmente información de menores de 13 años. La app no involucra apuestas con dinero real.</p>
+
+                            <h2>9. Cambios a esta política</h2>
+                            <p>Podemos actualizar esta política de privacidad ocasionalmente. Los cambios se publicarán en esta página con una fecha actualizada.</p>
+
+                            <h2>10. Contacto</h2>
+                            <p>Si tienes preguntas sobre esta política de privacidad o deseas solicitar la eliminación de tus datos, contáctanos en <a href="mailto:felipearcila@gmail.com">felipearcila@gmail.com</a>.</p>
+                        </article>
+
+                        <article class="lang-section" data-section="es-ES">
+                            <h1>Política de privacidad</h1>
+                            <p class="updated">Última actualización · 15 de abril de 2026</p>
+
+                            <h2>1. Introducción</h2>
+                            <p>Fortuna ("nosotros", "la app") es un juego de predicciones deportivas en el que los usuarios compiten acertando los marcadores de los partidos. Esta política de privacidad explica cómo recopilamos, usamos y protegemos tu información.</p>
+
+                            <h2>2. Información que recopilamos</h2>
+                            <ul>
+                                <li><strong>Correo electrónico</strong> — utilizado para la creación de la cuenta y la autenticación.</li>
+                                <li><strong>Datos de predicciones</strong> — los marcadores que envías para cada partido.</li>
+                                <li><strong>Participación en quinielas</strong> — las quinielas que creas o a las que te unes, y tu posición en ellas.</li>
+                            </ul>
+
+                            <h2>3. Cómo usamos tu información</h2>
+                            <ul>
+                                <li>Para autenticar tu identidad y gestionar tu cuenta.</li>
+                                <li>Para calcular puntuaciones, posiciones y clasificaciones.</li>
+                                <li>Para permitirte crear y unirte a quinielas de predicciones.</li>
+                            </ul>
+
+                            <h2>4. Compartir datos</h2>
+                            <p>No vendemos, intercambiamos ni compartimos tu información personal con terceros. Tu correo electrónico se usa únicamente para la autenticación. Los demás participantes de tus quinielas pueden ver tus predicciones y posición, pero no tu correo electrónico.</p>
+
+                            <h2>5. Infraestructura</h2>
+                            <p>Usamos Firebase (Google) para autenticación y hosting, y Amazon Web Services (AWS) para el almacenamiento y procesamiento de datos. Estos proveedores pueden procesar datos de acuerdo con sus propias políticas de privacidad.</p>
+
+                            <h2>6. Conservación de datos</h2>
+                            <p>Tus datos se conservan mientras tu cuenta esté activa. Puedes solicitar la eliminación de tu cuenta y de los datos asociados en cualquier momento contactando con nosotros.</p>
+
+                            <h2>7. Seguridad</h2>
+                            <p>Implementamos medidas de seguridad estándar de la industria para proteger tu información, incluyendo conexiones cifradas (HTTPS) y autenticación segura a través de Firebase.</p>
+
+                            <h2>8. Privacidad de menores</h2>
+                            <p>Fortuna no recopila intencionadamente información de menores de 13 años. La app no incluye apuestas con dinero real.</p>
+
+                            <h2>9. Cambios en esta política</h2>
+                            <p>Podemos actualizar esta política de privacidad ocasionalmente. Los cambios se publicarán en esta página con la fecha actualizada.</p>
+
+                            <h2>10. Contacto</h2>
+                            <p>Si tienes preguntas sobre esta política de privacidad o deseas solicitar la eliminación de tus datos, contacta con nosotros en <a href="mailto:felipearcila@gmail.com">felipearcila@gmail.com</a>.</p>
+                        </article>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container footer-inner">
+            <div class="footer-brand">
+                <svg class="brand-mark" viewBox="0 0 500 499" aria-hidden="true">
+                    <path fill="currentColor" d="M19.5,168.25Q35.62,124.91 65.77,89.9Q72.32,82.29 79.47,75.32Q133.33,22.8 208.31,10.31Q238.44,5.3 270.23,8.21Q358.98,16.33 420.56,77.44Q437.02,93.77 451.53,116.2Q458.03,126.27 462.08,133.19Q474.57,154.56 482.5,180.5Q489.73,204.15 492,232.25Q493.34,248.82 492.6,260.51Q486.87,351.09 426.11,417.61Q398.64,447.69 362.51,466.53Q317.36,490.07 267.5,493.5Q242.06,495.25 215.41,492.09Q205.04,490.86 195.7,488.78Q157.16,480.21 122.94,459.31Q87.72,437.8 61.87,406.37Q16.31,350.99 7,281.75Q0.69,234.78 13.42,187.29Q16.01,177.63 19.5,168.25ZM448.45,114.1Q436.25,98.02 422.42,87.35Q415.98,82.39 409.44,77.55Q408.97,77.2 408.85,77.37A0.5,0.28 39.9 0 0 409.05,77.89Q416.12,84.01 420.69,94.56Q426.19,107.27 424.57,119.26Q422.29,136.11 410.26,148.01Q405.09,153.13 398.75,158Q397.16,159.21 398.72,160.46Q427.35,183.36 440.63,216.74Q443.19,223.17 445.25,232Q454.03,269.61 443.88,306.57Q443.28,308.75 444.8,307.08Q449.92,301.43 454.22,295.19Q458.34,289.22 461.71,282.05Q470.62,263.12 473.65,242.44Q474.93,233.65 474.95,222.51Q474.97,207.61 473.25,196.25Q466.91,154.46 449.62,116.07Q449.15,115.02 448.45,114.1ZM243.06,144.44Q203.4,107.98 152,91.5Q138.43,87.15 131.45,85.17Q131.33,85.14 126.57,83.7Q121.96,82.31 116.98,81.72A1.07,1.06 23.1 0 0 116.03,82.1Q69.79,137.76 55.65,208.98Q49.29,241.05 48.76,273.36A2.95,2.95 -66 0 0 49.55,275.42Q53.98,280.16 58.93,284.32Q88.34,309.07 123.3,324.61Q132.73,328.8 141.9,331.92Q172.66,342.37 204.5,343.75Q223.08,344.55 228.44,344.9A1,0.99 -67.2 0 0 229.27,344.56Q233.51,339.56 237.56,331.81Q274.72,260.81 274.75,181.51A1.67,1.59 -63.3 0 0 274.47,180.59Q260.8,160.75 243.06,144.44ZM239.43,481.81Q242.06,482.86 244.86,482.81Q246.99,482.78 247.14,482.78Q268.13,483.32 291,479.75Q314.03,476.15 334.56,467.73Q345.27,463.34 352.28,458.58Q366.03,449.25 376.31,434.31Q392.33,411.04 398.75,383.49Q399.03,382.29 398.04,383.01Q387.82,390.47 377.13,397.85Q328.39,431.54 268.76,432.25A0.52,0.52 -88.8 0 0 268.25,432.74Q266.77,456.1 251.39,472.89Q248.76,475.76 245.98,477.37Q242.91,479.16 239.48,480.26Q237.3,480.96 239.43,481.81Z"/>
+                </svg>
+                <span>Fortuna</span>
+            </div>
+            <ul class="footer-links">
+                <li><a href="/privacy-policy.html" data-label="footer_privacy">Política de privacidad</a></li>
+                <li><a href="/support.html" data-label="footer_support">Soporte</a></li>
             </ul>
-
-            <h2>3. How We Use Your Information</h2>
-            <ul>
-                <li>To authenticate your identity and manage your account.</li>
-                <li>To calculate scores, rankings, and leaderboards.</li>
-                <li>To allow you to create and join prediction pools.</li>
-            </ul>
-
-            <h2>4. Data Sharing</h2>
-            <p>We do not sell, trade, or share your personal information with third parties. Your email is used solely for authentication purposes. Other participants in your pools can see your predictions and ranking, but not your email address.</p>
-
-            <h2>5. Infrastructure</h2>
-            <p>We use Firebase (Google) for authentication and hosting, and Amazon Web Services (AWS) for data storage and processing. These providers may process data in accordance with their own privacy policies.</p>
-
-            <h2>6. Data Retention</h2>
-            <p>Your data is retained as long as your account is active. You can request deletion of your account and associated data at any time by contacting us.</p>
-
-            <h2>7. Security</h2>
-            <p>We implement industry-standard security measures to protect your information, including encrypted connections (HTTPS) and secure authentication via Firebase.</p>
-
-            <h2>8. Children's Privacy</h2>
-            <p>Tyche does not knowingly collect information from children under 13. The app does not involve real-money gambling.</p>
-
-            <h2>9. Changes to This Policy</h2>
-            <p>We may update this privacy policy from time to time. Changes will be posted on this page with an updated date.</p>
-
-            <h2>10. Contact</h2>
-            <p>If you have questions about this privacy policy or wish to request data deletion, contact us at: <a href="mailto:felipearcila@gmail.com">felipearcila@gmail.com</a></p>
         </div>
-
-        <!-- Spanish -->
-        <div id="es" class="section">
-            <h1>Pol&iacute;tica de Privacidad</h1>
-            <p class="updated">&Uacute;ltima actualizaci&oacute;n: 15 de abril de 2026</p>
-
-            <h2>1. Introducci&oacute;n</h2>
-            <p>Tyche ("nosotros", "la app") es un juego de predicciones deportivas donde los usuarios compiten adivinando marcadores de partidos. Esta pol&iacute;tica de privacidad explica c&oacute;mo recopilamos, usamos y protegemos tu informaci&oacute;n.</p>
-
-            <h2>2. Informaci&oacute;n que Recopilamos</h2>
-            <ul>
-                <li><strong>Correo electr&oacute;nico:</strong> utilizado para la creaci&oacute;n de cuenta y autenticaci&oacute;n.</li>
-                <li><strong>Datos de predicciones:</strong> los marcadores que env&iacute;as para cada partido.</li>
-                <li><strong>Participaci&oacute;n en pollas:</strong> las pollas que creas o a las que te unes, y tu posici&oacute;n en ellas.</li>
-            </ul>
-
-            <h2>3. C&oacute;mo Usamos tu Informaci&oacute;n</h2>
-            <ul>
-                <li>Para autenticar tu identidad y gestionar tu cuenta.</li>
-                <li>Para calcular puntajes, posiciones y tablas de clasificaci&oacute;n.</li>
-                <li>Para permitirte crear y unirte a pollas de predicciones.</li>
-            </ul>
-
-            <h2>4. Compartir Datos</h2>
-            <p>No vendemos, intercambiamos ni compartimos tu informaci&oacute;n personal con terceros. Tu correo electr&oacute;nico se usa &uacute;nicamente para autenticaci&oacute;n. Los dem&aacute;s participantes de tus pollas pueden ver tus predicciones y posici&oacute;n, pero no tu correo electr&oacute;nico.</p>
-
-            <h2>5. Infraestructura</h2>
-            <p>Usamos Firebase (Google) para autenticaci&oacute;n y hosting, y Amazon Web Services (AWS) para almacenamiento y procesamiento de datos. Estos proveedores pueden procesar datos de acuerdo con sus propias pol&iacute;ticas de privacidad.</p>
-
-            <h2>6. Retenci&oacute;n de Datos</h2>
-            <p>Tus datos se conservan mientras tu cuenta est&eacute; activa. Puedes solicitar la eliminaci&oacute;n de tu cuenta y datos asociados en cualquier momento contact&aacute;ndonos.</p>
-
-            <h2>7. Seguridad</h2>
-            <p>Implementamos medidas de seguridad est&aacute;ndar de la industria para proteger tu informaci&oacute;n, incluyendo conexiones cifradas (HTTPS) y autenticaci&oacute;n segura a trav&eacute;s de Firebase.</p>
-
-            <h2>8. Privacidad de Menores</h2>
-            <p>Tyche no recopila intencionalmente informaci&oacute;n de menores de 13 a&ntilde;os. La app no involucra apuestas con dinero real.</p>
-
-            <h2>9. Cambios a esta Pol&iacute;tica</h2>
-            <p>Podemos actualizar esta pol&iacute;tica de privacidad ocasionalmente. Los cambios se publicar&aacute;n en esta p&aacute;gina con una fecha actualizada.</p>
-
-            <h2>10. Contacto</h2>
-            <p>Si tienes preguntas sobre esta pol&iacute;tica de privacidad o deseas solicitar la eliminaci&oacute;n de tus datos, cont&aacute;ctanos en: <a href="mailto:felipearcila@gmail.com">felipearcila@gmail.com</a></p>
+        <div class="container">
+            <p class="footer-copy" data-label="footer_copy">© 2026 felipearpa · Hecho con pasión por el fútbol.</p>
         </div>
-    </div>
+    </footer>
 
     <script>
-        function toggleLang(lang) {
-            document.querySelectorAll('.section').forEach(function(s) { s.classList.remove('active'); });
-            document.getElementById(lang).classList.add('active');
+    (function () {
+        const labels = {
+            es: {
+                lang_html: "es",
+                page_title: "Fortuna · Política de privacidad",
+                page_description: "Política de privacidad de Fortuna: qué información recopilamos, cómo la usamos y cómo protegemos tus datos.",
+                back_home: "Volver al inicio",
+                footer_privacy: "Política de privacidad",
+                footer_support: "Soporte",
+                footer_copy: "© 2026 felipearpa · Hecho con pasión por el fútbol."
+            },
+            "es-ES": {
+                lang_html: "es-ES",
+                page_title: "Fortuna · Política de privacidad",
+                page_description: "Política de privacidad de Fortuna: qué información recopilamos, cómo la usamos y cómo protegemos tus datos.",
+                back_home: "Volver al inicio",
+                footer_privacy: "Política de privacidad",
+                footer_support: "Soporte",
+                footer_copy: "© 2026 felipearpa · Hecho con pasión por el fútbol."
+            },
+            en: {
+                lang_html: "en",
+                page_title: "Fortuna · Privacy policy",
+                page_description: "Fortuna's privacy policy: what data we collect, how we use it, and how we protect it.",
+                back_home: "Back to home",
+                footer_privacy: "Privacy policy",
+                footer_support: "Support",
+                footer_copy: "© 2026 felipearpa · Built with a passion for football."
+            }
+        };
+
+        const SUPPORTED = ["es", "es-ES", "en"];
+        const STORAGE_KEY = "fortuna.lang";
+
+        function detectLanguage() {
+            try {
+                const saved = localStorage.getItem(STORAGE_KEY);
+                if (saved && SUPPORTED.includes(saved)) return saved;
+            } catch (_) {}
+            const candidates = (navigator.languages && navigator.languages.length) ? navigator.languages : [navigator.language];
+            for (const raw of candidates) {
+                if (!raw) continue;
+                const lower = raw.toLowerCase();
+                if (lower === "es-es" || lower.startsWith("es-es")) return "es-ES";
+                if (lower === "en" || lower.startsWith("en")) return "en";
+                if (lower === "es" || lower.startsWith("es")) return "es";
+            }
+            return "es";
         }
+
+        function applyLanguage(lang) {
+            const dict = labels[lang] || labels["es"];
+            document.documentElement.lang = dict.lang_html;
+            document.title = dict.page_title;
+
+            const meta = document.querySelector('meta[name="description"]');
+            if (meta) meta.setAttribute("content", dict.page_description);
+
+            document.querySelectorAll(".lang-section").forEach(s => {
+                s.classList.toggle("is-active", s.getAttribute("data-section") === lang);
+            });
+
+            document.querySelectorAll("[data-label]").forEach(el => {
+                const key = el.getAttribute("data-label");
+                if (dict[key] !== undefined) el.textContent = dict[key];
+            });
+
+            const switcher = document.getElementById("lang-switcher");
+            if (switcher && switcher.value !== lang) switcher.value = lang;
+
+            try { localStorage.setItem(STORAGE_KEY, lang); } catch (_) {}
+        }
+
+        const initial = detectLanguage();
+        applyLanguage(initial);
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const switcher = document.getElementById("lang-switcher");
+            if (!switcher) return;
+            switcher.value = initial;
+            switcher.addEventListener("change", (e) => applyLanguage(e.target.value));
+        });
+    })();
     </script>
 </body>
 </html>
