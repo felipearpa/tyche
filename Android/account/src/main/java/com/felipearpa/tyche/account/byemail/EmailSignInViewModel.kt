@@ -14,7 +14,7 @@ class EmailSignInViewModel(
     private val sendSignInLinkToEmail: SendSignInLinkToEmail,
 ) : ViewModel() {
     private val _state =
-        MutableStateFlow<LoadableViewState<Unit>>(LoadableViewState.Initial)
+        MutableStateFlow<LoadableViewState<String>>(LoadableViewState.Initial)
     val state = _state.asStateFlow()
 
     fun reset() {
@@ -25,7 +25,7 @@ class EmailSignInViewModel(
         viewModelScope.launch {
             _state.emit(LoadableViewState.Loading)
             sendSignInLinkToEmail.execute(email = Email(email))
-                .onSuccess { _state.emit(LoadableViewState.Success(Unit)) }
+                .onSuccess { _state.emit(LoadableViewState.Success(email)) }
                 .onFailure { exception ->
                     _state.emit(
                         LoadableViewState.Failure(

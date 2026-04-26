@@ -17,7 +17,7 @@
     <string name="account_verified_description">Congratulations, your email verification is complete! You\'re ready to join the fun and challenge your predictions</string>
     <string name="start_action">Get started</string>
     <string name="verification_email_sent_title">Verification link sent</string>
-    <string name="verification_email_sent_description">A verification link has been sent to your email. Please check your inbox and open the link on the same device to complete the process, as it\'s necessary for verification</string>
+    <string name="verification_email_sent_description">A verification link has been sent to %1$s. Please check your inbox and open the link on the same device to complete the process, as it\'s necessary for verification</string>
     <string name="invalid_email_link_sign_in_failure_description">Invalid sign-in link</string>
     <string name="invalid_email_link_sign_in_failure_reason">The sign-in link you clicked is either invalid or has expired</string>
     <string name="invalid_email_link_sign_in_failure_recovery_suggestion">Please request a new sign-in link. If you\'re experiencing issues repeatedly, contact our support team for further assistance</string>

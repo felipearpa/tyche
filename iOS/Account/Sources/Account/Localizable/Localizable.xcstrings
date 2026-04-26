@@ -487,19 +487,19 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "A verification link has been sent to your email. Please check your inbox and open the link on the same device to complete the process, as it's necessary for verification"
+            "value" : "A verification link has been sent to %@. Please check your inbox and open the link on the same device to complete the process, as it's necessary for verification"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Se ha enviado un enlace de verificación a tu correo electrónico. Por favor, revisa tu bandeja de entrada y abre el enlace en el mismo dispositivo para completar el proceso, ya que es necesario para la verificación"
+            "value" : "Se ha enviado un enlace de verificación a %@. Por favor, revisa tu bandeja de entrada y abre el enlace en el mismo dispositivo para completar el proceso, ya que es necesario para la verificación"
           }
         },
         "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Se ha enviado un enlace de verificación a tu correo electrónico. Por favor, revisa tu bandeja de entrada y abre el enlace en el mismo dispositivo para completar el proceso, ya que es necesario para la verificación"
+            "value" : "Se ha enviado un enlace de verificación a %@. Por favor, revisa tu bandeja de entrada y abre el enlace en el mismo dispositivo para completar el proceso, ya que es necesario para la verificación"
           }
         }
       }

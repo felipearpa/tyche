@@ -59,7 +59,7 @@ fun EmailSignInView(
 
 @Composable
 private fun EmailSignInView(
-    viewState: LoadableViewState<Unit>,
+    viewState: LoadableViewState<String>,
     onSignInWithEmail: (String) -> Unit,
     onReset: () -> Unit,
     onBack: () -> Unit,
@@ -101,6 +101,7 @@ private fun EmailSignInView(
                 }
 
                 is LoadableViewState.Success -> SuccessContent(
+                    email = viewState.value,
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(horizontal = LocalBoxSpacing.current.medium),
@@ -163,7 +164,7 @@ private fun EmailSignInView(
 }
 
 @Composable
-private fun SuccessContent(modifier: Modifier = Modifier) {
+private fun SuccessContent(email: String, modifier: Modifier = Modifier) {
     Column(modifier = modifier) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             Column(
@@ -187,7 +188,7 @@ private fun SuccessContent(modifier: Modifier = Modifier) {
                         style = MaterialTheme.typography.titleLarge,
                     )
 
-                    Text(text = stringResource(id = R.string.verification_email_sent_description))
+                    Text(text = stringResource(id = R.string.verification_email_sent_description, email))
                 }
             }
         }
@@ -198,7 +199,7 @@ private fun SuccessContent(modifier: Modifier = Modifier) {
 private fun FailureContent(
     modifier: Modifier = Modifier,
     email: String,
-    viewState: LoadableViewState<Unit>,
+    viewState: LoadableViewState<String>,
     onReset: () -> Unit,
 ) {
     Column(modifier = modifier) {
@@ -241,7 +242,7 @@ private fun LoadingEmailSignInViewPreview() {
 @Composable
 private fun SuccessEmailSignInViewPreview() {
     EmailSignInView(
-        viewState = LoadableViewState.Success(Unit),
+        viewState = LoadableViewState.Success("preview@example.com"),
         onSignInWithEmail = {},
         onReset = {},
         onBack = {},

@@ -22,12 +22,12 @@ public struct EmailSignInView: View {
 }
 
 private struct EmailSignInStatefulView: View {
-    let viewState: LoadableViewState<Void>
+    let viewState: LoadableViewState<String>
     let signInWithEmail: (String) -> Void
     let reset: () -> Void
-    
+
     init(
-        viewState: LoadableViewState<Void>,
+        viewState: LoadableViewState<String>,
         signInWithEmail: @escaping (String) -> Void = { _ in },
         reset: @escaping () -> Void = {}
     ) {
@@ -35,12 +35,12 @@ private struct EmailSignInStatefulView: View {
         self.signInWithEmail = signInWithEmail
         self.reset = reset
     }
-    
+
     @State private var email: String = ""
-    
+
     var body: some View {
         let signIn: (() -> Void)? = if Email.isValid(email) { { signInWithEmail(email) } } else { nil }
-        
+
         ZStack {
             switch viewState {
             case .initial:
@@ -49,8 +49,8 @@ private struct EmailSignInStatefulView: View {
                 LoadingContainerView {
                     EmailSignInContent(email: .constant(email), signIn: {})
                 }
-            case .success():
-                SuccessContent()
+            case .success(let sentEmail):
+                SuccessContent(email: sentEmail)
             case .failure(let error):
                 EmailSignInContent(email: .constant(email), signIn: {})
                     .errorAlert(.constant(error.localizedErrorOrNil()!), onDismiss: reset)
@@ -86,19 +86,21 @@ private struct EmailSignInContent: View {
 }
 
 private struct SuccessContent: View {
+    let email: String
+
     @Environment(\.boxSpacing) var boxSpacing
-    
+
     var body: some View {
         VStack(spacing: boxSpacing.large) {
             Image(.outgoingMail)
                 .resizable()
                 .frame(width: ICON_SIZE, height: ICON_SIZE)
-            
+
             VStack(spacing: boxSpacing.medium) {
                 Text(String(.verificationEmailSentTitle))
                     .font(.title)
-                
-                Text(String(.verificationEmailSentDescription))
+
+                Text(String(format: String(.verificationEmailSentDescription), email))
                     .multilineTextAlignment(.leading)
             }
         }
@@ -117,7 +119,7 @@ private let ICON_SIZE: CGFloat = 64
 }
 
 #Preview("Success") {
-    EmailSignInStatefulView(viewState: .success(()))
+    EmailSignInStatefulView(viewState: .success("preview@example.com"))
 }
 
 #Preview("Failure") {

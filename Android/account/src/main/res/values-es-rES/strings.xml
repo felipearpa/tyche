@@ -17,7 +17,7 @@
     <string name="account_verified_description">¡Enhorabuena, tu verificación de correo está completa! Ya puedes unirte a la diversión y poner a prueba tus predicciones</string>
     <string name="start_action">Empezar</string>
     <string name="verification_email_sent_title">Enlace de verificación enviado</string>
-    <string name="verification_email_sent_description">Se ha enviado un enlace de verificación a tu correo electrónico. Por favor, revisa tu bandeja de entrada y abre el enlace en el mismo dispositivo para completar el proceso, ya que es necesario para la verificación</string>
+    <string name="verification_email_sent_description">Se ha enviado un enlace de verificación a %1$s. Por favor, revisa tu bandeja de entrada y abre el enlace en el mismo dispositivo para completar el proceso, ya que es necesario para la verificación</string>
     <string name="invalid_email_link_sign_in_failure_description">Enlace de inicio de sesión no válido</string>
     <string name="invalid_email_link_sign_in_failure_reason">El enlace de inicio de sesión en el que has hecho clic no es válido o ha caducado</string>
     <string name="invalid_email_link_sign_in_failure_recovery_suggestion">Por favor, solicita un nuevo enlace de inicio de sesión. Si el problema se repite, contacta con nuestro equipo de soporte para obtener más ayuda</string>
