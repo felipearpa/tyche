@@ -17,4 +17,9 @@
     <string name="see_all_templates_action">See all templates</string>
     <string name="create_pool_action">Create</string>
     <string name="go_to_my_pools_action">Go to my pools</string>
+    <string name="invite_friends_action">Invite</string>
+    <string name="pool_join_requires_sign_in_failure_description">Sign-in required to join</string>
+    <string name="pool_join_requires_sign_in_failure_reason">You need to be signed in to open this pool join link</string>
+    <string name="pool_join_requires_sign_in_failure_recovery_suggestion">Please sign in and open the link again</string>
+    <string name="got_it_action">Got it</string>
 </resources>

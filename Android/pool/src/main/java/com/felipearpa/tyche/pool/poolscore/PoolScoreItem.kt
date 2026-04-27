@@ -1,28 +1,25 @@
 package com.felipearpa.tyche.pool.poolscore
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import com.felipearpa.tyche.pool.PoolGamblerScoreModel
 import com.felipearpa.tyche.pool.R
@@ -30,7 +27,6 @@ import com.felipearpa.tyche.pool.difference
 import com.felipearpa.tyche.pool.poolGamblerScoreDummyModel
 import com.felipearpa.tyche.pool.poolGamblerScorePlaceholderModel
 import com.felipearpa.tyche.pool.poolGamblerScoreWithoutScoreDummyModel
-import com.felipearpa.tyche.ui.SwipeToRevealBox
 import com.felipearpa.tyche.ui.TrendIndicator
 import com.felipearpa.tyche.ui.shimmer
 import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
@@ -42,35 +38,16 @@ fun PoolScoreItem(
     modifier: Modifier = Modifier,
     shimmerModifier: Modifier = Modifier,
 ) {
-    var isOptionsRevealed by remember { mutableStateOf(false) }
-
-    SwipeToRevealBox(
-        isRevealed = isOptionsRevealed,
-        onExpanded = { isOptionsRevealed = true },
-        onCollapsed = { isOptionsRevealed = false },
-        actions = {
-            IconButton(
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .background(color = MaterialTheme.colorScheme.primaryContainer)
-                    .padding(all = LocalBoxSpacing.current.medium),
-                onClick = onJoin,
-            ) {
-                Icon(
-                    painter = painterResource(R.drawable.person_add),
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onPrimaryContainer,
-                )
-            }
-        },
+    Card(
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
         modifier = modifier,
     ) {
-        Box(
+        Column(
+            verticalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.medium),
             modifier = Modifier
                 .fillMaxWidth()
-                .heightIn(min = MIN_HEIGHT)
-                .background(color = MaterialTheme.colorScheme.surface),
-            contentAlignment = Alignment.Center,
+                .padding(all = LocalBoxSpacing.current.medium),
         ) {
             Row(
                 modifier = Modifier
@@ -98,6 +75,27 @@ fun PoolScoreItem(
                         )
                     }
                 }
+
+            }
+
+            Row(modifier = Modifier.fillMaxWidth()) {
+                Spacer(modifier = Modifier.weight(1f))
+                OutlinedButton(
+                    onClick = onJoin,
+                    modifier = shimmerModifier,
+                ) {
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.medium),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Icon(
+                            painter = painterResource(R.drawable.person_add),
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                        )
+                        Text(text = stringResource(id = R.string.invite_friends_action))
+                    }
+                }
             }
         }
     }
@@ -113,9 +111,7 @@ fun PoolScorePlaceholderItem(modifier: Modifier = Modifier) {
     )
 }
 
-private val MIN_HEIGHT = 48.dp
-
-@Preview(showBackground = true)
+@PreviewLightDark
 @Composable
 private fun PoolScoreItemPreview() {
     PoolScoreItem(

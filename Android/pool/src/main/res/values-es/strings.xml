@@ -17,4 +17,9 @@
     <string name="see_all_templates_action">Ver todas las plantillas</string>
     <string name="create_pool_action">Crear</string>
     <string name="go_to_my_pools_action">Ir a mis pollas</string>
+    <string name="invite_friends_action">Invitar</string>
+    <string name="pool_join_requires_sign_in_failure_description">Inicio de sesión requerido</string>
+    <string name="pool_join_requires_sign_in_failure_reason">Necesitas iniciar sesión para abrir este enlace de invitación a la polla</string>
+    <string name="pool_join_requires_sign_in_failure_recovery_suggestion">Por favor, inicia sesión y abre el enlace nuevamente</string>
+    <string name="got_it_action">Entendido</string>
 </resources>

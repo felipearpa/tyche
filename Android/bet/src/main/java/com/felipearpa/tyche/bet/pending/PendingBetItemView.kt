@@ -104,7 +104,6 @@ private fun PendingBetItemView(
                 val poolGamblerBet = when (viewModelState) {
                     is EditableViewState.Initial -> viewModelState.value
                     is EditableViewState.Success -> viewModelState.succeeded
-                    else -> return
                 }
                 PendingBetItem(
                     poolGamblerBet = poolGamblerBet,
@@ -359,7 +358,6 @@ private fun StateIndicator(
                 val poolGamblerBet = when (viewModelState) {
                     is EditableViewState.Initial -> viewModelState.value
                     is EditableViewState.Success -> viewModelState.succeeded
-                    else -> return
                 }
                 ContentIndicator(poolGamblerBet = poolGamblerBet)
             }

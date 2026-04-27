@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.2
+
+- Added additional Android signing key fingerprints to `assetlinks.json` for App Links
+
 ## 1.1
 
 First public release.

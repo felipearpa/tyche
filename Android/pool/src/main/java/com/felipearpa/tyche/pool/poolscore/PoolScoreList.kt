@@ -14,7 +14,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -63,6 +62,7 @@ fun PoolScoreList(
 ) {
     RefreshableStatefulLazyColumn(
         modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.medium),
         lazyPagingItems = lazyPoolGamblerScores,
         lazyListState = lazyListState,
         loadingContent = { poolScorePlaceholderList(count = fakeItemCount) },
@@ -100,7 +100,6 @@ fun PoolScoreList(
                     onJoin = { onPoolJoin(poolGamblerScore.poolId) },
                     modifier = Modifier.fillMaxWidth(),
                 )
-                HorizontalDivider()
             }
         }
     }
@@ -270,7 +269,6 @@ private fun LazyListScope.poolScorePlaceholderList(count: Int) {
 private fun LazyListScope.poolScorePlaceholderItem() {
     item {
         PoolScorePlaceholderItem(modifier = Modifier.fillMaxWidth())
-        HorizontalDivider()
     }
 }
 
@@ -323,6 +321,7 @@ private fun PoolScoreEmptyListPreview() {
 @Composable
 private fun PoolScorePlaceholderListPreview() {
     LazyColumn(
+        verticalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.medium),
         modifier = Modifier
             .fillMaxSize()
             .padding(all = LocalBoxSpacing.current.medium),

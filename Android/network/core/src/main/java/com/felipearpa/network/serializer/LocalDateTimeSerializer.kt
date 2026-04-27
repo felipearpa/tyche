@@ -18,14 +18,17 @@ object LocalDateTimeSerializer : KSerializer<LocalDateTime> {
         PrimitiveSerialDescriptor("LocalDateTime", PrimitiveKind.STRING)
 
     override fun serialize(encoder: Encoder, value: LocalDateTime) {
-        val javaLocalDateTime = value.toJavaLocalDateTime()
-        val offsetDateTime =
-            javaLocalDateTime.atZone(java.time.ZoneId.systemDefault()).toOffsetDateTime()
+        val offsetDateTime = value.toJavaLocalDateTime()
+            .atZone(java.time.ZoneId.systemDefault())
+            .withZoneSameInstant(java.time.ZoneOffset.UTC)
+            .toOffsetDateTime()
         encoder.encodeString(offsetDateTime.format(formatter))
     }
 
     override fun deserialize(decoder: Decoder): LocalDateTime {
-        return java.time.LocalDateTime.parse(decoder.decodeString(), formatter)
+        return java.time.OffsetDateTime.parse(decoder.decodeString(), formatter)
+            .atZoneSameInstant(java.time.ZoneId.systemDefault())
+            .toLocalDateTime()
             .toKotlinLocalDateTime()
     }
 }

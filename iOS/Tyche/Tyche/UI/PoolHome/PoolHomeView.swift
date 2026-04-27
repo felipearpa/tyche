@@ -11,14 +11,23 @@ import Session
 struct PoolHomeView: View {
     let gamblerId: String
     let poolId: String
+    let onChangePool: () -> Void
+    let onSignOut: () -> Void
 
     @Environment(\.diResolver) var diResolver: DIResolver
     @State private var selectedTab = PoolHomeTab.gamblerScores
     @State private var drawerVisible = false
 
-    init(gamblerId: String, poolId: String) {
+    init(
+        gamblerId: String,
+        poolId: String,
+        onChangePool: @escaping () -> Void,
+        onSignOut: @escaping () -> Void
+    ) {
         self.gamblerId = gamblerId
         self.poolId = poolId
+        self.onChangePool = onChangePool
+        self.onSignOut = onSignOut
     }
 
     var body: some View {
@@ -84,8 +93,14 @@ struct PoolHomeView: View {
                     logoutUseCase: diResolver.resolve(LogOutUseCase.self)!,
                     getPoolGamblerScoreUseCase: diResolver.resolve(GetPoolGamblerScoreUseCase.self)!,
                 ),
-                changePool: {},
-                onLogout: {}
+                changePool: {
+                    drawerVisible = false
+                    onChangePool()
+                },
+                onLogout: {
+                    drawerVisible = false
+                    onSignOut()
+                }
             )
         }
         .navigationTitle(selectedTab.title)
@@ -132,7 +147,9 @@ private let ICON_SIZE: CGFloat = 24
 
     PoolHomeView(
         gamblerId: "gambler-id",
-        poolId: "pool-id"
+        poolId: "pool-id",
+        onChangePool: {},
+        onSignOut: {}
     )
     .environment(\.diResolver, diResolver)
 }

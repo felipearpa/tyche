@@ -1,0 +1,67 @@
+name: iOS unit tests
+
+on:
+  pull_request:
+    paths:
+      - "iOS/**"
+      - ".github/workflows/ios-unit-tests.yml"
+
+concurrency:
+  group: ios-unit-tests-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  unit-tests:
+    name: Run unit tests
+    runs-on: macos-latest
+    timeout-minutes: 45
+    defaults:
+      run:
+        working-directory: iOS/Tyche
+
+    env:
+      WORKSPACE: Tyche.xcworkspace
+      SCHEME: Tyche
+      DESTINATION: "platform=iOS Simulator,name=iPhone 16,OS=latest"
+      RESULT_BUNDLE: TestResults.xcresult
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Select Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
+
+      - name: Show Xcode and SDK versions
+        run: |
+          xcodebuild -version
+          xcrun simctl list runtimes | grep iOS || true
+
+      - name: Resolve Swift packages
+        run: |
+          xcodebuild -resolvePackageDependencies \
+            -workspace "$WORKSPACE" \
+            -scheme "$SCHEME"
+
+      - name: Run unit tests
+        run: |
+          set -o pipefail
+          xcodebuild test \
+            -workspace "$WORKSPACE" \
+            -scheme "$SCHEME" \
+            -destination "$DESTINATION" \
+            -resultBundlePath "$RESULT_BUNDLE" \
+            -skip-testing:TycheUITests \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO
+
+      - name: Upload xcresult bundle
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-unit-test-results
+          path: iOS/Tyche/TestResults.xcresult
+          if-no-files-found: ignore
+          retention-days: 7

@@ -1,22 +1,20 @@
 package com.felipearpa.tyche.bet.finished
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.composed
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import com.felipearpa.foundation.time.toShortDateTimeString
+import androidx.compose.ui.tooling.preview.PreviewLightDark
+import com.felipearpa.foundation.time.toShortTimeString
 import com.felipearpa.tyche.bet.PoolGamblerBetModel
 import com.felipearpa.tyche.bet.awayTeamBetRawValue
 import com.felipearpa.tyche.bet.awayTeamMatchRawValue
@@ -38,80 +36,95 @@ fun FinishedBetItem(
         modifier = modifier,
     ) {
         Row(
-            horizontalArrangement = Arrangement.SpaceBetween,
+            horizontalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.small),
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth(),
+        ) {
+            Text(
+                text = poolGamblerBet.matchDateTime.toShortTimeString(),
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.bodySmall,
+                modifier = shimmerModifier,
+            )
+
+            Spacer(modifier = Modifier.weight(1f))
+
+            Text(
+                text = "+${poolGamblerBet.score?.toString().orEmpty()}",
+                modifier = shimmerModifier,
+                style = MaterialTheme.typography.titleLarge,
+            )
+        }
+
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(text = poolGamblerBet.homeTeamName, modifier = shimmerModifier)
-            Row(horizontalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.medium)) {
-                Text(
-                    text = poolGamblerBet.homeTeamMatchRawValue(),
-                    textAlign = TextAlign.Center,
-                    modifier = shimmerModifier.scoreWidth(),
-                )
-                Text(
-                    text = poolGamblerBet.homeTeamBetRawValue(),
-                    textAlign = TextAlign.Center,
-                    modifier = shimmerModifier.betScoreStyle(),
-                    color = MaterialTheme.colorScheme.onSecondaryContainer,
-                )
-            }
-        }
-
-        Row(
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth(),
-        ) {
-            Text(text = poolGamblerBet.awayTeamName, modifier = shimmerModifier)
-            Row(horizontalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.medium)) {
-                Text(
-                    text = poolGamblerBet.awayTeamMatchRawValue(),
-                    textAlign = TextAlign.Center,
-                    modifier = shimmerModifier.scoreWidth(),
-                )
-                Text(
-                    text = poolGamblerBet.awayTeamBetRawValue(),
-                    textAlign = TextAlign.Center,
-                    modifier = shimmerModifier.betScoreStyle(),
-                    color = MaterialTheme.colorScheme.onSecondaryContainer,
-                )
-            }
-        }
-
-        Row(
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth(),
-        ) {
+            Spacer(modifier = Modifier.weight(1f))
             Text(
-                text = poolGamblerBet.matchDateTime.toShortDateTimeString(),
-                style = MaterialTheme.typography.bodySmall,
-                modifier = Modifier.padding(start = LocalBoxSpacing.current.large),
+                text = poolGamblerBet.homeTeamMatchRawValue(),
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier
+                    .scoreWidth()
+                    .then(shimmerModifier),
             )
             Text(
-                text = poolGamblerBet.score?.toString().orEmpty(),
-                modifier = shimmerModifier,
+                text = poolGamblerBet.homeTeamBetRawValue(),
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier
+                    .scoreWidth()
+                    .then(shimmerModifier),
+            )
+        }
+
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(text = poolGamblerBet.awayTeamName, modifier = shimmerModifier)
+            Spacer(modifier = Modifier.weight(1f))
+            Text(
+                text = poolGamblerBet.awayTeamMatchRawValue(),
+                textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier
+                    .scoreWidth()
+                    .then(shimmerModifier),
+            )
+            Text(
+                text = poolGamblerBet.awayTeamBetRawValue(),
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier
+                    .scoreWidth()
+                    .then(shimmerModifier),
             )
         }
     }
 }
 
-private fun Modifier.betScoreStyle() = composed {
-    this
-        .scoreWidth()
-        .clip(CircleShape)
-        .background(MaterialTheme.colorScheme.secondaryContainer)
-}
-
-@Preview(showBackground = true)
+@PreviewLightDark
 @Composable
 private fun FinishedBetItemPreview() {
     TycheTheme {
-        FinishedBetItem(
-            poolGamblerBet = poolGamblerBetDummyModel(),
-            modifier = Modifier.fillMaxWidth(),
-        )
+        Surface {
+            FinishedBetItem(
+                poolGamblerBet = poolGamblerBetDummyModel(),
+                modifier = Modifier.fillMaxWidth(),
+            )
+        }
+    }
+}
+
+@Preview(locale = "es")
+@Composable
+private fun FinishedBetItemSpanishPreview() {
+    TycheTheme {
+        Surface {
+            FinishedBetItem(
+                poolGamblerBet = poolGamblerBetDummyModel(),
+                modifier = Modifier.fillMaxWidth(),
+            )
+        }
     }
 }
