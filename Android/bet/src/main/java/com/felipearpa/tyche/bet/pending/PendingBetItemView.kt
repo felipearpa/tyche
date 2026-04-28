@@ -251,6 +251,8 @@ private fun NonEditableDefaultActionBar(
     edit: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val poolGamblerBet = viewModelState.relevantValue()
+
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
@@ -261,8 +263,10 @@ private fun NonEditableDefaultActionBar(
             isEditable = viewState is PendingBetItemViewState.Edition,
         )
 
-        TextButton(onClick = edit) {
-            Text(text = stringResource(id = SharedR.string.edit_action))
+        if (!poolGamblerBet.isLocked) {
+            TextButton(onClick = edit) {
+                Text(text = stringResource(id = SharedR.string.edit_action))
+            }
         }
     }
 }

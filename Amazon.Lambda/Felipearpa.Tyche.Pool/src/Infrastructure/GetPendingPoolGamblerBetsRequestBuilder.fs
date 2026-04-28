@@ -1,6 +1,5 @@
 namespace Felipearpa.Tyche.Pool.Infrastructure
 
-open System
 open System.Collections.Generic
 open Amazon.DynamoDBv2.Model
 open Felipearpa.Core
@@ -16,8 +15,7 @@ module GetPendingPoolGamblerBetsRequestBuilder =
         (maybeNext: string option)
         (deserialize: string -> IDictionary<string, AttributeValue>)
         =
-        let keyConditionExpression =
-            $"{ExpressionAttribute.name Key.pk} = :pk and {ExpressionAttribute.name PoolTable.Attribute.matchDateTime} > :now"
+        let keyConditionExpression = $"{ExpressionAttribute.name Key.pk} = :pk"
 
         let defaultFilterConditionExpression =
             $"attribute_not_exists({ExpressionAttribute.name PoolTable.Attribute.computedRequestId})"
@@ -27,14 +25,10 @@ module GetPendingPoolGamblerBetsRequestBuilder =
                 [ ":pk",
                   AttributeValue(
                       $"{KeyPrefix.build PoolTable.Prefix.gambler gamblerId.Value}#{KeyPrefix.build PoolTable.Prefix.pool poolId.Value}"
-                  )
-                  ":now", AttributeValue(DateTime.Now.ToUniversalTime().ToString("o")) ]
+                  ) ]
 
         let defaultAttributeNames =
-            ExpressionAttribute.names
-                [ Key.pk
-                  PoolTable.Attribute.matchDateTime
-                  PoolTable.Attribute.computedRequestId ]
+            ExpressionAttribute.names [ Key.pk; PoolTable.Attribute.computedRequestId ]
 
         let filterExpression, attributeValues, attributeNames =
             match maybeSearchText with
