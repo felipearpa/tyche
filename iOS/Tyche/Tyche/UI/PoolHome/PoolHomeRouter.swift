@@ -47,7 +47,20 @@ struct PoolHomeRouter: View {
                 GamblerBetsView(
                     poolId: route.poolId,
                     gamblerId: route.gamblerId,
-                    gamblerUsername: route.gamblerUsername
+                    gamblerUsername: route.gamblerUsername,
+                    onMatchOpen: { poolId, matchId, homeTeamName, awayTeamName, matchDateTime, homeTeamScore, awayTeamScore in
+                        path.append(
+                            MatchBetsRoute(
+                                poolId: poolId,
+                                matchId: matchId,
+                                homeTeamName: homeTeamName,
+                                awayTeamName: awayTeamName,
+                                matchDateTime: matchDateTime,
+                                homeTeamScore: homeTeamScore,
+                                awayTeamScore: awayTeamScore
+                            )
+                        )
+                    }
                 )
             }
             .navigationDestination(for: MatchBetsRoute.self) { route in

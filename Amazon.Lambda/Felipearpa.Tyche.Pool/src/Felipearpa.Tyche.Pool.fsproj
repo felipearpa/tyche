@@ -58,6 +58,7 @@
         <Compile Include="Application\GetPendingPoolGamblerBets.fs" />
         <Compile Include="Application\GetLivePoolGamblerBets.fs" />
         <Compile Include="Application\GetPoolMatchGamblerBets.fs" />
+        <Compile Include="Application\GetGamblerBetsTimeline.fs" />
         <Compile Include="Application\GetPoolGamblerScoreById.fs" />
         <Compile Include="Application\CreatePool.fs" />
         <Compile Include="Application\JoinPool.fs" />

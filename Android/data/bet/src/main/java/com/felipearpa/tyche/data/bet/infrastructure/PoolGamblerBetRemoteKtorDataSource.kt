@@ -57,6 +57,15 @@ internal class PoolGamblerBetRemoteKtorDataSource(private val httpClient: HttpCl
             parameter("next", next)
         }.body()
 
+    override suspend fun getGamblerBetsTimeline(
+        poolId: String,
+        gamblerId: String,
+        next: String?,
+    ): CursorPage<PoolGamblerBetResponse> =
+        httpClient.get("pools/$poolId/gamblers/$gamblerId/bets/timeline") {
+            parameter("next", next)
+        }.body()
+
     override suspend fun bet(betRequest: BetRequest): PoolGamblerBetResponse =
         httpClient.patch("bets") {
             contentType(ContentType.Application.Json)

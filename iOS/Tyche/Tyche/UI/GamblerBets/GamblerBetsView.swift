@@ -8,48 +8,35 @@ struct GamblerBetsView: View {
     let poolId: String
     let gamblerId: String
     let gamblerUsername: String
+    let onMatchOpen: MatchOpenHandler?
 
     @Environment(\.diResolver) var diResolver: DIResolver
-    @State private var selectedTab = GamblerBetsTab.live
+
+    init(
+        poolId: String,
+        gamblerId: String,
+        gamblerUsername: String,
+        onMatchOpen: MatchOpenHandler? = nil
+    ) {
+        self.poolId = poolId
+        self.gamblerId = gamblerId
+        self.gamblerUsername = gamblerUsername
+        self.onMatchOpen = onMatchOpen
+    }
 
     var body: some View {
         let _ = Self._printChangesIfDebug()
 
-        TabView(selection: $selectedTab) {
-            LiveBetListView(
-                viewModel: LiveBetListViewModel(
-                    getLivePoolGamblerBetsUseCase: GetLivePoolGamblerBetsUseCase(
-                        poolGamblerBetRepository: diResolver.resolve(PoolGamblerBetRepository.self)!
-                    ),
-                    gamblerId: gamblerId,
-                    poolId: poolId
-                )
-            )
-            .tag(GamblerBetsTab.live)
-            .tabItem {
-                Label(
-                    title: { Text(String(.betTab)) },
-                    icon: { Image(.money) }
-                )
-            }
-
-            FinishedPoolGamblerBetListView(
-                viewModel: FinishedBetListViewModel(
-                    getFinishedPoolGamblerBetsUseCase: GetFinishedPoolGamblerBetsUseCase(
-                        poolGamblerBetRepository: diResolver.resolve(PoolGamblerBetRepository.self)!
-                    ),
-                    gamblerId: gamblerId,
-                    poolId: poolId,
-                )
-            )
-            .tag(GamblerBetsTab.history)
-            .tabItem {
-                Label(
-                    title: { Text(String(.historyBetsTab)) },
-                    icon: { Image(.money) }
-                )
-            }
-        }
+        BetsTimelineListView(
+            viewModel: BetsTimelineViewModel(
+                getGamblerBetsTimelineUseCase: GetGamblerBetsTimelineUseCase(
+                    poolGamblerBetRepository: diResolver.resolve(PoolGamblerBetRepository.self)!
+                ),
+                poolId: poolId,
+                gamblerId: gamblerId
+            ),
+            onMatchOpen: onMatchOpen
+        )
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .principal) {
@@ -60,11 +47,6 @@ struct GamblerBetsView: View {
             }
         }
     }
-}
-
-private enum GamblerBetsTab: Int {
-    case live
-    case history
 }
 
 #Preview {

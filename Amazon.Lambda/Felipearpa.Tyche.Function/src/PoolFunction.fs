@@ -91,6 +91,19 @@ module PoolFunction =
             return Results.Ok(page |> CursorPage.map PoolGamblerBetTransformer.toResponse)
         }
 
+    let getBetsTimelineAsync
+        (poolId: string)
+        (gamblerId: string)
+        (next: string option)
+        (getGamblerBetsTimeline: GetGamblerBetsTimeline)
+        : IResult Async =
+        async {
+            let! page =
+                getGamblerBetsTimeline.ExecuteAsync(poolId |> Ulid.newOf, gamblerId |> Ulid.newOf, next)
+
+            return Results.Ok(page |> CursorPage.map PoolGamblerBetTransformer.toResponse)
+        }
+
     let getMatchBetsAsync
         (poolId: string)
         (matchId: string)

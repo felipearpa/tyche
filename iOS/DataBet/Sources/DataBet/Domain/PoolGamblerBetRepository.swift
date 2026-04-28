@@ -28,5 +28,11 @@ public protocol PoolGamblerBetRepository {
         next: String?
     ) async -> Result<CursorPage<PoolGamblerBet>, Error>
 
+    func getGamblerBetsTimeline(
+        poolId: String,
+        gamblerId: String,
+        next: String?
+    ) async -> Result<CursorPage<PoolGamblerBet>, Error>
+
     func bet(bet: Bet) async -> Result<PoolGamblerBet, Error>
 }

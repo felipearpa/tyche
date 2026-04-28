@@ -87,6 +87,23 @@ class PoolGamblerBetRemoteRepository: PoolGamblerBetRepository {
         }
     }
 
+    func getGamblerBetsTimeline(
+        poolId: String,
+        gamblerId: String,
+        next: String?
+    ) async -> Result<CursorPage<PoolGamblerBet>, Error> {
+        return await networkErrorHandler.handle {
+            let page = try await poolGamblerBetRemoteDataSource.getGamblerBetsTimeline(
+                poolId: poolId,
+                gamblerId: gamblerId,
+                next: next
+            )
+            return page.map { poolGamblerBetResponse in
+                poolGamblerBetResponse.toPoolGamblerBet()
+            }
+        }
+    }
+
     func bet(bet: Bet) async -> Result<PoolGamblerBet, Error> {
         return await networkErrorHandler.handle {
             let response = try await poolGamblerBetRemoteDataSource.bet(betRequest: bet.toBetRequest())

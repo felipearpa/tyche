@@ -58,6 +58,19 @@ public class PoolGamblerBetFakeRepository: PoolGamblerBetRepository {
         )
     }
 
+    public func getGamblerBetsTimeline(
+        poolId: String,
+        gamblerId: String,
+        next: String?
+    ) async -> Result<CursorPage<PoolGamblerBet>, Error> {
+        return .success(
+            CursorPage(
+                items: dummyPoolGamblerBets(),
+                next: nil
+            )
+        )
+    }
+
     public func bet(bet: Bet) async -> Result<PoolGamblerBet, Error> {
         return .success(dummyPoolGamblerBet())
     }
