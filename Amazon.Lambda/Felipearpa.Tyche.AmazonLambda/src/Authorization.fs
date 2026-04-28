@@ -65,27 +65,6 @@ module Authorization =
                     | Error _ -> Error NotAMember
         }
 
-    let requirePoolMembershipAsync
-        (request: APIGatewayHttpApiV2ProxyRequest)
-        (poolId: Ulid)
-        (accountRepository: IAccountRepository)
-        (poolRepository: IPoolRepository)
-        : Async<Result<Ulid, AuthFailure>> =
-        async {
-            let! callerResult = resolveCallerGamblerIdAsync request accountRepository
-
-            match callerResult with
-            | Error failure -> return Error failure
-            | Ok callerGamblerId ->
-                let! membership = poolRepository.IsPoolMemberAsync(poolId, callerGamblerId)
-
-                return
-                    match membership with
-                    | Ok true -> Ok callerGamblerId
-                    | Ok false -> Error NotAMember
-                    | Error _ -> Error NotAMember
-        }
-
     let toResponse (failure: AuthFailure) : APIGatewayHttpApiV2ProxyResponse =
         match failure with
         | MissingClaim -> UnauthorizedResponseFactory.create ()

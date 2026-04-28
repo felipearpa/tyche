@@ -85,7 +85,7 @@ type PoolFunction(configureServices: IServiceCollection -> unit) =
                 request.PathParameters
                 |> Option.ofObj
                 |> Option.defaultValue Map.empty
-                |> tryGetStringParamOrError poolIdParameter
+                |> tryGetUlidParamOrError poolIdParameter
 
             match poolIdResult with
             | Error error -> return [ error ] |> BadRequestResponseFactory.create
@@ -106,7 +106,7 @@ type PoolFunction(configureServices: IServiceCollection -> unit) =
                 request.PathParameters
                 |> Option.ofObj
                 |> Option.defaultValue Map.empty
-                |> tryGetStringParamOrError poolIdParameter
+                |> tryGetUlidParamOrError poolIdParameter
 
             let maybeNext =
                 request.QueryStringParameters
@@ -141,13 +141,13 @@ type PoolFunction(configureServices: IServiceCollection -> unit) =
                 request.PathParameters
                 |> Option.ofObj
                 |> Option.defaultValue Map.empty
-                |> tryGetStringParamOrError poolIdParameter
+                |> tryGetUlidParamOrError poolIdParameter
 
             let gamblerIdResult =
                 request.PathParameters
                 |> Option.ofObj
                 |> Option.defaultValue Map.empty
-                |> tryGetStringParamOrError gamblerIdParameter
+                |> tryGetUlidParamOrError gamblerIdParameter
 
             match poolIdResult, gamblerIdResult with
             | Ok poolId, Ok gamblerId ->
@@ -177,13 +177,13 @@ type PoolFunction(configureServices: IServiceCollection -> unit) =
                 request.PathParameters
                 |> Option.ofObj
                 |> Option.defaultValue Map.empty
-                |> tryGetStringParamOrError poolIdParameter
+                |> tryGetUlidParamOrError poolIdParameter
 
             let gamblerIdResult =
                 request.PathParameters
                 |> Option.ofObj
                 |> Option.defaultValue Map.empty
-                |> tryGetStringParamOrError gamblerIdParameter
+                |> tryGetUlidParamOrError gamblerIdParameter
 
             let maybeNext =
                 request.QueryStringParameters
@@ -199,26 +199,15 @@ type PoolFunction(configureServices: IServiceCollection -> unit) =
 
             match poolIdResult, gamblerIdResult, maybeNext, maybeSearchText with
             | Ok poolId, Ok gamblerId, next, searchText ->
-                let! authResult =
-                    Authorization.requirePoolAccessAsync
-                        request
-                        (Ulid.newOf poolId)
-                        (Ulid.newOf gamblerId)
-                        (scope.ServiceProvider.GetService<IAccountRepository>())
-                        (scope.ServiceProvider.GetService<IPoolRepository>())
+                let! response =
+                    getPendingBetsAsync
+                        poolId
+                        gamblerId
+                        searchText
+                        next
+                        (scope.ServiceProvider.GetService<GetPendingPoolGamblerBets>())
 
-                match authResult with
-                | Error failure -> return Authorization.toResponse failure
-                | Ok _ ->
-                    let! response =
-                        getPendingBetsAsync
-                            poolId
-                            gamblerId
-                            searchText
-                            next
-                            (scope.ServiceProvider.GetService<GetPendingPoolGamblerBets>())
-
-                    return! response.ToAmazonProxyResponse()
+                return! response.ToAmazonProxyResponse()
             | _ ->
                 let errors =
                     [ toErrorOption poolIdResult; toErrorOption gamblerIdResult ] |> List.choose id
@@ -238,13 +227,13 @@ type PoolFunction(configureServices: IServiceCollection -> unit) =
                 request.PathParameters
                 |> Option.ofObj
                 |> Option.defaultValue Map.empty
-                |> tryGetStringParamOrError poolIdParameter
+                |> tryGetUlidParamOrError poolIdParameter
 
             let gamblerIdResult =
                 request.PathParameters
                 |> Option.ofObj
                 |> Option.defaultValue Map.empty
-                |> tryGetStringParamOrError gamblerIdParameter
+                |> tryGetUlidParamOrError gamblerIdParameter
 
             let maybeNext =
                 request.QueryStringParameters
@@ -260,26 +249,15 @@ type PoolFunction(configureServices: IServiceCollection -> unit) =
 
             match poolIdResult, gamblerIdResult, maybeNext, maybeSearchText with
             | Ok poolId, Ok gamblerId, next, searchText ->
-                let! authResult =
-                    Authorization.requirePoolAccessAsync
-                        request
-                        (Ulid.newOf poolId)
-                        (Ulid.newOf gamblerId)
-                        (scope.ServiceProvider.GetService<IAccountRepository>())
-                        (scope.ServiceProvider.GetService<IPoolRepository>())
+                let! response =
+                    getFinishedBetsAsync
+                        poolId
+                        gamblerId
+                        searchText
+                        next
+                        (scope.ServiceProvider.GetService<GetFinishedPoolGamblerBets>())
 
-                match authResult with
-                | Error failure -> return Authorization.toResponse failure
-                | Ok _ ->
-                    let! response =
-                        getFinishedBetsAsync
-                            poolId
-                            gamblerId
-                            searchText
-                            next
-                            (scope.ServiceProvider.GetService<GetFinishedPoolGamblerBets>())
-
-                    return! response.ToAmazonProxyResponse()
+                return! response.ToAmazonProxyResponse()
             | _ ->
                 let errors =
                     [ toErrorOption poolIdResult; toErrorOption gamblerIdResult ] |> List.choose id
@@ -299,13 +277,13 @@ type PoolFunction(configureServices: IServiceCollection -> unit) =
                 request.PathParameters
                 |> Option.ofObj
                 |> Option.defaultValue Map.empty
-                |> tryGetStringParamOrError poolIdParameter
+                |> tryGetUlidParamOrError poolIdParameter
 
             let gamblerIdResult =
                 request.PathParameters
                 |> Option.ofObj
                 |> Option.defaultValue Map.empty
-                |> tryGetStringParamOrError gamblerIdParameter
+                |> tryGetUlidParamOrError gamblerIdParameter
 
             let maybeNext =
                 request.QueryStringParameters
@@ -321,26 +299,15 @@ type PoolFunction(configureServices: IServiceCollection -> unit) =
 
             match poolIdResult, gamblerIdResult, maybeNext, maybeSearchText with
             | Ok poolId, Ok gamblerId, next, searchText ->
-                let! authResult =
-                    Authorization.requirePoolAccessAsync
-                        request
-                        (Ulid.newOf poolId)
-                        (Ulid.newOf gamblerId)
-                        (scope.ServiceProvider.GetService<IAccountRepository>())
-                        (scope.ServiceProvider.GetService<IPoolRepository>())
+                let! response =
+                    getLiveBetsAsync
+                        poolId
+                        gamblerId
+                        searchText
+                        next
+                        (scope.ServiceProvider.GetService<GetLivePoolGamblerBets>())
 
-                match authResult with
-                | Error failure -> return Authorization.toResponse failure
-                | Ok _ ->
-                    let! response =
-                        getLiveBetsAsync
-                            poolId
-                            gamblerId
-                            searchText
-                            next
-                            (scope.ServiceProvider.GetService<GetLivePoolGamblerBets>())
-
-                    return! response.ToAmazonProxyResponse()
+                return! response.ToAmazonProxyResponse()
             | _ ->
                 let errors =
                     [ toErrorOption poolIdResult; toErrorOption gamblerIdResult ] |> List.choose id
@@ -360,13 +327,13 @@ type PoolFunction(configureServices: IServiceCollection -> unit) =
                 request.PathParameters
                 |> Option.ofObj
                 |> Option.defaultValue Map.empty
-                |> tryGetStringParamOrError poolIdParameter
+                |> tryGetUlidParamOrError poolIdParameter
 
             let gamblerIdResult =
                 request.PathParameters
                 |> Option.ofObj
                 |> Option.defaultValue Map.empty
-                |> tryGetStringParamOrError gamblerIdParameter
+                |> tryGetUlidParamOrError gamblerIdParameter
 
             let maybeNext =
                 request.QueryStringParameters
@@ -376,25 +343,14 @@ type PoolFunction(configureServices: IServiceCollection -> unit) =
 
             match poolIdResult, gamblerIdResult, maybeNext with
             | Ok poolId, Ok gamblerId, next ->
-                let! authResult =
-                    Authorization.requirePoolAccessAsync
-                        request
-                        (Ulid.newOf poolId)
-                        (Ulid.newOf gamblerId)
-                        (scope.ServiceProvider.GetService<IAccountRepository>())
-                        (scope.ServiceProvider.GetService<IPoolRepository>())
+                let! response =
+                    getBetsTimelineAsync
+                        poolId
+                        gamblerId
+                        next
+                        (scope.ServiceProvider.GetService<GetGamblerBetsTimeline>())
 
-                match authResult with
-                | Error failure -> return Authorization.toResponse failure
-                | Ok _ ->
-                    let! response =
-                        getBetsTimelineAsync
-                            poolId
-                            gamblerId
-                            next
-                            (scope.ServiceProvider.GetService<GetGamblerBetsTimeline>())
-
-                    return! response.ToAmazonProxyResponse()
+                return! response.ToAmazonProxyResponse()
             | _ ->
                 let errors =
                     [ toErrorOption poolIdResult; toErrorOption gamblerIdResult ] |> List.choose id
@@ -414,13 +370,13 @@ type PoolFunction(configureServices: IServiceCollection -> unit) =
                 request.PathParameters
                 |> Option.ofObj
                 |> Option.defaultValue Map.empty
-                |> tryGetStringParamOrError poolIdParameter
+                |> tryGetUlidParamOrError poolIdParameter
 
             let matchIdResult =
                 request.PathParameters
                 |> Option.ofObj
                 |> Option.defaultValue Map.empty
-                |> tryGetStringParamOrError matchIdParameter
+                |> tryGetUlidParamOrError matchIdParameter
 
             let maybeNext =
                 request.QueryStringParameters
@@ -430,24 +386,14 @@ type PoolFunction(configureServices: IServiceCollection -> unit) =
 
             match poolIdResult, matchIdResult, maybeNext with
             | Ok poolId, Ok matchId, next ->
-                let! authResult =
-                    Authorization.requirePoolMembershipAsync
-                        request
-                        (Ulid.newOf poolId)
-                        (scope.ServiceProvider.GetService<IAccountRepository>())
-                        (scope.ServiceProvider.GetService<IPoolRepository>())
+                let! response =
+                    getMatchBetsAsync
+                        poolId
+                        matchId
+                        next
+                        (scope.ServiceProvider.GetService<GetPoolMatchGamblerBets>())
 
-                match authResult with
-                | Error failure -> return Authorization.toResponse failure
-                | Ok _ ->
-                    let! response =
-                        getMatchBetsAsync
-                            poolId
-                            matchId
-                            next
-                            (scope.ServiceProvider.GetService<GetPoolMatchGamblerBets>())
-
-                    return! response.ToAmazonProxyResponse()
+                return! response.ToAmazonProxyResponse()
             | _ ->
                 let errors =
                     [ toErrorOption poolIdResult; toErrorOption matchIdResult ] |> List.choose id
@@ -485,7 +431,7 @@ type PoolFunction(configureServices: IServiceCollection -> unit) =
                 request.PathParameters
                 |> Option.ofObj
                 |> Option.defaultValue Map.empty
-                |> tryGetStringParamOrError poolIdParameter
+                |> tryGetUlidParamOrError poolIdParameter
 
             let joinPoolRequestResult = tryGetOrError<JoinPoolRequest> request.Body
 

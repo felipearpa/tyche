@@ -43,3 +43,18 @@ let ``given a wrong value for an email when a Email tries to create then an opti
     =
     let emailOpt = Email.tryOf value
     Assert.True(emailOpt |> Option.isNone)
+
+let mixedCaseEmails: obj [] seq =
+    seq {
+        yield [| "Email@Email.Email"; "email@email.email" |]
+        yield [| "FELIPE@EXAMPLE.COM"; "felipe@example.com" |]
+    }
+
+[<Theory>]
+[<MemberData(nameof mixedCaseEmails)>]
+let ``given a mixed case email when a Email is created then the value is normalized to lowercase``
+    (value: string)
+    (expected: string)
+    =
+    let email = Email.newOf value
+    Assert.Equal(expected, email |> Email.value)
