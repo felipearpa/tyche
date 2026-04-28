@@ -24,29 +24,6 @@
         }
       }
     },
-    "connected_account_text" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Connected account"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Cuenta conectada"
-          }
-        },
-        "es-ES" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Cuenta conectada"
-          }
-        }
-      }
-    },
     "bet_tab" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -89,6 +66,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Cambiar quiniela"
+          }
+        }
+      }
+    },
+    "connected_account_text" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Connected account"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cuenta conectada"
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cuenta conectada"
           }
         }
       }

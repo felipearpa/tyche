@@ -35,13 +35,17 @@ fun GamblerScoreItem(
     isCurrentUser: Boolean,
     modifier: Modifier = Modifier,
     shimmerModifier: Modifier = Modifier,
-    onGamblerOpen: ((poolId: String, gamblerId: String) -> Unit)? = null,
+    onGamblerOpen: ((poolId: String, gamblerId: String, gamblerUsername: String) -> Unit)? = null,
 ) {
     Row(
         modifier = modifier.let { base ->
             if (onGamblerOpen != null) {
                 base.clickable {
-                    onGamblerOpen(poolGamblerScore.poolId, poolGamblerScore.gamblerId)
+                    onGamblerOpen(
+                        poolGamblerScore.poolId,
+                        poolGamblerScore.gamblerId,
+                        poolGamblerScore.gamblerUsername,
+                    )
                 }
             } else {
                 base

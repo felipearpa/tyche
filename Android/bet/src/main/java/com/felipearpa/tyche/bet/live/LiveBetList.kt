@@ -22,28 +22,27 @@ import com.felipearpa.tyche.bet.pending.PendingBetPlaceholderItem
 import com.felipearpa.tyche.bet.poolGamblerBetDummyModels
 import com.felipearpa.tyche.ui.lazy.RefreshableStatefulLazyColumn
 import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
-import com.felipearpa.tyche.ui.theme.TycheTheme
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.datetime.LocalDate
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun LiveBetList(
-    lazyPoolGamblerBets: LazyPagingItems<PoolGamblerBetModel>,
+    lazyBets: LazyPagingItems<PoolGamblerBetModel>,
     modifier: Modifier = Modifier,
-    fakeItemCount: Int = 0,
+    placeholderCount: Int = 0,
 ) {
     RefreshableStatefulLazyColumn(
         modifier = modifier,
-        lazyPagingItems = lazyPoolGamblerBets,
-        loadingContent = { liveBetPlaceholderList(count = fakeItemCount) },
+        lazyPagingItems = lazyBets,
+        loadingContent = { liveBetPlaceholderList(count = placeholderCount) },
         loadingContentOnConcatenate = { liveBetPlaceholderItem() },
     ) {
-        val poolGamblerBetsCount = lazyPoolGamblerBets.itemCount
+        val poolGamblerBetsCount = lazyBets.itemCount
         var lastMatchDate: LocalDate? = null
 
         repeat(poolGamblerBetsCount) { index ->
-            val poolGamblerBet = lazyPoolGamblerBets[index]!!
+            val poolGamblerBet = lazyBets[index]!!
 
             if (lastMatchDate != poolGamblerBet.matchDateTime.date) {
                 val localDateString = poolGamblerBet.matchDateTime.toShortDateString()
@@ -111,7 +110,5 @@ private fun Modifier.liveHeaderBetItemView() =
 private fun LiveBetListPreview() {
     val items =
         MutableStateFlow(PagingData.from(poolGamblerBetDummyModels())).collectAsLazyPagingItems()
-    TycheTheme {
-        LiveBetList(lazyPoolGamblerBets = items, modifier = Modifier.fillMaxSize())
-    }
+    LiveBetList(lazyBets = items, modifier = Modifier.fillMaxSize())
 }

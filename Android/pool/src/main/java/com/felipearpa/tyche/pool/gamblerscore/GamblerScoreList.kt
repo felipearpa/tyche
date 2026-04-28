@@ -34,7 +34,7 @@ fun GamblerScoreList(
     loggedInGamblerId: String,
     modifier: Modifier = Modifier,
     fakeItemCount: Int = 0,
-    onGamblerOpen: ((poolId: String, gamblerId: String) -> Unit)? = null,
+    onGamblerOpen: ((poolId: String, gamblerId: String, gamblerUsername: String) -> Unit)? = null,
 ) {
     RefreshableStatefulLazyColumn(
         modifier = modifier,
@@ -79,7 +79,7 @@ fun GamblerScoreList(
                     )
                 },
             ),
-            contentType = lazyPoolGamblerScores.itemContentType { "PoolGamblerScore" },
+            contentType = lazyPoolGamblerScores.itemContentType { "GamblerScore" },
         ) { index ->
             val item = lazyPoolGamblerScores[index]
             GamblerScoreItem(

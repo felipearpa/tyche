@@ -4,6 +4,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
+import com.felipearpa.tyche.gamblerbets.GamblerBetsViewRoute
 import com.felipearpa.tyche.home.HomeRoute
 import com.felipearpa.tyche.pool.poolscore.PoolScoreListRoute
 
@@ -16,9 +17,8 @@ fun NavGraphBuilder.poolHomeNavView(
         PoolHomeView(
             poolId = route.poolId,
             gamblerId = route.gamblerId,
-            loggedInGamblerId = route.loggedInGamblerId,
             onPoolChange = {
-                navController.navigate(route = PoolScoreListRoute(gamblerId = route.loggedInGamblerId)) {
+                navController.navigate(route = PoolScoreListRoute(gamblerId = route.gamblerId)) {
                     popUpTo<PoolHomeViewRoute> { inclusive = true }
                 }
             },
@@ -27,13 +27,13 @@ fun NavGraphBuilder.poolHomeNavView(
                     popUpTo(route = initialRoute) { inclusive = true }
                 }
             },
-            onGamblerOpen = { _, tappedGamblerId ->
+            onGamblerOpen = { _, tappedGamblerId, tappedGamblerUsername ->
                 if (tappedGamblerId != route.gamblerId) {
                     navController.navigate(
-                        route = PoolHomeViewRoute(
+                        route = GamblerBetsViewRoute(
                             poolId = route.poolId,
                             gamblerId = tappedGamblerId,
-                            loggedInGamblerId = route.loggedInGamblerId,
+                            gamblerUsername = tappedGamblerUsername,
                         ),
                     )
                 }

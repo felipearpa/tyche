@@ -16,6 +16,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import com.felipearpa.foundation.emptyString
 import com.felipearpa.tyche.core.JoinPoolUrlTemplateProvider
+import com.felipearpa.tyche.gamblerbets.gamblerBetsNavView
 import com.felipearpa.tyche.home.HomeRoute
 import com.felipearpa.tyche.home.homeNavView
 import com.felipearpa.tyche.pool.poolJoinerView
@@ -130,6 +131,8 @@ fun Outlet(
             navController = navController,
             initialRoute = initialRoute,
         )
+
+        gamblerBetsNavView(navController = navController)
 
         poolFromLayoutCreatorNavView(navController = navController)
 

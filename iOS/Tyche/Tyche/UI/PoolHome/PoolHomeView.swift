@@ -10,28 +10,23 @@ import Session
 
 struct PoolHomeView: View {
     let gamblerId: String
-    let loggedInGamblerId: String
     let poolId: String
     let onChangePool: () -> Void
     let onSignOut: () -> Void
-    let onGamblerOpen: ((_ poolId: String, _ gamblerId: String) -> Void)?
+    let onGamblerOpen: ((_ poolId: String, _ gamblerId: String, _ gamblerUsername: String) -> Void)?
 
     @Environment(\.diResolver) var diResolver: DIResolver
     @State private var selectedTab = PoolHomeTab.gamblerScores
     @State private var drawerVisible = false
 
-    private var isViewingSelf: Bool { gamblerId == loggedInGamblerId }
-
     init(
         gamblerId: String,
-        loggedInGamblerId: String? = nil,
         poolId: String,
         onChangePool: @escaping () -> Void,
         onSignOut: @escaping () -> Void,
-        onGamblerOpen: ((_ poolId: String, _ gamblerId: String) -> Void)? = nil
+        onGamblerOpen: ((_ poolId: String, _ gamblerId: String, _ gamblerUsername: String) -> Void)? = nil
     ) {
         self.gamblerId = gamblerId
-        self.loggedInGamblerId = loggedInGamblerId ?? gamblerId
         self.poolId = poolId
         self.onChangePool = onChangePool
         self.onSignOut = onSignOut
@@ -47,7 +42,7 @@ struct PoolHomeView: View {
                     getPoolGamblerScoresByPoolUseCase: GetPoolGamblerScoresByPoolUseCase(
                         poolGamblerScoreRepository: diResolver.resolve(PoolGamblerScoreRepository.self)!
                     ),
-                    gamblerId: loggedInGamblerId,
+                    gamblerId: gamblerId,
                     poolId: poolId
                 ),
                 onGamblerOpen: onGamblerOpen
@@ -60,29 +55,15 @@ struct PoolHomeView: View {
                 )
             }
 
-            Group {
-                if isViewingSelf {
-                    PendingBetListView(
-                        viewModel: PendingBetListViewModel(
-                            getPoolGamblerBetsUseCase: GetPendingPoolGamblerBetsUseCase(
-                                poolGamblerBetRepository: diResolver.resolve(PoolGamblerBetRepository.self)!
-                            ),
-                            gamblerId: gamblerId,
-                            poolId: poolId
-                        )
-                    )
-                } else {
-                    LiveBetListView(
-                        viewModel: LiveBetListViewModel(
-                            getLivePoolGamblerBetsUseCase: GetLivePoolGamblerBetsUseCase(
-                                poolGamblerBetRepository: diResolver.resolve(PoolGamblerBetRepository.self)!
-                            ),
-                            gamblerId: gamblerId,
-                            poolId: poolId
-                        )
-                    )
-                }
-            }
+            PendingBetListView(
+                viewModel: PendingBetListViewModel(
+                    getPoolGamblerBetsUseCase: GetPendingPoolGamblerBetsUseCase(
+                        poolGamblerBetRepository: diResolver.resolve(PoolGamblerBetRepository.self)!
+                    ),
+                    gamblerId: gamblerId,
+                    poolId: poolId
+                )
+            )
             .tag(PoolHomeTab.bets)
             .tabItem {
                 Label(
@@ -112,7 +93,7 @@ struct PoolHomeView: View {
             PoolHomeDrawerView(
                 viewModel: PoolHomeDrawerViewModel(
                     poolId: poolId,
-                    gamblerId: loggedInGamblerId,
+                    gamblerId: gamblerId,
                     logoutUseCase: diResolver.resolve(LogOutUseCase.self)!,
                     getPoolGamblerScoreUseCase: diResolver.resolve(GetPoolGamblerScoreUseCase.self)!,
                 ),

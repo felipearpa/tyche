@@ -5,12 +5,12 @@ import UI
 struct GamblerScoreList: View {
     var lazyPagingItems: LazyPagingItems<String, PoolGamblerScoreModel>
     let isCurrentUser: String?
-    let onGamblerOpen: ((_ poolId: String, _ gamblerId: String) -> Void)?
+    let onGamblerOpen: ((_ poolId: String, _ gamblerId: String, _ gamblerUsername: String) -> Void)?
 
     init(
         lazyPagingItems: LazyPagingItems<String, PoolGamblerScoreModel>,
         isCurrentUser: String?,
-        onGamblerOpen: ((_ poolId: String, _ gamblerId: String) -> Void)? = nil
+        onGamblerOpen: ((_ poolId: String, _ gamblerId: String, _ gamblerUsername: String) -> Void)? = nil
     ) {
         self.lazyPagingItems = lazyPagingItems
         self.isCurrentUser = isCurrentUser

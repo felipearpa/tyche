@@ -5,11 +5,11 @@ import DataPool
 
 public struct GamblerScoreListView: View {
     @StateObject private var viewModel: GamblerScoreListViewModel
-    private let onGamblerOpen: ((_ poolId: String, _ gamblerId: String) -> Void)?
+    private let onGamblerOpen: ((_ poolId: String, _ gamblerId: String, _ gamblerUsername: String) -> Void)?
 
     public init(
         viewModel: @autoclosure @escaping () -> GamblerScoreListViewModel,
-        onGamblerOpen: ((_ poolId: String, _ gamblerId: String) -> Void)? = nil
+        onGamblerOpen: ((_ poolId: String, _ gamblerId: String, _ gamblerUsername: String) -> Void)? = nil
     ) {
         self._viewModel = .init(wrappedValue: viewModel())
         self.onGamblerOpen = onGamblerOpen

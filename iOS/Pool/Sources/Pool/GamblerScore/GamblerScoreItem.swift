@@ -4,14 +4,14 @@ import UI
 struct GamblerScoreItem: View {
     let poolGamblerScore: PoolGamblerScoreModel
     let isCurrentUser: Bool
-    let onTap: ((_ poolId: String, _ gamblerId: String) -> Void)?
+    let onTap: ((_ poolId: String, _ gamblerId: String, _ gamblerUsername: String) -> Void)?
 
     @Environment(\.boxSpacing) private var boxSpacing
 
     init(
         poolGamblerScore: PoolGamblerScoreModel,
         isCurrentUser: Bool,
-        onTap: ((_ poolId: String, _ gamblerId: String) -> Void)? = nil
+        onTap: ((_ poolId: String, _ gamblerId: String, _ gamblerUsername: String) -> Void)? = nil
     ) {
         self.poolGamblerScore = poolGamblerScore
         self.isCurrentUser = isCurrentUser
@@ -21,7 +21,13 @@ struct GamblerScoreItem: View {
     var body: some View {
         let row = rowContent
         if let onTap {
-            Button(action: { onTap(poolGamblerScore.poolId, poolGamblerScore.gamblerId) }) {
+            Button(action: {
+                onTap(
+                    poolGamblerScore.poolId,
+                    poolGamblerScore.gamblerId,
+                    poolGamblerScore.gamblerUsername
+                )
+            }) {
                 row
             }
             .buttonStyle(.plain)

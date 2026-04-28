@@ -14,15 +14,15 @@ import kotlinx.coroutines.flow.MutableStateFlow
 @Composable
 fun GamblerScoreListView(
     viewModel: GamblerScoreListViewModel,
-    loggedInGamblerId: String = viewModel.gamblerId,
-    onGamblerOpen: ((poolId: String, gamblerId: String) -> Unit)? = null,
+    signedInGamblerId: String = viewModel.gamblerId,
+    onGamblerOpen: ((poolId: String, gamblerId: String, gamblerUsername: String) -> Unit)? = null,
 ) {
     val lazyItems = viewModel.poolGamblerScores.collectAsLazyPagingItems()
     val pageSize = viewModel.pageSize
 
     GamblerScoreList(
         lazyPoolGamblerScores = lazyItems,
-        loggedInGamblerId = loggedInGamblerId,
+        loggedInGamblerId = signedInGamblerId,
         fakeItemCount = pageSize,
         modifier = Modifier.fillMaxSize(),
         onGamblerOpen = onGamblerOpen,
