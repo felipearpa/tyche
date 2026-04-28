@@ -69,15 +69,12 @@ type BetFunction(configureServices: IServiceCollection -> unit) =
             match betRequestResult with
             | Error error -> return [ error ] |> BadRequestResponseFactory.create
             | Ok betPoolRequest ->
-                let! authResult =
-                    Authorization.requirePoolAccessAsync
+                let! callerResult =
+                    Authorization.resolveCallerGamblerIdAsync
                         request
-                        (Ulid.newOf betPoolRequest.PoolId)
-                        (Ulid.newOf betPoolRequest.GamblerId)
                         (scope.ServiceProvider.GetService<IAccountRepository>())
-                        (scope.ServiceProvider.GetService<IPoolRepository>())
 
-                match authResult with
+                match callerResult with
                 | Error failure -> return Authorization.toResponse failure
                 | Ok callerGamblerId when callerGamblerId.Value <> betPoolRequest.GamblerId ->
                     return Authorization.toResponse NotAMember

@@ -2,7 +2,6 @@ namespace Felipearpa.Tyche.AmazonLambda
 
 open Amazon.Lambda.APIGatewayEvents
 open Felipearpa.Tyche.Account.Domain
-open Felipearpa.Tyche.Pool.Domain
 open Felipearpa.Type
 
 type AuthFailure =
@@ -40,29 +39,6 @@ module Authorization =
                     | Ok(Some account) -> Ok account.AccountId
                     | Ok None -> Error UnknownAccount
                     | Error _ -> Error UnknownAccount
-        }
-
-    let requirePoolAccessAsync
-        (request: APIGatewayHttpApiV2ProxyRequest)
-        (poolId: Ulid)
-        (targetGamblerId: Ulid)
-        (accountRepository: IAccountRepository)
-        (poolRepository: IPoolRepository)
-        : Async<Result<Ulid, AuthFailure>> =
-        async {
-            let! callerResult = resolveCallerGamblerIdAsync request accountRepository
-
-            match callerResult with
-            | Error failure -> return Error failure
-            | Ok callerGamblerId when callerGamblerId.Value = targetGamblerId.Value -> return Ok callerGamblerId
-            | Ok callerGamblerId ->
-                let! membership = poolRepository.IsPoolMemberAsync(poolId, callerGamblerId)
-
-                return
-                    match membership with
-                    | Ok true -> Ok callerGamblerId
-                    | Ok false -> Error NotAMember
-                    | Error _ -> Error NotAMember
         }
 
     let toResponse (failure: AuthFailure) : APIGatewayHttpApiV2ProxyResponse =
