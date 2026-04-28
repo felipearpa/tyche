@@ -6,6 +6,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
 import com.felipearpa.tyche.gamblerbets.GamblerBetsViewRoute
 import com.felipearpa.tyche.home.HomeRoute
+import com.felipearpa.tyche.matchbets.MatchBetsViewRoute
 import com.felipearpa.tyche.pool.poolscore.PoolScoreListRoute
 
 fun NavGraphBuilder.poolHomeNavView(
@@ -37,6 +38,19 @@ fun NavGraphBuilder.poolHomeNavView(
                         ),
                     )
                 }
+            },
+            onMatchOpen = { poolGamblerBet ->
+                navController.navigate(
+                    route = MatchBetsViewRoute(
+                        poolId = poolGamblerBet.poolId,
+                        matchId = poolGamblerBet.matchId,
+                        homeTeamName = poolGamblerBet.homeTeamName,
+                        awayTeamName = poolGamblerBet.awayTeamName,
+                        matchDateTimeIso = poolGamblerBet.matchDateTime.toString(),
+                        homeTeamScore = poolGamblerBet.matchScore?.homeTeamValue,
+                        awayTeamScore = poolGamblerBet.matchScore?.awayTeamValue,
+                    ),
+                )
             },
         )
     }

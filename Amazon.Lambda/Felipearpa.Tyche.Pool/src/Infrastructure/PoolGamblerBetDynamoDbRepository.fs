@@ -82,6 +82,27 @@ type PoolGamblerBetDynamoDbRepository(keySerializer: IKeySerializer, client: IAm
                         | None -> None }
             }
 
+        member this.GetPoolMatchGamblerBetsAsync(poolId, matchId, maybeNext) =
+            async {
+                let request =
+                    GetPoolMatchGamblerBetsRequestBuilder.build
+                        poolId
+                        matchId
+                        maybeNext
+                        keySerializer.Deserialize
+
+                let! response = client.QueryAsync(request) |> Async.AwaitTask
+
+                let maybeLastEvaluatedKey = response.LastEvaluatedKey |> Option.ofObj
+
+                return
+                    { CursorPage.Items = response.Items.Select(toPoolGamblerBet)
+                      Next =
+                        match maybeLastEvaluatedKey with
+                        | Some lastEvaluatedKey -> keySerializer.Serialize(lastEvaluatedKey) |> Some
+                        | None -> None }
+            }
+
         member this.BetAsync(poolId, gamblerId, matchId, betScore) =
             async {
                 let request = BetRequestBuilder.build poolId gamblerId matchId betScore

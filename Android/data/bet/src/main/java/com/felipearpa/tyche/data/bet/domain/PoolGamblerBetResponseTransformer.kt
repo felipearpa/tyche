@@ -6,6 +6,7 @@ internal fun PoolGamblerBetResponse.toPoolGamblerBet() =
     PoolGamblerBet(
         poolId = this.poolId,
         gamblerId = gamblerId,
+        gamblerUsername = this.gamblerUsername,
         matchId = this.matchId,
         homeTeamId = this.homeTeamId,
         homeTeamName = this.homeTeamName,

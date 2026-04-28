@@ -28,6 +28,19 @@ struct PoolHomeRouter: View {
                             )
                         )
                     }
+                },
+                onMatchOpen: { poolId, matchId, homeTeamName, awayTeamName, matchDateTime, homeTeamScore, awayTeamScore in
+                    path.append(
+                        MatchBetsRoute(
+                            poolId: poolId,
+                            matchId: matchId,
+                            homeTeamName: homeTeamName,
+                            awayTeamName: awayTeamName,
+                            matchDateTime: matchDateTime,
+                            homeTeamScore: homeTeamScore,
+                            awayTeamScore: awayTeamScore
+                        )
+                    )
                 }
             )
             .navigationDestination(for: GamblerBetsRoute.self) { route in
@@ -35,6 +48,17 @@ struct PoolHomeRouter: View {
                     poolId: route.poolId,
                     gamblerId: route.gamblerId,
                     gamblerUsername: route.gamblerUsername
+                )
+            }
+            .navigationDestination(for: MatchBetsRoute.self) { route in
+                MatchBetsView(
+                    poolId: route.poolId,
+                    matchId: route.matchId,
+                    homeTeamName: route.homeTeamName,
+                    awayTeamName: route.awayTeamName,
+                    matchDateTime: route.matchDateTime,
+                    homeTeamScore: route.homeTeamScore,
+                    awayTeamScore: route.awayTeamScore
                 )
             }
         }

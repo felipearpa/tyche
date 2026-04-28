@@ -70,6 +70,23 @@ class PoolGamblerBetRemoteRepository: PoolGamblerBetRepository {
         }
     }
 
+    func getPoolMatchGamblerBets(
+        poolId: String,
+        matchId: String,
+        next: String?
+    ) async -> Result<CursorPage<PoolGamblerBet>, Error> {
+        return await networkErrorHandler.handle {
+            let page = try await poolGamblerBetRemoteDataSource.getPoolMatchGamblerBets(
+                poolId: poolId,
+                matchId: matchId,
+                next: next
+            )
+            return page.map { poolGamblerBetResponse in
+                poolGamblerBetResponse.toPoolGamblerBet()
+            }
+        }
+    }
+
     func bet(bet: Bet) async -> Result<PoolGamblerBet, Error> {
         return await networkErrorHandler.handle {
             let response = try await poolGamblerBetRemoteDataSource.bet(betRequest: bet.toBetRequest())

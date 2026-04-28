@@ -5,6 +5,7 @@ open System
 type PoolGamblerBetResponse =
     { PoolId: string
       GamblerId: string
+      GamblerUsername: string
       MatchId: string
       PoolLayoutId: string
       HomeTeamId: string

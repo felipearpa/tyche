@@ -4,6 +4,7 @@ import Core
 struct PoolGamblerBetResponse: Codable {
     let poolId: String
     let gamblerId: String
+    let gamblerUsername: String
     let matchId: String
     let homeTeamId: String
     let homeTeamName: String
@@ -23,6 +24,7 @@ extension PoolGamblerBetResponse {
         return PoolGamblerBet(
             poolId: self.poolId,
             gamblerId: self.gamblerId,
+            gamblerUsername: self.gamblerUsername,
             matchId: self.matchId,
             homeTeamId: self.homeTeamId,
             homeTeamName: self.homeTeamName,

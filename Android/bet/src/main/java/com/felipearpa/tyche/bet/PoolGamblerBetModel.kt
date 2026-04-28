@@ -7,6 +7,7 @@ import java.util.UUID
 data class PoolGamblerBetModel(
     val poolId: String,
     val gamblerId: String,
+    val gamblerUsername: String,
     val matchId: String,
     val homeTeamId: String,
     val homeTeamName: String,

@@ -31,6 +31,9 @@ type PoolFunction(configureServices: IServiceCollection -> unit) =
     let gamblerIdParameter = "gamblerId"
 
     [<Literal>]
+    let matchIdParameter = "matchId"
+
+    [<Literal>]
     let nextParameter = "next"
 
     [<Literal>]
@@ -52,6 +55,7 @@ type PoolFunction(configureServices: IServiceCollection -> unit) =
             .AddScoped<GetPendingPoolGamblerBets>()
             .AddScoped<GetFinishedPoolGamblerBets>()
             .AddScoped<GetLivePoolGamblerBets>()
+            .AddScoped<GetPoolMatchGamblerBets>()
             .AddScoped<GetPoolGamblerScoreById>()
             .AddScoped<GetPoolById>()
             .AddScoped<Bet>()
@@ -339,6 +343,59 @@ type PoolFunction(configureServices: IServiceCollection -> unit) =
             | _ ->
                 let errors =
                     [ toErrorOption poolIdResult; toErrorOption gamblerIdResult ] |> List.choose id
+
+                return errors |> BadRequestResponseFactory.create
+        }
+        |> Async.StartAsTask
+
+    // GET /pools/{poolId}/matches/{matchId}/bets
+    member this.GetMatchBetsAsync
+        (request: APIGatewayHttpApiV2ProxyRequest, _: ILambdaContext)
+        : APIGatewayHttpApiV2ProxyResponse Task =
+        async {
+            use scope = serviceProvider.CreateScope()
+
+            let poolIdResult =
+                request.PathParameters
+                |> Option.ofObj
+                |> Option.defaultValue Map.empty
+                |> tryGetStringParamOrError poolIdParameter
+
+            let matchIdResult =
+                request.PathParameters
+                |> Option.ofObj
+                |> Option.defaultValue Map.empty
+                |> tryGetStringParamOrError matchIdParameter
+
+            let maybeNext =
+                request.QueryStringParameters
+                |> Option.ofObj
+                |> Option.defaultValue Map.empty
+                |> tryGetStringParamOrNone nextParameter
+
+            match poolIdResult, matchIdResult, maybeNext with
+            | Ok poolId, Ok matchId, next ->
+                let! authResult =
+                    Authorization.requirePoolMembershipAsync
+                        request
+                        (Ulid.newOf poolId)
+                        (scope.ServiceProvider.GetService<IAccountRepository>())
+                        (scope.ServiceProvider.GetService<IPoolRepository>())
+
+                match authResult with
+                | Error failure -> return Authorization.toResponse failure
+                | Ok _ ->
+                    let! response =
+                        getMatchBetsAsync
+                            poolId
+                            matchId
+                            next
+                            (scope.ServiceProvider.GetService<GetPoolMatchGamblerBets>())
+
+                    return! response.ToAmazonProxyResponse()
+            | _ ->
+                let errors =
+                    [ toErrorOption poolIdResult; toErrorOption matchIdResult ] |> List.choose id
 
                 return errors |> BadRequestResponseFactory.create
         }

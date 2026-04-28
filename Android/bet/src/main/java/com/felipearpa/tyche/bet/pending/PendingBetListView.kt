@@ -4,9 +4,13 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.paging.compose.collectAsLazyPagingItems
+import com.felipearpa.tyche.bet.PoolGamblerBetModel
 
 @Composable
-fun PendingBetListView(viewModel: PendingBetListViewModel) {
+fun PendingBetListView(
+    viewModel: PendingBetListViewModel,
+    onMatchOpen: ((PoolGamblerBetModel) -> Unit)? = null,
+) {
     val lazyItems = viewModel.poolGamblerBets.collectAsLazyPagingItems()
     val pageSize = viewModel.pageSize
 
@@ -14,5 +18,6 @@ fun PendingBetListView(viewModel: PendingBetListViewModel) {
         lazyPoolGamblerBets = lazyItems,
         fakeItemCount = pageSize,
         modifier = Modifier.fillMaxSize(),
+        onMatchOpen = onMatchOpen,
     )
 }

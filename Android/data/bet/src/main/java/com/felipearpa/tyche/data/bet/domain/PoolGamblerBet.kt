@@ -6,6 +6,7 @@ import kotlinx.datetime.LocalDateTime
 data class PoolGamblerBet(
     val poolId: String,
     val gamblerId: String,
+    val gamblerUsername: String,
     val matchId: String,
     val homeTeamId: String,
     val homeTeamName: String,

@@ -5,6 +5,7 @@ func poolGamblerBetFakeModel() -> PoolGamblerBetModel {
     PoolGamblerBetModel(
         poolId: String(repeating: "X", count: 15),
         gamblerId: String(repeating: "X", count: 15),
+        gamblerUsername: String(repeating: "X", count: 25),
         matchId: String(repeating: "X", count: 15),
         homeTeamId: String(repeating: "X", count: 15),
         homeTeamName: String(repeating: "X", count: 25),
@@ -22,6 +23,7 @@ func poolGamblerBetDummyModel() -> PoolGamblerBetModel {
     return PoolGamblerBetModel(
         poolId: "pool123",
         gamblerId: "gambler456",
+        gamblerUsername: "gambler456@example.com",
         matchId: "match789",
         homeTeamId: "homeTeam1011",
         homeTeamName: "Red Devils",
@@ -40,6 +42,7 @@ func poolGamblerBetDummyModels() -> [PoolGamblerBetModel] {
         PoolGamblerBetModel(
             poolId: "pool123",
             gamblerId: "gambler456",
+            gamblerUsername: "gambler456@example.com",
             matchId: "match789",
             homeTeamId: "homeTeam1011",
             homeTeamName: "Red Devils",
@@ -54,6 +57,7 @@ func poolGamblerBetDummyModels() -> [PoolGamblerBetModel] {
         PoolGamblerBetModel(
             poolId: "pool124",
             gamblerId: "gambler457",
+            gamblerUsername: "gambler457@example.com",
             matchId: "match790",
             homeTeamId: "homeTeam1012",
             homeTeamName: "Silver Surfers",
@@ -68,6 +72,7 @@ func poolGamblerBetDummyModels() -> [PoolGamblerBetModel] {
         PoolGamblerBetModel(
             poolId: "pool125",
             gamblerId: "gambler458",
+            gamblerUsername: "gambler458@example.com",
             matchId: "match791",
             homeTeamId: "homeTeam1013",
             homeTeamName: "Bronze Beasts",

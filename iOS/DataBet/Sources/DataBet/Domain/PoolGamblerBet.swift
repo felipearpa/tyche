@@ -4,6 +4,7 @@ import Core
 public struct PoolGamblerBet: Codable {
     public let poolId: String
     public let gamblerId: String
+    public let gamblerUsername: String
     public let matchId: String
     public let homeTeamId: String
     public let homeTeamName: String

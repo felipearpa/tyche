@@ -22,5 +22,11 @@ public protocol PoolGamblerBetRepository {
         searchText: String?
     ) async -> Result<CursorPage<PoolGamblerBet>, Error>
 
+    func getPoolMatchGamblerBets(
+        poolId: String,
+        matchId: String,
+        next: String?
+    ) async -> Result<CursorPage<PoolGamblerBet>, Error>
+
     func bet(bet: Bet) async -> Result<PoolGamblerBet, Error>
 }

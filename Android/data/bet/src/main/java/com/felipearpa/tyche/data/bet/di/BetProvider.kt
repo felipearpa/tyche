@@ -5,6 +5,7 @@ import com.felipearpa.tyche.data.bet.application.PlaceBet
 import com.felipearpa.tyche.data.bet.application.GetFinishedPoolGamblerBets
 import com.felipearpa.tyche.data.bet.application.GetLivePoolGamblerBets
 import com.felipearpa.tyche.data.bet.application.GetPendingPoolGamblerBets
+import com.felipearpa.tyche.data.bet.application.GetPoolMatchGamblerBets
 import com.felipearpa.tyche.data.bet.domain.PoolGamblerBetDataSource
 import com.felipearpa.tyche.data.bet.domain.PoolGamblerBetRepository
 import com.felipearpa.tyche.data.bet.infrastructure.PoolGamblerBetRemoteKtorDataSource
@@ -17,6 +18,7 @@ val betDataModule = module {
     factory { GetPendingPoolGamblerBets(poolGamblerBetRepository = get()) }
     factory { GetFinishedPoolGamblerBets(poolGamblerBetRepository = get()) }
     factory { GetLivePoolGamblerBets(poolGamblerBetRepository = get()) }
+    factory { GetPoolMatchGamblerBets(poolGamblerBetRepository = get()) }
     factory { PlaceBet(poolGamblerBetRepository = get()) }
 
     factory<PoolGamblerBetRepository> {

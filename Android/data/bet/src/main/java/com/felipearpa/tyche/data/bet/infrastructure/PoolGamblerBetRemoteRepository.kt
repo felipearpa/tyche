@@ -66,6 +66,20 @@ internal class PoolGamblerBetRemoteRepository(
         }
     }
 
+    override suspend fun getPoolMatchGamblerBets(
+        poolId: String,
+        matchId: String,
+        next: String?,
+    ): Result<CursorPage<PoolGamblerBet>> {
+        return networkExceptionHandler.handle {
+            poolGamblerBetDataSource.getPoolMatchGamblerBets(
+                poolId = poolId,
+                matchId = matchId,
+                next = next,
+            ).map { poolGamblerBetResponse -> poolGamblerBetResponse.toPoolGamblerBet() }
+        }
+    }
+
     override suspend fun bet(bet: Bet): Result<PoolGamblerBet> {
         return networkExceptionHandler.handle {
             poolGamblerBetDataSource.bet(betRequest = bet.toBetRequest()).toPoolGamblerBet()

@@ -20,6 +20,9 @@ type IPoolGamblerBetRepository =
     abstract GetLivePoolGamblerBetsAsync:
         Ulid * Ulid * string option * string option -> Async<PoolGamblerBet CursorPage>
 
+    abstract GetPoolMatchGamblerBetsAsync:
+        Ulid * Ulid * string option -> Async<PoolGamblerBet CursorPage>
+
     abstract BetAsync: Ulid * Ulid * Ulid * TeamScore<BetScore> -> Result<PoolGamblerBet, BetFailure> Async
 
     abstract AddPoolGamblerMatchAsync: InitialPoolGamblerBet -> Result<PoolGamblerBet, AddMatchFailure> Async

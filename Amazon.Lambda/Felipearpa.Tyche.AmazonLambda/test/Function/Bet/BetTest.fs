@@ -25,6 +25,7 @@ module BetTest =
             dict
                 [ "poolId", AttributeValue(S = "01K0DCFFB08W35AW5Q6F82R6NQ")
                   "gamblerId", AttributeValue(S = "01K0DCFFB08W35AW5Q6F82R6NQ")
+                  "gamblerUsername", AttributeValue(S = "felipearcila@gmail.com")
                   "matchId", AttributeValue(S = "01K0DCFFB08W35AW5Q6F82R6NQ")
                   "poolLayoutId", AttributeValue(S = "01K0DCFFB08W35AW5Q6F82R6NQ")
                   "homeTeamId", AttributeValue(S = "01K0DCFFB08W35AW5Q6F82R6NQ")

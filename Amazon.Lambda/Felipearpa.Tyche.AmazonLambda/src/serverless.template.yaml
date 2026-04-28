@@ -178,6 +178,35 @@ Resources:
             Method: GET
             ApiId: !Ref AuthGatewayHttpApi
 
+  GetMatchBets:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: Felipearpa.Tyche.AmazonLambda::Felipearpa.Tyche.AmazonLambda.Function.PoolFunction::GetMatchBetsAsync
+      Runtime: dotnet10
+      CodeUri: .
+      MemorySize: 256
+      Timeout: 30
+      Policies:
+        - AWSLambdaBasicExecutionRole
+        - Statement:
+            - Effect: Allow
+              Action:
+                - dynamodb:Query
+                - dynamodb:GetItem
+              Resource:
+                - arn:aws:dynamodb:us-east-2:567776770335:table/Pool
+                - arn:aws:dynamodb:us-east-2:567776770335:table/Pool/index/GetPoolGamblerScoresByMatch-index
+                - arn:aws:dynamodb:us-east-2:567776770335:table/Account
+                - arn:aws:dynamodb:us-east-2:567776770335:table/Account/index/GetByEmail-index
+      Architectures: [ arm64 ]
+      Events:
+        HttpApi:
+          Type: HttpApi
+          Properties:
+            Path: /pools/{poolId}/matches/{matchId}/bets
+            Method: GET
+            ApiId: !Ref AuthGatewayHttpApi
+
   GetPoolsByGamblerId:
     Type: AWS::Serverless::Function
     Properties:

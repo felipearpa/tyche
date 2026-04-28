@@ -14,6 +14,7 @@ struct PoolHomeView: View {
     let onChangePool: () -> Void
     let onSignOut: () -> Void
     let onGamblerOpen: ((_ poolId: String, _ gamblerId: String, _ gamblerUsername: String) -> Void)?
+    let onMatchOpen: MatchOpenHandler?
 
     @Environment(\.diResolver) var diResolver: DIResolver
     @State private var selectedTab = PoolHomeTab.gamblerScores
@@ -24,13 +25,15 @@ struct PoolHomeView: View {
         poolId: String,
         onChangePool: @escaping () -> Void,
         onSignOut: @escaping () -> Void,
-        onGamblerOpen: ((_ poolId: String, _ gamblerId: String, _ gamblerUsername: String) -> Void)? = nil
+        onGamblerOpen: ((_ poolId: String, _ gamblerId: String, _ gamblerUsername: String) -> Void)? = nil,
+        onMatchOpen: MatchOpenHandler? = nil
     ) {
         self.gamblerId = gamblerId
         self.poolId = poolId
         self.onChangePool = onChangePool
         self.onSignOut = onSignOut
         self.onGamblerOpen = onGamblerOpen
+        self.onMatchOpen = onMatchOpen
     }
 
     var body: some View {
@@ -62,7 +65,8 @@ struct PoolHomeView: View {
                     ),
                     gamblerId: gamblerId,
                     poolId: poolId
-                )
+                ),
+                onMatchOpen: onMatchOpen
             )
             .tag(PoolHomeTab.bets)
             .tabItem {
@@ -79,7 +83,8 @@ struct PoolHomeView: View {
                     ),
                     gamblerId: gamblerId,
                     poolId: poolId,
-                )
+                ),
+                onMatchOpen: onMatchOpen
             )
             .tag(PoolHomeTab.historyBet)
             .tabItem {

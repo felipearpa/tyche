@@ -6,6 +6,7 @@ fun PoolGamblerBet.toPoolGamblerBetModel() =
     PoolGamblerBetModel(
         poolId = this.poolId,
         gamblerId = this.gamblerId,
+        gamblerUsername = this.gamblerUsername,
         matchId = this.matchId,
         homeTeamId = this.homeTeamId,
         homeTeamName = this.homeTeamName,

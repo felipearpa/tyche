@@ -1,6 +1,7 @@
 package com.felipearpa.tyche.bet.finished
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -33,6 +34,7 @@ fun FinishedBetList(
     lazyPoolGamblerBets: LazyPagingItems<PoolGamblerBetModel>,
     modifier: Modifier = Modifier,
     fakeItemCount: Int = 0,
+    onMatchOpen: ((PoolGamblerBetModel) -> Unit)? = null,
 ) {
     RefreshableStatefulLazyColumn(
         modifier = modifier,
@@ -68,9 +70,15 @@ fun FinishedBetList(
                 ),
                 contentType = "PoolGamblerBet",
             ) {
+                val itemModifier = Modifier
+                    .let { base ->
+                        if (onMatchOpen != null) base.clickable { onMatchOpen(poolGamblerBet) } else base
+                    }
+                    .finishedBetItem()
+
                 FinishedBetItem(
                     poolGamblerBet = poolGamblerBet,
-                    modifier = Modifier.finishedBetItem(),
+                    modifier = itemModifier,
                 )
                 HorizontalDivider(modifier = Modifier.padding(horizontal = LocalBoxSpacing.current.large))
             }

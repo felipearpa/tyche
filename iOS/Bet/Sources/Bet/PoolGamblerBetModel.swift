@@ -10,6 +10,7 @@ struct PoolGamblerBetModelId: Hashable, Codable {
 struct PoolGamblerBetModel: Codable, Identifiable, Hashable {
     let poolId: String
     let gamblerId: String
+    let gamblerUsername: String
     let matchId: String
     let homeTeamId: String
     let homeTeamName: String
@@ -36,6 +37,7 @@ extension PoolGamblerBetModel {
     struct Builder {
         var poolId: String
         var gamblerId: String
+        var gamblerUsername: String
         var matchId: String
         var homeTeamId: String
         var homeTeamName: String
@@ -50,6 +52,7 @@ extension PoolGamblerBetModel {
         fileprivate init(original: PoolGamblerBetModel) {
             self.poolId = original.poolId
             self.gamblerId = original.gamblerId
+            self.gamblerUsername = original.gamblerUsername
             self.matchId = original.matchId
             self.homeTeamId = original.homeTeamId
             self.homeTeamName = original.homeTeamName
@@ -66,6 +69,7 @@ extension PoolGamblerBetModel {
             PoolGamblerBetModel(
                 poolId: self.poolId,
                 gamblerId: self.gamblerId,
+                gamblerUsername: self.gamblerUsername,
                 matchId: self.matchId,
                 homeTeamId: self.homeTeamId,
                 homeTeamName: self.homeTeamName,

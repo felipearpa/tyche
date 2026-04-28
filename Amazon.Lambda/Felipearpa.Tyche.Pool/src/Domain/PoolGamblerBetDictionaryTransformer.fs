@@ -21,6 +21,7 @@ module PoolGamblerBetDictionaryTransformer =
 
         { PoolGamblerBet.PoolId = dictionary[PoolTable.Attribute.poolId].S |> Ulid.newOf
           GamblerId = dictionary[PoolTable.Attribute.gamblerId].S |> Ulid.newOf
+          GamblerUsername = dictionary[PoolTable.Attribute.gamblerUsername].S |> NonEmptyString100.newOf
           MatchId = dictionary[PoolTable.Attribute.matchId].S |> Ulid.newOf
           PoolLayoutId = dictionary[PoolTable.Attribute.poolLayoutId].S |> Ulid.newOf
           HomeTeamId = dictionary[PoolTable.Attribute.homeTeamId].S |> Ulid.newOf

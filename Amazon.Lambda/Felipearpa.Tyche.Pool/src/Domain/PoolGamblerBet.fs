@@ -7,6 +7,7 @@ open Felipearpa.Type
 type PoolGamblerBet =
     { PoolId: Ulid
       GamblerId: Ulid
+      GamblerUsername: NonEmptyString100
       MatchId: Ulid
       PoolLayoutId: Ulid
       HomeTeamId: Ulid

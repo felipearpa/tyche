@@ -19,6 +19,7 @@ module InitialPoolGamblerBetTransformer =
               Key.sk, AttributeValue(S = KeyPrefix.build PoolTable.Prefix.match' poolGamblerBet.MatchId.Value)
               PoolTable.Attribute.poolId, AttributeValue(S = poolGamblerBet.PoolId.Value)
               PoolTable.Attribute.gamblerId, AttributeValue(S = poolGamblerBet.GamblerId.Value)
+              PoolTable.Attribute.gamblerUsername, AttributeValue(S = poolGamblerBet.GamblerUsername.Value)
               PoolTable.Attribute.matchId, AttributeValue(S = poolGamblerBet.MatchId.Value)
               PoolTable.Attribute.homeTeamId, AttributeValue(S = poolGamblerBet.HomeTeamId.Value)
               PoolTable.Attribute.homeTeamName, AttributeValue(S = poolGamblerBet.HomeTeamName.Value)

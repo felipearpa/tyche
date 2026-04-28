@@ -39,6 +39,7 @@
         <Compile Include="Infrastructure\BetRequestBuilder.fs" />
         <Compile Include="Infrastructure\AddPoolGamblerMatchRequestBuilder.fs" />
         <Compile Include="Infrastructure\GetBetPoolGamblerScoresByMatchRequestBuilder.fs" />
+        <Compile Include="Infrastructure\GetPoolMatchGamblerBetsRequestBuilder.fs" />
         <Compile Include="Infrastructure\ComputePoolGamblerBetRequestBuilder.fs" />
         <Compile Include="Infrastructure\ComputePoolGamblerScoreRequestBuilder.fs" />
         <Compile Include="Infrastructure\UpdatePositionRequestBuilder.fs" />
@@ -56,6 +57,7 @@
         <Compile Include="Application\GetFinishedPoolGamblerBets.fs" />
         <Compile Include="Application\GetPendingPoolGamblerBets.fs" />
         <Compile Include="Application\GetLivePoolGamblerBets.fs" />
+        <Compile Include="Application\GetPoolMatchGamblerBets.fs" />
         <Compile Include="Application\GetPoolGamblerScoreById.fs" />
         <Compile Include="Application\CreatePool.fs" />
         <Compile Include="Application\JoinPool.fs" />

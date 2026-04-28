@@ -1,6 +1,7 @@
 package com.felipearpa.tyche.bet.pending
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -31,6 +32,7 @@ fun PendingBetList(
     lazyPoolGamblerBets: LazyPagingItems<PoolGamblerBetModel>,
     modifier: Modifier = Modifier,
     fakeItemCount: Int = 0,
+    onMatchOpen: ((PoolGamblerBetModel) -> Unit)? = null,
 ) {
     RefreshableStatefulLazyColumn(
         modifier = modifier,
@@ -67,16 +69,22 @@ fun PendingBetList(
                 ),
                 contentType = "PoolGamblerBet",
             ) {
+                val itemModifier = Modifier
+                    .let { base ->
+                        if (onMatchOpen != null) base.clickable { onMatchOpen(poolGamblerBet) } else base
+                    }
+                    .pendingBetItem()
+
                 if (LocalInspectionMode.current) {
                     PendingBetItem(
                         poolGamblerBet = poolGamblerBet,
                         viewState = PendingBetItemViewState.dummyVisualization(),
-                        modifier = Modifier.pendingBetItem(),
+                        modifier = itemModifier,
                     )
                 } else {
                     PendingBetItemView(
                         viewModel = pendingBetViewModel(poolGamblerBet = poolGamblerBet),
-                        modifier = Modifier.pendingBetItem(),
+                        modifier = itemModifier,
                     )
                 }
                 HorizontalDivider()

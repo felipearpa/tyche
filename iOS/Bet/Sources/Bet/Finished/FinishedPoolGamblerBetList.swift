@@ -4,8 +4,17 @@ import Core
 
 struct FinishedPoolGamblerBetList: View {
     var lazyPagingItems: LazyPagingItems<String, PoolGamblerBetModel>
+    let onMatchOpen: MatchOpenHandler?
 
     @Environment(\.boxSpacing) private var boxSpacing
+
+    init(
+        lazyPagingItems: LazyPagingItems<String, PoolGamblerBetModel>,
+        onMatchOpen: MatchOpenHandler? = nil
+    ) {
+        self.lazyPagingItems = lazyPagingItems
+        self.onMatchOpen = onMatchOpen
+    }
 
     var body: some View {
         StatefulLazyVStack(
@@ -27,6 +36,8 @@ struct FinishedPoolGamblerBetList: View {
 
                 FinishedBetItem(poolGamblerBet: poolGamblerBet)
                     .padding(boxSpacing.large)
+                    .contentShape(Rectangle())
+                    .onTapGesture { invokeMatchOpen(onMatchOpen, poolGamblerBet) }
 
                 Divider()
             }
