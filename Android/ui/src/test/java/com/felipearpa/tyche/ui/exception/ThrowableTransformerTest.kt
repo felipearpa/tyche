@@ -1,7 +1,7 @@
 package com.felipearpa.tyche.ui.exception
 
-import com.felipearpa.tyche.core.network.HttpStatusCode
-import com.felipearpa.tyche.core.network.NetworkException
+import com.felipearpa.network.HttpStatus
+import com.felipearpa.network.NetworkException
 import com.felipearpa.tyche.ui.network.NetworkLocalizedException
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.should
@@ -22,7 +22,7 @@ class ThrowableTransformerTest {
     fun `given a NetworkException when transformation attempt then is transformed to NetworkLocalizedException`() =
         listOf(
             NetworkException.RemoteCommunication,
-            NetworkException.Http(HttpStatusCode.INTERNAL_SERVER_ERROR)
+            NetworkException.Http(HttpStatus.INTERNAL_SERVER_ERROR),
         ).map { networkException ->
             dynamicTest("given a $networkException when transformation attempt then is transformed to NetworkLocalizedException") {
                 val newLocalizedException = networkException.orDefaultLocalized()
