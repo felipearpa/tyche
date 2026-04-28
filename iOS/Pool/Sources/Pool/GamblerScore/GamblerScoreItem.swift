@@ -4,10 +4,33 @@ import UI
 struct GamblerScoreItem: View {
     let poolGamblerScore: PoolGamblerScoreModel
     let isCurrentUser: Bool
+    let onTap: ((_ poolId: String, _ gamblerId: String) -> Void)?
 
     @Environment(\.boxSpacing) private var boxSpacing
 
+    init(
+        poolGamblerScore: PoolGamblerScoreModel,
+        isCurrentUser: Bool,
+        onTap: ((_ poolId: String, _ gamblerId: String) -> Void)? = nil
+    ) {
+        self.poolGamblerScore = poolGamblerScore
+        self.isCurrentUser = isCurrentUser
+        self.onTap = onTap
+    }
+
     var body: some View {
+        let row = rowContent
+        if let onTap {
+            Button(action: { onTap(poolGamblerScore.poolId, poolGamblerScore.gamblerId) }) {
+                row
+            }
+            .buttonStyle(.plain)
+        } else {
+            row
+        }
+    }
+
+    private var rowContent: some View {
         HStack(spacing: boxSpacing.medium) {
             if let currentPosition = poolGamblerScore.position {
                 ZStack {

@@ -12,7 +12,12 @@ open Felipearpa.Type
 module PoolGamblerBetDictionaryTransformer =
 
     let toPoolGamblerBet (dictionary: IDictionary<string, AttributeValue>) =
-        let matchDateTime = DateTime.Parse(dictionary[PoolTable.Attribute.matchDateTime].S)
+        let matchDateTime =
+            DateTime.Parse(
+                dictionary[PoolTable.Attribute.matchDateTime].S,
+                Globalization.CultureInfo.InvariantCulture,
+                Globalization.DateTimeStyles.RoundtripKind
+            )
 
         { PoolGamblerBet.PoolId = dictionary[PoolTable.Attribute.poolId].S |> Ulid.newOf
           GamblerId = dictionary[PoolTable.Attribute.gamblerId].S |> Ulid.newOf
@@ -47,7 +52,7 @@ module PoolGamblerBetDictionaryTransformer =
             |> tryGetAttributeValueOrNone (PoolTable.Attribute.score)
             |> noneIfZero
           MatchDateTime = matchDateTime
-          isLocked = DateTime.Now >= matchDateTime }
+          isLocked = LockPolicy.isLockedAt DateTime.UtcNow matchDateTime }
 
     type Extensions =
         [<Extension>]

@@ -43,7 +43,8 @@ module PoolGamblerBetDictionaryTransformerTest =
         bet.BetScore.Value.HomeTeamValue.Value |> shouldEqual 1
         bet.BetScore.Value.AwayTeamValue.Value |> shouldEqual 1
         bet.Score.Value |> shouldEqual 3
-        bet.MatchDateTime |> shouldEqual (System.DateTime.Parse("2024-10-12T18:00:00Z"))
+        bet.MatchDateTime
+        |> shouldEqual (System.DateTime(2024, 10, 12, 18, 0, 0, System.DateTimeKind.Utc))
 
     [<Fact>]
     let ``given a bet dictionary with the minimal properties when is transformed to a bet then the bet is returned``
@@ -76,4 +77,5 @@ module PoolGamblerBetDictionaryTransformerTest =
         bet.AwayTeamName.Value |> shouldEqual "Team Beta"
         bet.BetScore |> shouldEqual None
         bet.Score |> shouldEqual None
-        bet.MatchDateTime |> shouldEqual (System.DateTime.Parse("2024-10-12T18:00:00Z"))
+        bet.MatchDateTime
+        |> shouldEqual (System.DateTime(2024, 10, 12, 18, 0, 0, System.DateTimeKind.Utc))

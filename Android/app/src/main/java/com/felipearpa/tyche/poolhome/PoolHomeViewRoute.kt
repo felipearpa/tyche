@@ -6,4 +6,5 @@ import kotlinx.serialization.Serializable
 data class PoolHomeViewRoute(
     val poolId: String,
     val gamblerId: String,
+    val loggedInGamblerId: String = gamblerId,
 )

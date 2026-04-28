@@ -13,6 +13,7 @@ open Felipearpa.Core
 open Felipearpa.Core.Json
 open Felipearpa.Core.Paging
 open Felipearpa.Tyche.AmazonLambda.Function
+open Felipearpa.Tyche.AmazonLambda.Function.Tests.AuthorizationTestHelpers
 open Felipearpa.Tyche.Function.Response
 open FsUnit.Xunit
 open FsUnitTyped
@@ -106,6 +107,8 @@ module GetFinishedBetsTest =
             .ReturnsAsync(QueryResponse(Items = (items |> List.map (fun it -> Dictionary it) |> ResizeArray)))
         |> ignore
 
+        let callerGamblerId = "01K0DCFFB08W35AW5Q6F82R6NQ"
+
         let functions =
             PoolFunction(fun services ->
                 services.AddLogging(fun builder ->
@@ -119,7 +122,8 @@ module GetFinishedBetsTest =
                     |> ignore)
                 |> ignore
 
-                services.AddSingleton<IAmazonDynamoDB>(client.Object) |> ignore)
+                services.AddSingleton<IAmazonDynamoDB>(client.Object) |> ignore
+                registerAuthAsCaller services callerGamblerId)
 
         let context = TestLambdaContext()
 
@@ -128,7 +132,9 @@ module GetFinishedBetsTest =
         request.PathParameters <-
             dict
                 [ "poolId", "01K0DCFFB08W35AW5Q6F82R6NQ"
-                  "gamblerId", "01K0DCFFB08W35AW5Q6F82R6NQ" ]
+                  "gamblerId", callerGamblerId ]
+
+        attachJwtClaim request testEmail |> ignore
 
         (expectedBets, context, request, functions)
 

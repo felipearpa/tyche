@@ -5,6 +5,17 @@ import UI
 struct GamblerScoreList: View {
     var lazyPagingItems: LazyPagingItems<String, PoolGamblerScoreModel>
     let isCurrentUser: String?
+    let onGamblerOpen: ((_ poolId: String, _ gamblerId: String) -> Void)?
+
+    init(
+        lazyPagingItems: LazyPagingItems<String, PoolGamblerScoreModel>,
+        isCurrentUser: String?,
+        onGamblerOpen: ((_ poolId: String, _ gamblerId: String) -> Void)? = nil
+    ) {
+        self.lazyPagingItems = lazyPagingItems
+        self.isCurrentUser = isCurrentUser
+        self.onGamblerOpen = onGamblerOpen
+    }
 
     @Environment(\.boxSpacing) private var boxSpacing
 
@@ -27,7 +38,8 @@ struct GamblerScoreList: View {
         ) { poolGamblerScore in
             GamblerScoreItem(
                 poolGamblerScore: poolGamblerScore,
-                isCurrentUser: isCurrentUser != nil ? isCurrentUser == poolGamblerScore.gamblerId : false
+                isCurrentUser: isCurrentUser != nil ? isCurrentUser == poolGamblerScore.gamblerId : false,
+                onTap: onGamblerOpen
             )
             .padding(boxSpacing.medium)
 

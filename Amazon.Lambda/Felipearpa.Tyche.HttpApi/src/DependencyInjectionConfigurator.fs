@@ -44,6 +44,7 @@ module DependencyInjectionConfigurator =
             .AddScoped<GetPoolGamblerScoresByPool>()
             .AddScoped<GetPendingPoolGamblerBets>()
             .AddScoped<GetFinishedPoolGamblerBets>()
+            .AddScoped<GetLivePoolGamblerBets>()
             .AddScoped<GetPoolGamblerScoreById>()
             .AddScoped<GetPoolById>()
             .AddScoped<Bet>()

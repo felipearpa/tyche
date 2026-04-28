@@ -41,6 +41,8 @@ import com.felipearpa.foundation.emptyString
 import com.felipearpa.tyche.R
 import com.felipearpa.tyche.bet.finished.FinishedBetListView
 import com.felipearpa.tyche.bet.finished.finishedBetListViewModel
+import com.felipearpa.tyche.bet.live.LiveBetListView
+import com.felipearpa.tyche.bet.live.liveBetListViewModel
 import com.felipearpa.tyche.bet.pending.PendingBetListView
 import com.felipearpa.tyche.bet.pending.pendingBetListViewModel
 import com.felipearpa.tyche.pool.gamblerscore.GamblerScoreListView
@@ -56,9 +58,13 @@ import com.felipearpa.tyche.ui.R as SharedR
 fun PoolHomeView(
     poolId: String,
     gamblerId: String,
+    loggedInGamblerId: String = gamblerId,
     onPoolChange: () -> Unit,
     onSignOut: () -> Unit = {},
+    onGamblerOpen: ((poolId: String, gamblerId: String) -> Unit)? = null,
 ) {
+    val isViewingSelf = gamblerId == loggedInGamblerId
+
     var selectedTabIndex by remember { mutableStateOf(Tab.GAMBLER_SCORE) }
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val coroutineScope = rememberCoroutineScope()
@@ -126,14 +132,26 @@ fun PoolHomeView(
                             poolId = poolId,
                             gamblerId = gamblerId,
                         ),
+                        loggedInGamblerId = loggedInGamblerId,
+                        onGamblerOpen = onGamblerOpen,
                     )
 
-                    Tab.BET_EDITOR -> PendingBetListView(
-                        viewModel = pendingBetListViewModel(
-                            poolId = poolId,
-                            gamblerId = gamblerId,
-                        ),
-                    )
+                    Tab.BET_EDITOR ->
+                        if (isViewingSelf) {
+                            PendingBetListView(
+                                viewModel = pendingBetListViewModel(
+                                    poolId = poolId,
+                                    gamblerId = gamblerId,
+                                ),
+                            )
+                        } else {
+                            LiveBetListView(
+                                viewModel = liveBetListViewModel(
+                                    poolId = poolId,
+                                    gamblerId = gamblerId,
+                                ),
+                            )
+                        }
 
                     Tab.HISTORY_BET -> FinishedBetListView(
                         viewModel = finishedBetListViewModel(

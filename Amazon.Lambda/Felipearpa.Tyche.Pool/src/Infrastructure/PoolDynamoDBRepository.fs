@@ -92,3 +92,14 @@ type PoolDynamoDbRepository(client: IAmazonDynamoDB) =
                 with :? AggregateException as error when (error.InnerException :? ConditionalCheckFailedException) ->
                     return JoinPoolDomainFailure.AlreadyJoined |> Error
             }
+
+        member this.IsPoolMemberAsync(poolId, gamblerId) =
+            async {
+                let request = IsPoolMemberRequestBuilder.build poolId gamblerId
+
+                try
+                    let! response = client.GetItemAsync(request) |> Async.AwaitTask
+                    return response.IsItemSet |> Ok
+                with _ ->
+                    return Error()
+            }

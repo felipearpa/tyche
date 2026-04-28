@@ -34,6 +34,7 @@ fun GamblerScoreList(
     loggedInGamblerId: String,
     modifier: Modifier = Modifier,
     fakeItemCount: Int = 0,
+    onGamblerOpen: ((poolId: String, gamblerId: String) -> Unit)? = null,
 ) {
     RefreshableStatefulLazyColumn(
         modifier = modifier,
@@ -85,6 +86,7 @@ fun GamblerScoreList(
                 poolGamblerScore = item!!,
                 isCurrentUser = item.gamblerId == loggedInGamblerId,
                 modifier = Modifier.gamblerScoreItem(),
+                onGamblerOpen = onGamblerOpen,
             )
             HorizontalDivider()
         }

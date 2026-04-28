@@ -30,7 +30,7 @@ struct PendingBetItem: View {
     }
 }
 
-private struct NonEditablePendingBetItem: View {
+struct NonEditablePendingBetItem: View {
     let poolGamblerBet: PoolGamblerBetModel
     let partialPoolGamblerBet: PartialPoolGamblerBetModel
 

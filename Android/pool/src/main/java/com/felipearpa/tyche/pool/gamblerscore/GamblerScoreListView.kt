@@ -12,15 +12,20 @@ import com.felipearpa.tyche.pool.poolGamblerScoreDummyModels
 import kotlinx.coroutines.flow.MutableStateFlow
 
 @Composable
-fun GamblerScoreListView(viewModel: GamblerScoreListViewModel) {
+fun GamblerScoreListView(
+    viewModel: GamblerScoreListViewModel,
+    loggedInGamblerId: String = viewModel.gamblerId,
+    onGamblerOpen: ((poolId: String, gamblerId: String) -> Unit)? = null,
+) {
     val lazyItems = viewModel.poolGamblerScores.collectAsLazyPagingItems()
     val pageSize = viewModel.pageSize
 
     GamblerScoreList(
         lazyPoolGamblerScores = lazyItems,
-        loggedInGamblerId = viewModel.gamblerId,
+        loggedInGamblerId = loggedInGamblerId,
         fakeItemCount = pageSize,
         modifier = Modifier.fillMaxSize(),
+        onGamblerOpen = onGamblerOpen,
     )
 }
 

@@ -18,6 +18,7 @@ open Felipearpa.Tyche.Function.Request
 open Felipearpa.Tyche.Pool.Application
 open Felipearpa.Tyche.Pool.Domain
 open Felipearpa.Tyche.Pool.Infrastructure
+open Felipearpa.Type
 open Microsoft.Extensions.DependencyInjection
 open Microsoft.Extensions.Logging
 
@@ -50,6 +51,7 @@ type PoolFunction(configureServices: IServiceCollection -> unit) =
             .AddScoped<GetPoolGamblerScoresByPool>()
             .AddScoped<GetPendingPoolGamblerBets>()
             .AddScoped<GetFinishedPoolGamblerBets>()
+            .AddScoped<GetLivePoolGamblerBets>()
             .AddScoped<GetPoolGamblerScoreById>()
             .AddScoped<GetPoolById>()
             .AddScoped<Bet>()
@@ -192,15 +194,26 @@ type PoolFunction(configureServices: IServiceCollection -> unit) =
 
             match poolIdResult, gamblerIdResult, maybeNext, maybeSearchText with
             | Ok poolId, Ok gamblerId, next, searchText ->
-                let! response =
-                    getPendingBetsAsync
-                        poolId
-                        gamblerId
-                        searchText
-                        next
-                        (scope.ServiceProvider.GetService<GetPendingPoolGamblerBets>())
+                let! authResult =
+                    Authorization.requirePoolAccessAsync
+                        request
+                        (Ulid.newOf poolId)
+                        (Ulid.newOf gamblerId)
+                        (scope.ServiceProvider.GetService<IAccountRepository>())
+                        (scope.ServiceProvider.GetService<IPoolRepository>())
 
-                return! response.ToAmazonProxyResponse()
+                match authResult with
+                | Error failure -> return Authorization.toResponse failure
+                | Ok _ ->
+                    let! response =
+                        getPendingBetsAsync
+                            poolId
+                            gamblerId
+                            searchText
+                            next
+                            (scope.ServiceProvider.GetService<GetPendingPoolGamblerBets>())
+
+                    return! response.ToAmazonProxyResponse()
             | _ ->
                 let errors =
                     [ toErrorOption poolIdResult; toErrorOption gamblerIdResult ] |> List.choose id
@@ -242,15 +255,87 @@ type PoolFunction(configureServices: IServiceCollection -> unit) =
 
             match poolIdResult, gamblerIdResult, maybeNext, maybeSearchText with
             | Ok poolId, Ok gamblerId, next, searchText ->
-                let! response =
-                    getFinishedBetsAsync
-                        poolId
-                        gamblerId
-                        searchText
-                        next
-                        (scope.ServiceProvider.GetService<GetFinishedPoolGamblerBets>())
+                let! authResult =
+                    Authorization.requirePoolAccessAsync
+                        request
+                        (Ulid.newOf poolId)
+                        (Ulid.newOf gamblerId)
+                        (scope.ServiceProvider.GetService<IAccountRepository>())
+                        (scope.ServiceProvider.GetService<IPoolRepository>())
 
-                return! response.ToAmazonProxyResponse()
+                match authResult with
+                | Error failure -> return Authorization.toResponse failure
+                | Ok _ ->
+                    let! response =
+                        getFinishedBetsAsync
+                            poolId
+                            gamblerId
+                            searchText
+                            next
+                            (scope.ServiceProvider.GetService<GetFinishedPoolGamblerBets>())
+
+                    return! response.ToAmazonProxyResponse()
+            | _ ->
+                let errors =
+                    [ toErrorOption poolIdResult; toErrorOption gamblerIdResult ] |> List.choose id
+
+                return errors |> BadRequestResponseFactory.create
+        }
+        |> Async.StartAsTask
+
+    // GET /pools/{poolId}/gamblers/{gamblerId}/bets/live
+    member this.GetLiveBetsAsync
+        (request: APIGatewayHttpApiV2ProxyRequest, _: ILambdaContext)
+        : APIGatewayHttpApiV2ProxyResponse Task =
+        async {
+            use scope = serviceProvider.CreateScope()
+
+            let poolIdResult =
+                request.PathParameters
+                |> Option.ofObj
+                |> Option.defaultValue Map.empty
+                |> tryGetStringParamOrError poolIdParameter
+
+            let gamblerIdResult =
+                request.PathParameters
+                |> Option.ofObj
+                |> Option.defaultValue Map.empty
+                |> tryGetStringParamOrError gamblerIdParameter
+
+            let maybeNext =
+                request.QueryStringParameters
+                |> Option.ofObj
+                |> Option.defaultValue Map.empty
+                |> tryGetStringParamOrNone nextParameter
+
+            let maybeSearchText =
+                request.QueryStringParameters
+                |> Option.ofObj
+                |> Option.defaultValue Map.empty
+                |> tryGetStringParamOrNone searchTextParameter
+
+            match poolIdResult, gamblerIdResult, maybeNext, maybeSearchText with
+            | Ok poolId, Ok gamblerId, next, searchText ->
+                let! authResult =
+                    Authorization.requirePoolAccessAsync
+                        request
+                        (Ulid.newOf poolId)
+                        (Ulid.newOf gamblerId)
+                        (scope.ServiceProvider.GetService<IAccountRepository>())
+                        (scope.ServiceProvider.GetService<IPoolRepository>())
+
+                match authResult with
+                | Error failure -> return Authorization.toResponse failure
+                | Ok _ ->
+                    let! response =
+                        getLiveBetsAsync
+                            poolId
+                            gamblerId
+                            searchText
+                            next
+                            (scope.ServiceProvider.GetService<GetLivePoolGamblerBets>())
+
+                    return! response.ToAmazonProxyResponse()
             | _ ->
                 let errors =
                     [ toErrorOption poolIdResult; toErrorOption gamblerIdResult ] |> List.choose id

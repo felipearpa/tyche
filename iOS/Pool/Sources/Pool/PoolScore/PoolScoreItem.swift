@@ -39,8 +39,6 @@ struct PoolScoreItem: View {
         }
         .padding(boxSpacing.medium)
         .frame(maxWidth: .infinity)
-        .background(Color(sharedResource: .surfaceVariant))
-        .cornerRadius(16)
     }
 }
 

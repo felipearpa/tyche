@@ -31,7 +31,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.platform.LocalAutofillManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
@@ -45,7 +44,6 @@ import com.felipearpa.tyche.pool.R
 import com.felipearpa.tyche.pool.creator.PoolLayoutModel
 import com.felipearpa.tyche.pool.creator.poolLayoutDummyModels
 import com.felipearpa.tyche.pool.poolGamblerScoreDummyModels
-import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
 import com.felipearpa.tyche.ui.theme.TycheTheme
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
@@ -151,8 +149,7 @@ private fun PoolScoreListView(
                 onSeeAllTemplates = onPoolCreate,
                 modifier = Modifier
                     .padding(paddingValues = paddingValues)
-                    .fillMaxSize()
-                    .padding(all = LocalBoxSpacing.current.medium),
+                    .fillMaxSize(),
             )
         }
     }

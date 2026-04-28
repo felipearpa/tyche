@@ -38,6 +38,7 @@ struct PoolScoreList: View {
                 .onTapGesture {
                     onPoolOpen(poolGamblerScore.poolId)
                 }
+            Divider()
         }
     }
 }
@@ -51,6 +52,7 @@ private struct PoolScorePlaceholderList : View {
         ForEach(poolGamblerScores) { poolGamblerScore in
             PoolScoreItem(poolGamblerScore: poolGamblerScore, onJoin: {})
                 .shimmer()
+            Divider()
         }
     }
 }

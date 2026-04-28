@@ -40,6 +40,7 @@ type GamblerFunction(configureServices: IServiceCollection -> unit) =
             .AddScoped<GetPoolGamblerScoresByPool>()
             .AddScoped<GetPendingPoolGamblerBets>()
             .AddScoped<GetFinishedPoolGamblerBets>()
+            .AddScoped<GetLivePoolGamblerBets>()
             .AddScoped<GetPoolGamblerScoreById>()
             .AddScoped<GetPoolById>()
             .AddScoped<Bet>()

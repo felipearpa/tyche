@@ -9,12 +9,16 @@ open Amazon.Lambda.Core
 open Felipearpa.Core
 open Felipearpa.Core.Json
 open Felipearpa.Data.DynamoDb
+open Felipearpa.Tyche.Account.Application
+open Felipearpa.Tyche.Account.Domain
+open Felipearpa.Tyche.Account.Infrastructure
 open Felipearpa.Tyche.AmazonLambda
 open Felipearpa.Tyche.Function.BetFunction
 open Felipearpa.Tyche.Function.Request
 open Felipearpa.Tyche.Pool.Application
 open Felipearpa.Tyche.Pool.Domain
 open Felipearpa.Tyche.Pool.Infrastructure
+open Felipearpa.Type
 open Microsoft.Extensions.DependencyInjection
 open Microsoft.Extensions.Logging
 
@@ -31,10 +35,13 @@ type BetFunction(configureServices: IServiceCollection -> unit) =
             .AddScoped<IPoolGamblerScoreRepository, PoolGamblerScoreDynamoDbRepository>()
             .AddScoped<IPoolGamblerBetRepository, PoolGamblerBetDynamoDbRepository>()
             .AddScoped<IPoolRepository, PoolDynamoDbRepository>()
+            .AddScoped<IAccountRepository, AccountDynamoDbRepository>()
+            .AddScoped<IGetAccountById, GetAccountById>()
             .AddScoped<GetPoolGamblerScoresByGambler>()
             .AddScoped<GetPoolGamblerScoresByPool>()
             .AddScoped<GetPendingPoolGamblerBets>()
             .AddScoped<GetFinishedPoolGamblerBets>()
+            .AddScoped<GetLivePoolGamblerBets>()
             .AddScoped<GetPoolGamblerScoreById>()
             .AddScoped<GetPoolById>()
             .AddScoped<Bet>()
@@ -62,7 +69,20 @@ type BetFunction(configureServices: IServiceCollection -> unit) =
             match betRequestResult with
             | Error error -> return [ error ] |> BadRequestResponseFactory.create
             | Ok betPoolRequest ->
-                let! response = betAsync betPoolRequest (scope.ServiceProvider.GetService<Bet>())
-                return! response.ToAmazonProxyResponse()
+                let! authResult =
+                    Authorization.requirePoolAccessAsync
+                        request
+                        (Ulid.newOf betPoolRequest.PoolId)
+                        (Ulid.newOf betPoolRequest.GamblerId)
+                        (scope.ServiceProvider.GetService<IAccountRepository>())
+                        (scope.ServiceProvider.GetService<IPoolRepository>())
+
+                match authResult with
+                | Error failure -> return Authorization.toResponse failure
+                | Ok callerGamblerId when callerGamblerId.Value <> betPoolRequest.GamblerId ->
+                    return Authorization.toResponse NotAMember
+                | Ok _ ->
+                    let! response = betAsync betPoolRequest (scope.ServiceProvider.GetService<Bet>())
+                    return! response.ToAmazonProxyResponse()
         }
         |> Async.StartAsTask

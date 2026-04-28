@@ -15,6 +15,9 @@
     <Compile Include="ParameterResolver.fs" />
     <Compile Include="BodyResolver.fs" />
     <Compile Include="BadRequestResponseFactory.fs" />
+    <Compile Include="UnauthorizedResponseFactory.fs" />
+    <Compile Include="ForbiddenResponseFactory.fs" />
+    <Compile Include="Authorization.fs" />
     <Compile Include="IResultTransformer.fs" />
     <Compile Include="Function\PoolFunction.fs" />
     <Compile Include="Function\GamblerFunction.fs" />
