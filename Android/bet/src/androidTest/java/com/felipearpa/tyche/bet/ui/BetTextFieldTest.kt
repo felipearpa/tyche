@@ -5,7 +5,7 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performTextClearance
 import androidx.compose.ui.test.performTextInput
 import com.felipearpa.tyche.bet.pending.BetTextField
-import com.felipearpa.tyche.core.emptyString
+import com.felipearpa.foundation.emptyString
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Rule
