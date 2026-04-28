@@ -11,6 +11,7 @@ struct PoolScoreList: View {
     let onSeeAllTemplates: () -> Void
 
     @State var rootSize: CGSize = .zero
+    @Environment(\.boxSpacing) private var boxSpacing
 
     var body: some View {
         let _ = Self._printChangesIfDebug()
@@ -21,7 +22,6 @@ struct PoolScoreList: View {
             loadingContentOnConcatenate: {
                 PoolScoreItem(poolGamblerScore: poolGamblerScorePlaceholderModel(), onJoin: {})
                     .shimmer()
-                Divider()
             },
             errorContent: { error in PoolScoreErrorList(error: error) },
             emptyContent: {
@@ -31,13 +31,13 @@ struct PoolScoreList: View {
                     onSeeAllTemplates: onSeeAllTemplates,
                 )
             },
+            spacing: boxSpacing.medium,
         ) { poolGamblerScore in
-            Group {
-                PoolScoreItem(poolGamblerScore: poolGamblerScore, onJoin: { onPoolJoin(poolGamblerScore.poolId) })
-                Divider()
-            }.onTapGesture {
-                onPoolOpen(poolGamblerScore.poolId)
-            }
+            PoolScoreItem(poolGamblerScore: poolGamblerScore, onJoin: { onPoolJoin(poolGamblerScore.poolId) })
+                .contentShape(Rectangle())
+                .onTapGesture {
+                    onPoolOpen(poolGamblerScore.poolId)
+                }
         }
     }
 }
@@ -51,7 +51,6 @@ private struct PoolScorePlaceholderList : View {
         ForEach(poolGamblerScores) { poolGamblerScore in
             PoolScoreItem(poolGamblerScore: poolGamblerScore, onJoin: {})
                 .shimmer()
-            Divider()
         }
     }
 }

@@ -19,13 +19,24 @@ struct SessionRouterView: View {
                 Color.clear
             case .some(nil):
                 let signInLinkUrlTemplate = diResolver.resolve(SignInLinkUrlTemplateProvider.self)!
+                let joinPoolUrlTemplate = diResolver.resolve(JoinPoolUrlTemplateProvider.self)!
 
                 if let url = universalLink,
                    let email = extractSignInEmail(
                        from: url.absoluteString,
                        template: String(format: signInLinkUrlTemplate(), "{email}"),
                    ) {
-                    EmailLinkSignInRouter(email: email, emailLink: url.absoluteString)
+                    EmailLinkSignInRouter(
+                        email: email,
+                        emailLink: url.absoluteString,
+                        onSignIn: { accountBundle in
+                            signedInAccountBundle = .some(.some(accountBundle))
+                            universalLink = nil
+                        },
+                    )
+                } else if let url = universalLink,
+                          matchURL(url.absoluteString, to: String(format: joinPoolUrlTemplate(), "{poolId}")) != nil {
+                    PoolJoinRequiresSignInView(onDismiss: { universalLink = nil })
                 } else {
                     HomeRouter(onSignIn: { accountBundle in signedInAccountBundle = accountBundle })
                 }
@@ -46,7 +57,13 @@ struct SessionRouterView: View {
                         onAbort: { universalLink = nil },
                     )
                 } else {
-                    PoolContent(accountBundle: accountBundle, onSignOut: { signedInAccountBundle = .some(nil) })
+                    PoolContent(
+                        accountBundle: accountBundle,
+                        onSignOut: {
+                            signedInAccountBundle = .some(nil)
+                            universalLink = nil
+                        },
+                    )
                 }
             }
         }
@@ -100,6 +117,8 @@ struct PoolContent: View {
             PoolHomeRouter(
                 user: accountBundle,
                 pool: selectedPool!,
+                onChangePool: { selectedPool = nil },
+                onSignOut: onSignOut,
             )
         }
     }

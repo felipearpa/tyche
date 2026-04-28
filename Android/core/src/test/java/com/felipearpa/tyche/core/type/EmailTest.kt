@@ -1,6 +1,5 @@
 package com.felipearpa.tyche.core.type
 
-import com.felipearpa.tyche.core.emptyString
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.DynamicTest.dynamicTest
@@ -18,7 +17,7 @@ class EmailTest {
 
     @TestFactory
     fun `given an invalid string when an Email is created then an exception is raised`() =
-        listOf(emptyString(), "invalid").map { rawEmail ->
+        listOf("", "invalid").map { rawEmail ->
             dynamicTest("given $rawEmail when an Email is created then an exception is raised") {
                 shouldThrow<IllegalArgumentException> {
                     Email(rawEmail)

@@ -6,6 +6,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navDeepLink
 import androidx.navigation.toRoute
 import com.felipearpa.tyche.core.JoinPoolUrlTemplateProvider
+import com.felipearpa.tyche.pool.joiner.PoolJoinRequiresSignInView
 import com.felipearpa.tyche.pool.joiner.PoolJoinerView
 import com.felipearpa.tyche.pool.joiner.poolJoinerViewModel
 import com.felipearpa.tyche.pool.poolscore.PoolScoreListRoute
@@ -13,7 +14,7 @@ import com.felipearpa.tyche.poolscore.POOL_CREATED_KEY
 
 fun NavGraphBuilder.poolJoinerView(
     navController: NavController,
-    gamblerId: String,
+    gamblerId: String?,
     initialRoute: Any,
     joinPoolUrlTemplate: JoinPoolUrlTemplateProvider,
 ) {
@@ -24,6 +25,13 @@ fun NavGraphBuilder.poolJoinerView(
             },
         ),
     ) {
+        if (gamblerId == null) {
+            PoolJoinRequiresSignInView(
+                onDismiss = { navController.popBackStack() },
+            )
+            return@composable
+        }
+
         val route = it.toRoute<PoolJoinerRoute>()
         PoolJoinerView(
             viewModel = poolJoinerViewModel(),

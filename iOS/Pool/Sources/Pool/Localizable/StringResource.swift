@@ -30,6 +30,10 @@ extension StringResource {
     static let createPoolAction = StringResource(name: "create_pool_action", bundle: Bundle.module)
     static let poolNameLengthValidationError = StringResource(name: "pool_name_length_validation_error", bundle: Bundle.module)
     static let goToMyPoolsAction = StringResource(name: "go_to_my_pools_action", bundle: Bundle.module)
+    static let poolJoinRequiresSignInFailureDescription = StringResource(name: "pool_join_requires_sign_in_failure_description", bundle: Bundle.module)
+    static let poolJoinRequiresSignInFailureReason = StringResource(name: "pool_join_requires_sign_in_failure_reason", bundle: Bundle.module)
+    static let poolJoinRequiresSignInFailureRecoverySuggestion = StringResource(name: "pool_join_requires_sign_in_failure_recovery_suggestion", bundle: Bundle.module)
+    static let gotItAction = StringResource(name: "got_it_action", bundle: Bundle.module)
 }
 
 extension String {

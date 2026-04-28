@@ -25,7 +25,7 @@ struct FinishedPoolGamblerBetList: View {
                         .padding(.top, boxSpacing.medium)
                 }
 
-                FinishedPoolGamblerBetItem(poolGamblerBet: poolGamblerBet)
+                FinishedBetItem(poolGamblerBet: poolGamblerBet)
                     .padding(boxSpacing.large)
 
                 Divider()
@@ -55,7 +55,7 @@ private struct FinishedPoolGamblerBetFakeItem: View {
     @Environment(\.boxSpacing) private var boxSpacing
 
     var body: some View {
-        FinishedPoolGamblerBetItem(poolGamblerBet: poolGamblerBetFakeModel())
+        FinishedBetItem(poolGamblerBet: poolGamblerBetFakeModel())
             .shimmer()
             .padding(boxSpacing.large)
     }
