@@ -120,6 +120,50 @@ module PoolRouter =
             |> ignore
 
             this
+                .MapGet(
+                    "/pools/{poolId}/gamblers/{gamblerId}/bets/timeline",
+                    Func<_, _, _, _, _>
+                        (fun
+                            (poolId: string)
+                            (gamblerId: string)
+                            (next: string)
+                            (getGamblerBetsTimeline: GetGamblerBetsTimeline) ->
+                            async {
+                                return!
+                                    getBetsTimelineAsync
+                                        poolId
+                                        gamblerId
+                                        (next |> Option.ofObj)
+                                        getGamblerBetsTimeline
+                            }
+                            |> Async.StartAsTask)
+                )
+                .RequireAuthorization()
+            |> ignore
+
+            this
+                .MapGet(
+                    "/pools/{poolId}/matches/{matchId}/bets",
+                    Func<_, _, _, _, _>
+                        (fun
+                            (poolId: string)
+                            (matchId: string)
+                            (next: string)
+                            (getPoolMatchGamblerBets: GetPoolMatchGamblerBets) ->
+                            async {
+                                return!
+                                    getMatchBetsAsync
+                                        poolId
+                                        matchId
+                                        (next |> Option.ofObj)
+                                        getPoolMatchGamblerBets
+                            }
+                            |> Async.StartAsTask)
+                )
+                .RequireAuthorization()
+            |> ignore
+
+            this
                 .MapPost(
                     "/pools",
                     Func<_, _, _>(fun (createPoolRequest: CreatePoolRequest) (createPool: CreatePool) ->
