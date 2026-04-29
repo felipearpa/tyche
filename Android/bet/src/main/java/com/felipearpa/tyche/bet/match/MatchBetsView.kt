@@ -1,12 +1,10 @@
-package com.felipearpa.tyche.matchbets
+package com.felipearpa.tyche.bet.match
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -22,17 +20,20 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.paging.PagingData
+import androidx.paging.compose.collectAsLazyPagingItems
 import com.felipearpa.foundation.emptyString
 import com.felipearpa.foundation.time.toShortDateTimeString
-import com.felipearpa.tyche.R
-import com.felipearpa.tyche.bet.match.MatchBetListView
-import com.felipearpa.tyche.bet.match.matchBetListViewModel
+import com.felipearpa.tyche.bet.R
+import com.felipearpa.tyche.bet.poolGamblerBetDummyModels
 import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
@@ -79,7 +80,16 @@ fun MatchBetsView(
                 awayTeamScore = awayTeamScore,
             )
 
-            Spacer(modifier = Modifier.height(LocalBoxSpacing.current.medium))
+            if (LocalInspectionMode.current) {
+                val lazyItems =
+                    MutableStateFlow(PagingData.from(poolGamblerBetDummyModels())).collectAsLazyPagingItems()
+                MatchBetList(
+                    lazyPoolGamblerBets = lazyItems,
+                    placeholderCount = 50,
+                    modifier = Modifier.fillMaxSize(),
+                )
+                return@Scaffold
+            }
 
             MatchBetListView(
                 viewModel = matchBetListViewModel(
@@ -170,12 +180,15 @@ private fun AppTopBar(
 
 @Preview(showBackground = true)
 @Composable
-private fun MatchHeaderPreview() {
-    MatchHeader(
+private fun MatBetsViewPreview() {
+    MatchBetsView(
+        poolId = "poolId",
+        matchId = "matchId",
         homeTeamName = "Paris",
         awayTeamName = "Bayern Munchen",
+        matchDateTime = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
         homeTeamScore = 5,
         awayTeamScore = 4,
-        matchDateTime = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
+        onBack = {},
     )
 }

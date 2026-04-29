@@ -23,7 +23,7 @@ fun LiveBetListView(viewModel: LiveBetListViewModel) {
 }
 
 @Composable
-fun LiveBetListView(
+private fun LiveBetListView(
     lazyBets: LazyPagingItems<PoolGamblerBetModel>,
     placeholderCount: Int,
     modifier: Modifier = Modifier,

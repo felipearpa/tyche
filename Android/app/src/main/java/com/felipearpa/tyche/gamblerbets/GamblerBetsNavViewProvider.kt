@@ -4,7 +4,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
-import com.felipearpa.tyche.matchbets.MatchBetsViewRoute
+import com.felipearpa.tyche.bet.match.MatchBetsViewRoute
 
 fun NavGraphBuilder.gamblerBetsNavView(navController: NavController) {
     composable<GamblerBetsViewRoute> { navBackStackEntry ->

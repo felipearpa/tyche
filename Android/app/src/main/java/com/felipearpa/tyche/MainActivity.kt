@@ -18,7 +18,7 @@ import com.felipearpa.foundation.emptyString
 import com.felipearpa.tyche.core.JoinPoolUrlTemplateProvider
 import com.felipearpa.tyche.gamblerbets.gamblerBetsNavView
 import com.felipearpa.tyche.home.HomeRoute
-import com.felipearpa.tyche.matchbets.matchBetsNavView
+import com.felipearpa.tyche.bet.match.matchBetsNavView
 import com.felipearpa.tyche.home.homeNavView
 import com.felipearpa.tyche.pool.poolJoinerView
 import com.felipearpa.tyche.pool.poolscore.PoolScoreListRoute

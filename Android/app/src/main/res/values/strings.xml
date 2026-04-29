@@ -12,7 +12,4 @@
     <string name="change_pool_action">Change pool</string>
     <string name="sign_in_with_email_and_password">Email and password</string>
     <string name="continue_with_text">Continue with:</string>
-    <string name="powered_by_text">Powered by</string>
-    <string name="felipearpa_logo_description">felipearpa</string>
-    <string name="match_bets_view_title">Score</string>
 </resources>

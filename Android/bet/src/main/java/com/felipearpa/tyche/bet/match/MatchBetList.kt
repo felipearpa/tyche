@@ -25,12 +25,12 @@ import kotlinx.coroutines.flow.MutableStateFlow
 fun MatchBetList(
     lazyPoolGamblerBets: LazyPagingItems<PoolGamblerBetModel>,
     modifier: Modifier = Modifier,
-    fakeItemCount: Int = 0,
+    placeholderCount: Int = 0,
 ) {
     RefreshableStatefulLazyColumn(
         modifier = modifier,
         lazyPagingItems = lazyPoolGamblerBets,
-        loadingContent = { matchGamblerBetPlaceholderList(count = fakeItemCount) },
+        loadingContent = { matchGamblerBetPlaceholderList(count = placeholderCount) },
         loadingContentOnConcatenate = { matchGamblerBetPlaceholderItem() },
     ) {
         items(

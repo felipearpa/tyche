@@ -17,7 +17,7 @@ fun MatchBetListView(viewModel: MatchBetListViewModel) {
     val pageSize = viewModel.pageSize
 
     MatchBetListView(
-        lazyBets = lazyItems,
+        lazyGamblerBets = lazyItems,
         placeholderCount = pageSize,
         modifier = Modifier.fillMaxSize(),
     )
@@ -25,13 +25,13 @@ fun MatchBetListView(viewModel: MatchBetListViewModel) {
 
 @Composable
 private fun MatchBetListView(
-    lazyBets: LazyPagingItems<PoolGamblerBetModel>,
+    lazyGamblerBets: LazyPagingItems<PoolGamblerBetModel>,
     placeholderCount: Int,
     modifier: Modifier = Modifier,
 ) {
     MatchBetList(
-        lazyPoolGamblerBets = lazyBets,
-        fakeItemCount = placeholderCount,
+        lazyPoolGamblerBets = lazyGamblerBets,
+        placeholderCount = placeholderCount,
         modifier = modifier,
     )
 }
@@ -41,7 +41,7 @@ private fun MatchBetListView(
 private fun MatchBetListViewPreview() {
     val items = MutableStateFlow(PagingData.from(poolGamblerBetDummyModels())).collectAsLazyPagingItems()
     MatchBetListView(
-        lazyBets = items,
+        lazyGamblerBets = items,
         placeholderCount = 50,
         modifier = Modifier.fillMaxSize(),
     )

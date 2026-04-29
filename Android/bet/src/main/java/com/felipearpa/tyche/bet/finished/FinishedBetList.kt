@@ -33,13 +33,13 @@ import kotlinx.datetime.LocalDate
 fun FinishedBetList(
     lazyPoolGamblerBets: LazyPagingItems<PoolGamblerBetModel>,
     modifier: Modifier = Modifier,
-    fakeItemCount: Int = 0,
+    placeholderCount: Int = 0,
     onMatchOpen: ((PoolGamblerBetModel) -> Unit)? = null,
 ) {
     RefreshableStatefulLazyColumn(
         modifier = modifier,
         lazyPagingItems = lazyPoolGamblerBets,
-        loadingContent = { finishedPoolGamblerBetFakeList(count = fakeItemCount) },
+        loadingContent = { finishedPoolGamblerBetFakeList(count = placeholderCount) },
         loadingContentOnConcatenate = { finishedPoolGamblerBetPlaceholderItem() },
     ) {
         val poolGamblerBetsCount = lazyPoolGamblerBets.itemCount

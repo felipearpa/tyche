@@ -1,4 +1,4 @@
-package com.felipearpa.tyche.matchbets
+package com.felipearpa.tyche.bet.match
 
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder

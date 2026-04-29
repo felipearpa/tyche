@@ -1,6 +1,7 @@
 package com.felipearpa.tyche.pool.gamblerscore
 
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -9,6 +10,7 @@ import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.felipearpa.tyche.pool.PoolGamblerScoreModel
 import com.felipearpa.tyche.pool.poolGamblerScoreDummyModels
+import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
 import kotlinx.coroutines.flow.MutableStateFlow
 
 @Composable
@@ -39,7 +41,9 @@ private fun GamblerScoreListView(
         lazyPoolGamblerScores = lazyPoolGamblerScores,
         loggedInGamblerId = gamblerId,
         fakeItemCount = placeholderItemCount,
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(all = LocalBoxSpacing.current.medium),
     )
 }
 

@@ -11,9 +11,6 @@ import com.felipearpa.tyche.data.bet.application.GetPoolMatchGamblerBets
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
 
-private const val PAGE_SIZE = 50
-private const val PREFETCH_DISTANCE = 5
-
 class MatchBetListViewModel(
     private val poolId: String,
     val matchId: String,
@@ -51,3 +48,6 @@ class MatchBetListViewModel(
             },
         )
 }
+
+private const val PAGE_SIZE = 50
+private const val PREFETCH_DISTANCE = 5

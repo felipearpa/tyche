@@ -6,7 +6,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
 import com.felipearpa.tyche.gamblerbets.GamblerBetsViewRoute
 import com.felipearpa.tyche.home.HomeRoute
-import com.felipearpa.tyche.matchbets.MatchBetsViewRoute
+import com.felipearpa.tyche.bet.match.MatchBetsViewRoute
 import com.felipearpa.tyche.pool.poolscore.PoolScoreListRoute
 
 fun NavGraphBuilder.poolHomeNavView(
