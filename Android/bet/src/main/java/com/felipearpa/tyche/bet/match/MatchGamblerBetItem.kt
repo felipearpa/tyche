@@ -14,6 +14,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import com.felipearpa.tyche.bet.PoolGamblerBetModel
 import com.felipearpa.tyche.bet.awayTeamBetRawValue
+import com.felipearpa.tyche.bet.hasBet
 import com.felipearpa.tyche.bet.homeTeamBetRawValue
 import com.felipearpa.tyche.bet.poolGamblerBetDummyModel
 import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
@@ -38,17 +39,19 @@ fun MatchGamblerBetItem(
             modifier = Modifier.weight(1f).then(shimmerModifier),
         )
 
-        Text(
-            text = "${poolGamblerBet.homeTeamBetRawValue()} - ${poolGamblerBet.awayTeamBetRawValue()}",
-            style = MaterialTheme.typography.titleMedium,
-            modifier = shimmerModifier,
-        )
+        if (poolGamblerBet.hasBet()) {
+            Text(
+                text = "${poolGamblerBet.homeTeamBetRawValue()} - ${poolGamblerBet.awayTeamBetRawValue()}",
+                style = MaterialTheme.typography.titleMedium,
+                modifier = shimmerModifier,
+            )
+        }
 
         poolGamblerBet.score?.let { score ->
             Spacer(modifier = Modifier)
             Text(
                 text = "+$score",
-                style = MaterialTheme.typography.titleMedium,
+                style = MaterialTheme.typography.titleLarge,
                 modifier = shimmerModifier,
             )
         }

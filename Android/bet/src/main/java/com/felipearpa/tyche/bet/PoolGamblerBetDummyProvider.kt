@@ -22,6 +22,7 @@ fun poolGamblerBetFakeModel() =
         score = 10,
         matchDateTime = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
         isLocked = true,
+        isComputed = false,
     )
 
 @OptIn(ExperimentalTime::class)
@@ -40,6 +41,7 @@ fun poolGamblerBetDummyModel() =
         score = 10,
         matchDateTime = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
         isLocked = false,
+        isComputed = false,
     )
 
 @OptIn(ExperimentalTime::class)
@@ -59,6 +61,7 @@ fun poolGamblerBetDummyModels() =
             score = 15,
             matchDateTime = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
             isLocked = true,
+            isComputed = false,
         ),
         PoolGamblerBetModel(
             poolId = "pool002",
@@ -73,7 +76,8 @@ fun poolGamblerBetDummyModels() =
             betScore = TeamScore(0, 1),
             score = 20,
             matchDateTime = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
-            isLocked = false,
+            isLocked = true,
+            isComputed = true,
         ),
         PoolGamblerBetModel(
             poolId = "pool003",
@@ -89,5 +93,6 @@ fun poolGamblerBetDummyModels() =
             score = 25,
             matchDateTime = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
             isLocked = true,
+            isComputed = true,
         ),
     )

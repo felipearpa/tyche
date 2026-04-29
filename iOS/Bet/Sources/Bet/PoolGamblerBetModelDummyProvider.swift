@@ -15,7 +15,8 @@ func poolGamblerBetFakeModel() -> PoolGamblerBetModel {
         betScore: TeamScore(homeTeamValue: 100, awayTeamValue: 100),
         score: 10,
         matchDateTime: Date(),
-        isLocked: true
+        isLocked: true,
+        isComputed: false
     )
 }
 
@@ -33,7 +34,8 @@ func poolGamblerBetDummyModel() -> PoolGamblerBetModel {
         betScore: TeamScore(homeTeamValue: 2, awayTeamValue: 2),
         score: 5,
         matchDateTime: Date(),
-        isLocked: false
+        isLocked: false,
+        isComputed: true
     )
 }
 
@@ -52,7 +54,8 @@ func poolGamblerBetDummyModels() -> [PoolGamblerBetModel] {
             betScore: TeamScore(homeTeamValue: 2, awayTeamValue: 2),
             score: 5,
             matchDateTime: Date(),
-            isLocked: false
+            isLocked: false,
+            isComputed: true
         ),
         PoolGamblerBetModel(
             poolId: "pool124",
@@ -67,7 +70,8 @@ func poolGamblerBetDummyModels() -> [PoolGamblerBetModel] {
             betScore: TeamScore(homeTeamValue: 1, awayTeamValue: 1),
             score: 2,
             matchDateTime: Date(),
-            isLocked: false
+            isLocked: false,
+            isComputed: true
         ),
         PoolGamblerBetModel(
             poolId: "pool125",
@@ -82,7 +86,8 @@ func poolGamblerBetDummyModels() -> [PoolGamblerBetModel] {
             betScore: TeamScore(homeTeamValue: 1, awayTeamValue: 2),
             score: 3,
             matchDateTime: Date(),
-            isLocked: false
+            isLocked: false,
+            isComputed: true
         )
     ]
 }

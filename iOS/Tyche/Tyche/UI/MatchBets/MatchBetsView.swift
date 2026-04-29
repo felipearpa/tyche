@@ -14,11 +14,12 @@ struct MatchBetsView: View {
     let awayTeamScore: Int?
 
     @Environment(\.diResolver) var diResolver: DIResolver
+    @Environment(\.boxSpacing) private var boxSpacing
 
     var body: some View {
         let _ = Self._printChangesIfDebug()
 
-        VStack(alignment: .leading, spacing: 0) {
+        VStack(spacing: boxSpacing.medium) {
             MatchHeader(
                 homeTeamName: homeTeamName,
                 awayTeamName: awayTeamName,
@@ -26,8 +27,6 @@ struct MatchBetsView: View {
                 homeTeamScore: homeTeamScore,
                 awayTeamScore: awayTeamScore
             )
-
-            Divider()
 
             MatchBetListView(
                 viewModel: MatchBetListViewModel(
@@ -39,6 +38,8 @@ struct MatchBetsView: View {
                 )
             )
         }
+        .padding(boxSpacing.medium)
+        .navigationTitle(String(.matchBetsViewTitle))
         .navigationBarTitleDisplayMode(.inline)
     }
 }
@@ -50,34 +51,38 @@ private struct MatchHeader: View {
     let homeTeamScore: Int?
     let awayTeamScore: Int?
 
-    var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            HStack {
-                Text(homeTeamName)
-                    .font(.title3)
-                    .lineLimit(1)
-                    .truncationMode(.tail)
-                    .frame(maxWidth: .infinity, alignment: .leading)
+    @Environment(\.boxSpacing) private var boxSpacing
 
-                if let home = homeTeamScore, let away = awayTeamScore {
-                    Text("\(home) - \(away)").font(.title2)
-                } else {
-                    Text("-").font(.title2)
-                }
+    var body: some View {
+        VStack(alignment: .center, spacing: boxSpacing.small) {
+            HStack(spacing: boxSpacing.medium) {
+                Text(homeTeamName)
+                    .font(.headline)
+                    .multilineTextAlignment(.center)
+                    .lineLimit(2)
+                    .truncationMode(.tail)
+                    .frame(maxWidth: .infinity)
+
+                Text(homeTeamScore.map { String($0) } ?? "")
+                    .font(.title2)
+
+                Text("-")
+
+                Text(awayTeamScore.map { String($0) } ?? "")
+                    .font(.title2)
 
                 Text(awayTeamName)
-                    .font(.title3)
-                    .lineLimit(1)
+                    .font(.headline)
+                    .multilineTextAlignment(.center)
+                    .lineLimit(2)
                     .truncationMode(.tail)
-                    .frame(maxWidth: .infinity, alignment: .trailing)
+                    .frame(maxWidth: .infinity)
             }
 
-            Text(matchDateTime, style: .date)
+            Text(matchDateTime.toShortDateTimeString())
                 .font(.caption)
-                .foregroundStyle(.secondary)
         }
-        .padding(.horizontal)
-        .padding(.vertical, 12)
+        .frame(maxWidth: .infinity)
     }
 }
 

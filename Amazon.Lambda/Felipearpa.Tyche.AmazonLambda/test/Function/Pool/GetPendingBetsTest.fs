@@ -44,7 +44,8 @@ module GetPendingBetsTest =
                       AwayTeamBet = Some 1
                       Score = Some 3
                       MatchDateTime = DateTime(2024, 10, 12, 18, 0, 0, DateTimeKind.Utc)
-                      isLocked = true }
+                      isLocked = true
+                      isComputed = false }
 
                     { PoolId = "01K1PX1TX2NM1HG851S1V0QG6N"
                       GamblerId = "01K1PX1TX2NM1HG851S1V0QG6N"
@@ -61,7 +62,8 @@ module GetPendingBetsTest =
                       AwayTeamBet = Some 2
                       Score = Some 1
                       MatchDateTime = DateTime(2024, 10, 13, 20, 30, 0, DateTimeKind.Utc)
-                      isLocked = true }
+                      isLocked = true
+                      isComputed = false }
                 }
               Next = None }
 

@@ -15,4 +15,5 @@ public struct PoolGamblerBet: Codable {
     public let score: Int?
     public let matchDateTime: Date
     public let isLocked: Bool
+    public let isComputed: Bool
 }

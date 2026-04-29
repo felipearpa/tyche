@@ -17,6 +17,7 @@ struct PoolGamblerBetResponse: Codable {
     let score: Int?
     let matchDateTime: Date
     let isLocked: Bool
+    let isComputed: Bool
 }
 
 extension PoolGamblerBetResponse {
@@ -38,7 +39,8 @@ extension PoolGamblerBetResponse {
                 TeamScore(homeTeamValue: self.homeTeamBet!, awayTeamValue: self.awayTeamBet!),
             score: self.score,
             matchDateTime: self.matchDateTime,
-            isLocked: self.isLocked
+            isLocked: self.isLocked,
+            isComputed: self.isComputed
         )
     }
 }

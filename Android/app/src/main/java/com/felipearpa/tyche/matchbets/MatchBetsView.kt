@@ -1,15 +1,14 @@
 package com.felipearpa.tyche.matchbets
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -24,13 +23,20 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import com.felipearpa.foundation.emptyString
 import com.felipearpa.foundation.time.toShortDateTimeString
+import com.felipearpa.tyche.R
 import com.felipearpa.tyche.bet.match.MatchBetListView
 import com.felipearpa.tyche.bet.match.matchBetListViewModel
 import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
 import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
+import kotlin.time.Clock
 import com.felipearpa.tyche.ui.R as SharedR
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -59,9 +65,11 @@ fun MatchBetsView(
         },
     ) { innerPadding ->
         Column(
+            verticalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.medium),
             modifier = Modifier
                 .padding(paddingValues = innerPadding)
-                .fillMaxSize(),
+                .fillMaxSize()
+                .padding(all = LocalBoxSpacing.current.medium),
         ) {
             MatchHeader(
                 homeTeamName = homeTeamName,
@@ -71,16 +79,14 @@ fun MatchBetsView(
                 awayTeamScore = awayTeamScore,
             )
 
-            HorizontalDivider()
+            Spacer(modifier = Modifier.height(LocalBoxSpacing.current.medium))
 
-            Box(modifier = Modifier.fillMaxSize()) {
-                MatchBetListView(
-                    viewModel = matchBetListViewModel(
-                        poolId = poolId,
-                        matchId = matchId,
-                    ),
-                )
-            }
+            MatchBetListView(
+                viewModel = matchBetListViewModel(
+                    poolId = poolId,
+                    matchId = matchId,
+                ),
+            )
         }
     }
 }
@@ -93,47 +99,43 @@ private fun MatchHeader(
     homeTeamScore: Int?,
     awayTeamScore: Int?,
 ) {
-    val hasScore = homeTeamScore != null && awayTeamScore != null
-
     Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(all = LocalBoxSpacing.current.medium),
-        verticalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.small),
+        modifier = Modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Row(
-            verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.medium),
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
                 text = homeTeamName,
-                style = MaterialTheme.typography.titleMedium,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
                 modifier = Modifier.weight(1f),
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.titleMedium,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis,
             )
 
-            if (hasScore) {
-                Text(
-                    text = "$homeTeamScore - $awayTeamScore",
-                    style = MaterialTheme.typography.titleLarge,
-                )
-            } else {
-                Text(
-                    text = "-",
-                    style = MaterialTheme.typography.titleLarge,
-                )
-            }
+            Text(
+                text = homeTeamScore.toString(),
+                style = MaterialTheme.typography.titleLarge,
+            )
 
-            Spacer(modifier = Modifier.weight(1f))
+            Text(text = "-")
+
+            Text(
+                text = awayTeamScore.toString(),
+                style = MaterialTheme.typography.titleLarge,
+            )
 
             Text(
                 text = awayTeamName,
-                style = MaterialTheme.typography.titleMedium,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                textAlign = androidx.compose.ui.text.style.TextAlign.End,
                 modifier = Modifier.weight(1f),
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.titleMedium,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis,
             )
         }
 
@@ -152,7 +154,7 @@ private fun AppTopBar(
     scrollBehavior: TopAppBarScrollBehavior,
 ) {
     TopAppBar(
-        title = {},
+        title = { Text(text = stringResource(id = R.string.match_bets_view_title)) },
         navigationIcon = {
             IconButton(onClick = onBack) {
                 Icon(
@@ -163,5 +165,17 @@ private fun AppTopBar(
         },
         modifier = modifier,
         scrollBehavior = scrollBehavior,
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun MatchHeaderPreview() {
+    MatchHeader(
+        homeTeamName = "Paris",
+        awayTeamName = "Bayern Munchen",
+        homeTeamScore = 5,
+        awayTeamScore = 4,
+        matchDateTime = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
     )
 }

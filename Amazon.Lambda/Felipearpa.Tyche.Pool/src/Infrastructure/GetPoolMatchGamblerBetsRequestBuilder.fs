@@ -22,9 +22,7 @@ module GetPoolMatchGamblerBetsRequestBuilder =
              and begins_with({ExpressionAttribute.name PoolTable.Attribute.getPoolGamblerScoresByMatchSk}, :poolPrefix)"
 
         let filterExpression =
-            $"attribute_exists({ExpressionAttribute.name PoolTable.Attribute.homeTeamBet}) \
-             AND attribute_exists({ExpressionAttribute.name PoolTable.Attribute.awayTeamBet}) \
-             AND {ExpressionAttribute.name PoolTable.Attribute.matchDateTime} <= :lockHorizon"
+            $"{ExpressionAttribute.name PoolTable.Attribute.matchDateTime} <= :lockHorizon"
 
         let attributeValues =
             dict
@@ -36,8 +34,6 @@ module GetPoolMatchGamblerBetsRequestBuilder =
             ExpressionAttribute.names
                 [ PoolTable.Attribute.getPoolGamblerScoresByMatchPk
                   PoolTable.Attribute.getPoolGamblerScoresByMatchSk
-                  PoolTable.Attribute.homeTeamBet
-                  PoolTable.Attribute.awayTeamBet
                   PoolTable.Attribute.matchDateTime ]
 
         QueryRequest(

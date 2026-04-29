@@ -21,7 +21,8 @@ struct PoolGamblerBetModel: Codable, Identifiable, Hashable {
     let score: Int?
     let matchDateTime: Date
     fileprivate(set) var isLocked: Bool
-    
+    let isComputed: Bool
+
     var id: PoolGamblerBetModelId {
         return PoolGamblerBetModelId(poolId: self.poolId, gamblerId: self.gamblerId, matchId: self.matchId)
     }
@@ -48,7 +49,8 @@ extension PoolGamblerBetModel {
         var score: Int?
         var matchDateTime: Date
         fileprivate var isLocked: Bool
-        
+        var isComputed: Bool
+
         fileprivate init(original: PoolGamblerBetModel) {
             self.poolId = original.poolId
             self.gamblerId = original.gamblerId
@@ -63,8 +65,9 @@ extension PoolGamblerBetModel {
             self.score = original.score
             self.matchDateTime = original.matchDateTime
             self.isLocked = original.isLocked
+            self.isComputed = original.isComputed
         }
-        
+
         fileprivate func build() -> PoolGamblerBetModel {
             PoolGamblerBetModel(
                 poolId: self.poolId,
@@ -79,7 +82,8 @@ extension PoolGamblerBetModel {
                 betScore: self.betScore,
                 score: self.score,
                 matchDateTime: self.matchDateTime,
-                isLocked: self.isLocked
+                isLocked: self.isLocked,
+                isComputed: self.isComputed
             )
         }
     }

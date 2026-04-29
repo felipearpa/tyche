@@ -24,4 +24,5 @@ internal fun PoolGamblerBetResponse.toPoolGamblerBet() =
         score = this.score,
         matchDateTime = this.matchDateTime,
         isLocked = this.isLocked,
+        isComputed = this.isComputed,
     )

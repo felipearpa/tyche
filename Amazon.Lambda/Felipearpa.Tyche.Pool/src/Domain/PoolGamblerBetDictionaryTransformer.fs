@@ -51,9 +51,13 @@ module PoolGamblerBetDictionaryTransformer =
           Score =
             dictionary
             |> tryGetAttributeValueOrNone (PoolTable.Attribute.score)
-            |> noneIfZero
+            |> Option.map (fun attributeValue -> int attributeValue.N)
           MatchDateTime = matchDateTime
-          isLocked = LockPolicy.isLockedAt DateTime.UtcNow matchDateTime }
+          isLocked = LockPolicy.isLockedAt DateTime.UtcNow matchDateTime
+          isComputed =
+            dictionary
+            |> tryGetAttributeValueOrNone (PoolTable.Attribute.computedRequestId)
+            |> Option.isSome }
 
     type Extensions =
         [<Extension>]

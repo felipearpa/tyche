@@ -14,12 +14,14 @@ struct MatchGamblerBetItem: View {
                 .truncationMode(.tail)
                 .frame(maxWidth: .infinity, alignment: .leading)
 
-            Text("\(poolGamblerBet.homeTeamBetRawValue()) - \(poolGamblerBet.awayTeamBetRawValue())")
-                .font(.title3)
+            if poolGamblerBet.betScore != nil {
+                Text("\(poolGamblerBet.homeTeamBetRawValue()) - \(poolGamblerBet.awayTeamBetRawValue())")
+                    .font(.headline)
+            }
 
             if let score = poolGamblerBet.score {
                 Text("+\(score)")
-                    .font(.title3)
+                    .font(.title2)
             }
         }
     }

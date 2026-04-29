@@ -18,4 +18,5 @@ type PoolGamblerBetResponse =
       AwayTeamBet: int option
       Score: int option
       MatchDateTime: DateTime
-      isLocked: bool }
+      isLocked: bool
+      isComputed: bool }

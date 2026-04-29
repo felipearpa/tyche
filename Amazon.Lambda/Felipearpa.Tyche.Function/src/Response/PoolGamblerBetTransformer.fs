@@ -34,4 +34,5 @@ module PoolGamblerBetTransformer =
             | None -> None
           Score = poolGamblerBet.Score
           MatchDateTime = poolGamblerBet.MatchDateTime.ToUniversalTime()
-          isLocked = poolGamblerBet.isLocked }
+          isLocked = poolGamblerBet.isLocked
+          isComputed = poolGamblerBet.isComputed }

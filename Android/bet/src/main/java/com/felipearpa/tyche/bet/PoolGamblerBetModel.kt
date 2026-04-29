@@ -18,8 +18,11 @@ data class PoolGamblerBetModel(
     val score: Int?,
     val matchDateTime: LocalDateTime,
     val isLocked: Boolean,
+    val isComputed: Boolean,
     val instanceId: String = UUID.randomUUID().toString(),
 )
+
+fun PoolGamblerBetModel.hasBet() = this.betScore != null
 
 fun PoolGamblerBetModel.homeTeamMatchRawValue() =
     this.matchScore?.homeTeamValue?.toString().orEmpty()

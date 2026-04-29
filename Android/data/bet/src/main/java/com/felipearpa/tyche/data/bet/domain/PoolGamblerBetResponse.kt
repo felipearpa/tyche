@@ -21,4 +21,5 @@ internal data class PoolGamblerBetResponse(
     val score: Int?,
     @Contextual val matchDateTime: LocalDateTime,
     val isLocked: Boolean,
+    val isComputed: Boolean,
 )

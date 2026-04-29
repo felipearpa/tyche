@@ -15,7 +15,8 @@ extension PoolGamblerBet {
             betScore: self.betScore,
             score: self.score,
             matchDateTime: self.matchDateTime,
-            isLocked: self.isLocked
+            isLocked: self.isLocked,
+            isComputed: self.isComputed
         )
     }
 }

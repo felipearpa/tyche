@@ -18,7 +18,6 @@ import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.felipearpa.foundation.time.toShortDateString
 import com.felipearpa.tyche.bet.PoolGamblerBetModel
-import com.felipearpa.tyche.bet.finished.FinishedBetItem
 import com.felipearpa.tyche.bet.pending.PendingBetPlaceholderItem
 import com.felipearpa.tyche.bet.poolGamblerBetDummyModels
 import com.felipearpa.tyche.ui.lazy.RefreshableStatefulLazyColumn
@@ -76,8 +75,8 @@ fun BetsTimelineList(
                     }
                     .timelineItem()
 
-                FinishedBetItem(
-                    poolGamblerBet = poolGamblerBet,
+                BetTimeLineItem(
+                    bet = poolGamblerBet,
                     modifier = itemModifier,
                 )
                 HorizontalDivider(modifier = Modifier.padding(horizontal = LocalBoxSpacing.current.large))
