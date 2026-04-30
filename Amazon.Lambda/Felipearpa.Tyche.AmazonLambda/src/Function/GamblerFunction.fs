@@ -40,6 +40,7 @@ type GamblerFunction(configureServices: IServiceCollection -> unit) =
             .AddScoped<GetPoolGamblerScoresByPool>()
             .AddScoped<GetPendingPoolGamblerBets>()
             .AddScoped<GetFinishedPoolGamblerBets>()
+            .AddScoped<GetLivePoolGamblerBets>()
             .AddScoped<GetPoolGamblerScoreById>()
             .AddScoped<GetPoolById>()
             .AddScoped<Bet>()
@@ -66,7 +67,7 @@ type GamblerFunction(configureServices: IServiceCollection -> unit) =
                 request.PathParameters
                 |> Option.ofObj
                 |> Option.defaultValue Map.empty
-                |> tryGetStringParamOrError gamblerIdParameter
+                |> tryGetUlidParamOrError gamblerIdParameter
 
             let maybeNext =
                 request.QueryStringParameters

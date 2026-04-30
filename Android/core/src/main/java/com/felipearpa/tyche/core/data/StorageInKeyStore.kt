@@ -8,7 +8,7 @@ import androidx.security.crypto.MasterKeys
 class StorageInKeyStore(
     private val context: Context,
     private val key: String,
-    private val filename: String
+    private val filename: String,
 ) {
     private val masterKeyAlias = MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC)
 
@@ -37,7 +37,7 @@ class StorageInKeyStore(
             masterKeyAlias,
             context,
             EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-            EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+            EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM,
         )
     }
 }

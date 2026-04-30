@@ -35,7 +35,7 @@ module Email =
         match element with
         | Null -> Error "String is null"
         | NotMatches regularExpressionForEmail -> Error "String is invalid format"
-        | _ -> Ok <| Email element
+        | _ -> Ok <| Email (element.ToLowerInvariant())
 
     let tryOf element =
         match create element with

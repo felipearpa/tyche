@@ -4,6 +4,7 @@ open System
 open System.Collections.Generic
 open Amazon.DynamoDBv2.Model
 open Felipearpa.Data.DynamoDb
+open Felipearpa.Tyche.Pool.Domain
 open Felipearpa.Tyche.Pool.Type
 open Felipearpa.Type
 
@@ -23,7 +24,7 @@ module BetRequestBuilder =
              {ExpressionAttribute.name PoolTable.Attribute.awayTeamBet} = :{PoolTable.Attribute.awayTeamBet}"
 
         let conditionExpression =
-            $":now < {ExpressionAttribute.name PoolTable.Attribute.matchDateTime}"
+            $":lockHorizon < {ExpressionAttribute.name PoolTable.Attribute.matchDateTime}"
 
         let mutable attributeNames =
             ExpressionAttribute.names
@@ -31,11 +32,13 @@ module BetRequestBuilder =
                   PoolTable.Attribute.awayTeamBet
                   PoolTable.Attribute.matchDateTime ]
 
+        let lockHorizon = DateTime.UtcNow + LockPolicy.lockOffset
+
         let mutable attributeValues =
             dict
                 [ $":{PoolTable.Attribute.homeTeamBet}", AttributeValue(N = betScore.HomeTeamValue.ToString())
                   $":{PoolTable.Attribute.awayTeamBet}", AttributeValue(N = betScore.AwayTeamValue.ToString())
-                  ":now", AttributeValue(S = DateTime.Now.ToUniversalTime().ToString("o")) ]
+                  ":lockHorizon", AttributeValue(S = lockHorizon.ToString("o")) ]
 
         UpdateItemRequest(
             TableName = PoolTable.name,

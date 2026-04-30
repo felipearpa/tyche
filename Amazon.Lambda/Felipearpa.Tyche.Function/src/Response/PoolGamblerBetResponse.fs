@@ -5,6 +5,7 @@ open System
 type PoolGamblerBetResponse =
     { PoolId: string
       GamblerId: string
+      GamblerUsername: string
       MatchId: string
       PoolLayoutId: string
       HomeTeamId: string
@@ -17,4 +18,5 @@ type PoolGamblerBetResponse =
       AwayTeamBet: int option
       Score: int option
       MatchDateTime: DateTime
-      isLocked: bool }
+      isLocked: bool
+      isComputed: bool }

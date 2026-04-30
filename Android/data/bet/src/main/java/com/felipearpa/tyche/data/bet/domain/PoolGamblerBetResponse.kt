@@ -8,6 +8,7 @@ import kotlinx.serialization.Serializable
 internal data class PoolGamblerBetResponse(
     val poolId: String,
     val gamblerId: String,
+    val gamblerUsername: String,
     val matchId: String,
     val homeTeamId: String,
     val homeTeamName: String,
@@ -20,4 +21,5 @@ internal data class PoolGamblerBetResponse(
     val score: Int?,
     @Contextual val matchDateTime: LocalDateTime,
     val isLocked: Boolean,
+    val isComputed: Boolean,
 )

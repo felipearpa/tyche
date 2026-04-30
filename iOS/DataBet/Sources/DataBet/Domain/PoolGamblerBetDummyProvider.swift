@@ -5,6 +5,7 @@ func dummyPoolGamblerBet() -> PoolGamblerBet {
     return PoolGamblerBet(
         poolId: "pool123",
         gamblerId: "gambler456",
+        gamblerUsername: "gambler456@example.com",
         matchId: "match789",
         homeTeamId: "homeTeam1011",
         homeTeamName: "Red Devils",
@@ -14,7 +15,8 @@ func dummyPoolGamblerBet() -> PoolGamblerBet {
         betScore: TeamScore(homeTeamValue: 2, awayTeamValue: 2),
         score: 5,
         matchDateTime: Date(),
-        isLocked: false
+        isLocked: false,
+        isComputed: true
     )
 }
 
@@ -24,6 +26,7 @@ func dummyPoolGamblerBets() -> [PoolGamblerBet] {
         PoolGamblerBet(
             poolId: "pool123",
             gamblerId: "gambler456",
+            gamblerUsername: "gambler456@example.com",
             matchId: "match789",
             homeTeamId: "homeTeam1011",
             homeTeamName: "Red Devils",
@@ -33,11 +36,13 @@ func dummyPoolGamblerBets() -> [PoolGamblerBet] {
             betScore: TeamScore(homeTeamValue: 2, awayTeamValue: 2),
             score: 5,
             matchDateTime: Date(),
-            isLocked: false
+            isLocked: false,
+            isComputed: true
         ),
         PoolGamblerBet(
             poolId: "pool124",
             gamblerId: "gambler457",
+            gamblerUsername: "gambler457@example.com",
             matchId: "match790",
             homeTeamId: "homeTeam1012",
             homeTeamName: "Silver Surfers",
@@ -47,11 +52,13 @@ func dummyPoolGamblerBets() -> [PoolGamblerBet] {
             betScore: TeamScore(homeTeamValue: 1, awayTeamValue: 1),
             score: 2,
             matchDateTime: Date(),
-            isLocked: false
+            isLocked: false,
+            isComputed: true
         ),
         PoolGamblerBet(
             poolId: "pool125",
             gamblerId: "gambler458",
+            gamblerUsername: "gambler458@example.com",
             matchId: "match791",
             homeTeamId: "homeTeam1013",
             homeTeamName: "Bronze Beasts",
@@ -61,7 +68,8 @@ func dummyPoolGamblerBets() -> [PoolGamblerBet] {
             betScore: TeamScore(homeTeamValue: 1, awayTeamValue: 2),
             score: 3,
             matchDateTime: Date(),
-            isLocked: false
+            isLocked: false,
+            isComputed: true
         )
     ]
 }

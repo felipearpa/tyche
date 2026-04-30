@@ -10,6 +10,7 @@ struct PoolGamblerBetModelId: Hashable, Codable {
 struct PoolGamblerBetModel: Codable, Identifiable, Hashable {
     let poolId: String
     let gamblerId: String
+    let gamblerUsername: String
     let matchId: String
     let homeTeamId: String
     let homeTeamName: String
@@ -20,9 +21,14 @@ struct PoolGamblerBetModel: Codable, Identifiable, Hashable {
     let score: Int?
     let matchDateTime: Date
     fileprivate(set) var isLocked: Bool
-    
+    let isComputed: Bool
+
     var id: PoolGamblerBetModelId {
         return PoolGamblerBetModelId(poolId: self.poolId, gamblerId: self.gamblerId, matchId: self.matchId)
+    }
+
+    var isLive: Bool {
+        isLocked && !isComputed
     }
 }
 
@@ -36,6 +42,7 @@ extension PoolGamblerBetModel {
     struct Builder {
         var poolId: String
         var gamblerId: String
+        var gamblerUsername: String
         var matchId: String
         var homeTeamId: String
         var homeTeamName: String
@@ -46,10 +53,12 @@ extension PoolGamblerBetModel {
         var score: Int?
         var matchDateTime: Date
         fileprivate var isLocked: Bool
-        
+        var isComputed: Bool
+
         fileprivate init(original: PoolGamblerBetModel) {
             self.poolId = original.poolId
             self.gamblerId = original.gamblerId
+            self.gamblerUsername = original.gamblerUsername
             self.matchId = original.matchId
             self.homeTeamId = original.homeTeamId
             self.homeTeamName = original.homeTeamName
@@ -60,12 +69,14 @@ extension PoolGamblerBetModel {
             self.score = original.score
             self.matchDateTime = original.matchDateTime
             self.isLocked = original.isLocked
+            self.isComputed = original.isComputed
         }
-        
+
         fileprivate func build() -> PoolGamblerBetModel {
             PoolGamblerBetModel(
                 poolId: self.poolId,
                 gamblerId: self.gamblerId,
+                gamblerUsername: self.gamblerUsername,
                 matchId: self.matchId,
                 homeTeamId: self.homeTeamId,
                 homeTeamName: self.homeTeamName,
@@ -75,7 +86,8 @@ extension PoolGamblerBetModel {
                 betScore: self.betScore,
                 score: self.score,
                 matchDateTime: self.matchDateTime,
-                isLocked: self.isLocked
+                isLocked: self.isLocked,
+                isComputed: self.isComputed
             )
         }
     }
@@ -95,8 +107,15 @@ extension PoolGamblerBetModel {
     func awayTeamBetRawValue() -> String {
         if let awayTeamBet = self.betScore?.awayTeamValue { String(awayTeamBet) } else { "" }
     }
-    
+
     mutating func lock() {
         self.isLocked = true
+    }
+
+    func toPartial() -> PartialPoolGamblerBetModel {
+        PartialPoolGamblerBetModel(
+            homeTeamBet: homeTeamBetRawValue(),
+            awayTeamBet: awayTeamBetRawValue()
+        )
     }
 }

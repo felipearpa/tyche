@@ -14,6 +14,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -100,6 +101,8 @@ fun PoolScoreList(
                     onJoin = { onPoolJoin(poolGamblerScore.poolId) },
                     modifier = Modifier.fillMaxWidth(),
                 )
+
+                HorizontalDivider()
             }
         }
     }
@@ -269,6 +272,7 @@ private fun LazyListScope.poolScorePlaceholderList(count: Int) {
 private fun LazyListScope.poolScorePlaceholderItem() {
     item {
         PoolScorePlaceholderItem(modifier = Modifier.fillMaxWidth())
+        HorizontalDivider()
     }
 }
 

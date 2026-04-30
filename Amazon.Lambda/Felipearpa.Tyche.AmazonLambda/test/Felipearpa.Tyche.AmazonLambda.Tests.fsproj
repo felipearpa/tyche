@@ -30,6 +30,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Event\PoolLayoutEventFilterTest.fs" />
+    <Compile Include="Function\AuthorizationTestHelpers.fs" />
     <Compile Include="Function\Pool\GetPoolByIdTest.fs" />
     <Compile Include="Function\Pool\GetGamblersByPoolIdTest.fs" />
     <Compile Include="Function\Pool\GetPoolGamblerScoreByIdTest.fs" />

@@ -36,6 +36,9 @@ type PoolEvent(configureServices: IServiceCollection -> unit) =
     let gamblerIdField = "gamblerId"
 
     [<Literal>]
+    let gamblerUsernameField = "gamblerUsername"
+
+    [<Literal>]
     let poolLayoutIdField = "poolLayoutId"
 
     [<Literal>]
@@ -76,6 +79,7 @@ type PoolEvent(configureServices: IServiceCollection -> unit) =
             let hasRequiredFields =
                 image.ContainsKey(poolIdField)
                 && image.ContainsKey(gamblerIdField)
+                && image.ContainsKey(gamblerUsernameField)
                 && image.ContainsKey(poolLayoutIdField)
                 && image.ContainsKey(poolLayoutVersionField)
                 && image.ContainsKey(pkField)
@@ -94,6 +98,7 @@ type PoolEvent(configureServices: IServiceCollection -> unit) =
                     Some(
                         image[poolIdField].S |> Ulid.newOf,
                         image[gamblerIdField].S |> Ulid.newOf,
+                        image[gamblerUsernameField].S |> NonEmptyString100.newOf,
                         image[poolLayoutIdField].S |> Ulid.newOf,
                         image[poolLayoutVersionField].N |> int
                     )
@@ -103,7 +108,7 @@ type PoolEvent(configureServices: IServiceCollection -> unit) =
     let applyPendingLayoutMatches
         (getPendingPoolLayoutMatches: GetPendingPoolLayoutMatches)
         (addMatches: AddMatches)
-        (poolId, gamblerId, poolLayoutId, poolLayoutVersion)
+        (poolId, gamblerId, gamblerUsername, poolLayoutId, poolLayoutVersion)
         : Async<unit> =
         let rec loop (next: string option) : Async<unit> =
             async {
@@ -114,6 +119,7 @@ type PoolEvent(configureServices: IServiceCollection -> unit) =
                     |> Seq.map (fun m ->
                         { InitialPoolGamblerBet.PoolId = poolId
                           GamblerId = gamblerId
+                          GamblerUsername = gamblerUsername
                           MatchId = m.MatchId
                           PoolLayoutId = poolLayoutId
                           HomeTeamId = m.HomeTeamId

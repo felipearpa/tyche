@@ -25,11 +25,11 @@ module PoolGamblerScoreDictionaryTransformer =
           Score =
             dictionary
             |> tryGetAttributeValueOrNone (PoolTable.Attribute.score)
-            |> noneIfZero
+            |> Option.map (fun attributeValue -> int attributeValue.N)
           BeforeScore =
             dictionary
             |> tryGetAttributeValueOrNone (PoolTable.Attribute.beforeScore)
-            |> noneIfZero }
+            |> Option.map (fun attributeValue -> int attributeValue.N) }
 
     type Extensions =
         [<Extension>]

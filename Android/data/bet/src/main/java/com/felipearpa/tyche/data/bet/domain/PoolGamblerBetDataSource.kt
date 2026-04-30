@@ -17,5 +17,24 @@ internal interface PoolGamblerBetDataSource {
         searchText: String? = null,
     ): CursorPage<PoolGamblerBetResponse>
 
+    suspend fun getLivePoolGamblerBets(
+        poolId: String,
+        gamblerId: String,
+        next: String? = null,
+        searchText: String? = null,
+    ): CursorPage<PoolGamblerBetResponse>
+
+    suspend fun getPoolMatchGamblerBets(
+        poolId: String,
+        matchId: String,
+        next: String? = null,
+    ): CursorPage<PoolGamblerBetResponse>
+
+    suspend fun getGamblerBetsTimeline(
+        poolId: String,
+        gamblerId: String,
+        next: String? = null,
+    ): CursorPage<PoolGamblerBetResponse>
+
     suspend fun bet(betRequest: BetRequest): PoolGamblerBetResponse
 }

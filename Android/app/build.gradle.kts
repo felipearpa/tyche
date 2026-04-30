@@ -27,7 +27,7 @@ android {
     defaultConfig {
         applicationId = "com.felipearpa.fortuna"
         minSdk = projectMinSdk.toInt()
-        versionCode = 3
+        versionCode = 4
         versionName = "1.2"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {

@@ -12,7 +12,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import com.felipearpa.foundation.time.toShortTimeString
 import com.felipearpa.tyche.bet.PoolGamblerBetModel
@@ -106,19 +105,6 @@ fun FinishedBetItem(
 @PreviewLightDark
 @Composable
 private fun FinishedBetItemPreview() {
-    TycheTheme {
-        Surface {
-            FinishedBetItem(
-                poolGamblerBet = poolGamblerBetDummyModel(),
-                modifier = Modifier.fillMaxWidth(),
-            )
-        }
-    }
-}
-
-@Preview(locale = "es")
-@Composable
-private fun FinishedBetItemSpanishPreview() {
     TycheTheme {
         Surface {
             FinishedBetItem(

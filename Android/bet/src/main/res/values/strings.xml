@@ -6,4 +6,6 @@
     <string name="searching_label">Type to search</string>
     <string name="forbidden_bet_title">Forbidden bet</string>
     <string name="forbidden_bet_message">Oops! Betting is currently unavailable</string>
+    <string name="match_bets_view_title">Score</string>
+    <string name="live_label">LIVE</string>
 </resources>

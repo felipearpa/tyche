@@ -1,18 +1,28 @@
 import SwiftUI
 import UI
 import Core
+import DataBet
 
-struct FinishedPoolGamblerBetList: View {
+struct BetsTimelineList: View {
     var lazyPagingItems: LazyPagingItems<String, PoolGamblerBetModel>
+    let onMatchOpen: MatchOpenHandler?
 
     @Environment(\.boxSpacing) private var boxSpacing
+
+    init(
+        lazyPagingItems: LazyPagingItems<String, PoolGamblerBetModel>,
+        onMatchOpen: MatchOpenHandler? = nil
+    ) {
+        self.lazyPagingItems = lazyPagingItems
+        self.onMatchOpen = onMatchOpen
+    }
 
     var body: some View {
         StatefulLazyVStack(
             lazyPagingItems: lazyPagingItems,
-            loadingContent: { FinishedPoolGamblerBetFakeList(count: 50) },
+            loadingContent: { BetsTimelinePlaceholderList(count: 50) },
             loadingContentOnConcatenate: {
-                FinishedPoolGamblerBetFakeItem()
+                BetsTimelinePlaceholderItem()
                 Divider()
             }
         ) { poolGamblerBet in
@@ -25,44 +35,52 @@ struct FinishedPoolGamblerBetList: View {
                         .padding(.top, boxSpacing.medium)
                 }
 
-                FinishedBetItem(poolGamblerBet: poolGamblerBet)
+                BetTimelineItem(poolGamblerBet: poolGamblerBet)
                     .padding(boxSpacing.large)
+                    .contentShape(Rectangle())
+                    .onTapGesture { invokeMatchOpen(onMatchOpen, poolGamblerBet) }
 
                 Divider()
             }
         }
     }
 
-    // Stub for header grouping logic; to be implemented via state or grouping
     private func shouldShowHeader(for bet: PoolGamblerBetModel) -> Bool {
-        // Implement logic for date comparison and header grouping
+        var previous: PoolGamblerBetModel?
+        for item in lazyPagingItems {
+            if item.id == bet.id {
+                guard let previous else { return true }
+                return previous.matchDateTime.toShortDateString() != bet.matchDateTime.toShortDateString()
+            }
+            previous = item
+        }
         return true
     }
 }
 
-private struct FinishedPoolGamblerBetFakeList: View {
+private struct BetsTimelinePlaceholderList: View {
     let count: Int
 
     var body: some View {
         ForEach(0..<count, id: \.self) { _ in
-            FinishedPoolGamblerBetFakeItem()
+            BetsTimelinePlaceholderItem()
             Divider()
         }
     }
 }
 
-private struct FinishedPoolGamblerBetFakeItem: View {
+private struct BetsTimelinePlaceholderItem: View {
     @Environment(\.boxSpacing) private var boxSpacing
 
     var body: some View {
-        FinishedBetItem(poolGamblerBet: poolGamblerBetFakeModel())
+        BetTimelineItem(poolGamblerBet: poolGamblerBetFakeModel())
             .shimmer()
             .padding(boxSpacing.large)
     }
 }
 
 #Preview {
-    FinishedPoolGamblerBetList(
+    BetsTimelineList(
         lazyPagingItems: LazyPagingItems(
             pagingData: PagingData(
                 pagingConfig: PagingConfig(prefetchDistance: 5),

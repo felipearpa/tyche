@@ -11,6 +11,7 @@ fun poolGamblerBetFakeModel() =
     PoolGamblerBetModel(
         poolId = "X".repeat(15),
         gamblerId = "X".repeat(15),
+        gamblerUsername = "X".repeat(25),
         matchId = "X".repeat(15),
         homeTeamId = "X".repeat(15),
         homeTeamName = "X".repeat(25),
@@ -21,6 +22,7 @@ fun poolGamblerBetFakeModel() =
         score = 10,
         matchDateTime = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
         isLocked = true,
+        isComputed = false,
     )
 
 @OptIn(ExperimentalTime::class)
@@ -28,6 +30,7 @@ fun poolGamblerBetDummyModel() =
     PoolGamblerBetModel(
         poolId = "pool123",
         gamblerId = "gambler456",
+        gamblerUsername = "gambler456@example.com",
         matchId = "match789",
         homeTeamId = "team101",
         homeTeamName = "Team A",
@@ -38,6 +41,7 @@ fun poolGamblerBetDummyModel() =
         score = 10,
         matchDateTime = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
         isLocked = false,
+        isComputed = false,
     )
 
 @OptIn(ExperimentalTime::class)
@@ -46,6 +50,7 @@ fun poolGamblerBetDummyModels() =
         PoolGamblerBetModel(
             poolId = "pool001",
             gamblerId = "gambler123",
+            gamblerUsername = "gambler123@example.com",
             matchId = "match321",
             homeTeamId = "team111",
             homeTeamName = "Red Dragons",
@@ -56,10 +61,12 @@ fun poolGamblerBetDummyModels() =
             score = 15,
             matchDateTime = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
             isLocked = true,
+            isComputed = false,
         ),
         PoolGamblerBetModel(
             poolId = "pool002",
             gamblerId = "gambler456",
+            gamblerUsername = "gambler456@example.com",
             matchId = "match654",
             homeTeamId = "team333",
             homeTeamName = "Green Eagles",
@@ -69,11 +76,13 @@ fun poolGamblerBetDummyModels() =
             betScore = TeamScore(0, 1),
             score = 20,
             matchDateTime = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
-            isLocked = false,
+            isLocked = true,
+            isComputed = true,
         ),
         PoolGamblerBetModel(
             poolId = "pool003",
             gamblerId = "gambler789",
+            gamblerUsername = "gambler789@example.com",
             matchId = "match987",
             homeTeamId = "team555",
             homeTeamName = "Black Panthers",
@@ -84,5 +93,6 @@ fun poolGamblerBetDummyModels() =
             score = 25,
             matchDateTime = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
             isLocked = true,
+            isComputed = true,
         ),
     )

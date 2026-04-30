@@ -15,15 +15,11 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 
-private const val PAGE_SIZE = 50
-private const val PREFETCH_DISTANCE = 5
-
 class FinishedBetListViewModel(
     private val poolId: String,
     val gamblerId: String,
     private val getFinishedPoolGamblerBets: GetFinishedPoolGamblerBets,
-) :
-    ViewModel() {
+) : ViewModel() {
 
     val pageSize = PAGE_SIZE
     private var _searchText = MutableStateFlow(emptyString())
@@ -63,3 +59,6 @@ class FinishedBetListViewModel(
         _searchText.value = searchText.trim()
     }
 }
+
+private const val PAGE_SIZE = 50
+private const val PREFETCH_DISTANCE = 5

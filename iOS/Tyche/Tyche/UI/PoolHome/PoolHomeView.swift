@@ -13,6 +13,8 @@ struct PoolHomeView: View {
     let poolId: String
     let onChangePool: () -> Void
     let onSignOut: () -> Void
+    let onGamblerOpen: ((_ poolId: String, _ gamblerId: String, _ gamblerUsername: String) -> Void)?
+    let onMatchOpen: MatchOpenHandler?
 
     @Environment(\.diResolver) var diResolver: DIResolver
     @State private var selectedTab = PoolHomeTab.gamblerScores
@@ -22,12 +24,16 @@ struct PoolHomeView: View {
         gamblerId: String,
         poolId: String,
         onChangePool: @escaping () -> Void,
-        onSignOut: @escaping () -> Void
+        onSignOut: @escaping () -> Void,
+        onGamblerOpen: ((_ poolId: String, _ gamblerId: String, _ gamblerUsername: String) -> Void)? = nil,
+        onMatchOpen: MatchOpenHandler? = nil
     ) {
         self.gamblerId = gamblerId
         self.poolId = poolId
         self.onChangePool = onChangePool
         self.onSignOut = onSignOut
+        self.onGamblerOpen = onGamblerOpen
+        self.onMatchOpen = onMatchOpen
     }
 
     var body: some View {
@@ -41,7 +47,8 @@ struct PoolHomeView: View {
                     ),
                     gamblerId: gamblerId,
                     poolId: poolId
-                )
+                ),
+                onGamblerOpen: onGamblerOpen
             )
             .tag(PoolHomeTab.gamblerScores)
             .tabItem {
@@ -58,7 +65,8 @@ struct PoolHomeView: View {
                     ),
                     gamblerId: gamblerId,
                     poolId: poolId
-                )
+                ),
+                onMatchOpen: onMatchOpen
             )
             .tag(PoolHomeTab.bets)
             .tabItem {
@@ -68,14 +76,15 @@ struct PoolHomeView: View {
                 )
             }
 
-            FinishedPoolGamblerBetListView(
+            FinishedBetListView(
                 viewModel: FinishedBetListViewModel(
                     getFinishedPoolGamblerBetsUseCase: GetFinishedPoolGamblerBetsUseCase(
                         poolGamblerBetRepository: diResolver.resolve(PoolGamblerBetRepository.self)!
                     ),
                     gamblerId: gamblerId,
                     poolId: poolId,
-                )
+                ),
+                onMatchOpen: onMatchOpen
             )
             .tag(PoolHomeTab.historyBet)
             .tabItem {

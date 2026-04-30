@@ -6,4 +6,6 @@
     <string name="searching_label">Escriba para buscar</string>
     <string name="forbidden_bet_title">Apuesta no permitida</string>
     <string name="forbidden_bet_message">¡Vaya! Las apuestas están actualmente deshabilitadas</string>
+    <string name="match_bets_view_title">Marcador</string>
+    <string name="live_label">EN VIVO</string>
 </resources>

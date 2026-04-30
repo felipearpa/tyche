@@ -157,14 +157,16 @@ private struct NonEditableDefaultActionBar: View {
     let viewModelState: EditableViewState<PoolGamblerBetModel>
     @Binding var viewState: PendingBetItemViewState
     let edit: () -> Void
-    
+
     var body: some View {
         StateIndicator(state: viewModelState)
-        
+
         Spacer()
-        
-        Button(action: edit) {
-            Text(String(sharedResource: .editAction))
+
+        if !viewModelState.relevantValue().isLocked {
+            Button(action: edit) {
+                Text(String(sharedResource: .editAction))
+            }
         }
     }
 }

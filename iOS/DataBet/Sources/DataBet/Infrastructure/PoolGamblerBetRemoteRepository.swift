@@ -51,6 +51,59 @@ class PoolGamblerBetRemoteRepository: PoolGamblerBetRepository {
         }
     }
 
+    func getLivePoolGamblerBets(
+        poolId: String,
+        gamblerId: String,
+        next: String?,
+        searchText: String?
+    ) async -> Result<CursorPage<PoolGamblerBet>, Error> {
+        return await networkErrorHandler.handle {
+            let page = try await poolGamblerBetRemoteDataSource.getLivePoolGamblerBets(
+                poolId: poolId,
+                gamblerId: gamblerId,
+                next: next,
+                searchText: searchText
+            )
+            return page.map { poolGamblerBetResponse in
+                poolGamblerBetResponse.toPoolGamblerBet()
+            }
+        }
+    }
+
+    func getPoolMatchGamblerBets(
+        poolId: String,
+        matchId: String,
+        next: String?
+    ) async -> Result<CursorPage<PoolGamblerBet>, Error> {
+        return await networkErrorHandler.handle {
+            let page = try await poolGamblerBetRemoteDataSource.getPoolMatchGamblerBets(
+                poolId: poolId,
+                matchId: matchId,
+                next: next
+            )
+            return page.map { poolGamblerBetResponse in
+                poolGamblerBetResponse.toPoolGamblerBet()
+            }
+        }
+    }
+
+    func getGamblerBetsTimeline(
+        poolId: String,
+        gamblerId: String,
+        next: String?
+    ) async -> Result<CursorPage<PoolGamblerBet>, Error> {
+        return await networkErrorHandler.handle {
+            let page = try await poolGamblerBetRemoteDataSource.getGamblerBetsTimeline(
+                poolId: poolId,
+                gamblerId: gamblerId,
+                next: next
+            )
+            return page.map { poolGamblerBetResponse in
+                poolGamblerBetResponse.toPoolGamblerBet()
+            }
+        }
+    }
+
     func bet(bet: Bet) async -> Result<PoolGamblerBet, Error> {
         return await networkErrorHandler.handle {
             let response = try await poolGamblerBetRemoteDataSource.bet(betRequest: bet.toBetRequest())

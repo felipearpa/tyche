@@ -39,6 +39,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.felipearpa.foundation.emptyString
 import com.felipearpa.tyche.R
+import com.felipearpa.tyche.bet.PoolGamblerBetModel
 import com.felipearpa.tyche.bet.finished.FinishedBetListView
 import com.felipearpa.tyche.bet.finished.finishedBetListViewModel
 import com.felipearpa.tyche.bet.pending.PendingBetListView
@@ -58,6 +59,8 @@ fun PoolHomeView(
     gamblerId: String,
     onPoolChange: () -> Unit,
     onSignOut: () -> Unit = {},
+    onGamblerOpen: ((poolId: String, gamblerId: String, gamblerUsername: String) -> Unit)? = null,
+    onMatchOpen: ((PoolGamblerBetModel) -> Unit)? = null,
 ) {
     var selectedTabIndex by remember { mutableStateOf(Tab.GAMBLER_SCORE) }
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
@@ -126,6 +129,7 @@ fun PoolHomeView(
                             poolId = poolId,
                             gamblerId = gamblerId,
                         ),
+                        onGamblerOpen = onGamblerOpen,
                     )
 
                     Tab.BET_EDITOR -> PendingBetListView(
@@ -133,6 +137,7 @@ fun PoolHomeView(
                             poolId = poolId,
                             gamblerId = gamblerId,
                         ),
+                        onMatchOpen = onMatchOpen,
                     )
 
                     Tab.HISTORY_BET -> FinishedBetListView(
@@ -140,6 +145,7 @@ fun PoolHomeView(
                             poolId = poolId,
                             gamblerId = gamblerId,
                         ),
+                        onMatchOpen = onMatchOpen,
                     )
                 }
             }

@@ -18,6 +18,7 @@ open Felipearpa.Tyche.Function.Request
 open Felipearpa.Tyche.Pool.Application
 open Felipearpa.Tyche.Pool.Domain
 open Felipearpa.Tyche.Pool.Infrastructure
+open Felipearpa.Type
 open Microsoft.Extensions.DependencyInjection
 open Microsoft.Extensions.Logging
 
@@ -28,6 +29,9 @@ type PoolFunction(configureServices: IServiceCollection -> unit) =
 
     [<Literal>]
     let gamblerIdParameter = "gamblerId"
+
+    [<Literal>]
+    let matchIdParameter = "matchId"
 
     [<Literal>]
     let nextParameter = "next"
@@ -50,6 +54,9 @@ type PoolFunction(configureServices: IServiceCollection -> unit) =
             .AddScoped<GetPoolGamblerScoresByPool>()
             .AddScoped<GetPendingPoolGamblerBets>()
             .AddScoped<GetFinishedPoolGamblerBets>()
+            .AddScoped<GetLivePoolGamblerBets>()
+            .AddScoped<GetPoolMatchGamblerBets>()
+            .AddScoped<GetGamblerBetsTimeline>()
             .AddScoped<GetPoolGamblerScoreById>()
             .AddScoped<GetPoolById>()
             .AddScoped<Bet>()
@@ -78,7 +85,7 @@ type PoolFunction(configureServices: IServiceCollection -> unit) =
                 request.PathParameters
                 |> Option.ofObj
                 |> Option.defaultValue Map.empty
-                |> tryGetStringParamOrError poolIdParameter
+                |> tryGetUlidParamOrError poolIdParameter
 
             match poolIdResult with
             | Error error -> return [ error ] |> BadRequestResponseFactory.create
@@ -99,7 +106,7 @@ type PoolFunction(configureServices: IServiceCollection -> unit) =
                 request.PathParameters
                 |> Option.ofObj
                 |> Option.defaultValue Map.empty
-                |> tryGetStringParamOrError poolIdParameter
+                |> tryGetUlidParamOrError poolIdParameter
 
             let maybeNext =
                 request.QueryStringParameters
@@ -134,13 +141,13 @@ type PoolFunction(configureServices: IServiceCollection -> unit) =
                 request.PathParameters
                 |> Option.ofObj
                 |> Option.defaultValue Map.empty
-                |> tryGetStringParamOrError poolIdParameter
+                |> tryGetUlidParamOrError poolIdParameter
 
             let gamblerIdResult =
                 request.PathParameters
                 |> Option.ofObj
                 |> Option.defaultValue Map.empty
-                |> tryGetStringParamOrError gamblerIdParameter
+                |> tryGetUlidParamOrError gamblerIdParameter
 
             match poolIdResult, gamblerIdResult with
             | Ok poolId, Ok gamblerId ->
@@ -170,13 +177,13 @@ type PoolFunction(configureServices: IServiceCollection -> unit) =
                 request.PathParameters
                 |> Option.ofObj
                 |> Option.defaultValue Map.empty
-                |> tryGetStringParamOrError poolIdParameter
+                |> tryGetUlidParamOrError poolIdParameter
 
             let gamblerIdResult =
                 request.PathParameters
                 |> Option.ofObj
                 |> Option.defaultValue Map.empty
-                |> tryGetStringParamOrError gamblerIdParameter
+                |> tryGetUlidParamOrError gamblerIdParameter
 
             let maybeNext =
                 request.QueryStringParameters
@@ -220,13 +227,13 @@ type PoolFunction(configureServices: IServiceCollection -> unit) =
                 request.PathParameters
                 |> Option.ofObj
                 |> Option.defaultValue Map.empty
-                |> tryGetStringParamOrError poolIdParameter
+                |> tryGetUlidParamOrError poolIdParameter
 
             let gamblerIdResult =
                 request.PathParameters
                 |> Option.ofObj
                 |> Option.defaultValue Map.empty
-                |> tryGetStringParamOrError gamblerIdParameter
+                |> tryGetUlidParamOrError gamblerIdParameter
 
             let maybeNext =
                 request.QueryStringParameters
@@ -254,6 +261,142 @@ type PoolFunction(configureServices: IServiceCollection -> unit) =
             | _ ->
                 let errors =
                     [ toErrorOption poolIdResult; toErrorOption gamblerIdResult ] |> List.choose id
+
+                return errors |> BadRequestResponseFactory.create
+        }
+        |> Async.StartAsTask
+
+    // GET /pools/{poolId}/gamblers/{gamblerId}/bets/live
+    member this.GetLiveBetsAsync
+        (request: APIGatewayHttpApiV2ProxyRequest, _: ILambdaContext)
+        : APIGatewayHttpApiV2ProxyResponse Task =
+        async {
+            use scope = serviceProvider.CreateScope()
+
+            let poolIdResult =
+                request.PathParameters
+                |> Option.ofObj
+                |> Option.defaultValue Map.empty
+                |> tryGetUlidParamOrError poolIdParameter
+
+            let gamblerIdResult =
+                request.PathParameters
+                |> Option.ofObj
+                |> Option.defaultValue Map.empty
+                |> tryGetUlidParamOrError gamblerIdParameter
+
+            let maybeNext =
+                request.QueryStringParameters
+                |> Option.ofObj
+                |> Option.defaultValue Map.empty
+                |> tryGetStringParamOrNone nextParameter
+
+            let maybeSearchText =
+                request.QueryStringParameters
+                |> Option.ofObj
+                |> Option.defaultValue Map.empty
+                |> tryGetStringParamOrNone searchTextParameter
+
+            match poolIdResult, gamblerIdResult, maybeNext, maybeSearchText with
+            | Ok poolId, Ok gamblerId, next, searchText ->
+                let! response =
+                    getLiveBetsAsync
+                        poolId
+                        gamblerId
+                        searchText
+                        next
+                        (scope.ServiceProvider.GetService<GetLivePoolGamblerBets>())
+
+                return! response.ToAmazonProxyResponse()
+            | _ ->
+                let errors =
+                    [ toErrorOption poolIdResult; toErrorOption gamblerIdResult ] |> List.choose id
+
+                return errors |> BadRequestResponseFactory.create
+        }
+        |> Async.StartAsTask
+
+    // GET /pools/{poolId}/gamblers/{gamblerId}/bets/timeline
+    member this.GetBetsTimelineAsync
+        (request: APIGatewayHttpApiV2ProxyRequest, _: ILambdaContext)
+        : APIGatewayHttpApiV2ProxyResponse Task =
+        async {
+            use scope = serviceProvider.CreateScope()
+
+            let poolIdResult =
+                request.PathParameters
+                |> Option.ofObj
+                |> Option.defaultValue Map.empty
+                |> tryGetUlidParamOrError poolIdParameter
+
+            let gamblerIdResult =
+                request.PathParameters
+                |> Option.ofObj
+                |> Option.defaultValue Map.empty
+                |> tryGetUlidParamOrError gamblerIdParameter
+
+            let maybeNext =
+                request.QueryStringParameters
+                |> Option.ofObj
+                |> Option.defaultValue Map.empty
+                |> tryGetStringParamOrNone nextParameter
+
+            match poolIdResult, gamblerIdResult, maybeNext with
+            | Ok poolId, Ok gamblerId, next ->
+                let! response =
+                    getBetsTimelineAsync
+                        poolId
+                        gamblerId
+                        next
+                        (scope.ServiceProvider.GetService<GetGamblerBetsTimeline>())
+
+                return! response.ToAmazonProxyResponse()
+            | _ ->
+                let errors =
+                    [ toErrorOption poolIdResult; toErrorOption gamblerIdResult ] |> List.choose id
+
+                return errors |> BadRequestResponseFactory.create
+        }
+        |> Async.StartAsTask
+
+    // GET /pools/{poolId}/matches/{matchId}/bets
+    member this.GetMatchBetsAsync
+        (request: APIGatewayHttpApiV2ProxyRequest, _: ILambdaContext)
+        : APIGatewayHttpApiV2ProxyResponse Task =
+        async {
+            use scope = serviceProvider.CreateScope()
+
+            let poolIdResult =
+                request.PathParameters
+                |> Option.ofObj
+                |> Option.defaultValue Map.empty
+                |> tryGetUlidParamOrError poolIdParameter
+
+            let matchIdResult =
+                request.PathParameters
+                |> Option.ofObj
+                |> Option.defaultValue Map.empty
+                |> tryGetUlidParamOrError matchIdParameter
+
+            let maybeNext =
+                request.QueryStringParameters
+                |> Option.ofObj
+                |> Option.defaultValue Map.empty
+                |> tryGetStringParamOrNone nextParameter
+
+            match poolIdResult, matchIdResult, maybeNext with
+            | Ok poolId, Ok matchId, next ->
+                let! response =
+                    getMatchBetsAsync
+                        poolId
+                        matchId
+                        next
+                        (scope.ServiceProvider.GetService<GetPoolMatchGamblerBets>())
+
+                return! response.ToAmazonProxyResponse()
+            | _ ->
+                let errors =
+                    [ toErrorOption poolIdResult; toErrorOption matchIdResult ] |> List.choose id
 
                 return errors |> BadRequestResponseFactory.create
         }
@@ -288,7 +431,7 @@ type PoolFunction(configureServices: IServiceCollection -> unit) =
                 request.PathParameters
                 |> Option.ofObj
                 |> Option.defaultValue Map.empty
-                |> tryGetStringParamOrError poolIdParameter
+                |> tryGetUlidParamOrError poolIdParameter
 
             let joinPoolRequestResult = tryGetOrError<JoinPoolRequest> request.Body
 

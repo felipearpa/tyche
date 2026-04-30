@@ -5,16 +5,24 @@ import DataPool
 
 public struct GamblerScoreListView: View {
     @StateObject private var viewModel: GamblerScoreListViewModel
-    
-    public init(viewModel: @autoclosure @escaping () -> GamblerScoreListViewModel) {
+    private let onGamblerOpen: ((_ poolId: String, _ gamblerId: String, _ gamblerUsername: String) -> Void)?
+    @Environment(\.boxSpacing) private var boxSpacing
+
+    public init(
+        viewModel: @autoclosure @escaping () -> GamblerScoreListViewModel,
+        onGamblerOpen: ((_ poolId: String, _ gamblerId: String, _ gamblerUsername: String) -> Void)? = nil
+    ) {
         self._viewModel = .init(wrappedValue: viewModel())
+        self.onGamblerOpen = onGamblerOpen
     }
-    
+
     public var body: some View {
         GamblerScoreList(
             lazyPagingItems: viewModel.lazyPager,
-            isCurrentUser: viewModel.gamblerId
+            isCurrentUser: viewModel.gamblerId,
+            onGamblerOpen: onGamblerOpen
         )
+        .padding(boxSpacing.medium)
     }
 }
 

@@ -16,13 +16,13 @@ module GamblerRouter =
                     "/gamblers/{gamblerId}/pools",
                     Func<_, _, _, _>
                         (fun
-                            (poolId: string)
+                            (gamblerId: string)
                             (next: string)
                             (getPoolGamblerScoresByGambler: GetPoolGamblerScoresByGambler) ->
                             async {
                                 return!
                                     getPoolsByGamblerIdAsync
-                                        poolId
+                                        gamblerId
                                         (next |> Option.ofObj)
                                         getPoolGamblerScoresByGambler
                             }

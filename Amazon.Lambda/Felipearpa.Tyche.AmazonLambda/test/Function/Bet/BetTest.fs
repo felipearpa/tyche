@@ -10,6 +10,7 @@ open Amazon.DynamoDBv2.Model
 open Amazon.Lambda.APIGatewayEvents
 open Amazon.Lambda.TestUtilities
 open Felipearpa.Tyche.AmazonLambda.Function
+open Felipearpa.Tyche.AmazonLambda.Function.Tests.AuthorizationTestHelpers
 open FsUnitTyped
 open Microsoft.Extensions.DependencyInjection
 open Microsoft.Extensions.Logging
@@ -24,6 +25,7 @@ module BetTest =
             dict
                 [ "poolId", AttributeValue(S = "01K0DCFFB08W35AW5Q6F82R6NQ")
                   "gamblerId", AttributeValue(S = "01K0DCFFB08W35AW5Q6F82R6NQ")
+                  "gamblerUsername", AttributeValue(S = "felipearcila@gmail.com")
                   "matchId", AttributeValue(S = "01K0DCFFB08W35AW5Q6F82R6NQ")
                   "poolLayoutId", AttributeValue(S = "01K0DCFFB08W35AW5Q6F82R6NQ")
                   "homeTeamId", AttributeValue(S = "01K0DCFFB08W35AW5Q6F82R6NQ")
@@ -46,6 +48,8 @@ module BetTest =
         let client = Mock<IAmazonDynamoDB>()
         setupMockBetWrite client
 
+        let callerGamblerId = "01K23DN4Q5WD5BJ5FKGTG414EG"
+
         let functions =
             BetFunction(fun services ->
                 services.AddLogging(fun builder ->
@@ -59,7 +63,8 @@ module BetTest =
                     |> ignore)
                 |> ignore
 
-                services.AddSingleton<IAmazonDynamoDB>(client.Object) |> ignore)
+                services.AddSingleton<IAmazonDynamoDB>(client.Object) |> ignore
+                registerAuthAsCaller services callerGamblerId)
 
         let context = TestLambdaContext()
 
@@ -67,6 +72,8 @@ module BetTest =
 
         request.Body <-
             """{"poolId":"01K23DN4Q5WD5BJ5FKGTG414EG","gamblerId":"01K23DN4Q5WD5BJ5FKGTG414EG","matchId":"01K23DN4Q5WD5BJ5FKGTG414EH","homeTeamBet":2,"awayTeamBet":1}"""
+
+        attachJwtClaim request testEmail |> ignore
 
         (context, request, functions)
 

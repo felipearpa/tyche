@@ -6,6 +6,7 @@ import kotlinx.datetime.LocalDateTime
 data class PoolGamblerBet(
     val poolId: String,
     val gamblerId: String,
+    val gamblerUsername: String,
     val matchId: String,
     val homeTeamId: String,
     val homeTeamName: String,
@@ -17,4 +18,5 @@ data class PoolGamblerBet(
     val score: Int?,
     val matchDateTime: LocalDateTime,
     val isLocked: Boolean,
+    val isComputed: Boolean,
 )

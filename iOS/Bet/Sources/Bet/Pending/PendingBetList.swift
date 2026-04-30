@@ -5,9 +5,18 @@ import DataBet
 
 struct PendingBetList: View {
     var lazyPagingItems: LazyPagingItems<String, PoolGamblerBetModel>
+    let onMatchOpen: MatchOpenHandler?
 
     @Environment(\.boxSpacing) private var boxSpacing
     @Environment(\.diResolver) private var diResolver: DIResolver
+
+    init(
+        lazyPagingItems: LazyPagingItems<String, PoolGamblerBetModel>,
+        onMatchOpen: MatchOpenHandler? = nil
+    ) {
+        self.lazyPagingItems = lazyPagingItems
+        self.onMatchOpen = onMatchOpen
+    }
 
     var body: some View {
         let _ = Self._printChangesIfDebug()
@@ -26,6 +35,8 @@ struct PendingBetList: View {
                     viewState: .constant(PendingBetItemViewState.emptyVisualization())
                 )
                 .padding(boxSpacing.medium)
+                .contentShape(Rectangle())
+                .onTapGesture { invokeMatchOpen(onMatchOpen, poolGamblerBet) }
                 Divider()
             } else {
                 PendingBetItemView(
@@ -35,10 +46,25 @@ struct PendingBetList: View {
                     )
                 )
                 .padding(boxSpacing.medium)
+                .contentShape(Rectangle())
+                .onTapGesture { invokeMatchOpen(onMatchOpen, poolGamblerBet) }
                 Divider()
             }
         }
     }
+}
+
+func invokeMatchOpen(_ handler: MatchOpenHandler?, _ poolGamblerBet: PoolGamblerBetModel) {
+    handler?(
+        poolGamblerBet.poolId,
+        poolGamblerBet.matchId,
+        poolGamblerBet.homeTeamName,
+        poolGamblerBet.awayTeamName,
+        poolGamblerBet.matchDateTime,
+        poolGamblerBet.matchScore?.homeTeamValue,
+        poolGamblerBet.matchScore?.awayTeamValue,
+        poolGamblerBet.isLive
+    )
 }
 
 private struct PendingBetPlaceholderList: View {

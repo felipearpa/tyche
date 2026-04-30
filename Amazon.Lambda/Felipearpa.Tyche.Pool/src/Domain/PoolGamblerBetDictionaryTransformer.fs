@@ -12,10 +12,16 @@ open Felipearpa.Type
 module PoolGamblerBetDictionaryTransformer =
 
     let toPoolGamblerBet (dictionary: IDictionary<string, AttributeValue>) =
-        let matchDateTime = DateTime.Parse(dictionary[PoolTable.Attribute.matchDateTime].S)
+        let matchDateTime =
+            DateTime.Parse(
+                dictionary[PoolTable.Attribute.matchDateTime].S,
+                Globalization.CultureInfo.InvariantCulture,
+                Globalization.DateTimeStyles.RoundtripKind
+            )
 
         { PoolGamblerBet.PoolId = dictionary[PoolTable.Attribute.poolId].S |> Ulid.newOf
           GamblerId = dictionary[PoolTable.Attribute.gamblerId].S |> Ulid.newOf
+          GamblerUsername = dictionary[PoolTable.Attribute.gamblerUsername].S |> NonEmptyString100.newOf
           MatchId = dictionary[PoolTable.Attribute.matchId].S |> Ulid.newOf
           PoolLayoutId = dictionary[PoolTable.Attribute.poolLayoutId].S |> Ulid.newOf
           HomeTeamId = dictionary[PoolTable.Attribute.homeTeamId].S |> Ulid.newOf
@@ -45,9 +51,13 @@ module PoolGamblerBetDictionaryTransformer =
           Score =
             dictionary
             |> tryGetAttributeValueOrNone (PoolTable.Attribute.score)
-            |> noneIfZero
+            |> Option.map (fun attributeValue -> int attributeValue.N)
           MatchDateTime = matchDateTime
-          isLocked = DateTime.Now >= matchDateTime }
+          isLocked = LockPolicy.isLockedAt DateTime.UtcNow matchDateTime
+          isComputed =
+            dictionary
+            |> tryGetAttributeValueOrNone (PoolTable.Attribute.computedRequestId)
+            |> Option.isSome }
 
     type Extensions =
         [<Extension>]

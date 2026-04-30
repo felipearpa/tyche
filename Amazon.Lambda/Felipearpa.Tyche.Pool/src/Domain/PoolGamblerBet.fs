@@ -7,6 +7,7 @@ open Felipearpa.Type
 type PoolGamblerBet =
     { PoolId: Ulid
       GamblerId: Ulid
+      GamblerUsername: NonEmptyString100
       MatchId: Ulid
       PoolLayoutId: Ulid
       HomeTeamId: Ulid
@@ -17,4 +18,5 @@ type PoolGamblerBet =
       BetScore: TeamScore<BetScore> option
       Score: int option
       MatchDateTime: DateTime
-      isLocked: bool }
+      isLocked: bool
+      isComputed: bool }

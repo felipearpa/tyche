@@ -5,6 +5,7 @@ extension PoolGamblerBet {
         return PoolGamblerBetModel(
             poolId: self.poolId,
             gamblerId: self.gamblerId,
+            gamblerUsername: self.gamblerUsername,
             matchId: self.matchId,
             homeTeamId: self.homeTeamId,
             homeTeamName: self.homeTeamName,
@@ -14,7 +15,8 @@ extension PoolGamblerBet {
             betScore: self.betScore,
             score: self.score,
             matchDateTime: self.matchDateTime,
-            isLocked: self.isLocked
+            isLocked: self.isLocked,
+            isComputed: self.isComputed
         )
     }
 }

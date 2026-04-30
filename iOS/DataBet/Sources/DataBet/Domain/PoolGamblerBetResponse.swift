@@ -4,6 +4,7 @@ import Core
 struct PoolGamblerBetResponse: Codable {
     let poolId: String
     let gamblerId: String
+    let gamblerUsername: String
     let matchId: String
     let homeTeamId: String
     let homeTeamName: String
@@ -16,6 +17,7 @@ struct PoolGamblerBetResponse: Codable {
     let score: Int?
     let matchDateTime: Date
     let isLocked: Bool
+    let isComputed: Bool
 }
 
 extension PoolGamblerBetResponse {
@@ -23,6 +25,7 @@ extension PoolGamblerBetResponse {
         return PoolGamblerBet(
             poolId: self.poolId,
             gamblerId: self.gamblerId,
+            gamblerUsername: self.gamblerUsername,
             matchId: self.matchId,
             homeTeamId: self.homeTeamId,
             homeTeamName: self.homeTeamName,
@@ -36,7 +39,8 @@ extension PoolGamblerBetResponse {
                 TeamScore(homeTeamValue: self.homeTeamBet!, awayTeamValue: self.awayTeamBet!),
             score: self.score,
             matchDateTime: self.matchDateTime,
-            isLocked: self.isLocked
+            isLocked: self.isLocked,
+            isComputed: self.isComputed
         )
     }
 }

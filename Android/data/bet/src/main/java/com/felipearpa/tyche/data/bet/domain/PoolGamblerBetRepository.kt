@@ -18,4 +18,23 @@ interface PoolGamblerBetRepository {
         next: String? = null,
         searchText: String? = null
     ): Result<CursorPage<PoolGamblerBet>>
+
+    suspend fun getLivePoolGamblerBets(
+        poolId: String,
+        gamblerId: String,
+        next: String? = null,
+        searchText: String? = null
+    ): Result<CursorPage<PoolGamblerBet>>
+
+    suspend fun getPoolMatchGamblerBets(
+        poolId: String,
+        matchId: String,
+        next: String? = null,
+    ): Result<CursorPage<PoolGamblerBet>>
+
+    suspend fun getGamblerBetsTimeline(
+        poolId: String,
+        gamblerId: String,
+        next: String? = null,
+    ): Result<CursorPage<PoolGamblerBet>>
 }

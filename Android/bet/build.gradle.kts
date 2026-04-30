@@ -7,6 +7,7 @@ val projectMinSdk: String by project
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.kotlinx.serialization)
 }
 
 kotlin {
@@ -57,6 +58,7 @@ dependencies {
     implementation(libs.felipearpa.viewing.state)
     implementation(libs.kotlinx.datetime)
     implementation(libs.felipearpa.foundation)
+    implementation(libs.kotlinx.serialization.json)
 
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)

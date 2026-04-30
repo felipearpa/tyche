@@ -59,6 +59,69 @@ class PoolGamblerBetAlamofireDataSource: PoolGamblerBetRemoteDataSource {
         }
     }
 
+    func getLivePoolGamblerBets(poolId: String, gamblerId: String, next: String?, searchText: String?) async throws -> Core.CursorPage<PoolGamblerBetResponse> {
+        return try await withUnsafeThrowingContinuation { continuation in
+            session.request(
+                urlBasePathProvider.prependBasePath("pools/\(poolId)/gamblers/\(gamblerId)/bets/live")!,
+                parameters: ["next": next, "searchText": searchText]
+            )
+            .validate()
+            .responseDecodable(
+                of: CursorPage<PoolGamblerBetResponse>.self,
+                decoder: JSONDecoder().withISODate()
+            ) { response in
+                switch response.result {
+                case .success(let page):
+                    continuation.resume(returning: page)
+                case .failure(let error):
+                    continuation.resume(throwing: error)
+                }
+            }
+        }
+    }
+
+    func getPoolMatchGamblerBets(poolId: String, matchId: String, next: String?) async throws -> CursorPage<PoolGamblerBetResponse> {
+        return try await withUnsafeThrowingContinuation { continuation in
+            session.request(
+                urlBasePathProvider.prependBasePath("pools/\(poolId)/matches/\(matchId)/bets")!,
+                parameters: ["next": next]
+            )
+            .validate()
+            .responseDecodable(
+                of: CursorPage<PoolGamblerBetResponse>.self,
+                decoder: JSONDecoder().withISODate()
+            ) { response in
+                switch response.result {
+                case .success(let page):
+                    continuation.resume(returning: page)
+                case .failure(let error):
+                    continuation.resume(throwing: error)
+                }
+            }
+        }
+    }
+
+    func getGamblerBetsTimeline(poolId: String, gamblerId: String, next: String?) async throws -> CursorPage<PoolGamblerBetResponse> {
+        return try await withUnsafeThrowingContinuation { continuation in
+            session.request(
+                urlBasePathProvider.prependBasePath("pools/\(poolId)/gamblers/\(gamblerId)/bets/timeline")!,
+                parameters: ["next": next]
+            )
+            .validate()
+            .responseDecodable(
+                of: CursorPage<PoolGamblerBetResponse>.self,
+                decoder: JSONDecoder().withISODate()
+            ) { response in
+                switch response.result {
+                case .success(let page):
+                    continuation.resume(returning: page)
+                case .failure(let error):
+                    continuation.resume(throwing: error)
+                }
+            }
+        }
+    }
+
     func bet(betRequest: BetRequest) async throws -> PoolGamblerBetResponse {
         return try await withUnsafeThrowingContinuation { continuation in
             session.request(

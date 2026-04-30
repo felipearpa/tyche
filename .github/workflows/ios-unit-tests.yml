@@ -17,7 +17,7 @@ jobs:
     timeout-minutes: 45
     defaults:
       run:
-        working-directory: iOS/Tyche
+        working-directory: iOS
 
     env:
       WORKSPACE: Tyche.xcworkspace
@@ -62,6 +62,6 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ios-unit-test-results
-          path: iOS/Tyche/TestResults.xcresult
+          path: iOS/TestResults.xcresult
           if-no-files-found: ignore
           retention-days: 7

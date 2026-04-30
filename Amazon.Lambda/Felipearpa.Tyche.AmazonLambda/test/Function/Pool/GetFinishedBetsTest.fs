@@ -13,6 +13,7 @@ open Felipearpa.Core
 open Felipearpa.Core.Json
 open Felipearpa.Core.Paging
 open Felipearpa.Tyche.AmazonLambda.Function
+open Felipearpa.Tyche.AmazonLambda.Function.Tests.AuthorizationTestHelpers
 open Felipearpa.Tyche.Function.Response
 open FsUnit.Xunit
 open FsUnitTyped
@@ -30,6 +31,7 @@ module GetFinishedBetsTest =
                 seq {
                     { PoolId = "01K1PX1TX2NM1HG851S1V0QG6N"
                       GamblerId = "01K1PX1TX2NM1HG851S1V0QG6N"
+                      GamblerUsername = "felipearcila@gmail.com"
                       MatchId = "01K1PX1TX2NM1HG851S1V0QG6N"
                       PoolLayoutId = "01K1PX1TX2NM1HG851S1V0QG6N"
                       HomeTeamId = "01K1PX1TX2NM1HG851S1V0QG6N"
@@ -42,10 +44,12 @@ module GetFinishedBetsTest =
                       AwayTeamBet = Some 1
                       Score = Some 3
                       MatchDateTime = DateTime(2024, 10, 12, 18, 0, 0, DateTimeKind.Utc)
-                      isLocked = true }
+                      isLocked = true
+                      isComputed = true }
 
                     { PoolId = "01K1PX1TX2NM1HG851S1V0QG6N"
                       GamblerId = "01K1PX1TX2NM1HG851S1V0QG6N"
+                      GamblerUsername = "felipearcila@gmail.com"
                       MatchId = "01K1PX1TX2NM1HG851S1V0QG6N"
                       PoolLayoutId = "01K1PX1TX2NM1HG851S1V0QG6N"
                       HomeTeamId = "01K1PX1TX2NM1HG851S1V0QG6N"
@@ -58,7 +62,8 @@ module GetFinishedBetsTest =
                       AwayTeamBet = Some 2
                       Score = Some 1
                       MatchDateTime = DateTime(2024, 10, 13, 20, 30, 0, DateTimeKind.Utc)
-                      isLocked = true }
+                      isLocked = true
+                      isComputed = true }
                 }
               Next = None }
 
@@ -70,6 +75,7 @@ module GetFinishedBetsTest =
                     "sk", AttributeValue(S = "GAMBLER#01K1PX1TX2NM1HG851S1V0QG6N")
                     "poolId", AttributeValue(S = "01K1PX1TX2NM1HG851S1V0QG6N")
                     "gamblerId", AttributeValue(S = "01K1PX1TX2NM1HG851S1V0QG6N")
+                    "gamblerUsername", AttributeValue(S = "felipearcila@gmail.com")
                     "matchId", AttributeValue(S = "01K1PX1TX2NM1HG851S1V0QG6N")
                     "poolLayoutId", AttributeValue(S = "01K1PX1TX2NM1HG851S1V0QG6N")
                     "homeTeamId", AttributeValue(S = "01K1PX1TX2NM1HG851S1V0QG6N")
@@ -81,13 +87,15 @@ module GetFinishedBetsTest =
                     "awayTeamScore", AttributeValue(N = "1")
                     "awayTeamBet", AttributeValue(N = "1")
                     "score", AttributeValue(N = "3")
-                    "matchDateTime", AttributeValue(S = "2024-10-12T18:00:00Z") ]
+                    "matchDateTime", AttributeValue(S = "2024-10-12T18:00:00Z")
+                    "computedRequestId", AttributeValue(S = "01K1PX1TX2NM1HG851S1V0QG6N") ]
 
               dict
                   [ "pk", AttributeValue(S = "POOL#01K1PX1TX2NM1HG851S1V0QG6N")
                     "sk", AttributeValue(S = "GAMBLER#01K1PX1TX2NM1HG851S1V0QG6N")
                     "poolId", AttributeValue(S = "01K1PX1TX2NM1HG851S1V0QG6N")
                     "gamblerId", AttributeValue(S = "01K1PX1TX2NM1HG851S1V0QG6N")
+                    "gamblerUsername", AttributeValue(S = "felipearcila@gmail.com")
                     "matchId", AttributeValue(S = "01K1PX1TX2NM1HG851S1V0QG6N")
                     "poolLayoutId", AttributeValue(S = "01K1PX1TX2NM1HG851S1V0QG6N")
                     "homeTeamId", AttributeValue(S = "01K1PX1TX2NM1HG851S1V0QG6N")
@@ -99,12 +107,15 @@ module GetFinishedBetsTest =
                     "awayTeamScore", AttributeValue(N = "2")
                     "awayTeamBet", AttributeValue(N = "2")
                     "score", AttributeValue(N = "1")
-                    "matchDateTime", AttributeValue(S = "2024-10-13T20:30:00Z") ] ]
+                    "matchDateTime", AttributeValue(S = "2024-10-13T20:30:00Z")
+                    "computedRequestId", AttributeValue(S = "01K1PX1TX2NM1HG851S1V0QG6N") ] ]
 
         client
             .Setup(_.QueryAsync(It.IsAny<QueryRequest>()))
             .ReturnsAsync(QueryResponse(Items = (items |> List.map (fun it -> Dictionary it) |> ResizeArray)))
         |> ignore
+
+        let callerGamblerId = "01K0DCFFB08W35AW5Q6F82R6NQ"
 
         let functions =
             PoolFunction(fun services ->
@@ -119,7 +130,8 @@ module GetFinishedBetsTest =
                     |> ignore)
                 |> ignore
 
-                services.AddSingleton<IAmazonDynamoDB>(client.Object) |> ignore)
+                services.AddSingleton<IAmazonDynamoDB>(client.Object) |> ignore
+                registerAuthAsCaller services callerGamblerId)
 
         let context = TestLambdaContext()
 
@@ -128,7 +140,9 @@ module GetFinishedBetsTest =
         request.PathParameters <-
             dict
                 [ "poolId", "01K0DCFFB08W35AW5Q6F82R6NQ"
-                  "gamblerId", "01K0DCFFB08W35AW5Q6F82R6NQ" ]
+                  "gamblerId", callerGamblerId ]
+
+        attachJwtClaim request testEmail |> ignore
 
         (expectedBets, context, request, functions)
 

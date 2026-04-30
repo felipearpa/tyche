@@ -12,9 +12,7 @@ module GetBetPoolGamblerScoresByMatchRequestBuilder =
             $"{ExpressionAttribute.name PoolTable.Attribute.getPoolGamblerScoresByMatchPk} = :{PoolTable.Attribute.getPoolGamblerScoresByMatchPk}"
 
         let filterExpression =
-            $"attribute_not_exists({ExpressionAttribute.name PoolTable.Attribute.computedRequestId}) \
-             AND attribute_exists({ExpressionAttribute.name PoolTable.Attribute.homeTeamBet}) \
-             AND attribute_exists({ExpressionAttribute.name PoolTable.Attribute.awayTeamBet})"
+            $"attribute_not_exists({ExpressionAttribute.name PoolTable.Attribute.computedRequestId})"
 
         let attributeValues =
             dict
@@ -24,9 +22,7 @@ module GetBetPoolGamblerScoresByMatchRequestBuilder =
         let attributeNames =
             ExpressionAttribute.names
                 [ PoolTable.Attribute.getPoolGamblerScoresByMatchPk
-                  PoolTable.Attribute.computedRequestId
-                  PoolTable.Attribute.homeTeamBet
-                  PoolTable.Attribute.awayTeamBet ]
+                  PoolTable.Attribute.computedRequestId ]
 
         QueryRequest(
             TableName = PoolTable.name,

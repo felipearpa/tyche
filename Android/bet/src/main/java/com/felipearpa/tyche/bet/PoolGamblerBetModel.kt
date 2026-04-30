@@ -7,6 +7,7 @@ import java.util.UUID
 data class PoolGamblerBetModel(
     val poolId: String,
     val gamblerId: String,
+    val gamblerUsername: String,
     val matchId: String,
     val homeTeamId: String,
     val homeTeamName: String,
@@ -17,8 +18,14 @@ data class PoolGamblerBetModel(
     val score: Int?,
     val matchDateTime: LocalDateTime,
     val isLocked: Boolean,
+    val isComputed: Boolean,
     val instanceId: String = UUID.randomUUID().toString(),
 )
+
+fun PoolGamblerBetModel.hasBet() = this.betScore != null
+
+val PoolGamblerBetModel.isLive: Boolean
+    get() = this.isLocked && !this.isComputed
 
 fun PoolGamblerBetModel.homeTeamMatchRawValue() =
     this.matchScore?.homeTeamValue?.toString().orEmpty()
