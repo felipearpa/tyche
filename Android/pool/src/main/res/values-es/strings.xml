@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="position_label">Posición %d</string>
     <string name="gambler_pool_list_title">Mis pollas</string>
     <string name="pool_from_layout_creator_title">Polla desde plantilla</string>
     <string name="starting_from_date_text">Inicia el %1$s</string>
@@ -17,7 +16,6 @@
     <string name="see_all_templates_action">Ver todas las plantillas</string>
     <string name="create_pool_action">Crear</string>
     <string name="go_to_my_pools_action">Ir a mis pollas</string>
-    <string name="invite_friends_action">Invitar</string>
     <string name="pool_join_requires_sign_in_failure_description">Inicio de sesión requerido</string>
     <string name="pool_join_requires_sign_in_failure_reason">Necesitas iniciar sesión para abrir este enlace de invitación a la polla</string>
     <string name="pool_join_requires_sign_in_failure_recovery_suggestion">Por favor, inicia sesión y abre el enlace nuevamente</string>

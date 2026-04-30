@@ -43,7 +43,7 @@ private fun GamblerScoreListView(
     GamblerScoreList(
         lazyPoolGamblerScores = lazyPoolGamblerScores,
         loggedInGamblerId = gamblerId,
-        fakeItemCount = placeholderItemCount,
+        placeholderCount = placeholderItemCount,
         onGamblerOpen = onGamblerOpen,
         modifier = modifier,
     )

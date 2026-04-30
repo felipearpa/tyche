@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="position_label">Position %d</string>
     <string name="gambler_pool_list_title">My pools</string>
     <string name="pool_from_layout_creator_title">Pool from layout</string>
     <string name="starting_from_date_text">Starting %1$s</string>
@@ -17,7 +16,6 @@
     <string name="see_all_templates_action">See all templates</string>
     <string name="create_pool_action">Create</string>
     <string name="go_to_my_pools_action">Go to my pools</string>
-    <string name="invite_friends_action">Invite</string>
     <string name="pool_join_requires_sign_in_failure_description">Sign-in required to join</string>
     <string name="pool_join_requires_sign_in_failure_reason">You need to be signed in to open this pool join link</string>
     <string name="pool_join_requires_sign_in_failure_recovery_suggestion">Please sign in and open the link again</string>

@@ -33,13 +33,13 @@ fun GamblerScoreList(
     lazyPoolGamblerScores: LazyPagingItems<PoolGamblerScoreModel>,
     loggedInGamblerId: String,
     modifier: Modifier = Modifier,
-    fakeItemCount: Int = 0,
+    placeholderCount: Int = 0,
     onGamblerOpen: ((poolId: String, gamblerId: String, gamblerUsername: String) -> Unit)? = null,
 ) {
     RefreshableStatefulLazyColumn(
         modifier = modifier,
         lazyPagingItems = lazyPoolGamblerScores,
-        loadingContent = { gamblerScorePlaceholderList(count = fakeItemCount) },
+        loadingContent = { gamblerScorePlaceholderList(count = placeholderCount) },
         loadingContentOnConcatenate = { gamblerScorePlaceholderItem() },
         emptyContent = {
             item {

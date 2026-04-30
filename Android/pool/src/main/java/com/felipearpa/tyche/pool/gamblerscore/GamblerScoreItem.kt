@@ -1,6 +1,5 @@
 package com.felipearpa.tyche.pool.gamblerscore
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -8,19 +7,18 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import com.felipearpa.tyche.pool.PoolGamblerScoreModel
+import com.felipearpa.tyche.pool.PositionIndicator
 import com.felipearpa.tyche.pool.difference
 import com.felipearpa.tyche.pool.poolGamblerScoreDummyModel
 import com.felipearpa.tyche.pool.poolGamblerScorePlaceholderModel
@@ -59,7 +57,7 @@ fun GamblerScoreItem(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             if (poolGamblerScore.position != null) {
-                Position(
+                PositionIndicator(
                     position = poolGamblerScore.position,
                     isCurrentUser = isCurrentUser,
                     shimmerModifier = shimmerModifier,
@@ -94,28 +92,6 @@ fun GamblerScoreItem(
                 }
             }
         }
-    }
-}
-
-@Composable
-fun Position(
-    position: Int,
-    isCurrentUser: Boolean,
-    modifier: Modifier = Modifier,
-    shimmerModifier: Modifier = Modifier,
-) {
-    Box(
-        modifier = modifier
-            .size(scoreSize)
-            .clip(CircleShape)
-            .background(color = if (isCurrentUser) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.secondaryContainer)
-            .then(shimmerModifier),
-        contentAlignment = Alignment.Center,
-    ) {
-        Text(
-            text = position.toString(),
-            color = if (isCurrentUser) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSecondaryContainer,
-        )
     }
 }
 
