@@ -1,7 +1,6 @@
 package com.felipearpa.tyche.pool.poolscore
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -39,18 +38,19 @@ fun PoolScoreItem(
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.medium),
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(all = LocalBoxSpacing.current.medium),
+        modifier = Modifier.fillMaxWidth(),
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(all = LocalBoxSpacing.current.medium),
-            horizontalArrangement = Arrangement.SpaceBetween,
+            horizontalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.medium),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Column(verticalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.small)) {
+            Column(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.small),
+            ) {
                 Text(text = poolGamblerScore.poolName, modifier = shimmerModifier)
                 poolGamblerScore.position?.let {
                     Text(
@@ -62,14 +62,11 @@ fun PoolScoreItem(
             }
 
             poolGamblerScore.difference()?.let {
-                Box {
-                    TrendIndicator(
-                        shimmerModifier = shimmerModifier,
-                        difference = it,
-                    )
-                }
+                TrendIndicator(
+                    shimmerModifier = shimmerModifier,
+                    difference = it,
+                )
             }
-
         }
 
         Row(modifier = Modifier.fillMaxWidth()) {

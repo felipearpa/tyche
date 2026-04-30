@@ -26,12 +26,35 @@ struct BetsTimelineList: View {
                 Divider()
             }
         ) { poolGamblerBet in
-            FinishedBetItem(poolGamblerBet: poolGamblerBet)
-                .padding(boxSpacing.large)
-                .contentShape(Rectangle())
-                .onTapGesture { invokeMatchOpen(onMatchOpen, poolGamblerBet) }
-            Divider()
+            VStack(spacing: 0) {
+                if shouldShowHeader(for: poolGamblerBet) {
+                    Text(poolGamblerBet.matchDateTime.toShortDateString())
+                        .font(.title3)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.horizontal, boxSpacing.medium)
+                        .padding(.top, boxSpacing.medium)
+                }
+
+                BetTimelineItem(poolGamblerBet: poolGamblerBet)
+                    .padding(boxSpacing.large)
+                    .contentShape(Rectangle())
+                    .onTapGesture { invokeMatchOpen(onMatchOpen, poolGamblerBet) }
+
+                Divider()
+            }
         }
+    }
+
+    private func shouldShowHeader(for bet: PoolGamblerBetModel) -> Bool {
+        var previous: PoolGamblerBetModel?
+        for item in lazyPagingItems {
+            if item.id == bet.id {
+                guard let previous else { return true }
+                return previous.matchDateTime.toShortDateString() != bet.matchDateTime.toShortDateString()
+            }
+            previous = item
+        }
+        return true
     }
 }
 
@@ -50,7 +73,7 @@ private struct BetsTimelinePlaceholderItem: View {
     @Environment(\.boxSpacing) private var boxSpacing
 
     var body: some View {
-        FinishedBetItem(poolGamblerBet: poolGamblerBetFakeModel())
+        BetTimelineItem(poolGamblerBet: poolGamblerBetFakeModel())
             .shimmer()
             .padding(boxSpacing.large)
     }

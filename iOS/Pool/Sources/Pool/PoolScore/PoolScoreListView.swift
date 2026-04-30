@@ -8,6 +8,7 @@ public struct PoolScoreListView: View {
     private let onPoolOpen: (PoolProfile) -> Void
     private let onPoolCreate: () -> Void
     private let onPoolLayoutSelect: (String, String) -> Void
+    @Environment(\.boxSpacing) private var boxSpacing
 
     public init(
         viewModel: @autoclosure @escaping () -> PoolScoreListViewModel,
@@ -28,6 +29,7 @@ public struct PoolScoreListView: View {
             onPoolCreate: onPoolCreate,
             onPoolLayoutSelect: onPoolLayoutSelect,
         )
+        .padding(boxSpacing.medium)
     }
 }
 

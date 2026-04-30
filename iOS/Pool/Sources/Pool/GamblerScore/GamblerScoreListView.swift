@@ -6,6 +6,7 @@ import DataPool
 public struct GamblerScoreListView: View {
     @StateObject private var viewModel: GamblerScoreListViewModel
     private let onGamblerOpen: ((_ poolId: String, _ gamblerId: String, _ gamblerUsername: String) -> Void)?
+    @Environment(\.boxSpacing) private var boxSpacing
 
     public init(
         viewModel: @autoclosure @escaping () -> GamblerScoreListViewModel,
@@ -21,6 +22,7 @@ public struct GamblerScoreListView: View {
             isCurrentUser: viewModel.gamblerId,
             onGamblerOpen: onGamblerOpen
         )
+        .padding(boxSpacing.medium)
     }
 }
 

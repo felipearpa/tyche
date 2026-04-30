@@ -8,12 +8,14 @@ public typealias MatchOpenHandler = (
     _ awayTeamName: String,
     _ matchDateTime: Date,
     _ homeTeamScore: Int?,
-    _ awayTeamScore: Int?
+    _ awayTeamScore: Int?,
+    _ isLive: Bool
 ) -> Void
 
 public struct PendingBetListView: View {
     @StateObject private var viewModel: PendingBetListViewModel
     private let onMatchOpen: MatchOpenHandler?
+    @Environment(\.boxSpacing) private var boxSpacing
 
     public init(
         viewModel: @autoclosure @escaping () -> PendingBetListViewModel,
@@ -30,6 +32,7 @@ public struct PendingBetListView: View {
             lazyPagingItems: viewModel.lazyPager,
             onMatchOpen: onMatchOpen
         )
+        .padding(boxSpacing.medium)
     }
 }
 

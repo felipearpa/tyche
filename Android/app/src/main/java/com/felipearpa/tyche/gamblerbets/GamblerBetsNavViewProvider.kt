@@ -4,7 +4,8 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
-import com.felipearpa.tyche.bet.match.MatchBetsViewRoute
+import com.felipearpa.tyche.bet.isLive
+import com.felipearpa.tyche.bet.match.MatchBetListViewRoute
 
 fun NavGraphBuilder.gamblerBetsNavView(navController: NavController) {
     composable<GamblerBetsViewRoute> { navBackStackEntry ->
@@ -16,7 +17,7 @@ fun NavGraphBuilder.gamblerBetsNavView(navController: NavController) {
             onBack = { navController.navigateUp() },
             onMatchOpen = { poolGamblerBet ->
                 navController.navigate(
-                    route = MatchBetsViewRoute(
+                    route = MatchBetListViewRoute(
                         poolId = poolGamblerBet.poolId,
                         matchId = poolGamblerBet.matchId,
                         homeTeamName = poolGamblerBet.homeTeamName,
@@ -24,6 +25,7 @@ fun NavGraphBuilder.gamblerBetsNavView(navController: NavController) {
                         matchDateTimeIso = poolGamblerBet.matchDateTime.toString(),
                         homeTeamScore = poolGamblerBet.matchScore?.homeTeamValue,
                         awayTeamScore = poolGamblerBet.matchScore?.awayTeamValue,
+                        isLive = poolGamblerBet.isLive,
                     ),
                 )
             },

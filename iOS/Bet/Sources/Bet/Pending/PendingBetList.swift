@@ -62,7 +62,8 @@ func invokeMatchOpen(_ handler: MatchOpenHandler?, _ poolGamblerBet: PoolGambler
         poolGamblerBet.awayTeamName,
         poolGamblerBet.matchDateTime,
         poolGamblerBet.matchScore?.homeTeamValue,
-        poolGamblerBet.matchScore?.awayTeamValue
+        poolGamblerBet.matchScore?.awayTeamValue,
+        poolGamblerBet.isLive
     )
 }
 

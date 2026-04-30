@@ -2,7 +2,7 @@ import SwiftUI
 import UI
 import Core
 
-struct FinishedPoolGamblerBetList: View {
+struct FinishedBetList: View {
     var lazyPagingItems: LazyPagingItems<String, PoolGamblerBetModel>
     let onMatchOpen: MatchOpenHandler?
 
@@ -73,7 +73,7 @@ private struct FinishedPoolGamblerBetFakeItem: View {
 }
 
 #Preview {
-    FinishedPoolGamblerBetList(
+    FinishedBetList(
         lazyPagingItems: LazyPagingItems(
             pagingData: PagingData(
                 pagingConfig: PagingConfig(prefetchDistance: 5),

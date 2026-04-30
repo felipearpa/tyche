@@ -22,7 +22,6 @@ extension StringResource {
     static let historyBetsTab = StringResource(name: "history_bets_tab")
     static let continueWithText = StringResource(name: "continue_with_text")
     static let changePoolAction = StringResource(name: "change_pool_action")
-    static let matchBetsViewTitle = StringResource(name: "match_bets_view_title")
 }
 
 extension String {

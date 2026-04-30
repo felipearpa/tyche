@@ -44,6 +44,7 @@ import com.felipearpa.tyche.pool.R
 import com.felipearpa.tyche.pool.creator.PoolLayoutModel
 import com.felipearpa.tyche.pool.creator.poolLayoutDummyModels
 import com.felipearpa.tyche.pool.poolGamblerScoreDummyModels
+import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
 import com.felipearpa.tyche.ui.theme.TycheTheme
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
@@ -149,7 +150,8 @@ private fun PoolScoreListView(
                 onSeeAllTemplates = onPoolCreate,
                 modifier = Modifier
                     .padding(paddingValues = paddingValues)
-                    .fillMaxSize(),
+                    .fillMaxSize()
+                    .padding(all = LocalBoxSpacing.current.medium),
             )
         }
     }

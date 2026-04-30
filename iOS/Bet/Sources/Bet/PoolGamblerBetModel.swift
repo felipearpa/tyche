@@ -26,6 +26,10 @@ struct PoolGamblerBetModel: Codable, Identifiable, Hashable {
     var id: PoolGamblerBetModelId {
         return PoolGamblerBetModelId(poolId: self.poolId, gamblerId: self.gamblerId, matchId: self.matchId)
     }
+
+    var isLive: Bool {
+        isLocked && !isComputed
+    }
 }
 
 extension PoolGamblerBetModel {
@@ -103,8 +107,15 @@ extension PoolGamblerBetModel {
     func awayTeamBetRawValue() -> String {
         if let awayTeamBet = self.betScore?.awayTeamValue { String(awayTeamBet) } else { "" }
     }
-    
+
     mutating func lock() {
         self.isLocked = true
+    }
+
+    func toPartial() -> PartialPoolGamblerBetModel {
+        PartialPoolGamblerBetModel(
+            homeTeamBet: homeTeamBetRawValue(),
+            awayTeamBet: awayTeamBetRawValue()
+        )
     }
 }

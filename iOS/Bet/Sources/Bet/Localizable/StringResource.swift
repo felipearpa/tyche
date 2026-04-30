@@ -14,6 +14,8 @@ struct StringResource {
 extension StringResource {
     static let forbiddenBetFailureDescription = StringResource(name: "forbidden_bet_failure_description", bundle: Bundle.module)
     static let forbiddenBetFailureReason = StringResource(name: "forbidden_bet_failure_reason", bundle: Bundle.module)
+    static let matchBetsViewTitle = StringResource(name: "match_bets_view_title", bundle: Bundle.module)
+    static let liveLabel = StringResource(name: "live_label", bundle: Bundle.module)
 }
 
 extension String {

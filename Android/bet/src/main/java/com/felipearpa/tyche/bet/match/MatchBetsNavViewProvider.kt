@@ -7,9 +7,9 @@ import androidx.navigation.toRoute
 import kotlinx.datetime.LocalDateTime
 
 fun NavGraphBuilder.matchBetsNavView(navController: NavController) {
-    composable<MatchBetsViewRoute> { navBackStackEntry ->
-        val route: MatchBetsViewRoute = navBackStackEntry.toRoute()
-        MatchBetsView(
+    composable<MatchBetListViewRoute> { navBackStackEntry ->
+        val route: MatchBetListViewRoute = navBackStackEntry.toRoute()
+        MatchBetListView(
             poolId = route.poolId,
             matchId = route.matchId,
             homeTeamName = route.homeTeamName,

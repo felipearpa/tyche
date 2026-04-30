@@ -76,7 +76,7 @@ struct PoolHomeView: View {
                 )
             }
 
-            FinishedPoolGamblerBetListView(
+            FinishedBetListView(
                 viewModel: FinishedBetListViewModel(
                     getFinishedPoolGamblerBetsUseCase: GetFinishedPoolGamblerBetsUseCase(
                         poolGamblerBetRepository: diResolver.resolve(PoolGamblerBetRepository.self)!

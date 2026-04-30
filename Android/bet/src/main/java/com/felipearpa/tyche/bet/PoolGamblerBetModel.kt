@@ -24,6 +24,9 @@ data class PoolGamblerBetModel(
 
 fun PoolGamblerBetModel.hasBet() = this.betScore != null
 
+val PoolGamblerBetModel.isLive: Boolean
+    get() = this.isLocked && !this.isComputed
+
 fun PoolGamblerBetModel.homeTeamMatchRawValue() =
     this.matchScore?.homeTeamValue?.toString().orEmpty()
 

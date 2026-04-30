@@ -21,13 +21,14 @@ fun GamblerScoreListView(
 ) {
     val lazyItems = viewModel.poolGamblerScores.collectAsLazyPagingItems()
     val pageSize = viewModel.pageSize
-
-    GamblerScoreList(
+    GamblerScoreListView(
         lazyPoolGamblerScores = lazyItems,
-        loggedInGamblerId = signedInGamblerId,
-        fakeItemCount = pageSize,
-        modifier = Modifier.fillMaxSize(),
+        gamblerId = signedInGamblerId,
+        placeholderItemCount = pageSize,
         onGamblerOpen = onGamblerOpen,
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(all = LocalBoxSpacing.current.medium),
     )
 }
 
@@ -36,14 +37,15 @@ private fun GamblerScoreListView(
     lazyPoolGamblerScores: LazyPagingItems<PoolGamblerScoreModel>,
     gamblerId: String,
     placeholderItemCount: Int,
+    onGamblerOpen: ((poolId: String, gamblerId: String, gamblerUsername: String) -> Unit)?,
+    modifier: Modifier = Modifier,
 ) {
     GamblerScoreList(
         lazyPoolGamblerScores = lazyPoolGamblerScores,
         loggedInGamblerId = gamblerId,
         fakeItemCount = placeholderItemCount,
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(all = LocalBoxSpacing.current.medium),
+        onGamblerOpen = onGamblerOpen,
+        modifier = modifier,
     )
 }
 
@@ -55,5 +57,9 @@ private fun GamblerScoreListViewPreview() {
         lazyPoolGamblerScores = items,
         gamblerId = "gambler001",
         placeholderItemCount = 50,
+        onGamblerOpen = { _, _, _ -> },
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(all = LocalBoxSpacing.current.medium),
     )
 }

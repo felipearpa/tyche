@@ -29,15 +29,6 @@ struct LiveBetList: View {
     }
 }
 
-private extension PoolGamblerBetModel {
-    func toPartial() -> PartialPoolGamblerBetModel {
-        PartialPoolGamblerBetModel(
-            homeTeamBet: homeTeamBetRawValue(),
-            awayTeamBet: awayTeamBetRawValue()
-        )
-    }
-}
-
 private struct LiveBetPlaceholderList: View {
     @Environment(\.boxSpacing) private var boxSpacing
 

@@ -2,10 +2,9 @@
 
 ## 1.2
 
-- Joining a pool now requires sign-in, with a clearer prompt when you are not signed in
-- Pool list visual refresh with rounded card styling and a visible invite action
-- Renamed items in the finished bets section for clarity
-- Fix: more reliable email link sign-in via universal links
+- Tap a gambler in the score view to see their bets
+- Tap a match in the pool view to see how everyone bet on it
+- Pending bets that have already been locked can no longer be edited
 
 ## 1.1
 

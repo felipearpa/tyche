@@ -84,7 +84,6 @@
 		55C9D92E2E2B1D24007B79CA /* Home */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Home; sourceTree = "<group>"; };
 		55DC0E1C2E283C32007F7BD9 /* PoolScoreList */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = PoolScoreList; sourceTree = "<group>"; };
 		55F0FE012F56AB1100E78408 /* GamblerBets */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = GamblerBets; sourceTree = "<group>"; };
-		55F1FE022F56AB1200E78408 /* MatchBets */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = MatchBets; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -202,7 +201,6 @@
 			children = (
 				55F0FE012F56AB1100E78408 /* GamblerBets */,
 				55C9D92E2E2B1D24007B79CA /* Home */,
-				55F1FE022F56AB1200E78408 /* MatchBets */,
 				55C9D9102E2AE2A9007B79CA /* PoolHome */,
 				55DC0E1C2E283C32007F7BD9 /* PoolScoreList */,
 				D21495EB2ABFD65E00C18C71 /* SessionRouterView.swift */,
@@ -242,7 +240,6 @@
 				55C9D92E2E2B1D24007B79CA /* Home */,
 				55DC0E1C2E283C32007F7BD9 /* PoolScoreList */,
 				55F0FE012F56AB1100E78408 /* GamblerBets */,
-				55F1FE022F56AB1200E78408 /* MatchBets */,
 			);
 			name = Tyche;
 			packageProductDependencies = (

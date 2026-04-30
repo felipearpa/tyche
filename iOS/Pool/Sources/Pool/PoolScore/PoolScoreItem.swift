@@ -24,7 +24,6 @@ struct PoolScoreItem: View {
                     TrendIndicator(difference: difference)
                 }
             }
-            .padding(boxSpacing.medium)
 
             HStack {
                 Spacer()

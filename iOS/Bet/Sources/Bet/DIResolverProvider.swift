@@ -4,6 +4,9 @@ import DataBet
 
 func diFakeResolver() -> DIResolver {
     let container = Container()
+    container.register(PoolGamblerBetRepository.self) { _ in
+        PoolGamblerBetFakeRepository()
+    }
     container.register(BetUseCase.self) { _ in
         BetUseCase(poolGamblerBetRepository: PoolGamblerBetFakeRepository())
     }
