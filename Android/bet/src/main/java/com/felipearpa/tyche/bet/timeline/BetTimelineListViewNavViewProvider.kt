@@ -1,4 +1,4 @@
-package com.felipearpa.tyche.gamblerbets
+package com.felipearpa.tyche.bet.timeline
 
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
@@ -7,10 +7,10 @@ import androidx.navigation.toRoute
 import com.felipearpa.tyche.bet.isLive
 import com.felipearpa.tyche.bet.match.MatchBetListViewRoute
 
-fun NavGraphBuilder.gamblerBetsNavView(navController: NavController) {
-    composable<GamblerBetsViewRoute> { navBackStackEntry ->
-        val route: GamblerBetsViewRoute = navBackStackEntry.toRoute()
-        GamblerBetsView(
+fun NavGraphBuilder.betTimelineListView(navController: NavController) {
+    composable<BetTimelineListViewRoute> { navBackStackEntry ->
+        val route: BetTimelineListViewRoute = navBackStackEntry.toRoute()
+        BetTimelineListView(
             poolId = route.poolId,
             gamblerId = route.gamblerId,
             gamblerUsername = route.gamblerUsername,

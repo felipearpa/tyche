@@ -1,10 +1,8 @@
 import SwiftUI
-import Swinject
 import Core
 import DataBet
-import Bet
 
-struct GamblerBetsView: View {
+public struct BetTimelineListView: View {
     let poolId: String
     let gamblerId: String
     let gamblerUsername: String
@@ -12,7 +10,7 @@ struct GamblerBetsView: View {
 
     @Environment(\.diResolver) var diResolver: DIResolver
 
-    init(
+    public init(
         poolId: String,
         gamblerId: String,
         gamblerUsername: String,
@@ -24,10 +22,10 @@ struct GamblerBetsView: View {
         self.onMatchOpen = onMatchOpen
     }
 
-    var body: some View {
+    public var body: some View {
         let _ = Self._printChangesIfDebug()
 
-        BetsTimelineListView(
+        BetTimelineListContent(
             viewModel: BetsTimelineViewModel(
                 getGamblerBetsTimelineUseCase: GetGamblerBetsTimelineUseCase(
                     poolGamblerBetRepository: diResolver.resolve(PoolGamblerBetRepository.self)!
@@ -49,26 +47,37 @@ struct GamblerBetsView: View {
     }
 }
 
-#Preview {
-    var diResolver = DIResolver(
-        resolver: Assembler([
-            GamblerBetsAssembler()
-        ]).resolver)
+private struct BetTimelineListContent: View {
+    @StateObject private var viewModel: BetsTimelineViewModel
+    private let onMatchOpen: MatchOpenHandler?
 
+    init(
+        viewModel: @autoclosure @escaping () -> BetsTimelineViewModel,
+        onMatchOpen: MatchOpenHandler? = nil
+    ) {
+        self._viewModel = .init(wrappedValue: viewModel())
+        self.onMatchOpen = onMatchOpen
+    }
+
+    var body: some View {
+        let _ = Self._printChangesIfDebug()
+
+        BetsTimelineList(
+            lazyPagingItems: viewModel.lazyPager,
+            onMatchOpen: onMatchOpen
+        )
+        .refreshable { viewModel.refresh() }
+        .onAppearOnce { viewModel.refresh() }
+    }
+}
+
+#Preview {
     NavigationStack {
-        GamblerBetsView(
+        BetTimelineListView(
             poolId: "pool-id",
             gamblerId: "gambler-id",
             gamblerUsername: "felipearcila@gmail.com"
         )
-        .environment(\.diResolver, diResolver)
-    }
-}
-
-private class GamblerBetsAssembler: Assembly {
-    func assemble(container: Container) {
-        container.register(PoolGamblerBetRepository.self) { _ in
-            PoolGamblerBetFakeRepository()
-        }
+        .environment(\.diResolver, diFakeResolver())
     }
 }

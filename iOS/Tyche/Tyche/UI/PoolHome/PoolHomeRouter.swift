@@ -22,7 +22,7 @@ struct PoolHomeRouter: View {
                 onGamblerOpen: { tappedPoolId, tappedGamblerId, tappedGamblerUsername in
                     if tappedGamblerId != user.accountId {
                         path.append(
-                            GamblerBetsRoute(
+                            BetTimelineListViewRoute(
                                 poolId: tappedPoolId,
                                 gamblerId: tappedGamblerId,
                                 gamblerUsername: tappedGamblerUsername
@@ -45,8 +45,8 @@ struct PoolHomeRouter: View {
                     )
                 }
             )
-            .navigationDestination(for: GamblerBetsRoute.self) { route in
-                GamblerBetsView(
+            .navigationDestination(for: BetTimelineListViewRoute.self) { route in
+                BetTimelineListView(
                     poolId: route.poolId,
                     gamblerId: route.gamblerId,
                     gamblerUsername: route.gamblerUsername,

@@ -1,4 +1,4 @@
-public struct GamblerBetsRoute: Hashable {
+public struct BetTimelineListViewRoute: Hashable {
     public let poolId: String
     public let gamblerId: String
     public let gamblerUsername: String
