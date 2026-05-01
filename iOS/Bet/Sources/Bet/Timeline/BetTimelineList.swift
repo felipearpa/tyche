@@ -20,9 +20,9 @@ struct BetTimelineList: View {
     var body: some View {
         StatefulLazyVStack(
             lazyPagingItems: lazyPagingItems,
-            loadingContent: { BetsTimelinePlaceholderList(count: 50) },
+            loadingContent: { BetTimelinePlaceholderList(count: 50) },
             loadingContentOnConcatenate: {
-                BetsTimelinePlaceholderItem()
+                BetTimelinePlaceholderItem()
                 Divider()
             },
             sectionKey: { $0.matchDateTime.toShortDateString() },
@@ -48,18 +48,18 @@ struct BetTimelineList: View {
     }
 }
 
-private struct BetsTimelinePlaceholderList: View {
+private struct BetTimelinePlaceholderList: View {
     let count: Int
 
     var body: some View {
         ForEach(0..<count, id: \.self) { _ in
-            BetsTimelinePlaceholderItem()
+            BetTimelinePlaceholderItem()
             Divider()
         }
     }
 }
 
-private struct BetsTimelinePlaceholderItem: View {
+private struct BetTimelinePlaceholderItem: View {
     @Environment(\.boxSpacing) private var boxSpacing
 
     var body: some View {

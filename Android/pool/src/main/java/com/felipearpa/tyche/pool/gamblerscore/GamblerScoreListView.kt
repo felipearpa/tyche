@@ -28,7 +28,7 @@ fun GamblerScoreListView(
         onGamblerOpen = onGamblerOpen,
         modifier = Modifier
             .fillMaxSize()
-            .padding(all = LocalBoxSpacing.current.medium),
+            .padding(vertical = LocalBoxSpacing.current.medium),
     )
 }
 
@@ -60,6 +60,6 @@ private fun GamblerScoreListViewPreview() {
         onGamblerOpen = { _, _, _ -> },
         modifier = Modifier
             .fillMaxSize()
-            .padding(all = LocalBoxSpacing.current.medium),
+            .padding(vertical = LocalBoxSpacing.current.medium),
     )
 }

@@ -1,6 +1,5 @@
 package com.felipearpa.tyche.pool.gamblerscore
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -34,22 +33,9 @@ fun GamblerScoreItem(
     isCurrentUser: Boolean,
     modifier: Modifier = Modifier,
     shimmerModifier: Modifier = Modifier,
-    onGamblerOpen: ((poolId: String, gamblerId: String, gamblerUsername: String) -> Unit)? = null,
 ) {
     Row(
-        modifier = modifier.let { base ->
-            if (onGamblerOpen != null) {
-                base.clickable {
-                    onGamblerOpen(
-                        poolGamblerScore.poolId,
-                        poolGamblerScore.gamblerId,
-                        poolGamblerScore.gamblerUsername,
-                    )
-                }
-            } else {
-                base
-            }
-        },
+        modifier = modifier,
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
     ) {

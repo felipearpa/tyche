@@ -1,6 +1,8 @@
 package com.felipearpa.tyche.pool.gamblerscore
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -81,14 +83,33 @@ fun GamblerScoreList(
             ),
             contentType = lazyPoolGamblerScores.itemContentType { "GamblerScore" },
         ) { index ->
-            val item = lazyPoolGamblerScores[index]
-            GamblerScoreItem(
-                poolGamblerScore = item!!,
-                isCurrentUser = item.gamblerId == loggedInGamblerId,
-                modifier = Modifier.gamblerScoreItem(),
-                onGamblerOpen = onGamblerOpen,
-            )
-            HorizontalDivider()
+            val item = lazyPoolGamblerScores[index] ?: return@items
+
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .let { base ->
+                        if (onGamblerOpen != null) {
+                            base.clickable {
+                                onGamblerOpen(
+                                    item.poolId,
+                                    item.gamblerId,
+                                    item.gamblerUsername,
+                                )
+                            }
+                        } else {
+                            base
+                        }
+                    }
+                    .padding(horizontal = LocalBoxSpacing.current.medium),
+            ) {
+                GamblerScoreItem(
+                    poolGamblerScore = item,
+                    isCurrentUser = item.gamblerId == loggedInGamblerId,
+                    modifier = Modifier.gamblerScoreItem(),
+                )
+                HorizontalDivider()
+            }
         }
     }
 }
@@ -101,8 +122,14 @@ private fun LazyListScope.gamblerScorePlaceholderList(count: Int) {
 
 private fun LazyListScope.gamblerScorePlaceholderItem() {
     item {
-        GamblerScorePlaceholderItem(modifier = Modifier.gamblerScoreItem())
-        HorizontalDivider()
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = LocalBoxSpacing.current.medium),
+        ) {
+            GamblerScorePlaceholderItem(modifier = Modifier.gamblerScoreItem())
+            HorizontalDivider()
+        }
     }
 }
 
