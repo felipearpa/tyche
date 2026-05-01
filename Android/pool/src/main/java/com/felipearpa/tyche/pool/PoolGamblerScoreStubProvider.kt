@@ -40,9 +40,9 @@ fun poolGamblerScoreDummyModels() =
             poolName = "Champions League",
             gamblerId = "gambler001",
             gamblerUsername = "AceBettor",
-            position = 1,
-            beforePosition = 2,
-            score = 150,
+            position = null,
+            beforePosition = null,
+            score = 0,
         ),
         PoolGamblerScoreModel(
             poolId = "pool456",

@@ -4,6 +4,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -80,7 +81,8 @@ fun GamblerScoreItem(
                 Text(text = score.toString(), modifier = shimmerModifier)
             }
 
-            poolGamblerScore.difference()?.let { difference ->
+            val difference = poolGamblerScore.difference()
+            if (difference != null) {
                 Box(
                     modifier = Modifier.width(trendIndicatorSize),
                     contentAlignment = Alignment.Center,
@@ -90,6 +92,8 @@ fun GamblerScoreItem(
                         shimmerModifier = shimmerModifier,
                     )
                 }
+            } else {
+                Spacer(modifier = Modifier.width(trendIndicatorSize))
             }
         }
     }
