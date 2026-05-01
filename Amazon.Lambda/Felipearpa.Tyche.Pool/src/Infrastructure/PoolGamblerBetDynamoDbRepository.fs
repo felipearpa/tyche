@@ -129,3 +129,24 @@ type PoolGamblerBetDynamoDbRepository(keySerializer: IKeySerializer, client: IAm
         member this.AddPoolGamblerMatchesAsync(poolGamblerBets) =
             poolGamblerBets
             |> Seq.mapAsync (this :> IPoolGamblerBetRepository).AddPoolGamblerMatchAsync
+
+        member this.MaterializeMatchForGamblerAsync(initialBet, newPoolLayoutVersion) =
+            async {
+                let item = initialBet |> toAmazonItem
+                let putRequest = AddPoolGamblerMatchRequestBuilder.build item
+
+                try
+                    let! _ = client.PutItemAsync(putRequest) |> Async.AwaitTask
+                    ()
+                with :? AggregateException as error when (error.InnerException :? ConditionalCheckFailedException) ->
+                    ()
+
+                let updateRequest =
+                    UpdatePoolLayoutVersionRequestBuilder.build initialBet.PoolId initialBet.GamblerId newPoolLayoutVersion
+
+                try
+                    let! _ = client.UpdateItemAsync(updateRequest) |> Async.AwaitTask
+                    ()
+                with :? AggregateException as error when (error.InnerException :? ConditionalCheckFailedException) ->
+                    ()
+            }

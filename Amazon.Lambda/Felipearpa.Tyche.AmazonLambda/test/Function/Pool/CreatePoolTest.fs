@@ -25,16 +25,28 @@ module CreatePoolTest =
         |> ignore
 
     let private setupMockGetAccountQuery (client: Mock<IAmazonDynamoDB>) =
-        let items =
+        let accountItems =
             [ dict
                   [ "pk", AttributeValue(S = "POOL#01K1PX1TX2NM1HG851S1V0QG6N")
                     "accountId", AttributeValue(S = "01K1PX1TX2NM1HG851S1V0QG6N")
                     "email", AttributeValue(S = "tyche@tyche.com")
                     "externalAccountId", AttributeValue(S = "01K1PX1TX2NM1HG851S1V0QG6N") ] ]
 
+        let poolLayoutItems =
+            [ dict
+                  [ "poolLayoutId", AttributeValue(S = "01K23DN4Q5WD5BJ5FKGTG414EG")
+                    "poolLayoutName", AttributeValue(S = "Champions League")
+                    "startDateTime", AttributeValue(S = "2026-06-06T06:06:00.000Z")
+                    "poolLayoutVersion", AttributeValue(N = "1") ] ]
+
         client
-            .Setup(_.QueryAsync(It.IsAny<QueryRequest>()))
-            .ReturnsAsync(QueryResponse(Items = (items |> List.map (fun it -> Dictionary it) |> ResizeArray)))
+            .Setup(_.QueryAsync(It.Is<QueryRequest>(fun (request: QueryRequest) -> request.TableName = "Account")))
+            .ReturnsAsync(QueryResponse(Items = (accountItems |> List.map (fun it -> Dictionary it) |> ResizeArray)))
+        |> ignore
+
+        client
+            .Setup(_.QueryAsync(It.Is<QueryRequest>(fun (request: QueryRequest) -> request.TableName = "PoolLayout")))
+            .ReturnsAsync(QueryResponse(Items = (poolLayoutItems |> List.map (fun it -> Dictionary it) |> ResizeArray)))
         |> ignore
 
     let private ``given a request to create a pool`` () =

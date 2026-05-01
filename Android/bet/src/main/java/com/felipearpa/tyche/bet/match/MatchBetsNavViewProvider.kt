@@ -18,6 +18,7 @@ fun NavGraphBuilder.matchBetsNavView(navController: NavController) {
             homeTeamScore = route.homeTeamScore,
             awayTeamScore = route.awayTeamScore,
             onBack = { navController.navigateUp() },
+            isLive = route.isLive,
         )
     }
 }

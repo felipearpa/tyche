@@ -68,7 +68,7 @@ fun MatchBetListView(
     homeTeamScore: Int?,
     awayTeamScore: Int?,
     onBack: () -> Unit,
-    isLive: Boolean = false,
+    isLive: Boolean,
 ) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
 

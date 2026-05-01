@@ -7,12 +7,15 @@ open System.Collections.Generic
 open System.Linq
 open Amazon.DynamoDBv2
 open Amazon.DynamoDBv2.Model
+open Felipearpa.Core.Paging
+open Felipearpa.Data.DynamoDb
 open Felipearpa.Tyche.Account.Infrastructure
 open Felipearpa.Tyche.Pool.Domain
 open Felipearpa.Tyche.Pool.Domain.PoolDictionaryTransformer
+open Felipearpa.Tyche.Pool.Domain.PoolLayoutGamblerDictionaryTransformer
 open Felipearpa.Type
 
-type PoolDynamoDbRepository(client: IAmazonDynamoDB) =
+type PoolDynamoDbRepository(keySerializer: IKeySerializer, client: IAmazonDynamoDB) =
     let createPoolInDbAsync createUserTransaction =
         async {
             try
@@ -77,7 +80,8 @@ type PoolDynamoDbRepository(client: IAmazonDynamoDB) =
                           PoolName = joinPoolInput.PoolName
                           OwnerGamblerId = joinPoolInput.GamblerId
                           OwnerGamblerUsername = joinPoolInput.GamblerUsername
-                          PoolLayoutId = joinPoolInput.PoolLayoutId }
+                          PoolLayoutId = joinPoolInput.PoolLayoutId
+                          PoolLayoutVersion = joinPoolInput.PoolLayoutVersion }
 
                 let putItemRequest =
                     PutItemRequest(
@@ -91,6 +95,25 @@ type PoolDynamoDbRepository(client: IAmazonDynamoDB) =
                     return Ok()
                 with :? AggregateException as error when (error.InnerException :? ConditionalCheckFailedException) ->
                     return JoinPoolDomainFailure.AlreadyJoined |> Error
+            }
+
+        member this.GetGamblersByPoolLayoutAsync(poolLayoutId, maybeNext) =
+            async {
+                let request =
+                    GetGamblersByPoolLayoutRequestBuilder.build
+                        poolLayoutId
+                        (maybeNext |> Option.map keySerializer.Deserialize)
+
+                let! response = client.QueryAsync(request) |> Async.AwaitTask
+
+                let maybeLastEvaluatedKey = response.LastEvaluatedKey |> Option.ofObj
+
+                return
+                    { CursorPage.Items = response.Items |> Seq.map toPoolLayoutGambler
+                      Next =
+                        match maybeLastEvaluatedKey with
+                        | Some lastEvaluatedKey -> keySerializer.Serialize(lastEvaluatedKey) |> Some
+                        | None -> None }
             }
 
         member this.IsPoolMemberAsync(poolId, gamblerId) =

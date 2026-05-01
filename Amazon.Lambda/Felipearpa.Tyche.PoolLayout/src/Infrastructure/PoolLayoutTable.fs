@@ -48,6 +48,12 @@ module PoolLayoutTable =
         [<Literal>]
         let matchDateTime = "matchDateTime"
 
+        [<Literal>]
+        let homeTeamScore = "homeTeamScore"
+
+        [<Literal>]
+        let awayTeamScore = "awayTeamScore"
+
     module Index =
 
         [<Literal>]

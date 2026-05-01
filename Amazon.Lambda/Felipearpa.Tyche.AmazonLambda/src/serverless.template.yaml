@@ -282,6 +282,7 @@ Resources:
               Resource:
                 - arn:aws:dynamodb:us-east-2:567776770335:table/Pool
                 - arn:aws:dynamodb:us-east-2:567776770335:table/Account
+                - arn:aws:dynamodb:us-east-2:567776770335:table/PoolLayout
       Architectures: [ arm64 ]
       Events:
         HttpApi:
@@ -309,6 +310,7 @@ Resources:
               Resource:
                 - arn:aws:dynamodb:us-east-2:567776770335:table/Pool
                 - arn:aws:dynamodb:us-east-2:567776770335:table/Account
+                - arn:aws:dynamodb:us-east-2:567776770335:table/PoolLayout
       Architectures: [ arm64 ]
       Events:
         HttpApi:
@@ -473,6 +475,7 @@ Resources:
                 - arn:aws:dynamodb:us-east-2:567776770335:table/PoolLayout
                 - arn:aws:dynamodb:us-east-2:567776770335:table/Pool
                 - arn:aws:dynamodb:us-east-2:567776770335:table/Pool/index/GetPoolGamblerScoresByMatch-index
+                - arn:aws:dynamodb:us-east-2:567776770335:table/Pool/index/GetGamblersByPoolLayout-index
             - Effect: Allow
               Action:
                 - sqs:SendMessage

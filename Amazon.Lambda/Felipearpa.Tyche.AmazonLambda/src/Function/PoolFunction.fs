@@ -18,6 +18,9 @@ open Felipearpa.Tyche.Function.Request
 open Felipearpa.Tyche.Pool.Application
 open Felipearpa.Tyche.Pool.Domain
 open Felipearpa.Tyche.Pool.Infrastructure
+open Felipearpa.Tyche.PoolLayout.Application
+open Felipearpa.Tyche.PoolLayout.Domain
+open Felipearpa.Tyche.PoolLayout.Infrastructure
 open Felipearpa.Type
 open Microsoft.Extensions.DependencyInjection
 open Microsoft.Extensions.Logging
@@ -50,6 +53,8 @@ type PoolFunction(configureServices: IServiceCollection -> unit) =
             .AddScoped<IPoolGamblerScoreRepository, PoolGamblerScoreDynamoDbRepository>()
             .AddScoped<IPoolGamblerBetRepository, PoolGamblerBetDynamoDbRepository>()
             .AddScoped<IPoolRepository, PoolDynamoDbRepository>()
+            .AddScoped<IPoolLayoutRepository, PoolLayoutDynamoDbRepository>()
+            .AddScoped<IPoolLayoutVersionResolver, PoolLayoutVersionResolver>()
             .AddScoped<GetPoolGamblerScoresByGambler>()
             .AddScoped<GetPoolGamblerScoresByPool>()
             .AddScoped<GetPendingPoolGamblerBets>()

@@ -16,6 +16,9 @@ module PoolTable =
         [<Literal>]
         let match' = "MATCH"
 
+        [<Literal>]
+        let poolLayout = "POOLLAYOUT"
+
     module Attribute =
 
         [<Literal>]
@@ -96,6 +99,12 @@ module PoolTable =
         [<Literal>]
         let getPoolGamblerScoresByMatchSk = "getPoolGamblerScoresByMatchSk"
 
+        [<Literal>]
+        let getGamblersByPoolLayoutPk = "getGamblersByPoolLayoutPk"
+
+        [<Literal>]
+        let getGamblersByPoolLayoutSk = "getGamblersByPoolLayoutSk"
+
     module Index =
 
         [<Literal>]
@@ -112,3 +121,6 @@ module PoolTable =
 
         [<Literal>]
         let scoresByMatch = "GetPoolGamblerScoresByMatch-index"
+
+        [<Literal>]
+        let gamblersByPoolLayout = "GetGamblersByPoolLayout-index"

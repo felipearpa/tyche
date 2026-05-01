@@ -8,6 +8,11 @@ open Felipearpa.Tyche.PoolLayout.Infrastructure
 open Felipearpa.Type
 
 module PoolLayoutMatchDictionaryTransformer =
+    let private tryGetIntAttribute (dictionary: IDictionary<string, AttributeValue>) (key: string) =
+        match dictionary.TryGetValue(key) with
+        | true, value -> value.N |> int |> Some
+        | false, _ -> None
+
     let toPoolLayoutMatch (dictionary: IDictionary<string, AttributeValue>) =
         { PoolLayoutMatch.MatchId = dictionary[PoolLayoutTable.Attribute.matchId].S |> Ulid.newOf
           PoolLayoutId = dictionary[PoolLayoutTable.Attribute.poolLayoutId].S |> Ulid.newOf
@@ -16,7 +21,9 @@ module PoolLayoutMatchDictionaryTransformer =
           AwayTeamId = dictionary[PoolLayoutTable.Attribute.awayTeamId].S |> Ulid.newOf
           AwayTeamName = dictionary[PoolLayoutTable.Attribute.awayTeamName].S |> NonEmptyString100.newOf
           MatchDateTime = DateTime.Parse(dictionary[PoolLayoutTable.Attribute.matchDateTime].S)
-          PoolLayoutVersion = dictionary[PoolLayoutTable.Attribute.poolLayoutVersion].N |> int }
+          PoolLayoutVersion = dictionary[PoolLayoutTable.Attribute.poolLayoutVersion].N |> int
+          HomeTeamScore = tryGetIntAttribute dictionary PoolLayoutTable.Attribute.homeTeamScore
+          AwayTeamScore = tryGetIntAttribute dictionary PoolLayoutTable.Attribute.awayTeamScore }
 
     type Extensions =
         [<Extension>]

@@ -14,4 +14,9 @@ type InitialPoolGamblerBet =
       AwayTeamId: Ulid
       AwayTeamName: NonEmptyString100
       MatchDateTime: DateTime
-      PoolLayoutVersion: int }
+      PoolLayoutVersion: int
+      HomeTeamScore: int option
+      AwayTeamScore: int option
+      BetScore: int option
+      ComputedDateTime: DateTime option
+      ComputedRequestId: string option }

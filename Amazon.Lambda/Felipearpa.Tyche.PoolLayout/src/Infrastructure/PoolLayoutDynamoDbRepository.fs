@@ -2,12 +2,14 @@ namespace Felipearpa.Tyche.PoolLayout.Infrastructure
 
 #nowarn "3536"
 
+open System.Linq
 open Amazon.DynamoDBv2
 open Felipearpa.Core.Paging
 open Felipearpa.Data.DynamoDb
 open Felipearpa.Tyche.PoolLayout.Domain
 open Felipearpa.Tyche.PoolLayout.Domain.PoolLayoutDictionaryTransformer
 open Felipearpa.Tyche.PoolLayout.Domain.PoolLayoutMatchDictionaryTransformer
+open Felipearpa.Type
 
 type PoolLayoutDynamoDbRepository(keySerializer: IKeySerializer, client: IAmazonDynamoDB) =
     interface IPoolLayoutRepository with
@@ -26,6 +28,17 @@ type PoolLayoutDynamoDbRepository(keySerializer: IKeySerializer, client: IAmazon
                         match maybeLastEvaluatedKey with
                         | Some lastEvaluatedKey -> keySerializer.Serialize(lastEvaluatedKey) |> Some
                         | None -> None }
+            }
+
+        member this.GetPoolLayoutByIdAsync(poolLayoutId) =
+            async {
+                let request = GetPoolLayoutByIdRequestBuilder.build (poolLayoutId |> Ulid.value)
+                let! response = client.QueryAsync(request) |> Async.AwaitTask
+
+                return
+                    match response.Items.FirstOrDefault() |> Option.ofObj with
+                    | Some item -> item |> toPoolLayout |> Some
+                    | None -> None
             }
 
         member this.GetPoolLayoutMatchesThroughVersionAsync(poolLayoutId, poolLayoutVersion, maybeNext) =

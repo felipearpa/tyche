@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewLightDark
+import com.felipearpa.tyche.pool.NonPositionIndicator
 import com.felipearpa.tyche.pool.PoolGamblerScoreModel
 import com.felipearpa.tyche.pool.PositionIndicator
 import com.felipearpa.tyche.pool.R
@@ -48,12 +49,14 @@ fun PoolScoreItem(
             horizontalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.medium),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            poolGamblerScore.position?.let { position ->
+            if (poolGamblerScore.position != null) {
                 PositionIndicator(
-                    position = position,
+                    position = poolGamblerScore.position,
                     isCurrentUser = true,
                     shimmerModifier = placeholderModifier,
                 )
+            } else {
+                NonPositionIndicator()
             }
 
             Text(

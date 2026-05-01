@@ -15,6 +15,14 @@ public struct PostionIndicator: View {
     }
 }
 
+public struct NonPostionIndicator: View {
+    public var body: some View {
+        ZStack {
+        }
+        .frame(width: indicatorSize, height: indicatorSize)
+    }
+}
+
 private let indicatorSize = 32.0
 
 #Preview("signed in") {

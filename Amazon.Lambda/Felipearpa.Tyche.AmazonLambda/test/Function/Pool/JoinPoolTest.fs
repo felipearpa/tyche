@@ -49,11 +49,25 @@ module JoinPoolTest =
             .ReturnsAsync(QueryResponse(Items = (items |> List.map (fun it -> Dictionary it) |> ResizeArray)))
         |> ignore
 
+    let private setupMockGetPoolLayoutQuery (client: Mock<IAmazonDynamoDB>) =
+        let items =
+            [ dict
+                  [ "poolLayoutId", AttributeValue(S = "01K1PX1TX2NM1HG851S1V0QG6N")
+                    "poolLayoutName", AttributeValue(S = "World Cup 2026")
+                    "startDateTime", AttributeValue(S = "2026-06-06T06:06:00.000Z")
+                    "poolLayoutVersion", AttributeValue(N = "1") ] ]
+
+        client
+            .Setup(_.QueryAsync(It.Is<QueryRequest>(fun (request: QueryRequest) -> request.TableName = "PoolLayout")))
+            .ReturnsAsync(QueryResponse(Items = (items |> List.map (fun it -> Dictionary it) |> ResizeArray)))
+        |> ignore
+
     let private ``given a request to join a pool`` () =
         let client = Mock<IAmazonDynamoDB>()
         setupMockCreatePoolWrite client
         setupMockGetAccountQuery client
         setupMockGetPoolQuery client
+        setupMockGetPoolLayoutQuery client
 
         let functions =
             PoolFunction(fun services ->
@@ -92,6 +106,7 @@ module JoinPoolTest =
         setupMockCreatePoolWrite client
         setupMockGetAccountQuery client
         setupMockGetPoolQuery client
+        setupMockGetPoolLayoutQuery client
 
         let functions =
             PoolFunction(fun services ->

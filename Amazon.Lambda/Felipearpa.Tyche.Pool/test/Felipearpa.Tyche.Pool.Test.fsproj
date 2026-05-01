@@ -28,6 +28,9 @@
     <ItemGroup>
       <Compile Include="Domain\BetEvaluatorTest.fs" />
       <Compile Include="Domain\PoolGamblerBetDictionaryTransformer.fs" />
+      <Compile Include="Domain\InitialPoolGamblerBetTransformerTest.fs" />
+      <Compile Include="Infrastructure\JoinPoolGamblerRequestBuilderTest.fs" />
+      <Compile Include="Application\FanOutMatchToGamblersTest.fs" />
     </ItemGroup>
 
 </Project>
