@@ -84,6 +84,7 @@ fun PendingBetList(
                 } else {
                     PendingBetItemView(
                         viewModel = pendingBetViewModel(poolGamblerBet = poolGamblerBet),
+                        poolGamblerBet = poolGamblerBet,
                         modifier = itemModifier,
                     )
                 }

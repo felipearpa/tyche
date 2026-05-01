@@ -162,7 +162,7 @@ private struct ContentWrapper
  ErrorContentOnConcatenate: View,
  ItemView: View>: View
 {
-    let lazyPagingItems: LazyPagingItems<Key, Item>
+    @ObservedObject var lazyPagingItems: LazyPagingItems<Key, Item>
     let loadingContentOnAppend: () -> LoadingContentOnConcatenate
     let errorContentOnAppend: (Error) -> ErrorContentOnConcatenate
     let itemContent: (Item) -> ItemView
@@ -180,7 +180,7 @@ private struct ContentWrapper
     }
 
     var body: some View {
-        ForEach(Array(lazyPagingItems.enumerated()), id: \.element) { index, item in
+        ForEach(Array(lazyPagingItems.enumerated()), id: \.element.id) { index, item in
             itemContent(item)
                 .task { await lazyPagingItems.appendIfNeeded(currentIndex: index) }
         }

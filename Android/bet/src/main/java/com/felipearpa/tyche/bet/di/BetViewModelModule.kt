@@ -50,9 +50,8 @@ val betViewModelModule = module {
         )
     }
 
-    viewModel { params ->
+    viewModel {
         PendingBetItemViewModel(
-            poolGamblerBet = params.get(),
             placeBet = get(),
         )
     }

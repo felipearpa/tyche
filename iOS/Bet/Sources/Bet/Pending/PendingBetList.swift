@@ -41,9 +41,9 @@ struct PendingBetList: View {
             } else {
                 PendingBetItemView(
                     viewModel: PendingBetItemViewModel(
-                        poolGamblerBet: poolGamblerBet,
                         betUseCase: diResolver.resolve(BetUseCase.self)!
-                    )
+                    ),
+                    poolGamblerBet: poolGamblerBet
                 )
                 .padding(boxSpacing.medium)
                 .contentShape(Rectangle())

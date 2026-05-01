@@ -45,12 +45,20 @@ import com.felipearpa.tyche.ui.R as SharedR
 private val ICON_SIZE = 24.dp
 
 @Composable
-fun PendingBetItemView(viewModel: PendingBetItemViewModel, modifier: Modifier = Modifier) {
+fun PendingBetItemView(
+    viewModel: PendingBetItemViewModel,
+    poolGamblerBet: PoolGamblerBetModel,
+    modifier: Modifier = Modifier,
+) {
+    LaunchedEffect(poolGamblerBet) { viewModel.bind(poolGamblerBet) }
+
     val viewModelState by viewModel.state.collectAsState()
     var viewState by remember { mutableStateOf(PendingBetItemViewState.emptyVisualization()) }
 
+    val currentViewModelState = viewModelState ?: return
+
     PendingBetItemView(
-        viewModelState = viewModelState,
+        viewModelState = currentViewModelState,
         viewState = viewState,
         onViewStateChanged = { newViewState -> viewState = newViewState },
         bet = {
@@ -67,10 +75,10 @@ fun PendingBetItemView(viewModel: PendingBetItemViewModel, modifier: Modifier = 
         modifier = modifier,
     )
 
-    LaunchedEffect(viewModelState) {
-        viewState = when (val localViewModelState = viewModelState) {
+    LaunchedEffect(currentViewModelState) {
+        viewState = when (currentViewModelState) {
             is EditableViewState.Initial -> {
-                val poolGamblerBet = localViewModelState.value
+                val poolGamblerBet = currentViewModelState.value
                 PendingBetItemViewState.Visualization(
                     PartialPoolGamblerBetModel(
                         homeTeamBet = poolGamblerBet.homeTeamBetRawValue(),

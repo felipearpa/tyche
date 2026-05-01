@@ -15,4 +15,4 @@ fun pendingBetListViewModel(
 fun pendingBetViewModel(poolGamblerBet: PoolGamblerBetModel): PendingBetItemViewModel =
     koinViewModel(
         key = "${poolGamblerBet.poolId}:${poolGamblerBet.gamblerId}:${poolGamblerBet.matchId}",
-    ) { parametersOf(poolGamblerBet) }
+    )
