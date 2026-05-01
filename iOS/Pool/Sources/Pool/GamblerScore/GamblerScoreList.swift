@@ -26,9 +26,12 @@ struct GamblerScoreList: View {
             lazyPagingItems: lazyPagingItems,
             loadingContent: { GamblerScorePlaceholderList() },
             loadingContentOnConcatenate: {
-                PoolScoreItem(poolGamblerScore: poolGamblerScorePlaceholderModel(), onJoin: {})
-                    .shimmer()
-                Divider()
+                VStack(spacing: 0) {
+                    PoolScoreItem(poolGamblerScore: poolGamblerScorePlaceholderModel(), onJoin: {})
+                        .shimmer()
+                    Divider()
+                }
+                .padding(.horizontal, boxSpacing.medium)
             },
             errorContent: { error in
                 StatefulLazyVStackError(localizedError: error.localizedErrorOrDefault())
@@ -36,14 +39,35 @@ struct GamblerScoreList: View {
             },
             emptyContent: { StatefulLazyVStackEmpty().padding(boxSpacing.medium) },
         ) { poolGamblerScore in
-            GamblerScoreItem(
-                poolGamblerScore: poolGamblerScore,
-                isCurrentUser: isCurrentUser != nil ? isCurrentUser == poolGamblerScore.gamblerId : false,
-                onTap: onGamblerOpen
-            )
-            .padding(boxSpacing.medium)
-
-            Divider()
+            if let onGamblerOpen {
+                VStack(spacing: 0) {
+                    GamblerScoreItem(
+                        poolGamblerScore: poolGamblerScore,
+                        isCurrentUser: isCurrentUser != nil ? isCurrentUser == poolGamblerScore.gamblerId : false
+                    )
+                    .padding(boxSpacing.medium)
+                    Divider()
+                }
+                .padding(.horizontal, boxSpacing.medium)
+                .contentShape(Rectangle())
+                .onTapGesture {
+                    onGamblerOpen(
+                        poolGamblerScore.poolId,
+                        poolGamblerScore.gamblerId,
+                        poolGamblerScore.gamblerUsername
+                    )
+                }
+            } else {
+                VStack(spacing: 0) {
+                    GamblerScoreItem(
+                        poolGamblerScore: poolGamblerScore,
+                        isCurrentUser: isCurrentUser != nil ? isCurrentUser == poolGamblerScore.gamblerId : false
+                    )
+                    .padding(boxSpacing.medium)
+                    Divider()
+                }
+                .padding(.horizontal, boxSpacing.medium)
+            }
         }
     }
 }
@@ -57,14 +81,16 @@ struct GamblerScorePlaceholderList: View {
 
     var body: some View {
         ForEach(poolGamblerScores) { poolGamblerScore in
-            GamblerScoreItem(
-                poolGamblerScore: poolGamblerScore,
-                isCurrentUser: false
-            )
-            .shimmer()
-            .padding(boxSpacing.medium)
-
-            Divider()
+            VStack(spacing: 0) {
+                GamblerScoreItem(
+                    poolGamblerScore: poolGamblerScore,
+                    isCurrentUser: false
+                )
+                .shimmer()
+                .padding(boxSpacing.medium)
+                Divider()
+            }
+            .padding(.horizontal, boxSpacing.medium)
         }
     }
 }

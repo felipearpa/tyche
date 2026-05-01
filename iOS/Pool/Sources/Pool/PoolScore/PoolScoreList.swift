@@ -20,8 +20,12 @@ struct PoolScoreList: View {
             lazyPagingItems: lazyPagingItems,
             loadingContent: { PoolScorePlaceholderList() },
             loadingContentOnConcatenate: {
-                PoolScoreItem(poolGamblerScore: poolGamblerScorePlaceholderModel(), onJoin: {})
-                    .shimmer()
+                VStack(spacing: 0) {
+                    PoolScoreItem(poolGamblerScore: poolGamblerScorePlaceholderModel(), onJoin: {})
+                        .shimmer()
+                    Divider()
+                }
+                .padding(.horizontal, boxSpacing.medium)
             },
             errorContent: { error in PoolScoreErrorList(error: error) },
             emptyContent: {
@@ -31,14 +35,16 @@ struct PoolScoreList: View {
                     onSeeAllTemplates: onSeeAllTemplates,
                 )
             },
-            spacing: boxSpacing.medium,
         ) { poolGamblerScore in
-            PoolScoreItem(poolGamblerScore: poolGamblerScore, onJoin: { onPoolJoin(poolGamblerScore.poolId) })
-                .contentShape(Rectangle())
-                .onTapGesture {
-                    onPoolOpen(poolGamblerScore.poolId)
-                }
-            Divider()
+            VStack(spacing: 0) {
+                PoolScoreItem(poolGamblerScore: poolGamblerScore, onJoin: { onPoolJoin(poolGamblerScore.poolId) })
+                Divider()
+            }
+            .padding(.horizontal, boxSpacing.medium)
+            .contentShape(Rectangle())
+            .onTapGesture {
+                onPoolOpen(poolGamblerScore.poolId)
+            }
         }
     }
 }
@@ -48,11 +54,16 @@ private struct PoolScorePlaceholderList : View {
         poolGamblerScorePlaceholderModel()
     }
 
+    @Environment(\.boxSpacing) private var boxSpacing
+
     var body: some View {
         ForEach(poolGamblerScores) { poolGamblerScore in
-            PoolScoreItem(poolGamblerScore: poolGamblerScore, onJoin: {})
-                .shimmer()
-            Divider()
+            VStack(spacing: 0) {
+                PoolScoreItem(poolGamblerScore: poolGamblerScore, onJoin: {})
+                    .shimmer()
+                Divider()
+            }
+            .padding(.horizontal, boxSpacing.medium)
         }
     }
 }
