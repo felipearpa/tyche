@@ -23,7 +23,7 @@ public struct FinishedBetListView : View {
         )
         .refreshable { viewModel.refresh() }
         .onAppearOnce { viewModel.refresh() }
-        .padding(boxSpacing.medium)
+        .padding(.vertical, boxSpacing.medium)
     }
 }
 

@@ -22,7 +22,6 @@ struct FinishedBetList: View {
             loadingContent: { FinishedPoolGamblerBetFakeList(count: 50) },
             loadingContentOnConcatenate: {
                 FinishedPoolGamblerBetFakeItem()
-                Divider()
             }
         ) { poolGamblerBet in
             VStack(spacing: 0) {
@@ -30,16 +29,18 @@ struct FinishedBetList: View {
                     Text(poolGamblerBet.matchDateTime.toShortDateString())
                         .font(.title3)
                         .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(.horizontal, boxSpacing.medium)
+                        .padding(.horizontal, boxSpacing.large)
                         .padding(.top, boxSpacing.medium)
                 }
 
-                FinishedBetItem(poolGamblerBet: poolGamblerBet)
-                    .padding(boxSpacing.large)
-                    .contentShape(Rectangle())
-                    .onTapGesture { invokeMatchOpen(onMatchOpen, poolGamblerBet) }
-
-                Divider()
+                VStack(spacing: 0) {
+                    FinishedBetItem(poolGamblerBet: poolGamblerBet)
+                        .padding(boxSpacing.large)
+                    Divider()
+                }
+                .padding(.horizontal, boxSpacing.medium)
+                .contentShape(Rectangle())
+                .onTapGesture { invokeMatchOpen(onMatchOpen, poolGamblerBet) }
             }
         }
     }
@@ -57,7 +58,6 @@ private struct FinishedPoolGamblerBetFakeList: View {
     var body: some View {
         ForEach(0..<count, id: \.self) { _ in
             FinishedPoolGamblerBetFakeItem()
-            Divider()
         }
     }
 }
@@ -66,9 +66,13 @@ private struct FinishedPoolGamblerBetFakeItem: View {
     @Environment(\.boxSpacing) private var boxSpacing
 
     var body: some View {
-        FinishedBetItem(poolGamblerBet: poolGamblerBetFakeModel())
-            .shimmer()
-            .padding(boxSpacing.large)
+        VStack(spacing: 0) {
+            FinishedBetItem(poolGamblerBet: poolGamblerBetFakeModel())
+                .shimmer()
+                .padding(boxSpacing.large)
+            Divider()
+        }
+        .padding(.horizontal, boxSpacing.medium)
     }
 }
 
