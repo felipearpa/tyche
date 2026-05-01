@@ -25,30 +25,39 @@ struct PendingBetList: View {
             lazyPagingItems: lazyPagingItems,
             loadingContent: { PendingBetPlaceholderList() },
             loadingContentOnConcatenate: {
-                PendingBetPlaceholderItem()
-                Divider()
+                VStack(spacing: 0) {
+                    PendingBetPlaceholderItem()
+                    Divider()
+                }
+                .padding(.horizontal, boxSpacing.medium)
             }
         ) { poolGamblerBet in
             if isInPreviewMode() {
-                PendingBetItem(
-                    poolGamblerBet: poolGamblerBet,
-                    viewState: .constant(PendingBetItemViewState.emptyVisualization())
-                )
-                .padding(boxSpacing.medium)
+                VStack(spacing: 0) {
+                    PendingBetItem(
+                        poolGamblerBet: poolGamblerBet,
+                        viewState: .constant(PendingBetItemViewState.emptyVisualization())
+                    )
+                    .padding(boxSpacing.medium)
+                    Divider()
+                }
+                .padding(.horizontal, boxSpacing.medium)
                 .contentShape(Rectangle())
                 .onTapGesture { invokeMatchOpen(onMatchOpen, poolGamblerBet) }
-                Divider()
             } else {
-                PendingBetItemView(
-                    viewModel: PendingBetItemViewModel(
-                        betUseCase: diResolver.resolve(BetUseCase.self)!
-                    ),
-                    poolGamblerBet: poolGamblerBet
-                )
-                .padding(boxSpacing.medium)
+                VStack(spacing: 0) {
+                    PendingBetItemView(
+                        viewModel: PendingBetItemViewModel(
+                            betUseCase: diResolver.resolve(BetUseCase.self)!
+                        ),
+                        poolGamblerBet: poolGamblerBet
+                    )
+                    .padding(boxSpacing.medium)
+                    Divider()
+                }
+                .padding(.horizontal, boxSpacing.medium)
                 .contentShape(Rectangle())
                 .onTapGesture { invokeMatchOpen(onMatchOpen, poolGamblerBet) }
-                Divider()
             }
         }
     }
@@ -72,9 +81,12 @@ private struct PendingBetPlaceholderList: View {
 
     var body: some View {
         ForEach(1...50, id: \.self) { _ in
-            PendingBetPlaceholderItem()
-                .padding(boxSpacing.medium)
-            Divider()
+            VStack(spacing: 0) {
+                PendingBetPlaceholderItem()
+                    .padding(boxSpacing.medium)
+                Divider()
+            }
+            .padding(.horizontal, boxSpacing.medium)
         }
     }
 }

@@ -32,7 +32,7 @@ public struct PendingBetListView: View {
             lazyPagingItems: viewModel.lazyPager,
             onMatchOpen: onMatchOpen
         )
-        .padding(boxSpacing.medium)
+        .padding(.vertical, boxSpacing.medium)
     }
 }
 

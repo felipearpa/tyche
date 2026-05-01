@@ -26,7 +26,7 @@ fun PendingBetListView(
         onMatchOpen = onMatchOpen,
         modifier = Modifier
             .fillMaxSize()
-            .padding(all = LocalBoxSpacing.current.medium),
+            .padding(vertical = LocalBoxSpacing.current.medium),
     )
 }
 
@@ -55,6 +55,6 @@ private fun PendingBetListViewPreview() {
         onMatchOpen = {},
         modifier = Modifier
             .fillMaxSize()
-            .padding(all = LocalBoxSpacing.current.medium),
+            .padding(vertical = LocalBoxSpacing.current.medium),
     )
 }

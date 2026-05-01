@@ -2,6 +2,7 @@ package com.felipearpa.tyche.bet.pending
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -69,26 +70,33 @@ fun PendingBetList(
                 ),
                 contentType = "PoolGamblerBet",
             ) {
-                val itemModifier = Modifier
-                    .let { base ->
-                        if (onMatchOpen != null) base.clickable { onMatchOpen(poolGamblerBet) } else base
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .let { base ->
+                            if (onMatchOpen != null) {
+                                base.clickable { onMatchOpen(poolGamblerBet) }
+                            } else {
+                                base
+                            }
+                        }
+                        .padding(horizontal = LocalBoxSpacing.current.medium),
+                ) {
+                    if (LocalInspectionMode.current) {
+                        PendingBetItem(
+                            poolGamblerBet = poolGamblerBet,
+                            viewState = PendingBetItemViewState.dummyVisualization(),
+                            modifier = Modifier.pendingBetItem(),
+                        )
+                    } else {
+                        PendingBetItemView(
+                            viewModel = pendingBetViewModel(poolGamblerBet = poolGamblerBet),
+                            poolGamblerBet = poolGamblerBet,
+                            modifier = Modifier.pendingBetItem(),
+                        )
                     }
-                    .pendingBetItem()
-
-                if (LocalInspectionMode.current) {
-                    PendingBetItem(
-                        poolGamblerBet = poolGamblerBet,
-                        viewState = PendingBetItemViewState.dummyVisualization(),
-                        modifier = itemModifier,
-                    )
-                } else {
-                    PendingBetItemView(
-                        viewModel = pendingBetViewModel(poolGamblerBet = poolGamblerBet),
-                        poolGamblerBet = poolGamblerBet,
-                        modifier = itemModifier,
-                    )
+                    HorizontalDivider()
                 }
-                HorizontalDivider()
             }
         }
     }
@@ -102,8 +110,14 @@ private fun LazyListScope.pendingBetPlaceholderList(count: Int) {
 
 private fun LazyListScope.pendingBetPlaceholderItem() {
     item {
-        PendingBetPlaceholderItem(modifier = Modifier.pendingBetItem())
-        HorizontalDivider()
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = LocalBoxSpacing.current.medium),
+        ) {
+            PendingBetPlaceholderItem(modifier = Modifier.pendingBetItem())
+            HorizontalDivider()
+        }
     }
 }
 
