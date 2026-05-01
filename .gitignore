@@ -3,6 +3,7 @@ Amazon.Lambda/token-query.http
 
 #claude
 .claude/settings.local.json
+CLAUDE.md
 
 # globs
 Makefile.in

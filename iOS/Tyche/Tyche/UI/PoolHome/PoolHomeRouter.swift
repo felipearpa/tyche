@@ -75,7 +75,18 @@ struct PoolHomeRouter: View {
                     matchDateTime: route.matchDateTime,
                     homeTeamScore: route.homeTeamScore,
                     awayTeamScore: route.awayTeamScore,
-                    isLive: route.isLive
+                    isLive: route.isLive,
+                    onGamblerOpen: { tappedPoolId, tappedGamblerId, tappedGamblerUsername in
+                        if tappedGamblerId != user.accountId {
+                            path.append(
+                                BetTimelineListViewRoute(
+                                    poolId: tappedPoolId,
+                                    gamblerId: tappedGamblerId,
+                                    gamblerUsername: tappedGamblerUsername
+                                )
+                            )
+                        }
+                    }
                 )
             }
         }

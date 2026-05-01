@@ -11,6 +11,7 @@ public struct MatchBetListView: View {
     let homeTeamScore: Int?
     let awayTeamScore: Int?
     let isLive: Bool
+    let onGamblerOpen: ((_ poolId: String, _ gamblerId: String, _ gamblerUsername: String) -> Void)?
 
     @Environment(\.diResolver) var diResolver: DIResolver
     @Environment(\.boxSpacing) private var boxSpacing
@@ -23,7 +24,8 @@ public struct MatchBetListView: View {
         matchDateTime: Date,
         homeTeamScore: Int?,
         awayTeamScore: Int?,
-        isLive: Bool = false
+        isLive: Bool = false,
+        onGamblerOpen: ((_ poolId: String, _ gamblerId: String, _ gamblerUsername: String) -> Void)? = nil
     ) {
         self.poolId = poolId
         self.matchId = matchId
@@ -33,6 +35,7 @@ public struct MatchBetListView: View {
         self.homeTeamScore = homeTeamScore
         self.awayTeamScore = awayTeamScore
         self.isLive = isLive
+        self.onGamblerOpen = onGamblerOpen
     }
 
     public var body: some View {
@@ -55,7 +58,8 @@ public struct MatchBetListView: View {
                     ),
                     poolId: poolId,
                     matchId: matchId
-                )
+                ),
+                onGamblerOpen: onGamblerOpen
             )
         }
         .padding(boxSpacing.medium)
@@ -66,15 +70,20 @@ public struct MatchBetListView: View {
 
 private struct MatchBetListContent: View {
     @StateObject private var viewModel: MatchBetListViewModel
+    let onGamblerOpen: ((_ poolId: String, _ gamblerId: String, _ gamblerUsername: String) -> Void)?
 
-    init(viewModel: @autoclosure @escaping () -> MatchBetListViewModel) {
+    init(
+        viewModel: @autoclosure @escaping () -> MatchBetListViewModel,
+        onGamblerOpen: ((_ poolId: String, _ gamblerId: String, _ gamblerUsername: String) -> Void)? = nil
+    ) {
         self._viewModel = .init(wrappedValue: viewModel())
+        self.onGamblerOpen = onGamblerOpen
     }
 
     var body: some View {
         let _ = Self._printChangesIfDebug()
 
-        MatchBetList(lazyPagingItems: viewModel.lazyPager)
+        MatchBetList(lazyPagingItems: viewModel.lazyPager, onGamblerOpen: onGamblerOpen)
             .refreshable { viewModel.refresh() }
             .onAppearOnce { viewModel.refresh() }
     }

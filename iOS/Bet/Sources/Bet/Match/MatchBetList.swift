@@ -5,8 +5,17 @@ import DataBet
 
 struct MatchBetList: View {
     var lazyPagingItems: LazyPagingItems<String, PoolGamblerBetModel>
+    let onGamblerOpen: ((_ poolId: String, _ gamblerId: String, _ gamblerUsername: String) -> Void)?
 
     @Environment(\.boxSpacing) private var boxSpacing
+
+    init(
+        lazyPagingItems: LazyPagingItems<String, PoolGamblerBetModel>,
+        onGamblerOpen: ((_ poolId: String, _ gamblerId: String, _ gamblerUsername: String) -> Void)? = nil
+    ) {
+        self.lazyPagingItems = lazyPagingItems
+        self.onGamblerOpen = onGamblerOpen
+    }
 
     var body: some View {
         let _ = Self._printChangesIfDebug()
@@ -20,7 +29,7 @@ struct MatchBetList: View {
             },
             spacing: boxSpacing.medium
         ) { poolGamblerBet in
-            MatchGamblerBetItem(poolGamblerBet: poolGamblerBet)
+            MatchGamblerBetItem(poolGamblerBet: poolGamblerBet, onTap: onGamblerOpen)
                 .padding(boxSpacing.medium)
             Divider()
         }
