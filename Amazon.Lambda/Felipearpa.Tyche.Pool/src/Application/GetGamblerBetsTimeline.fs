@@ -47,20 +47,16 @@ type GetGamblerBetsTimeline
             | TimelineCursor.Live ->
                 let! livePage = getLivePoolGamblerBets.ExecuteAsync(poolId, gamblerId, None, innerCursor)
 
-                match livePage.Next, Seq.isEmpty livePage.Items with
-                | Some _, _ ->
+                match livePage.Next with
+                | Some _ ->
                     return
                         { CursorPage.Items = livePage.Items
                           Next = TimelineCursor.formatLive livePage.Next }
-                | None, false ->
-                    return
-                        { CursorPage.Items = livePage.Items
-                          Next = Some TimelineCursor.finishedTag }
-                | None, true ->
+                | None ->
                     let! finishedPage = getFinishedPoolGamblerBets.ExecuteAsync(poolId, gamblerId, None, None)
 
                     return
-                        { CursorPage.Items = finishedPage.Items
+                        { CursorPage.Items = Seq.append livePage.Items finishedPage.Items
                           Next = TimelineCursor.formatFinished finishedPage.Next }
             | TimelineCursor.Finished ->
                 let! finishedPage = getFinishedPoolGamblerBets.ExecuteAsync(poolId, gamblerId, None, innerCursor)
