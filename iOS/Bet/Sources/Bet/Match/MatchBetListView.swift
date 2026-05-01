@@ -50,6 +50,7 @@ public struct MatchBetListView: View {
                 awayTeamScore: awayTeamScore,
                 isLive: isLive
             )
+            .padding(.horizontal, boxSpacing.medium)
 
             MatchBetListContent(
                 viewModel: MatchBetListViewModel(
@@ -62,7 +63,7 @@ public struct MatchBetListView: View {
                 onGamblerOpen: onGamblerOpen
             )
         }
-        .padding(boxSpacing.medium)
+        .padding(.vertical, boxSpacing.medium)
         .navigationTitle(String(.matchBetsViewTitle))
         .navigationBarTitleDisplayMode(.inline)
     }

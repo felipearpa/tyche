@@ -135,7 +135,10 @@ fun Outlet(
 
         betTimelineListView(navController = navController)
 
-        matchBetsNavView(navController = navController)
+        matchBetsNavView(
+            navController = navController,
+            signedInGamblerId = maybeGamblerId,
+        )
 
         poolFromLayoutCreatorNavView(navController = navController)
 

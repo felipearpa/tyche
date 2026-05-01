@@ -69,6 +69,7 @@ fun MatchBetListView(
     awayTeamScore: Int?,
     onBack: () -> Unit,
     isLive: Boolean,
+    onGamblerOpen: ((poolId: String, gamblerId: String, gamblerUsername: String) -> Unit)? = null,
 ) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
 
@@ -88,7 +89,7 @@ fun MatchBetListView(
             modifier = Modifier
                 .padding(paddingValues = innerPadding)
                 .fillMaxSize()
-                .padding(all = LocalBoxSpacing.current.medium),
+                .padding(vertical = LocalBoxSpacing.current.medium),
         ) {
             MatchHeader(
                 homeTeamName = homeTeamName,
@@ -105,6 +106,7 @@ fun MatchBetListView(
                 MatchBetList(
                     lazyPoolGamblerBets = lazyItems,
                     placeholderCount = 50,
+                    onGamblerOpen = onGamblerOpen,
                     modifier = Modifier.fillMaxSize(),
                 )
                 return@Scaffold
@@ -115,6 +117,7 @@ fun MatchBetListView(
                     poolId = poolId,
                     matchId = matchId,
                 ),
+                onGamblerOpen = onGamblerOpen,
             )
         }
     }
@@ -130,7 +133,9 @@ private fun MatchHeader(
     isLive: Boolean,
 ) {
     Column(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = LocalBoxSpacing.current.medium),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.medium),
     ) {
@@ -238,13 +243,17 @@ private fun AppTopBar(
 }
 
 @Composable
-private fun MatchBetListView(viewModel: MatchBetListViewModel) {
+private fun MatchBetListView(
+    viewModel: MatchBetListViewModel,
+    onGamblerOpen: ((poolId: String, gamblerId: String, gamblerUsername: String) -> Unit)?,
+) {
     val lazyItems = viewModel.poolGamblerBets.collectAsLazyPagingItems()
     val pageSize = viewModel.pageSize
 
     MatchBetListView(
         lazyGamblerBets = lazyItems,
         placeholderCount = pageSize,
+        onGamblerOpen = onGamblerOpen,
         modifier = Modifier.fillMaxSize(),
     )
 }
@@ -253,11 +262,13 @@ private fun MatchBetListView(viewModel: MatchBetListViewModel) {
 private fun MatchBetListView(
     lazyGamblerBets: LazyPagingItems<PoolGamblerBetModel>,
     placeholderCount: Int,
+    onGamblerOpen: ((poolId: String, gamblerId: String, gamblerUsername: String) -> Unit)?,
     modifier: Modifier = Modifier,
 ) {
     MatchBetList(
         lazyPoolGamblerBets = lazyGamblerBets,
         placeholderCount = placeholderCount,
+        onGamblerOpen = onGamblerOpen,
         modifier = modifier,
     )
 }
