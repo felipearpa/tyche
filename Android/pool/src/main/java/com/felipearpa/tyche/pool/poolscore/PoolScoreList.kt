@@ -63,7 +63,6 @@ fun PoolScoreList(
 ) {
     RefreshableStatefulLazyColumn(
         modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.medium),
         lazyPagingItems = lazyPoolGamblerScores,
         lazyListState = lazyListState,
         loadingContent = { poolScorePlaceholderList(count = fakeItemCount) },
@@ -94,7 +93,8 @@ fun PoolScoreList(
                     .fillMaxWidth()
                     .clickable {
                         onPoolOpen(poolGamblerScore.poolId, poolGamblerScore.gamblerId)
-                    },
+                    }
+                    .padding(horizontal = LocalBoxSpacing.current.medium),
             ) {
                 PoolScoreItem(
                     poolGamblerScore = poolGamblerScore,
@@ -271,8 +271,14 @@ private fun LazyListScope.poolScorePlaceholderList(count: Int) {
 
 private fun LazyListScope.poolScorePlaceholderItem() {
     item {
-        PoolScorePlaceholderItem(modifier = Modifier.fillMaxWidth())
-        HorizontalDivider()
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = LocalBoxSpacing.current.medium),
+        ) {
+            PoolScorePlaceholderItem(modifier = Modifier.fillMaxWidth())
+            HorizontalDivider()
+        }
     }
 }
 

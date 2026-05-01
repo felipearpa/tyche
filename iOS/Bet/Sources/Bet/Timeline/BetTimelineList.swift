@@ -3,7 +3,7 @@ import UI
 import Core
 import DataBet
 
-struct BetsTimelineList: View {
+struct BetTimelineList: View {
     var lazyPagingItems: LazyPagingItems<String, PoolGamblerBetModel>
     let onMatchOpen: MatchOpenHandler?
 
@@ -24,37 +24,27 @@ struct BetsTimelineList: View {
             loadingContentOnConcatenate: {
                 BetsTimelinePlaceholderItem()
                 Divider()
+            },
+            sectionKey: { $0.matchDateTime.toShortDateString() },
+            sectionHeader: { dateString in
+                Text(dateString)
+                    .font(.body)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.horizontal, boxSpacing.medium)
+                    .padding(.vertical, boxSpacing.medium)
             }
         ) { poolGamblerBet in
             VStack(spacing: 0) {
-                if shouldShowHeader(for: poolGamblerBet) {
-                    Text(poolGamblerBet.matchDateTime.toShortDateString())
-                        .font(.title3)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(.horizontal, boxSpacing.medium)
-                        .padding(.top, boxSpacing.medium)
-                }
-
                 BetTimelineItem(poolGamblerBet: poolGamblerBet)
-                    .padding(boxSpacing.large)
+                    .padding(.horizontal, boxSpacing.large)
                     .contentShape(Rectangle())
                     .onTapGesture { invokeMatchOpen(onMatchOpen, poolGamblerBet) }
 
                 Divider()
+                    .padding(.horizontal, boxSpacing.large)
+                    .padding(.vertical, boxSpacing.medium)
             }
         }
-    }
-
-    private func shouldShowHeader(for bet: PoolGamblerBetModel) -> Bool {
-        var previous: PoolGamblerBetModel?
-        for item in lazyPagingItems {
-            if item.id == bet.id {
-                guard let previous else { return true }
-                return previous.matchDateTime.toShortDateString() != bet.matchDateTime.toShortDateString()
-            }
-            previous = item
-        }
-        return true
     }
 }
 
@@ -80,7 +70,7 @@ private struct BetsTimelinePlaceholderItem: View {
 }
 
 #Preview {
-    BetsTimelineList(
+    BetTimelineList(
         lazyPagingItems: LazyPagingItems(
             pagingData: PagingData(
                 pagingConfig: PagingConfig(prefetchDistance: 5),

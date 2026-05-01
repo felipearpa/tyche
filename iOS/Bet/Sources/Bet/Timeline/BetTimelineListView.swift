@@ -33,41 +33,48 @@ public struct BetTimelineListView: View {
                 poolId: poolId,
                 gamblerId: gamblerId
             ),
+            gamblerUsername: gamblerUsername,
             onMatchOpen: onMatchOpen
         )
+        .navigationTitle(.betTimelineViewTitle)
         .navigationBarTitleDisplayMode(.inline)
-        .toolbar {
-            ToolbarItem(placement: .principal) {
-                Text(gamblerUsername)
-                    .font(.footnote)
-                    .lineLimit(1)
-                    .truncationMode(.tail)
-            }
-        }
     }
 }
 
 private struct BetTimelineListContent: View {
     @StateObject private var viewModel: BetsTimelineViewModel
     private let onMatchOpen: MatchOpenHandler?
+    private let gamblerUsername: String
+    @Environment(\.boxSpacing) private var boxSpacing
 
     init(
         viewModel: @autoclosure @escaping () -> BetsTimelineViewModel,
+        gamblerUsername: String,
         onMatchOpen: MatchOpenHandler? = nil
     ) {
         self._viewModel = .init(wrappedValue: viewModel())
+        self.gamblerUsername = gamblerUsername
         self.onMatchOpen = onMatchOpen
     }
 
     var body: some View {
         let _ = Self._printChangesIfDebug()
 
-        BetsTimelineList(
-            lazyPagingItems: viewModel.lazyPager,
-            onMatchOpen: onMatchOpen
-        )
+        VStack(spacing: boxSpacing.medium) {
+            Text(gamblerUsername)
+                .font(.title2)
+                .fontWeight(.black)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.bottom, boxSpacing.medium)
+
+            BetTimelineList(
+                lazyPagingItems: viewModel.lazyPager,
+                onMatchOpen: onMatchOpen
+            )
+        }
         .refreshable { viewModel.refresh() }
         .onAppearOnce { viewModel.refresh() }
+        .padding(boxSpacing.medium)
     }
 }
 

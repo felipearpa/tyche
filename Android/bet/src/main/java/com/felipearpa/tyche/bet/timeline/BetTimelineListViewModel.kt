@@ -11,10 +11,7 @@ import com.felipearpa.tyche.data.bet.application.GetGamblerBetsTimeline
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
 
-private const val PAGE_SIZE = 50
-private const val PREFETCH_DISTANCE = 5
-
-class BetsTimelineViewModel(
+class BetTimelineListViewModel(
     private val poolId: String,
     val gamblerId: String,
     private val getGamblerBetsTimeline: GetGamblerBetsTimeline,
@@ -51,3 +48,6 @@ class BetsTimelineViewModel(
             },
         )
 }
+
+private const val PAGE_SIZE = 50
+private const val PREFETCH_DISTANCE = 5

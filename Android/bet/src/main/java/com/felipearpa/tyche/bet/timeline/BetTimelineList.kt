@@ -28,7 +28,7 @@ import kotlinx.datetime.LocalDate
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun BetsTimelineList(
+fun BetTimelineList(
     lazyBets: LazyPagingItems<PoolGamblerBetModel>,
     modifier: Modifier = Modifier,
     placeholderCount: Int = 0,
@@ -37,8 +37,8 @@ fun BetsTimelineList(
     RefreshableStatefulLazyColumn(
         modifier = modifier,
         lazyPagingItems = lazyBets,
-        loadingContent = { betsTimelinePlaceholderList(count = placeholderCount) },
-        loadingContentOnConcatenate = { betsTimelinePlaceholderItem() },
+        loadingContent = { betTimelinePlaceholderList(count = placeholderCount) },
+        loadingContentOnConcatenate = { betTimelinePlaceholderItem() },
     ) {
         val poolGamblerBetsCount = lazyBets.itemCount
         var lastMatchDate: LocalDate? = null
@@ -55,7 +55,7 @@ fun BetsTimelineList(
                     Text(
                         text = localDateString,
                         style = MaterialTheme.typography.titleMedium,
-                        modifier = Modifier.timelineHeaderItem(),
+                        modifier = Modifier.betTimelineHeaderItem(),
                     )
                 }
                 lastMatchDate = poolGamblerBet.matchDateTime.date
@@ -73,7 +73,7 @@ fun BetsTimelineList(
                     .let { base ->
                         if (onMatchOpen != null) base.clickable { onMatchOpen(poolGamblerBet) } else base
                     }
-                    .timelineItem()
+                    .betTimelineItem()
 
                 BetTimeLineItem(
                     bet = poolGamblerBet,
@@ -85,36 +85,37 @@ fun BetsTimelineList(
     }
 }
 
-private fun LazyListScope.betsTimelinePlaceholderList(count: Int) {
+private fun LazyListScope.betTimelinePlaceholderList(count: Int) {
     repeat(count) {
-        betsTimelinePlaceholderItem()
+        betTimelinePlaceholderItem()
     }
 }
 
-private fun LazyListScope.betsTimelinePlaceholderItem() {
+private fun LazyListScope.betTimelinePlaceholderItem() {
     item {
-        PendingBetPlaceholderItem(modifier = Modifier.timelineItem())
+        PendingBetPlaceholderItem(modifier = Modifier.betTimelineItem())
         HorizontalDivider(modifier = Modifier.padding(horizontal = LocalBoxSpacing.current.large))
     }
 }
 
 @Composable
-private fun Modifier.timelineItem() =
-    fillMaxWidth().padding(all = LocalBoxSpacing.current.large)
+private fun Modifier.betTimelineItem() =
+    fillMaxWidth()
+        .padding(horizontal = LocalBoxSpacing.current.large)
+        .padding(vertical = LocalBoxSpacing.current.medium)
 
 @Composable
-private fun Modifier.timelineHeaderItem() =
+private fun Modifier.betTimelineHeaderItem() =
     fillMaxWidth()
-        .padding(horizontal = LocalBoxSpacing.current.medium)
-        .padding(top = LocalBoxSpacing.current.medium)
+        .padding(top = LocalBoxSpacing.current.large)
 
 @PreviewLightDark
 @Composable
-private fun BetsTimelineListPreview() {
+private fun BetTimelineListPreview() {
     val items = MutableStateFlow(PagingData.from(poolGamblerBetDummyModels())).collectAsLazyPagingItems()
     TycheTheme {
         Surface {
-            BetsTimelineList(
+            BetTimelineList(
                 lazyBets = items,
                 modifier = Modifier.fillMaxSize(),
             )

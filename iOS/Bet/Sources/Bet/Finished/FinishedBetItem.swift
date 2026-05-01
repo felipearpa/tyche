@@ -25,7 +25,7 @@ struct FinishedBetItem: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
 
                 Text(poolGamblerBet.homeTeamMatchRawValue())
-                    .font(.title)
+                    .font(.title2)
                     .multilineTextAlignment(.center)
                     .scoreWidth()
 
@@ -40,7 +40,7 @@ struct FinishedBetItem: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
 
                 Text(poolGamblerBet.awayTeamMatchRawValue())
-                    .font(.title)
+                    .font(.title2)
                     .multilineTextAlignment(.center)
                     .scoreWidth()
 

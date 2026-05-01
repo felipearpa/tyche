@@ -1,6 +1,10 @@
 package com.felipearpa.tyche.bet.timeline
 
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -17,14 +21,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.felipearpa.foundation.emptyString
 import com.felipearpa.tyche.bet.PoolGamblerBetModel
+import com.felipearpa.tyche.bet.R
 import com.felipearpa.tyche.bet.poolGamblerBetDummyModels
+import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
 import kotlinx.coroutines.flow.MutableStateFlow
 import com.felipearpa.tyche.ui.R as SharedR
 
@@ -45,7 +52,7 @@ fun BetTimelineListView(
             .nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
             AppTopBar(
-                title = gamblerUsername,
+                title = stringResource(id = R.string.bet_timeline_view_title),
                 onBack = onBack,
                 scrollBehavior = scrollBehavior,
             )
@@ -57,24 +64,21 @@ fun BetTimelineListView(
             BetTimelineListView(
                 lazyBets = lazyItems,
                 placeholderCount = 50,
+                gamblerUsername = gamblerUsername,
                 onMatchOpen = {},
-                modifier = Modifier
-                    .padding(paddingValues = innerPadding)
-                    .fillMaxSize(),
+                modifier = Modifier.viewStyle(paddingValues = innerPadding),
             )
-
             return@Scaffold
         }
 
         BetTimelineListView(
-            viewModel = betsTimelineViewModel(
+            viewModel = betTimelineListViewModel(
                 poolId = poolId,
                 gamblerId = gamblerId,
             ),
+            gamblerUsername = gamblerUsername,
             onMatchOpen = onMatchOpen,
-            modifier = Modifier
-                .padding(paddingValues = innerPadding)
-                .fillMaxSize(),
+            modifier = Modifier.viewStyle(paddingValues = innerPadding),
         )
     }
 }
@@ -88,14 +92,7 @@ private fun AppTopBar(
     scrollBehavior: TopAppBarScrollBehavior,
 ) {
     TopAppBar(
-        title = {
-            Text(
-                text = title,
-                style = MaterialTheme.typography.titleSmall,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-            )
-        },
+        title = { Text(text = title) },
         navigationIcon = {
             IconButton(onClick = onBack) {
                 Icon(
@@ -111,16 +108,18 @@ private fun AppTopBar(
 
 @Composable
 private fun BetTimelineListView(
-    viewModel: BetsTimelineViewModel,
+    viewModel: BetTimelineListViewModel,
+    gamblerUsername: String,
     modifier: Modifier = Modifier,
     onMatchOpen: ((PoolGamblerBetModel) -> Unit)? = null,
 ) {
     val lazyItems = viewModel.poolGamblerBets.collectAsLazyPagingItems()
     val pageSize = viewModel.pageSize
 
-    BetsTimelineList(
+    BetTimelineListView(
         lazyBets = lazyItems,
         placeholderCount = pageSize,
+        gamblerUsername = gamblerUsername,
         modifier = modifier,
         onMatchOpen = onMatchOpen,
     )
@@ -130,16 +129,36 @@ private fun BetTimelineListView(
 private fun BetTimelineListView(
     lazyBets: LazyPagingItems<PoolGamblerBetModel>,
     placeholderCount: Int,
+    gamblerUsername: String,
     modifier: Modifier = Modifier,
     onMatchOpen: ((PoolGamblerBetModel) -> Unit)?,
 ) {
-    BetsTimelineList(
-        lazyBets = lazyBets,
-        placeholderCount = placeholderCount,
-        modifier = modifier,
-        onMatchOpen = onMatchOpen,
-    )
+    Column(modifier = modifier) {
+        Text(
+            text = gamblerUsername,
+            style = MaterialTheme.typography.titleLarge,
+            fontWeight = FontWeight.Black,
+        )
+
+        Spacer(modifier = Modifier.height(LocalBoxSpacing.current.medium))
+
+        BetTimelineList(
+            lazyBets = lazyBets,
+            placeholderCount = placeholderCount,
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = LocalBoxSpacing.current.medium),
+            onMatchOpen = onMatchOpen,
+        )
+    }
 }
+
+@Composable
+private fun Modifier.viewStyle(paddingValues: PaddingValues) =
+    padding(paddingValues = paddingValues)
+        .fillMaxSize()
+        .padding(all = LocalBoxSpacing.current.medium)
+
 
 @Preview(showBackground = true)
 @Composable

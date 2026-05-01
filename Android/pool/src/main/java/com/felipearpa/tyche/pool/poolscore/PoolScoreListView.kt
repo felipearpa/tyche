@@ -150,7 +150,7 @@ private fun PoolScoreListView(
                 modifier = Modifier
                     .padding(paddingValues = paddingValues)
                     .fillMaxSize()
-                    .padding(all = LocalBoxSpacing.current.medium),
+                    .padding(vertical = LocalBoxSpacing.current.medium),
             )
         }
     }

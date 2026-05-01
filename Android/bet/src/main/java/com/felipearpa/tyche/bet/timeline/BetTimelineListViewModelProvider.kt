@@ -5,7 +5,7 @@ import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
 @Composable
-fun betsTimelineViewModel(
+fun betTimelineListViewModel(
     poolId: String,
     gamblerId: String,
-): BetsTimelineViewModel = koinViewModel { parametersOf(poolId, gamblerId) }
+): BetTimelineListViewModel = koinViewModel { parametersOf(poolId, gamblerId) }

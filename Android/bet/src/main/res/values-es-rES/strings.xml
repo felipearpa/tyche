@@ -8,4 +8,5 @@
     <string name="forbidden_bet_message">¡Vaya! Las apuestas no están disponibles ahora mismo</string>
     <string name="match_bets_view_title">Marcador</string>
     <string name="live_label">EN DIRECTO</string>
+    <string name="bet_timeline_view_title">Línea de tiempo</string>
 </resources>

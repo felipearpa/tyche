@@ -8,4 +8,5 @@
     <string name="forbidden_bet_message">Oops! Betting is currently unavailable</string>
     <string name="match_bets_view_title">Score</string>
     <string name="live_label">LIVE</string>
+    <string name="bet_timeline_view_title">Timeline</string>
 </resources>

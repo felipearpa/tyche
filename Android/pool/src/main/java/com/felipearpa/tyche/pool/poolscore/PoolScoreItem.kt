@@ -75,7 +75,10 @@ fun PoolScoreItem(
 
             Spacer(modifier = Modifier.height(LocalBoxSpacing.current.medium))
 
-            IconButton(onClick = onJoin) {
+            IconButton(
+                onClick = onJoin,
+                modifier = placeholderModifier,
+            ) {
                 Icon(
                     painter = painterResource(R.drawable.person_add),
                     contentDescription = null,
