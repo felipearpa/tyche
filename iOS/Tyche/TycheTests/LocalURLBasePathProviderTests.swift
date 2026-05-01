@@ -1,5 +1,5 @@
 import XCTest
-@testable import Core
+@testable import Tyche
 
 final class LocalURLBasePathProviderTests: XCTestCase {
     

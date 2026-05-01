@@ -17,7 +17,8 @@ struct MatchBetList: View {
             loadingContentOnConcatenate: {
                 MatchBetPlaceholderItem()
                 Divider()
-            }
+            },
+            spacing: boxSpacing.medium
         ) { poolGamblerBet in
             MatchGamblerBetItem(poolGamblerBet: poolGamblerBet)
                 .padding(boxSpacing.medium)

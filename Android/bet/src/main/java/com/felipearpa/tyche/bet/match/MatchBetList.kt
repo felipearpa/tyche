@@ -1,5 +1,6 @@
 package com.felipearpa.tyche.bet.match
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -28,10 +29,11 @@ fun MatchBetList(
     placeholderCount: Int = 0,
 ) {
     RefreshableStatefulLazyColumn(
-        modifier = modifier,
         lazyPagingItems = lazyPoolGamblerBets,
         loadingContent = { matchGamblerBetPlaceholderList(count = placeholderCount) },
         loadingContentOnConcatenate = { matchGamblerBetPlaceholderItem() },
+        verticalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.medium),
+        modifier = modifier,
     ) {
         items(
             count = lazyPoolGamblerBets.itemCount,
