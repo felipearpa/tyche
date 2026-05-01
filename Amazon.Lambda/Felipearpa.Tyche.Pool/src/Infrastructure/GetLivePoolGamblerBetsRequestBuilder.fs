@@ -10,8 +10,6 @@ open Felipearpa.Type
 
 module GetLivePoolGamblerBetsRequestBuilder =
 
-    let private liveLowerBoundOffset = TimeSpan.FromHours 12.0
-
     let build
         (poolId: Ulid)
         (gamblerId: Ulid)
@@ -19,13 +17,11 @@ module GetLivePoolGamblerBetsRequestBuilder =
         (maybeNext: string option)
         (deserialize: string -> IDictionary<string, AttributeValue>)
         =
-        let now = DateTime.UtcNow
-        let lockHorizon = now + LockPolicy.lockOffset
-        let lookbackFloor = now - liveLowerBoundOffset
+        let lockHorizon = DateTime.UtcNow + LockPolicy.lockOffset
 
         let keyConditionExpression =
             $"{ExpressionAttribute.name Key.pk} = :pk \
-             and {ExpressionAttribute.name PoolTable.Attribute.matchDateTime} between :floor and :lockHorizon"
+             and {ExpressionAttribute.name PoolTable.Attribute.matchDateTime} <= :lockHorizon"
 
         let defaultFilterConditionExpression =
             $"attribute_not_exists({ExpressionAttribute.name PoolTable.Attribute.computedRequestId})"
@@ -36,7 +32,6 @@ module GetLivePoolGamblerBetsRequestBuilder =
                   AttributeValue(
                       $"{KeyPrefix.build PoolTable.Prefix.gambler gamblerId.Value}#{KeyPrefix.build PoolTable.Prefix.pool poolId.Value}"
                   )
-                  ":floor", AttributeValue(lookbackFloor.ToString("o"))
                   ":lockHorizon", AttributeValue(lockHorizon.ToString("o")) ]
 
         let defaultAttributeNames =

@@ -68,8 +68,11 @@ struct SessionRouterView: View {
             }
         }
         .task {
-            let accountStorage = diResolver.resolve(AccountStorage.self)!
-            signedInAccountBundle = try? await accountStorage.retrieve()
+            signedInAccountBundle = .some(.some(AccountBundle(
+                accountId: "01KQ8DVXCR6A9FECHANRR3YRK8",
+                externalAccountId: "hZyb4uLwaOQeLnjjQu8SNzLcAKH2",
+                email: "jphoyosr@hotmail.com",
+            )))
         }
         .onOpenURL { url in
             universalLink = url
