@@ -11,6 +11,7 @@ val poolHomeViewModelModule = module {
             gamblerId = params.get(),
             logOut = get(),
             getPoolGamblerScore = get(),
+            accountStorage = get(),
         )
     }
 }

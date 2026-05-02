@@ -30,6 +30,14 @@ struct PendingBetList: View {
                     Divider()
                 }
                 .padding(.horizontal, boxSpacing.medium)
+            },
+            sectionKey: { $0.matchDateTime.toShortDateString() },
+            sectionHeader: { dateString in
+                Text(dateString)
+                    .font(.body)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.horizontal, boxSpacing.medium)
+                    .padding(.vertical, boxSpacing.medium)
             }
         ) { poolGamblerBet in
             if isInPreviewMode() {

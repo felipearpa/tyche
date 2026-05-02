@@ -101,11 +101,8 @@ struct PoolHomeView: View {
                     gamblerId: gamblerId,
                     logoutUseCase: diResolver.resolve(LogOutUseCase.self)!,
                     getPoolGamblerScoreUseCase: diResolver.resolve(GetPoolGamblerScoreUseCase.self)!,
+                    accountStorage: diResolver.resolve(AccountStorage.self)!
                 ),
-                changePool: {
-                    drawerVisible = false
-                    onChangePool()
-                },
                 onLogout: {
                     drawerVisible = false
                     onSignOut()
@@ -113,7 +110,10 @@ struct PoolHomeView: View {
             )
         }
         .navigationTitle(selectedTab.title)
-        .navigationBarItems(leading: navigationBarLeading())
+        .navigationBarItems(
+            leading: navigationBarLeading(),
+            trailing: navigationBarTrailing()
+        )
         .toolbar(drawerVisible ? .hidden : .visible, for: .navigationBar)
     }
 
@@ -121,6 +121,16 @@ struct PoolHomeView: View {
         Button(action: { drawerVisible.toggle() }) {
             Image(sharedResource: .menu)
                 .resizable()
+                .frame(width: ICON_SIZE, height: ICON_SIZE)
+                .tint(.primary)
+        }
+    }
+
+    private func navigationBarTrailing() -> some View {
+        Button(action: onChangePool) {
+            Image(systemName: "arrow.left.arrow.right")
+                .resizable()
+                .scaledToFit()
                 .frame(width: ICON_SIZE, height: ICON_SIZE)
                 .tint(.primary)
         }
