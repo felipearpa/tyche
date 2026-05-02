@@ -3,13 +3,8 @@ import DataBet
 
 public typealias MatchOpenHandler = (
     _ poolId: String,
-    _ matchId: String,
-    _ homeTeamName: String,
-    _ awayTeamName: String,
-    _ matchDateTime: Date,
-    _ homeTeamScore: Int?,
-    _ awayTeamScore: Int?,
-    _ isLive: Bool
+    _ gamblerId: String,
+    _ matchId: String
 ) -> Void
 
 public struct PendingBetListView: View {

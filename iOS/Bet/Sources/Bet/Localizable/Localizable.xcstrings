@@ -142,6 +142,52 @@
           }
         }
       }
+    },
+    "predictions_open_title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Predictions are still open"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Las predicciones aún están abiertas"
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Las predicciones siguen abiertas"
+          }
+        }
+      }
+    },
+    "predictions_open_message" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "To keep things fair, other gamblers' bets will be revealed once predictions close for this match."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Para que el juego sea justo, las apuestas de los demás se mostrarán cuando se cierren las predicciones para este partido."
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Para que el juego sea limpio, las apuestas del resto se mostrarán cuando se cierren las predicciones de este partido."
+          }
+        }
+      }
     }
   },
   "version" : "1.1"

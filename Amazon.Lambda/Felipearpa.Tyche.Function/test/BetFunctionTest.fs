@@ -25,6 +25,7 @@ module BetFunctionTest =
             member _.GetFinishedPoolGamblerBetsAsync(_, _, _, _) = failwith "not used"
             member _.GetLivePoolGamblerBetsAsync(_, _, _, _) = failwith "not used"
             member _.GetPoolMatchGamblerBetsAsync(_, _, _) = failwith "not used"
+            member _.GetPoolGamblerBetByIdAsync(_, _, _) = failwith "not used"
             member _.AddPoolGamblerMatchAsync(_) = failwith "not used"
             member _.AddPoolGamblerMatchesAsync(_) = failwith "not used"
             member _.MaterializeMatchForGamblerAsync(_, _) = failwith "not used"

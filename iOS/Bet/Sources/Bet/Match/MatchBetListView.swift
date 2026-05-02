@@ -1,16 +1,12 @@
 import SwiftUI
 import Core
+import UI
 import DataBet
 
 public struct MatchBetListView: View {
     let poolId: String
+    let gamblerId: String
     let matchId: String
-    let homeTeamName: String
-    let awayTeamName: String
-    let matchDateTime: Date
-    let homeTeamScore: Int?
-    let awayTeamScore: Int?
-    let isLive: Bool
     let onGamblerOpen: ((_ poolId: String, _ gamblerId: String, _ gamblerUsername: String) -> Void)?
 
     @Environment(\.diResolver) var diResolver: DIResolver
@@ -18,52 +14,33 @@ public struct MatchBetListView: View {
 
     public init(
         poolId: String,
+        gamblerId: String,
         matchId: String,
-        homeTeamName: String,
-        awayTeamName: String,
-        matchDateTime: Date,
-        homeTeamScore: Int?,
-        awayTeamScore: Int?,
-        isLive: Bool = false,
         onGamblerOpen: ((_ poolId: String, _ gamblerId: String, _ gamblerUsername: String) -> Void)? = nil
     ) {
         self.poolId = poolId
+        self.gamblerId = gamblerId
         self.matchId = matchId
-        self.homeTeamName = homeTeamName
-        self.awayTeamName = awayTeamName
-        self.matchDateTime = matchDateTime
-        self.homeTeamScore = homeTeamScore
-        self.awayTeamScore = awayTeamScore
-        self.isLive = isLive
         self.onGamblerOpen = onGamblerOpen
     }
 
     public var body: some View {
         let _ = Self._printChangesIfDebug()
 
-        VStack(spacing: boxSpacing.medium) {
-            MatchHeader(
-                homeTeamName: homeTeamName,
-                awayTeamName: awayTeamName,
-                matchDateTime: matchDateTime,
-                homeTeamScore: homeTeamScore,
-                awayTeamScore: awayTeamScore,
-                isLive: isLive
-            )
-            .padding(.horizontal, boxSpacing.medium)
-
-            MatchBetListContent(
-                viewModel: MatchBetListViewModel(
-                    getPoolMatchGamblerBetsUseCase: GetPoolMatchGamblerBetsUseCase(
-                        poolGamblerBetRepository: diResolver.resolve(PoolGamblerBetRepository.self)!
-                    ),
-                    poolId: poolId,
-                    matchId: matchId
+        MatchBetListContent(
+            viewModel: MatchBetListViewModel(
+                getPoolGamblerBetUseCase: GetPoolGamblerBetUseCase(
+                    poolGamblerBetRepository: diResolver.resolve(PoolGamblerBetRepository.self)!
                 ),
-                onGamblerOpen: onGamblerOpen
-            )
-        }
-        .padding(.vertical, boxSpacing.medium)
+                getPoolMatchGamblerBetsUseCase: GetPoolMatchGamblerBetsUseCase(
+                    poolGamblerBetRepository: diResolver.resolve(PoolGamblerBetRepository.self)!
+                ),
+                poolId: poolId,
+                gamblerId: gamblerId,
+                matchId: matchId
+            ),
+            onGamblerOpen: onGamblerOpen
+        )
         .navigationTitle(String(.matchBetsViewTitle))
         .navigationBarTitleDisplayMode(.inline)
     }
@@ -72,6 +49,8 @@ public struct MatchBetListView: View {
 private struct MatchBetListContent: View {
     @StateObject private var viewModel: MatchBetListViewModel
     let onGamblerOpen: ((_ poolId: String, _ gamblerId: String, _ gamblerUsername: String) -> Void)?
+
+    @Environment(\.boxSpacing) private var boxSpacing
 
     init(
         viewModel: @autoclosure @escaping () -> MatchBetListViewModel,
@@ -84,112 +63,97 @@ private struct MatchBetListContent: View {
     var body: some View {
         let _ = Self._printChangesIfDebug()
 
-        MatchBetList(lazyPagingItems: viewModel.lazyPager, onGamblerOpen: onGamblerOpen)
-            .refreshable { viewModel.refresh() }
-            .onAppearOnce { viewModel.refresh() }
-    }
-}
+        Group {
+            switch viewModel.poolGamblerBetState {
+            case .initial, .loading:
+                VStack(spacing: boxSpacing.medium) {
+                    MatchHeaderPlaceholderItem()
+                        .padding(.horizontal, boxSpacing.medium)
 
-private struct MatchHeader: View {
-    let homeTeamName: String
-    let awayTeamName: String
-    let matchDateTime: Date
-    let homeTeamScore: Int?
-    let awayTeamScore: Int?
-    let isLive: Bool
-
-    @Environment(\.boxSpacing) private var boxSpacing
-
-    var body: some View {
-        VStack(alignment: .center, spacing: boxSpacing.medium) {
-            if isLive {
-                LiveIndicator()
-            }
-
-            HStack(spacing: boxSpacing.medium) {
-                Text(homeTeamName)
-                    .font(.headline)
-                    .multilineTextAlignment(.center)
-                    .lineLimit(2)
-                    .truncationMode(.tail)
-                    .frame(maxWidth: .infinity)
-
-                if !isLive {
-                    Text(homeTeamScore.map { String($0) } ?? "")
-                        .font(.title2)
-
-                    Text("-")
-
-                    Text(awayTeamScore.map { String($0) } ?? "")
-                        .font(.title2)
+                    MatchBetList(lazyPagingItems: viewModel.lazyPager, onGamblerOpen: onGamblerOpen)
                 }
+                .padding(.vertical, boxSpacing.medium)
 
-                Text(awayTeamName)
-                    .font(.headline)
-                    .multilineTextAlignment(.center)
-                    .lineLimit(2)
-                    .truncationMode(.tail)
-                    .frame(maxWidth: .infinity)
-            }
-
-            Text(matchDateTime.toShortDateTimeString())
-                .font(.caption)
-        }
-        .frame(maxWidth: .infinity)
-    }
-}
-
-private struct LiveIndicator: View {
-    @State private var isPulsing = false
-
-    @Environment(\.boxSpacing) private var boxSpacing
-
-    var body: some View {
-        HStack(spacing: boxSpacing.small) {
-            Circle()
-                .fill(Color.accentColor)
-                .frame(width: 8, height: 8)
-                .opacity(isPulsing ? 0.3 : 1.0)
-                .animation(
-                    .easeInOut(duration: 0.8).repeatForever(autoreverses: true),
-                    value: isPulsing
+            case .failure(let error):
+                FailureContent(
+                    localizedError: error.localizedErrorOrDefault(),
+                    onRetry: { Task { await viewModel.loadPoolGamblerBet() } }
                 )
 
-            Text(String(.liveLabel))
-                .font(.caption2)
-                .foregroundStyle(Color.accentColor)
+            case .success(let bet):
+                VStack(spacing: boxSpacing.medium) {
+                    MatchHeader(bet: bet)
+                        .padding(.horizontal, boxSpacing.medium)
+
+                    if bet.isPending {
+                        PredictionsOpenContent()
+                    } else {
+                        MatchBetList(lazyPagingItems: viewModel.lazyPager, onGamblerOpen: onGamblerOpen)
+                            .refreshable {
+                                await viewModel.loadPoolGamblerBet()
+                                viewModel.refresh()
+                            }
+                    }
+                }
+                .padding(.vertical, boxSpacing.medium)
+            }
         }
-        .onAppear { isPulsing = true }
+        .task { await viewModel.loadPoolGamblerBet() }
     }
 }
 
-#Preview("Live") {
-    NavigationStack {
-        MatchBetListView(
-            poolId: "pool-id",
-            matchId: "match-id",
-            homeTeamName: "Home FC",
-            awayTeamName: "Away United",
-            matchDateTime: Date(),
-            homeTeamScore: 2,
-            awayTeamScore: 1,
-            isLive: true
-        )
-        .environment(\.diResolver, diFakeResolver())
+private struct FailureContent: View {
+    let localizedError: LocalizedError
+    let onRetry: () -> Void
+
+    @Environment(\.boxSpacing) private var boxSpacing
+
+    var body: some View {
+        VStack(spacing: boxSpacing.large) {
+            ErrorView(localizedError: localizedError)
+
+            Button(action: onRetry) {
+                Text(String(sharedResource: .retryAction))
+            }
+        }
+        .padding(.all, boxSpacing.large)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 }
 
-#Preview("Not live") {
+private struct PredictionsOpenContent: View {
+    @Environment(\.boxSpacing) private var boxSpacing
+
+    var body: some View {
+        VStack(spacing: boxSpacing.large) {
+            Image(systemName: "lock.fill")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 64, height: 64)
+                .foregroundStyle(Color.accentColor)
+
+            VStack(spacing: boxSpacing.medium) {
+                Text(String(.predictionsOpenTitle))
+                    .font(.headline)
+                    .multilineTextAlignment(.center)
+
+                Text(String(.predictionsOpenMessage))
+                    .font(.body)
+                    .foregroundStyle(Color.secondary)
+                    .multilineTextAlignment(.center)
+            }
+        }
+        .padding(.all, boxSpacing.large)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+}
+
+#Preview {
     NavigationStack {
         MatchBetListView(
             poolId: "pool-id",
-            matchId: "match-id",
-            homeTeamName: "Home FC",
-            awayTeamName: "Away United",
-            matchDateTime: Date(),
-            homeTeamScore: 2,
-            awayTeamScore: 1,
-            isLive: false
+            gamblerId: "gambler-id",
+            matchId: "match-id"
         )
         .environment(\.diResolver, diFakeResolver())
     }

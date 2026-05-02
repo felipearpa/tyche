@@ -66,13 +66,8 @@ struct PendingBetList: View {
 func invokeMatchOpen(_ handler: MatchOpenHandler?, _ poolGamblerBet: PoolGamblerBetModel) {
     handler?(
         poolGamblerBet.poolId,
-        poolGamblerBet.matchId,
-        poolGamblerBet.homeTeamName,
-        poolGamblerBet.awayTeamName,
-        poolGamblerBet.matchDateTime,
-        poolGamblerBet.matchScore?.homeTeamValue,
-        poolGamblerBet.matchScore?.awayTeamValue,
-        poolGamblerBet.isLive
+        poolGamblerBet.gamblerId,
+        poolGamblerBet.matchId
     )
 }
 

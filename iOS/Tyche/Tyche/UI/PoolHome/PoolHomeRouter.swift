@@ -30,17 +30,12 @@ struct PoolHomeRouter: View {
                         )
                     }
                 },
-                onMatchOpen: { poolId, matchId, homeTeamName, awayTeamName, matchDateTime, homeTeamScore, awayTeamScore, isLive in
+                onMatchOpen: { poolId, gamblerId, matchId in
                     path.append(
                         MatchBetListViewRoute(
                             poolId: poolId,
-                            matchId: matchId,
-                            homeTeamName: homeTeamName,
-                            awayTeamName: awayTeamName,
-                            matchDateTime: matchDateTime,
-                            homeTeamScore: homeTeamScore,
-                            awayTeamScore: awayTeamScore,
-                            isLive: isLive
+                            gamblerId: gamblerId,
+                            matchId: matchId
                         )
                     )
                 }
@@ -50,17 +45,12 @@ struct PoolHomeRouter: View {
                     poolId: route.poolId,
                     gamblerId: route.gamblerId,
                     gamblerUsername: route.gamblerUsername,
-                    onMatchOpen: { poolId, matchId, homeTeamName, awayTeamName, matchDateTime, homeTeamScore, awayTeamScore, isLive in
+                    onMatchOpen: { poolId, gamblerId, matchId in
                         path.append(
                             MatchBetListViewRoute(
                                 poolId: poolId,
-                                matchId: matchId,
-                                homeTeamName: homeTeamName,
-                                awayTeamName: awayTeamName,
-                                matchDateTime: matchDateTime,
-                                homeTeamScore: homeTeamScore,
-                                awayTeamScore: awayTeamScore,
-                                isLive: isLive
+                                gamblerId: gamblerId,
+                                matchId: matchId
                             )
                         )
                     }
@@ -69,13 +59,8 @@ struct PoolHomeRouter: View {
             .navigationDestination(for: MatchBetListViewRoute.self) { route in
                 MatchBetListView(
                     poolId: route.poolId,
+                    gamblerId: route.gamblerId,
                     matchId: route.matchId,
-                    homeTeamName: route.homeTeamName,
-                    awayTeamName: route.awayTeamName,
-                    matchDateTime: route.matchDateTime,
-                    homeTeamScore: route.homeTeamScore,
-                    awayTeamScore: route.awayTeamScore,
-                    isLive: route.isLive,
                     onGamblerOpen: { tappedPoolId, tappedGamblerId, tappedGamblerUsername in
                         if tappedGamblerId != user.accountId {
                             path.append(

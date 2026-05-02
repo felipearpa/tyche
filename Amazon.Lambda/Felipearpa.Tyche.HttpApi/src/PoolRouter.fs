@@ -143,6 +143,28 @@ module PoolRouter =
 
             this
                 .MapGet(
+                    "/pools/{poolId}/gamblers/{gamblerId}/matches/{matchId}",
+                    Func<_, _, _, _, _>
+                        (fun
+                            (poolId: string)
+                            (gamblerId: string)
+                            (matchId: string)
+                            (getPoolGamblerBetById: GetPoolGamblerBetById) ->
+                            async {
+                                return!
+                                    getPoolGamblerBetByIdAsync
+                                        poolId
+                                        gamblerId
+                                        matchId
+                                        getPoolGamblerBetById
+                            }
+                            |> Async.StartAsTask)
+                )
+                .RequireAuthorization()
+            |> ignore
+
+            this
+                .MapGet(
                     "/pools/{poolId}/matches/{matchId}/bets",
                     Func<_, _, _, _, _>
                         (fun

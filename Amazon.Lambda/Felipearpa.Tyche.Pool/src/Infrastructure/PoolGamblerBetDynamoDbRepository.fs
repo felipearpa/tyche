@@ -103,6 +103,18 @@ type PoolGamblerBetDynamoDbRepository(keySerializer: IKeySerializer, client: IAm
                         | None -> None }
             }
 
+        member this.GetPoolGamblerBetByIdAsync(poolId, gamblerId, matchId) =
+            async {
+                let request = GetPoolGamblerBetByIdRequestBuilder.build poolId gamblerId matchId
+                let! response = client.GetItemAsync(request) |> Async.AwaitTask
+
+                return
+                    if response.IsItemSet then
+                        response.Item |> toPoolGamblerBet |> Some
+                    else
+                        None
+            }
+
         member this.BetAsync(poolId, gamblerId, matchId, betScore) =
             async {
                 let request = BetRequestBuilder.build poolId gamblerId matchId betScore

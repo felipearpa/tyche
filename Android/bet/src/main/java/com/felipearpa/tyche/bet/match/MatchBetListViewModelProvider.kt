@@ -7,5 +7,6 @@ import org.koin.core.parameter.parametersOf
 @Composable
 fun matchBetListViewModel(
     poolId: String,
+    gamblerId: String,
     matchId: String,
-): MatchBetListViewModel = koinViewModel { parametersOf(poolId, matchId) }
+): MatchBetListViewModel = koinViewModel { parametersOf(poolId, gamblerId, matchId) }

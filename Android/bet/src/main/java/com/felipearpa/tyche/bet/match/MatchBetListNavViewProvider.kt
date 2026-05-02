@@ -5,24 +5,20 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
 import com.felipearpa.tyche.bet.timeline.BetTimelineListViewRoute
-import kotlinx.datetime.LocalDateTime
 
-fun NavGraphBuilder.matchBetsNavView(
+fun NavGraphBuilder.matchBetListNavView(
     navController: NavController,
     signedInGamblerId: String?,
 ) {
     composable<MatchBetListViewRoute> { navBackStackEntry ->
         val route: MatchBetListViewRoute = navBackStackEntry.toRoute()
         MatchBetListView(
-            poolId = route.poolId,
-            matchId = route.matchId,
-            homeTeamName = route.homeTeamName,
-            awayTeamName = route.awayTeamName,
-            matchDateTime = LocalDateTime.parse(route.matchDateTimeIso),
-            homeTeamScore = route.homeTeamScore,
-            awayTeamScore = route.awayTeamScore,
+            viewModel = matchBetListViewModel(
+                poolId = route.poolId,
+                gamblerId = route.gamblerId,
+                matchId = route.matchId,
+            ),
             onBack = { navController.navigateUp() },
-            isLive = route.isLive,
             onGamblerOpen = { tappedPoolId, tappedGamblerId, tappedGamblerUsername ->
                 if (tappedGamblerId != signedInGamblerId) {
                     navController.navigate(

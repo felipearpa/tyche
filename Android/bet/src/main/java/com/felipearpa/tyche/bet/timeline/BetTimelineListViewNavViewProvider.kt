@@ -4,7 +4,6 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
-import com.felipearpa.tyche.bet.isLive
 import com.felipearpa.tyche.bet.match.MatchBetListViewRoute
 
 fun NavGraphBuilder.betTimelineListView(navController: NavController) {
@@ -19,13 +18,8 @@ fun NavGraphBuilder.betTimelineListView(navController: NavController) {
                 navController.navigate(
                     route = MatchBetListViewRoute(
                         poolId = poolGamblerBet.poolId,
+                        gamblerId = poolGamblerBet.gamblerId,
                         matchId = poolGamblerBet.matchId,
-                        homeTeamName = poolGamblerBet.homeTeamName,
-                        awayTeamName = poolGamblerBet.awayTeamName,
-                        matchDateTimeIso = poolGamblerBet.matchDateTime.toString(),
-                        homeTeamScore = poolGamblerBet.matchScore?.homeTeamValue,
-                        awayTeamScore = poolGamblerBet.matchScore?.awayTeamValue,
-                        isLive = poolGamblerBet.isLive,
                     ),
                 )
             },

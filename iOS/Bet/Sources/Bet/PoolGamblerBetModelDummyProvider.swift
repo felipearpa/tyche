@@ -1,7 +1,10 @@
 import Foundation
 import Core
 
-func poolGamblerBetFakeModel() -> PoolGamblerBetModel {
+func poolGamblerBetFakeModel(
+    isLocked: Bool = true,
+    isComputed: Bool = false
+) -> PoolGamblerBetModel {
     PoolGamblerBetModel(
         poolId: String(repeating: "X", count: 15),
         gamblerId: String(repeating: "X", count: 15),
@@ -15,8 +18,8 @@ func poolGamblerBetFakeModel() -> PoolGamblerBetModel {
         betScore: TeamScore(homeTeamValue: 100, awayTeamValue: 100),
         score: 10,
         matchDateTime: Date(),
-        isLocked: true,
-        isComputed: false
+        isLocked: isLocked,
+        isComputed: isComputed
     )
 }
 

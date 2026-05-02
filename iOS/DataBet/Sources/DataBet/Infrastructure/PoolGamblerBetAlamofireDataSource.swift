@@ -101,6 +101,26 @@ class PoolGamblerBetAlamofireDataSource: PoolGamblerBetRemoteDataSource {
         }
     }
 
+    func getPoolGamblerBet(poolId: String, gamblerId: String, matchId: String) async throws -> PoolGamblerBetResponse {
+        return try await withUnsafeThrowingContinuation { continuation in
+            session.request(
+                urlBasePathProvider.prependBasePath("pools/\(poolId)/gamblers/\(gamblerId)/matches/\(matchId)")!
+            )
+            .validate()
+            .responseDecodable(
+                of: PoolGamblerBetResponse.self,
+                decoder: JSONDecoder().withISODate()
+            ) { response in
+                switch response.result {
+                case .success(let poolGamblerBetResponse):
+                    continuation.resume(returning: poolGamblerBetResponse)
+                case .failure(let error):
+                    continuation.resume(throwing: error)
+                }
+            }
+        }
+    }
+
     func getGamblerBetsTimeline(poolId: String, gamblerId: String, next: String?) async throws -> CursorPage<PoolGamblerBetResponse> {
         return try await withUnsafeThrowingContinuation { continuation in
             session.request(

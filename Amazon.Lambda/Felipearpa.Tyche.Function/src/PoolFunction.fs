@@ -115,6 +115,26 @@ module PoolFunction =
             return Results.Ok(page |> CursorPage.map PoolGamblerBetTransformer.toResponse)
         }
 
+    let getPoolGamblerBetByIdAsync
+        (poolId: string)
+        (gamblerId: string)
+        (matchId: string)
+        (getPoolGamblerBetById: GetPoolGamblerBetById)
+        : IResult Async =
+        async {
+            let! maybeBet =
+                getPoolGamblerBetById.ExecuteAsync(
+                    poolId |> Ulid.newOf,
+                    gamblerId |> Ulid.newOf,
+                    matchId |> Ulid.newOf
+                )
+
+            return
+                match maybeBet with
+                | Some bet -> Results.Ok(bet |> PoolGamblerBetTransformer.toResponse)
+                | None -> Results.NotFound()
+        }
+
     let createPoolAsync (createPoolRequest: CreatePoolRequest) (createPool: CreatePool) : IResult Async =
         async {
             let! result = createPool.ExecuteAsync(createPoolRequest |> CreatePoolRequestTransformer.toCreatePoolInput)
