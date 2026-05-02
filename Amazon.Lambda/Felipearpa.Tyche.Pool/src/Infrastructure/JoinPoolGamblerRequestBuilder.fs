@@ -8,7 +8,7 @@ open Felipearpa.Type
 
 module JoinPoolGamblerRequestBuilder =
 
-    let build (createPoolInput: ResolvedCreatePoolInput) =
+    let build (createPoolInput: ResolvedCreatePoolInput) (position: int) =
         let poolLayoutId = createPoolInput.PoolLayoutId |> Ulid.value
         let poolId = createPoolInput.PoolId.Value
         let gamblerId = createPoolInput.OwnerGamblerId.Value
@@ -30,7 +30,7 @@ module JoinPoolGamblerRequestBuilder =
                   PoolTable.Attribute.filter,
                   AttributeValue(S = $"{createPoolInput.PoolName} {createPoolInput.OwnerGamblerUsername}")
                   PoolTable.Attribute.poolLayoutId, AttributeValue(S = poolLayoutId)
-                  PoolTable.Attribute.position, AttributeValue(N = "0")
+                  PoolTable.Attribute.position, AttributeValue(N = position.ToString())
                   PoolTable.Attribute.score, AttributeValue(N = "0")
                   PoolTable.Attribute.poolLayoutVersion,
                   AttributeValue(N = createPoolInput.PoolLayoutVersion.ToString())

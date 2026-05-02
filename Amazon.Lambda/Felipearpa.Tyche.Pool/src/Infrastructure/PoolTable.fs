@@ -52,6 +52,9 @@ module PoolTable =
         let beforePosition = "beforePosition"
 
         [<Literal>]
+        let gamblerCount = "gamblerCount"
+
+        [<Literal>]
         let poolLayoutId = "poolLayoutId"
 
         [<Literal>]

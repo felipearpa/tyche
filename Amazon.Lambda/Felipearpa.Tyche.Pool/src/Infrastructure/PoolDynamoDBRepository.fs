@@ -52,7 +52,7 @@ type PoolDynamoDbRepository(keySerializer: IKeySerializer, client: IAmazonDynamo
         member this.CreatePoolAsync(createPoolInput) =
             async {
                 let createPoolRequest = CreatePoolRequestBuilder.build createPoolInput
-                let joinPoolGamblerRequest = JoinPoolGamblerRequestBuilder.build createPoolInput
+                let joinPoolGamblerRequest = JoinPoolGamblerRequestBuilder.build createPoolInput 1
 
                 let requests =
                     [ TransactWriteItem(Put = createPoolRequest)
@@ -74,6 +74,10 @@ type PoolDynamoDbRepository(keySerializer: IKeySerializer, client: IAmazonDynamo
 
         member this.JoinPoolAsync(joinPoolInput) =
             async {
+                let incrementRequest = IncrementGamblerCountRequestBuilder.build joinPoolInput.PoolId
+                let! incrementResponse = client.UpdateItemAsync(incrementRequest) |> Async.AwaitTask
+                let position = incrementResponse.Attributes[PoolTable.Attribute.gamblerCount].N |> int
+
                 let putRequest =
                     JoinPoolGamblerRequestBuilder.build
                         { ResolvedCreatePoolInput.PoolId = joinPoolInput.PoolId
@@ -82,6 +86,7 @@ type PoolDynamoDbRepository(keySerializer: IKeySerializer, client: IAmazonDynamo
                           OwnerGamblerUsername = joinPoolInput.GamblerUsername
                           PoolLayoutId = joinPoolInput.PoolLayoutId
                           PoolLayoutVersion = joinPoolInput.PoolLayoutVersion }
+                        position
 
                 let putItemRequest =
                     PutItemRequest(

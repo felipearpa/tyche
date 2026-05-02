@@ -24,6 +24,15 @@ module JoinPoolTest =
             .ReturnsAsync(PutItemResponse())
         |> ignore
 
+        client
+            .Setup(_.UpdateItemAsync(It.IsAny<UpdateItemRequest>()))
+            .ReturnsAsync(
+                UpdateItemResponse(
+                    Attributes = Dictionary(dict [ "gamblerCount", AttributeValue(N = "2") ])
+                )
+            )
+        |> ignore
+
     let private setupMockGetAccountQuery (client: Mock<IAmazonDynamoDB>) =
         let items =
             [ dict

@@ -55,6 +55,7 @@
         <Compile Include="Infrastructure\GetPoolByIdRequestBuilder.fs" />
         <Compile Include="Infrastructure\CreatePoolRequestBuilder.fs" />
         <Compile Include="Infrastructure\JoinPoolGamblerRequestBuilder.fs" />
+        <Compile Include="Infrastructure\IncrementGamblerCountRequestBuilder.fs" />
         <Compile Include="Infrastructure\GetGamblersByPoolLayoutRequestBuilder.fs" />
         <Compile Include="Infrastructure\PoolDynamoDBRepository.fs" />
         <Compile Include="Application\GetPoolGamblerScoresByGambler.fs" />
