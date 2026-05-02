@@ -34,25 +34,12 @@ fun FinishedBetItem(
         verticalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.medium),
         modifier = modifier,
     ) {
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.small),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Text(
-                text = poolGamblerBet.matchDateTime.toShortTimeString(),
-                textAlign = TextAlign.Center,
-                style = MaterialTheme.typography.bodySmall,
-                modifier = shimmerModifier,
-            )
-
-            Spacer(modifier = Modifier.weight(1f))
-
-            Text(
-                text = "+${poolGamblerBet.score?.toString().orEmpty()}",
-                modifier = shimmerModifier,
-                style = MaterialTheme.typography.titleLarge,
-            )
-        }
+        Text(
+            text = poolGamblerBet.matchDateTime.toShortTimeString(),
+            textAlign = TextAlign.Center,
+            style = MaterialTheme.typography.bodySmall,
+            modifier = shimmerModifier,
+        )
 
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -99,6 +86,15 @@ fun FinishedBetItem(
                     .then(shimmerModifier),
             )
         }
+
+        Text(
+            text = "+${poolGamblerBet.score?.toString().orEmpty()}",
+            style = MaterialTheme.typography.titleLarge,
+            textAlign = TextAlign.End,
+            modifier = Modifier
+                .fillMaxWidth()
+                .then(shimmerModifier),
+        )
     }
 }
 

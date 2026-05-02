@@ -21,7 +21,7 @@ Resources:
       Handler: Felipearpa.Tyche.AmazonLambda::Felipearpa.Tyche.AmazonLambda.Function.PoolFunction::GetPoolByIdAsync
       Runtime: dotnet10
       CodeUri: .
-      MemorySize: 256
+      MemorySize: 1024
       Timeout: 30
       Policies:
         - AWSLambdaBasicExecutionRole
@@ -46,7 +46,7 @@ Resources:
       Handler: Felipearpa.Tyche.AmazonLambda::Felipearpa.Tyche.AmazonLambda.Function.PoolFunction::GetGamblersByPoolIdAsync
       Runtime: dotnet10
       CodeUri: .
-      MemorySize: 256
+      MemorySize: 1024
       Timeout: 30
       Policies:
         - AWSLambdaBasicExecutionRole
@@ -72,7 +72,7 @@ Resources:
       Handler: Felipearpa.Tyche.AmazonLambda::Felipearpa.Tyche.AmazonLambda.Function.PoolFunction::GetPoolGamblerScoreByIdAsync
       Runtime: dotnet10
       CodeUri: .
-      MemorySize: 256
+      MemorySize: 1024
       Timeout: 30
       Policies:
         - AWSLambdaBasicExecutionRole
@@ -97,7 +97,7 @@ Resources:
       Handler: Felipearpa.Tyche.AmazonLambda::Felipearpa.Tyche.AmazonLambda.Function.PoolFunction::GetPoolGamblerBetByIdAsync
       Runtime: dotnet10
       CodeUri: .
-      MemorySize: 256
+      MemorySize: 1024
       Timeout: 30
       Policies:
         - AWSLambdaBasicExecutionRole
@@ -122,7 +122,7 @@ Resources:
       Handler: Felipearpa.Tyche.AmazonLambda::Felipearpa.Tyche.AmazonLambda.Function.PoolFunction::GetPendingBetsAsync
       Runtime: dotnet10
       CodeUri: .
-      MemorySize: 256
+      MemorySize: 1024
       Timeout: 30
       Policies:
         - AWSLambdaBasicExecutionRole
@@ -151,7 +151,7 @@ Resources:
       Handler: Felipearpa.Tyche.AmazonLambda::Felipearpa.Tyche.AmazonLambda.Function.PoolFunction::GetFinishedBetsAsync
       Runtime: dotnet10
       CodeUri: .
-      MemorySize: 256
+      MemorySize: 1024
       Timeout: 30
       Policies:
         - AWSLambdaBasicExecutionRole
@@ -180,7 +180,7 @@ Resources:
       Handler: Felipearpa.Tyche.AmazonLambda::Felipearpa.Tyche.AmazonLambda.Function.PoolFunction::GetLiveBetsAsync
       Runtime: dotnet10
       CodeUri: .
-      MemorySize: 256
+      MemorySize: 1024
       Timeout: 30
       Policies:
         - AWSLambdaBasicExecutionRole
@@ -209,7 +209,7 @@ Resources:
       Handler: Felipearpa.Tyche.AmazonLambda::Felipearpa.Tyche.AmazonLambda.Function.PoolFunction::GetBetsTimelineAsync
       Runtime: dotnet10
       CodeUri: .
-      MemorySize: 256
+      MemorySize: 1024
       Timeout: 30
       Policies:
         - AWSLambdaBasicExecutionRole
@@ -239,7 +239,7 @@ Resources:
       Handler: Felipearpa.Tyche.AmazonLambda::Felipearpa.Tyche.AmazonLambda.Function.PoolFunction::GetMatchBetsAsync
       Runtime: dotnet10
       CodeUri: .
-      MemorySize: 256
+      MemorySize: 1024
       Timeout: 30
       Policies:
         - AWSLambdaBasicExecutionRole
@@ -268,7 +268,7 @@ Resources:
       Handler: Felipearpa.Tyche.AmazonLambda::Felipearpa.Tyche.AmazonLambda.Function.GamblerFunction::GetPoolsByGamblerIdAsync
       Runtime: dotnet10
       CodeUri: .
-      MemorySize: 256
+      MemorySize: 1024
       Timeout: 30
       Policies:
         - AWSLambdaBasicExecutionRole
@@ -294,7 +294,7 @@ Resources:
       Handler: Felipearpa.Tyche.AmazonLambda::Felipearpa.Tyche.AmazonLambda.Function.PoolFunction::CreatePoolAsync
       Runtime: dotnet10
       CodeUri: .
-      MemorySize: 256
+      MemorySize: 1024
       Timeout: 30
       Policies:
         - AWSLambdaBasicExecutionRole
@@ -323,7 +323,7 @@ Resources:
       Handler: Felipearpa.Tyche.AmazonLambda::Felipearpa.Tyche.AmazonLambda.Function.PoolFunction::JoinPoolAsync
       Runtime: dotnet10
       CodeUri: .
-      MemorySize: 256
+      MemorySize: 1024
       Timeout: 30
       Policies:
         - AWSLambdaBasicExecutionRole
@@ -351,7 +351,7 @@ Resources:
       Handler: Felipearpa.Tyche.AmazonLambda::Felipearpa.Tyche.AmazonLambda.Function.BetFunction::BetAsync
       Runtime: dotnet10
       CodeUri: .
-      MemorySize: 256
+      MemorySize: 1024
       Timeout: 30
       Policies:
         - AWSLambdaBasicExecutionRole
@@ -380,7 +380,7 @@ Resources:
       Handler: Felipearpa.Tyche.AmazonLambda::Felipearpa.Tyche.AmazonLambda.Function.PoolLayoutFunction::GetOpenPoolLayoutsAsync
       Runtime: dotnet10
       CodeUri: .
-      MemorySize: 256
+      MemorySize: 1024
       Timeout: 30
       Policies:
         - AWSLambdaBasicExecutionRole
@@ -406,7 +406,7 @@ Resources:
       Handler: Felipearpa.Tyche.AmazonLambda::Felipearpa.Tyche.AmazonLambda.Function.AccountFunction::LinkAccountAsync
       Runtime: dotnet10
       CodeUri: .
-      MemorySize: 256
+      MemorySize: 1024
       Timeout: 30
       Policies:
         - AWSLambdaBasicExecutionRole
@@ -435,7 +435,7 @@ Resources:
       Handler: Felipearpa.Tyche.AmazonLambda::Felipearpa.Tyche.AmazonLambda.Event.PoolEvent::OnPoolChangeAsync
       Runtime: dotnet10
       CodeUri: .
-      MemorySize: 256
+      MemorySize: 1024
       Timeout: 60
       Policies:
         - AWSLambdaBasicExecutionRole
@@ -477,7 +477,7 @@ Resources:
       Handler: Felipearpa.Tyche.AmazonLambda::Felipearpa.Tyche.AmazonLambda.Event.PoolLayoutEvent::OnPoolLayoutChangeAsync
       Runtime: dotnet10
       CodeUri: .
-      MemorySize: 256
+      MemorySize: 1769
       Timeout: 60
       Environment:
         Variables:
@@ -522,7 +522,7 @@ Resources:
       Handler: Felipearpa.Tyche.AmazonLambda::Felipearpa.Tyche.AmazonLambda.Event.UpdatePositionsEvent::OnUpdatePositionsAsync
       Runtime: dotnet10
       CodeUri: .
-      MemorySize: 256
+      MemorySize: 1024
       Timeout: 60
       Policies:
         - AWSLambdaBasicExecutionRole

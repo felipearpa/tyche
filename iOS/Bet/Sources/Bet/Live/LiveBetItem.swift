@@ -2,7 +2,7 @@ import SwiftUI
 import Core
 import UI
 
-struct FinishedBetItem: View {
+struct LiveBetItem: View {
     let poolGamblerBet: PoolGamblerBetModel
 
     @Environment(\.boxSpacing) private var boxSpacing
@@ -18,11 +18,6 @@ struct FinishedBetItem: View {
                 Text(poolGamblerBet.homeTeamName)
                     .frame(maxWidth: .infinity, alignment: .leading)
 
-                Text(poolGamblerBet.homeTeamMatchRawValue())
-                    .font(.title2)
-                    .multilineTextAlignment(.center)
-                    .scoreWidth()
-
                 Text(poolGamblerBet.homeTeamBetRawValue())
                     .font(.caption)
                     .multilineTextAlignment(.center)
@@ -33,20 +28,11 @@ struct FinishedBetItem: View {
                 Text(poolGamblerBet.awayTeamName)
                     .frame(maxWidth: .infinity, alignment: .leading)
 
-                Text(poolGamblerBet.awayTeamMatchRawValue())
-                    .font(.title2)
-                    .multilineTextAlignment(.center)
-                    .scoreWidth()
-
                 Text(poolGamblerBet.awayTeamBetRawValue())
                     .font(.caption)
                     .multilineTextAlignment(.center)
                     .scoreWidth()
             }
-
-            Text("+\(poolGamblerBet.score.map { String($0) } ?? "")")
-                .font(.largeTitle)
-                .frame(maxWidth: .infinity, alignment: .trailing)
         }
     }
 }
@@ -61,5 +47,5 @@ private extension View {
 }
 
 #Preview {
-    FinishedBetItem(poolGamblerBet: poolGamblerBetDummyModel())
+    LiveBetItem(poolGamblerBet: poolGamblerBetDummyModel())
 }
