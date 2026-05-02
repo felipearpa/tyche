@@ -1,6 +1,6 @@
 AWSTemplateFormatVersion: 2010-09-09
 Transform: AWS::Serverless-2016-10-31
-Description: An AWS Serverless Application
+Description: Tyche API v1.3.0
 Resources:
   AuthGatewayHttpApi:
     Type: AWS::Serverless::HttpApi
@@ -14,6 +14,27 @@ Resources:
               audience:
                 - tyche-588ce
         DefaultAuthorizer: FirebaseAuthorizer
+
+  GetVersion:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: Felipearpa.Tyche.AmazonLambda::Felipearpa.Tyche.AmazonLambda.Function.VersionFunction::GetVersionAsync
+      Runtime: dotnet10
+      CodeUri: .
+      MemorySize: 1024
+      Timeout: 30
+      Policies:
+        - AWSLambdaBasicExecutionRole
+      Architectures: [ arm64 ]
+      Events:
+        HttpApi:
+          Type: HttpApi
+          Properties:
+            Path: /version
+            Method: GET
+            ApiId: !Ref AuthGatewayHttpApi
+            Auth:
+              Authorizer: NONE
 
   GetPoolById:
     Type: AWS::Serverless::Function
