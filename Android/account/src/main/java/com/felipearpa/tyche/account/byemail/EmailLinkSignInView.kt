@@ -186,16 +186,26 @@ private fun FailureContent(
     onRetry: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Box(modifier = modifier, contentAlignment = Alignment.Center) {
-        Column(verticalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.large)) {
+    Column(
+        modifier = modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Box(
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxWidth(),
+            contentAlignment = Alignment.Center,
+        ) {
             ExceptionView(localizedException = localizedException)
+        }
 
-            Button(
-                onClick = onRetry,
-                modifier = Modifier.fillMaxWidth(),
-            ) {
-                Text(text = stringResource(id = SharedR.string.retry_action))
-            }
+        Button(
+            onClick = onRetry,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = LocalBoxSpacing.current.medium),
+        ) {
+            Text(text = stringResource(id = SharedR.string.retry_action))
         }
     }
 }

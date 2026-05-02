@@ -79,15 +79,21 @@ private struct FailureContent: View {
     @Environment(\.boxSpacing) private var boxSpacing
 
     var body: some View {
-        VStack(spacing: boxSpacing.large) {
+        VStack(spacing: 0) {
+            Spacer()
+
             ErrorView(localizedError: localizedError)
+
+            Spacer()
 
             Button(action: onRetry) {
                 Text((String(sharedResource: .retryAction)))
                     .frame(maxWidth: .infinity)
             }
             .buttonStyle(.borderedProminent)
+            .padding(.vertical, boxSpacing.medium)
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 }
 
