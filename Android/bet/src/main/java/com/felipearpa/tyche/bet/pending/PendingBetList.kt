@@ -2,7 +2,6 @@ package com.felipearpa.tyche.bet.pending
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -49,6 +48,7 @@ fun PendingBetList(
 
             if (lastMatchDate != poolGamblerBet.matchDateTime.date) {
                 val localDateString = poolGamblerBet.matchDateTime.toShortDateString()
+                val isFirstHeader = lastMatchDate == null
                 stickyHeader(
                     key = localDateString,
                     contentType = "Header",
@@ -56,7 +56,7 @@ fun PendingBetList(
                     Text(
                         text = localDateString,
                         style = MaterialTheme.typography.titleMedium,
-                        modifier = Modifier.pendingHeaderBetItemView(),
+                        modifier = Modifier.pendingHeaderBetItemView(isFirst = isFirstHeader),
                     )
                 }
                 lastMatchDate = poolGamblerBet.matchDateTime.date
@@ -70,33 +70,26 @@ fun PendingBetList(
                 ),
                 contentType = "PoolGamblerBet",
             ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .let { base ->
-                            if (onMatchOpen != null) {
-                                base.clickable { onMatchOpen(poolGamblerBet) }
-                            } else {
-                                base
-                            }
-                        }
-                        .padding(horizontal = LocalBoxSpacing.current.medium),
-                ) {
-                    if (LocalInspectionMode.current) {
-                        PendingBetItem(
-                            poolGamblerBet = poolGamblerBet,
-                            viewState = PendingBetItemViewState.dummyVisualization(),
-                            modifier = Modifier.pendingBetItem(),
-                        )
-                    } else {
-                        PendingBetItemView(
-                            viewModel = pendingBetViewModel(poolGamblerBet = poolGamblerBet),
-                            poolGamblerBet = poolGamblerBet,
-                            modifier = Modifier.pendingBetItem(),
-                        )
+                val itemModifier = Modifier
+                    .let { base ->
+                        if (onMatchOpen != null) base.clickable { onMatchOpen(poolGamblerBet) } else base
                     }
-                    HorizontalDivider()
+                    .pendingBetItem()
+
+                if (LocalInspectionMode.current) {
+                    PendingBetItem(
+                        poolGamblerBet = poolGamblerBet,
+                        viewState = PendingBetItemViewState.dummyVisualization(),
+                        modifier = itemModifier,
+                    )
+                } else {
+                    PendingBetItemView(
+                        viewModel = pendingBetViewModel(poolGamblerBet = poolGamblerBet),
+                        poolGamblerBet = poolGamblerBet,
+                        modifier = itemModifier,
+                    )
                 }
+                HorizontalDivider(modifier = Modifier.padding(horizontal = LocalBoxSpacing.current.large))
             }
         }
     }
@@ -110,24 +103,26 @@ private fun LazyListScope.pendingBetPlaceholderList(count: Int) {
 
 private fun LazyListScope.pendingBetPlaceholderItem() {
     item {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = LocalBoxSpacing.current.medium),
-        ) {
-            PendingBetPlaceholderItem(modifier = Modifier.pendingBetItem())
-            HorizontalDivider()
-        }
+        PendingBetPlaceholderItem(modifier = Modifier.pendingBetItem())
+        HorizontalDivider(modifier = Modifier.padding(horizontal = LocalBoxSpacing.current.large))
     }
 }
 
 @Composable
 private fun Modifier.pendingBetItem() =
-    fillMaxWidth().padding(all = LocalBoxSpacing.current.medium)
+    fillMaxWidth()
+        .padding(horizontal = LocalBoxSpacing.current.large)
+        .padding(vertical = LocalBoxSpacing.current.medium)
 
 @Composable
-private fun Modifier.pendingHeaderBetItemView() =
-    fillMaxWidth().padding(all = LocalBoxSpacing.current.medium)
+private fun Modifier.pendingHeaderBetItemView(isFirst: Boolean) =
+    fillMaxWidth()
+        .padding(horizontal = LocalBoxSpacing.current.medium)
+        .padding(
+            top = if (isFirst) LocalBoxSpacing.current.medium
+            else LocalBoxSpacing.current.medium + LocalBoxSpacing.current.medium,
+        )
+        .padding(bottom = LocalBoxSpacing.current.medium)
 
 @Preview(showBackground = true)
 @Composable

@@ -132,7 +132,7 @@ where ErrorContentOnConcatenate == StatefulLazyVStackError {
         @ViewBuilder emptyContent: @escaping () -> EmptyContent = { StatefulLazyVStackEmpty() },
         spacing: CGFloat = 0,
         sectionKey: @escaping (Item) -> SectionKey,
-        @ViewBuilder sectionHeader: @escaping (SectionKey) -> SectionHeader,
+        @ViewBuilder sectionHeader: @escaping (SectionKey, Bool) -> SectionHeader,
         @ViewBuilder itemContent: @escaping (Item) -> ItemView
     ) {
         self.lazyPagingItems = lazyPagingItems
@@ -149,7 +149,7 @@ where ErrorContentOnConcatenate == StatefulLazyVStackError {
         self.pinnedViews = [.sectionHeaders]
         self.sectionConfiguration = SectionConfiguration(
             key: { AnyHashable(sectionKey($0)) },
-            header: { AnyView(sectionHeader($0.base as! SectionKey)) }
+            header: { key, isFirst in AnyView(sectionHeader(key.base as! SectionKey, isFirst)) }
         )
     }
 }

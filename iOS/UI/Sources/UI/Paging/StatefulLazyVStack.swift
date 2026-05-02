@@ -2,7 +2,7 @@ import SwiftUI
 
 public struct SectionConfiguration<Item> {
     let key: (Item) -> AnyHashable
-    let header: (AnyHashable) -> AnyView
+    let header: (AnyHashable, Bool) -> AnyView
 }
 
 public struct StatefulLazyVStack
@@ -244,6 +244,7 @@ private struct SectionedContentWrapper
     var body: some View {
         let indexedItems = Array(lazyPagingItems.enumerated())
         let sections = buildSections(from: indexedItems)
+        let firstSectionId = sections.first?.id
 
         ForEach(sections) { section in
             Section {
@@ -252,7 +253,7 @@ private struct SectionedContentWrapper
                         .task { await lazyPagingItems.appendIfNeeded(currentIndex: index) }
                 }
             } header: {
-                sectionConfiguration.header(section.key)
+                sectionConfiguration.header(section.key, section.id == firstSectionId)
             }
         }
 
@@ -347,7 +348,7 @@ where ErrorContentOnConcatenate == StatefulLazyVStackError {
         @ViewBuilder emptyContent: @escaping () -> EmptyContent = { StatefulLazyVStackEmpty() },
         spacing: CGFloat = 0,
         sectionKey: @escaping (Item) -> SectionKey,
-        @ViewBuilder sectionHeader: @escaping (SectionKey) -> SectionHeader,
+        @ViewBuilder sectionHeader: @escaping (SectionKey, Bool) -> SectionHeader,
         @ViewBuilder itemContent: @escaping (Item) -> ItemView
     ) {
         self.lazyPagingItems = lazyPagingItems
@@ -364,7 +365,7 @@ where ErrorContentOnConcatenate == StatefulLazyVStackError {
         self.pinnedViews = [.sectionHeaders]
         self.sectionConfiguration = SectionConfiguration(
             key: { AnyHashable(sectionKey($0)) },
-            header: { AnyView(sectionHeader($0.base as! SectionKey)) }
+            header: { key, isFirst in AnyView(sectionHeader(key.base as! SectionKey, isFirst)) }
         )
     }
 }

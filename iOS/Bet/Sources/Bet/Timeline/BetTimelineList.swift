@@ -24,25 +24,28 @@ struct BetTimelineList: View {
             loadingContentOnConcatenate: {
                 BetTimelinePlaceholderItem()
                 Divider()
+                    .padding(.horizontal, boxSpacing.large)
             },
             sectionKey: { $0.matchDateTime.toShortDateString() },
-            sectionHeader: { dateString in
+            sectionHeader: { dateString, isFirst in
                 Text(dateString)
                     .font(.body)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.horizontal, boxSpacing.medium)
-                    .padding(.vertical, boxSpacing.medium)
+                    .padding(.top, isFirst ? boxSpacing.medium : boxSpacing.medium + boxSpacing.medium)
+                    .padding(.bottom, boxSpacing.medium)
             }
         ) { poolGamblerBet in
             VStack(spacing: 0) {
                 BetTimelineItem(poolGamblerBet: poolGamblerBet)
+                    .frame(maxWidth: .infinity)
                     .padding(.horizontal, boxSpacing.large)
+                    .padding(.vertical, boxSpacing.medium)
                     .contentShape(Rectangle())
                     .onTapGesture { invokeMatchOpen(onMatchOpen, poolGamblerBet) }
 
                 Divider()
                     .padding(.horizontal, boxSpacing.large)
-                    .padding(.vertical, boxSpacing.medium)
             }
         }
     }
@@ -51,10 +54,13 @@ struct BetTimelineList: View {
 private struct BetTimelinePlaceholderList: View {
     let count: Int
 
+    @Environment(\.boxSpacing) private var boxSpacing
+
     var body: some View {
         ForEach(0..<count, id: \.self) { _ in
             BetTimelinePlaceholderItem()
             Divider()
+                .padding(.horizontal, boxSpacing.large)
         }
     }
 }
@@ -65,7 +71,9 @@ private struct BetTimelinePlaceholderItem: View {
     var body: some View {
         BetTimelineItem(poolGamblerBet: poolGamblerBetFakeModel())
             .shimmer()
-            .padding(boxSpacing.large)
+            .frame(maxWidth: .infinity)
+            .padding(.horizontal, boxSpacing.large)
+            .padding(.vertical, boxSpacing.medium)
     }
 }
 

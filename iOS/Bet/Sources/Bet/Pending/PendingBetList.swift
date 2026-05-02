@@ -25,47 +25,47 @@ struct PendingBetList: View {
             lazyPagingItems: lazyPagingItems,
             loadingContent: { PendingBetPlaceholderList() },
             loadingContentOnConcatenate: {
-                VStack(spacing: 0) {
-                    PendingBetPlaceholderItem()
-                    Divider()
-                }
-                .padding(.horizontal, boxSpacing.medium)
+                PendingBetPlaceholderItem()
+                    .frame(maxWidth: .infinity)
+                    .padding(.horizontal, boxSpacing.large)
+                    .padding(.vertical, boxSpacing.medium)
+                Divider()
+                    .padding(.horizontal, boxSpacing.large)
             },
             sectionKey: { $0.matchDateTime.toShortDateString() },
-            sectionHeader: { dateString in
+            sectionHeader: { dateString, isFirst in
                 Text(dateString)
                     .font(.body)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.horizontal, boxSpacing.medium)
-                    .padding(.vertical, boxSpacing.medium)
+                    .padding(.top, isFirst ? boxSpacing.medium : boxSpacing.medium + boxSpacing.medium)
+                    .padding(.bottom, boxSpacing.medium)
             }
         ) { poolGamblerBet in
-            if isInPreviewMode() {
-                VStack(spacing: 0) {
-                    PendingBetItem(
-                        poolGamblerBet: poolGamblerBet,
-                        viewState: .constant(PendingBetItemViewState.emptyVisualization())
-                    )
-                    .padding(boxSpacing.medium)
-                    Divider()
+            VStack(spacing: 0) {
+                Group {
+                    if isInPreviewMode() {
+                        PendingBetItem(
+                            poolGamblerBet: poolGamblerBet,
+                            viewState: .constant(PendingBetItemViewState.emptyVisualization())
+                        )
+                    } else {
+                        PendingBetItemView(
+                            viewModel: PendingBetItemViewModel(
+                                betUseCase: diResolver.resolve(BetUseCase.self)!
+                            ),
+                            poolGamblerBet: poolGamblerBet
+                        )
+                    }
                 }
-                .padding(.horizontal, boxSpacing.medium)
+                .frame(maxWidth: .infinity)
+                .padding(.horizontal, boxSpacing.large)
+                .padding(.vertical, boxSpacing.medium)
                 .contentShape(Rectangle())
                 .onTapGesture { invokeMatchOpen(onMatchOpen, poolGamblerBet) }
-            } else {
-                VStack(spacing: 0) {
-                    PendingBetItemView(
-                        viewModel: PendingBetItemViewModel(
-                            betUseCase: diResolver.resolve(BetUseCase.self)!
-                        ),
-                        poolGamblerBet: poolGamblerBet
-                    )
-                    .padding(boxSpacing.medium)
-                    Divider()
-                }
-                .padding(.horizontal, boxSpacing.medium)
-                .contentShape(Rectangle())
-                .onTapGesture { invokeMatchOpen(onMatchOpen, poolGamblerBet) }
+
+                Divider()
+                    .padding(.horizontal, boxSpacing.large)
             }
         }
     }
@@ -84,12 +84,12 @@ private struct PendingBetPlaceholderList: View {
 
     var body: some View {
         ForEach(1...50, id: \.self) { _ in
-            VStack(spacing: 0) {
-                PendingBetPlaceholderItem()
-                    .padding(boxSpacing.medium)
-                Divider()
-            }
-            .padding(.horizontal, boxSpacing.medium)
+            PendingBetPlaceholderItem()
+                .frame(maxWidth: .infinity)
+                .padding(.horizontal, boxSpacing.large)
+                .padding(.vertical, boxSpacing.medium)
+            Divider()
+                .padding(.horizontal, boxSpacing.large)
         }
     }
 }

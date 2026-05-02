@@ -24,22 +24,25 @@ struct FinishedBetList: View {
                 FinishedPoolGamblerBetFakeItem()
             },
             sectionKey: { $0.matchDateTime.toShortDateString() },
-            sectionHeader: { dateString in
+            sectionHeader: { dateString, isFirst in
                 Text(dateString)
                     .font(.title3)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.horizontal, boxSpacing.large)
-                    .padding(.top, boxSpacing.medium)
+                    .padding(.top, isFirst ? boxSpacing.medium : boxSpacing.medium + boxSpacing.medium)
             }
         ) { poolGamblerBet in
             VStack(spacing: 0) {
                 FinishedBetItem(poolGamblerBet: poolGamblerBet)
-                    .padding(boxSpacing.large)
+                    .frame(maxWidth: .infinity)
+                    .padding(.horizontal, boxSpacing.large)
+                    .padding(.vertical, boxSpacing.medium)
+                    .contentShape(Rectangle())
+                    .onTapGesture { invokeMatchOpen(onMatchOpen, poolGamblerBet) }
+
                 Divider()
+                    .padding(.horizontal, boxSpacing.large)
             }
-            .padding(.horizontal, boxSpacing.medium)
-            .contentShape(Rectangle())
-            .onTapGesture { invokeMatchOpen(onMatchOpen, poolGamblerBet) }
         }
     }
 }
@@ -58,13 +61,13 @@ private struct FinishedPoolGamblerBetFakeItem: View {
     @Environment(\.boxSpacing) private var boxSpacing
 
     var body: some View {
-        VStack(spacing: 0) {
-            FinishedBetItem(poolGamblerBet: poolGamblerBetFakeModel())
-                .shimmer()
-                .padding(boxSpacing.large)
-            Divider()
-        }
-        .padding(.horizontal, boxSpacing.medium)
+        FinishedBetItem(poolGamblerBet: poolGamblerBetFakeModel())
+            .shimmer()
+            .frame(maxWidth: .infinity)
+            .padding(.horizontal, boxSpacing.large)
+            .padding(.vertical, boxSpacing.medium)
+        Divider()
+            .padding(.horizontal, boxSpacing.large)
     }
 }
 

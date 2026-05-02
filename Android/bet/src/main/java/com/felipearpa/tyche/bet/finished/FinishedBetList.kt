@@ -2,7 +2,6 @@ package com.felipearpa.tyche.bet.finished
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -50,6 +49,7 @@ fun FinishedBetList(
             val poolGamblerBet = lazyPoolGamblerBets[index]!!
             if (lastMatchDate != poolGamblerBet.matchDateTime.date) {
                 val localDateString = poolGamblerBet.matchDateTime.toShortDateString()
+                val isFirstHeader = lastMatchDate == null
                 stickyHeader(
                     key = localDateString,
                     contentType = "Header",
@@ -57,7 +57,7 @@ fun FinishedBetList(
                     Text(
                         text = localDateString,
                         style = MaterialTheme.typography.titleMedium,
-                        modifier = Modifier.finishedHeaderBetItem(),
+                        modifier = Modifier.finishedHeaderBetItem(isFirst = isFirstHeader),
                     )
                 }
                 lastMatchDate = poolGamblerBet.matchDateTime.date
@@ -71,24 +71,17 @@ fun FinishedBetList(
                 ),
                 contentType = "PoolGamblerBet",
             ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .let { base ->
-                            if (onMatchOpen != null) {
-                                base.clickable { onMatchOpen(poolGamblerBet) }
-                            } else {
-                                base
-                            }
-                        }
-                        .padding(horizontal = LocalBoxSpacing.current.large),
-                ) {
-                    FinishedBetItem(
-                        poolGamblerBet = poolGamblerBet,
-                        modifier = Modifier.finishedBetItem(),
-                    )
-                    HorizontalDivider()
-                }
+                val itemModifier = Modifier
+                    .let { base ->
+                        if (onMatchOpen != null) base.clickable { onMatchOpen(poolGamblerBet) } else base
+                    }
+                    .finishedBetItem()
+
+                FinishedBetItem(
+                    poolGamblerBet = poolGamblerBet,
+                    modifier = itemModifier,
+                )
+                HorizontalDivider(modifier = Modifier.padding(horizontal = LocalBoxSpacing.current.large))
             }
         }
     }
@@ -102,27 +95,25 @@ private fun LazyListScope.finishedPoolGamblerBetFakeList(count: Int) {
 
 private fun LazyListScope.finishedPoolGamblerBetPlaceholderItem() {
     item {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = LocalBoxSpacing.current.large),
-        ) {
-            PendingBetPlaceholderItem(modifier = Modifier.finishedBetItem())
-            HorizontalDivider()
-        }
+        PendingBetPlaceholderItem(modifier = Modifier.finishedBetItem())
+        HorizontalDivider(modifier = Modifier.padding(horizontal = LocalBoxSpacing.current.large))
     }
 }
 
 @Composable
 private fun Modifier.finishedBetItem() =
     fillMaxWidth()
-        .padding(vertical = LocalBoxSpacing.current.large)
+        .padding(horizontal = LocalBoxSpacing.current.large)
+        .padding(vertical = LocalBoxSpacing.current.medium)
 
 @Composable
-private fun Modifier.finishedHeaderBetItem() =
+private fun Modifier.finishedHeaderBetItem(isFirst: Boolean) =
     fillMaxWidth()
         .padding(horizontal = LocalBoxSpacing.current.medium)
-        .padding(top = LocalBoxSpacing.current.medium)
+        .padding(
+            top = if (isFirst) LocalBoxSpacing.current.medium
+            else LocalBoxSpacing.current.medium + LocalBoxSpacing.current.medium,
+        )
 
 @PreviewLightDark
 @Composable

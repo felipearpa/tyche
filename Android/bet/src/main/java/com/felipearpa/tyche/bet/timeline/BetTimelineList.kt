@@ -48,6 +48,7 @@ fun BetTimelineList(
 
             if (lastMatchDate != poolGamblerBet.matchDateTime.date) {
                 val localDateString = poolGamblerBet.matchDateTime.toShortDateString()
+                val isFirstHeader = lastMatchDate == null
                 stickyHeader(
                     key = localDateString,
                     contentType = "Header",
@@ -55,7 +56,7 @@ fun BetTimelineList(
                     Text(
                         text = localDateString,
                         style = MaterialTheme.typography.titleMedium,
-                        modifier = Modifier.betTimelineHeaderItem(),
+                        modifier = Modifier.betTimelineHeaderItem(isFirst = isFirstHeader),
                     )
                 }
                 lastMatchDate = poolGamblerBet.matchDateTime.date
@@ -105,9 +106,12 @@ private fun Modifier.betTimelineItem() =
         .padding(vertical = LocalBoxSpacing.current.medium)
 
 @Composable
-private fun Modifier.betTimelineHeaderItem() =
+private fun Modifier.betTimelineHeaderItem(isFirst: Boolean) =
     fillMaxWidth()
-        .padding(top = LocalBoxSpacing.current.large)
+        .padding(
+            top = if (isFirst) LocalBoxSpacing.current.large
+            else LocalBoxSpacing.current.large + LocalBoxSpacing.current.medium,
+        )
 
 @PreviewLightDark
 @Composable
