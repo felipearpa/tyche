@@ -6,10 +6,8 @@ struct PoolHomeDrawerView: View {
     @ObservedObject var viewModel: PoolHomeDrawerViewModel
     let onSignOut: () -> Void
 
-    init(viewModel: @autoclosure @escaping () -> PoolHomeDrawerViewModel,
-         onLogout: @escaping () -> Void
-    ) {
-        self._viewModel = .init(wrappedValue: viewModel())
+    init(viewModel: PoolHomeDrawerViewModel, onLogout: @escaping () -> Void) {
+        self.viewModel = viewModel
         self.onSignOut = onLogout
     }
 
