@@ -25,6 +25,7 @@ public struct EmailLinkSignInView: View {
 
         EmailLinkSignInStatefulView(
             viewState: viewModel.state,
+            email: email,
             onStart: onStart,
             onRetry: signInWithEmailLink,
         )
@@ -36,6 +37,7 @@ public struct EmailLinkSignInView: View {
 
 private struct EmailLinkSignInStatefulView: View {
     let viewState: LoadableViewState<AccountBundle>
+    let email: String
     let onStart: (AccountBundle) -> Void
     let onRetry: () -> Void
 
@@ -43,10 +45,12 @@ private struct EmailLinkSignInStatefulView: View {
 
     init(
         viewState: LoadableViewState<AccountBundle>,
+        email: String,
         onStart: @escaping (AccountBundle) -> Void = { _ in },
         onRetry: @escaping () -> Void,
     ) {
         self.viewState = viewState
+        self.email = email
         self.onStart = onStart
         self.onRetry = onRetry
     }
@@ -56,7 +60,7 @@ private struct EmailLinkSignInStatefulView: View {
         case .initial, .loading:
             LoadingContainerView { EmptyView() }
         case .success(let accountBundle):
-            SuccessContent(start: { onStart(accountBundle) })
+            SuccessContent(email: email, start: { onStart(accountBundle) })
                 .padding(boxSpacing.medium)
         case .failure(let error):
             FailureContent(
@@ -88,43 +92,78 @@ private struct FailureContent: View {
 }
 
 private struct SuccessContent: View {
+    let email: String
     let start: () -> Void
 
     @Environment(\.boxSpacing) private var boxSpacing
 
     var body: some View {
-        VStack(spacing: boxSpacing.large) {
-            Image(.markEmailRead)
-                .resizable()
-                .frame(width: ICON_SIZE, height: ICON_SIZE)
+        VStack(spacing: 0) {
+            Spacer()
 
-            VStack(spacing: boxSpacing.medium) {
-                Text(String(.accountVerifiedTitle))
-                    .multilineTextAlignment(.center)
-                    .font(.title)
+            VStack(spacing: boxSpacing.large) {
+                Image(.markEmailRead)
+                    .resizable()
+                    .frame(width: ICON_SIZE, height: ICON_SIZE)
 
-                Text(String(.accountVerifiedDescription))
-                    .multilineTextAlignment(.leading)
+                VStack(spacing: boxSpacing.medium) {
+                    Text(String(.accountVerifiedTitle))
+                        .multilineTextAlignment(.center)
+                        .font(.title)
+
+                    Text(String(.accountVerifiedDescription))
+                        .multilineTextAlignment(.center)
+                }
+
+                VerifiedEmailPill(email: email)
             }
 
+            Spacer()
+
             Button(action: start) {
-                Text((String(.continueAction)))
+                Text((String(.startAction)))
                     .frame(maxWidth: .infinity)
             }
             .buttonStyle(.borderedProminent)
+            .padding(.vertical, boxSpacing.medium)
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+}
+
+private struct VerifiedEmailPill: View {
+    let email: String
+
+    @Environment(\.boxSpacing) private var boxSpacing
+
+    var body: some View {
+        Label {
+            Text(email)
+        } icon: {
+            Image(sharedResource: .done)
+                .resizable()
+                .frame(width: PILL_ICON_SIZE, height: PILL_ICON_SIZE)
+        }
+        .font(.subheadline)
+        .padding(.horizontal, boxSpacing.medium)
+        .padding(.vertical, boxSpacing.small)
+        .background(Color(sharedResource: .successContainer))
+        .foregroundStyle(Color(sharedResource: .onSuccessContainer))
+        .clipShape(RoundedRectangle(cornerRadius: boxSpacing.large))
     }
 }
 
 private let ICON_SIZE: CGFloat = 64
+private let PILL_ICON_SIZE: CGFloat = 16
 
 #Preview("initial, loading") {
-    EmailLinkSignInStatefulView(viewState: .initial, onRetry: {})
+    EmailLinkSignInStatefulView(viewState: .initial, email: "", onRetry: {})
 }
 
 #Preview("success") {
     EmailLinkSignInStatefulView(
         viewState: .success(AccountBundle(accountId: "", externalAccountId: "", email: "")),
+        email: "preview@example.com",
         onRetry: {},
     )
 }
@@ -132,6 +171,7 @@ private let ICON_SIZE: CGFloat = 64
 #Preview("failure") {
     EmailLinkSignInStatefulView(
         viewState: .failure(UnknownLocalizedError()),
+        email: "preview@example.com",
         onRetry: {},
     )
 }

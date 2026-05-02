@@ -13,8 +13,8 @@
     <string name="invalid_credential_failure_reason">Incorrect username or password</string>
     <string name="invalid_credential_recovery_suggestion">Please check your username and password and try again. If you\'ve forgotten your password, you can reset it using the \'Forgot Password\' link</string>
     <string name="user_success_login_message">Congratulations! You\'re in the game and ready to place your bet. Let the fun begin!</string>
-    <string name="account_verified_title">Email verified: Let the games begin!</string>
-    <string name="account_verified_description">Congratulations, your email verification is complete! You\'re ready to join the fun and challenge your predictions</string>
+    <string name="account_verified_title">You\'re verified</string>
+    <string name="account_verified_description">Tap below to start playing.</string>
     <string name="start_action">Get started</string>
     <string name="verification_email_sent_title">We sent you a link</string>
     <string name="verification_email_sent_description">Tap the link in your email to sign in</string>

@@ -7,19 +7,19 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Congratulations, your email verification is complete! You're ready to join the fun and challenge your predictions"
+            "value" : "Tap below to start playing."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "¡Felicidades, tu verificación de correo está completa! Ya puedes unirte a la diversión y poner a prueba tus predicciones"
+            "value" : "Toca abajo para empezar a jugar"
           }
         },
         "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "¡Enhorabuena, tu verificación de correo está completa! Ya puedes unirte a la diversión y poner a prueba tus predicciones"
+            "value" : "Toca abajo para empezar a jugar"
           }
         }
       }
@@ -30,19 +30,19 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Email verified: Let the games begin!"
+            "value" : "You're verified"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Correo electrónico verificado: ¡Que comiencen los juegos!"
+            "value" : "Ya estás verificado"
           }
         },
         "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Correo electrónico verificado: ¡Que empiecen los juegos!"
+            "value" : "Ya estás verificado"
           }
         }
       }
