@@ -9,6 +9,7 @@ import com.felipearpa.tyche.bet.timeline.BetTimelineListViewRoute
 fun NavGraphBuilder.matchBetListNavView(
     navController: NavController,
     signedInGamblerId: String?,
+    onHome: () -> Unit,
 ) {
     composable<MatchBetListViewRoute> { navBackStackEntry ->
         val route: MatchBetListViewRoute = navBackStackEntry.toRoute()
@@ -19,6 +20,7 @@ fun NavGraphBuilder.matchBetListNavView(
                 matchId = route.matchId,
             ),
             onBack = { navController.navigateUp() },
+            onHome = onHome,
             onGamblerOpen = { tappedPoolId, tappedGamblerId, tappedGamblerUsername ->
                 if (tappedGamblerId != signedInGamblerId) {
                     navController.navigate(

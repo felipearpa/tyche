@@ -42,6 +42,7 @@ fun BetTimelineListView(
     gamblerId: String,
     gamblerUsername: String,
     onBack: () -> Unit,
+    onHome: () -> Unit,
     onMatchOpen: ((PoolGamblerBetModel) -> Unit)? = null,
 ) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
@@ -54,6 +55,7 @@ fun BetTimelineListView(
             AppTopBar(
                 title = stringResource(id = R.string.bet_timeline_view_title),
                 onBack = onBack,
+                onHome = onHome,
                 scrollBehavior = scrollBehavior,
             )
         },
@@ -88,6 +90,7 @@ fun BetTimelineListView(
 private fun AppTopBar(
     title: String,
     onBack: () -> Unit,
+    onHome: () -> Unit,
     modifier: Modifier = Modifier,
     scrollBehavior: TopAppBarScrollBehavior,
 ) {
@@ -97,6 +100,14 @@ private fun AppTopBar(
             IconButton(onClick = onBack) {
                 Icon(
                     painter = painterResource(id = SharedR.drawable.arrow_back),
+                    contentDescription = emptyString(),
+                )
+            }
+        },
+        actions = {
+            IconButton(onClick = onHome) {
+                Icon(
+                    painter = painterResource(id = SharedR.drawable.home),
                     contentDescription = emptyString(),
                 )
             }
@@ -168,6 +179,7 @@ private fun BetTimelineListViewPreview() {
         gamblerId = "gamblerId",
         gamblerUsername = "felipearcila@gmail.com",
         onBack = {},
+        onHome = {},
         onMatchOpen = {},
     )
 }

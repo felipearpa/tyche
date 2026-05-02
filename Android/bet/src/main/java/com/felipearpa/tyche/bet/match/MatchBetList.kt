@@ -18,7 +18,7 @@ import androidx.paging.compose.itemContentType
 import androidx.paging.compose.itemKey
 import com.felipearpa.tyche.bet.PoolGamblerBetModel
 import com.felipearpa.tyche.bet.poolGamblerBetDummyModels
-import com.felipearpa.tyche.ui.lazy.StatefulLazyColumn
+import com.felipearpa.tyche.ui.lazy.RefreshableStatefulLazyColumn
 import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
 import com.felipearpa.tyche.ui.theme.TycheTheme
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -30,7 +30,7 @@ fun MatchBetList(
     placeholderCount: Int = 0,
     onGamblerOpen: ((poolId: String, gamblerId: String, gamblerUsername: String) -> Unit)? = null,
 ) {
-    StatefulLazyColumn(
+    RefreshableStatefulLazyColumn(
         lazyPagingItems = lazyPoolGamblerBets,
         loadingContent = { matchGamblerBetPlaceholderList(count = placeholderCount) },
         loadingContentOnConcatenate = { matchGamblerBetPlaceholderItem() },

@@ -6,7 +6,10 @@ import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
 import com.felipearpa.tyche.bet.match.MatchBetListViewRoute
 
-fun NavGraphBuilder.betTimelineListView(navController: NavController) {
+fun NavGraphBuilder.betTimelineListView(
+    navController: NavController,
+    onHome: () -> Unit,
+) {
     composable<BetTimelineListViewRoute> { navBackStackEntry ->
         val route: BetTimelineListViewRoute = navBackStackEntry.toRoute()
         BetTimelineListView(
@@ -14,6 +17,7 @@ fun NavGraphBuilder.betTimelineListView(navController: NavController) {
             gamblerId = route.gamblerId,
             gamblerUsername = route.gamblerUsername,
             onBack = { navController.navigateUp() },
+            onHome = onHome,
             onMatchOpen = { poolGamblerBet ->
                 navController.navigate(
                     route = MatchBetListViewRoute(

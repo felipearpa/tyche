@@ -7,6 +7,7 @@ public struct MatchBetListView: View {
     let poolId: String
     let gamblerId: String
     let matchId: String
+    let onHome: (() -> Void)?
     let onGamblerOpen: ((_ poolId: String, _ gamblerId: String, _ gamblerUsername: String) -> Void)?
 
     @Environment(\.diResolver) var diResolver: DIResolver
@@ -16,11 +17,13 @@ public struct MatchBetListView: View {
         poolId: String,
         gamblerId: String,
         matchId: String,
+        onHome: (() -> Void)? = nil,
         onGamblerOpen: ((_ poolId: String, _ gamblerId: String, _ gamblerUsername: String) -> Void)? = nil
     ) {
         self.poolId = poolId
         self.gamblerId = gamblerId
         self.matchId = matchId
+        self.onHome = onHome
         self.onGamblerOpen = onGamblerOpen
     }
 
@@ -43,8 +46,24 @@ public struct MatchBetListView: View {
         )
         .navigationTitle(String(.matchBetsViewTitle))
         .navigationBarTitleDisplayMode(.inline)
+        .navigationBarItems(trailing: navigationBarTrailing())
+    }
+
+    @ViewBuilder
+    private func navigationBarTrailing() -> some View {
+        if let onHome {
+            Button(action: onHome) {
+                Image(sharedResource: .home)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: HOME_ICON_SIZE, height: HOME_ICON_SIZE)
+                    .tint(.primary)
+            }
+        }
     }
 }
+
+private let HOME_ICON_SIZE: CGFloat = 24
 
 private struct MatchBetListContent: View {
     @StateObject private var viewModel: MatchBetListViewModel

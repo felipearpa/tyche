@@ -6,6 +6,7 @@ public struct BetTimelineListView: View {
     let poolId: String
     let gamblerId: String
     let gamblerUsername: String
+    let onHome: (() -> Void)?
     let onMatchOpen: MatchOpenHandler?
 
     @Environment(\.diResolver) var diResolver: DIResolver
@@ -14,11 +15,13 @@ public struct BetTimelineListView: View {
         poolId: String,
         gamblerId: String,
         gamblerUsername: String,
+        onHome: (() -> Void)? = nil,
         onMatchOpen: MatchOpenHandler? = nil
     ) {
         self.poolId = poolId
         self.gamblerId = gamblerId
         self.gamblerUsername = gamblerUsername
+        self.onHome = onHome
         self.onMatchOpen = onMatchOpen
     }
 
@@ -38,8 +41,24 @@ public struct BetTimelineListView: View {
         )
         .navigationTitle(.betTimelineViewTitle)
         .navigationBarTitleDisplayMode(.inline)
+        .navigationBarItems(trailing: navigationBarTrailing())
+    }
+
+    @ViewBuilder
+    private func navigationBarTrailing() -> some View {
+        if let onHome {
+            Button(action: onHome) {
+                Image(sharedResource: .home)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: HOME_ICON_SIZE, height: HOME_ICON_SIZE)
+                    .tint(.primary)
+            }
+        }
     }
 }
+
+private let HOME_ICON_SIZE: CGFloat = 24
 
 private struct BetTimelineListContent: View {
     @StateObject private var viewModel: BetsTimelineViewModel

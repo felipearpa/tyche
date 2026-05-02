@@ -55,6 +55,7 @@ import com.felipearpa.tyche.ui.R as SharedR
 fun MatchBetListView(
     viewModel: MatchBetListViewModel,
     onBack: () -> Unit,
+    onHome: () -> Unit,
     onGamblerOpen: ((poolId: String, gamblerId: String, gamblerUsername: String) -> Unit)? = null,
 ) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
@@ -66,6 +67,7 @@ fun MatchBetListView(
         lazyPoolGamblerBets = lazyPoolGamblerBets,
         pageSize = viewModel.pageSize,
         onBack = onBack,
+        onHome = onHome,
         onRetry = viewModel::loadPoolGamblerBet,
         onGamblerOpen = onGamblerOpen,
         scrollBehavior = scrollBehavior,
@@ -83,6 +85,7 @@ private fun MatchBetListView(
     lazyPoolGamblerBets: LazyPagingItems<PoolGamblerBetModel>,
     pageSize: Int,
     onBack: () -> Unit,
+    onHome: () -> Unit,
     onRetry: () -> Unit,
     onGamblerOpen: ((poolId: String, gamblerId: String, gamblerUsername: String) -> Unit)?,
     scrollBehavior: TopAppBarScrollBehavior,
@@ -94,6 +97,7 @@ private fun MatchBetListView(
         topBar = {
             AppTopBar(
                 onBack = onBack,
+                onHome = onHome,
                 scrollBehavior = scrollBehavior,
             )
         },
@@ -228,6 +232,7 @@ private fun PredictionsOpenContent(modifier: Modifier = Modifier) {
 @Composable
 private fun AppTopBar(
     onBack: () -> Unit,
+    onHome: () -> Unit,
     modifier: Modifier = Modifier,
     scrollBehavior: TopAppBarScrollBehavior,
 ) {
@@ -237,6 +242,14 @@ private fun AppTopBar(
             IconButton(onClick = onBack) {
                 Icon(
                     painter = painterResource(id = SharedR.drawable.arrow_back),
+                    contentDescription = emptyString(),
+                )
+            }
+        },
+        actions = {
+            IconButton(onClick = onHome) {
+                Icon(
+                    painter = painterResource(id = SharedR.drawable.home),
                     contentDescription = emptyString(),
                 )
             }
@@ -270,6 +283,7 @@ private fun MatchBetListViewPreview(
                 lazyPoolGamblerBets = lazyItems,
                 pageSize = 50,
                 onBack = {},
+                onHome = {},
                 onRetry = {},
                 onGamblerOpen = { _, _, _ -> },
                 scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState()),
@@ -294,6 +308,7 @@ private fun MatchBetListViewPendingPreview() {
                 lazyPoolGamblerBets = lazyItems,
                 pageSize = 50,
                 onBack = {},
+                onHome = {},
                 onRetry = {},
                 onGamblerOpen = { _, _, _ -> },
                 scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState()),
@@ -318,6 +333,7 @@ private fun MatchBetListViewLivePreview() {
                 lazyPoolGamblerBets = lazyItems,
                 pageSize = 50,
                 onBack = {},
+                onHome = {},
                 onRetry = {},
                 onGamblerOpen = { _, _, _ -> },
                 scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState()),
@@ -342,6 +358,7 @@ private fun MatchBetListViewComputedPreview() {
                 lazyPoolGamblerBets = lazyItems,
                 pageSize = 50,
                 onBack = {},
+                onHome = {},
                 onRetry = {},
                 onGamblerOpen = { _, _, _ -> },
                 scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState()),
