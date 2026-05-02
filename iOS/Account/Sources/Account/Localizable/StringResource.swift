@@ -22,6 +22,7 @@ extension StringResource {
     static let continueAction = StringResource(name: "continue_action", bundle: Bundle.module)
     static let verificationEmailSentTitle = StringResource(name: "verification_email_sent_title", bundle: Bundle.module)
     static let verificationEmailSentDescription = StringResource(name: "verification_email_sent_description", bundle: Bundle.module)
+    static let verificationEmailSentWarning = StringResource(name: "verification_email_sent_warning", bundle: Bundle.module)
     static let invalidEmailLinkSignInFailureDescription = StringResource(name: "invalid_email_link_sign_in_failure_description", bundle: Bundle.module)
     static let invalidEmailLinkSignInFailureReason = StringResource(name: "invalid_email_link_sign_in_failure_reason", bundle: Bundle.module)
     static let invalidEmailLinkSignInFailureRecoverySuggestion = StringResource(name: "invalid_email_link_sign_in_failure_recovery_suggestion", bundle: Bundle.module)

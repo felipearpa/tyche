@@ -487,19 +487,19 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "A verification link has been sent to %@. Please check your inbox and open the link on the same device to complete the process, as it's necessary for verification"
+            "value" : "Tap the link in your email to sign in"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Se ha enviado un enlace de verificación a %@. Por favor, revisa tu bandeja de entrada y abre el enlace en el mismo dispositivo para completar el proceso, ya que es necesario para la verificación"
+            "value" : "Toca el enlace en el correo para entrar"
           }
         },
         "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Se ha enviado un enlace de verificación a %@. Por favor, revisa tu bandeja de entrada y abre el enlace en el mismo dispositivo para completar el proceso, ya que es necesario para la verificación"
+            "value" : "Toca el enlace en el correo para entrar"
           }
         }
       }
@@ -510,19 +510,42 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Verification link sent"
+            "value" : "We sent you a link"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Enlace de verificación enviado"
+            "value" : "Te enviamos un enlace"
           }
         },
         "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Enlace de verificación enviado"
+            "value" : "Te enviamos un enlace"
+          }
+        }
+      }
+    },
+    "verification_email_sent_warning" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Make sure to open it on this device"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Asegúrate de abrirlo desde este teléfono"
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Asegúrate de abrirlo desde este teléfono"
           }
         }
       }
