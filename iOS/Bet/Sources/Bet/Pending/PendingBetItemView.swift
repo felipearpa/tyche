@@ -152,12 +152,12 @@ private struct EditableDefaultActionBar: View {
         
         Button(action: reset) {
             Text(String(sharedResource: .cancelAction))
-        }.buttonStyle(.bordered)
+        }.buttonStyle(.liquidGlass)
         
         Button(action: bet) {
             Text(String(sharedResource: .saveAction))
         }
-        .buttonStyle(.borderedProminent)
+        .buttonStyle(.liquidGlassProminent)
     }
 }
 
@@ -204,13 +204,13 @@ private struct FailureActionBar: View {
             Button(action: { reset() }) {
                 Text(String(sharedResource: .cancelAction))
             }
-            .buttonStyle(.bordered)
+            .buttonStyle(.liquidGlass)
             .tint(Color(sharedResource: .error))
             
             Button(action: { retryBet() }) {
                 Text(String(sharedResource: .retryAction))
             }
-            .buttonStyle(.borderedProminent)
+            .buttonStyle(.liquidGlassProminent)
             .tint(Color(sharedResource: .error))
         }
     }

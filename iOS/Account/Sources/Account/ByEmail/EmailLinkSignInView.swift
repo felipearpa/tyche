@@ -90,7 +90,7 @@ private struct FailureContent: View {
                 Text((String(sharedResource: .retryAction)))
                     .frame(maxWidth: .infinity)
             }
-            .buttonStyle(.borderedProminent)
+            .buttonStyle(.liquidGlassProminent)
             .padding(.vertical, boxSpacing.medium)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -130,7 +130,7 @@ private struct SuccessContent: View {
                 Text((String(.startAction)))
                     .frame(maxWidth: .infinity)
             }
-            .buttonStyle(.borderedProminent)
+            .buttonStyle(.liquidGlassProminent)
             .padding(.vertical, boxSpacing.medium)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)

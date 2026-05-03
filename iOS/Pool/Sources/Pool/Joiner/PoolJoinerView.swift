@@ -102,13 +102,13 @@ private struct PoolJoinerContent: View {
                         Text(String(.joinPoolAction))
                             .frame(maxWidth: .infinity)
                     }
-                    .buttonStyle(.borderedProminent)
+                    .buttonStyle(.liquidGlassProminent)
 
                     Button(action: onAbort) {
                         Text(String(.goToMyPoolsAction))
                             .frame(maxWidth: .infinity)
                     }
-                    .buttonStyle(.bordered)
+                    .buttonStyle(.liquidGlass)
                 }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
@@ -134,13 +134,13 @@ private struct PoolJoinerContainerFailure: View {
                     Text(String(sharedResource: .retryAction))
                         .frame(maxWidth: .infinity)
                 }
-                .buttonStyle(.borderedProminent)
+                .buttonStyle(.liquidGlassProminent)
 
                 Button(action: onAbort) {
                     Text(String(.goToMyPoolsAction))
                         .frame(maxWidth: .infinity)
                 }
-                .buttonStyle(.bordered)
+                .buttonStyle(.liquidGlass)
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
@@ -161,7 +161,7 @@ private struct PoolLoaderContainerFailure: View {
                 Text(String(.goToMyPoolsAction))
                     .frame(maxWidth: .infinity)
             }
-            .buttonStyle(.borderedProminent)
+            .buttonStyle(.liquidGlassProminent)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
     }

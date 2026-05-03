@@ -151,12 +151,12 @@ private struct PoolHomeContent: View {
                 }
             )
         }
+        .drawerStyle(.liquidGlass)
         .navigationTitle(selectedTab.title)
         .navigationBarItems(
             leading: navigationBarLeading(),
             trailing: navigationBarTrailing()
         )
-        .toolbar(drawerVisible ? .hidden : .visible, for: .navigationBar)
     }
 
     private func navigationBarLeading() -> some View {

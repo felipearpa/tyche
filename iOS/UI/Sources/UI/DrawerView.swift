@@ -5,6 +5,8 @@ private struct DrawerView<ContentView: View>: View {
     var content: () -> ContentView
     var edgeTransition: AnyTransition = .move(edge: .leading)
 
+    @Environment(\.drawerStyle) private var style
+
     init(isShowing: Binding<Bool>, @ViewBuilder content: @escaping () -> ContentView) {
         self._isShowing = isShowing
         self.content = content
@@ -20,21 +22,16 @@ private struct DrawerView<ContentView: View>: View {
                             isShowing.toggle()
                         }
 
-                    ZStack {
-                        content()
-                            .padding(.top, geometry.safeAreaInsets.top)
-                            .padding(.bottom, geometry.safeAreaInsets.bottom)
-                    }
-                    .frame(width: UIScreen.main.bounds.width * 0.9)
-                    .background(Color(.systemBackground))
-                    .clipShape(
-                        .rect(
-                            topLeadingRadius: 0,
-                            bottomLeadingRadius: 0,
-                            bottomTrailingRadius: 25,
-                            topTrailingRadius: 25
-                        )
-                    )
+                    style.makeBody(configuration: DrawerStyleConfiguration(
+                        content: DrawerStyleConfiguration.Content(view: AnyView(
+                            ZStack {
+                                content()
+                                    .padding(.top, geometry.safeAreaInsets.top)
+                                    .padding(.bottom, geometry.safeAreaInsets.bottom)
+                            }
+                            .frame(width: UIScreen.main.bounds.width * 0.9)
+                        ))
+                    ))
                     .transition(edgeTransition)
                 }
             }

@@ -41,7 +41,7 @@ struct PoolFromLayoutCreatorStepTwoView: View {
                 }
                 .frame(maxWidth: .infinity)
             }
-            .buttonStyle(.borderedProminent)
+            .buttonStyle(.liquidGlassProminent)
             .disabled(!isValid)
 
             Spacer()
@@ -72,7 +72,7 @@ private struct PoolNameTextField: View {
             isValid: isValid,
             errorMessage: String(.poolNameLengthValidationError),
         )
-        .textFieldStyle(.roundedBorder)
+        .textFieldStyle(.liquidGlass)
     }
 }
 

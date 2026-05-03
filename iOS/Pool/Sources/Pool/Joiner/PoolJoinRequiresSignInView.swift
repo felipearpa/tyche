@@ -18,7 +18,7 @@ public struct PoolJoinRequiresSignInView: View {
                 Text(String(.gotItAction))
                     .frame(maxWidth: .infinity)
             }
-            .buttonStyle(.borderedProminent)
+            .buttonStyle(.liquidGlassProminent)
         }
         .padding(boxSpacing.medium)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
