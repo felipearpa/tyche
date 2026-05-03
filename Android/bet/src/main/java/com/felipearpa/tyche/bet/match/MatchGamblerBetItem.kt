@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -36,7 +37,9 @@ fun MatchGamblerBetItem(
             style = MaterialTheme.typography.bodyMedium,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
-            modifier = Modifier.weight(1f).then(shimmerModifier),
+            modifier = Modifier
+                .weight(1f)
+                .then(shimmerModifier),
         )
 
         if (poolGamblerBet.hasBet()) {
@@ -47,14 +50,13 @@ fun MatchGamblerBetItem(
             )
         }
 
-        poolGamblerBet.score?.let { score ->
-            Spacer(modifier = Modifier)
-            Text(
-                text = "+$score",
-                style = MaterialTheme.typography.titleLarge,
-                modifier = shimmerModifier,
-            )
-        }
+        Spacer(modifier = Modifier.width(LocalBoxSpacing.current.medium))
+
+        Text(
+            text = poolGamblerBet.score?.let { "+$it" }.orEmpty(),
+            style = MaterialTheme.typography.titleLarge,
+            modifier = shimmerModifier,
+        )
     }
 }
 

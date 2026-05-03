@@ -23,6 +23,8 @@ public struct RefreshableStatefulLazyVStack
     let errorContentOnConcatenate: (Error) -> ErrorContentOnConcatenate
     let itemContent: (Item) -> ItemView
     let spacing: CGFloat
+    let pinnedViews: PinnedScrollableViews
+    let sectionConfiguration: SectionConfiguration<Item>?
 
     public init(
         lazyPagingItems: LazyPagingItems<Key, Item>,
@@ -44,6 +46,8 @@ public struct RefreshableStatefulLazyVStack
         self.errorContentOnConcatenate = errorContentOnConcatenate
         self.itemContent = itemContent
         self.spacing = spacing
+        self.pinnedViews = []
+        self.sectionConfiguration = nil
     }
 
     public var body: some View {
@@ -64,6 +68,8 @@ public struct RefreshableStatefulLazyVStack
             errorContent: errorContent,
             loadingContentOnConcatenate: loadingContentOnConcatenate,
             errorContentOnConcatenate: errorContentOnConcatenate,
+            pinnedViews: pinnedViews,
+            sectionConfiguration: sectionConfiguration,
             spacing: spacing,
             itemContent: itemContent
         )
@@ -107,6 +113,43 @@ where ErrorContentOnConcatenate == StatefulLazyVStackError {
             },
             spacing: spacing,
             itemContent: itemContent,
+        )
+    }
+}
+
+public extension RefreshableStatefulLazyVStack
+where ErrorContentOnConcatenate == StatefulLazyVStackError {
+    init<SectionKey: Hashable, SectionHeader: View>(
+        lazyPagingItems: LazyPagingItems<Key, Item>,
+        @ViewBuilder loadingContent: @escaping () -> LoadingContent,
+        @ViewBuilder refreshLoadingContent: @escaping () -> RefreshLoadingContent = {
+            ProgressView().progressViewStyle(.circular)
+        },
+        @ViewBuilder loadingContentOnConcatenate: @escaping () -> LoadingContentOnConcatenate,
+        @ViewBuilder errorContent: @escaping (Error) -> ErrorContent = { error in
+            StatefulLazyVStackError(localizedError: error.localizedErrorOrDefault())
+        },
+        @ViewBuilder emptyContent: @escaping () -> EmptyContent = { StatefulLazyVStackEmpty() },
+        spacing: CGFloat = 0,
+        sectionKey: @escaping (Item) -> SectionKey,
+        @ViewBuilder sectionHeader: @escaping (SectionKey, Bool) -> SectionHeader,
+        @ViewBuilder itemContent: @escaping (Item) -> ItemView
+    ) {
+        self.lazyPagingItems = lazyPagingItems
+        self.loadingContent = loadingContent
+        self.refreshLoadingContent = refreshLoadingContent
+        self.emptyContent = emptyContent
+        self.errorContent = errorContent
+        self.loadingContentOnConcatenate = loadingContentOnConcatenate
+        self.errorContentOnConcatenate = { error in
+            StatefulLazyVStackError(localizedError: error.localizedErrorOrDefault())
+        }
+        self.itemContent = itemContent
+        self.spacing = spacing
+        self.pinnedViews = [.sectionHeaders]
+        self.sectionConfiguration = SectionConfiguration(
+            key: { AnyHashable(sectionKey($0)) },
+            header: { key, isFirst in AnyView(sectionHeader(key.base as! SectionKey, isFirst)) }
         )
     }
 }

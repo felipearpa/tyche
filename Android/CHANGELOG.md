@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.3
+
+- New Bet Timeline: tap a gambler from a match to see their full prediction history, with live, finished, and pending bets grouped by date
+- Drawer redesigned with an account header and pool status; pool selection moved to the top navigation bar
+- Quick "Home" action in the Bet Timeline and Match Bet views
+- Email link sign-in screen redesigned with a verified email pill, clearer success messaging, and an edge-to-edge layout
+- Predictions from other gamblers stay hidden until a match locks
+- Pool tab selection is preserved across configuration changes
+- Pull-to-refresh added to the match bet list
+- Friendlier handling when access to a pool has been revoked
+
 ## 1.2
 
 - Joining a pool now requires sign-in, with a clearer prompt when you are not signed in

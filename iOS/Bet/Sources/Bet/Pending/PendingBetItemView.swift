@@ -5,14 +5,19 @@ import Core
 struct PendingBetItemView: View {
     @StateObject private var viewModel: PendingBetItemViewModel
     @State private var viewState = PendingBetItemViewState.emptyVisualization()
-    
-    init(viewModel: @autoclosure @escaping () -> PendingBetItemViewModel) {
+    let poolGamblerBet: PoolGamblerBetModel
+
+    init(
+        viewModel: @autoclosure @escaping () -> PendingBetItemViewModel,
+        poolGamblerBet: PoolGamblerBetModel
+    ) {
         self._viewModel = .init(wrappedValue: viewModel())
+        self.poolGamblerBet = poolGamblerBet
     }
-    
+
     var body: some View {
         StatefulPendingBetItemView(
-            viewModelState: viewModel.state,
+            viewModelState: viewModel.state ?? .initial(poolGamblerBet),
             viewState: $viewState,
             bet: {
                 viewModel.bet(
@@ -28,7 +33,10 @@ struct PendingBetItemView: View {
                 viewModel.reset()
             },
             edit: { viewState = .edition(viewState.value) }
-        ).onReceive(viewModel.$state) { state in
+        )
+        .task(id: poolGamblerBet) { viewModel.bind(poolGamblerBet) }
+        .onReceive(viewModel.$state) { state in
+            guard let state = state else { return }
             viewState = switch state {
             case .initial(let poolGamblerBet):
                 viewState.copy(

@@ -17,6 +17,7 @@ public extension SharedImageResource  {
     static let menu = SharedImageResource(.menu)
     static let arrowForwardIos = SharedImageResource(.arrowForwardIos)
     static let filledAddCircle = SharedImageResource(.filledAddCircle)
+    static let home = SharedImageResource(.home)
 }
 
 public extension Image {

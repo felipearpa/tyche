@@ -5,11 +5,11 @@ import Session
 
 public struct EmailSignInView: View {
     @StateObject private var viewModel: EmailSignInViewModel
-    
+
     public init(viewModel: @autoclosure @escaping () -> EmailSignInViewModel) {
         self._viewModel = .init(wrappedValue: viewModel())
     }
-    
+
     public var body: some View {
         EmailSignInStatefulView(
             viewState: viewModel.state,
@@ -64,20 +64,20 @@ private struct EmailSignInStatefulView: View {
 private struct EmailSignInContent: View {
     @Binding var email: String
     let signIn: (() -> Void)?
-    
+
     @Environment(\.boxSpacing) var boxSpacing;
-    
+
     var body: some View {
         VStack(spacing: boxSpacing.medium) {
             EmailTextField(value: $email)
-            
+
             Button(action: signIn ?? {}) {
                 Text((String(.signInAction)))
                     .frame(maxWidth: .infinity)
             }
             .buttonStyle(.borderedProminent)
             .disabled(signIn == nil)
-            
+
             Spacer()
         }
         .padding(boxSpacing.medium)
@@ -94,21 +94,52 @@ private struct SuccessContent: View {
         VStack(spacing: boxSpacing.large) {
             Image(.outgoingMail)
                 .resizable()
-                .frame(width: ICON_SIZE, height: ICON_SIZE)
+                .frame(width: EMAIL_ICON_SIZE, height: EMAIL_ICON_SIZE)
 
             VStack(spacing: boxSpacing.medium) {
                 Text(String(.verificationEmailSentTitle))
                     .font(.title)
+                    .multilineTextAlignment(.center)
 
-                Text(String(format: String(.verificationEmailSentDescription), email))
+                Text(String(.verificationEmailSentDescription))
                     .multilineTextAlignment(.leading)
+
+                Label {
+                    Text(email)
+                } icon: {
+                    Image(.mail)
+                }
+                .font(.subheadline)
+                .padding(.horizontal, boxSpacing.medium)
+                .padding(.vertical, boxSpacing.small)
+                .overlay(
+                    RoundedRectangle(cornerRadius: boxSpacing.large)
+                        .stroke(Color(.systemGray4))
+                )
+                .padding(.bottom, boxSpacing.medium)
+
+                Label {
+                    Text(String(.verificationEmailSentWarning))
+                } icon: {
+                    Image(.warning)
+                        .resizable()
+                        .frame(width: WARNING_ICON_SIZE, height: WARNING_ICON_SIZE)
+                        .foregroundStyle(Color(sharedResource: .onWarningContainer))
+                }
+                .font(.subheadline)
+                .multilineTextAlignment(.center)
+                .padding(boxSpacing.medium)
+                .background(Color(sharedResource: .warningContainer))
+                .foregroundStyle(Color(sharedResource: .onWarningContainer))
+                .clipShape(RoundedRectangle(cornerRadius: boxSpacing.medium))
             }
         }
         .padding(boxSpacing.medium)
     }
 }
 
-private let ICON_SIZE: CGFloat = 64
+private let EMAIL_ICON_SIZE: CGFloat = 64
+private let WARNING_ICON_SIZE: CGFloat = 16
 
 #Preview("Initial") {
     EmailSignInStatefulView(viewState: .initial)

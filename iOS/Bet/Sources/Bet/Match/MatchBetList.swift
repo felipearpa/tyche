@@ -5,8 +5,17 @@ import DataBet
 
 struct MatchBetList: View {
     var lazyPagingItems: LazyPagingItems<String, PoolGamblerBetModel>
+    let onGamblerOpen: ((_ poolId: String, _ gamblerId: String, _ gamblerUsername: String) -> Void)?
 
     @Environment(\.boxSpacing) private var boxSpacing
+
+    init(
+        lazyPagingItems: LazyPagingItems<String, PoolGamblerBetModel>,
+        onGamblerOpen: ((_ poolId: String, _ gamblerId: String, _ gamblerUsername: String) -> Void)? = nil
+    ) {
+        self.lazyPagingItems = lazyPagingItems
+        self.onGamblerOpen = onGamblerOpen
+    }
 
     var body: some View {
         let _ = Self._printChangesIfDebug()
@@ -15,13 +24,37 @@ struct MatchBetList: View {
             lazyPagingItems: lazyPagingItems,
             loadingContent: { MatchBetPlaceholderList() },
             loadingContentOnConcatenate: {
-                MatchBetPlaceholderItem()
-                Divider()
+                VStack(spacing: 0) {
+                    MatchBetPlaceholderItem()
+                        .padding(boxSpacing.medium)
+                    Divider()
+                }
+                .padding(.horizontal, boxSpacing.medium)
             }
         ) { poolGamblerBet in
-            MatchGamblerBetItem(poolGamblerBet: poolGamblerBet)
-                .padding(boxSpacing.medium)
-            Divider()
+            if let onGamblerOpen {
+                VStack(spacing: 0) {
+                    MatchGamblerBetItem(poolGamblerBet: poolGamblerBet)
+                        .padding(boxSpacing.medium)
+                    Divider()
+                }
+                .padding(.horizontal, boxSpacing.medium)
+                .contentShape(Rectangle())
+                .onTapGesture {
+                    onGamblerOpen(
+                        poolGamblerBet.poolId,
+                        poolGamblerBet.gamblerId,
+                        poolGamblerBet.gamblerUsername
+                    )
+                }
+            } else {
+                VStack(spacing: 0) {
+                    MatchGamblerBetItem(poolGamblerBet: poolGamblerBet)
+                        .padding(boxSpacing.medium)
+                    Divider()
+                }
+                .padding(.horizontal, boxSpacing.medium)
+            }
         }
     }
 }
@@ -31,9 +64,12 @@ private struct MatchBetPlaceholderList: View {
 
     var body: some View {
         ForEach(1...10, id: \.self) { _ in
-            MatchBetPlaceholderItem()
-                .padding(boxSpacing.medium)
-            Divider()
+            VStack(spacing: 0) {
+                MatchBetPlaceholderItem()
+                    .padding(boxSpacing.medium)
+                Divider()
+            }
+            .padding(.horizontal, boxSpacing.medium)
         }
     }
 }

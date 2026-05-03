@@ -10,30 +10,26 @@ struct PoolScoreItem: View {
     var body: some View {
         VStack(spacing: boxSpacing.medium) {
             HStack(spacing: boxSpacing.medium) {
-                VStack(alignment: .leading, spacing: boxSpacing.small) {
-                    Text(poolGamblerScore.poolName)
-                    if let currentPosition = poolGamblerScore.position {
-                        Text(String(format: String(.positionLabel), String(currentPosition)))
-                            .font(.footnote)
-                    }
+                if let position = poolGamblerScore.position {
+                    PostionIndicator(postion: position, isSignedIdUser: false)
+                } else {
+                    NonPostionIndicator()
                 }
+
+                Text(poolGamblerScore.poolName)
 
                 Spacer()
 
                 if let difference = poolGamblerScore.difference() {
                     TrendIndicator(difference: difference)
                 }
-            }
 
-            HStack {
-                Spacer()
-                Button(action: onJoin) {
-                    HStack(spacing: boxSpacing.medium) {
-                        Image(.personAdd)
-                        Text(String(.inviteAction))
-                    }
+                Spacer().frame(width: boxSpacing.medium)
+
+                Button { onJoin() } label: {
+                    Image(.personAdd)
                 }
-                .buttonStyle(.bordered)
+                .labelStyle(.iconOnly)
             }
         }
         .padding(boxSpacing.medium)
@@ -41,12 +37,12 @@ struct PoolScoreItem: View {
     }
 }
 
-#Preview {
+#Preview("Normal") {
     PoolScoreItem(poolGamblerScore: poolGamblerScoreDummyModel(), onJoin: {})
         .padding()
 }
 
-#Preview {
+#Preview("Placeholder") {
     PoolScoreItem(poolGamblerScore: poolGamblerScoreDummyModel(), onJoin: {})
         .shimmer()
         .padding()

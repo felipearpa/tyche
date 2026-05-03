@@ -28,6 +28,12 @@ protocol PoolGamblerBetRemoteDataSource {
         next: String?
     ) async throws -> CursorPage<PoolGamblerBetResponse>
 
+    func getPoolGamblerBet(
+        poolId: String,
+        gamblerId: String,
+        matchId: String
+    ) async throws -> PoolGamblerBetResponse
+
     func getGamblerBetsTimeline(
         poolId: String,
         gamblerId: String,

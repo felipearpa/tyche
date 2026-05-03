@@ -1,5 +1,10 @@
 import SwiftUI
 
+public struct SectionConfiguration<Item> {
+    let key: (Item) -> AnyHashable
+    let header: (AnyHashable, Bool) -> AnyView
+}
+
 public struct StatefulLazyVStack
 <Key,
  Item: Identifiable & Hashable,
@@ -21,6 +26,8 @@ public struct StatefulLazyVStack
     let errorContentOnConcatenate: (Error) -> ErrorContentOnConcatenate
     let itemContent: (Item) -> ItemView
     let spacing: CGFloat
+    let pinnedViews: PinnedScrollableViews
+    let sectionConfiguration: SectionConfiguration<Item>?
 
     public init(
         lazyPagingItems: LazyPagingItems<Key, Item>,
@@ -30,6 +37,7 @@ public struct StatefulLazyVStack
         @ViewBuilder errorContent: @escaping (Error) -> ErrorContent,
         @ViewBuilder loadingContentOnConcatenate: @escaping () -> LoadingContentOnConcatenate,
         @ViewBuilder errorContentOnConcatenate: @escaping (Error) -> ErrorContentOnConcatenate,
+        pinnedViews: PinnedScrollableViews = [],
         spacing: CGFloat = 0,
         @ViewBuilder itemContent: @escaping (Item) -> ItemView
     ) {
@@ -42,6 +50,8 @@ public struct StatefulLazyVStack
         self.errorContentOnConcatenate = errorContentOnConcatenate
         self.itemContent = itemContent
         self.spacing = spacing
+        self.pinnedViews = pinnedViews
+        self.sectionConfiguration = nil
     }
 
     public var body: some View {
@@ -54,6 +64,8 @@ public struct StatefulLazyVStack
             errorContent: errorContent,
             loadingContentOnConcatenate: loadingContentOnConcatenate,
             errorContentOnConcatenate: errorContentOnConcatenate,
+            pinnedViews: pinnedViews,
+            sectionConfiguration: sectionConfiguration,
             spacing: spacing,
             itemContent: itemContent
         )
@@ -83,6 +95,8 @@ internal struct StatefulObservedLazyVStack
     let errorContentOnConcatenate: (Error) -> ErrorContentOnConcatenate
     let itemContent: (Item) -> ItemView
     let spacing: CGFloat
+    let pinnedViews: PinnedScrollableViews
+    let sectionConfiguration: SectionConfiguration<Item>?
 
     public init(
         lazyPagingItems: LazyPagingItems<Key, Item>,
@@ -93,6 +107,8 @@ internal struct StatefulObservedLazyVStack
         @ViewBuilder errorContent: @escaping (Error) -> ErrorContent,
         @ViewBuilder loadingContentOnConcatenate: @escaping () -> LoadingContentOnConcatenate,
         @ViewBuilder errorContentOnConcatenate: @escaping (Error) -> ErrorContentOnConcatenate,
+        pinnedViews: PinnedScrollableViews = [],
+        sectionConfiguration: SectionConfiguration<Item>? = nil,
         spacing: CGFloat = 0,
         @ViewBuilder itemContent: @escaping (Item) -> ItemView
     ) {
@@ -106,6 +122,8 @@ internal struct StatefulObservedLazyVStack
         self.errorContentOnConcatenate = errorContentOnConcatenate
         self.itemContent = itemContent
         self.spacing = spacing
+        self.pinnedViews = pinnedViews
+        self.sectionConfiguration = sectionConfiguration
     }
 
     public var body: some View {
@@ -124,7 +142,7 @@ internal struct StatefulObservedLazyVStack
             .animation(.easeInOut, value: isRefreshVisible)
 
             ScrollView {
-                LazyVStack(spacing: spacing) {
+                LazyVStack(spacing: spacing, pinnedViews: pinnedViews) {
                     switch statefulLazyVStackState {
                     case .loading:
                         loadingContent()
@@ -133,12 +151,22 @@ internal struct StatefulObservedLazyVStack
                     case .error(let error):
                         errorContent(error)
                     case .content:
-                        ContentWrapper(
-                            lazyPagingItems: lazyPagingItems,
-                            loadingContentOnAppend: loadingContentOnConcatenate,
-                            errorContentOnAppend: errorContentOnConcatenate,
-                            itemContent: itemContent
-                        )
+                        if let sectionConfiguration {
+                            SectionedContentWrapper(
+                                lazyPagingItems: lazyPagingItems,
+                                sectionConfiguration: sectionConfiguration,
+                                loadingContentOnAppend: loadingContentOnConcatenate,
+                                errorContentOnAppend: errorContentOnConcatenate,
+                                itemContent: itemContent
+                            )
+                        } else {
+                            ContentWrapper(
+                                lazyPagingItems: lazyPagingItems,
+                                loadingContentOnAppend: loadingContentOnConcatenate,
+                                errorContentOnAppend: errorContentOnConcatenate,
+                                itemContent: itemContent
+                            )
+                        }
                     }
                 }
                 .nextStatefulLazyVStack(
@@ -162,7 +190,7 @@ private struct ContentWrapper
  ErrorContentOnConcatenate: View,
  ItemView: View>: View
 {
-    let lazyPagingItems: LazyPagingItems<Key, Item>
+    @ObservedObject var lazyPagingItems: LazyPagingItems<Key, Item>
     let loadingContentOnAppend: () -> LoadingContentOnConcatenate
     let errorContentOnAppend: (Error) -> ErrorContentOnConcatenate
     let itemContent: (Item) -> ItemView
@@ -180,7 +208,7 @@ private struct ContentWrapper
     }
 
     var body: some View {
-        ForEach(Array(lazyPagingItems.enumerated()), id: \.element) { index, item in
+        ForEach(Array(lazyPagingItems.enumerated()), id: \.element.id) { index, item in
             itemContent(item)
                 .task { await lazyPagingItems.appendIfNeeded(currentIndex: index) }
         }
@@ -191,6 +219,74 @@ private struct ContentWrapper
         } else if case .failure(let error, _) = lazyPagingItems.loadState.append {
             errorContentOnAppend(error)
         }
+    }
+}
+
+private struct ItemSection<Item>: Identifiable {
+    var id: AnyHashable { key }
+    let key: AnyHashable
+    let items: [(offset: Int, element: Item)]
+}
+
+private struct SectionedContentWrapper
+<Key,
+ Item: Identifiable & Hashable,
+ LoadingContentOnConcatenate: View,
+ ErrorContentOnConcatenate: View,
+ ItemView: View>: View
+{
+    @ObservedObject var lazyPagingItems: LazyPagingItems<Key, Item>
+    let sectionConfiguration: SectionConfiguration<Item>
+    let loadingContentOnAppend: () -> LoadingContentOnConcatenate
+    let errorContentOnAppend: (Error) -> ErrorContentOnConcatenate
+    let itemContent: (Item) -> ItemView
+
+    var body: some View {
+        let indexedItems = Array(lazyPagingItems.enumerated())
+        let sections = buildSections(from: indexedItems)
+        let firstSectionId = sections.first?.id
+
+        ForEach(sections) { section in
+            Section {
+                ForEach(section.items, id: \.element.id) { index, item in
+                    itemContent(item)
+                        .task { await lazyPagingItems.appendIfNeeded(currentIndex: index) }
+                }
+            } header: {
+                sectionConfiguration.header(section.key, section.id == firstSectionId)
+            }
+        }
+
+        if case .loading = lazyPagingItems.loadState.append {
+            loadingContentOnAppend()
+                .withDisableGestures()
+        } else if case .failure(let error, _) = lazyPagingItems.loadState.append {
+            errorContentOnAppend(error)
+        }
+    }
+
+    private func buildSections(from items: [(offset: Int, element: Item)]) -> [ItemSection<Item>] {
+        var sections: [ItemSection<Item>] = []
+        var currentKey: AnyHashable?
+        var currentItems: [(offset: Int, element: Item)] = []
+
+        for item in items {
+            let key = sectionConfiguration.key(item.element)
+            if key != currentKey {
+                if let currentKey, !currentItems.isEmpty {
+                    sections.append(ItemSection(key: currentKey, items: currentItems))
+                }
+                currentKey = key
+                currentItems = [item]
+            } else {
+                currentItems.append(item)
+            }
+        }
+        if let currentKey, !currentItems.isEmpty {
+            sections.append(ItemSection(key: currentKey, items: currentItems))
+        }
+
+        return sections
     }
 }
 
@@ -216,8 +312,9 @@ where ErrorContentOnConcatenate == StatefulLazyVStackError {
             StatefulLazyVStackError(localizedError: error.localizedErrorOrDefault())
         },
         @ViewBuilder emptyContent: @escaping () -> EmptyContent = { StatefulLazyVStackEmpty() },
+        pinnedViews: PinnedScrollableViews = [],
         spacing: CGFloat = 0,
-        @ViewBuilder itemContent: @escaping (Item) -> ItemView,
+        @ViewBuilder itemContent: @escaping (Item) -> ItemView
     ) {
         self.init(
             lazyPagingItems: lazyPagingItems,
@@ -229,8 +326,46 @@ where ErrorContentOnConcatenate == StatefulLazyVStackError {
             errorContentOnConcatenate: { error in
                 StatefulLazyVStackError(localizedError: error.localizedErrorOrDefault())
             },
+            pinnedViews: pinnedViews,
             spacing: spacing,
-            itemContent: itemContent,
+            itemContent: itemContent
+        )
+    }
+}
+
+public extension StatefulLazyVStack
+where ErrorContentOnConcatenate == StatefulLazyVStackError {
+    init<SectionKey: Hashable, SectionHeader: View>(
+        lazyPagingItems: LazyPagingItems<Key, Item>,
+        @ViewBuilder loadingContent: @escaping () -> LoadingContent,
+        @ViewBuilder refreshLoadingContent: @escaping () -> RefreshLoadingContent = {
+            ProgressView().progressViewStyle(.circular)
+        },
+        @ViewBuilder loadingContentOnConcatenate: @escaping () -> LoadingContentOnConcatenate,
+        @ViewBuilder errorContent: @escaping (Error) -> ErrorContent = { error in
+            StatefulLazyVStackError(localizedError: error.localizedErrorOrDefault())
+        },
+        @ViewBuilder emptyContent: @escaping () -> EmptyContent = { StatefulLazyVStackEmpty() },
+        spacing: CGFloat = 0,
+        sectionKey: @escaping (Item) -> SectionKey,
+        @ViewBuilder sectionHeader: @escaping (SectionKey, Bool) -> SectionHeader,
+        @ViewBuilder itemContent: @escaping (Item) -> ItemView
+    ) {
+        self.lazyPagingItems = lazyPagingItems
+        self.loadingContent = loadingContent
+        self.refreshLoadingContent = refreshLoadingContent
+        self.emptyContent = emptyContent
+        self.errorContent = errorContent
+        self.loadingContentOnConcatenate = loadingContentOnConcatenate
+        self.errorContentOnConcatenate = { error in
+            StatefulLazyVStackError(localizedError: error.localizedErrorOrDefault())
+        }
+        self.itemContent = itemContent
+        self.spacing = spacing
+        self.pinnedViews = [.sectionHeaders]
+        self.sectionConfiguration = SectionConfiguration(
+            key: { AnyHashable(sectionKey($0)) },
+            header: { key, isFirst in AnyView(sectionHeader(key.base as! SectionKey, isFirst)) }
         )
     }
 }

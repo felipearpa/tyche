@@ -28,7 +28,7 @@ fun GamblerScoreListView(
         onGamblerOpen = onGamblerOpen,
         modifier = Modifier
             .fillMaxSize()
-            .padding(all = LocalBoxSpacing.current.medium),
+            .padding(vertical = LocalBoxSpacing.current.medium),
     )
 }
 
@@ -43,7 +43,7 @@ private fun GamblerScoreListView(
     GamblerScoreList(
         lazyPoolGamblerScores = lazyPoolGamblerScores,
         loggedInGamblerId = gamblerId,
-        fakeItemCount = placeholderItemCount,
+        placeholderCount = placeholderItemCount,
         onGamblerOpen = onGamblerOpen,
         modifier = modifier,
     )
@@ -60,6 +60,6 @@ private fun GamblerScoreListViewPreview() {
         onGamblerOpen = { _, _, _ -> },
         modifier = Modifier
             .fillMaxSize()
-            .padding(all = LocalBoxSpacing.current.medium),
+            .padding(vertical = LocalBoxSpacing.current.medium),
     )
 }

@@ -18,6 +18,9 @@ open Felipearpa.Tyche.Function.Request
 open Felipearpa.Tyche.Pool.Application
 open Felipearpa.Tyche.Pool.Domain
 open Felipearpa.Tyche.Pool.Infrastructure
+open Felipearpa.Tyche.PoolLayout.Application
+open Felipearpa.Tyche.PoolLayout.Domain
+open Felipearpa.Tyche.PoolLayout.Infrastructure
 open Felipearpa.Type
 open Microsoft.Extensions.DependencyInjection
 open Microsoft.Extensions.Logging
@@ -50,6 +53,8 @@ type PoolFunction(configureServices: IServiceCollection -> unit) =
             .AddScoped<IPoolGamblerScoreRepository, PoolGamblerScoreDynamoDbRepository>()
             .AddScoped<IPoolGamblerBetRepository, PoolGamblerBetDynamoDbRepository>()
             .AddScoped<IPoolRepository, PoolDynamoDbRepository>()
+            .AddScoped<IPoolLayoutRepository, PoolLayoutDynamoDbRepository>()
+            .AddScoped<IPoolLayoutVersionResolver, PoolLayoutVersionResolver>()
             .AddScoped<GetPoolGamblerScoresByGambler>()
             .AddScoped<GetPoolGamblerScoresByPool>()
             .AddScoped<GetPendingPoolGamblerBets>()
@@ -58,6 +63,7 @@ type PoolFunction(configureServices: IServiceCollection -> unit) =
             .AddScoped<GetPoolMatchGamblerBets>()
             .AddScoped<GetGamblerBetsTimeline>()
             .AddScoped<GetPoolGamblerScoreById>()
+            .AddScoped<GetPoolGamblerBetById>()
             .AddScoped<GetPoolById>()
             .AddScoped<Bet>()
             .AddScoped<CreatePool>()
@@ -397,6 +403,52 @@ type PoolFunction(configureServices: IServiceCollection -> unit) =
             | _ ->
                 let errors =
                     [ toErrorOption poolIdResult; toErrorOption matchIdResult ] |> List.choose id
+
+                return errors |> BadRequestResponseFactory.create
+        }
+        |> Async.StartAsTask
+
+    // GET /pools/{poolId}/gamblers/{gamblerId}/matches/{matchId}
+    member this.GetPoolGamblerBetByIdAsync
+        (request: APIGatewayHttpApiV2ProxyRequest, _: ILambdaContext)
+        : APIGatewayHttpApiV2ProxyResponse Task =
+        async {
+            use scope = serviceProvider.CreateScope()
+
+            let poolIdResult =
+                request.PathParameters
+                |> Option.ofObj
+                |> Option.defaultValue Map.empty
+                |> tryGetUlidParamOrError poolIdParameter
+
+            let gamblerIdResult =
+                request.PathParameters
+                |> Option.ofObj
+                |> Option.defaultValue Map.empty
+                |> tryGetUlidParamOrError gamblerIdParameter
+
+            let matchIdResult =
+                request.PathParameters
+                |> Option.ofObj
+                |> Option.defaultValue Map.empty
+                |> tryGetUlidParamOrError matchIdParameter
+
+            match poolIdResult, gamblerIdResult, matchIdResult with
+            | Ok poolId, Ok gamblerId, Ok matchId ->
+                let! response =
+                    getPoolGamblerBetByIdAsync
+                        poolId
+                        gamblerId
+                        matchId
+                        (scope.ServiceProvider.GetService<GetPoolGamblerBetById>())
+
+                return! response.ToAmazonProxyResponse()
+            | _ ->
+                let errors =
+                    [ toErrorOption poolIdResult
+                      toErrorOption gamblerIdResult
+                      toErrorOption matchIdResult ]
+                    |> List.choose id
 
                 return errors |> BadRequestResponseFactory.create
         }

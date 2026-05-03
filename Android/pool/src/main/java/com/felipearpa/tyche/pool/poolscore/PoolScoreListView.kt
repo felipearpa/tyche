@@ -62,7 +62,6 @@ fun PoolScoreListView(
     val lazyPoolLayouts = viewModel.poolLayouts.collectAsLazyPagingItems()
     val pageSize = viewModel.pageSize
     var invitePoolUrl by remember { mutableStateOf(emptyString()) }
-    val refreshEvent = viewModel.refreshEvents.collectAsState(Unit)
 
     PoolScoreListView(
         lazyItems = lazyItems,
@@ -151,7 +150,7 @@ private fun PoolScoreListView(
                 modifier = Modifier
                     .padding(paddingValues = paddingValues)
                     .fillMaxSize()
-                    .padding(all = LocalBoxSpacing.current.medium),
+                    .padding(vertical = LocalBoxSpacing.current.medium),
             )
         }
     }

@@ -8,28 +8,34 @@ open Felipearpa.Type
 
 module JoinPoolGamblerRequestBuilder =
 
-    [<Literal>]
-    let private initialPoolLayoutVersion = 1
+    let build (createPoolInput: ResolvedCreatePoolInput) (position: int) =
+        let poolLayoutId = createPoolInput.PoolLayoutId |> Ulid.value
+        let poolId = createPoolInput.PoolId.Value
+        let gamblerId = createPoolInput.OwnerGamblerId.Value
 
-    let build (createPoolInput: ResolvedCreatePoolInput) =
+        let gamblersByPoolLayoutPk = KeyPrefix.build PoolTable.Prefix.poolLayout poolLayoutId
+
+        let gamblersByPoolLayoutSk =
+            $"{KeyPrefix.build PoolTable.Prefix.pool poolId}#{KeyPrefix.build PoolTable.Prefix.gambler gamblerId}"
+
         let mutable attributeValues =
             dict
-                [ Key.pk, AttributeValue(S = KeyPrefix.build PoolTable.Prefix.pool createPoolInput.PoolId.Value)
-                  Key.sk,
-                  AttributeValue(S = KeyPrefix.build PoolTable.Prefix.gambler createPoolInput.OwnerGamblerId.Value)
-                  PoolTable.Attribute.poolId, AttributeValue(S = createPoolInput.PoolId.Value)
+                [ Key.pk, AttributeValue(S = KeyPrefix.build PoolTable.Prefix.pool poolId)
+                  Key.sk, AttributeValue(S = KeyPrefix.build PoolTable.Prefix.gambler gamblerId)
+                  PoolTable.Attribute.poolId, AttributeValue(S = poolId)
                   PoolTable.Attribute.poolName, AttributeValue(S = createPoolInput.PoolName.Value)
-                  PoolTable.Attribute.gamblerId, AttributeValue(S = createPoolInput.OwnerGamblerId.Value)
+                  PoolTable.Attribute.gamblerId, AttributeValue(S = gamblerId)
                   PoolTable.Attribute.gamblerUsername, AttributeValue(S = createPoolInput.OwnerGamblerUsername.Value)
                   PoolTable.Attribute.status, AttributeValue(S = "OPENED")
                   PoolTable.Attribute.filter,
                   AttributeValue(S = $"{createPoolInput.PoolName} {createPoolInput.OwnerGamblerUsername}")
-                  PoolTable.Attribute.poolLayoutId, AttributeValue(S = (createPoolInput.PoolLayoutId |> Ulid.value))
-                  PoolTable.Attribute.position, AttributeValue(N = "0")
-                  PoolTable.Attribute.beforePosition, AttributeValue(N = "0")
+                  PoolTable.Attribute.poolLayoutId, AttributeValue(S = poolLayoutId)
+                  PoolTable.Attribute.position, AttributeValue(N = position.ToString())
                   PoolTable.Attribute.score, AttributeValue(N = "0")
-                  PoolTable.Attribute.beforeScore, AttributeValue(N = "0")
-                  PoolTable.Attribute.poolLayoutVersion, AttributeValue(N = initialPoolLayoutVersion.ToString()) ]
+                  PoolTable.Attribute.poolLayoutVersion,
+                  AttributeValue(N = createPoolInput.PoolLayoutVersion.ToString())
+                  PoolTable.Attribute.getGamblersByPoolLayoutPk, AttributeValue(S = gamblersByPoolLayoutPk)
+                  PoolTable.Attribute.getGamblersByPoolLayoutSk, AttributeValue(S = gamblersByPoolLayoutSk) ]
 
         Put(
             TableName = PoolTable.name,

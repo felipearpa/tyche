@@ -22,7 +22,7 @@ public struct GamblerScoreListView: View {
             isCurrentUser: viewModel.gamblerId,
             onGamblerOpen: onGamblerOpen
         )
-        .padding(boxSpacing.medium)
+        .padding(.vertical, boxSpacing.medium)
     }
 }
 

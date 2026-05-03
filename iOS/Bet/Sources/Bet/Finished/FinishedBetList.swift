@@ -22,32 +22,28 @@ struct FinishedBetList: View {
             loadingContent: { FinishedPoolGamblerBetFakeList(count: 50) },
             loadingContentOnConcatenate: {
                 FinishedPoolGamblerBetFakeItem()
-                Divider()
+            },
+            sectionKey: { $0.matchDateTime.toShortDateString() },
+            sectionHeader: { dateString, isFirst in
+                Text(dateString)
+                    .font(.title3)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.horizontal, boxSpacing.large)
+                    .padding(.top, isFirst ? boxSpacing.medium : boxSpacing.medium + boxSpacing.medium)
             }
         ) { poolGamblerBet in
             VStack(spacing: 0) {
-                if shouldShowHeader(for: poolGamblerBet) {
-                    Text(poolGamblerBet.matchDateTime.toShortDateString())
-                        .font(.title3)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(.horizontal, boxSpacing.medium)
-                        .padding(.top, boxSpacing.medium)
-                }
-
                 FinishedBetItem(poolGamblerBet: poolGamblerBet)
-                    .padding(boxSpacing.large)
+                    .frame(maxWidth: .infinity)
+                    .padding(.horizontal, boxSpacing.large)
+                    .padding(.vertical, boxSpacing.medium)
                     .contentShape(Rectangle())
                     .onTapGesture { invokeMatchOpen(onMatchOpen, poolGamblerBet) }
 
                 Divider()
+                    .padding(.horizontal, boxSpacing.large)
             }
         }
-    }
-
-    // Stub for header grouping logic; to be implemented via state or grouping
-    private func shouldShowHeader(for bet: PoolGamblerBetModel) -> Bool {
-        // Implement logic for date comparison and header grouping
-        return true
     }
 }
 
@@ -57,7 +53,6 @@ private struct FinishedPoolGamblerBetFakeList: View {
     var body: some View {
         ForEach(0..<count, id: \.self) { _ in
             FinishedPoolGamblerBetFakeItem()
-            Divider()
         }
     }
 }
@@ -68,7 +63,11 @@ private struct FinishedPoolGamblerBetFakeItem: View {
     var body: some View {
         FinishedBetItem(poolGamblerBet: poolGamblerBetFakeModel())
             .shimmer()
-            .padding(boxSpacing.large)
+            .frame(maxWidth: .infinity)
+            .padding(.horizontal, boxSpacing.large)
+            .padding(.vertical, boxSpacing.medium)
+        Divider()
+            .padding(.horizontal, boxSpacing.large)
     }
 }
 

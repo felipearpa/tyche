@@ -24,6 +24,7 @@
     <Compile Include="Function\BetFunction.fs" />
     <Compile Include="Function\PoolLayoutFunction.fs" />
     <Compile Include="Function\AccountFunction.fs" />
+    <Compile Include="Function\VersionFunction.fs" />
     <Compile Include="Event\FieldResolver.fs" />
     <Compile Include="Event\PoolEvent.fs" />
     <Compile Include="Event\PoolLayoutEventFilter.fs" />

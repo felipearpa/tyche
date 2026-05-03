@@ -5,20 +5,22 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewLightDark
+import com.felipearpa.tyche.pool.NonPositionIndicator
 import com.felipearpa.tyche.pool.PoolGamblerScoreModel
+import com.felipearpa.tyche.pool.PositionIndicator
 import com.felipearpa.tyche.pool.R
 import com.felipearpa.tyche.pool.difference
 import com.felipearpa.tyche.pool.poolGamblerScoreDummyModel
@@ -34,11 +36,11 @@ fun PoolScoreItem(
     poolGamblerScore: PoolGamblerScoreModel,
     onJoin: () -> Unit,
     modifier: Modifier = Modifier,
-    shimmerModifier: Modifier = Modifier,
+    placeholderModifier: Modifier = Modifier,
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.medium),
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier,
     ) {
         Row(
             modifier = Modifier
@@ -47,45 +49,41 @@ fun PoolScoreItem(
             horizontalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.medium),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Column(
-                modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.small),
-            ) {
-                Text(text = poolGamblerScore.poolName, modifier = shimmerModifier)
-                poolGamblerScore.position?.let {
-                    Text(
-                        text = stringResource(R.string.position_label, it),
-                        modifier = shimmerModifier,
-                        style = MaterialTheme.typography.labelSmall,
-                    )
-                }
+            if (poolGamblerScore.position != null) {
+                PositionIndicator(
+                    position = poolGamblerScore.position,
+                    isCurrentUser = true,
+                    shimmerModifier = placeholderModifier,
+                )
+            } else {
+                NonPositionIndicator()
             }
+
+            Text(
+                text = poolGamblerScore.poolName,
+                modifier = Modifier
+                    .weight(1f)
+                    .then(placeholderModifier),
+            )
 
             poolGamblerScore.difference()?.let {
                 TrendIndicator(
-                    shimmerModifier = shimmerModifier,
+                    shimmerModifier = placeholderModifier,
                     difference = it,
                 )
             }
-        }
 
-        Row(modifier = Modifier.fillMaxWidth()) {
-            Spacer(modifier = Modifier.weight(1f))
-            OutlinedButton(
+            Spacer(modifier = Modifier.height(LocalBoxSpacing.current.medium))
+
+            IconButton(
                 onClick = onJoin,
-                modifier = shimmerModifier,
+                modifier = placeholderModifier,
             ) {
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.medium),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Icon(
-                        painter = painterResource(R.drawable.person_add),
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.onPrimaryContainer,
-                    )
-                    Text(text = stringResource(id = R.string.invite_friends_action))
-                }
+                Icon(
+                    painter = painterResource(R.drawable.person_add),
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                )
             }
         }
     }
@@ -97,7 +95,7 @@ fun PoolScorePlaceholderItem(modifier: Modifier = Modifier) {
         poolGamblerScore = poolGamblerScorePlaceholderModel(),
         onJoin = {},
         modifier = modifier,
-        shimmerModifier = Modifier.shimmer(),
+        placeholderModifier = Modifier.shimmer(),
     )
 }
 

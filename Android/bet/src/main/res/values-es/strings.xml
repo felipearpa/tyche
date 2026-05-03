@@ -8,4 +8,7 @@
     <string name="forbidden_bet_message">¡Vaya! Las apuestas están actualmente deshabilitadas</string>
     <string name="match_bets_view_title">Marcador</string>
     <string name="live_label">EN VIVO</string>
+    <string name="bet_timeline_view_title">Línea de tiempo</string>
+    <string name="predictions_open_title">Las predicciones aún están abiertas</string>
+    <string name="predictions_open_message">Para que el juego sea justo, las apuestas de los demás se mostrarán cuando se cierren las predicciones para este partido.</string>
 </resources>

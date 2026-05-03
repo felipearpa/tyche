@@ -43,9 +43,9 @@ public func poolGamblerScoresDummyModels() -> [PoolGamblerScoreModel] {
             poolName: "Neptune World Series 2023",
             gamblerId: "YF23H1",
             gamblerUsername: "neptune-player",
-            position: 4,
-            beforePosition: 3,
-            score: 8
+            position: nil,
+            beforePosition: nil,
+            score: nil
         ),
         PoolGamblerScoreModel(
             poolId: "X4D7B9",

@@ -26,5 +26,5 @@ module BetFunction =
             return
                 match result with
                 | Ok bet -> Results.Ok(bet |> PoolGamblerBetTransformer.toResponse)
-                | Error _ -> Results.Forbid()
+                | Error _ -> Results.StatusCode 403
         }

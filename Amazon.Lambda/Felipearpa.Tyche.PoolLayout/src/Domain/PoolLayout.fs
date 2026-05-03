@@ -6,4 +6,5 @@ open Felipearpa.Type
 type PoolLayout =
     { Id: Ulid
       Name: NonEmptyString100
-      StartDateTime: DateTime }
+      StartDateTime: DateTime
+      Version: int }

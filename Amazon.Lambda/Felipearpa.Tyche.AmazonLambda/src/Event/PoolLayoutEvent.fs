@@ -35,7 +35,10 @@ type PoolLayoutEvent(configureServices: IServiceCollection -> unit) =
                     UpdatePositionsSqsPublisher(sp.GetRequiredService<IAmazonSQS>(), queueUrl))
             )
             .AddSingleton<IPoolGamblerScoreRepository, PoolGamblerScoreDynamoDbRepository>()
+            .AddSingleton<IPoolGamblerBetRepository, PoolGamblerBetDynamoDbRepository>()
+            .AddSingleton<IPoolRepository, PoolDynamoDbRepository>()
             .AddSingleton<ComputeBets>()
+            .AddSingleton<FanOutMatchToGamblers>()
         |> ignore
 
         configureServices services
@@ -51,10 +54,15 @@ type PoolLayoutEvent(configureServices: IServiceCollection -> unit) =
             use scope = serviceProvider.CreateScope()
 
             let computeBets = scope.ServiceProvider.GetRequiredService<ComputeBets>()
+            let fanOutMatchToGamblers = scope.ServiceProvider.GetRequiredService<FanOutMatchToGamblers>()
 
             do!
                 PoolLayoutEventFilter.extractUpdatedPoolLayouts event
                 |> Seq.iterAsync computeBets.ExecuteAsync
+
+            do!
+                PoolLayoutEventFilter.extractInsertedMatches event
+                |> Seq.iterAsync fanOutMatchToGamblers.ExecuteAsync
 
             return ()
          }

@@ -58,6 +58,14 @@ public class PoolGamblerBetFakeRepository: PoolGamblerBetRepository {
         )
     }
 
+    public func getPoolGamblerBet(
+        poolId: String,
+        gamblerId: String,
+        matchId: String
+    ) async -> Result<PoolGamblerBet, Error> {
+        return .success(dummyPoolGamblerBet())
+    }
+
     public func getGamblerBetsTimeline(
         poolId: String,
         gamblerId: String,

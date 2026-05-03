@@ -1,12 +1,19 @@
 package com.felipearpa.tyche.account.byemail
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -17,6 +24,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -32,6 +40,7 @@ import com.felipearpa.tyche.ui.exception.UnknownLocalizedException
 import com.felipearpa.tyche.ui.exception.localizedOrDefault
 import com.felipearpa.tyche.ui.loading.LoadingContainerView
 import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
+import com.felipearpa.tyche.ui.theme.LocalExtendedColorScheme
 import com.felipearpa.ui.state.LoadableViewState
 import com.felipearpa.tyche.ui.R as SharedR
 
@@ -48,6 +57,7 @@ fun EmailLinkSignInView(
 
     EmailLinkSignInView(
         state = state,
+        email = email,
         onStart = onStart,
         onRetry = { signInWithEmailAndLink() },
     )
@@ -60,6 +70,7 @@ fun EmailLinkSignInView(
 @Composable
 fun EmailLinkSignInView(
     state: LoadableViewState<AccountBundle>,
+    email: String,
     onStart: (AccountBundle) -> Unit = {},
     onRetry: () -> Unit,
 ) {
@@ -70,6 +81,8 @@ fun EmailLinkSignInView(
                 onRetry = onRetry,
                 modifier = Modifier
                     .fillMaxSize()
+                    .statusBarsPadding()
+                    .navigationBarsPadding()
                     .padding(horizontal = LocalBoxSpacing.current.medium),
             )
         }
@@ -80,52 +93,98 @@ fun EmailLinkSignInView(
 
         is LoadableViewState.Success ->
             SuccessContent(
+                email = email,
                 onStart = { onStart(state.value) },
                 modifier = Modifier
                     .fillMaxSize()
+                    .statusBarsPadding()
+                    .navigationBarsPadding()
                     .padding(horizontal = LocalBoxSpacing.current.medium),
             )
     }
 }
 
 @Composable
-private fun SuccessContent(onStart: () -> Unit, modifier: Modifier = Modifier) {
-    Column(modifier = modifier) {
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            Column(
+private fun SuccessContent(email: String, onStart: () -> Unit, modifier: Modifier = Modifier) {
+    Column(
+        modifier = modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Column(
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
+        ) {
+            Icon(
+                painter = painterResource(id = R.drawable.mark_email_read),
+                contentDescription = emptyString(),
+                modifier = Modifier.size(iconSize),
+            )
+
+            Spacer(modifier = Modifier.height(LocalBoxSpacing.current.large))
+
+            Text(
+                text = stringResource(id = R.string.account_verified_title),
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.headlineSmall,
                 modifier = Modifier.fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.large),
-            ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.mark_email_read),
-                    contentDescription = emptyString(),
-                    modifier = Modifier.size(iconSize),
-                )
+            )
 
-                Column(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.medium),
-                ) {
-                    Text(
-                        text = stringResource(id = R.string.account_verified_title),
-                        textAlign = TextAlign.Center,
-                        style = MaterialTheme.typography.titleLarge,
-                    )
+            Spacer(modifier = Modifier.height(LocalBoxSpacing.current.medium))
 
-                    Text(text = stringResource(id = R.string.account_verified_description))
-                }
+            Text(
+                text = stringResource(id = R.string.account_verified_description),
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth(),
+            )
 
-                Button(onClick = onStart, modifier = Modifier.fillMaxWidth()) {
-                    Text(text = stringResource(id = R.string.start_action))
-                }
-            }
+            Spacer(modifier = Modifier.height(LocalBoxSpacing.current.large))
+
+            VerifiedEmailPill(email = email)
+        }
+
+        Button(
+            onClick = onStart,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = LocalBoxSpacing.current.medium),
+        ) {
+            Text(text = stringResource(id = R.string.start_action))
         }
     }
 }
 
+@Composable
+private fun VerifiedEmailPill(email: String, modifier: Modifier = Modifier) {
+    Row(
+        modifier = modifier
+            .clip(RoundedCornerShape(LocalBoxSpacing.current.large))
+            .background(LocalExtendedColorScheme.current.successContainer)
+            .padding(
+                horizontal = LocalBoxSpacing.current.medium,
+                vertical = LocalBoxSpacing.current.small,
+            ),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.small),
+    ) {
+        Icon(
+            painter = painterResource(id = SharedR.drawable.done),
+            contentDescription = emptyString(),
+            modifier = Modifier.size(pillIconSize),
+            tint = LocalExtendedColorScheme.current.onSuccessContainer,
+        )
+        Text(
+            text = email,
+            style = MaterialTheme.typography.bodyMedium,
+            color = LocalExtendedColorScheme.current.onSuccessContainer,
+        )
+    }
+}
+
 private val iconSize = 64.dp
+private val pillIconSize = 16.dp
 
 @Composable
 private fun FailureContent(
@@ -133,16 +192,26 @@ private fun FailureContent(
     onRetry: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Box(modifier = modifier, contentAlignment = Alignment.Center) {
-        Column(verticalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.large)) {
+    Column(
+        modifier = modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Box(
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxWidth(),
+            contentAlignment = Alignment.Center,
+        ) {
             ExceptionView(localizedException = localizedException)
+        }
 
-            Button(
-                onClick = onRetry,
-                modifier = Modifier.fillMaxWidth(),
-            ) {
-                Text(text = stringResource(id = SharedR.string.retry_action))
-            }
+        Button(
+            onClick = onRetry,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = LocalBoxSpacing.current.medium),
+        ) {
+            Text(text = stringResource(id = SharedR.string.retry_action))
         }
     }
 }
@@ -150,7 +219,11 @@ private fun FailureContent(
 @Preview(showBackground = true)
 @Composable
 private fun SuccessSignInWithEmailLinkViewPreview() {
-    EmailLinkSignInView(state = LoadableViewState.Success(emptyAccountBundle()), onRetry = {})
+    EmailLinkSignInView(
+        state = LoadableViewState.Success(emptyAccountBundle()),
+        email = "preview@example.com",
+        onRetry = {},
+    )
 }
 
 @Preview(showBackground = true)
@@ -158,6 +231,7 @@ private fun SuccessSignInWithEmailLinkViewPreview() {
 private fun FailureSignInWithEmailLinkViewPreview() {
     EmailLinkSignInView(
         state = LoadableViewState.Failure(UnknownLocalizedException()),
+        email = "preview@example.com",
         onRetry = {},
     )
 }

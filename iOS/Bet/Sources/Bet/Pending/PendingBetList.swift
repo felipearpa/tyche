@@ -26,29 +26,46 @@ struct PendingBetList: View {
             loadingContent: { PendingBetPlaceholderList() },
             loadingContentOnConcatenate: {
                 PendingBetPlaceholderItem()
+                    .frame(maxWidth: .infinity)
+                    .padding(.horizontal, boxSpacing.large)
+                    .padding(.vertical, boxSpacing.medium)
                 Divider()
+                    .padding(.horizontal, boxSpacing.large)
+            },
+            sectionKey: { $0.matchDateTime.toShortDateString() },
+            sectionHeader: { dateString, isFirst in
+                Text(dateString)
+                    .font(.body)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.horizontal, boxSpacing.medium)
+                    .padding(.top, isFirst ? boxSpacing.medium : boxSpacing.medium + boxSpacing.medium)
+                    .padding(.bottom, boxSpacing.medium)
             }
         ) { poolGamblerBet in
-            if isInPreviewMode() {
-                PendingBetItem(
-                    poolGamblerBet: poolGamblerBet,
-                    viewState: .constant(PendingBetItemViewState.emptyVisualization())
-                )
-                .padding(boxSpacing.medium)
+            VStack(spacing: 0) {
+                Group {
+                    if isInPreviewMode() {
+                        PendingBetItem(
+                            poolGamblerBet: poolGamblerBet,
+                            viewState: .constant(PendingBetItemViewState.emptyVisualization())
+                        )
+                    } else {
+                        PendingBetItemView(
+                            viewModel: PendingBetItemViewModel(
+                                betUseCase: diResolver.resolve(BetUseCase.self)!
+                            ),
+                            poolGamblerBet: poolGamblerBet
+                        )
+                    }
+                }
+                .frame(maxWidth: .infinity)
+                .padding(.horizontal, boxSpacing.large)
+                .padding(.vertical, boxSpacing.medium)
                 .contentShape(Rectangle())
                 .onTapGesture { invokeMatchOpen(onMatchOpen, poolGamblerBet) }
+
                 Divider()
-            } else {
-                PendingBetItemView(
-                    viewModel: PendingBetItemViewModel(
-                        poolGamblerBet: poolGamblerBet,
-                        betUseCase: diResolver.resolve(BetUseCase.self)!
-                    )
-                )
-                .padding(boxSpacing.medium)
-                .contentShape(Rectangle())
-                .onTapGesture { invokeMatchOpen(onMatchOpen, poolGamblerBet) }
-                Divider()
+                    .padding(.horizontal, boxSpacing.large)
             }
         }
     }
@@ -57,13 +74,8 @@ struct PendingBetList: View {
 func invokeMatchOpen(_ handler: MatchOpenHandler?, _ poolGamblerBet: PoolGamblerBetModel) {
     handler?(
         poolGamblerBet.poolId,
-        poolGamblerBet.matchId,
-        poolGamblerBet.homeTeamName,
-        poolGamblerBet.awayTeamName,
-        poolGamblerBet.matchDateTime,
-        poolGamblerBet.matchScore?.homeTeamValue,
-        poolGamblerBet.matchScore?.awayTeamValue,
-        poolGamblerBet.isLive
+        poolGamblerBet.gamblerId,
+        poolGamblerBet.matchId
     )
 }
 
@@ -73,8 +85,11 @@ private struct PendingBetPlaceholderList: View {
     var body: some View {
         ForEach(1...50, id: \.self) { _ in
             PendingBetPlaceholderItem()
-                .padding(boxSpacing.medium)
+                .frame(maxWidth: .infinity)
+                .padding(.horizontal, boxSpacing.large)
+                .padding(.vertical, boxSpacing.medium)
             Divider()
+                .padding(.horizontal, boxSpacing.large)
         }
     }
 }

@@ -5,10 +5,12 @@ import androidx.lifecycle.viewModelScope
 import com.felipearpa.tyche.data.pool.application.GetPoolGamblerScore
 import com.felipearpa.tyche.pool.PoolGamblerScoreModel
 import com.felipearpa.tyche.pool.toPoolGamblerScoreModel
+import com.felipearpa.tyche.session.AccountStorage
 import com.felipearpa.tyche.session.authentication.application.LogOut
 import com.felipearpa.tyche.ui.exception.orDefaultLocalized
 import com.felipearpa.ui.state.LoadableViewState
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
@@ -17,10 +19,20 @@ class DrawerViewModel(
     val gamblerId: String,
     private val logOut: LogOut,
     private val getPoolGamblerScore: GetPoolGamblerScore,
+    private val accountStorage: AccountStorage,
 ) : ViewModel() {
     private val _state =
         MutableStateFlow<LoadableViewState<PoolGamblerScoreModel>>(LoadableViewState.Initial)
     val state = _state.asStateFlow()
+
+    private val _email = MutableStateFlow("")
+    val email: StateFlow<String> = _email.asStateFlow()
+
+    init {
+        viewModelScope.launch {
+            _email.value = accountStorage.retrieve()?.email.orEmpty()
+        }
+    }
 
     init {
         viewModelScope.launch {

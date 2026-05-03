@@ -15,14 +15,15 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import com.felipearpa.foundation.emptyString
+import com.felipearpa.tyche.bet.match.matchBetListNavView
+import com.felipearpa.tyche.bet.timeline.betTimelineListView
 import com.felipearpa.tyche.core.JoinPoolUrlTemplateProvider
-import com.felipearpa.tyche.gamblerbets.gamblerBetsNavView
 import com.felipearpa.tyche.home.HomeRoute
-import com.felipearpa.tyche.bet.match.matchBetsNavView
 import com.felipearpa.tyche.home.homeNavView
 import com.felipearpa.tyche.pool.poolJoinerView
 import com.felipearpa.tyche.pool.poolscore.PoolScoreListRoute
 import com.felipearpa.tyche.poolcreator.poolFromLayoutCreatorNavView
+import com.felipearpa.tyche.poolhome.PoolHomeViewRoute
 import com.felipearpa.tyche.poolhome.poolHomeNavView
 import com.felipearpa.tyche.poolscore.poolScoreListNavView
 import com.felipearpa.tyche.session.AccountBundle
@@ -133,9 +134,20 @@ fun Outlet(
             initialRoute = initialRoute,
         )
 
-        gamblerBetsNavView(navController = navController)
+        val popToPoolHome: () -> Unit = {
+            navController.popBackStack<PoolHomeViewRoute>(inclusive = false)
+        }
 
-        matchBetsNavView(navController = navController)
+        betTimelineListView(
+            navController = navController,
+            onHome = popToPoolHome,
+        )
+
+        matchBetListNavView(
+            navController = navController,
+            signedInGamblerId = maybeGamblerId,
+            onHome = popToPoolHome,
+        )
 
         poolFromLayoutCreatorNavView(navController = navController)
 

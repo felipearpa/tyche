@@ -80,6 +80,20 @@ internal class PoolGamblerBetRemoteRepository(
         }
     }
 
+    override suspend fun getPoolGamblerBet(
+        poolId: String,
+        gamblerId: String,
+        matchId: String,
+    ): Result<PoolGamblerBet> {
+        return networkExceptionHandler.handle {
+            poolGamblerBetDataSource.getPoolGamblerBet(
+                poolId = poolId,
+                gamblerId = gamblerId,
+                matchId = matchId,
+            ).toPoolGamblerBet()
+        }
+    }
+
     override suspend fun getGamblerBetsTimeline(
         poolId: String,
         gamblerId: String,

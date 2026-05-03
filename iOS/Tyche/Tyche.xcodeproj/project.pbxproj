@@ -18,6 +18,7 @@
 		55ACE9FF2E634A5C000CEF99 /* UrlMatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55ACE9FE2E634A51000CEF99 /* UrlMatcher.swift */; };
 		55B782CD2E2D449C00E78408 /* AppConfig.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 55B782CC2E2D449C00E78408 /* AppConfig.xcconfig */; };
 		55BE0001A0001A002B0CDEF2 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 55BE0001A0001A002B0CDEF1 /* LaunchScreen.storyboard */; };
+		55D5929D2FA43C71003D4E59 /* LocalURLBasePathProviderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55D5929C2FA43C71003D4E59 /* LocalURLBasePathProviderTests.swift */; };
 		55F9FDCA2B56EAD500066BBA /* EmailLinkSignInRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55F9FDC92B56EAD500066BBA /* EmailLinkSignInRouter.swift */; };
 		D2127F392A2C2F240047DED7 /* TycheApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2127F382A2C2F240047DED7 /* TycheApp.swift */; };
 		D2127F3D2A2C2F260047DED7 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D2127F3C2A2C2F260047DED7 /* Assets.xcassets */; };
@@ -60,6 +61,7 @@
 		55ACE9FE2E634A51000CEF99 /* UrlMatcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UrlMatcher.swift; sourceTree = "<group>"; };
 		55B782CC2E2D449C00E78408 /* AppConfig.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = AppConfig.xcconfig; sourceTree = "<group>"; };
 		55BE0001A0001A002B0CDEF1 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
+		55D5929C2FA43C71003D4E59 /* LocalURLBasePathProviderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalURLBasePathProviderTests.swift; sourceTree = "<group>"; };
 		55F9FDC92B56EAD500066BBA /* EmailLinkSignInRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmailLinkSignInRouter.swift; sourceTree = "<group>"; };
 		D204461A2A367F1400390319 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		D2127F352A2C2F240047DED7 /* Tyche.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Tyche.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -83,7 +85,6 @@
 		55C9D9102E2AE2A9007B79CA /* PoolHome */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = PoolHome; sourceTree = "<group>"; };
 		55C9D92E2E2B1D24007B79CA /* Home */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Home; sourceTree = "<group>"; };
 		55DC0E1C2E283C32007F7BD9 /* PoolScoreList */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = PoolScoreList; sourceTree = "<group>"; };
-		55F0FE012F56AB1100E78408 /* GamblerBets */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = GamblerBets; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -176,6 +177,7 @@
 			isa = PBXGroup;
 			children = (
 				D2127F4E2A2C2F270047DED7 /* TycheTests.swift */,
+				55D5929C2FA43C71003D4E59 /* LocalURLBasePathProviderTests.swift */,
 			);
 			path = TycheTests;
 			sourceTree = "<group>";
@@ -199,7 +201,6 @@
 		D2127F762A2C33340047DED7 /* UI */ = {
 			isa = PBXGroup;
 			children = (
-				55F0FE012F56AB1100E78408 /* GamblerBets */,
 				55C9D92E2E2B1D24007B79CA /* Home */,
 				55C9D9102E2AE2A9007B79CA /* PoolHome */,
 				55DC0E1C2E283C32007F7BD9 /* PoolScoreList */,
@@ -239,7 +240,6 @@
 				55C9D9102E2AE2A9007B79CA /* PoolHome */,
 				55C9D92E2E2B1D24007B79CA /* Home */,
 				55DC0E1C2E283C32007F7BD9 /* PoolScoreList */,
-				55F0FE012F56AB1100E78408 /* GamblerBets */,
 			);
 			name = Tyche;
 			packageProductDependencies = (
@@ -391,6 +391,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				55D5929D2FA43C71003D4E59 /* LocalURLBasePathProviderTests.swift in Sources */,
 				D2127F4F2A2C2F270047DED7 /* TycheTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -552,13 +553,14 @@
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_ENTITLEMENTS = Tyche/Tyche.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 4;
+				CURRENT_PROJECT_VERSION = 5;
 				DEVELOPMENT_ASSET_PATHS = "\"Tyche/Preview Content\"";
 				DEVELOPMENT_TEAM = H7N4H27ULJ;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Tyche/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Fortuna;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.sports";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
@@ -569,7 +571,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.2;
+				MARKETING_VERSION = 1.3;
 				PRODUCT_BUNDLE_IDENTIFIER = com.felipearpa.tyche;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -586,13 +588,14 @@
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_ENTITLEMENTS = Tyche/Tyche.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 4;
+				CURRENT_PROJECT_VERSION = 5;
 				DEVELOPMENT_ASSET_PATHS = "\"Tyche/Preview Content\"";
 				DEVELOPMENT_TEAM = H7N4H27ULJ;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Tyche/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Fortuna;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.sports";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
@@ -603,7 +606,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.2;
+				MARKETING_VERSION = 1.3;
 				PRODUCT_BUNDLE_IDENTIFIER = com.felipearpa.tyche;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;

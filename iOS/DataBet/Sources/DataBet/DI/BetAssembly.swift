@@ -45,6 +45,12 @@ public class BetAssembly: Assembly {
             )
         }
 
+        container.register(GetPoolGamblerBetUseCase.self) { resolver in
+            GetPoolGamblerBetUseCase(
+                poolGamblerBetRepository: resolver.resolve(PoolGamblerBetRepository.self)!
+            )
+        }
+
         container.register(GetGamblerBetsTimelineUseCase.self) { resolver in
             GetGamblerBetsTimelineUseCase(
                 poolGamblerBetRepository: resolver.resolve(PoolGamblerBetRepository.self)!

@@ -103,6 +103,18 @@ type PoolGamblerBetDynamoDbRepository(keySerializer: IKeySerializer, client: IAm
                         | None -> None }
             }
 
+        member this.GetPoolGamblerBetByIdAsync(poolId, gamblerId, matchId) =
+            async {
+                let request = GetPoolGamblerBetByIdRequestBuilder.build poolId gamblerId matchId
+                let! response = client.GetItemAsync(request) |> Async.AwaitTask
+
+                return
+                    if response.IsItemSet then
+                        response.Item |> toPoolGamblerBet |> Some
+                    else
+                        None
+            }
+
         member this.BetAsync(poolId, gamblerId, matchId, betScore) =
             async {
                 let request = BetRequestBuilder.build poolId gamblerId matchId betScore
@@ -129,3 +141,24 @@ type PoolGamblerBetDynamoDbRepository(keySerializer: IKeySerializer, client: IAm
         member this.AddPoolGamblerMatchesAsync(poolGamblerBets) =
             poolGamblerBets
             |> Seq.mapAsync (this :> IPoolGamblerBetRepository).AddPoolGamblerMatchAsync
+
+        member this.MaterializeMatchForGamblerAsync(initialBet, newPoolLayoutVersion) =
+            async {
+                let item = initialBet |> toAmazonItem
+                let putRequest = AddPoolGamblerMatchRequestBuilder.build item
+
+                try
+                    let! _ = client.PutItemAsync(putRequest) |> Async.AwaitTask
+                    ()
+                with :? AggregateException as error when (error.InnerException :? ConditionalCheckFailedException) ->
+                    ()
+
+                let updateRequest =
+                    UpdatePoolLayoutVersionRequestBuilder.build initialBet.PoolId initialBet.GamblerId newPoolLayoutVersion
+
+                try
+                    let! _ = client.UpdateItemAsync(updateRequest) |> Async.AwaitTask
+                    ()
+                with :? AggregateException as error when (error.InnerException :? ConditionalCheckFailedException) ->
+                    ()
+            }

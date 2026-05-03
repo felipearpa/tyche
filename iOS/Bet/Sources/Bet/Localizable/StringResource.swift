@@ -16,6 +16,9 @@ extension StringResource {
     static let forbiddenBetFailureReason = StringResource(name: "forbidden_bet_failure_reason", bundle: Bundle.module)
     static let matchBetsViewTitle = StringResource(name: "match_bets_view_title", bundle: Bundle.module)
     static let liveLabel = StringResource(name: "live_label", bundle: Bundle.module)
+    static let betTimelineViewTitle = StringResource(name: "bet_timeline_view_title", bundle: Bundle.module)
+    static let predictionsOpenTitle = StringResource(name: "predictions_open_title", bundle: Bundle.module)
+    static let predictionsOpenMessage = StringResource(name: "predictions_open_message", bundle: Bundle.module)
 }
 
 extension String {

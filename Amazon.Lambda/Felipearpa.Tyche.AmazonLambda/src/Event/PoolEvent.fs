@@ -2,6 +2,7 @@ namespace Felipearpa.Tyche.AmazonLambda.Event
 
 #nowarn "3536"
 
+open System
 open System.Threading.Tasks
 open Amazon.DynamoDBv2
 open Amazon.Lambda.Core
@@ -110,24 +111,43 @@ type PoolEvent(configureServices: IServiceCollection -> unit) =
         (addMatches: AddMatches)
         (poolId, gamblerId, gamblerUsername, poolLayoutId, poolLayoutVersion)
         : Async<unit> =
+        let computedRequestId = Ulid.random().ToString()
+        let computedDateTime = DateTime.UtcNow
+
+        let buildBet (m: PoolLayoutMatch) =
+            let baseBet =
+                { InitialPoolGamblerBet.PoolId = poolId
+                  GamblerId = gamblerId
+                  GamblerUsername = gamblerUsername
+                  MatchId = m.MatchId
+                  PoolLayoutId = poolLayoutId
+                  HomeTeamId = m.HomeTeamId
+                  HomeTeamName = m.HomeTeamName
+                  AwayTeamId = m.AwayTeamId
+                  AwayTeamName = m.AwayTeamName
+                  MatchDateTime = m.MatchDateTime
+                  PoolLayoutVersion = m.PoolLayoutVersion
+                  HomeTeamScore = None
+                  AwayTeamScore = None
+                  BetScore = None
+                  ComputedDateTime = None
+                  ComputedRequestId = None }
+
+            match m.HomeTeamScore, m.AwayTeamScore with
+            | Some _, Some _ ->
+                { baseBet with
+                    HomeTeamScore = m.HomeTeamScore
+                    AwayTeamScore = m.AwayTeamScore
+                    BetScore = Some 0
+                    ComputedDateTime = Some computedDateTime
+                    ComputedRequestId = Some computedRequestId }
+            | _ -> baseBet
+
         let rec loop (next: string option) : Async<unit> =
             async {
                 let! page = getPendingPoolLayoutMatches.ExecuteAsync(poolLayoutId, poolLayoutVersion, next)
 
-                let poolGamblerBets: InitialPoolGamblerBet seq =
-                    page.Items
-                    |> Seq.map (fun m ->
-                        { InitialPoolGamblerBet.PoolId = poolId
-                          GamblerId = gamblerId
-                          GamblerUsername = gamblerUsername
-                          MatchId = m.MatchId
-                          PoolLayoutId = poolLayoutId
-                          HomeTeamId = m.HomeTeamId
-                          HomeTeamName = m.HomeTeamName
-                          AwayTeamId = m.AwayTeamId
-                          AwayTeamName = m.AwayTeamName
-                          MatchDateTime = m.MatchDateTime
-                          PoolLayoutVersion = m.PoolLayoutVersion })
+                let poolGamblerBets: InitialPoolGamblerBet seq = page.Items |> Seq.map buildBet
 
                 let! _ = addMatches.ExecuteAsync poolGamblerBets
 

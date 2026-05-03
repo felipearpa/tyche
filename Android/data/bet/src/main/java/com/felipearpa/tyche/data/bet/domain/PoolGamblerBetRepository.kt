@@ -32,6 +32,12 @@ interface PoolGamblerBetRepository {
         next: String? = null,
     ): Result<CursorPage<PoolGamblerBet>>
 
+    suspend fun getPoolGamblerBet(
+        poolId: String,
+        gamblerId: String,
+        matchId: String,
+    ): Result<PoolGamblerBet>
+
     suspend fun getGamblerBetsTimeline(
         poolId: String,
         gamblerId: String,

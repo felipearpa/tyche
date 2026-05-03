@@ -11,4 +11,6 @@ type PoolLayoutMatch =
       AwayTeamId: Ulid
       AwayTeamName: NonEmptyString100
       MatchDateTime: DateTime
-      PoolLayoutVersion: int }
+      PoolLayoutVersion: int
+      HomeTeamScore: int option
+      AwayTeamScore: int option }

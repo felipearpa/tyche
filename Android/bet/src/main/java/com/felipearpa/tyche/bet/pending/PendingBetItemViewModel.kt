@@ -20,16 +20,24 @@ import kotlinx.coroutines.launch
 import java.util.UUID
 
 class PendingBetItemViewModel(
-    poolGamblerBet: PoolGamblerBetModel,
     private val placeBet: PlaceBet,
-) :
-    ViewModel() {
+) : ViewModel() {
 
     private val _state =
-        MutableStateFlow<EditableViewState<PoolGamblerBetModel>>(
-            EditableViewState.Initial(poolGamblerBet),
-        )
+        MutableStateFlow<EditableViewState<PoolGamblerBetModel>?>(null)
     val state = _state.asStateFlow()
+
+    fun bind(poolGamblerBet: PoolGamblerBetModel) {
+        _state.update { current ->
+            when (current) {
+                null, is EditableViewState.Initial -> EditableViewState.Initial(poolGamblerBet)
+                is EditableViewState.Success ->
+                    EditableViewState.Success(old = current.old, succeeded = poolGamblerBet)
+
+                is EditableViewState.Saving, is EditableViewState.Failure -> current
+            }
+        }
+    }
 
     fun retryBet() {
         val poolGamblerBet = when (val stateValue = this.state.value) {
@@ -43,7 +51,7 @@ class PendingBetItemViewModel(
     fun bet(betScore: TeamScore<Int>) {
         viewModelScope.launch {
             val (currentPoolGamblerBet, targetPoolGamblerBet) = _state.updateAndGet { currentState ->
-                val currentPoolGamblerBet = currentState.relevantValue()
+                val currentPoolGamblerBet = currentState?.relevantValue() ?: return@launch
                 val targetPoolGamblerBet = currentPoolGamblerBet.copy(betScore = betScore)
                 EditableViewState.Saving(
                     current = currentPoolGamblerBet,
@@ -69,13 +77,17 @@ class PendingBetItemViewModel(
                     )
                 }.onFailure { exception ->
                     if (exception is BetException.Forbidden) {
-                        _state.emit(EditableViewState.Initial(currentPoolGamblerBet.copy(isLocked = true)))
+                        _state.emit(
+                            EditableViewState.Initial(currentPoolGamblerBet.copy(isLocked = true)),
+                        )
                     } else {
                         _state.emit(
                             EditableViewState.Failure(
                                 current = currentPoolGamblerBet,
                                 failed = targetPoolGamblerBet,
-                                exception = exception.mapOrDefaultLocalized { it.asBetLocalizedExceptionOnMatch() },
+                                exception = exception.mapOrDefaultLocalized {
+                                    it.asBetLocalizedExceptionOnMatch()
+                                },
                             ),
                         )
                     }
@@ -85,7 +97,7 @@ class PendingBetItemViewModel(
 
     fun reset() {
         _state.update { currentState ->
-            val poolGamblerBet = currentState.relevantValue()
+            val poolGamblerBet = currentState?.relevantValue() ?: return@update currentState
             EditableViewState.Initial(
                 poolGamblerBet.copy(
                     instanceId = UUID.randomUUID().toString(),

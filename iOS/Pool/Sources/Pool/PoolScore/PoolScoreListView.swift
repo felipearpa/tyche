@@ -29,7 +29,7 @@ public struct PoolScoreListView: View {
             onPoolCreate: onPoolCreate,
             onPoolLayoutSelect: onPoolLayoutSelect,
         )
-        .padding(boxSpacing.medium)
+        .padding(.vertical, boxSpacing.medium)
     }
 }
 

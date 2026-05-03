@@ -59,6 +59,7 @@ dependencies {
     testImplementation(libs.kotest.runner)
     testImplementation(libs.kotest.assertions.core)
     testImplementation(libs.kotest.property)
+    testImplementation(libs.ktor.client.mock)
 
     testRuntimeOnly(libs.bundles.junit5.runtime)
 }

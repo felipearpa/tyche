@@ -1,5 +1,7 @@
 package com.felipearpa.tyche.bet.match
 
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -26,12 +28,13 @@ fun MatchBetList(
     lazyPoolGamblerBets: LazyPagingItems<PoolGamblerBetModel>,
     modifier: Modifier = Modifier,
     placeholderCount: Int = 0,
+    onGamblerOpen: ((poolId: String, gamblerId: String, gamblerUsername: String) -> Unit)? = null,
 ) {
     RefreshableStatefulLazyColumn(
-        modifier = modifier,
         lazyPagingItems = lazyPoolGamblerBets,
         loadingContent = { matchGamblerBetPlaceholderList(count = placeholderCount) },
         loadingContentOnConcatenate = { matchGamblerBetPlaceholderItem() },
+        modifier = modifier,
     ) {
         items(
             count = lazyPoolGamblerBets.itemCount,
@@ -39,11 +42,26 @@ fun MatchBetList(
             contentType = lazyPoolGamblerBets.itemContentType { "MatchGamblerBet" },
         ) { index ->
             val item = lazyPoolGamblerBets[index]!!
-            MatchGamblerBetItem(
-                poolGamblerBet = item,
-                modifier = Modifier.matchGamblerBetItem(),
-            )
-            HorizontalDivider()
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .let { base ->
+                        if (onGamblerOpen != null) {
+                            base.clickable {
+                                onGamblerOpen(item.poolId, item.gamblerId, item.gamblerUsername)
+                            }
+                        } else {
+                            base
+                        }
+                    }
+                    .padding(horizontal = LocalBoxSpacing.current.medium),
+            ) {
+                MatchGamblerBetItem(
+                    poolGamblerBet = item,
+                    modifier = Modifier.matchGamblerBetItem(),
+                )
+                HorizontalDivider()
+            }
         }
     }
 }
@@ -56,8 +74,14 @@ private fun LazyListScope.matchGamblerBetPlaceholderList(count: Int) {
 
 private fun LazyListScope.matchGamblerBetPlaceholderItem() {
     item {
-        MatchGamblerBetPlaceholderItem(modifier = Modifier.matchGamblerBetItem())
-        HorizontalDivider()
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = LocalBoxSpacing.current.medium),
+        ) {
+            MatchGamblerBetPlaceholderItem(modifier = Modifier.matchGamblerBetItem())
+            HorizontalDivider()
+        }
     }
 }
 

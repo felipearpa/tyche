@@ -17,8 +17,6 @@ struct PoolHomeView: View {
     let onMatchOpen: MatchOpenHandler?
 
     @Environment(\.diResolver) var diResolver: DIResolver
-    @State private var selectedTab = PoolHomeTab.gamblerScores
-    @State private var drawerVisible = false
 
     init(
         gamblerId: String,
@@ -39,6 +37,56 @@ struct PoolHomeView: View {
     var body: some View {
         let _ = Self._printChangesIfDebug()
 
+        PoolHomeContent(
+            gamblerId: gamblerId,
+            poolId: poolId,
+            onChangePool: onChangePool,
+            onSignOut: onSignOut,
+            onGamblerOpen: onGamblerOpen,
+            onMatchOpen: onMatchOpen,
+            drawerViewModel: PoolHomeDrawerViewModel(
+                poolId: poolId,
+                gamblerId: gamblerId,
+                logoutUseCase: diResolver.resolve(LogOutUseCase.self)!,
+                getPoolGamblerScoreUseCase: diResolver.resolve(GetPoolGamblerScoreUseCase.self)!,
+                accountStorage: diResolver.resolve(AccountStorage.self)!
+            )
+        )
+    }
+}
+
+private struct PoolHomeContent: View {
+    let gamblerId: String
+    let poolId: String
+    let onChangePool: () -> Void
+    let onSignOut: () -> Void
+    let onGamblerOpen: ((_ poolId: String, _ gamblerId: String, _ gamblerUsername: String) -> Void)?
+    let onMatchOpen: MatchOpenHandler?
+
+    @Environment(\.diResolver) var diResolver: DIResolver
+    @StateObject private var drawerViewModel: PoolHomeDrawerViewModel
+    @State private var selectedTab = PoolHomeTab.gamblerScores
+    @State private var drawerVisible = false
+
+    init(
+        gamblerId: String,
+        poolId: String,
+        onChangePool: @escaping () -> Void,
+        onSignOut: @escaping () -> Void,
+        onGamblerOpen: ((_ poolId: String, _ gamblerId: String, _ gamblerUsername: String) -> Void)?,
+        onMatchOpen: MatchOpenHandler?,
+        drawerViewModel: @autoclosure @escaping () -> PoolHomeDrawerViewModel
+    ) {
+        self.gamblerId = gamblerId
+        self.poolId = poolId
+        self.onChangePool = onChangePool
+        self.onSignOut = onSignOut
+        self.onGamblerOpen = onGamblerOpen
+        self.onMatchOpen = onMatchOpen
+        self._drawerViewModel = StateObject(wrappedValue: drawerViewModel())
+    }
+
+    var body: some View {
         TabView(selection: $selectedTab) {
             GamblerScoreListView(
                 viewModel: GamblerScoreListViewModel(
@@ -96,16 +144,7 @@ struct PoolHomeView: View {
         }
         .drawer(isShowing: $drawerVisible) {
             PoolHomeDrawerView(
-                viewModel: PoolHomeDrawerViewModel(
-                    poolId: poolId,
-                    gamblerId: gamblerId,
-                    logoutUseCase: diResolver.resolve(LogOutUseCase.self)!,
-                    getPoolGamblerScoreUseCase: diResolver.resolve(GetPoolGamblerScoreUseCase.self)!,
-                ),
-                changePool: {
-                    drawerVisible = false
-                    onChangePool()
-                },
+                viewModel: drawerViewModel,
                 onLogout: {
                     drawerVisible = false
                     onSignOut()
@@ -113,7 +152,10 @@ struct PoolHomeView: View {
             )
         }
         .navigationTitle(selectedTab.title)
-        .navigationBarItems(leading: navigationBarLeading())
+        .navigationBarItems(
+            leading: navigationBarLeading(),
+            trailing: navigationBarTrailing()
+        )
         .toolbar(drawerVisible ? .hidden : .visible, for: .navigationBar)
     }
 
@@ -121,6 +163,16 @@ struct PoolHomeView: View {
         Button(action: { drawerVisible.toggle() }) {
             Image(sharedResource: .menu)
                 .resizable()
+                .frame(width: ICON_SIZE, height: ICON_SIZE)
+                .tint(.primary)
+        }
+    }
+
+    private func navigationBarTrailing() -> some View {
+        Button(action: onChangePool) {
+            Image(systemName: "arrow.left.arrow.right")
+                .resizable()
+                .scaledToFit()
                 .frame(width: ICON_SIZE, height: ICON_SIZE)
                 .tint(.primary)
         }

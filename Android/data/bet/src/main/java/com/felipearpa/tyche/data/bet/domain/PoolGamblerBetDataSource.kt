@@ -30,6 +30,12 @@ internal interface PoolGamblerBetDataSource {
         next: String? = null,
     ): CursorPage<PoolGamblerBetResponse>
 
+    suspend fun getPoolGamblerBet(
+        poolId: String,
+        gamblerId: String,
+        matchId: String,
+    ): PoolGamblerBetResponse
+
     suspend fun getGamblerBetsTimeline(
         poolId: String,
         gamblerId: String,

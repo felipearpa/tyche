@@ -9,23 +9,17 @@ struct FinishedBetItem: View {
 
     var body: some View {
         VStack(spacing: boxSpacing.medium) {
-            HStack(spacing: boxSpacing.small) {
-                Text(poolGamblerBet.matchDateTime.toShortTimeString())
-                    .font(.caption)
-                    .multilineTextAlignment(.center)
-
-                Spacer()
-
-                Text("+\(poolGamblerBet.score.map { String($0) } ?? "")")
-                    .font(.largeTitle)
-            }
+            Text(poolGamblerBet.matchDateTime.toShortTimeString())
+                .font(.caption)
+                .multilineTextAlignment(.center)
+                .frame(maxWidth: .infinity, alignment: .leading)
 
             HStack {
                 Text(poolGamblerBet.homeTeamName)
                     .frame(maxWidth: .infinity, alignment: .leading)
 
                 Text(poolGamblerBet.homeTeamMatchRawValue())
-                    .font(.title)
+                    .font(.title2)
                     .multilineTextAlignment(.center)
                     .scoreWidth()
 
@@ -40,7 +34,7 @@ struct FinishedBetItem: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
 
                 Text(poolGamblerBet.awayTeamMatchRawValue())
-                    .font(.title)
+                    .font(.title2)
                     .multilineTextAlignment(.center)
                     .scoreWidth()
 
@@ -49,6 +43,10 @@ struct FinishedBetItem: View {
                     .multilineTextAlignment(.center)
                     .scoreWidth()
             }
+
+            Text("+\(poolGamblerBet.score.map { String($0) } ?? "")")
+                .font(.largeTitle)
+                .frame(maxWidth: .infinity, alignment: .trailing)
         }
     }
 }

@@ -48,6 +48,7 @@ fun PendingBetList(
 
             if (lastMatchDate != poolGamblerBet.matchDateTime.date) {
                 val localDateString = poolGamblerBet.matchDateTime.toShortDateString()
+                val isFirstHeader = lastMatchDate == null
                 stickyHeader(
                     key = localDateString,
                     contentType = "Header",
@@ -55,7 +56,7 @@ fun PendingBetList(
                     Text(
                         text = localDateString,
                         style = MaterialTheme.typography.titleMedium,
-                        modifier = Modifier.pendingHeaderBetItemView(),
+                        modifier = Modifier.pendingHeaderBetItemView(isFirst = isFirstHeader),
                     )
                 }
                 lastMatchDate = poolGamblerBet.matchDateTime.date
@@ -84,10 +85,11 @@ fun PendingBetList(
                 } else {
                     PendingBetItemView(
                         viewModel = pendingBetViewModel(poolGamblerBet = poolGamblerBet),
+                        poolGamblerBet = poolGamblerBet,
                         modifier = itemModifier,
                     )
                 }
-                HorizontalDivider()
+                HorizontalDivider(modifier = Modifier.padding(horizontal = LocalBoxSpacing.current.large))
             }
         }
     }
@@ -102,17 +104,25 @@ private fun LazyListScope.pendingBetPlaceholderList(count: Int) {
 private fun LazyListScope.pendingBetPlaceholderItem() {
     item {
         PendingBetPlaceholderItem(modifier = Modifier.pendingBetItem())
-        HorizontalDivider()
+        HorizontalDivider(modifier = Modifier.padding(horizontal = LocalBoxSpacing.current.large))
     }
 }
 
 @Composable
 private fun Modifier.pendingBetItem() =
-    fillMaxWidth().padding(all = LocalBoxSpacing.current.medium)
+    fillMaxWidth()
+        .padding(horizontal = LocalBoxSpacing.current.large)
+        .padding(vertical = LocalBoxSpacing.current.medium)
 
 @Composable
-private fun Modifier.pendingHeaderBetItemView() =
-    fillMaxWidth().padding(all = LocalBoxSpacing.current.medium)
+private fun Modifier.pendingHeaderBetItemView(isFirst: Boolean) =
+    fillMaxWidth()
+        .padding(horizontal = LocalBoxSpacing.current.medium)
+        .padding(
+            top = if (isFirst) LocalBoxSpacing.current.medium
+            else LocalBoxSpacing.current.medium + LocalBoxSpacing.current.medium,
+        )
+        .padding(bottom = LocalBoxSpacing.current.medium)
 
 @Preview(showBackground = true)
 @Composable

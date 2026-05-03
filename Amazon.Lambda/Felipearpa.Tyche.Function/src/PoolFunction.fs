@@ -115,6 +115,26 @@ module PoolFunction =
             return Results.Ok(page |> CursorPage.map PoolGamblerBetTransformer.toResponse)
         }
 
+    let getPoolGamblerBetByIdAsync
+        (poolId: string)
+        (gamblerId: string)
+        (matchId: string)
+        (getPoolGamblerBetById: GetPoolGamblerBetById)
+        : IResult Async =
+        async {
+            let! maybeBet =
+                getPoolGamblerBetById.ExecuteAsync(
+                    poolId |> Ulid.newOf,
+                    gamblerId |> Ulid.newOf,
+                    matchId |> Ulid.newOf
+                )
+
+            return
+                match maybeBet with
+                | Some bet -> Results.Ok(bet |> PoolGamblerBetTransformer.toResponse)
+                | None -> Results.NotFound()
+        }
+
     let createPoolAsync (createPoolRequest: CreatePoolRequest) (createPool: CreatePool) : IResult Async =
         async {
             let! result = createPool.ExecuteAsync(createPoolRequest |> CreatePoolRequestTransformer.toCreatePoolInput)
@@ -122,7 +142,8 @@ module PoolFunction =
             return
                 match result with
                 | Ok pool -> Results.Ok(pool |> CreatePoolOutputTransformer.toResponse)
-                | Error _ -> Results.NotFound("Gambler not found")
+                | Error CreatePoolFailure.GamblerNotFound -> Results.NotFound("Gambler not found")
+                | Error CreatePoolFailure.PoolLayoutNotFound -> Results.NotFound("Pool layout not found")
         }
 
     let joinPoolAsync (poolId: string) (joinPoolRequest: JoinPoolRequest) (joinPool: JoinPool) : IResult Async =
@@ -137,4 +158,5 @@ module PoolFunction =
                     | JoinPoolFailure.AlreadyJoined -> Results.BadRequest("The gambler has already joined this pool")
                     | JoinPoolFailure.PoolNotFound -> Results.NotFound("Pool not found")
                     | JoinPoolFailure.GamblerNotFound -> Results.NotFound("Gambler not found")
+                    | JoinPoolFailure.PoolLayoutNotFound -> Results.NotFound("Pool layout not found")
         }

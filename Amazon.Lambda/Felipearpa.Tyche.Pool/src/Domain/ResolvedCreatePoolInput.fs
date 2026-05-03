@@ -6,5 +6,6 @@ type ResolvedCreatePoolInput =
     { PoolId: Ulid
       PoolName: NonEmptyString100
       PoolLayoutId: Ulid
+      PoolLayoutVersion: int
       OwnerGamblerId: Ulid
       OwnerGamblerUsername: NonEmptyString100 }

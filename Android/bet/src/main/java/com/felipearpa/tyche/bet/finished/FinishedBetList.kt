@@ -49,6 +49,7 @@ fun FinishedBetList(
             val poolGamblerBet = lazyPoolGamblerBets[index]!!
             if (lastMatchDate != poolGamblerBet.matchDateTime.date) {
                 val localDateString = poolGamblerBet.matchDateTime.toShortDateString()
+                val isFirstHeader = lastMatchDate == null
                 stickyHeader(
                     key = localDateString,
                     contentType = "Header",
@@ -56,7 +57,7 @@ fun FinishedBetList(
                     Text(
                         text = localDateString,
                         style = MaterialTheme.typography.titleMedium,
-                        modifier = Modifier.finishedHeaderBetItem(),
+                        modifier = Modifier.finishedHeaderBetItem(isFirst = isFirstHeader),
                     )
                 }
                 lastMatchDate = poolGamblerBet.matchDateTime.date
@@ -102,13 +103,17 @@ private fun LazyListScope.finishedPoolGamblerBetPlaceholderItem() {
 @Composable
 private fun Modifier.finishedBetItem() =
     fillMaxWidth()
-        .padding(all = LocalBoxSpacing.current.large)
+        .padding(horizontal = LocalBoxSpacing.current.large)
+        .padding(vertical = LocalBoxSpacing.current.medium)
 
 @Composable
-private fun Modifier.finishedHeaderBetItem() =
+private fun Modifier.finishedHeaderBetItem(isFirst: Boolean) =
     fillMaxWidth()
         .padding(horizontal = LocalBoxSpacing.current.medium)
-        .padding(top = LocalBoxSpacing.current.medium)
+        .padding(
+            top = if (isFirst) LocalBoxSpacing.current.medium
+            else LocalBoxSpacing.current.medium + LocalBoxSpacing.current.medium,
+        )
 
 @PreviewLightDark
 @Composable

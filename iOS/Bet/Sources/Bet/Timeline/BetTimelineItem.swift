@@ -7,10 +7,7 @@ struct BetTimelineItem: View {
         if poolGamblerBet.isComputed {
             FinishedBetItem(poolGamblerBet: poolGamblerBet)
         } else {
-            NonEditablePendingBetItem(
-                poolGamblerBet: poolGamblerBet,
-                partialPoolGamblerBet: poolGamblerBet.toPartial()
-            )
+            LiveBetItem(poolGamblerBet: poolGamblerBet)
         }
     }
 }

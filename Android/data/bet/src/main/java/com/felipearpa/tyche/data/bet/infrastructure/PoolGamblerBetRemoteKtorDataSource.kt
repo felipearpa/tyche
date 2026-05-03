@@ -57,6 +57,13 @@ internal class PoolGamblerBetRemoteKtorDataSource(private val httpClient: HttpCl
             parameter("next", next)
         }.body()
 
+    override suspend fun getPoolGamblerBet(
+        poolId: String,
+        gamblerId: String,
+        matchId: String,
+    ): PoolGamblerBetResponse =
+        httpClient.get("pools/$poolId/gamblers/$gamblerId/matches/$matchId").body()
+
     override suspend fun getGamblerBetsTimeline(
         poolId: String,
         gamblerId: String,

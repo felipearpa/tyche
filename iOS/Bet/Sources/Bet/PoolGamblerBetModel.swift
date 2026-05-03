@@ -30,6 +30,10 @@ struct PoolGamblerBetModel: Codable, Identifiable, Hashable {
     var isLive: Bool {
         isLocked && !isComputed
     }
+
+    var isPending: Bool {
+        !isLocked && !isComputed
+    }
 }
 
 extension PoolGamblerBetModel {

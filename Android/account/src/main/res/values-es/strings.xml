@@ -13,11 +13,12 @@
     <string name="invalid_credential_failure_reason">Nombre de usuario o contraseña iconrrectos</string>
     <string name="invalid_credential_recovery_suggestion">Por favor, verifica tu nombre de usuario y contraseña y vuelve a intentarlo. Si has olvidado tu contraseña, puedes restablecerla utilizando el enlace \'¿Olvidaste tu contraseña?\'</string>
     <string name="user_success_login_message">¡Felicidades! Has iniciado sesión correctamente y estás listo para hacer tu apuesta. ¡Que empiece la diversión!</string>
-    <string name="account_verified_title">Correo electrónico verificado: ¡Que comiencen los juegos!</string>
-    <string name="account_verified_description">¡Felicidades, tu verificación de correo está completa! Ya puedes unirte a la diversión y poner a prueba tus predicciones</string>
+    <string name="account_verified_title">Ya estás verificado</string>
+    <string name="account_verified_description">Toca abajo para empezar a jugar</string>
     <string name="start_action">Iniciar</string>
-    <string name="verification_email_sent_title">Enlace de verificación enviado</string>
-    <string name="verification_email_sent_description">Se ha enviado un enlace de verificación a %1$s. Por favor, revisa tu bandeja de entrada y abre el enlace en el mismo dispositivo para completar el proceso, ya que es necesario para la verificación</string>
+    <string name="verification_email_sent_title">Te enviamos un enlace</string>
+    <string name="verification_email_sent_description">Toca el enlace en el correo para entrar</string>
+    <string name="verification_email_sent_warning">Asegúrate de abrirlo desde este teléfono</string>
     <string name="invalid_email_link_sign_in_failure_description">Enlace de inicio de sesión inválido</string>
     <string name="invalid_email_link_sign_in_failure_reason">El enlace de inicio de sesión en el que hiciste clic es inválido o ha expirado</string>
     <string name="invalid_email_link_sign_in_failure_recovery_suggestion">Por favor, solicita un nuevo enlace de inicio de sesión. Si este problema se repite, contacta a nuestro equipo de soporte para obtener más ayuda</string>
