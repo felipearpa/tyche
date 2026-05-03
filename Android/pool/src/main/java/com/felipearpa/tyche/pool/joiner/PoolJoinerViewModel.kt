@@ -42,7 +42,7 @@ class PoolJoinerViewModel(
             result.onSuccess {
                 _joinPoolState.emit(LoadableViewState.Success(Unit))
             }.onFailure {
-                _joinPoolState.emit(LoadableViewState.Failure(it))
+                _joinPoolState.emit(LoadableViewState.Failure(it.asJoinPoolLocalizedException()))
             }
         }
     }

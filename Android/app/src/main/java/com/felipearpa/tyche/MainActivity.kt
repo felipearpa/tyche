@@ -8,6 +8,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -32,7 +33,6 @@ import com.felipearpa.tyche.signin.signInWithEmailAndPasswordNavView
 import com.felipearpa.tyche.signin.signInWithEmailLinkNavView
 import com.felipearpa.tyche.signin.signInWithEmailNavView
 import com.felipearpa.tyche.ui.theme.TycheTheme
-import kotlinx.coroutines.runBlocking
 import org.koin.android.ext.android.inject
 
 class MainActivity : ComponentActivity() {
@@ -46,13 +46,13 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         val intentData = intent.data?.toString()
-        val accountBundle = runBlocking { accountStorage.retrieve() }
 
         enableEdgeToEdge()
 
         setContent {
             TycheTheme {
                 Surface {
+                    val accountBundle by accountStorage.state.collectAsState()
                     Content(
                         accountBundle = accountBundle,
                         intentData = intentData,

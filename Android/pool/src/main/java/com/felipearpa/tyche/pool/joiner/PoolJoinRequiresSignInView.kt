@@ -1,11 +1,12 @@
 package com.felipearpa.tyche.pool.joiner
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -19,25 +20,30 @@ import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
 
 @Composable
 fun PoolJoinRequiresSignInView(onDismiss: () -> Unit, modifier: Modifier = Modifier) {
-    Box(
+    Column(
         modifier = modifier
             .fillMaxSize()
-            .padding(all = LocalBoxSpacing.current.medium),
-        contentAlignment = Alignment.Center,
+            .statusBarsPadding()
+            .navigationBarsPadding()
+            .padding(horizontal = LocalBoxSpacing.current.medium),
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Column(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.large),
+        Box(
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxWidth(),
+            contentAlignment = Alignment.Center,
         ) {
             ExceptionView(localizedException = PoolJoinRequiresSignInException)
+        }
 
-            Button(
-                onClick = onDismiss,
-                modifier = Modifier.fillMaxWidth(),
-            ) {
-                Text(text = stringResource(id = R.string.got_it_action))
-            }
+        Button(
+            onClick = onDismiss,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = LocalBoxSpacing.current.medium),
+        ) {
+            Text(text = stringResource(id = R.string.got_it_action))
         }
     }
 }

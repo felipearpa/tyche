@@ -26,7 +26,6 @@ public struct ValidatableTextField: View {
 
         VStack(spacing: boxSpacing.small) {
             TextField(label, text: $value)
-                .border(shouldShowErrorMessage ? Color(sharedResource: .error) : Color.clear)
                 .focused($wasTouched)
 
             if shouldShowErrorMessage, let errorMessage = errorMessage {

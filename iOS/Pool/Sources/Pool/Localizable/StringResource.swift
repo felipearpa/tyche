@@ -34,6 +34,9 @@ extension StringResource {
     static let poolJoinRequiresSignInFailureReason = StringResource(name: "pool_join_requires_sign_in_failure_reason", bundle: Bundle.module)
     static let poolJoinRequiresSignInFailureRecoverySuggestion = StringResource(name: "pool_join_requires_sign_in_failure_recovery_suggestion", bundle: Bundle.module)
     static let gotItAction = StringResource(name: "got_it_action", bundle: Bundle.module)
+    static let poolAlreadyJoinedErrorDescription = StringResource(name: "pool_already_joined_error_description", bundle: Bundle.module)
+    static let poolAlreadyJoinedFailureReason = StringResource(name: "pool_already_joined_failure_reason", bundle: Bundle.module)
+    static let poolAlreadyJoinedRecoverySuggestion = StringResource(name: "pool_already_joined_recovery_suggestion", bundle: Bundle.module)
 }
 
 extension String {
