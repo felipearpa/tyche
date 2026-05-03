@@ -16,8 +16,9 @@ private struct DrawerView<ContentView: View>: View {
         GeometryReader { geometry in
             ZStack(alignment:.leading) {
                 if (isShowing) {
-                    Color.black
-                        .opacity(0.3)
+                    Rectangle()
+                        .fill(.ultraThinMaterial)
+                        .opacity(0.5)
                         .onTapGesture {
                             isShowing.toggle()
                         }

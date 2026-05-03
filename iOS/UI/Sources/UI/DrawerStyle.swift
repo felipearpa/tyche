@@ -32,7 +32,7 @@ public struct DefaultDrawerStyle: DrawerStyle {
 
     public func makeBody(configuration: Configuration) -> some View {
         configuration.content
-            .background(Color(.systemBackground))
+            .background(.regularMaterial)
             .clipShape(
                 .rect(
                     topLeadingRadius: 0,
