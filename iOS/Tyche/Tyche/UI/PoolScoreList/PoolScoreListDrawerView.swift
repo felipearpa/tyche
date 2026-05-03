@@ -1,4 +1,5 @@
 import SwiftUI
+import UI
 
 struct PoolScoreListDrawerView : View {
     @StateObject var viewModel: PoolScoreListDrawerViewModel
@@ -97,7 +98,7 @@ private struct SignOutButton: View {
             }
             .frame(maxWidth: .infinity, alignment: .center)
         }
-        .buttonStyle(.bordered)
+        .buttonStyle(.liquidGlass)
     }
 }
 

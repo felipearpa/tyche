@@ -8,7 +8,7 @@ struct BetTextField: View {
         let _ = Self._printChangesIfDebug()
         
         TextField("", text: $value)
-            .textFieldStyle(RoundedBorderTextFieldStyle())
+            .textFieldStyle(.liquidGlass)
             .keyboardType(.numberPad)
             .onChange(of: value) { newValue in
                 value = newValue.normalize()

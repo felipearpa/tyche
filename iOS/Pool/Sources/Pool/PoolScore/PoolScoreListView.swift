@@ -73,6 +73,7 @@ public struct PoolScoreListObservedView: View {
         .navigationTitle(String(.gamblerPoolListTitle))
         .sheet(item: $poolUrl) { poolUrl in
             ShareSheet(activityItems: [URL(string: poolUrl.id)!])
+                .presentationDetents([.medium, .large])
         }
     }
 }

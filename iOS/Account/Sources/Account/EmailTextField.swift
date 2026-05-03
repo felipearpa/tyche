@@ -56,8 +56,10 @@ struct EmailTextField : View {
 
 #Preview {
     RawEmailTextField(value: .constant(""))
+        .preferredColorScheme(.light)
 }
 
 #Preview {
     EmailTextField(value: .constant(""))
+        .preferredColorScheme(.dark)
 }

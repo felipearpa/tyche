@@ -190,7 +190,7 @@ private struct SignOutButton: View {
             }
             .frame(maxWidth: .infinity)
         }
-        .buttonStyle(.bordered)
+        .buttonStyle(.liquidGlass)
     }
 }
 

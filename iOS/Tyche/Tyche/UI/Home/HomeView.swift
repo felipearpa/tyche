@@ -62,13 +62,13 @@ struct HomeView: View {
                 Text(String(.signInWithEmailAction))
                     .frame(maxWidth:.infinity)
             }
-            .buttonStyle(.borderedProminent)
+            .buttonStyle(.liquidGlassProminent)
 
             Button(action: onSignInWithEmailAndPassword) {
                 Text(String(.signInWithEmailAndPasswordAction))
                     .frame(maxWidth:.infinity)
             }
-            .buttonStyle(.bordered)
+            .buttonStyle(.liquidGlass)
         }
     }
 }

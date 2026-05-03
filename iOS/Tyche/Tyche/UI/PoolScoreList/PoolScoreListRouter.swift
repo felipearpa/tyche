@@ -71,6 +71,7 @@ struct PoolScoreListRouter: View {
                 onSignOut: onSignOut,
             )
         }
+        .drawerStyle(.liquidGlass)
         .withParentGeometryProxy()
     }
 
@@ -96,3 +97,50 @@ struct PoolScoreListRouter: View {
 
 private let iconSize: CGFloat = 24
 private let createIconSize: CGFloat = 32
+
+private func poolScoreListFakeResolver() -> DIResolver {
+    let container = Container()
+    container.register(CreatePoolUseCase.self) { _ in
+        CreatePoolUseCase(poolRepository: PoolFakePreviewRepository())
+    }
+    return DIResolver(resolver: container.synchronize())
+}
+
+private class PoolFakePreviewRepository: PoolRepository {
+    func getPool(id: String) async -> Result<Pool, Error> { .failure(NSError()) }
+    func createPool(createPoolInput: CreatePoolInput) async -> Result<CreatePoolOutput, Error> { .failure(NSError()) }
+    func joinPool(joinPoolInput: JoinPoolInput) async -> Result<Void, Error> { .failure(NSError()) }
+}
+
+private class PoolLayoutFakePreviewRepository: PoolLayoutRepository {
+    func getOpenPoolLayouts(next: String?, searchText: String?) async -> Result<CursorPage<PoolLayout>, Error> {
+        .success(CursorPage(items: [], next: nil))
+    }
+}
+
+private struct JoinPoolUrlTemplateFakeProvider: JoinPoolUrlTemplateProvider {
+    func callAsFunction() -> String { "https://example.com/pools/{poolId}/join?gambler={gamblerId}" }
+}
+
+#Preview {
+    PoolScoreListRouter(
+        accountBundle: AccountBundle(
+            accountId: "gambler-id",
+            externalAccountId: "external-id",
+            email: "preview@example.com"
+        ),
+        onPoolSelect: { _ in },
+        onSignOut: {},
+        poolScoreViewModel: PoolScoreListViewModel(
+            getPoolGamblerScoresByGamblerUseCase: GetPoolGamblerScoresByGamblerUseCase(
+                poolGamblerScoreRepository: PoolGamblerScoreFakeRepository()
+            ),
+            getOpenPoolLayoutsUseCase: GetOpenPoolLayoutsUseCase(
+                poolLayoutRepository: PoolLayoutFakePreviewRepository()
+            ),
+            joinPoolUrlTemplate: JoinPoolUrlTemplateFakeProvider(),
+            gamblerId: "gambler-id"
+        )
+    )
+    .environment(\.diResolver, poolScoreListFakeResolver())
+}
