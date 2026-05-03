@@ -81,40 +81,36 @@ private fun EmailSignInView(
     }
     val back = if (viewState.isLoading()) null else onBack
 
-    Scaffold(
-        topBar = { TopBar(onBack = back) },
-    ) { innerPadding ->
-        Box(
-            modifier = Modifier
-                .padding(paddingValues = innerPadding)
-                .fillMaxWidth(),
-        ) {
+    val isOverlayVisible = viewState.isLoading()
+
+    Box(modifier = Modifier.fillMaxSize()) {
+        Scaffold(
+            topBar = { TopBar(onBack = back) },
+        ) { innerPadding ->
             when (viewState) {
-                LoadableViewState.Initial -> EmailSignInView(
+                LoadableViewState.Initial,
+                LoadableViewState.Loading,
+                    -> EmailSignInView(
                     email = email,
                     onEdit = edit,
                     onSignIn = signIn,
                     modifier = Modifier
+                        .padding(paddingValues = innerPadding)
                         .fillMaxWidth()
                         .padding(horizontal = LocalBoxSpacing.current.medium),
                 )
 
-                LoadableViewState.Loading -> LoadingContainerView {
-                    EmailSignInView(
-                        email = email,
-                        modifier = Modifier.padding(horizontal = LocalBoxSpacing.current.medium),
-                    )
-                }
-
                 is LoadableViewState.Success -> SuccessContent(
                     email = viewState.value,
                     modifier = Modifier
+                        .padding(paddingValues = innerPadding)
                         .fillMaxSize()
                         .padding(LocalBoxSpacing.current.medium),
                 )
 
                 is LoadableViewState.Failure -> FailureContent(
                     modifier = Modifier
+                        .padding(paddingValues = innerPadding)
                         .fillMaxWidth()
                         .padding(horizontal = LocalBoxSpacing.current.medium),
                     email = email,
@@ -122,6 +118,10 @@ private fun EmailSignInView(
                     onReset = onReset,
                 )
             }
+        }
+
+        if (isOverlayVisible) {
+            LoadingContainerView {}
         }
     }
 }
