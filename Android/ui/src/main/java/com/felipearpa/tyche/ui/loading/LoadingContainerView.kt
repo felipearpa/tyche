@@ -14,12 +14,11 @@ import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.blur
 import androidx.compose.ui.tooling.preview.PreviewLightDark
-import androidx.compose.ui.unit.dp
 import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
 import com.felipearpa.tyche.ui.theme.LocalExtendedColorScheme
 import com.felipearpa.tyche.ui.theme.TycheTheme
+import com.skydoves.cloudy.cloudy
 
 private const val BLUR_RADIUS = 2
 
@@ -29,7 +28,7 @@ fun LoadingContainerView(content: @Composable () -> Unit) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .blur(radius = BLUR_RADIUS.dp),
+                .cloudy(radius = BLUR_RADIUS),
         ) {
             content()
         }
@@ -63,7 +62,7 @@ private fun ProgressContainerViewPreview() {
                             onValueChange = {},
                             modifier = Modifier.fillMaxWidth(),
                         )
-                        Button(onClick = { /*TODO*/ }, modifier = Modifier.fillMaxWidth()) {
+                        Button(onClick = {}, modifier = Modifier.fillMaxWidth()) {
                             Text(text = "Ok")
                         }
                     }

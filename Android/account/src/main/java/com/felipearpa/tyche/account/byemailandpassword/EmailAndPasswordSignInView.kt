@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -53,9 +54,6 @@ fun EmailAndPasswordSignInView(
     val viewState by viewModel.state.collectAsState(initial = LoadableViewState.Initial)
     EmailAndPasswordSignInView(
         viewState = viewState,
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(all = LocalBoxSpacing.current.medium),
         onBack = onBack,
         onReset = viewModel::reset,
         onSignIn = viewModel::signInWithEmailAndPassword,
@@ -66,7 +64,6 @@ fun EmailAndPasswordSignInView(
 @Composable
 private fun EmailAndPasswordSignInView(
     viewState: LoadableViewState<AccountBundle>,
-    modifier: Modifier = Modifier,
     onSignIn: (String, String) -> Unit,
     onBack: () -> Unit,
     onReset: () -> Unit,
@@ -96,42 +93,40 @@ private fun EmailAndPasswordSignInView(
         }
     }
 
-    Scaffold(topBar = { TopBar(onBack = onBack) }) { innerPadding ->
-        Box(
-            modifier = Modifier
-                .padding(paddingValues = innerPadding)
-                .fillMaxWidth(),
-        ) {
-            when (viewState) {
-                LoadableViewState.Initial ->
-                    EmailAndPasswordSignInView(
-                        email = email,
-                        onEmailChanged = updateEmail,
-                        password = password,
-                        onPasswordChanged = updatePassword,
-                        onSignIn = signIn,
-                        modifier = modifier,
-                    )
+    val isOverlayVisible = viewState.isLoading() || viewState is LoadableViewState.Success
 
-                LoadableViewState.Loading, is LoadableViewState.Success -> LoadingContainerView {
+    Box(modifier = Modifier.fillMaxSize()) {
+        Scaffold(
+            topBar = {
+                TopBar(onBack = onBack.takeUnless { isOverlayVisible })
+            },
+        ) { innerPadding ->
+            when (viewState) {
+                LoadableViewState.Initial,
+                LoadableViewState.Loading,
+                is LoadableViewState.Success,
+                    ->
                     EmailAndPasswordSignInView(
                         email = email,
                         onEmailChanged = updateEmail,
                         password = password,
                         onPasswordChanged = updatePassword,
                         onSignIn = signIn,
-                        modifier = modifier,
+                        modifier = Modifier.viewStyle(paddingValues = innerPadding),
                     )
-                }
 
                 is LoadableViewState.Failure -> FailureContent(
                     email = email,
                     password = password,
                     viewState = viewState,
                     reset = onReset,
-                    modifier = modifier,
+                    modifier = Modifier.viewStyle(paddingValues = innerPadding),
                 )
             }
+        }
+
+        if (isOverlayVisible) {
+            LoadingContainerView {}
         }
     }
 
@@ -238,14 +233,17 @@ private fun TopBar(onBack: (() -> Unit)?) {
     )
 }
 
+@Composable
+private fun Modifier.viewStyle(paddingValues: PaddingValues) =
+    padding(paddingValues = paddingValues)
+        .fillMaxWidth()
+        .padding(all = LocalBoxSpacing.current.medium)
+
 @Preview(showBackground = true, name = "Initial")
 @Composable
 private fun InitialEmailAndPasswordSignInViewPreview() {
     EmailAndPasswordSignInView(
         viewState = LoadableViewState.Initial,
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(all = LocalBoxSpacing.current.medium),
         onSignIn = { _, _ -> },
         onBack = {},
         onReset = {},
@@ -258,9 +256,6 @@ private fun InitialEmailAndPasswordSignInViewPreview() {
 private fun LoadingEmailAndPasswordSignInViewPreview() {
     EmailAndPasswordSignInView(
         viewState = LoadableViewState.Loading,
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(all = LocalBoxSpacing.current.medium),
         onSignIn = { _, _ -> },
         onBack = {},
         onReset = {},
@@ -278,9 +273,6 @@ private fun SuccessEmailAndPasswordSignInViewPreview() {
                 externalAccountId = emptyString(),
             ),
         ),
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(all = LocalBoxSpacing.current.medium),
         onSignIn = { _, _ -> },
         onBack = {},
         onReset = {},
@@ -293,9 +285,6 @@ private fun SuccessEmailAndPasswordSignInViewPreview() {
 private fun FailureEmailAndPasswordSignInViewPreview() {
     EmailAndPasswordSignInView(
         viewState = LoadableViewState.Failure(UnknownLocalizedException()),
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(all = LocalBoxSpacing.current.medium),
         onSignIn = { _, _ -> },
         onBack = {},
         onReset = {},

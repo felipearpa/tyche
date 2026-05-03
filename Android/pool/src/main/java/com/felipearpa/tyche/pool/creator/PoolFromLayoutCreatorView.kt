@@ -94,83 +94,81 @@ private fun PoolFromLayoutCreatorView(
         )
     }
 
-    Scaffold(
-        modifier = Modifier
-            .fillMaxSize()
-            .nestedScroll(scrollBehavior.nestedScrollConnection),
-        topBar = {
-            TopBar(
-                title = { Text(text = stringResource(id = R.string.pool_from_layout_creator_title)) },
-                scrollBehavior = scrollBehavior,
-                onBackClick = {
-                    when (step) {
-                        Step.One -> onBackClick()
-                        Step.Two -> step = Step.One
-                    }
-                },
-            )
-        },
-    ) { paddingValues ->
-        when (state) {
-            is EditableViewState.Initial ->
-                Stepper(
-                    step = step,
-                    onStepChange = { newStep -> step = newStep },
-                    onSaveClick = { onSaveClick(createPoolModel) },
-                    createPoolModel = createPoolModel,
-                    onCreatePoolModelChange = { newCreatePoolModel ->
-                        createPoolModel = newCreatePoolModel
+    val isOverlayVisible = state is EditableViewState.Saving || state is EditableViewState.Success
+
+    Box(modifier = Modifier.fillMaxSize()) {
+        Scaffold(
+            modifier = Modifier
+                .fillMaxSize()
+                .nestedScroll(scrollBehavior.nestedScrollConnection),
+            topBar = {
+                TopBar(
+                    title = { Text(text = stringResource(id = R.string.pool_from_layout_creator_title)) },
+                    scrollBehavior = scrollBehavior,
+                    onBackClick = {
+                        if (!isOverlayVisible) {
+                            when (step) {
+                                Step.One -> onBackClick()
+                                Step.Two -> step = Step.One
+                            }
+                        }
                     },
-                    modifier = Modifier
-                        .padding(paddingValues = paddingValues)
-                        .fillMaxSize()
-                        .padding(all = LocalBoxSpacing.current.medium),
                 )
+            },
+        ) { paddingValues ->
+            when (state) {
+                is EditableViewState.Initial ->
+                    Stepper(
+                        step = step,
+                        onStepChange = { newStep -> step = newStep },
+                        onSaveClick = { onSaveClick(createPoolModel) },
+                        createPoolModel = createPoolModel,
+                        onCreatePoolModelChange = { newCreatePoolModel ->
+                            createPoolModel = newCreatePoolModel
+                        },
+                        modifier = Modifier
+                            .padding(paddingValues = paddingValues)
+                            .fillMaxSize()
+                            .padding(all = LocalBoxSpacing.current.medium),
+                    )
 
-            is EditableViewState.Saving -> LoadingContainerView {
-                Stepper(
-                    step = step,
-                    onStepChange = {},
-                    onSaveClick = {},
-                    createPoolModel = createPoolModel,
-                    onCreatePoolModelChange = {},
-                    modifier = Modifier
-                        .padding(paddingValues = paddingValues)
-                        .fillMaxSize()
-                        .padding(all = LocalBoxSpacing.current.medium),
-                )
+                is EditableViewState.Saving,
+                is EditableViewState.Success,
+                    ->
+                    Stepper(
+                        step = step,
+                        onStepChange = {},
+                        onSaveClick = {},
+                        createPoolModel = createPoolModel,
+                        onCreatePoolModelChange = {},
+                        modifier = Modifier
+                            .padding(paddingValues = paddingValues)
+                            .fillMaxSize()
+                            .padding(all = LocalBoxSpacing.current.medium),
+                    )
+
+                is EditableViewState.Failure -> {
+                    Stepper(
+                        step = step,
+                        onStepChange = {},
+                        onSaveClick = {},
+                        createPoolModel = createPoolModel,
+                        onCreatePoolModelChange = {},
+                        modifier = Modifier
+                            .padding(paddingValues = paddingValues)
+                            .fillMaxSize()
+                            .padding(all = LocalBoxSpacing.current.medium),
+                    )
+                    ExceptionAlertDialog(
+                        exception = state.exception.localizedOrDefault(),
+                        onDismiss = { reset() },
+                    )
+                }
             }
+        }
 
-            is EditableViewState.Success ->
-                Stepper(
-                    step = step,
-                    onStepChange = {},
-                    onSaveClick = {},
-                    createPoolModel = createPoolModel,
-                    onCreatePoolModelChange = {},
-                    modifier = Modifier
-                        .padding(paddingValues = paddingValues)
-                        .fillMaxSize()
-                        .padding(all = LocalBoxSpacing.current.medium),
-                )
-
-            is EditableViewState.Failure -> {
-                Stepper(
-                    step = step,
-                    onStepChange = {},
-                    onSaveClick = {},
-                    createPoolModel = createPoolModel,
-                    onCreatePoolModelChange = {},
-                    modifier = Modifier
-                        .padding(paddingValues = paddingValues)
-                        .fillMaxSize()
-                        .padding(all = LocalBoxSpacing.current.medium),
-                )
-                ExceptionAlertDialog(
-                    exception = state.exception.localizedOrDefault(),
-                    onDismiss = { reset() },
-                )
-            }
+        if (isOverlayVisible) {
+            LoadingContainerView {}
         }
     }
 

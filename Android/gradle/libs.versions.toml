@@ -27,6 +27,7 @@ kotlinx-serialization-json = "1.11.0"
 kotlinx-datetime = "0.7.1"
 felipearpa-viewing-state = "v0.0.2"
 felipearpa-foundation = "v0.0.1"
+cloudy = "0.5.0"
 
 [libraries]
 core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "core-ktx" }
@@ -79,6 +80,7 @@ kotest-runner-junit4 = { group = "io.kotest", name = "kotest-runner-junit4", ver
 kotlinx-datetime = { group = "org.jetbrains.kotlinx", name = "kotlinx-datetime", version.ref = "kotlinx-datetime" }
 felipearpa-viewing-state = { group = "com.github.felipearpa", name = "viewing-state-android", version.ref = "felipearpa-viewing-state" }
 felipearpa-foundation = { group = "com.github.felipearpa", name = "foundation-android", version.ref = "felipearpa-foundation" }
+cloudy = { group = "com.github.skydoves", name = "cloudy", version.ref = "cloudy" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
