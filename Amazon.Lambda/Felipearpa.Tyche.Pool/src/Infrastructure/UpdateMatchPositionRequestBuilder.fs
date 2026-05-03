@@ -7,7 +7,13 @@ open Felipearpa.Type
 
 module UpdateMatchPositionRequestBuilder =
 
-    let build (poolId: Ulid) (gamblerId: Ulid) (matchId: Ulid) (position: int) (beforePosition: int) =
+    let build
+        (poolId: Ulid)
+        (gamblerId: Ulid)
+        (matchId: Ulid)
+        (position: int)
+        (beforePosition: int option)
+        =
         let pk =
             $"{KeyPrefix.build PoolTable.Prefix.gambler gamblerId.Value}#{KeyPrefix.build PoolTable.Prefix.pool poolId.Value}"
 
@@ -15,22 +21,36 @@ module UpdateMatchPositionRequestBuilder =
 
         let key = dict [ Key.pk, AttributeValue(pk); Key.sk, AttributeValue(sk) ]
 
-        let updateExpression =
-            $"SET {ExpressionAttribute.name PoolTable.Attribute.position} = :{PoolTable.Attribute.position}, \
-             {ExpressionAttribute.name PoolTable.Attribute.beforePosition} = :{PoolTable.Attribute.beforePosition}"
+        let positionAssignments =
+            [ $"{ExpressionAttribute.name PoolTable.Attribute.position} = :{PoolTable.Attribute.position}"
+              match beforePosition with
+              | Some _ ->
+                  $"{ExpressionAttribute.name PoolTable.Attribute.beforePosition} = :{PoolTable.Attribute.beforePosition}"
+              | None -> () ]
+
+        let updateExpression = "SET " + System.String.Join(", ", positionAssignments)
+
+        let conditionExpression = $"attribute_exists({Key.pk})"
 
         let attributeNames =
-            ExpressionAttribute.names [ PoolTable.Attribute.position; PoolTable.Attribute.beforePosition ]
+            match beforePosition with
+            | Some _ ->
+                ExpressionAttribute.names [ PoolTable.Attribute.position; PoolTable.Attribute.beforePosition ]
+            | None -> ExpressionAttribute.names [ PoolTable.Attribute.position ]
 
         let attributeValues =
             dict
                 [ $":{PoolTable.Attribute.position}", AttributeValue(N = position.ToString())
-                  $":{PoolTable.Attribute.beforePosition}", AttributeValue(N = beforePosition.ToString()) ]
+                  match beforePosition with
+                  | Some value ->
+                      $":{PoolTable.Attribute.beforePosition}", AttributeValue(N = value.ToString())
+                  | None -> () ]
 
         UpdateItemRequest(
             TableName = PoolTable.name,
             Key = Dictionary key,
             UpdateExpression = updateExpression,
+            ConditionExpression = conditionExpression,
             ExpressionAttributeNames = Dictionary attributeNames,
             ExpressionAttributeValues = Dictionary attributeValues
         )

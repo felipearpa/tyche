@@ -24,11 +24,6 @@ let private joinInput () : ResolvedJoinPoolInput =
       PoolLayoutId = Ulid.newOf "01K1PX1TX2NM1HG851S1V0QG6B"
       PoolLayoutVersion = 1 }
 
-let private updateItemResponseWith (gamblerCount: string) =
-    UpdateItemResponse(
-        Attributes = Dictionary(dict [ PoolTable.Attribute.gamblerCount, AttributeValue(N = gamblerCount) ])
-    )
-
 let private buildRepository (clientMock: Mock<IAmazonDynamoDB>) =
     let keySerializerMock = Mock<IKeySerializer>()
     PoolDynamoDbRepository(keySerializerMock.Object, clientMock.Object) :> IPoolRepository
@@ -40,7 +35,7 @@ let ``given a join pool input when joining then the gambler count counter is inc
 
         clientMock
             .Setup(fun client -> client.UpdateItemAsync(It.IsAny<UpdateItemRequest>()))
-            .Returns(Task.FromResult(updateItemResponseWith "3"))
+            .Returns(Task.FromResult(UpdateItemResponse()))
         |> ignore
 
         clientMock
@@ -59,13 +54,13 @@ let ``given a join pool input when joining then the gambler count counter is inc
     }
 
 [<Fact>]
-let ``given a join pool input when joining then the put writes the position returned by the counter`` () =
+let ``given a join pool input when joining then the put does not assign a leaderboard position`` () =
     async {
         let clientMock = Mock<IAmazonDynamoDB>()
 
         clientMock
             .Setup(fun client -> client.UpdateItemAsync(It.IsAny<UpdateItemRequest>()))
-            .Returns(Task.FromResult(updateItemResponseWith "5"))
+            .Returns(Task.FromResult(UpdateItemResponse()))
         |> ignore
 
         let mutable capturedPut: PutItemRequest = null
@@ -81,7 +76,8 @@ let ``given a join pool input when joining then the put writes the position retu
         let! _ = repository.JoinPoolAsync(joinInput ())
 
         capturedPut |> shouldNotEqual null
-        capturedPut.Item[PoolTable.Attribute.position].N |> shouldEqual "5"
+        capturedPut.Item.ContainsKey(PoolTable.Attribute.position) |> shouldEqual false
+        capturedPut.Item.ContainsKey(PoolTable.Attribute.beforePosition) |> shouldEqual false
     }
 
 [<Fact>]
@@ -91,7 +87,7 @@ let ``given a put that fails the condition check when joining then AlreadyJoined
 
         clientMock
             .Setup(fun client -> client.UpdateItemAsync(It.IsAny<UpdateItemRequest>()))
-            .Returns(Task.FromResult(updateItemResponseWith "2"))
+            .Returns(Task.FromResult(UpdateItemResponse()))
         |> ignore
 
         clientMock

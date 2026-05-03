@@ -14,7 +14,8 @@ module UpdatePositionRequestBuilder =
                   Key.sk, AttributeValue(S = KeyPrefix.build PoolTable.Prefix.gambler gamblerId.Value) ]
 
         let updateExpression =
-            $"SET {ExpressionAttribute.name PoolTable.Attribute.beforePosition} = {ExpressionAttribute.name PoolTable.Attribute.position}, \
+            $"SET {ExpressionAttribute.name PoolTable.Attribute.beforePosition} = \
+             if_not_exists({ExpressionAttribute.name PoolTable.Attribute.position}, :{PoolTable.Attribute.position}), \
              {ExpressionAttribute.name PoolTable.Attribute.position} = :{PoolTable.Attribute.position}"
 
         let attributeNames =

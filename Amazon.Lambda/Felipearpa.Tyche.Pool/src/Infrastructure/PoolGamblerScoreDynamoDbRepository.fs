@@ -8,6 +8,7 @@ open Amazon.DynamoDBv2.Model
 open Felipearpa.Core
 open Felipearpa.Core.Paging
 open Felipearpa.Data.DynamoDb
+open Felipearpa.Data.DynamoDb.Dictionary
 open Felipearpa.Tyche.Pool.Domain
 open Felipearpa.Tyche.Pool.Domain.BetEvaluator
 open Felipearpa.Tyche.Pool.Domain.PoolGamblerBetDictionaryTransformer
@@ -148,7 +149,12 @@ type PoolGamblerScoreDynamoDbRepository(keySerializer: IKeySerializer, client: I
                         response.Items
                         |> Seq.mapi (fun i item ->
                             let gamblerId = item[PoolTable.Attribute.gamblerId].S |> Ulid.newOf
-                            let beforePosition = item[PoolTable.Attribute.position].N |> int
+
+                            let beforePosition =
+                                item
+                                |> tryGetAttributeValueOrNone PoolTable.Attribute.position
+                                |> noneIfZero
+
                             let newPosition = position + i + 1
 
                             let masterUpdate = UpdatePositionRequestBuilder.build poolId gamblerId newPosition

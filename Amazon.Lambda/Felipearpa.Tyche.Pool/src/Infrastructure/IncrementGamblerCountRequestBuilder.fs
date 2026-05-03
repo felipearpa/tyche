@@ -27,6 +27,5 @@ module IncrementGamblerCountRequestBuilder =
             Key = Dictionary key,
             UpdateExpression = updateExpression,
             ExpressionAttributeNames = Dictionary attributeNames,
-            ExpressionAttributeValues = Dictionary attributeValues,
-            ReturnValues = "UPDATED_NEW"
+            ExpressionAttributeValues = Dictionary attributeValues
         )
