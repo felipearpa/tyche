@@ -30,10 +30,10 @@ Currently in **closed beta** on Google Play.
 ## Screenshots
 
 <p align="center">
-  <img src="../android-store/Google%20Play%20Phone%20Screenshot%201.png" width="200" alt="Android screenshot 1" />
-  <img src="../android-store/Google%20Play%20Phone%20Screenshot%202.png" width="200" alt="Android screenshot 2" />
-  <img src="../android-store/Google%20Play%20Phone%20Screenshot%203.png" width="200" alt="Android screenshot 3" />
-  <img src="../android-store/Google%20Play%20Phone%20Screenshot%204.png" width="200" alt="Android screenshot 4" />
+  <img src="../android-store/phone-1.png" width="200" alt="Android screenshot 1" />
+  <img src="../android-store/phone-2.png" width="200" alt="Android screenshot 2" />
+  <img src="../android-store/phone-3.png" width="200" alt="Android screenshot 3" />
+  <img src="../android-store/phone-4.png" width="200" alt="Android screenshot 4" />
 </p>
 
 ## Tech stack

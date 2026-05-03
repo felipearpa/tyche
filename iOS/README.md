@@ -30,10 +30,10 @@ Available on **iPhone and iPad**.
 ## Screenshots
 
 <p align="center">
-  <img src="../ios-store/Apple%20iPhone%2016%20Pro%20Max%20Screenshot%201.png" width="200" alt="iOS screenshot 1" />
-  <img src="../ios-store/Apple%20iPhone%2016%20Pro%20Max%20Screenshot%202.png" width="200" alt="iOS screenshot 2" />
-  <img src="../ios-store/Apple%20iPhone%2016%20Pro%20Max%20Screenshot%203.png" width="200" alt="iOS screenshot 3" />
-  <img src="../ios-store/Apple%20iPhone%2016%20Pro%20Max%20Screenshot%204.png" width="200" alt="iOS screenshot 4" />
+  <img src="../ios-store/iphone-1.png" width="200" alt="iOS screenshot 1" />
+  <img src="../ios-store/iphone-2.png" width="200" alt="iOS screenshot 2" />
+  <img src="../ios-store/iphone-3.png" width="200" alt="iOS screenshot 3" />
+  <img src="../ios-store/iphone-4.png" width="200" alt="iOS screenshot 4" />
 </p>
 
 ## Tech stack

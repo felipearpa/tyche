@@ -2,7 +2,7 @@
 
 ### Predict. Compete. Win the bragging rights.
 
-![Feature graphic](android-store/Google%20Play%20Feature%20Graphic.png)
+![Feature graphic](android-store/feature-graphic.png)
 
 **Fortuna turns every match into a competition between friends.** Call the scores, climb the leaderboard, and prove once and for all who actually knows football. The classic *polla* (Colombia) and *quiniela* (Spain) experience — now in your pocket, beautifully native on iOS and Android.
 
@@ -62,19 +62,19 @@ Or visit the landing page at **[fortuna.felipearpa.com](https://fortuna.felipear
 ### Android
 
 <p align="center">
-  <img src="android-store/Google%20Play%20Phone%20Screenshot%201.png" width="200" alt="Android screenshot 1" />
-  <img src="android-store/Google%20Play%20Phone%20Screenshot%202.png" width="200" alt="Android screenshot 2" />
-  <img src="android-store/Google%20Play%20Phone%20Screenshot%203.png" width="200" alt="Android screenshot 3" />
-  <img src="android-store/Google%20Play%20Phone%20Screenshot%204.png" width="200" alt="Android screenshot 4" />
+  <img src="android-store/phone-1.png" width="200" alt="Android screenshot 1" />
+  <img src="android-store/phone-2.png" width="200" alt="Android screenshot 2" />
+  <img src="android-store/phone-3.png" width="200" alt="Android screenshot 3" />
+  <img src="android-store/phone-4.png" width="200" alt="Android screenshot 4" />
 </p>
 
 ### iOS
 
 <p align="center">
-  <img src="ios-store/Apple%20iPhone%2016%20Pro%20Max%20Screenshot%201.png" width="200" alt="iOS screenshot 1" />
-  <img src="ios-store/Apple%20iPhone%2016%20Pro%20Max%20Screenshot%202.png" width="200" alt="iOS screenshot 2" />
-  <img src="ios-store/Apple%20iPhone%2016%20Pro%20Max%20Screenshot%203.png" width="200" alt="iOS screenshot 3" />
-  <img src="ios-store/Apple%20iPhone%2016%20Pro%20Max%20Screenshot%204.png" width="200" alt="iOS screenshot 4" />
+  <img src="ios-store/iphone-1.png" width="200" alt="iOS screenshot 1" />
+  <img src="ios-store/iphone-2.png" width="200" alt="iOS screenshot 2" />
+  <img src="ios-store/iphone-3.png" width="200" alt="iOS screenshot 3" />
+  <img src="ios-store/iphone-4.png" width="200" alt="iOS screenshot 4" />
 </p>
 
 ## How a round works
