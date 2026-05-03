@@ -29,18 +29,16 @@ let private buildRepository (clientMock: Mock<IAmazonDynamoDB>) =
     PoolDynamoDbRepository(keySerializerMock.Object, clientMock.Object) :> IPoolRepository
 
 [<Fact>]
-let ``given a join pool input when joining then the gambler count counter is incremented before the put`` () =
+let ``given a join pool input when joining then the put and the increment are sent as a single transaction`` () =
     async {
         let clientMock = Mock<IAmazonDynamoDB>()
 
-        clientMock
-            .Setup(fun client -> client.UpdateItemAsync(It.IsAny<UpdateItemRequest>()))
-            .Returns(Task.FromResult(UpdateItemResponse()))
-        |> ignore
+        let mutable capturedTransaction: TransactWriteItemsRequest = null
 
         clientMock
-            .Setup(fun client -> client.PutItemAsync(It.IsAny<PutItemRequest>()))
-            .Returns(Task.FromResult(PutItemResponse()))
+            .Setup(fun client -> client.TransactWriteItemsAsync(It.IsAny<TransactWriteItemsRequest>()))
+            .Callback<TransactWriteItemsRequest, CancellationToken>(fun request _ -> capturedTransaction <- request)
+            .Returns(Task.FromResult(TransactWriteItemsResponse()))
         |> ignore
 
         let repository = buildRepository clientMock
@@ -48,9 +46,20 @@ let ``given a join pool input when joining then the gambler count counter is inc
         let! _ = repository.JoinPoolAsync(joinInput ())
 
         clientMock.Verify(
-            (fun client -> client.UpdateItemAsync(It.IsAny<UpdateItemRequest>())),
+            (fun client -> client.TransactWriteItemsAsync(It.IsAny<TransactWriteItemsRequest>())),
             Times.Once()
         )
+
+        capturedTransaction |> shouldNotEqual null
+        capturedTransaction.TransactItems.Count |> shouldEqual 2
+
+        capturedTransaction.TransactItems
+        |> Seq.exists (fun item -> item.Put <> null)
+        |> shouldEqual true
+
+        capturedTransaction.TransactItems
+        |> Seq.exists (fun item -> item.Update <> null)
+        |> shouldEqual true
     }
 
 [<Fact>]
@@ -58,41 +67,46 @@ let ``given a join pool input when joining then the put does not assign a leader
     async {
         let clientMock = Mock<IAmazonDynamoDB>()
 
-        clientMock
-            .Setup(fun client -> client.UpdateItemAsync(It.IsAny<UpdateItemRequest>()))
-            .Returns(Task.FromResult(UpdateItemResponse()))
-        |> ignore
-
-        let mutable capturedPut: PutItemRequest = null
+        let mutable capturedTransaction: TransactWriteItemsRequest = null
 
         clientMock
-            .Setup(fun client -> client.PutItemAsync(It.IsAny<PutItemRequest>()))
-            .Callback<PutItemRequest, CancellationToken>(fun request _ -> capturedPut <- request)
-            .Returns(Task.FromResult(PutItemResponse()))
+            .Setup(fun client -> client.TransactWriteItemsAsync(It.IsAny<TransactWriteItemsRequest>()))
+            .Callback<TransactWriteItemsRequest, CancellationToken>(fun request _ -> capturedTransaction <- request)
+            .Returns(Task.FromResult(TransactWriteItemsResponse()))
         |> ignore
 
         let repository = buildRepository clientMock
 
         let! _ = repository.JoinPoolAsync(joinInput ())
 
-        capturedPut |> shouldNotEqual null
-        capturedPut.Item.ContainsKey(PoolTable.Attribute.position) |> shouldEqual false
-        capturedPut.Item.ContainsKey(PoolTable.Attribute.beforePosition) |> shouldEqual false
+        capturedTransaction |> shouldNotEqual null
+
+        let put =
+            capturedTransaction.TransactItems
+            |> Seq.find (fun item -> item.Put <> null)
+            |> _.Put
+
+        put.Item.ContainsKey(PoolTable.Attribute.position) |> shouldEqual false
+        put.Item.ContainsKey(PoolTable.Attribute.beforePosition) |> shouldEqual false
     }
 
 [<Fact>]
-let ``given a put that fails the condition check when joining then AlreadyJoined is returned`` () =
+let ``given a transaction cancelled by a conditional check when joining then AlreadyJoined is returned`` () =
     async {
         let clientMock = Mock<IAmazonDynamoDB>()
 
-        clientMock
-            .Setup(fun client -> client.UpdateItemAsync(It.IsAny<UpdateItemRequest>()))
-            .Returns(Task.FromResult(UpdateItemResponse()))
-        |> ignore
+        let cancellationReasons =
+            ResizeArray
+                [ CancellationReason(Code = "ConditionalCheckFailed")
+                  CancellationReason(Code = "None") ]
 
         clientMock
-            .Setup(fun client -> client.PutItemAsync(It.IsAny<PutItemRequest>()))
-            .Throws(AggregateException(ConditionalCheckFailedException("already joined")))
+            .Setup(fun client -> client.TransactWriteItemsAsync(It.IsAny<TransactWriteItemsRequest>()))
+            .Throws(
+                AggregateException(
+                    TransactionCanceledException("transaction cancelled", CancellationReasons = cancellationReasons)
+                )
+            )
         |> ignore
 
         let repository = buildRepository clientMock

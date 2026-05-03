@@ -16,6 +16,10 @@ open Felipearpa.Tyche.Pool.Domain.PoolLayoutGamblerDictionaryTransformer
 open Felipearpa.Type
 
 type PoolDynamoDbRepository(keySerializer: IKeySerializer, client: IAmazonDynamoDB) =
+    let isAlreadyJoinedFailure (transactionException: TransactionCanceledException) =
+        transactionException.CancellationReasons
+        |> Seq.exists (fun reason -> reason.Code = "ConditionalCheckFailed")
+
     let createPoolInDbAsync createUserTransaction =
         async {
             try
@@ -74,9 +78,6 @@ type PoolDynamoDbRepository(keySerializer: IKeySerializer, client: IAmazonDynamo
 
         member this.JoinPoolAsync(joinPoolInput) =
             async {
-                let incrementRequest = IncrementGamblerCountRequestBuilder.build joinPoolInput.PoolId
-                do! client.UpdateItemAsync(incrementRequest) |> Async.AwaitTask |> Async.Ignore
-
                 let putRequest =
                     JoinPoolGamblerRequestBuilder.build
                         { ResolvedCreatePoolInput.PoolId = joinPoolInput.PoolId
@@ -86,17 +87,24 @@ type PoolDynamoDbRepository(keySerializer: IKeySerializer, client: IAmazonDynamo
                           PoolLayoutId = joinPoolInput.PoolLayoutId
                           PoolLayoutVersion = joinPoolInput.PoolLayoutVersion }
 
-                let putItemRequest =
-                    PutItemRequest(
-                        TableName = putRequest.TableName,
-                        Item = putRequest.Item,
-                        ConditionExpression = putRequest.ConditionExpression
+                let incrementRequest = IncrementGamblerCountRequestBuilder.build joinPoolInput.PoolId
+
+                let transaction =
+                    TransactWriteItemsRequest(
+                        TransactItems =
+                            ([ TransactWriteItem(Put = putRequest)
+                               TransactWriteItem(Update = incrementRequest) ]
+                             |> List)
                     )
 
                 try
-                    let! _ = client.PutItemAsync(putItemRequest) |> Async.AwaitTask
+                    let! _ = client.TransactWriteItemsAsync(transaction) |> Async.AwaitTask
                     return Ok()
-                with :? AggregateException as error when (error.InnerException :? ConditionalCheckFailedException) ->
+                with error when
+                    (match error.GetBaseException() with
+                     | :? TransactionCanceledException as transactionException ->
+                         isAlreadyJoinedFailure transactionException
+                     | _ -> false) ->
                     return JoinPoolDomainFailure.AlreadyJoined |> Error
             }
 

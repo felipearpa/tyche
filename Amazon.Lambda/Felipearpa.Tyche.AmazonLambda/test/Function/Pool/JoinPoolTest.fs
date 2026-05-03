@@ -18,17 +18,23 @@ open Xunit
 
 module JoinPoolTest =
 
-    let private setupMockCreatePoolWrite (client: Mock<IAmazonDynamoDB>) =
+    let private setupMockJoinPoolWrite (client: Mock<IAmazonDynamoDB>) =
         client
-            .Setup(_.PutItemAsync(It.IsAny<PutItemRequest>()))
-            .ReturnsAsync(PutItemResponse())
+            .Setup(_.TransactWriteItemsAsync(It.IsAny<TransactWriteItemsRequest>()))
+            .ReturnsAsync(TransactWriteItemsResponse())
         |> ignore
 
+    let private setupMockJoinPoolAlreadyJoined (client: Mock<IAmazonDynamoDB>) =
+        let cancellationReasons =
+            ResizeArray
+                [ CancellationReason(Code = "ConditionalCheckFailed")
+                  CancellationReason(Code = "None") ]
+
         client
-            .Setup(_.UpdateItemAsync(It.IsAny<UpdateItemRequest>()))
-            .ReturnsAsync(
-                UpdateItemResponse(
-                    Attributes = Dictionary(dict [ "gamblerCount", AttributeValue(N = "2") ])
+            .Setup(_.TransactWriteItemsAsync(It.IsAny<TransactWriteItemsRequest>()))
+            .ThrowsAsync(
+                System.AggregateException(
+                    TransactionCanceledException("transaction cancelled", CancellationReasons = cancellationReasons)
                 )
             )
         |> ignore
@@ -73,7 +79,7 @@ module JoinPoolTest =
 
     let private ``given a request to join a pool`` () =
         let client = Mock<IAmazonDynamoDB>()
-        setupMockCreatePoolWrite client
+        setupMockJoinPoolWrite client
         setupMockGetAccountQuery client
         setupMockGetPoolQuery client
         setupMockGetPoolLayoutQuery client
@@ -112,7 +118,7 @@ module JoinPoolTest =
 
     let private ``given a bad request to join a pool`` () =
         let client = Mock<IAmazonDynamoDB>()
-        setupMockCreatePoolWrite client
+        setupMockJoinPoolWrite client
         setupMockGetAccountQuery client
         setupMockGetPoolQuery client
         setupMockGetPoolLayoutQuery client
@@ -141,6 +147,42 @@ module JoinPoolTest =
     let private ``then a bad response is returned`` (response: APIGatewayHttpApiV2ProxyResponse) =
         response.StatusCode |> shouldEqual (int HttpStatusCode.BadRequest)
 
+    let private ``given a request to join a pool the gambler already joined`` () =
+        let client = Mock<IAmazonDynamoDB>()
+        setupMockJoinPoolAlreadyJoined client
+        setupMockGetAccountQuery client
+        setupMockGetPoolQuery client
+        setupMockGetPoolLayoutQuery client
+
+        let functions =
+            PoolFunction(fun services ->
+                services.AddLogging(fun builder ->
+                    builder.ClearProviders() |> ignore
+
+                    builder.AddProvider(
+                        { new ILoggerProvider with
+                            member _.CreateLogger _ = NullLogger.Instance
+                            member _.Dispose() = () }
+                    )
+                    |> ignore)
+                |> ignore
+
+                services.AddSingleton<IAmazonDynamoDB>(client.Object) |> ignore)
+
+        let context = TestLambdaContext()
+
+        let request = APIGatewayHttpApiV2ProxyRequest()
+
+        request.PathParameters <- dict [ "poolId", "01K23DN4Q5WD5BJ5FKGTG414EG" ]
+
+        // language=json
+        request.Body <- """{"gamblerId":"01K23DN4Q5WD5BJ5FKGTG414EG"}"""
+
+        (context, request, functions)
+
+    let private ``then a conflict response is returned`` (response: APIGatewayHttpApiV2ProxyResponse) =
+        response.StatusCode |> shouldEqual (int HttpStatusCode.Conflict)
+
     [<Fact>]
     let ``given a request to join a pool when requested then the participant is added to the pool`` () =
         async {
@@ -159,4 +201,14 @@ module JoinPoolTest =
             let! response = ``when requested`` functions request context
 
             ``then a bad response is returned`` response
+        }
+
+    [<Fact>]
+    let ``given a request to join a pool the gambler already joined when requested then a conflict response is returned`` () =
+        async {
+            let context, request, functions = ``given a request to join a pool the gambler already joined`` ()
+
+            let! response = ``when requested`` functions request context
+
+            ``then a conflict response is returned`` response
         }
