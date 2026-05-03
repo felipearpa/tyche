@@ -17,6 +17,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -34,13 +35,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.PreviewLightDark
+import androidx.paging.PagingData
+import androidx.paging.compose.collectAsLazyPagingItems
 import com.felipearpa.tyche.pool.R
 import com.felipearpa.tyche.ui.exception.ExceptionAlertDialog
 import com.felipearpa.tyche.ui.exception.localizedOrDefault
 import com.felipearpa.tyche.ui.loading.LoadingContainerView
 import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
+import com.felipearpa.tyche.ui.theme.TycheTheme
 import com.felipearpa.ui.state.EditableViewState
 import com.felipearpa.ui.state.isSuccess
+import kotlinx.coroutines.flow.MutableStateFlow
 import com.felipearpa.tyche.ui.R as SharedR
 
 @Composable
@@ -62,6 +68,19 @@ fun PoolFromLayoutCreatorView(
         reset = viewModel::reset,
         preselectedPoolLayoutId = preselectedPoolLayoutId,
         preselectedPoolName = preselectedPoolName,
+        stepOneView = { model, onNext ->
+            StepOneView(
+                viewModel = stepOneViewModel(),
+                createPoolModel = model,
+                onNextClick = onNext,
+            )
+        },
+        stepTwoView = { model, onSave ->
+            StepTwoView(
+                createPoolModel = model,
+                onSaveClick = onSave,
+            )
+        },
     )
 }
 
@@ -75,6 +94,8 @@ private fun PoolFromLayoutCreatorView(
     reset: () -> Unit,
     preselectedPoolLayoutId: String? = null,
     preselectedPoolName: String? = null,
+    stepOneView: @Composable (CreatePoolModel, (CreatePoolModel) -> Unit) -> Unit,
+    stepTwoView: @Composable (CreatePoolModel, (CreatePoolModel) -> Unit) -> Unit,
 ) {
     val hasPreselection = preselectedPoolLayoutId != null
     var step by remember {
@@ -126,6 +147,8 @@ private fun PoolFromLayoutCreatorView(
                         onCreatePoolModelChange = { newCreatePoolModel ->
                             createPoolModel = newCreatePoolModel
                         },
+                        stepOneView = stepOneView,
+                        stepTwoView = stepTwoView,
                         modifier = Modifier
                             .padding(paddingValues = paddingValues)
                             .fillMaxSize()
@@ -141,6 +164,8 @@ private fun PoolFromLayoutCreatorView(
                         onSaveClick = {},
                         createPoolModel = createPoolModel,
                         onCreatePoolModelChange = {},
+                        stepOneView = stepOneView,
+                        stepTwoView = stepTwoView,
                         modifier = Modifier
                             .padding(paddingValues = paddingValues)
                             .fillMaxSize()
@@ -154,6 +179,8 @@ private fun PoolFromLayoutCreatorView(
                         onSaveClick = {},
                         createPoolModel = createPoolModel,
                         onCreatePoolModelChange = {},
+                        stepOneView = stepOneView,
+                        stepTwoView = stepTwoView,
                         modifier = Modifier
                             .padding(paddingValues = paddingValues)
                             .fillMaxSize()
@@ -188,6 +215,8 @@ private fun Stepper(
     onSaveClick: () -> Unit,
     createPoolModel: CreatePoolModel,
     onCreatePoolModelChange: (CreatePoolModel) -> Unit,
+    stepOneView: @Composable (CreatePoolModel, (CreatePoolModel) -> Unit) -> Unit,
+    stepTwoView: @Composable (CreatePoolModel, (CreatePoolModel) -> Unit) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     NavigationStep(currentScreen = step, modifier = modifier) {
@@ -196,22 +225,15 @@ private fun Stepper(
             transitionSpec = { transform() },
         ) { currentStep ->
             when (currentStep) {
-                Step.One -> StepOneView(
-                    viewModel = stepOneViewModel(),
-                    createPoolModel = createPoolModel,
-                    onNextClick = { newCreatePoolModel ->
-                        onCreatePoolModelChange(newCreatePoolModel)
-                        onStepChange(Step.Two)
-                    },
-                )
+                Step.One -> stepOneView(createPoolModel) { newCreatePoolModel ->
+                    onCreatePoolModelChange(newCreatePoolModel)
+                    onStepChange(Step.Two)
+                }
 
-                Step.Two -> StepTwoView(
-                    createPoolModel = createPoolModel,
-                    onSaveClick = { newCreatePoolModel ->
-                        onCreatePoolModelChange(newCreatePoolModel)
-                        onSaveClick()
-                    },
-                )
+                Step.Two -> stepTwoView(createPoolModel) { newCreatePoolModel ->
+                    onCreatePoolModelChange(newCreatePoolModel)
+                    onSaveClick()
+                }
             }
         }
     }
@@ -296,4 +318,37 @@ private fun TopBar(
 private enum class Step {
     One,
     Two
+}
+
+@PreviewLightDark
+@Composable
+private fun PoolFromLayoutCreatorViewPreview() {
+    val items =
+        MutableStateFlow(PagingData.from(poolLayoutDummyModels())).collectAsLazyPagingItems()
+
+    TycheTheme {
+        Surface {
+            PoolFromLayoutCreatorView(
+                state = EditableViewState.Initial(emptyCreatePoolModel()),
+                onSaveClick = {},
+                onPoolCreated = {},
+                onBackClick = {},
+                reset = {},
+                stepOneView = { model, onNext ->
+                    StepOneView(
+                        lazyItems = items,
+                        pageSize = 5,
+                        createPoolModel = model,
+                        onNextClick = onNext,
+                    )
+                },
+                stepTwoView = { model, onSave ->
+                    StepTwoView(
+                        createPoolModel = model,
+                        onSaveClick = onSave,
+                    )
+                },
+            )
+        }
+    }
 }

@@ -32,7 +32,7 @@ internal fun StepOneView(
     modifier: Modifier = Modifier,
 ) {
     val lazyPoolLayouts = viewModel.poolLayouts.collectAsLazyPagingItems()
-    StepOne(
+    StepOneView(
         lazyItems = lazyPoolLayouts,
         pageSize = 3,
         createPoolModel = createPoolModel,
@@ -42,7 +42,7 @@ internal fun StepOneView(
 }
 
 @Composable
-private fun StepOne(
+internal fun StepOneView(
     lazyItems: LazyPagingItems<PoolLayoutModel>,
     pageSize: Int,
     createPoolModel: CreatePoolModel,
@@ -85,7 +85,7 @@ private fun StepOnePreview() {
 
     TycheTheme {
         Surface {
-            StepOne(
+            StepOneView(
                 lazyItems = items,
                 pageSize = 5,
                 createPoolModel = emptyCreatePoolModel(),
