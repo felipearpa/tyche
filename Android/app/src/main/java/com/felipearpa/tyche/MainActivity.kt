@@ -12,6 +12,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import com.felipearpa.foundation.emptyString
@@ -32,7 +33,9 @@ import com.felipearpa.tyche.signin.signInWithEmailAndPasswordNavView
 import com.felipearpa.tyche.signin.signInWithEmailLinkNavView
 import com.felipearpa.tyche.signin.signInWithEmailNavView
 import com.felipearpa.tyche.ui.theme.TycheTheme
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.koin.android.ext.android.inject
 
 class MainActivity : ComponentActivity() {
@@ -40,26 +43,38 @@ class MainActivity : ComponentActivity() {
     private val joinUrlTemplate: JoinPoolUrlTemplateProvider by inject()
 
     private var deepLinkIntent by mutableStateOf<Intent?>(null)
+    private var isReady by mutableStateOf(false)
+    private var accountBundle by mutableStateOf<AccountBundle?>(null)
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        installSplashScreen()
+        val splashScreen = installSplashScreen()
         super.onCreate(savedInstanceState)
 
+        splashScreen.setKeepOnScreenCondition { !isReady }
+
+        lifecycleScope.launch {
+            accountBundle = withContext(Dispatchers.IO) {
+                accountStorage.retrieve()
+            }
+            isReady = true
+        }
+
         val intentData = intent.data?.toString()
-        val accountBundle = runBlocking { accountStorage.retrieve() }
 
         enableEdgeToEdge()
 
         setContent {
-            TycheTheme {
-                Surface {
-                    Content(
-                        accountBundle = accountBundle,
-                        intentData = intentData,
-                        joinPoolUrlTemplate = joinUrlTemplate,
-                        deepLinkIntent = deepLinkIntent,
-                        onHandleDeepLink = { deepLinkIntent = null },
-                    )
+            if (isReady) {
+                TycheTheme {
+                    Surface {
+                        Content(
+                            accountBundle = accountBundle,
+                            intentData = intentData,
+                            joinPoolUrlTemplate = joinUrlTemplate,
+                            deepLinkIntent = deepLinkIntent,
+                            onHandleDeepLink = { deepLinkIntent = null },
+                        )
+                    }
                 }
             }
         }
