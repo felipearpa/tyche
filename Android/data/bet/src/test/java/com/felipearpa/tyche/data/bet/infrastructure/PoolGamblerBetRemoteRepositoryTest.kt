@@ -7,7 +7,8 @@ import com.felipearpa.tyche.core.type.BetScore
 import com.felipearpa.tyche.data.bet.domain.Bet
 import com.felipearpa.tyche.data.bet.domain.BetException
 import com.felipearpa.tyche.data.bet.domain.PoolGamblerBetDataSource
-import io.mockk.coEvery
+import io.kotest.matchers.nulls.shouldNotBeNull
+import io.kotest.matchers.types.shouldBeInstanceOf
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
@@ -39,7 +40,8 @@ class PoolGamblerBetRemoteRepositoryTest {
         val result = repository.bet(bet)
 
         assertTrue(result.isFailure)
-        assertEquals(BetException.Forbidden, result.exceptionOrNull())
+        result.exceptionOrNull().shouldNotBeNull()
+        result.exceptionOrNull().shouldBeInstanceOf<BetException.Forbidden>()
     }
 
     @Test

@@ -18,6 +18,7 @@ public extension SharedImageResource  {
     static let arrowForwardIos = SharedImageResource(.arrowForwardIos)
     static let filledAddCircle = SharedImageResource(.filledAddCircle)
     static let home = SharedImageResource(.home)
+    static let trophy = SharedImageResource(.trophy)
 }
 
 public extension Image {

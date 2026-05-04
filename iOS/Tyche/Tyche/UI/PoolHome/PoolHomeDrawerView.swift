@@ -116,7 +116,7 @@ private struct PoolLayoutItem: View {
     var body: some View {
         VStack(alignment: .leading, spacing: boxSpacing.small) {
             HStack(spacing: boxSpacing.small) {
-                Image(systemName: "trophy.fill")
+                Image(sharedResource: .trophy)
                     .resizable()
                     .scaledToFit()
                     .frame(width: 12, height: 12)

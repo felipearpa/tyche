@@ -1,8 +1,11 @@
 package com.felipearpa.tyche.data.pool.infrastructure
 
+import com.felipearpa.network.HttpStatus
 import com.felipearpa.network.NetworkExceptionHandler
+import com.felipearpa.network.recoverHttpException
 import com.felipearpa.tyche.data.pool.domain.CreatePoolInput
 import com.felipearpa.tyche.data.pool.domain.CreatePoolOutput
+import com.felipearpa.tyche.data.pool.domain.JoinPoolException
 import com.felipearpa.tyche.data.pool.domain.JoinPoolInput
 import com.felipearpa.tyche.data.pool.domain.Pool
 import com.felipearpa.tyche.data.pool.domain.PoolDataSource
@@ -35,6 +38,11 @@ internal class PoolRemoteRepository(
                 poolId = joinPoolInput.poolId,
                 joinPoolRequest = joinPoolInput.toJoinPoolRequest(),
             )
+        }.recoverHttpException { exception ->
+            when (exception.httpStatus) {
+                HttpStatus.CONFLICT -> JoinPoolException.AlreadyJoined()
+                else -> exception
+            }
         }
     }
 }

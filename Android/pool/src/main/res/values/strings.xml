@@ -7,8 +7,8 @@
     <string name="pool_name_label">Type the name for the pool</string>
     <string name="fill_pool_fields_title">Fill out the fields to create your pool</string>
     <string name="pool_name_length_validation_error">The pool name must be between 1 and 100 characters</string>
-    <string name="ready_to_join_title">Ready to join “%1$s”?</string>
-    <string name="ready_to_join_subtitle">You’ve been invited to join the “%1$s”! Want to jump in and play alongside others?</string>
+    <string name="ready_to_join_title">You’re invited</string>
+    <string name="ready_to_join_subtitle">Jump in and play your predictions alongside others</string>
     <string name="join_pool_action">Join</string>
     <string name="pool_score_empty_list_title">You\'re not in any pools yet</string>
     <string name="pool_score_empty_list_subtitle">Pick a tournament template, create your pool and invite your friends.</string>
@@ -20,4 +20,7 @@
     <string name="pool_join_requires_sign_in_failure_reason">You need to be signed in to open this pool join link</string>
     <string name="pool_join_requires_sign_in_failure_recovery_suggestion">Please sign in and open the link again</string>
     <string name="got_it_action">Got it</string>
+    <string name="pool_already_joined_error_description">You’re already in this pool</string>
+    <string name="pool_already_joined_failure_reason">Looks like you joined this one before</string>
+    <string name="pool_already_joined_recovery_suggestion">Open it from “My pools” to start playing</string>
 </resources>

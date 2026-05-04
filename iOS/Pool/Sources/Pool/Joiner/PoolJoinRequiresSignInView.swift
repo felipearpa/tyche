@@ -11,17 +11,22 @@ public struct PoolJoinRequiresSignInView: View {
     }
 
     public var body: some View {
-        VStack(spacing: boxSpacing.large) {
+        VStack(spacing: 0) {
+            Spacer()
+
             ErrorView(localizedError: PoolJoinRequiresSignInError.requiresSignIn)
+
+            Spacer()
 
             Button(action: onDismiss) {
                 Text(String(.gotItAction))
                     .frame(maxWidth: .infinity)
             }
             .buttonStyle(.liquidGlassProminent)
+            .padding(.vertical, boxSpacing.medium)
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
         .padding(boxSpacing.medium)
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
     }
 }
 

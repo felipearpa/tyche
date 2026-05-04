@@ -113,7 +113,7 @@ internal class PoolGamblerBetRemoteRepository(
             poolGamblerBetDataSource.bet(betRequest = bet.toBetRequest()).toPoolGamblerBet()
         }.recoverHttpException { exception ->
             when (exception.httpStatus) {
-                HttpStatus.FORBIDDEN -> BetException.Forbidden
+                HttpStatus.FORBIDDEN -> BetException.Forbidden()
                 else -> exception
             }
         }

@@ -1,5 +1,5 @@
 import XCTest
-@testable import User
+@testable import Session
 
 final class PasswordTests: XCTestCase {
     
@@ -12,7 +12,7 @@ final class PasswordTests: XCTestCase {
     }
     
     private func givenAValidPasswordStringWhenAPasswordIsCreatedThenAPasswordWithTheStringContainedIsReturned(value: String) throws {
-        let password = Password(value: value)!
+        let password = Password(value)!
         XCTAssertEqual(value, password.value)
     }
     
@@ -27,7 +27,7 @@ final class PasswordTests: XCTestCase {
     }
     
     private func givenAnInvalidPasswordStringWhenAPasswordIsCreatedThenANilValueIsGotten(value: String) throws {
-        let maybePassoword = Password(value: value)
+        let maybePassoword = Password(value)
         XCTAssertNil(maybePassoword)
     }
 }

@@ -20,15 +20,13 @@ import com.felipearpa.tyche.ui.theme.LocalExtendedColorScheme
 import com.felipearpa.tyche.ui.theme.TycheTheme
 import com.skydoves.cloudy.cloudy
 
-private const val BLUR_RADIUS = 2
-
 @Composable
 fun LoadingContainerView(content: @Composable () -> Unit) {
     Box(modifier = Modifier.fillMaxSize()) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .cloudy(radius = BLUR_RADIUS),
+                .cloudy(),
         ) {
             content()
         }

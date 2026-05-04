@@ -75,7 +75,6 @@ private struct InternalSecureField : View {
     
     var body: some View {
         SecureField(String(.passwordLabel), text: $value)
-            .border(isValid ? Color.clear : Color(sharedResource: .error))
             .overlay(alignment: .trailing) {
                 Image(systemName: isPasswordTextVisible ? "eye.slash.fill" : "eye.fill")
                     .padding(.horizontal)
@@ -93,7 +92,6 @@ private struct InternalTextField : View {
         TextField(String(.passwordLabel), text: $value)
             .autocapitalization(.none)
             .autocorrectionDisabled(true)
-            .border(isValid ? Color.clear : Color(sharedResource: .error))
             .overlay(alignment: .trailing) {
                 Image(systemName: isPasswordTextVisible ? "eye.slash.fill" : "eye.fill")
                     .accentColor(.secondary)
