@@ -47,16 +47,15 @@ jobs:
 
       - name: Test Swift packages
         run: |
-          SIM_ID=$(xcrun simctl list devices available -j \
-            | jq -r '[.devices[][] | select(.isAvailable)] | .[0].udid')
-
           for pkg in Account Bet Core DataBet DataPool Pool Session UI; do
             echo "▶ Testing package $pkg"
             (
               cd "$pkg" && \
               xcodebuild test \
                 -scheme "$pkg" \
-                -destination "id=$SIM_ID"
+                -destination "$DESTINATION" \
+                CODE_SIGNING_ALLOWED=NO \
+                CODE_SIGNING_REQUIRED=NO
             ) || exit 1
           done
 
@@ -67,16 +66,6 @@ jobs:
             -workspace "$WORKSPACE" \
             -scheme "$SCHEME" \
             -destination "$DESTINATION" \
-            -resultBundlePath "$RESULT_BUNDLE" \
             -skip-testing:TycheUITests \
             CODE_SIGNING_ALLOWED=NO \
             CODE_SIGNING_REQUIRED=NO
-
-      - name: Upload xcresult bundle
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: ios-unit-test-results
-          path: iOS/TestResults.xcresult
-          if-no-files-found: ignore
-          retention-days: 7
