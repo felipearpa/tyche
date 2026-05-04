@@ -2,19 +2,29 @@ package com.felipearpa.tyche.bet.finished
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewLightDark
+import androidx.compose.ui.unit.dp
 import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
@@ -27,6 +37,7 @@ import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
 import com.felipearpa.tyche.ui.theme.TycheTheme
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.datetime.LocalDate
+import com.felipearpa.tyche.ui.R as SharedR
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -41,6 +52,7 @@ fun FinishedBetList(
         lazyPagingItems = lazyPoolGamblerBets,
         loadingContent = { finishedPoolGamblerBetFakeList(count = placeholderCount) },
         loadingContentOnConcatenate = { finishedPoolGamblerBetPlaceholderItem() },
+        emptyContent = { emptyContent() },
     ) {
         val poolGamblerBetsCount = lazyPoolGamblerBets.itemCount
         var lastMatchDate: LocalDate? = null
@@ -114,6 +126,35 @@ private fun Modifier.finishedHeaderBetItem(isFirst: Boolean) =
             top = if (isFirst) LocalBoxSpacing.current.medium
             else LocalBoxSpacing.current.medium + LocalBoxSpacing.current.medium,
         )
+
+private fun LazyListScope.emptyContent() {
+    item {
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier.fillParentMaxSize(),
+        ) {
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.medium),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                Icon(
+                    painter = painterResource(id = SharedR.drawable.ic_sentiment_sad),
+                    contentDescription = null,
+                    modifier = Modifier.size(iconSize),
+                )
+
+                Text(
+                    text = stringResource(id = SharedR.string.empty_list_message),
+                    textAlign = TextAlign.Center,
+                    style = MaterialTheme.typography.titleMedium,
+                )
+            }
+        }
+    }
+}
+
+private val iconSize = 64.dp
 
 @PreviewLightDark
 @Composable
