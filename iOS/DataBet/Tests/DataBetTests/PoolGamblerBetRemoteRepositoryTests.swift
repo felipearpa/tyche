@@ -105,6 +105,10 @@ private final class StubNetworkErrorHandler: NetworkErrorHandler {
 }
 
 private final class UnusedDataSource: PoolGamblerBetRemoteDataSource {
+    func getPoolGamblerBet(poolId: String, gamblerId: String, matchId: String) async throws -> DataBet.PoolGamblerBetResponse {
+        fatalError("not used")
+    }
+    
     func getPendingPoolGamblerBets(poolId: String, gamblerId: String, next: String?, searchText: String?) async throws -> CursorPage<PoolGamblerBetResponse> {
         fatalError("not used")
     }

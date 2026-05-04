@@ -56,6 +56,9 @@ dependencies {
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.io.mockk)
+    testImplementation(libs.kotest.runner)
+    testImplementation(libs.kotest.assertions.core)
+    testImplementation(libs.kotest.property)
 
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.espresso.core)
