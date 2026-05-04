@@ -5,8 +5,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/Alamofire/Alamofire.git",
       "state" : {
-        "revision" : "e938f8c66708e7352fc7e3512647fa54255b267a",
-        "version" : "5.11.2"
+        "revision" : "513364f870f6bfc468f9d2ff0a95caccc10044c5",
+        "version" : "5.10.2"
       }
     },
     {
@@ -23,8 +23,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/Swinject/Swinject.git",
       "state" : {
-        "revision" : "b685b549fe4d8ae265fc7a2f27d0789720425d69",
-        "version" : "2.10.0"
+        "revision" : "be9dbcc7b86811bc131539a20c6f9c2d3e56919f",
+        "version" : "2.9.1"
       }
     },
     {
@@ -32,8 +32,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/nalexn/ViewInspector",
       "state" : {
-        "revision" : "e9a06346499a3a889165647e3f23f8a7b2609a1c",
-        "version" : "0.10.3"
+        "revision" : "a6fcac8485bc8f57b2d2b55bb6d97138e8659e4b",
+        "version" : "0.10.2"
       }
     }
   ],

@@ -193,7 +193,7 @@ private fun PoolLayoutItem(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Icon(
-                painter = painterResource(id = R.drawable.trophy),
+                painter = painterResource(id = SharedR.drawable.trophy),
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.onPrimary,
                 modifier = Modifier

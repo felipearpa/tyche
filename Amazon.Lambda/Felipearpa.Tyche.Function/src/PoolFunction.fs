@@ -155,7 +155,7 @@ module PoolFunction =
                 | Ok _ -> Results.NoContent()
                 | Error error ->
                     match error with
-                    | JoinPoolFailure.AlreadyJoined -> Results.BadRequest("The gambler has already joined this pool")
+                    | JoinPoolFailure.AlreadyJoined -> Results.Conflict("The gambler has already joined this pool")
                     | JoinPoolFailure.PoolNotFound -> Results.NotFound("Pool not found")
                     | JoinPoolFailure.GamblerNotFound -> Results.NotFound("Gambler not found")
                     | JoinPoolFailure.PoolLayoutNotFound -> Results.NotFound("Pool layout not found")

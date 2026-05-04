@@ -33,7 +33,6 @@ struct EmailTextField : View {
         VStack(spacing: boxSpacing.small) {
             TextField(String(.emailLabel), text: $value)
                 .autocapitalization(.none)
-                .border(isValid ? Color.clear : Color(sharedResource: .error))
                 .onChange(of: value) { newValue in
                     withAnimation {
                         isValid = validation?.isValid(newValue) ?? true

@@ -22,7 +22,7 @@ module IncrementGamblerCountRequestBuilder =
         let attributeValues =
             dict [ ":zero", AttributeValue(N = "0"); ":one", AttributeValue(N = "1") ]
 
-        UpdateItemRequest(
+        Update(
             TableName = PoolTable.name,
             Key = Dictionary key,
             UpdateExpression = updateExpression,

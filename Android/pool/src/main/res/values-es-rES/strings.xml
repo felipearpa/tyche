@@ -7,8 +7,8 @@
     <string name="pool_name_label">Introduce el nombre de la quiniela</string>
     <string name="fill_pool_fields_title">Rellena los campos para crear tu quiniela</string>
     <string name="pool_name_length_validation_error">El nombre de la quiniela debe tener entre 1 y 100 caracteres</string>
-    <string name="ready_to_join_title">¿Listo para unirte a “%1$s”?</string>
-    <string name="ready_to_join_subtitle">¡Te han invitado a la emocionante quiniela “%1$s”! ¿Quieres unirte y jugar con los demás?</string>
+    <string name="ready_to_join_title">Estas invitado</string>
+    <string name="ready_to_join_subtitle">Únete y haz tus predicciones junto a otros</string>
     <string name="join_pool_action">Unirse</string>
     <string name="pool_score_empty_list_title">Aún no estás en ninguna quiniela</string>
     <string name="pool_score_empty_list_subtitle">Elige una plantilla, crea tu quiniela e invita a tus amigos.</string>
@@ -20,4 +20,7 @@
     <string name="pool_join_requires_sign_in_failure_reason">Necesitas iniciar sesión para abrir este enlace de invitación a la quiniela</string>
     <string name="pool_join_requires_sign_in_failure_recovery_suggestion">Por favor, inicia sesión y abre el enlace de nuevo</string>
     <string name="got_it_action">Entendido</string>
+    <string name="pool_already_joined_error_description">Ya estás en esta quiniela</string>
+    <string name="pool_already_joined_failure_reason">Parece que ya te uniste antes</string>
+    <string name="pool_already_joined_recovery_suggestion">Ábrela desde “Mis quinielas” para empezar a jugar</string>
 </resources>

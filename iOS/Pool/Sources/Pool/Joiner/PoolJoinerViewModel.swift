@@ -41,7 +41,7 @@ public class PoolJoinerViewModel: ObservableObject {
             case .success:
                 joinPoolState = .success(())
             case .failure(let error):
-                joinPoolState = .failure(error)
+                joinPoolState = .failure(error.asJoinPoolLocalizedError())
             }
         }
     }

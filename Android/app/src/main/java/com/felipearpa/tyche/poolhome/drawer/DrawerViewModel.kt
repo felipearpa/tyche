@@ -29,9 +29,7 @@ class DrawerViewModel(
     val email: StateFlow<String> = _email.asStateFlow()
 
     init {
-        viewModelScope.launch {
-            _email.value = accountStorage.retrieve()?.email.orEmpty()
-        }
+        _email.value = accountStorage.state.value?.email.orEmpty()
     }
 
     init {

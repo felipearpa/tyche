@@ -30,6 +30,13 @@ class PoolRemoteRepository : PoolRepository {
     func joinPool(joinPoolInput: JoinPoolInput) async -> Result<Void, any Error> {
         return await networkErrorHandler.handle {
             try await poolRemoteDataSource.joinPool(poolId: joinPoolInput.poolId, joinPoolRequest: joinPoolInput.toJoinPoolRequest())
+        }.recoverNetworkError { networkError in
+            if case .http(let code) = networkError {
+                if code == .conflict {
+                    return JoinPoolError.alreadyJoined
+                }
+            }
+            return networkError
         }
     }
 }
