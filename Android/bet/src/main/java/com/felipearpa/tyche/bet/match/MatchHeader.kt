@@ -33,6 +33,7 @@ import com.felipearpa.tyche.bet.R
 import com.felipearpa.tyche.bet.isLive
 import com.felipearpa.tyche.bet.poolGamblerBetDummyModel
 import com.felipearpa.tyche.bet.poolGamblerBetFakeModel
+import com.felipearpa.tyche.ui.FlagImage
 import com.felipearpa.tyche.ui.shimmer
 import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
 import com.felipearpa.tyche.ui.theme.TycheTheme
@@ -59,16 +60,27 @@ fun MatchHeader(
             horizontalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.medium),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Text(
-                text = bet.homeTeamName,
-                modifier = Modifier
-                    .weight(1f)
-                    .then(shimmerModifier),
-                textAlign = TextAlign.Center,
-                style = MaterialTheme.typography.titleMedium,
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis,
-            )
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.small),
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.weight(1f),
+            ) {
+                FlagImage(
+                    teamId = bet.awayTeamId,
+                    modifier = Modifier
+                        .size(flagSize)
+                        .then(shimmerModifier),
+                )
+                Text(
+                    text = bet.homeTeamName,
+                    style = MaterialTheme.typography.titleMedium,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier
+                        .weight(1f)
+                        .then(shimmerModifier),
+                )
+            }
 
             if (bet.isComputed) {
                 Text(
@@ -86,16 +98,28 @@ fun MatchHeader(
                 )
             }
 
-            Text(
-                text = bet.awayTeamName,
-                modifier = Modifier
-                    .weight(1f)
-                    .then(shimmerModifier),
-                textAlign = TextAlign.Center,
-                style = MaterialTheme.typography.titleMedium,
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis,
-            )
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.small, alignment = Alignment.End),
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.weight(1f),
+            ) {
+                Text(
+                    text = bet.awayTeamName,
+                    style = MaterialTheme.typography.titleMedium,
+                    textAlign = TextAlign.End,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier
+                        .weight(1f)
+                        .then(shimmerModifier),
+                )
+                FlagImage(
+                    teamId = bet.awayTeamId,
+                    modifier = Modifier
+                        .size(flagSize)
+                        .then(shimmerModifier),
+                )
+            }
         }
 
         Text(
@@ -151,6 +175,8 @@ fun MatchHeaderPlaceholderItem(modifier: Modifier = Modifier) {
         shimmerModifier = Modifier.shimmer(),
     )
 }
+
+private val flagSize = 48.dp
 
 @PreviewLightDark
 @Composable

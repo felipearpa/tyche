@@ -39,17 +39,21 @@ struct NonEditablePendingBetItem: View {
     var body: some View {
         VStack(spacing: boxSpacing.medium) {
             HStack {
+                FlagImage(teamCode: poolGamblerBet.homeTeamId)
+                    .frame(width: flagSize, height: flagSize)
                 Text(poolGamblerBet.homeTeamName)
                     .frame(maxWidth: .infinity, alignment: .leading)
                 Text(partialPoolGamblerBet.homeTeamBet)
             }
-            
+
             HStack {
+                FlagImage(teamCode: poolGamblerBet.awayTeamId)
+                    .frame(width: flagSize, height: flagSize)
                 Text(poolGamblerBet.awayTeamName)
                     .frame(maxWidth: .infinity, alignment: .leading)
                 Text(partialPoolGamblerBet.awayTeamBet)
             }
-            
+
             HStack {
                 Text(poolGamblerBet.matchDateTime.toShortDateTimeString())
                     .font(.footnote)
@@ -69,13 +73,17 @@ private struct EditablePendingBetItem: View {
     var body: some View {
         VStack(spacing: boxSpacing.medium) {
             HStack {
+                FlagImage(teamCode: poolGamblerBet.homeTeamId)
+                    .frame(width: flagSize, height: flagSize)
                 Text(poolGamblerBet.homeTeamName)
                     .frame(maxWidth: .infinity, alignment: .leading)
                 BetTextField(value: $partialPoolGamblerBet.homeTeamBet)
                     .betStyle()
             }
-            
+
             HStack {
+                FlagImage(teamCode: poolGamblerBet.awayTeamId)
+                    .frame(width: flagSize, height: flagSize)
                 Text(poolGamblerBet.awayTeamName)
                     .frame(maxWidth: .infinity, alignment: .leading)
                 BetTextField(value: $partialPoolGamblerBet.awayTeamBet)
@@ -84,6 +92,8 @@ private struct EditablePendingBetItem: View {
         }
     }
 }
+
+private let flagSize: CGFloat = 32
 
 private extension View {
     func betStyle() -> some View {
@@ -106,4 +116,12 @@ private extension View {
         poolGamblerBet: poolGamblerBetDummyModel(),
         partialPoolGamblerBet: .constant(partialPoolGamblerBetDummyModel())
     )
+}
+
+#Preview("Placeholder") {
+    NonEditablePendingBetItem(
+        poolGamblerBet: poolGamblerBetPlaceholderModel(isLocked: false, isComputed: false),
+        partialPoolGamblerBet: PartialPoolGamblerBetModel(homeTeamBet: "", awayTeamBet: "")
+    )
+    .shimmer()
 }

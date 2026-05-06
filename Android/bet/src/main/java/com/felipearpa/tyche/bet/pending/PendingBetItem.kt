@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -18,11 +19,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.felipearpa.foundation.time.toShortDateTimeString
 import com.felipearpa.tyche.bet.PoolGamblerBetModel
 import com.felipearpa.tyche.bet.poolGamblerBetDummyModel
+import com.felipearpa.tyche.bet.poolGamblerBetFakeModel
 import com.felipearpa.tyche.bet.scoreWidth
+import com.felipearpa.tyche.ui.FlagImage
+import com.felipearpa.tyche.ui.shimmer
 import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
+import com.felipearpa.tyche.ui.theme.TycheTheme
 
 @Composable
 fun PendingBetItem(
@@ -81,7 +87,18 @@ fun NonEditablePendingBetItem(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.fillMaxWidth(),
         ) {
-            Text(text = poolGamblerBet.homeTeamName, modifier = shimmerModifier)
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.small),
+            ) {
+                FlagImage(
+                    teamId = poolGamblerBet.homeTeamId,
+                    modifier = Modifier
+                        .size(flagSize)
+                        .then(shimmerModifier),
+                )
+                Text(text = poolGamblerBet.homeTeamName, modifier = shimmerModifier)
+            }
             Text(text = partialPoolGamblerBet.homeTeamBet, modifier = shimmerModifier)
         }
 
@@ -90,7 +107,18 @@ fun NonEditablePendingBetItem(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.fillMaxWidth(),
         ) {
-            Text(text = poolGamblerBet.awayTeamName, modifier = shimmerModifier)
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.small),
+            ) {
+                FlagImage(
+                    teamId = poolGamblerBet.awayTeamId,
+                    modifier = Modifier
+                        .size(flagSize)
+                        .then(shimmerModifier),
+                )
+                Text(text = poolGamblerBet.awayTeamName, modifier = shimmerModifier)
+            }
             Text(text = partialPoolGamblerBet.awayTeamBet, modifier = shimmerModifier)
         }
 
@@ -121,7 +149,18 @@ fun EditablePendingBetItem(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.fillMaxWidth(),
         ) {
-            Text(text = poolGamblerBet.homeTeamName, modifier = shimmerModifier)
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.small),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                FlagImage(
+                    teamId = poolGamblerBet.homeTeamId,
+                    modifier = Modifier
+                        .size(flagSize)
+                        .then(shimmerModifier),
+                )
+                Text(text = poolGamblerBet.homeTeamName, modifier = shimmerModifier)
+            }
             BetTextField(
                 value = partialPoolGamblerBet.homeTeamBet,
                 onValueChange = { newHomeTeamBet ->
@@ -138,7 +177,18 @@ fun EditablePendingBetItem(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.fillMaxWidth(),
         ) {
-            Text(text = poolGamblerBet.awayTeamName, modifier = shimmerModifier)
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.small),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                FlagImage(
+                    teamId = poolGamblerBet.awayTeamId,
+                    modifier = Modifier
+                        .size(flagSize)
+                        .then(shimmerModifier),
+                )
+                Text(text = poolGamblerBet.awayTeamName, modifier = shimmerModifier)
+            }
             BetTextField(
                 value = partialPoolGamblerBet.awayTeamBet,
                 onValueChange = { newAwayTeamBet ->
@@ -151,6 +201,18 @@ fun EditablePendingBetItem(
         }
     }
 }
+
+@Composable
+fun PendingBetPlaceholderItem(modifier: Modifier = Modifier) {
+    PendingBetItem(
+        poolGamblerBet = poolGamblerBetFakeModel(),
+        viewState = PendingBetItemViewState.Visualization(partialPoolGamblerBetFakeModel()),
+        modifier = modifier,
+        shimmerModifier = Modifier.shimmer(),
+    )
+}
+
+private val flagSize = 32.dp
 
 @Preview
 @Composable
@@ -177,6 +239,16 @@ private fun EditablePendingBetItemPreview() {
                 partialPoolGamblerBet = partialPoolGamblerBetDummyModel(),
                 onBetChanged = {},
             )
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun PendingBetPlaceholderItemPreview() {
+    TycheTheme {
+        Surface {
+            PendingBetPlaceholderItem(modifier = Modifier.fillMaxWidth())
         }
     }
 }

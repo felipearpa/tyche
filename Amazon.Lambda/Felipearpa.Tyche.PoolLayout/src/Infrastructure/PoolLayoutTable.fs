@@ -54,6 +54,9 @@ module PoolLayoutTable =
         [<Literal>]
         let awayTeamScore = "awayTeamScore"
 
+        [<Literal>]
+        let round = "round"
+
     module Index =
 
         [<Literal>]

@@ -28,6 +28,7 @@ kotlinx-datetime = "0.7.1"
 felipearpa-viewing-state = "v0.0.2"
 felipearpa-foundation = "v0.0.1"
 cloudy = "0.5.0"
+coil = "3.4.0"
 
 [libraries]
 core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "core-ktx" }
@@ -81,6 +82,7 @@ kotlinx-datetime = { group = "org.jetbrains.kotlinx", name = "kotlinx-datetime",
 felipearpa-viewing-state = { group = "com.github.felipearpa", name = "viewing-state-android", version.ref = "felipearpa-viewing-state" }
 felipearpa-foundation = { group = "com.github.felipearpa", name = "foundation-android", version.ref = "felipearpa-foundation" }
 cloudy = { group = "com.github.skydoves", name = "cloudy", version.ref = "cloudy" }
+coil-compose = { group = "io.coil-kt.coil3", name = "coil-compose", version.ref = "coil" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

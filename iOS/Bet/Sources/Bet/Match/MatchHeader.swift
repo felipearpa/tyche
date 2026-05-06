@@ -13,12 +13,17 @@ struct MatchHeader: View {
             }
 
             HStack(spacing: boxSpacing.medium) {
-                Text(bet.homeTeamName)
-                    .font(.headline)
-                    .multilineTextAlignment(.center)
-                    .lineLimit(2)
-                    .truncationMode(.tail)
-                    .frame(maxWidth: .infinity)
+                HStack(spacing: boxSpacing.small) {
+                    FlagImage(teamCode: bet.homeTeamId)
+                        .frame(width: flagSize, height: flagSize)
+
+                    Text(bet.homeTeamName)
+                        .font(.headline)
+                        .multilineTextAlignment(.center)
+                        .lineLimit(2)
+                        .truncationMode(.tail)
+                        .frame(maxWidth: .infinity)
+                }
 
                 if bet.isComputed {
                     Text(bet.matchScore.map { String($0.homeTeamValue) } ?? "")
@@ -30,12 +35,17 @@ struct MatchHeader: View {
                         .font(.title2)
                 }
 
-                Text(bet.awayTeamName)
-                    .font(.headline)
-                    .multilineTextAlignment(.center)
-                    .lineLimit(2)
-                    .truncationMode(.tail)
-                    .frame(maxWidth: .infinity)
+                HStack(spacing: boxSpacing.small) {
+                    Text(bet.awayTeamName)
+                        .font(.headline)
+                        .multilineTextAlignment(.center)
+                        .lineLimit(2)
+                        .truncationMode(.tail)
+                        .frame(maxWidth: .infinity)
+
+                    FlagImage(teamCode: bet.awayTeamId)
+                        .frame(width: flagSize, height: flagSize)
+                }
             }
 
             Text(bet.matchDateTime.toShortDateTimeString())
@@ -44,6 +54,8 @@ struct MatchHeader: View {
         .frame(maxWidth: .infinity)
     }
 }
+
+private let flagSize: CGFloat = 48
 
 private struct LiveIndicator: View {
     @State private var isPulsing = false
@@ -71,4 +83,9 @@ private struct LiveIndicator: View {
 
 #Preview {
     MatchHeader(bet: poolGamblerBetDummyModel())
+}
+
+#Preview("Placeholder") {
+    MatchHeader(bet: poolGamblerBetPlaceholderModel(isLocked: false, isComputed: false))
+        .shimmer()
 }

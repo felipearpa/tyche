@@ -15,6 +15,9 @@ struct LiveBetItem: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
 
             HStack {
+                FlagImage(teamCode: poolGamblerBet.homeTeamId)
+                    .frame(width: flagSize, height: flagSize)
+
                 Text(poolGamblerBet.homeTeamName)
                     .frame(maxWidth: .infinity, alignment: .leading)
 
@@ -25,6 +28,9 @@ struct LiveBetItem: View {
             }
 
             HStack {
+                FlagImage(teamCode: poolGamblerBet.awayTeamId)
+                    .frame(width: flagSize, height: flagSize)
+
                 Text(poolGamblerBet.awayTeamName)
                     .frame(maxWidth: .infinity, alignment: .leading)
 
@@ -37,6 +43,8 @@ struct LiveBetItem: View {
     }
 }
 
+private let flagSize: CGFloat = 32
+
 private extension View {
     func scoreWidth() -> some View {
         let width = String(repeating: "8", count: 3)
@@ -48,4 +56,9 @@ private extension View {
 
 #Preview {
     LiveBetItem(poolGamblerBet: poolGamblerBetDummyModel())
+}
+
+#Preview("Placeholder") {
+    LiveBetItem(poolGamblerBet: poolGamblerBetPlaceholderModel(isLocked: true, isComputed: false))
+        .shimmer()
 }

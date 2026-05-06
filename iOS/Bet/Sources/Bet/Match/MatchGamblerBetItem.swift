@@ -32,7 +32,7 @@ struct MatchGamblerBetItem: View {
 struct MatchHeaderPlaceholderItem: View {
     var body: some View {
         MatchHeader(
-            bet: poolGamblerBetFakeModel(isLocked: false, isComputed: false)
+            bet: poolGamblerBetPlaceholderModel(isLocked: false, isComputed: false)
         )
         .shimmer()
     }

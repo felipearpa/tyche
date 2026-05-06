@@ -9,11 +9,12 @@ type FanOutMatchInput =
     { MatchId: Ulid
       PoolLayoutId: Ulid
       PoolLayoutVersion: int
-      HomeTeamId: Ulid
+      HomeTeamId: string
       HomeTeamName: NonEmptyString100
-      AwayTeamId: Ulid
+      AwayTeamId: string
       AwayTeamName: NonEmptyString100
-      MatchDateTime: DateTime }
+      MatchDateTime: DateTime
+      Round: string }
 
 type FanOutMatchToGamblers
     (poolRepository: IPoolRepository, poolGamblerBetRepository: IPoolGamblerBetRepository) =
@@ -31,6 +32,7 @@ type FanOutMatchToGamblers
               AwayTeamName = input.AwayTeamName
               MatchDateTime = input.MatchDateTime
               PoolLayoutVersion = input.PoolLayoutVersion
+              Round = input.Round
               HomeTeamScore = None
               AwayTeamScore = None
               BetScore = None
@@ -43,7 +45,6 @@ type FanOutMatchToGamblers
 
                 do!
                     page.Items
-                    |> Seq.filter (fun gambler -> gambler.PoolLayoutVersion < input.PoolLayoutVersion)
                     |> Seq.map (fun gambler ->
                         poolGamblerBetRepository.MaterializeMatchForGamblerAsync(
                             buildBet gambler,

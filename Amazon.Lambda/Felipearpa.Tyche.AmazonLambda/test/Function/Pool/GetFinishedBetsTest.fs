@@ -44,6 +44,7 @@ module GetFinishedBetsTest =
                       AwayTeamBet = Some 1
                       Score = Some 3
                       MatchDateTime = DateTime(2024, 10, 12, 18, 0, 0, DateTimeKind.Utc)
+                      Round = "Fase de grupos"
                       isLocked = true
                       isComputed = true }
 
@@ -62,6 +63,7 @@ module GetFinishedBetsTest =
                       AwayTeamBet = Some 2
                       Score = Some 1
                       MatchDateTime = DateTime(2024, 10, 13, 20, 30, 0, DateTimeKind.Utc)
+                      Round = "Fase de grupos"
                       isLocked = true
                       isComputed = true }
                 }

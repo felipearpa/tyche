@@ -27,7 +27,8 @@ module PoolGamblerBetDictionaryTransformerTest =
                   "awayTeamScore", AttributeValue(N = "1")
                   "awayTeamBet", AttributeValue(N = "1")
                   "score", AttributeValue(N = "3")
-                  "matchDateTime", AttributeValue(S = "2024-10-12T18:00:00Z") ]
+                  "matchDateTime", AttributeValue(S = "2024-10-12T18:00:00Z")
+                  "round", AttributeValue(S = "Octavos de final") ]
 
         let bet = dictionary |> toPoolGamblerBet
 
@@ -35,15 +36,16 @@ module PoolGamblerBetDictionaryTransformerTest =
         bet.GamblerId.Value |> shouldEqual "01K1PX1TX2NM1HG851S1V0QG6N"
         bet.MatchId.Value |> shouldEqual "01K1PX1TX2NM1HG851S1V0QG6N"
         bet.PoolLayoutId.Value |> shouldEqual "01K1PX1TX2NM1HG851S1V0QG6N"
-        bet.HomeTeamId.Value |> shouldEqual "01K1PX1TX2NM1HG851S1V0QG6N"
+        bet.HomeTeamId |> shouldEqual "01K1PX1TX2NM1HG851S1V0QG6N"
         bet.HomeTeamName.Value |> shouldEqual "Team Alpha"
         bet.MatchScore.Value.HomeTeamValue |> shouldEqual 2
         bet.MatchScore.Value.AwayTeamValue |> shouldEqual 1
-        bet.AwayTeamId.Value |> shouldEqual "01K1PX1TX2NM1HG851S1V0QG6N"
+        bet.AwayTeamId |> shouldEqual "01K1PX1TX2NM1HG851S1V0QG6N"
         bet.AwayTeamName.Value |> shouldEqual "Team Beta"
         bet.BetScore.Value.HomeTeamValue.Value |> shouldEqual 1
         bet.BetScore.Value.AwayTeamValue.Value |> shouldEqual 1
         bet.Score.Value |> shouldEqual 3
+        bet.Round |> shouldEqual "Octavos de final"
         bet.MatchDateTime
         |> shouldEqual (System.DateTime(2024, 10, 12, 18, 0, 0, System.DateTimeKind.Utc))
 
@@ -72,12 +74,13 @@ module PoolGamblerBetDictionaryTransformerTest =
         bet.GamblerId.Value |> shouldEqual "01K1PX1TX2NM1HG851S1V0QG6N"
         bet.MatchId.Value |> shouldEqual "01K1PX1TX2NM1HG851S1V0QG6N"
         bet.PoolLayoutId.Value |> shouldEqual "01K1PX1TX2NM1HG851S1V0QG6N"
-        bet.HomeTeamId.Value |> shouldEqual "01K1PX1TX2NM1HG851S1V0QG6N"
+        bet.HomeTeamId |> shouldEqual "01K1PX1TX2NM1HG851S1V0QG6N"
         bet.HomeTeamName.Value |> shouldEqual "Team Alpha"
         bet.MatchScore |> shouldEqual None
-        bet.AwayTeamId.Value |> shouldEqual "01K1PX1TX2NM1HG851S1V0QG6N"
+        bet.AwayTeamId |> shouldEqual "01K1PX1TX2NM1HG851S1V0QG6N"
         bet.AwayTeamName.Value |> shouldEqual "Team Beta"
         bet.BetScore |> shouldEqual None
         bet.Score |> shouldEqual None
+        bet.Round |> shouldEqual "Fase de grupos"
         bet.MatchDateTime
         |> shouldEqual (System.DateTime(2024, 10, 12, 18, 0, 0, System.DateTimeKind.Utc))

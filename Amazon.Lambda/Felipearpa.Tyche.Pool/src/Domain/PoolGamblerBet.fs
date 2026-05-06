@@ -10,13 +10,14 @@ type PoolGamblerBet =
       GamblerUsername: NonEmptyString100
       MatchId: Ulid
       PoolLayoutId: Ulid
-      HomeTeamId: Ulid
+      HomeTeamId: string
       HomeTeamName: NonEmptyString100
-      AwayTeamId: Ulid
+      AwayTeamId: string
       AwayTeamName: NonEmptyString100
       MatchScore: TeamScore<int> option
       BetScore: TeamScore<BetScore> option
       Score: int option
       MatchDateTime: DateTime
+      Round: string
       isLocked: bool
       isComputed: bool }
