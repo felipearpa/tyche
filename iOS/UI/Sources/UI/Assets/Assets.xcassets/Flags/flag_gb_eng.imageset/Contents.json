@@ -1,0 +1,13 @@
+{
+  "images" : [
+    {
+      "filename" : "flag_gb_eng.png",
+      "idiom" : "universal",
+      "scale" : "1x"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

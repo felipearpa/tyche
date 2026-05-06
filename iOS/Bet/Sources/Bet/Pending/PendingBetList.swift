@@ -72,11 +72,13 @@ struct PendingBetList: View {
 }
 
 func invokeMatchOpen(_ handler: MatchOpenHandler?, _ poolGamblerBet: PoolGamblerBetModel) {
-    handler?(
-        poolGamblerBet.poolId,
-        poolGamblerBet.gamblerId,
-        poolGamblerBet.matchId
-    )
+    if (!poolGamblerBet.isPending) {
+        handler?(
+            poolGamblerBet.poolId,
+            poolGamblerBet.gamblerId,
+            poolGamblerBet.matchId
+        )
+    }
 }
 
 private struct PendingBetPlaceholderList: View {
@@ -97,7 +99,7 @@ private struct PendingBetPlaceholderList: View {
 private struct PendingBetPlaceholderItem: View {
     var body: some View {
         PendingBetItem(
-            poolGamblerBet: poolGamblerBetFakeModel(),
+            poolGamblerBet: poolGamblerBetPlaceholderModel(),
             viewState: .constant(.visualization(partialPoolGamblerBetFakeModel()))
         ).shimmer()
     }

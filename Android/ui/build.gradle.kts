@@ -70,6 +70,7 @@ dependencies {
     implementation(libs.google.accompanist.placeholder)
     implementation(libs.felipearpa.foundation)
     implementation(libs.cloudy)
+    implementation(libs.coil.compose)
 
     testImplementation(platform(libs.junit5.bom))
     testImplementation(libs.junit5.jupiter)

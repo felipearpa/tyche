@@ -29,7 +29,10 @@ import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.felipearpa.foundation.time.toShortDateString
 import com.felipearpa.tyche.bet.PoolGamblerBetModel
+import com.felipearpa.tyche.bet.isPending
 import com.felipearpa.tyche.bet.poolGamblerBetDummyModels
+import com.felipearpa.tyche.ui.exception.localizedOrDefault
+import com.felipearpa.tyche.ui.lazy.Failure
 import com.felipearpa.tyche.ui.lazy.RefreshableStatefulLazyColumn
 import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
 import com.felipearpa.tyche.ui.theme.TycheTheme
@@ -51,6 +54,7 @@ fun PendingBetList(
         loadingContent = { pendingBetPlaceholderList(count = fakeItemCount) },
         loadingContentOnConcatenate = { pendingBetPlaceholderItem() },
         emptyContent = { emptyContent() },
+        errorContent = { error(it) },
     ) {
         val poolGamblerBetsCount = lazyPoolGamblerBets.itemCount
         var lastMatchDate: LocalDate? = null
@@ -84,7 +88,11 @@ fun PendingBetList(
             ) {
                 val itemModifier = Modifier
                     .let { base ->
-                        if (onMatchOpen != null) base.clickable { onMatchOpen(poolGamblerBet) } else base
+                        if (onMatchOpen != null && !poolGamblerBet.isPending) base.clickable {
+                            onMatchOpen(
+                                poolGamblerBet,
+                            )
+                        } else base
                     }
                     .pendingBetItem()
 
@@ -144,6 +152,22 @@ private fun LazyListScope.pendingBetPlaceholderItem() {
     item {
         PendingBetPlaceholderItem(modifier = Modifier.pendingBetItem())
         HorizontalDivider(modifier = Modifier.padding(horizontal = LocalBoxSpacing.current.large))
+    }
+}
+
+private fun LazyListScope.error(exception: Throwable) {
+    item {
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier
+                .fillParentMaxSize()
+                .padding(all = LocalBoxSpacing.current.medium),
+        ) {
+            Failure(
+                localizedException = exception.localizedOrDefault(),
+                modifier = Modifier.fillMaxWidth(),
+            )
+        }
     }
 }
 

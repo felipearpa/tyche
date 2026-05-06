@@ -201,7 +201,7 @@ private extension PoolHomeTab {
 private let ICON_SIZE: CGFloat = 24
 
 #Preview {
-    var diResolver = DIResolver(
+    let diResolver = DIResolver(
         resolver:Assembler([
             PoolHomeAssembler()
         ]).resolver)

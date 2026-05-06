@@ -1,9 +1,9 @@
 import SwiftUI
 
 public struct SharedImageResource {
-    fileprivate let resource: ImageResource
-    
-    fileprivate init(_ resource: ImageResource) {
+    let resource: ImageResource
+
+    init(_ resource: ImageResource) {
         self.resource = resource
     }
 }

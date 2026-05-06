@@ -76,7 +76,7 @@ private struct MatchBetPlaceholderList: View {
 
 private struct MatchBetPlaceholderItem: View {
     var body: some View {
-        MatchGamblerBetItem(poolGamblerBet: poolGamblerBetFakeModel()).shimmer()
+        MatchGamblerBetItem(poolGamblerBet: poolGamblerBetPlaceholderModel()).shimmer()
     }
 }
 

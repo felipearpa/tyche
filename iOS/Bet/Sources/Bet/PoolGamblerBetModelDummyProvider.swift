@@ -1,7 +1,7 @@
 import Foundation
 import Core
 
-func poolGamblerBetFakeModel(
+func poolGamblerBetPlaceholderModel(
     isLocked: Bool = true,
     isComputed: Bool = false
 ) -> PoolGamblerBetModel {
@@ -10,9 +10,9 @@ func poolGamblerBetFakeModel(
         gamblerId: String(repeating: "X", count: 15),
         gamblerUsername: String(repeating: "X", count: 25),
         matchId: String(repeating: "X", count: 15),
-        homeTeamId: String(repeating: "X", count: 15),
+        homeTeamId: "co",
         homeTeamName: String(repeating: "X", count: 25),
-        awayTeamId: String(repeating: "X", count: 15),
+        awayTeamId: "br",
         awayTeamName: String(repeating: "X", count: 25),
         matchScore: TeamScore(homeTeamValue: 100, awayTeamValue: 100),
         betScore: TeamScore(homeTeamValue: 100, awayTeamValue: 100),
@@ -29,9 +29,9 @@ func poolGamblerBetDummyModel() -> PoolGamblerBetModel {
         gamblerId: "gambler456",
         gamblerUsername: "gambler456@example.com",
         matchId: "match789",
-        homeTeamId: "homeTeam1011",
+        homeTeamId: "co",
         homeTeamName: "Red Devils",
-        awayTeamId: "awayTeam1213",
+        awayTeamId: "br",
         awayTeamName: "Blue Angels",
         matchScore: TeamScore(homeTeamValue: 3, awayTeamValue: 2),
         betScore: TeamScore(homeTeamValue: 2, awayTeamValue: 2),

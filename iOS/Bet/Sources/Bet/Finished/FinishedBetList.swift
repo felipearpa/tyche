@@ -61,7 +61,7 @@ private struct FinishedPoolGamblerBetFakeItem: View {
     @Environment(\.boxSpacing) private var boxSpacing
 
     var body: some View {
-        FinishedBetItem(poolGamblerBet: poolGamblerBetFakeModel())
+        FinishedBetItem(poolGamblerBet: poolGamblerBetPlaceholderModel())
             .shimmer()
             .frame(maxWidth: .infinity)
             .padding(.horizontal, boxSpacing.large)

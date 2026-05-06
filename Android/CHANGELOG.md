@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.4
+
+- Team flags shown next to every team name across match headers and bet items
+- Pool joiner flow redesigned
+- Loading screens refreshed
+- Empty state placeholder when you have no pending or finished bets yet
+- Friendlier error state when the pending bet list fails to load
+
 ## 1.3
 
 - New Bet Timeline: tap a gambler from a match to see their full prediction history, with live, finished, and pending bets grouped by date
