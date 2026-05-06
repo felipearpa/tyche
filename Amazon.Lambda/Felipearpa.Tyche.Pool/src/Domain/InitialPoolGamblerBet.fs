@@ -9,12 +9,13 @@ type InitialPoolGamblerBet =
       GamblerUsername: NonEmptyString100
       MatchId: Ulid
       PoolLayoutId: Ulid
-      HomeTeamId: Ulid
+      HomeTeamId: string
       HomeTeamName: NonEmptyString100
-      AwayTeamId: Ulid
+      AwayTeamId: string
       AwayTeamName: NonEmptyString100
       MatchDateTime: DateTime
       PoolLayoutVersion: int
+      Round: string
       HomeTeamScore: int option
       AwayTeamScore: int option
       BetScore: int option

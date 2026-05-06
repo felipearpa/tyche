@@ -12,7 +12,7 @@ module PoolGamblerBetTransformer =
           GamblerUsername = poolGamblerBet.GamblerUsername |> NonEmptyString100.value
           MatchId = poolGamblerBet.MatchId |> Ulid.value
           PoolLayoutId = poolGamblerBet.PoolLayoutId |> Ulid.value
-          HomeTeamId = poolGamblerBet.HomeTeamId |> Ulid.value
+          HomeTeamId = poolGamblerBet.HomeTeamId
           HomeTeamName = poolGamblerBet.HomeTeamName |> NonEmptyString100.value
           HomeTeamScore =
             match poolGamblerBet.MatchScore with
@@ -22,7 +22,7 @@ module PoolGamblerBetTransformer =
             match poolGamblerBet.BetScore with
             | Some score -> score.HomeTeamValue |> BetScore.value |> Some
             | None -> None
-          AwayTeamId = poolGamblerBet.AwayTeamId.ToString()
+          AwayTeamId = poolGamblerBet.AwayTeamId
           AwayTeamName = poolGamblerBet.AwayTeamName |> NonEmptyString100.value
           AwayTeamScore =
             match poolGamblerBet.MatchScore with
@@ -34,5 +34,6 @@ module PoolGamblerBetTransformer =
             | None -> None
           Score = poolGamblerBet.Score
           MatchDateTime = poolGamblerBet.MatchDateTime.ToUniversalTime()
+          Round = poolGamblerBet.Round
           isLocked = poolGamblerBet.isLocked
           isComputed = poolGamblerBet.isComputed }

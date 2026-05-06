@@ -49,3 +49,22 @@ let ``given a match with only home score when transformed then only home is Some
 
     model.HomeTeamScore |> should equal (Some 2)
     model.AwayTeamScore |> should equal None
+
+[<Fact>]
+let ``given a match without round when transformed then round defaults to group stage`` () =
+    let dictionary = baseDictionary ()
+
+    let model = dictionary.ToPoolLayoutMatch()
+
+    model.Round |> should equal "Fase de grupos"
+
+[<Fact>]
+let ``given a match with round when transformed then round is read`` () =
+    let dictionary =
+        System.Collections.Generic.Dictionary(baseDictionary ())
+
+    dictionary["round"] <- AttributeValue(S = "Octavos de final")
+
+    let model = dictionary.ToPoolLayoutMatch()
+
+    model.Round |> should equal "Octavos de final"

@@ -17,11 +17,12 @@ module FanOutMatchToGamblersTest =
         { MatchId = Ulid.newOf "01K1PX1TX2NM1HG851S1V0QG6M"
           PoolLayoutId = poolLayoutId
           PoolLayoutVersion = newVersion
-          HomeTeamId = Ulid.newOf "01K1PX1TX2NM1HG851S1V0QG6N"
+          HomeTeamId = "01K1PX1TX2NM1HG851S1V0QG6N"
           HomeTeamName = NonEmptyString100.newOf "Tigre"
-          AwayTeamId = Ulid.newOf "01K1PX1TX2NM1HG851S1V0QG6P"
+          AwayTeamId = "01K1PX1TX2NM1HG851S1V0QG6P"
           AwayTeamName = NonEmptyString100.newOf "América"
-          MatchDateTime = DateTime(2026, 5, 1, 0, 0, 0, DateTimeKind.Utc) }
+          MatchDateTime = DateTime(2026, 5, 1, 0, 0, 0, DateTimeKind.Utc)
+          Round = "Fase de grupos" }
 
     let private gambler (id: string) (poolId: string) (version: int) : PoolLayoutGambler =
         { PoolId = Ulid.newOf poolId
@@ -103,7 +104,7 @@ module FanOutMatchToGamblersTest =
         }
 
     [<Fact>]
-    let ``given gamblers already at new version when execute then they are skipped`` () =
+    let ``given gamblers at any version when execute then materializes for each`` () =
         async {
             let alreadyAtVersion = gambler "01K1PX1TX2NM1HG851S1V0QG6Q" "01K1PX1TX2NM1HG851S1V0QG6T" newVersion
             let aheadOfVersion = gambler "01K1PX1TX2NM1HG851S1V0QG6R" "01K1PX1TX2NM1HG851S1V0QG6W" (newVersion + 1)
@@ -116,9 +117,7 @@ module FanOutMatchToGamblersTest =
 
             do! service.ExecuteAsync(input ())
 
-            captured.Count |> shouldEqual 1
-            let bet, _ = captured[0]
-            bet.GamblerId |> shouldEqual needsUpdate.GamblerId
+            captured.Count |> shouldEqual 3
         }
 
     [<Fact>]

@@ -91,6 +91,9 @@ module PoolTable =
         let awayTeamScore = "awayTeamScore"
 
         [<Literal>]
+        let round = "round"
+
+        [<Literal>]
         let computedDateTime = "computedDateTime"
 
         [<Literal>]

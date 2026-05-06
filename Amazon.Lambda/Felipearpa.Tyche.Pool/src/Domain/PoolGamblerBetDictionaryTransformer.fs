@@ -11,6 +11,9 @@ open Felipearpa.Type
 
 module PoolGamblerBetDictionaryTransformer =
 
+    [<Literal>]
+    let private defaultRound = "Fase de grupos"
+
     let toPoolGamblerBet (dictionary: IDictionary<string, AttributeValue>) =
         let matchDateTime =
             DateTime.Parse(
@@ -24,9 +27,9 @@ module PoolGamblerBetDictionaryTransformer =
           GamblerUsername = dictionary[PoolTable.Attribute.gamblerUsername].S |> NonEmptyString100.newOf
           MatchId = dictionary[PoolTable.Attribute.matchId].S |> Ulid.newOf
           PoolLayoutId = dictionary[PoolTable.Attribute.poolLayoutId].S |> Ulid.newOf
-          HomeTeamId = dictionary[PoolTable.Attribute.homeTeamId].S |> Ulid.newOf
+          HomeTeamId = dictionary[PoolTable.Attribute.homeTeamId].S
           HomeTeamName = dictionary[PoolTable.Attribute.homeTeamName].S |> NonEmptyString100.newOf
-          AwayTeamId = dictionary[PoolTable.Attribute.awayTeamId].S |> Ulid.newOf
+          AwayTeamId = dictionary[PoolTable.Attribute.awayTeamId].S
           AwayTeamName = dictionary[PoolTable.Attribute.awayTeamName].S |> NonEmptyString100.newOf
           MatchScore =
             match
@@ -53,6 +56,11 @@ module PoolGamblerBetDictionaryTransformer =
             |> tryGetAttributeValueOrNone (PoolTable.Attribute.score)
             |> Option.map (fun attributeValue -> int attributeValue.N)
           MatchDateTime = matchDateTime
+          Round =
+            dictionary
+            |> tryGetAttributeValueOrNone (PoolTable.Attribute.round)
+            |> Option.map (fun attributeValue -> attributeValue.S)
+            |> Option.defaultValue defaultRound
           isLocked = LockPolicy.isLockedAt DateTime.UtcNow matchDateTime
           isComputed =
             dictionary

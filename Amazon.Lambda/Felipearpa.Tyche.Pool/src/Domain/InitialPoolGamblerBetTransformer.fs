@@ -23,14 +23,15 @@ module InitialPoolGamblerBetTransformer =
                       PoolTable.Attribute.gamblerId, AttributeValue(S = poolGamblerBet.GamblerId.Value)
                       PoolTable.Attribute.gamblerUsername, AttributeValue(S = poolGamblerBet.GamblerUsername.Value)
                       PoolTable.Attribute.matchId, AttributeValue(S = poolGamblerBet.MatchId.Value)
-                      PoolTable.Attribute.homeTeamId, AttributeValue(S = poolGamblerBet.HomeTeamId.Value)
+                      PoolTable.Attribute.homeTeamId, AttributeValue(S = poolGamblerBet.HomeTeamId)
                       PoolTable.Attribute.homeTeamName, AttributeValue(S = poolGamblerBet.HomeTeamName.Value)
-                      PoolTable.Attribute.awayTeamId, AttributeValue(S = poolGamblerBet.AwayTeamId.Value)
+                      PoolTable.Attribute.awayTeamId, AttributeValue(S = poolGamblerBet.AwayTeamId)
                       PoolTable.Attribute.awayTeamName, AttributeValue(S = poolGamblerBet.AwayTeamName.Value)
                       PoolTable.Attribute.matchDateTime, AttributeValue(S = matchDateTime)
                       PoolTable.Attribute.poolLayoutId, AttributeValue(S = poolGamblerBet.PoolLayoutId.Value)
                       PoolTable.Attribute.poolLayoutVersion,
                       AttributeValue(N = poolGamblerBet.PoolLayoutVersion.ToString())
+                      PoolTable.Attribute.round, AttributeValue(S = poolGamblerBet.Round)
                       PoolTable.Attribute.getPoolGamblerScoresByMatchPk,
                       AttributeValue(S = KeyPrefix.build PoolTable.Prefix.match' poolGamblerBet.MatchId.Value)
                       PoolTable.Attribute.getPoolGamblerScoresByMatchSk,

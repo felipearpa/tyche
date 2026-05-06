@@ -15,12 +15,13 @@ module InitialPoolGamblerBetTransformerTest =
           GamblerUsername = NonEmptyString100.newOf "felipe@tyche.com"
           MatchId = Ulid.newOf "01K1PX1TX2NM1HG851S1V0QG6Q"
           PoolLayoutId = Ulid.newOf "01K1PX1TX2NM1HG851S1V0QG6R"
-          HomeTeamId = Ulid.newOf "01K1PX1TX2NM1HG851S1V0QG6S"
+          HomeTeamId = "01K1PX1TX2NM1HG851S1V0QG6S"
           HomeTeamName = NonEmptyString100.newOf "Tigre"
-          AwayTeamId = Ulid.newOf "01K1PX1TX2NM1HG851S1V0QG6T"
+          AwayTeamId = "01K1PX1TX2NM1HG851S1V0QG6T"
           AwayTeamName = NonEmptyString100.newOf "América"
           MatchDateTime = DateTime(2026, 5, 1, 0, 0, 0, DateTimeKind.Utc)
           PoolLayoutVersion = 2
+          Round = "Fase de grupos"
           HomeTeamScore = None
           AwayTeamScore = None
           BetScore = None
@@ -36,6 +37,15 @@ module InitialPoolGamblerBetTransformerTest =
         item.ContainsKey("computedRequestId") |> shouldEqual false
         item.ContainsKey("homeTeamScore") |> shouldEqual false
         item.ContainsKey("awayTeamScore") |> shouldEqual false
+
+    [<Fact>]
+    let ``given a bet when transformed then round is written`` () =
+        let item =
+            { bet () with
+                Round = "Octavos de final" }
+            |> toAmazonItem
+
+        item["round"].S |> shouldEqual "Octavos de final"
 
     [<Fact>]
     let ``given a backfilled bet for an already-scored match when transformed then all optional fields are present`` () =
