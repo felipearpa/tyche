@@ -148,6 +148,12 @@ private struct PoolHomeContent: View {
                 onLogout: {
                     drawerVisible = false
                     onSignOut()
+                },
+                onInvite: {
+                    drawerVisible = false
+                },
+                onDeletePool: {
+                    drawerVisible = false
                 }
             )
         }

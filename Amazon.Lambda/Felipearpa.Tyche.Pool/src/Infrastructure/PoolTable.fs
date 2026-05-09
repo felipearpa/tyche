@@ -31,6 +31,9 @@ module PoolTable =
         let gamblerId = "gamblerId"
 
         [<Literal>]
+        let creatorGamblerId = "creatorGamblerId"
+
+        [<Literal>]
         let gamblerUsername = "gamblerUsername"
 
         [<Literal>]

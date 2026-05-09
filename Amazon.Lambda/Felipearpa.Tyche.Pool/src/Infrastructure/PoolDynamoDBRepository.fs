@@ -87,7 +87,8 @@ type PoolDynamoDbRepository(keySerializer: IKeySerializer, client: IAmazonDynamo
                           PoolLayoutId = joinPoolInput.PoolLayoutId
                           PoolLayoutVersion = joinPoolInput.PoolLayoutVersion }
 
-                let incrementRequest = IncrementGamblerCountRequestBuilder.build joinPoolInput.PoolId
+                let incrementRequest =
+                    IncrementGamblerCountRequestBuilder.build joinPoolInput.PoolId
 
                 let transaction =
                     TransactWriteItemsRequest(
@@ -136,4 +137,89 @@ type PoolDynamoDbRepository(keySerializer: IKeySerializer, client: IAmazonDynamo
                     return response.IsItemSet |> Ok
                 with _ ->
                     return Error()
+            }
+
+        member this.DeletePoolAsync(poolId) =
+            let queryAllKeysAsync buildRequest =
+                let rec loop (acc: IDictionary<string, AttributeValue> list) maybeNext =
+                    async {
+                        let! response = client.QueryAsync(buildRequest maybeNext) |> Async.AwaitTask
+
+                        let acc =
+                            (response.Items |> Seq.cast<IDictionary<string, AttributeValue>> |> List.ofSeq)
+                            @ acc
+
+                        match response.LastEvaluatedKey |> Option.ofObj with
+                        | Some lek when lek.Count > 0 -> return! loop acc (Some(lek :> IDictionary<_, _>))
+                        | _ -> return acc
+                    }
+
+                loop [] None
+
+            let deleteKeysAsync (keys: IDictionary<string, AttributeValue> seq) =
+                let maxRetries = 10
+                let baseDelayMs = 50
+
+                let rec submit attempt items =
+                    async {
+                        match items with
+                        | [] -> return ()
+                        | _ when attempt >= maxRetries ->
+                            return
+                                failwith
+                                    $"BatchWriteItem left {List.length items} unprocessed item(s) after {maxRetries} retries"
+                        | _ ->
+                            if attempt > 0 then
+                                let delayMs = baseDelayMs * (1 <<< (attempt - 1))
+                                do! Async.Sleep(Random.Shared.Next(delayMs / 2, delayMs + 1))
+
+                            let request =
+                                BatchWriteItemRequest(
+                                    RequestItems = Dictionary(dict [ PoolTable.name, ResizeArray items ])
+                                )
+
+                            let! response = client.BatchWriteItemAsync(request) |> Async.AwaitTask
+
+                            let unprocessed =
+                                match response.UnprocessedItems |> Option.ofObj with
+                                | Some u when u.ContainsKey(PoolTable.name) -> u[PoolTable.name] |> List.ofSeq
+                                | _ -> []
+
+                            return! submit (attempt + 1) unprocessed
+                    }
+
+                async {
+                    for chunk in keys |> Seq.chunkBySize 25 do
+                        let items =
+                            chunk
+                            |> Array.toList
+                            |> List.map (fun key -> WriteRequest(DeleteRequest = DeleteRequest(Key = Dictionary key)))
+
+                        do! submit 0 items
+                }
+
+            let parseGamblerId (key: IDictionary<string, AttributeValue>) =
+                let prefix = $"{PoolTable.Prefix.gambler}#"
+                key[Key.sk].S.Substring(prefix.Length) |> Ulid.newOf
+
+            async {
+                let! gamblerKeys = queryAllKeysAsync (GetPoolGamblerKeysRequestBuilder.build poolId)
+
+                for gamblerKey in gamblerKeys do
+                    let gamblerId = parseGamblerId gamblerKey
+                    let! betKeys = queryAllKeysAsync (GetPoolGamblerBetKeysRequestBuilder.build poolId gamblerId)
+                    do! deleteKeysAsync betKeys
+
+                do! deleteKeysAsync gamblerKeys
+
+                let poolPk = KeyPrefix.build PoolTable.Prefix.pool poolId.Value
+
+                let poolKey =
+                    dict [ Key.pk, AttributeValue(S = poolPk); Key.sk, AttributeValue(S = poolPk) ]
+
+                let deletePoolRoot =
+                    DeleteItemRequest(TableName = PoolTable.name, Key = Dictionary poolKey)
+
+                let! _ = client.DeleteItemAsync(deletePoolRoot) |> Async.AwaitTask
+                return ()
             }
