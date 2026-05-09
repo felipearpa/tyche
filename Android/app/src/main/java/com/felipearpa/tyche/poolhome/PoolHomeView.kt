@@ -1,5 +1,8 @@
 package com.felipearpa.tyche.poolhome
 
+import android.content.Intent
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -25,8 +28,11 @@ import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -44,12 +50,22 @@ import com.felipearpa.tyche.bet.finished.FinishedBetListView
 import com.felipearpa.tyche.bet.finished.finishedBetListViewModel
 import com.felipearpa.tyche.bet.pending.PendingBetListView
 import com.felipearpa.tyche.bet.pending.pendingBetListViewModel
+import com.felipearpa.tyche.core.JoinPoolUrlTemplateProvider
 import com.felipearpa.tyche.pool.gamblerscore.GamblerScoreListView
 import com.felipearpa.tyche.pool.gamblerscore.gamblerScoreListViewModel
 import com.felipearpa.tyche.poolhome.drawer.DrawerView
+import com.felipearpa.tyche.poolhome.drawer.DrawerViewModel
 import com.felipearpa.tyche.poolhome.drawer.drawerViewModel
+import com.felipearpa.tyche.ui.exception.ExceptionAlertDialog
+import com.felipearpa.tyche.ui.exception.LocalizedException
+import com.felipearpa.tyche.ui.exception.localizedOrDefault
+import com.felipearpa.tyche.ui.loading.LoadingContainerView
 import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
+import com.felipearpa.ui.state.LoadableViewState
+import com.felipearpa.ui.state.isFailure
+import com.felipearpa.ui.state.isLoading
 import kotlinx.coroutines.launch
+import org.koin.compose.koinInject
 import com.felipearpa.tyche.ui.R as SharedR
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -67,89 +83,140 @@ fun PoolHomeView(
     val coroutineScope = rememberCoroutineScope()
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
 
+    val drawerViewModel: DrawerViewModel = drawerViewModel(poolId = poolId, gamblerId = gamblerId)
+    val deleteState by drawerViewModel.deleteState.collectAsState()
+    val joinPoolUrlTemplate = koinInject<JoinPoolUrlTemplateProvider>()
+    var invitePoolUrl by remember { mutableStateOf(emptyString()) }
+
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
             ModalDrawerSheet {
                 DrawerView(
-                    viewModel = drawerViewModel(poolId = poolId, gamblerId = gamblerId),
+                    viewModel = drawerViewModel,
                     onSignOut = onSignOut,
+                    onInvite = {
+                        coroutineScope.launch { drawerState.close() }
+                        invitePoolUrl = String.format(joinPoolUrlTemplate(), poolId)
+                    },
+                    onPoolDeleting = {
+                        coroutineScope.launch { drawerState.close() }
+                    },
+                    onPoolDeleted = onPoolChange,
                 )
             }
         },
     ) {
-        Scaffold(
-            modifier = Modifier
-                .fillMaxSize()
-                .nestedScroll(scrollBehavior.nestedScrollConnection),
-            topBar = {
-                AppTopBar(
-                    title = selectedTabIndex.title,
-                    onAccountShow = {
-                        coroutineScope.launch {
-                            drawerState.apply {
-                                if (isClosed) open() else close()
-                            }
-                        }
-                    },
-                    onPoolChange = onPoolChange,
-                    scrollBehavior = scrollBehavior,
-                )
-            },
-            bottomBar = {
-                PrimaryTabRow(
-                    selectedTabIndex = selectedTabIndex.ordinal,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .navigationBarsPadding(),
-                ) {
-                    GamblerScoreTab(
-                        selected = selectedTabIndex == Tab.GAMBLER_SCORE,
-                        onClick = { selectedTabIndex = Tab.GAMBLER_SCORE },
-                    )
-                    BetEditorTab(
-                        selected = selectedTabIndex == Tab.BET_EDITOR,
-                        onClick = { selectedTabIndex = Tab.BET_EDITOR },
-                    )
-                    HistoryBetTab(
-                        selected = selectedTabIndex == Tab.HISTORY_BET,
-                        onClick = { selectedTabIndex = Tab.HISTORY_BET },
-                    )
-                }
-            },
-        ) { innerPadding ->
-            Box(
+        val mainContent: @Composable () -> Unit = {
+            Scaffold(
                 modifier = Modifier
-                    .padding(paddingValues = innerPadding)
-                    .fillMaxSize(),
-            ) {
-                when (selectedTabIndex) {
-                    Tab.GAMBLER_SCORE -> GamblerScoreListView(
-                        viewModel = gamblerScoreListViewModel(
-                            poolId = poolId,
-                            gamblerId = gamblerId,
-                        ),
-                        onGamblerOpen = onGamblerOpen,
+                    .fillMaxSize()
+                    .nestedScroll(scrollBehavior.nestedScrollConnection),
+                topBar = {
+                    AppTopBar(
+                        title = selectedTabIndex.title,
+                        onAccountShow = {
+                            coroutineScope.launch {
+                                drawerState.apply {
+                                    if (isClosed) open() else close()
+                                }
+                            }
+                        },
+                        onPoolChange = onPoolChange,
+                        scrollBehavior = scrollBehavior,
                     )
+                },
+                bottomBar = {
+                    PrimaryTabRow(
+                        selectedTabIndex = selectedTabIndex.ordinal,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .navigationBarsPadding(),
+                    ) {
+                        GamblerScoreTab(
+                            selected = selectedTabIndex == Tab.GAMBLER_SCORE,
+                            onClick = { selectedTabIndex = Tab.GAMBLER_SCORE },
+                        )
+                        BetEditorTab(
+                            selected = selectedTabIndex == Tab.BET_EDITOR,
+                            onClick = { selectedTabIndex = Tab.BET_EDITOR },
+                        )
+                        HistoryBetTab(
+                            selected = selectedTabIndex == Tab.HISTORY_BET,
+                            onClick = { selectedTabIndex = Tab.HISTORY_BET },
+                        )
+                    }
+                },
+            ) { innerPadding ->
+                Box(
+                    modifier = Modifier
+                        .padding(paddingValues = innerPadding)
+                        .fillMaxSize(),
+                ) {
+                    when (selectedTabIndex) {
+                        Tab.GAMBLER_SCORE -> GamblerScoreListView(
+                            viewModel = gamblerScoreListViewModel(
+                                poolId = poolId,
+                                gamblerId = gamblerId,
+                            ),
+                            onGamblerOpen = onGamblerOpen,
+                        )
 
-                    Tab.BET_EDITOR -> PendingBetListView(
-                        viewModel = pendingBetListViewModel(
-                            poolId = poolId,
-                            gamblerId = gamblerId,
-                        ),
-                        onMatchOpen = onMatchOpen,
-                    )
+                        Tab.BET_EDITOR -> PendingBetListView(
+                            viewModel = pendingBetListViewModel(
+                                poolId = poolId,
+                                gamblerId = gamblerId,
+                            ),
+                            onMatchOpen = onMatchOpen,
+                        )
 
-                    Tab.HISTORY_BET -> FinishedBetListView(
-                        viewModel = finishedBetListViewModel(
-                            poolId = poolId,
-                            gamblerId = gamblerId,
-                        ),
-                        onMatchOpen = onMatchOpen,
-                    )
+                        Tab.HISTORY_BET -> FinishedBetListView(
+                            viewModel = finishedBetListViewModel(
+                                poolId = poolId,
+                                gamblerId = gamblerId,
+                            ),
+                            onMatchOpen = onMatchOpen,
+                        )
+                    }
                 }
             }
         }
+
+        if (deleteState.isLoading()) {
+            LoadingContainerView { mainContent() }
+        } else {
+            mainContent()
+        }
+    }
+
+    if (deleteState.isFailure()) {
+        val exception = (deleteState as LoadableViewState.Failure).exception
+        ExceptionAlertDialog(
+            exception = exception as? LocalizedException ?: exception.localizedOrDefault(),
+            onDismiss = { drawerViewModel.resetDeleteState() },
+        )
+    }
+
+    if (invitePoolUrl.isNotEmpty()) {
+        InvitePoolSharer(url = invitePoolUrl, onClose = { invitePoolUrl = emptyString() })
+    }
+}
+
+@Composable
+private fun InvitePoolSharer(url: String, onClose: () -> Unit) {
+    val activityResultLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult(),
+    ) { _ -> onClose() }
+
+    val sendIntent: Intent = Intent().apply {
+        action = Intent.ACTION_SEND
+        putExtra(Intent.EXTRA_TEXT, url)
+        type = "text/plain"
+    }
+    val shareIntent = Intent.createChooser(sendIntent, null)
+
+    LaunchedEffect(Unit) {
+        activityResultLauncher.launch(shareIntent)
     }
 }
 

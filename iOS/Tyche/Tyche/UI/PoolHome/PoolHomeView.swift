@@ -49,6 +49,8 @@ struct PoolHomeView: View {
                 gamblerId: gamblerId,
                 logoutUseCase: diResolver.resolve(LogOutUseCase.self)!,
                 getPoolGamblerScoreUseCase: diResolver.resolve(GetPoolGamblerScoreUseCase.self)!,
+                getPoolUseCase: diResolver.resolve(GetPoolUseCase.self)!,
+                deletePoolUseCase: diResolver.resolve(DeletePoolUseCase.self)!,
                 accountStorage: diResolver.resolve(AccountStorage.self)!
             )
         )
@@ -67,6 +69,7 @@ private struct PoolHomeContent: View {
     @StateObject private var drawerViewModel: PoolHomeDrawerViewModel
     @State private var selectedTab = PoolHomeTab.gamblerScores
     @State private var drawerVisible = false
+    @State private var inviteUrl: ShareablePoolUrl?
 
     init(
         gamblerId: String,
@@ -87,6 +90,24 @@ private struct PoolHomeContent: View {
     }
 
     var body: some View {
+        Group {
+            if drawerViewModel.deleteState.isLoading() {
+                LoadingContainerView { mainContent }
+            } else {
+                mainContent
+            }
+        }
+        .errorAlert(
+            Binding(
+                get: { drawerViewModel.deleteState.localizedErrorOrNil() },
+                set: { _ in drawerViewModel.resetDeleteState() }
+            ),
+            onDismiss: {}
+        )
+    }
+
+    @ViewBuilder
+    private var mainContent: some View {
         TabView(selection: $selectedTab) {
             GamblerScoreListView(
                 viewModel: GamblerScoreListViewModel(
@@ -151,9 +172,15 @@ private struct PoolHomeContent: View {
                 },
                 onInvite: {
                     drawerVisible = false
+                    let template = diResolver.resolve(JoinPoolUrlTemplateProvider.self)!
+                    inviteUrl = ShareablePoolUrl(String(format: template(), poolId))
                 },
-                onDeletePool: {
+                onPoolDeleting: {
                     drawerVisible = false
+                },
+                onPoolDeleted: {
+                    drawerVisible = false
+                    onChangePool()
                 }
             )
         }
@@ -163,6 +190,10 @@ private struct PoolHomeContent: View {
             leading: navigationBarLeading(),
             trailing: navigationBarTrailing()
         )
+        .sheet(item: $inviteUrl) { inviteUrl in
+            ShareSheet(activityItems: [URL(string: inviteUrl.id)!])
+                .presentationDetents([.medium, .large])
+        }
     }
 
     private func navigationBarLeading() -> some View {
@@ -205,6 +236,24 @@ private extension PoolHomeTab {
 }
 
 private let ICON_SIZE: CGFloat = 24
+
+private struct ShareablePoolUrl: Identifiable {
+    let id: String
+
+    init(_ id: String) {
+        self.id = id
+    }
+}
+
+private struct ShareSheet: UIViewControllerRepresentable {
+    let activityItems: [Any]
+
+    func makeUIViewController(context: Context) -> UIActivityViewController {
+        UIActivityViewController(activityItems: activityItems, applicationActivities: nil)
+    }
+
+    func updateUIViewController(_ uiViewController: UIActivityViewController, context: Context) {}
+}
 
 #Preview {
     let diResolver = DIResolver(

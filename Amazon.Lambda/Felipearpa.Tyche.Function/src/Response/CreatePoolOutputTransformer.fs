@@ -6,4 +6,5 @@ open Felipearpa.Type
 module CreatePoolOutputTransformer =
     let toResponse (createPoolOutput: CreatePoolOutput) : PoolResponse =
         { PoolResponse.PoolId = createPoolOutput.PoolId |> Ulid.value
-          PoolName = createPoolOutput.PoolName |> NonEmptyString100.value }
+          PoolName = createPoolOutput.PoolName |> NonEmptyString100.value
+          CreatorGamblerId = createPoolOutput.CreatorGamblerId |> Ulid.value }

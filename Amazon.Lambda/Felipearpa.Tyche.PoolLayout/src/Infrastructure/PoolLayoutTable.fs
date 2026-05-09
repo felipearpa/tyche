@@ -57,6 +57,9 @@ module PoolLayoutTable =
         [<Literal>]
         let round = "round"
 
+        [<Literal>]
+        let groupName = "groupName"
+
     module Index =
 
         [<Literal>]

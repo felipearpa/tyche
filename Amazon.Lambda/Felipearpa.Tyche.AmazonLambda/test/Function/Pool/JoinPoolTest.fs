@@ -57,7 +57,8 @@ module JoinPoolTest =
             [ dict
                   [ "poolId", AttributeValue(S = "01K1PX1TX2NM1HG851S1V0QG6N")
                     "poolName", AttributeValue(S = "World Cup 2026")
-                    "poolLayoutId", AttributeValue(S = "01K1PX1TX2NM1HG851S1V0QG6N") ] ]
+                    "poolLayoutId", AttributeValue(S = "01K1PX1TX2NM1HG851S1V0QG6N")
+                    "creatorGamblerId", AttributeValue(S = "01K1PX1TX2NM1HG851S1V0QG6N") ] ]
 
         client
             .Setup(_.QueryAsync(It.Is<QueryRequest>(fun (request: QueryRequest) -> request.TableName = "Pool")))

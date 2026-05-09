@@ -21,6 +21,11 @@ module PoolLayoutMatchDictionaryTransformer =
         | true, value -> value.S
         | false, _ -> defaultValue
 
+    let private tryGetStringAttribute (dictionary: IDictionary<string, AttributeValue>) (key: string) =
+        match dictionary.TryGetValue(key) with
+        | true, value -> Some value.S
+        | false, _ -> None
+
     let toPoolLayoutMatch (dictionary: IDictionary<string, AttributeValue>) =
         { PoolLayoutMatch.MatchId = dictionary[PoolLayoutTable.Attribute.matchId].S |> Ulid.newOf
           PoolLayoutId = dictionary[PoolLayoutTable.Attribute.poolLayoutId].S |> Ulid.newOf
@@ -31,6 +36,7 @@ module PoolLayoutMatchDictionaryTransformer =
           MatchDateTime = DateTime.Parse(dictionary[PoolLayoutTable.Attribute.matchDateTime].S)
           PoolLayoutVersion = dictionary[PoolLayoutTable.Attribute.poolLayoutVersion].N |> int
           Round = getStringOrDefault dictionary PoolLayoutTable.Attribute.round defaultRound
+          GroupName = tryGetStringAttribute dictionary PoolLayoutTable.Attribute.groupName
           HomeTeamScore = tryGetIntAttribute dictionary PoolLayoutTable.Attribute.homeTeamScore
           AwayTeamScore = tryGetIntAttribute dictionary PoolLayoutTable.Attribute.awayTeamScore }
 

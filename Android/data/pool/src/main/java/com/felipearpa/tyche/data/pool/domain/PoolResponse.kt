@@ -6,4 +6,5 @@ import kotlinx.serialization.Serializable
 internal data class PoolResponse(
     val poolId: String,
     val poolName: String,
+    val creatorGamblerId: String,
 )

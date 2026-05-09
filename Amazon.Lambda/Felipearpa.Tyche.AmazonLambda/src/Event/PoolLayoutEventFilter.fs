@@ -50,6 +50,9 @@ module PoolLayoutEventFilter =
     let private roundAttributeKey = "round"
 
     [<Literal>]
+    let private groupNameAttributeKey = "groupName"
+
+    [<Literal>]
     let private defaultRound = "Fase de grupos"
 
     let extractUpdatedPoolLayouts (event: DynamoDBEvent) =
@@ -96,6 +99,8 @@ module PoolLayoutEventFilter =
                 tryGetStringFieldOrNone roundAttributeKey image
                 |> Option.defaultValue defaultRound
 
+            let groupName = tryGetStringFieldOrNone groupNameAttributeKey image
+
             match
                 maybeMatchId,
                 maybePoolLayoutId,
@@ -123,5 +128,6 @@ module PoolLayoutEventFilter =
                       AwayTeamId = awayTeamId
                       AwayTeamName = NonEmptyString100.newOf awayTeamName
                       MatchDateTime = DateTime.Parse(matchDateTime)
-                      Round = round }
+                      Round = round
+                      GroupName = groupName }
             | _ -> None)

@@ -45,6 +45,7 @@ module GetPendingBetsTest =
                       Score = Some 3
                       MatchDateTime = DateTime(2024, 10, 12, 18, 0, 0, DateTimeKind.Utc)
                       Round = "Fase de grupos"
+                      GroupName = None
                       isLocked = true
                       isComputed = false }
 
@@ -64,6 +65,7 @@ module GetPendingBetsTest =
                       Score = Some 1
                       MatchDateTime = DateTime(2024, 10, 13, 20, 30, 0, DateTimeKind.Utc)
                       Round = "Fase de grupos"
+                      GroupName = None
                       isLocked = true
                       isComputed = false }
                 }

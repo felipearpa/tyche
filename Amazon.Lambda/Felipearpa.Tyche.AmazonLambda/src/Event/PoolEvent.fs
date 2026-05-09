@@ -128,6 +128,7 @@ type PoolEvent(configureServices: IServiceCollection -> unit) =
                   MatchDateTime = m.MatchDateTime
                   PoolLayoutVersion = m.PoolLayoutVersion
                   Round = m.Round
+                  GroupName = m.GroupName
                   HomeTeamScore = None
                   AwayTeamScore = None
                   BetScore = None

@@ -1,6 +1,7 @@
 package com.felipearpa.tyche.data.pool.di
 
 import com.felipearpa.tyche.data.pool.application.CreatePool
+import com.felipearpa.tyche.data.pool.application.DeletePool
 import com.felipearpa.tyche.data.pool.application.GetOpenPoolLayouts
 import com.felipearpa.tyche.data.pool.application.GetPoolGamblerScore
 import com.felipearpa.tyche.data.pool.application.GetPoolGamblerScoresByGambler
@@ -32,6 +33,7 @@ val poolDataModule = module {
     factory { CreatePool(poolRepository = get()) }
     factory { JoinPool(poolRepository = get()) }
     factory { GetPool(poolRepository = get()) }
+    factory { DeletePool(poolRepository = get()) }
 
     factory<PoolGamblerScoreRepository> {
         PoolGamblerScoreRemoteRepository(

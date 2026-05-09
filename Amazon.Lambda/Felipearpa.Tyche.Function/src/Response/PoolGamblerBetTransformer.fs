@@ -35,5 +35,6 @@ module PoolGamblerBetTransformer =
           Score = poolGamblerBet.Score
           MatchDateTime = poolGamblerBet.MatchDateTime.ToUniversalTime()
           Round = poolGamblerBet.Round
+          GroupName = poolGamblerBet.GroupName
           isLocked = poolGamblerBet.isLocked
           isComputed = poolGamblerBet.isComputed }

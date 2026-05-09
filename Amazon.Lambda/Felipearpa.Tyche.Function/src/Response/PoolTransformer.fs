@@ -6,4 +6,5 @@ open Felipearpa.Type
 module PoolTransformer =
     let toPoolViewModel (pool: Pool) =
         { PoolResponse.PoolId = pool.PoolId |> Ulid.value
-          PoolName = pool.PoolName |> NonEmptyString100.value }
+          PoolName = pool.PoolName |> NonEmptyString100.value
+          CreatorGamblerId = pool.CreatorGamblerId |> Ulid.value }

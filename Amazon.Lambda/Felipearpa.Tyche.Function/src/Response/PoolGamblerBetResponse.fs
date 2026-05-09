@@ -19,5 +19,6 @@ type PoolGamblerBetResponse =
       Score: int option
       MatchDateTime: DateTime
       Round: string
+      GroupName: string option
       isLocked: bool
       isComputed: bool }

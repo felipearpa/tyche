@@ -41,6 +41,7 @@ module GetPoolGamblerBetByIdTest =
               Score = Some 3
               MatchDateTime = DateTime(2024, 10, 12, 18, 0, 0, DateTimeKind.Utc)
               Round = "Fase de grupos"
+              GroupName = None
               isLocked = true
               isComputed = false }
 

@@ -74,4 +74,24 @@ class PoolAlamofireDataSource : PoolRemoteDataSource {
             }
         }
     }
+
+    func deletePool(poolId: String, gamblerId: String) async throws {
+        return try await withUnsafeThrowingContinuation { continuation in
+            session.request(
+                urlBasePathProvider.prependBasePath("pools/\(poolId)")!,
+                method: .delete,
+                parameters: ["gamblerId": gamblerId]
+            )
+            .cURLDescription(calling: { curl in print(curl) })
+            .validate()
+            .response { response in
+                switch response.result {
+                case .success:
+                    continuation.resume()
+                case .failure(let error):
+                    continuation.resume(throwing: error)
+                }
+            }
+        }
+    }
 }

@@ -4,4 +4,5 @@ open Felipearpa.Type
 
 type CreatePoolOutput =
     { PoolId: Ulid
-      PoolName: NonEmptyString100 }
+      PoolName: NonEmptyString100
+      CreatorGamblerId: Ulid }

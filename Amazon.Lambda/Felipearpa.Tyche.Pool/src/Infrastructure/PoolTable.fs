@@ -97,6 +97,9 @@ module PoolTable =
         let round = "round"
 
         [<Literal>]
+        let groupName = "groupName"
+
+        [<Literal>]
         let computedDateTime = "computedDateTime"
 
         [<Literal>]

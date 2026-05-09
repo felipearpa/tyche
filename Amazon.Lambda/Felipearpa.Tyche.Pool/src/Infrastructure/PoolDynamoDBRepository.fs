@@ -71,7 +71,8 @@ type PoolDynamoDbRepository(keySerializer: IKeySerializer, client: IAmazonDynamo
                     match response with
                     | Ok _ ->
                         { CreatePoolOutput.PoolId = createPoolInput.PoolId
-                          PoolName = createPoolInput.PoolName }
+                          PoolName = createPoolInput.PoolName
+                          CreatorGamblerId = createPoolInput.OwnerGamblerId }
                         |> Ok
                     | Error _ -> Error()
             }

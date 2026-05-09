@@ -14,7 +14,8 @@ type FanOutMatchInput =
       AwayTeamId: string
       AwayTeamName: NonEmptyString100
       MatchDateTime: DateTime
-      Round: string }
+      Round: string
+      GroupName: string option }
 
 type FanOutMatchToGamblers
     (poolRepository: IPoolRepository, poolGamblerBetRepository: IPoolGamblerBetRepository) =
@@ -33,6 +34,7 @@ type FanOutMatchToGamblers
               MatchDateTime = input.MatchDateTime
               PoolLayoutVersion = input.PoolLayoutVersion
               Round = input.Round
+              GroupName = input.GroupName
               HomeTeamScore = None
               AwayTeamScore = None
               BetScore = None

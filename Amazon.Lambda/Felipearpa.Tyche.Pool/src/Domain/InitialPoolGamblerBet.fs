@@ -16,6 +16,7 @@ type InitialPoolGamblerBet =
       MatchDateTime: DateTime
       PoolLayoutVersion: int
       Round: string
+      GroupName: string option
       HomeTeamScore: int option
       AwayTeamScore: int option
       BetScore: int option

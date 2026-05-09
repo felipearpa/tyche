@@ -22,7 +22,8 @@ module FanOutMatchToGamblersTest =
           AwayTeamId = "01K1PX1TX2NM1HG851S1V0QG6P"
           AwayTeamName = NonEmptyString100.newOf "América"
           MatchDateTime = DateTime(2026, 5, 1, 0, 0, 0, DateTimeKind.Utc)
-          Round = "Fase de grupos" }
+          Round = "Fase de grupos"
+          GroupName = None }
 
     let private gambler (id: string) (poolId: string) (version: int) : PoolLayoutGambler =
         { PoolId = Ulid.newOf poolId
