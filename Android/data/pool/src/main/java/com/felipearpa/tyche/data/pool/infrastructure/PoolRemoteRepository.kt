@@ -45,4 +45,10 @@ internal class PoolRemoteRepository(
             }
         }
     }
+
+    override suspend fun deletePool(poolId: String, gamblerId: String): Result<Unit> {
+        return networkExceptionHandler.handle {
+            poolDataSource.deletePool(poolId = poolId, gamblerId = gamblerId)
+        }
+    }
 }

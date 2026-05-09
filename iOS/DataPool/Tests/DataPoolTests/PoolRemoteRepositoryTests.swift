@@ -113,4 +113,8 @@ private final class UnusedDataSource: PoolRemoteDataSource {
     func joinPool(poolId: String, joinPoolRequest: JoinPoolRequest) async throws -> Void {
         fatalError("not used")
     }
+
+    func deletePool(poolId: String, gamblerId: String) async throws -> Void {
+        fatalError("not used")
+    }
 }

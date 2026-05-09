@@ -21,3 +21,11 @@ module CreatePoolRequestBuilderTest =
         let put = CreatePoolRequestBuilder.build (input ())
 
         put.Item["gamblerCount"].N |> shouldEqual "1"
+
+    [<Fact>]
+    let ``given a resolved create pool input when built then the pool root stores the owner as the creator gambler`` () =
+        let resolved = input ()
+
+        let put = CreatePoolRequestBuilder.build resolved
+
+        put.Item["creatorGamblerId"].S |> shouldEqual (resolved.OwnerGamblerId |> Ulid.value)

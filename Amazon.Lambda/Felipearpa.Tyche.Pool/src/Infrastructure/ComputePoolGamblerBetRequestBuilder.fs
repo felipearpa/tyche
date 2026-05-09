@@ -26,7 +26,8 @@ module ComputePoolGamblerBetRequestBuilder =
              {ExpressionAttribute.name PoolTable.Attribute.computedRequestId} = :{PoolTable.Attribute.computedRequestId}"
 
         let conditionExpression =
-            $"attribute_not_exists({ExpressionAttribute.name PoolTable.Attribute.computedRequestId})"
+            $"attribute_exists({Key.pk}) AND \
+             attribute_not_exists({ExpressionAttribute.name PoolTable.Attribute.computedRequestId})"
 
         let mutable attributeNames =
             ExpressionAttribute.names

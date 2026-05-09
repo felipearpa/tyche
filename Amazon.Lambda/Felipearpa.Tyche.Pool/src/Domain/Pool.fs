@@ -5,4 +5,5 @@ open Felipearpa.Type
 type Pool =
     { PoolId: Ulid
       PoolName: NonEmptyString100
-      PoolLayoutId: Ulid }
+      PoolLayoutId: Ulid
+      CreatorGamblerId: Ulid }

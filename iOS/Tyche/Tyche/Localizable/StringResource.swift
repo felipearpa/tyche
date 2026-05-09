@@ -24,6 +24,13 @@ extension StringResource {
     static let changePoolAction = StringResource(name: "change_pool_action")
     static let playingNowText = StringResource(name: "playing_now_text")
     static let suffixPointText = StringResource(name: "suffix_point_text")
+    static let poolSectionTitle = StringResource(name: "pool_section_title")
+    static let inviteAction = StringResource(name: "invite_action")
+    static let deletePoolAction = StringResource(name: "delete_pool_action")
+    static let deletePoolAlertTitle = StringResource(name: "delete_pool_alert_title")
+    static let deletePoolAlertMessage = StringResource(name: "delete_pool_alert_message")
+    static let deleteAction = StringResource(name: "delete_action")
+    static let cancelAction = StringResource(name: "cancel_action")
 }
 
 extension String {

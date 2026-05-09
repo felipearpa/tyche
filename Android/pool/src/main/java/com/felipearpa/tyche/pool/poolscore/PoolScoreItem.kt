@@ -30,6 +30,7 @@ import com.felipearpa.tyche.ui.TrendIndicator
 import com.felipearpa.tyche.ui.shimmer
 import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
 import com.felipearpa.tyche.ui.theme.TycheTheme
+import com.felipearpa.tyche.ui.R as SharedR
 
 @Composable
 fun PoolScoreItem(
@@ -80,7 +81,7 @@ fun PoolScoreItem(
                 modifier = placeholderModifier,
             ) {
                 Icon(
-                    painter = painterResource(R.drawable.person_add),
+                    painter = painterResource(SharedR.drawable.person_add),
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.onPrimaryContainer,
                 )

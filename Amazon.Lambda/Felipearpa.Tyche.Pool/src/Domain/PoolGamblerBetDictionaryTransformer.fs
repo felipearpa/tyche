@@ -61,6 +61,10 @@ module PoolGamblerBetDictionaryTransformer =
             |> tryGetAttributeValueOrNone (PoolTable.Attribute.round)
             |> Option.map (fun attributeValue -> attributeValue.S)
             |> Option.defaultValue defaultRound
+          GroupName =
+            dictionary
+            |> tryGetAttributeValueOrNone (PoolTable.Attribute.groupName)
+            |> Option.map (fun attributeValue -> attributeValue.S)
           isLocked = LockPolicy.isLockedAt DateTime.UtcNow matchDateTime
           isComputed =
             dictionary

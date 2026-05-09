@@ -41,6 +41,10 @@ module InitialPoolGamblerBetTransformer =
                       ) ]
             )
 
+        match poolGamblerBet.GroupName with
+        | Some groupName -> item[PoolTable.Attribute.groupName] <- AttributeValue(S = groupName)
+        | None -> ()
+
         match poolGamblerBet.HomeTeamScore with
         | Some homeTeamScore -> item[PoolTable.Attribute.homeTeamScore] <- AttributeValue(N = homeTeamScore.ToString())
         | None -> ()

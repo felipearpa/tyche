@@ -25,6 +25,7 @@
         <Compile Include="Domain\CreatePoolOutput.fs" />
         <Compile Include="Domain\JoinPoolInput.fs" />
         <Compile Include="Domain\ResolvedJoinPoolInput.fs" />
+        <Compile Include="Domain\DeletePoolInput.fs" />
         <Compile Include="Domain\Pool.fs" />
         <Compile Include="Domain\PoolLayoutGambler.fs" />
         <Compile Include="Domain\PoolLayoutGamblerDictionaryTransformer.fs" />
@@ -57,6 +58,8 @@
         <Compile Include="Infrastructure\JoinPoolGamblerRequestBuilder.fs" />
         <Compile Include="Infrastructure\IncrementGamblerCountRequestBuilder.fs" />
         <Compile Include="Infrastructure\GetGamblersByPoolLayoutRequestBuilder.fs" />
+        <Compile Include="Infrastructure\GetPoolGamblerKeysRequestBuilder.fs" />
+        <Compile Include="Infrastructure\GetPoolGamblerBetKeysRequestBuilder.fs" />
         <Compile Include="Infrastructure\PoolDynamoDBRepository.fs" />
         <Compile Include="Application\GetPoolGamblerScoresByGambler.fs" />
         <Compile Include="Application\GetPoolGamblerScoresByPool.fs" />
@@ -70,6 +73,7 @@
         <Compile Include="Application\GetPoolGamblerBetById.fs" />
         <Compile Include="Application\CreatePool.fs" />
         <Compile Include="Application\JoinPool.fs" />
+        <Compile Include="Application\DeletePool.fs" />
         <Compile Include="Application\GetPoolById.fs" />
         <Compile Include="Application\AddMatch.fs" />
         <Compile Include="Application\ComputeBets.fs" />

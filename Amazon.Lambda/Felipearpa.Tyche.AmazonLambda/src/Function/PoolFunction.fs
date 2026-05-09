@@ -68,6 +68,7 @@ type PoolFunction(configureServices: IServiceCollection -> unit) =
             .AddScoped<Bet>()
             .AddScoped<CreatePool>()
             .AddScoped<JoinPool>()
+            .AddScoped<DeletePool>()
             .AddScoped<IAccountRepository, AccountDynamoDbRepository>()
             .AddScoped<IGetAccountById, GetAccountById>()
         |> ignore
@@ -469,6 +470,37 @@ type PoolFunction(configureServices: IServiceCollection -> unit) =
                 let! response = createPoolAsync createPoolRequest (scope.ServiceProvider.GetService<CreatePool>())
 
                 return! response.ToAmazonProxyResponse()
+        }
+        |> Async.StartAsTask
+
+    // DELETE /pools/{poolId}?gamblerId={gamblerId}
+    member this.DeletePoolAsync
+        (request: APIGatewayHttpApiV2ProxyRequest, _: ILambdaContext)
+        : APIGatewayHttpApiV2ProxyResponse Task =
+        async {
+            use scope = serviceProvider.CreateScope()
+
+            let poolIdResult =
+                request.PathParameters
+                |> Option.ofObj
+                |> Option.defaultValue Map.empty
+                |> tryGetUlidParamOrError poolIdParameter
+
+            let gamblerIdResult =
+                request.QueryStringParameters
+                |> Option.ofObj
+                |> Option.defaultValue Map.empty
+                |> tryGetUlidParamOrError gamblerIdParameter
+
+            match poolIdResult, gamblerIdResult with
+            | Ok poolId, Ok gamblerId ->
+                let! response = deletePoolAsync poolId gamblerId (scope.ServiceProvider.GetService<DeletePool>())
+                return! response.ToAmazonProxyResponse()
+            | _ ->
+                let errors =
+                    [ toErrorOption poolIdResult; toErrorOption gamblerIdResult ] |> List.choose id
+
+                return errors |> BadRequestResponseFactory.create
         }
         |> Async.StartAsTask
 

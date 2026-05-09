@@ -5,34 +5,68 @@ import Pool
 struct PoolHomeDrawerView: View {
     @ObservedObject var viewModel: PoolHomeDrawerViewModel
     let onSignOut: () -> Void
+    let onInvite: () -> Void
+    let onPoolDeleting: () -> Void
+    let onPoolDeleted: () -> Void
 
-    init(viewModel: PoolHomeDrawerViewModel, onLogout: @escaping () -> Void) {
+    @State private var isConfirmingDelete = false
+
+    init(
+        viewModel: PoolHomeDrawerViewModel,
+        onLogout: @escaping () -> Void,
+        onInvite: @escaping () -> Void,
+        onPoolDeleting: @escaping () -> Void,
+        onPoolDeleted: @escaping () -> Void
+    ) {
         self.viewModel = viewModel
         self.onSignOut = onLogout
+        self.onInvite = onInvite
+        self.onPoolDeleting = onPoolDeleting
+        self.onPoolDeleted = onPoolDeleted
     }
 
     var body: some View {
         PoolHomeDrawerStatefulView(
             email: viewModel.email,
             poolGamblerScoreState: viewModel.state,
+            isOwner: viewModel.isOwner,
+            isDeleting: viewModel.deleteState.isLoading(),
             onSignOut: {
                 viewModel.signOut()
                 onSignOut()
-            }
+            },
+            onInvite: onInvite,
+            onDeletePool: { isConfirmingDelete = true }
         )
+        .alert(
+            String(.deletePoolAlertTitle),
+            isPresented: $isConfirmingDelete
+        ) {
+            Button(String(.cancelAction), role: .cancel) {}
+            Button(String(.deleteAction), role: .destructive) {
+                onPoolDeleting()
+                viewModel.deletePool(onSuccess: onPoolDeleted)
+            }
+        } message: {
+            Text(String(.deletePoolAlertMessage))
+        }
     }
 }
 
 private struct PoolHomeDrawerStatefulView: View {
     let email: String
     let poolGamblerScoreState: LoadableViewState<PoolGamblerScoreModel>
+    let isOwner: Bool
+    let isDeleting: Bool
     let onSignOut: () -> Void
+    let onInvite: () -> Void
+    let onDeletePool: () -> Void
 
     @Environment(\.boxSpacing) private var boxSpacing
 
     var body: some View {
         VStack(spacing: boxSpacing.medium) {
-            AccountHeader(email: email)
+            AccountHeaderDrawer(email: email)
                 .frame(maxWidth: .infinity)
                 .padding(.top, boxSpacing.large)
                 .padding(.horizontal, boxSpacing.medium)
@@ -41,6 +75,15 @@ private struct PoolHomeDrawerStatefulView: View {
             PoolLayout(poolGamblerScoreState: poolGamblerScoreState)
                 .frame(maxWidth: .infinity)
 
+            PoolMenuSection(
+                isOwner: isOwner,
+                isDeleting: isDeleting,
+                onInvite: onInvite,
+                onDeletePool: onDeletePool
+            )
+            .padding(.horizontal, boxSpacing.medium)
+            .padding(.top, boxSpacing.medium)
+
             Spacer()
 
             SignOutButton(onSignOut: onSignOut)
@@ -48,42 +91,6 @@ private struct PoolHomeDrawerStatefulView: View {
                 .padding(.all, boxSpacing.medium)
         }
         .frame(maxHeight: .infinity)
-    }
-}
-
-private struct AccountHeader: View {
-    let email: String
-
-    @Environment(\.boxSpacing) private var boxSpacing
-
-    var body: some View {
-        VStack(spacing: boxSpacing.medium) {
-            ZStack {
-                Circle()
-                    .stroke(Color.accentColor, lineWidth: AVATAR_RING_WIDTH)
-                    .frame(width: AVATAR_SIZE, height: AVATAR_SIZE)
-
-                Image(.filledPerson)
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: AVATAR_ICON_SIZE, height: AVATAR_ICON_SIZE)
-                    .foregroundStyle(Color.secondary)
-            }
-
-            Text(email)
-                .font(.headline)
-                .multilineTextAlignment(.center)
-                .lineLimit(2)
-                .truncationMode(.tail)
-
-            Text(String(.connectedAccountText))
-                .font(.caption)
-                .foregroundStyle(Color.secondary)
-
-            RoundedRectangle(cornerRadius: ACCENT_LINE_HEIGHT / 2)
-                .fill(Color.accentColor)
-                .frame(width: ACCENT_LINE_WIDTH, height: ACCENT_LINE_HEIGHT)
-        }
     }
 }
 
@@ -174,6 +181,85 @@ private struct ConditionalShimmer: ViewModifier {
     }
 }
 
+private struct PoolMenuSection: View {
+    let isOwner: Bool
+    let isDeleting: Bool
+    let onInvite: () -> Void
+    let onDeletePool: () -> Void
+
+    @Environment(\.boxSpacing) private var boxSpacing
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: boxSpacing.small) {
+            Text(String(.poolSectionTitle).uppercased())
+                .font(.caption)
+                .foregroundStyle(Color.secondary)
+
+            VStack(spacing: 0) {
+                DrawerMenuRow(
+                    icon: { Image(sharedResource: .personAdd) },
+                    title: String(.inviteAction),
+                    action: onInvite
+                )
+
+                if isOwner {
+                    Divider()
+
+                    DrawerMenuRow(
+                        icon: { Image(sharedResource: .deleteForever) },
+                        title: String(.deletePoolAction),
+                        tint: Color(sharedResource: .error),
+                        action: onDeletePool
+                    )
+                    .disabled(isDeleting)
+                }
+            }
+            .padding(.horizontal, boxSpacing.medium)
+            .overlay(
+                RoundedRectangle(cornerRadius: SECTION_CORNER_RADIUS)
+                    .stroke(Color(.separator), lineWidth: 1)
+            )
+        }
+    }
+}
+
+private struct DrawerMenuRow<Icon: View>: View {
+    let icon: Icon
+    let title: String
+    var tint: Color = .primary
+    let action: () -> Void
+
+    init(
+        @ViewBuilder icon: () -> Icon,
+        title: String,
+        tint: Color = .primary,
+        action: @escaping () -> Void
+    ) {
+        self.icon = icon()
+        self.title = title
+        self.tint = tint
+        self.action = action
+    }
+
+    @Environment(\.boxSpacing) private var boxSpacing
+
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: boxSpacing.medium) {
+                icon
+                    .frame(width: MENU_ICON_SIZE, height: MENU_ICON_SIZE)
+                    .foregroundStyle(tint)
+
+                Text(title)
+                    .foregroundStyle(tint)
+
+                Spacer()
+            }
+            .padding(.vertical, boxSpacing.medium)
+        }
+    }
+}
+
 private struct SignOutButton: View {
     let onSignOut: () -> Void
 
@@ -194,24 +280,44 @@ private struct SignOutButton: View {
     }
 }
 
-private let AVATAR_SIZE: CGFloat = 96
-private let AVATAR_ICON_SIZE: CGFloat = 56
-private let AVATAR_RING_WIDTH: CGFloat = 3
-private let ACCENT_LINE_WIDTH: CGFloat = 48
-private let ACCENT_LINE_HEIGHT: CGFloat = 3
+private let MENU_ICON_SIZE: CGFloat = 22
+private let CHEVRON_SIZE: CGFloat = 14
+private let SECTION_CORNER_RADIUS: CGFloat = 12
 
-#Preview {
+#Preview("Light") {
     PoolHomeDrawerStatefulView(
         email: "felipearpa@email.com",
         poolGamblerScoreState: .success(poolGamblerScoreDummyModel()),
-        onSignOut: {}
+        isOwner: true,
+        isDeleting: false,
+        onSignOut: {},
+        onInvite: {},
+        onDeletePool: {}
     )
+    .preferredColorScheme(.light)
+}
+
+#Preview("Dark") {
+    PoolHomeDrawerStatefulView(
+        email: "felipearpa@email.com",
+        poolGamblerScoreState: .success(poolGamblerScoreDummyModel()),
+        isOwner: true,
+        isDeleting: false,
+        onSignOut: {},
+        onInvite: {},
+        onDeletePool: {}
+    )
+    .preferredColorScheme(.dark)
 }
 
 #Preview("Loading") {
     PoolHomeDrawerStatefulView(
         email: "felipearpa@email.com",
         poolGamblerScoreState: .loading,
-        onSignOut: {}
+        isOwner: false,
+        isDeleting: false,
+        onSignOut: {},
+        onInvite: {},
+        onDeletePool: {}
     )
 }

@@ -110,6 +110,7 @@ private class PoolFakePreviewRepository: PoolRepository {
     func getPool(id: String) async -> Result<Pool, Error> { .failure(NSError()) }
     func createPool(createPoolInput: CreatePoolInput) async -> Result<CreatePoolOutput, Error> { .failure(NSError()) }
     func joinPool(joinPoolInput: JoinPoolInput) async -> Result<Void, Error> { .failure(NSError()) }
+    func deletePool(poolId: String, gamblerId: String) async -> Result<Void, Error> { .failure(NSError()) }
 }
 
 private class PoolLayoutFakePreviewRepository: PoolLayoutRepository {

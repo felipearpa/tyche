@@ -7,7 +7,9 @@ import com.felipearpa.tyche.data.pool.domain.PoolDataSource
 import com.felipearpa.tyche.data.pool.domain.PoolResponse
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
+import io.ktor.client.request.delete
 import io.ktor.client.request.get
+import io.ktor.client.request.parameter
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
@@ -28,6 +30,12 @@ internal class PoolRemoteKtorDataSource(private val httpClient: HttpClient) :
         httpClient.post("pools/$poolId/gamblers") {
             contentType(ContentType.Application.Json)
             setBody(joinPoolRequest)
+        }
+    }
+
+    override suspend fun deletePool(poolId: String, gamblerId: String) {
+        httpClient.delete("pools/$poolId") {
+            parameter("gamblerId", gamblerId)
         }
     }
 }

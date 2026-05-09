@@ -24,7 +24,8 @@ module GetPoolByIdTest =
     let private ``given an existing pool`` () =
         let expectedPool: PoolResponse =
             { PoolId = "01K0DCFFB08W35AW5Q6F82R6NQ"
-              PoolName = "Hello world" }
+              PoolName = "Hello world"
+              CreatorGamblerId = "01K0DCFFB08W35AW5Q6F82R6NR" }
 
         let client = Mock<IAmazonDynamoDB>()
 
@@ -35,7 +36,8 @@ module GetPoolByIdTest =
                   "filter", AttributeValue(S = "Hello world")
                   "poolId", AttributeValue(S = "01K0DCFFB08W35AW5Q6F82R6NQ")
                   "poolLayoutId", AttributeValue(S = "01HY8V7VXGPNN8CS5QY8AVMZ2C")
-                  "poolName", AttributeValue(S = "Hello world") ]
+                  "poolName", AttributeValue(S = "Hello world")
+                  "creatorGamblerId", AttributeValue(S = "01K0DCFFB08W35AW5Q6F82R6NR") ]
 
         let items = [ item ]
 

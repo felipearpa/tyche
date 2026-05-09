@@ -367,7 +367,34 @@ Resources:
             Path: /pools/{poolId}/gamblers
             Method: POST
             ApiId: !Ref AuthGatewayHttpApi
-  
+
+  DeletePool:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: Felipearpa.Tyche.AmazonLambda::Felipearpa.Tyche.AmazonLambda.Function.PoolFunction::DeletePoolAsync
+      Runtime: dotnet10
+      CodeUri: .
+      MemorySize: 1024
+      Timeout: 300
+      Policies:
+        - AWSLambdaBasicExecutionRole
+        - Statement:
+            - Effect: Allow
+              Action:
+                - dynamodb:Query
+                - dynamodb:DeleteItem
+                - dynamodb:BatchWriteItem
+              Resource:
+                - arn:aws:dynamodb:us-east-2:567776770335:table/Pool
+      Architectures: [ arm64 ]
+      Events:
+        HttpApi:
+          Type: HttpApi
+          Properties:
+            Path: /pools/{poolId}
+            Method: DELETE
+            ApiId: !Ref AuthGatewayHttpApi
+
   Bet:
     Type: AWS::Serverless::Function
     Properties:

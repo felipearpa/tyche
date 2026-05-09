@@ -14,4 +14,10 @@
     <string name="continue_with_text">Continue with:</string>
     <string name="suffix_point_text">%s points</string>
     <string name="playing_now_text">Playing now</string>
+    <string name="pool_section_title">Pool</string>
+    <string name="invite_action">Invite</string>
+    <string name="delete_pool_action">Delete pool</string>
+    <string name="delete_pool_alert_title">Delete pool?</string>
+    <string name="delete_pool_alert_message">This will permanently delete the pool and every gambler\'s bets. This action cannot be undone.</string>
+    <string name="delete_action">Delete</string>
 </resources>

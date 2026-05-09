@@ -14,4 +14,10 @@
     <string name="continue_with_text">Continuar con:</string>
     <string name="suffix_point_text">%s puntos</string>
     <string name="playing_now_text">Jugando ahora</string>
+    <string name="pool_section_title">Polla</string>
+    <string name="invite_action">Invitar</string>
+    <string name="delete_pool_action">Eliminar polla</string>
+    <string name="delete_pool_alert_title">¿Eliminar polla?</string>
+    <string name="delete_pool_alert_message">Esto eliminará la polla y las apuestas de todos los participantes de forma permanente. Esta acción no se puede deshacer.</string>
+    <string name="delete_action">Eliminar</string>
 </resources>

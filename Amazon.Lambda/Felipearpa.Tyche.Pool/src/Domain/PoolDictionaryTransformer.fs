@@ -10,7 +10,8 @@ module PoolDictionaryTransformer =
     let toPool (dictionary: IDictionary<string, AttributeValue>) =
         { Pool.PoolId = dictionary[PoolTable.Attribute.poolId].S |> Ulid.newOf
           PoolName = dictionary[PoolTable.Attribute.poolName].S |> NonEmptyString100.newOf
-          PoolLayoutId = dictionary[PoolTable.Attribute.poolLayoutId].S |> Ulid.newOf }
+          PoolLayoutId = dictionary[PoolTable.Attribute.poolLayoutId].S |> Ulid.newOf
+          CreatorGamblerId = dictionary[PoolTable.Attribute.creatorGamblerId].S |> Ulid.newOf }
 
     type Extensions =
         [<Extension>]

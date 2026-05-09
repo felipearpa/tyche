@@ -1,5 +1,5 @@
 extension PoolResponse {
     func toPool() -> Pool {
-        Pool(id: poolId, name: poolName)
+        Pool(id: poolId, name: poolName, creatorGamblerId: creatorGamblerId)
     }
 }

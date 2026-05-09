@@ -4,6 +4,7 @@ open Felipearpa.Core.Paging
 open Felipearpa.Tyche.Function.Request
 open Felipearpa.Tyche.Function.Response
 open Felipearpa.Tyche.Pool.Application
+open Felipearpa.Tyche.Pool.Domain
 open Felipearpa.Type
 open Microsoft.AspNetCore.Http
 
@@ -98,8 +99,7 @@ module PoolFunction =
         (getGamblerBetsTimeline: GetGamblerBetsTimeline)
         : IResult Async =
         async {
-            let! page =
-                getGamblerBetsTimeline.ExecuteAsync(poolId |> Ulid.newOf, gamblerId |> Ulid.newOf, next)
+            let! page = getGamblerBetsTimeline.ExecuteAsync(poolId |> Ulid.newOf, gamblerId |> Ulid.newOf, next)
 
             return Results.Ok(page |> CursorPage.map PoolGamblerBetTransformer.toResponse)
         }
@@ -123,11 +123,7 @@ module PoolFunction =
         : IResult Async =
         async {
             let! maybeBet =
-                getPoolGamblerBetById.ExecuteAsync(
-                    poolId |> Ulid.newOf,
-                    gamblerId |> Ulid.newOf,
-                    matchId |> Ulid.newOf
-                )
+                getPoolGamblerBetById.ExecuteAsync(poolId |> Ulid.newOf, gamblerId |> Ulid.newOf, matchId |> Ulid.newOf)
 
             return
                 match maybeBet with
@@ -159,4 +155,19 @@ module PoolFunction =
                     | JoinPoolFailure.PoolNotFound -> Results.NotFound("Pool not found")
                     | JoinPoolFailure.GamblerNotFound -> Results.NotFound("Gambler not found")
                     | JoinPoolFailure.PoolLayoutNotFound -> Results.NotFound("Pool layout not found")
+        }
+
+    let deletePoolAsync (poolId: string) (gamblerId: string) (deletePool: DeletePool) : IResult Async =
+        async {
+            let! result =
+                deletePool.ExecuteAsync(
+                    { DeletePoolInput.PoolId = poolId |> Ulid.newOf
+                      GamblerId = gamblerId |> Ulid.newOf }
+                )
+
+            return
+                match result with
+                | Ok _ -> Results.NoContent()
+                | Error DeletePoolFailure.PoolNotFound -> Results.NotFound("Pool not found")
+                | Error DeletePoolFailure.NotOwner -> Results.Forbid()
         }

@@ -22,10 +22,13 @@ module ComputePoolGamblerScoreRequestBuilder =
 
         let attributeValues = dict [ ":delta", AttributeValue(N = delta.ToString()) ]
 
+        let conditionExpression = $"attribute_exists({Key.pk})"
+
         Update(
             TableName = PoolTable.name,
             Key = Dictionary key,
             UpdateExpression = updateExpression,
+            ConditionExpression = conditionExpression,
             ExpressionAttributeNames = Dictionary attributeNames,
             ExpressionAttributeValues = Dictionary attributeValues
         )

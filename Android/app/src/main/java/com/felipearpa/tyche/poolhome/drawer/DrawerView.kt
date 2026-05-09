@@ -2,8 +2,8 @@ package com.felipearpa.tyche.poolhome.drawer
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
@@ -13,29 +13,32 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.felipearpa.foundation.emptyString
+import com.felipearpa.tyche.AccountHeaderDrawer
 import com.felipearpa.tyche.R
 import com.felipearpa.tyche.pool.PoolGamblerScoreModel
 import com.felipearpa.tyche.pool.poolGamblerScoreDummyModel
@@ -46,19 +49,35 @@ import com.felipearpa.tyche.ui.shimmer
 import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
 import com.felipearpa.tyche.ui.theme.TycheTheme
 import com.felipearpa.ui.state.LoadableViewState
+import com.felipearpa.ui.state.isLoading
 import com.felipearpa.tyche.ui.R as SharedR
 
 @Composable
-fun DrawerView(viewModel: DrawerViewModel, onSignOut: () -> Unit) {
+fun DrawerView(
+    viewModel: DrawerViewModel,
+    onSignOut: () -> Unit,
+    onInvite: () -> Unit,
+    onPoolDeleting: () -> Unit,
+    onPoolDeleted: () -> Unit,
+) {
     val email by viewModel.email.collectAsStateWithLifecycle()
     val poolGamblerScoreState by viewModel.state.collectAsStateWithLifecycle()
+    val isOwner by viewModel.isOwner.collectAsStateWithLifecycle()
+    val deleteState by viewModel.deleteState.collectAsStateWithLifecycle()
 
     DrawerView(
         email = email,
         poolGamblerScoreState = poolGamblerScoreState,
+        isOwner = isOwner,
+        isDeleting = deleteState.isLoading(),
         logout = {
             viewModel.logout()
             onSignOut()
+        },
+        onInvite = onInvite,
+        onConfirmDelete = {
+            onPoolDeleting()
+            viewModel.deletePool(onSuccess = onPoolDeleted)
         },
         modifier = Modifier.fillMaxSize(),
     )
@@ -68,14 +87,20 @@ fun DrawerView(viewModel: DrawerViewModel, onSignOut: () -> Unit) {
 private fun DrawerView(
     email: String,
     poolGamblerScoreState: LoadableViewState<PoolGamblerScoreModel>,
+    isOwner: Boolean,
+    isDeleting: Boolean,
     modifier: Modifier = Modifier,
     logout: () -> Unit = {},
+    onInvite: () -> Unit = {},
+    onConfirmDelete: () -> Unit = {},
 ) {
+    var isConfirmingDelete by remember { mutableStateOf(false) }
+
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.medium),
     ) {
-        AccountHeader(
+        AccountHeaderDrawer(
             email = email,
             modifier = Modifier
                 .fillMaxWidth()
@@ -89,6 +114,17 @@ private fun DrawerView(
             modifier = Modifier.fillMaxWidth(),
         )
 
+        PoolMenuSection(
+            isOwner = isOwner,
+            isDeleting = isDeleting,
+            onInvite = onInvite,
+            onDeletePool = { isConfirmingDelete = true },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = LocalBoxSpacing.current.medium)
+                .padding(top = LocalBoxSpacing.current.medium),
+        )
+
         Spacer(modifier = Modifier.weight(1f))
 
         SignOutButton(
@@ -98,54 +134,14 @@ private fun DrawerView(
                 .padding(all = LocalBoxSpacing.current.medium),
         )
     }
-}
 
-@Composable
-private fun AccountHeader(email: String, modifier: Modifier = Modifier) {
-    Column(
-        modifier = modifier,
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.medium),
-    ) {
-        Box(
-            modifier = Modifier
-                .size(AVATAR_SIZE.dp)
-                .clip(CircleShape)
-                .border(
-                    width = AVATAR_RING_WIDTH.dp,
-                    color = MaterialTheme.colorScheme.primary,
-                    shape = CircleShape,
-                ),
-            contentAlignment = Alignment.Center,
-        ) {
-            Icon(
-                painter = painterResource(id = SharedR.drawable.filled_person),
-                contentDescription = emptyString(),
-                tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.size(AVATAR_ICON_SIZE.dp),
-            )
-        }
-
-        Text(
-            text = email,
-            style = MaterialTheme.typography.titleMedium,
-            textAlign = TextAlign.Center,
-            maxLines = 2,
-            overflow = TextOverflow.Ellipsis,
-        )
-
-        Text(
-            text = stringResource(id = R.string.connected_account_text),
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
-
-        HorizontalDivider(
-            color = MaterialTheme.colorScheme.primary,
-            thickness = ACCENT_LINE_HEIGHT.dp,
-            modifier = Modifier
-                .width(ACCENT_LINE_WIDTH.dp)
-                .clip(RoundedCornerShape(ACCENT_LINE_HEIGHT.dp)),
+    if (isConfirmingDelete) {
+        DeletePoolConfirmationDialog(
+            onConfirm = {
+                isConfirmingDelete = false
+                onConfirmDelete()
+            },
+            onDismiss = { isConfirmingDelete = false },
         )
     }
 }
@@ -247,6 +243,115 @@ private fun PoolLayoutItem(
 }
 
 @Composable
+private fun PoolMenuSection(
+    isOwner: Boolean,
+    isDeleting: Boolean,
+    onInvite: () -> Unit,
+    onDeletePool: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        verticalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.small),
+        modifier = modifier,
+    ) {
+        Text(
+            text = stringResource(id = R.string.pool_section_title).uppercase(),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(SECTION_CORNER_RADIUS.dp))
+                .border(
+                    width = 1.dp,
+                    color = MaterialTheme.colorScheme.outlineVariant,
+                    shape = RoundedCornerShape(SECTION_CORNER_RADIUS.dp),
+                ),
+        ) {
+            DrawerMenuRow(
+                iconResId = SharedR.drawable.person_add,
+                title = stringResource(id = R.string.invite_action),
+                onClick = onInvite,
+            )
+
+            if (isOwner) {
+                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+
+                DrawerMenuRow(
+                    iconResId = SharedR.drawable.delete_forever,
+                    title = stringResource(id = R.string.delete_pool_action),
+                    tint = MaterialTheme.colorScheme.error,
+                    enabled = !isDeleting,
+                    onClick = onDeletePool,
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun DrawerMenuRow(
+    iconResId: Int,
+    title: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    tint: Color = MaterialTheme.colorScheme.onSurface,
+    enabled: Boolean = true,
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.medium),
+        modifier = modifier
+            .fillMaxWidth()
+            .clickable(enabled = enabled, onClick = onClick)
+            .padding(
+                horizontal = LocalBoxSpacing.current.medium,
+                vertical = LocalBoxSpacing.current.medium,
+            ),
+    ) {
+        Icon(
+            painter = painterResource(id = iconResId),
+            contentDescription = null,
+            tint = tint,
+            modifier = Modifier.size(MENU_ICON_SIZE.dp),
+        )
+
+        Text(
+            text = title,
+            style = MaterialTheme.typography.bodyLarge,
+            color = tint,
+        )
+    }
+}
+
+@Composable
+private fun DeletePoolConfirmationDialog(
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit,
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(text = stringResource(id = R.string.delete_pool_alert_title)) },
+        text = { Text(text = stringResource(id = R.string.delete_pool_alert_message)) },
+        confirmButton = {
+            TextButton(onClick = onConfirm) {
+                Text(
+                    text = stringResource(id = R.string.delete_action),
+                    color = MaterialTheme.colorScheme.error,
+                )
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text(text = stringResource(id = SharedR.string.cancel_action))
+            }
+        },
+    )
+}
+
+@Composable
 private fun SignOutButton(onSignOut: () -> Unit, modifier: Modifier = Modifier) {
     OutlinedButton(
         modifier = modifier,
@@ -263,11 +368,8 @@ private fun SignOutButton(onSignOut: () -> Unit, modifier: Modifier = Modifier) 
     }
 }
 
-private const val AVATAR_SIZE = 96
-private const val AVATAR_ICON_SIZE = 56
-private const val AVATAR_RING_WIDTH = 3
-private const val ACCENT_LINE_WIDTH = 48
-private const val ACCENT_LINE_HEIGHT = 3
+private const val MENU_ICON_SIZE = 22
+private const val SECTION_CORNER_RADIUS = 12
 
 @Preview(showBackground = true)
 @Composable
@@ -278,6 +380,24 @@ private fun DrawerViewPreview() {
                 modifier = Modifier.fillMaxSize(),
                 email = "felipearpa@email.com",
                 poolGamblerScoreState = LoadableViewState.Success(poolGamblerScoreDummyModel()),
+                isOwner = true,
+                isDeleting = false,
+            )
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun DrawerViewNonOwnerPreview() {
+    TycheTheme {
+        Surface {
+            DrawerView(
+                modifier = Modifier.fillMaxSize(),
+                email = "felipearpa@email.com",
+                poolGamblerScoreState = LoadableViewState.Success(poolGamblerScoreDummyModel()),
+                isOwner = false,
+                isDeleting = false,
             )
         }
     }
@@ -292,6 +412,8 @@ private fun LoadingDrawerViewPreview() {
                 modifier = Modifier.fillMaxSize(),
                 email = "felipearpa@email.com",
                 poolGamblerScoreState = LoadableViewState.Loading,
+                isOwner = false,
+                isDeleting = false,
             )
         }
     }

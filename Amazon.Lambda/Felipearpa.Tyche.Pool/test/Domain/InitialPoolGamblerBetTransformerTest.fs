@@ -22,6 +22,7 @@ module InitialPoolGamblerBetTransformerTest =
           MatchDateTime = DateTime(2026, 5, 1, 0, 0, 0, DateTimeKind.Utc)
           PoolLayoutVersion = 2
           Round = "Fase de grupos"
+          GroupName = None
           HomeTeamScore = None
           AwayTeamScore = None
           BetScore = None
@@ -37,6 +38,16 @@ module InitialPoolGamblerBetTransformerTest =
         item.ContainsKey("computedRequestId") |> shouldEqual false
         item.ContainsKey("homeTeamScore") |> shouldEqual false
         item.ContainsKey("awayTeamScore") |> shouldEqual false
+        item.ContainsKey("groupName") |> shouldEqual false
+
+    [<Fact>]
+    let ``given a bet with a group name when transformed then groupName is written`` () =
+        let item =
+            { bet () with
+                GroupName = Some "Group A" }
+            |> toAmazonItem
+
+        item["groupName"].S |> shouldEqual "Group A"
 
     [<Fact>]
     let ``given a bet when transformed then round is written`` () =

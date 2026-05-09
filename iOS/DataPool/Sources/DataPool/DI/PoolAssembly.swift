@@ -84,6 +84,12 @@ public class PoolAssembly : Assembly {
             )
         }
 
+        container.register(DeletePoolUseCase.self) { resolver in
+            DeletePoolUseCase(
+                poolRepository: resolver.resolve(PoolRepository.self)!
+            )
+        }
+
         container.register(GetOpenPoolLayoutsUseCase.self) { resolver in
             GetOpenPoolLayoutsUseCase(
                 poolLayoutRepository: resolver.resolve(PoolLayoutRepository.self)!

@@ -39,4 +39,10 @@ class PoolRemoteRepository : PoolRepository {
             return networkError
         }
     }
+
+    func deletePool(poolId: String, gamblerId: String) async -> Result<Void, any Error> {
+        return await networkErrorHandler.handle {
+            try await poolRemoteDataSource.deletePool(poolId: poolId, gamblerId: gamblerId)
+        }
+    }
 }

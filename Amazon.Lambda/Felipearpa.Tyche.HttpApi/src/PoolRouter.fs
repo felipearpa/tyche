@@ -206,3 +206,13 @@ module PoolRouter =
             |> ignore
 
             this
+                .MapDelete(
+                    "/pools/{poolId}",
+                    Func<_, _, _, _>(fun (poolId: string) (gamblerId: string) (deletePool: DeletePool) ->
+                        async { return! deletePoolAsync poolId gamblerId deletePool }
+                        |> Async.StartAsTask)
+                )
+                .RequireAuthorization()
+            |> ignore
+
+            this

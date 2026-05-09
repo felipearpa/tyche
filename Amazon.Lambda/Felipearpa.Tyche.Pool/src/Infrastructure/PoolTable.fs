@@ -31,6 +31,9 @@ module PoolTable =
         let gamblerId = "gamblerId"
 
         [<Literal>]
+        let creatorGamblerId = "creatorGamblerId"
+
+        [<Literal>]
         let gamblerUsername = "gamblerUsername"
 
         [<Literal>]
@@ -92,6 +95,9 @@ module PoolTable =
 
         [<Literal>]
         let round = "round"
+
+        [<Literal>]
+        let groupName = "groupName"
 
         [<Literal>]
         let computedDateTime = "computedDateTime"

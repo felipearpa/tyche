@@ -2,6 +2,8 @@ package com.felipearpa.tyche.poolhome.drawer
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.felipearpa.tyche.data.pool.application.DeletePool
+import com.felipearpa.tyche.data.pool.application.GetPool
 import com.felipearpa.tyche.data.pool.application.GetPoolGamblerScore
 import com.felipearpa.tyche.pool.PoolGamblerScoreModel
 import com.felipearpa.tyche.pool.toPoolGamblerScoreModel
@@ -19,6 +21,8 @@ class DrawerViewModel(
     val gamblerId: String,
     private val logOut: LogOut,
     private val getPoolGamblerScore: GetPoolGamblerScore,
+    private val getPool: GetPool,
+    private val deletePool: DeletePool,
     private val accountStorage: AccountStorage,
 ) : ViewModel() {
     private val _state =
@@ -27,6 +31,13 @@ class DrawerViewModel(
 
     private val _email = MutableStateFlow("")
     val email: StateFlow<String> = _email.asStateFlow()
+
+    private val _isOwner = MutableStateFlow(false)
+    val isOwner: StateFlow<Boolean> = _isOwner.asStateFlow()
+
+    private val _deleteState =
+        MutableStateFlow<LoadableViewState<Unit>>(LoadableViewState.Initial)
+    val deleteState = _deleteState.asStateFlow()
 
     init {
         _email.value = accountStorage.state.value?.email.orEmpty()
@@ -46,9 +57,36 @@ class DrawerViewModel(
         }
     }
 
+    init {
+        viewModelScope.launch {
+            getPool.execute(poolId = poolId).onSuccess { pool ->
+                _isOwner.value = pool.creatorGamblerId == gamblerId
+            }
+        }
+    }
+
     fun logout() {
         viewModelScope.launch {
             logOut.execute()
         }
+    }
+
+    fun deletePool(onSuccess: () -> Unit) {
+        viewModelScope.launch {
+            _deleteState.emit(LoadableViewState.Loading)
+
+            deletePool.execute(poolId = poolId, gamblerId = gamblerId)
+                .onSuccess {
+                    _deleteState.emit(LoadableViewState.Success(Unit))
+                    onSuccess()
+                }
+                .onFailure { exception ->
+                    _deleteState.emit(LoadableViewState.Failure(exception.orDefaultLocalized()))
+                }
+        }
+    }
+
+    fun resetDeleteState() {
+        _deleteState.value = LoadableViewState.Initial
     }
 }

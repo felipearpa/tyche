@@ -19,6 +19,8 @@ public extension SharedImageResource  {
     static let filledAddCircle = SharedImageResource(.filledAddCircle)
     static let home = SharedImageResource(.home)
     static let trophy = SharedImageResource(.trophy)
+    static let deleteForever = SharedImageResource(.deleteForever)
+    static let personAdd = SharedImageResource(.personAdd)
 }
 
 public extension Image {
