@@ -96,7 +96,7 @@ private fun PoolNameTextField(
     val interactionSource = remember { MutableInteractionSource() }
     val isTouched by interactionSource.collectIsFocusedAsState()
     val shouldShowError by remember(value, isTouched) {
-        derivedStateOf { isTouched && PoolName.isValid(value) }
+        derivedStateOf { isTouched && !PoolName.isValid(value) }
     }
 
     Column(
