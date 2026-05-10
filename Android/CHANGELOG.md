@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.5
+
+- Delete a pool you created from the home drawer, with a confirmation prompt before every gambler and bet is removed
+- Fix: corrected error message shown when pool creation fails
+
 ## 1.4
 
 - Team flags shown next to every team name across match headers and bet items

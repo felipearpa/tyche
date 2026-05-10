@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.4
+
+- New `DELETE /pools/{poolId}` endpoint that cascades the removal of every gambler, score, and bet in the pool
+
 ## 1.3
 
 - Public `/version` endpoint exposing the deployed assembly version
