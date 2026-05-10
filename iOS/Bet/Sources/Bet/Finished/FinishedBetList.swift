@@ -1,15 +1,16 @@
 import SwiftUI
 import UI
 import Core
+import LazyPaging
 
 struct FinishedBetList: View {
-    var lazyPagingItems: LazyPagingItems<String, PoolGamblerBetModel>
+    var lazyPagingItems: LazyPaging.LazyPagingItems<String, PoolGamblerBetModel>
     let onMatchOpen: MatchOpenHandler?
 
     @Environment(\.boxSpacing) private var boxSpacing
 
     init(
-        lazyPagingItems: LazyPagingItems<String, PoolGamblerBetModel>,
+        lazyPagingItems: LazyPaging.LazyPagingItems<String, PoolGamblerBetModel>,
         onMatchOpen: MatchOpenHandler? = nil
     ) {
         self.lazyPagingItems = lazyPagingItems
@@ -17,31 +18,43 @@ struct FinishedBetList: View {
     }
 
     var body: some View {
-        StatefulLazyVStack(
+        RefreshableLazyPagingVStack(
             lazyPagingItems: lazyPagingItems,
+            pinnedViews: [.sectionHeaders],
             loadingContent: { FinishedPoolGamblerBetFakeList(count: 50) },
-            loadingContentOnConcatenate: {
-                FinishedPoolGamblerBetFakeItem()
-            },
-            sectionKey: { $0.matchDateTime.toShortDateString() },
-            sectionHeader: { dateString, isFirst in
-                Text(dateString)
-                    .font(.title3)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(.horizontal, boxSpacing.large)
-                    .padding(.top, isFirst ? boxSpacing.medium : boxSpacing.medium + boxSpacing.medium)
-            }
-        ) { poolGamblerBet in
-            VStack(spacing: 0) {
-                FinishedBetItem(poolGamblerBet: poolGamblerBet)
-                    .frame(maxWidth: .infinity)
-                    .padding(.horizontal, boxSpacing.large)
-                    .padding(.vertical, boxSpacing.medium)
-                    .contentShape(Rectangle())
-                    .onTapGesture { invokeMatchOpen(onMatchOpen, poolGamblerBet) }
+        ) { index in
+            if let poolGamblerBet = lazyPagingItems.peek(at: index) {
+                let currentDate = poolGamblerBet.matchDateTime.toShortDateString()
+                let previousDate = index > 0
+                    ? lazyPagingItems.peek(at: index - 1)?.matchDateTime.toShortDateString()
+                    : nil
+                let isFirstInSection = currentDate != previousDate
+                let isFirstSection = index == 0
 
-                Divider()
-                    .padding(.horizontal, boxSpacing.large)
+                Section {
+                    FinishedBetItem(poolGamblerBet: poolGamblerBet)
+                        .frame(maxWidth: .infinity)
+                        .padding(.horizontal, boxSpacing.large)
+                        .padding(.vertical, boxSpacing.medium)
+                        .contentShape(Rectangle())
+                        .onTapGesture { invokeMatchOpen(onMatchOpen, poolGamblerBet) }
+
+                    Divider()
+                        .padding(.horizontal, boxSpacing.large)
+                } header: {
+                    if isFirstInSection {
+                        Text(currentDate)
+                            .font(.title3)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .padding(.horizontal, boxSpacing.large)
+                            .padding(.top, isFirstSection ? boxSpacing.medium : boxSpacing.medium + boxSpacing.medium)
+                            .background(.background)
+                    }
+                }
+            } else {
+                Section {
+                    FinishedPoolGamblerBetFakeItem()
+                }
             }
         }
     }
@@ -73,11 +86,11 @@ private struct FinishedPoolGamblerBetFakeItem: View {
 
 #Preview {
     FinishedBetList(
-        lazyPagingItems: LazyPagingItems(
-            pagingData: PagingData(
-                pagingConfig: PagingConfig(prefetchDistance: 5),
+        lazyPagingItems: LazyPaging.LazyPagingItems(
+            pager: Pager(
+                config: LazyPaging.PagingConfig(pageSize: 25, prefetchDistance: 5),
                 pagingSourceFactory: {
-                    PoolGamblerBetPagingSource(
+                    LazyPagingCursorSource<PoolGamblerBetModel>(
                         pagingQuery: { _ in .success(CursorPage(items: poolGamblerBetDummyModels(), next: nil)) }
                     )
                 }

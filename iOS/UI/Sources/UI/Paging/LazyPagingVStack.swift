@@ -1,7 +1,7 @@
 import SwiftUI
 import LazyPaging
 
-public extension LazyPaging.LazyPagingVStack where EmptyContent == LazyPagingColumnEmpty, ErrorContent == LazyPagingColumnError {
+public extension LazyPaging.LazyPagingVStack where EmptyContent == LazyPagingVStackEmpty, ErrorContent == LazyPagingVStackError {
     init(
         lazyPagingItems: LazyPaging.LazyPagingItems<Key, Item>,
         spacing: CGFloat = 0,
@@ -16,8 +16,8 @@ public extension LazyPaging.LazyPagingVStack where EmptyContent == LazyPagingCol
             contentInsets: contentInsets,
             pinnedViews: pinnedViews,
             loadingContent: loadingContent,
-            emptyContent: { LazyPagingColumnEmpty() },
-            errorContent: { error in LazyPagingColumnError(localizedError: error.orDefaultLocalized()) },
+            emptyContent: { LazyPagingVStackEmpty() },
+            errorContent: { error in LazyPagingVStackError(localizedError: error.orDefaultLocalized()) },
             rowContent: rowContent
         )
     }

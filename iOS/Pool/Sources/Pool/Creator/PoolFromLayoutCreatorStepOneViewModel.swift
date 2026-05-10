@@ -1,20 +1,22 @@
 import Foundation
 import DataPool
 import UI
+import LazyPaging
 import Core
 
 public class PoolFromLayoutCreatorStepOneViewModel : ObservableObject {
     private let getOpenPoolLayoutsUseCase: GetOpenPoolLayoutsUseCase
 
-    private var pagingSource: OpenPoolLayoutPagingSource!
+    private var pagingSource: LazyPagingCursorSource<PoolLayoutModel>!
 
     private var searchText: String? = nil
 
-    lazy var lazyPager: LazyPagingItems<String, PoolLayoutModel> = {
-        LazyPagingItems(
-            pagingData: PagingData(
-                pagingConfig: PagingConfig(prefetchDistance: 5),
-                pagingSourceFactory: { self.pagingSource }
+    @MainActor
+    lazy var lazyPager: LazyPaging.LazyPagingItems<String, PoolLayoutModel> = {
+        LazyPaging.LazyPagingItems(
+            pager: Pager(
+                config: LazyPaging.PagingConfig(pageSize: 25, prefetchDistance: 5),
+                pagingSourceFactory: { [pagingSource = self.pagingSource!] in pagingSource }
             )
         )
     }()
@@ -22,7 +24,7 @@ public class PoolFromLayoutCreatorStepOneViewModel : ObservableObject {
     public init(getOpenPoolLayoutsUseCase: GetOpenPoolLayoutsUseCase) {
         self.getOpenPoolLayoutsUseCase = getOpenPoolLayoutsUseCase
 
-        self.pagingSource = OpenPoolLayoutPagingSource(
+        self.pagingSource = LazyPagingCursorSource<PoolLayoutModel>(
             pagingQuery: { [unowned self] next in
                 return await self.getOpenPoolLayoutsUseCase.execute(
                     next: next,

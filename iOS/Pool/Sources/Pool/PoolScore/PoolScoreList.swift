@@ -140,7 +140,7 @@ private struct TemplatesContent: View {
             }
             .padding(.horizontal, emptyStateHorizontalPadding)
         } else if case .failure(let error) = lazyPoolLayouts.loadState.refresh {
-            StatefulLazyVStackError(localizedError: error.localizedErrorOrDefault())
+            LazyPagingVStackError(localizedError: error.localizedErrorOrDefault())
                 .padding(.horizontal, emptyStateHorizontalPadding)
                 .padding(.vertical, boxSpacing.medium)
         } else {
@@ -178,7 +178,7 @@ private struct PoolScoreErrorList: View {
     @Environment(\.boxSpacing) private var boxSpacing
 
     var body: some View {
-        StatefulLazyVStackError(localizedError: error.localizedErrorOrDefault())
+        LazyPagingVStackError(localizedError: error.localizedErrorOrDefault())
             .padding(boxSpacing.medium)
     }
 }

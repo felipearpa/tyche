@@ -1,6 +1,6 @@
 import SwiftUI
 
-public struct LazyPagingColumnEmpty: View {
+public struct LazyPagingVStackEmpty: View {
     @Environment(\.parentSize) private var parentSize
     @Environment(\.parentSafeAreaInsets) private var parentSafeAreaInsets
 
@@ -16,5 +16,5 @@ public struct LazyPagingColumnEmpty: View {
 }
 
 #Preview {
-    LazyPagingColumnEmpty()
+    LazyPagingVStackEmpty()
 }

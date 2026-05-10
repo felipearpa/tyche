@@ -1,6 +1,6 @@
 import SwiftUI
 
-public struct LazyPagingColumnError: View {
+public struct LazyPagingVStackError: View {
     let localizedError: LocalizedError
 
     @Environment(\.parentSize) private var parentSize
@@ -17,5 +17,5 @@ public struct LazyPagingColumnError: View {
 }
 
 #Preview {
-    LazyPagingColumnError(localizedError: UnknownLocalizedError())
+    LazyPagingVStackError(localizedError: UnknownLocalizedError())
 }
