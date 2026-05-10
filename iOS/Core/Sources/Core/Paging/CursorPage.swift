@@ -1,12 +1,14 @@
 public struct CursorPage<Value: Codable>: Codable {
     public let items: [Value]
     public let next: String?
-    
+
     public init(items: [Value], next: String?) {
         self.items = items
         self.next = next
     }
 }
+
+extension CursorPage: Sendable where Value: Sendable {}
 
 public extension CursorPage {
     @inlinable

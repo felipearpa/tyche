@@ -1,6 +1,6 @@
-import FirebaseAuth
+@preconcurrency import FirebaseAuth
 
-class AuthTokenFirebaseRetriever: AuthTokenRetriever {
+final class AuthTokenFirebaseRetriever: AuthTokenRetriever {
     private let firebaseAuth: Auth
     
     init(firebaseAuth: Auth) {
