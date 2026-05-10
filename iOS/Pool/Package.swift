@@ -22,6 +22,7 @@ let package = Package(
         .package(path: "../DataPool"),
         .package(url: "https://github.com/Alamofire/Alamofire.git", exact: "5.10.2"),
         .package(url: "https://github.com/Swinject/Swinject.git", exact: "2.9.1"),
+        .package(url: "https://github.com/felipearpa/lazy-paging-swift.git", branch: "main"),
     ],
     targets: [
         // Targets are the basic building blocks of a package. A target can define a module or a test suite.
@@ -35,6 +36,7 @@ let package = Package(
                 "DataPool",
                 "Alamofire",
                 "Swinject",
+                .product(name: "LazyPaging", package: "lazy-paging-swift"),
             ],
             resources: [
                 .process("Localizable/Localizable.xcstrings"),

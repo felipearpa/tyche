@@ -100,6 +100,15 @@
       }
     },
     {
+      "identity" : "lazy-paging-swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/felipearpa/lazy-paging-swift.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "d0a0be12ced36ed67c9980ed6c0266af61573dfc"
+      }
+    },
+    {
       "identity" : "leveldb",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/firebase/leveldb.git",
