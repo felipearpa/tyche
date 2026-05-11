@@ -33,7 +33,7 @@ public struct PoolFromLayoutCreatorView: View {
             preselectedPoolLayoutId: preselectedPoolLayoutId,
             preselectedPoolName: preselectedPoolName,
         )
-        .navigationTitle(String(.poolFromLayoutCreatorTitle))
+        .navigationTitle(String(localized: .poolFromLayoutCreatorTitle))
         .padding(boxSpacing.medium)
     }
 }

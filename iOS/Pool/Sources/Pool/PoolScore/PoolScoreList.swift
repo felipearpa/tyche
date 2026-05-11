@@ -84,7 +84,7 @@ private struct PoolScoreEmptyList: View {
                 .padding(.vertical, emptyStateHeroVerticalPadding)
                 .frame(maxWidth: .infinity)
 
-            Text(String(.poolScoreEmptyListTemplatesSection))
+            Text(.poolScoreEmptyListTemplatesSection)
                 .font(.headline)
                 .padding(.horizontal, emptyStateHorizontalPadding)
                 .padding(.bottom, boxSpacing.medium)
@@ -110,11 +110,11 @@ private struct Hero: View {
                 .frame(width: heroImageWidth, height: heroImageHeight)
 
             VStack(spacing: boxSpacing.medium) {
-                Text(String(.poolScoreEmptyListTitle))
+                Text(.poolScoreEmptyListTitle)
                     .font(.title2)
                     .multilineTextAlignment(.center)
 
-                Text(String(.poolScoreEmptyListSubtitle))
+                Text(.poolScoreEmptyListSubtitle)
                     .font(.callout)
                     .multilineTextAlignment(.center)
                     .foregroundColor(.secondary)
@@ -160,7 +160,7 @@ private struct TemplatesContent: View {
                 HStack {
                     Spacer()
                     Button(action: onSeeAllTemplates) {
-                        Text(String(.seeAllTemplatesAction))
+                        Text(.seeAllTemplatesAction)
                     }
                     Spacer()
                 }

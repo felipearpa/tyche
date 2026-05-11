@@ -40,16 +40,16 @@ struct PoolHomeDrawerView: View {
             onDeletePool: { isConfirmingDelete = true }
         )
         .alert(
-            String(.deletePoolAlertTitle),
+            String(localized: .deletePoolAlertTitle),
             isPresented: $isConfirmingDelete
         ) {
-            Button(String(.cancelAction), role: .cancel) {}
-            Button(String(.deleteAction), role: .destructive) {
+            Button(String(localized: .cancelAction), role: .cancel) {}
+            Button(String(localized: .deleteAction), role: .destructive) {
                 onPoolDeleting()
                 viewModel.deletePool(onSuccess: onPoolDeleted)
             }
         } message: {
-            Text(String(.deletePoolAlertMessage))
+            Text(.deletePoolAlertMessage)
         }
     }
 }
@@ -131,7 +131,7 @@ private struct PoolLayoutItem: View {
                     .foregroundStyle(Color.white)
                     .modifier(ConditionalShimmer(isActive: isPlaceholder))
 
-                Text(String(.playingNowText))
+                Text(.playingNowText)
                     .font(.caption)
                     .foregroundStyle(Color.white)
                     .modifier(ConditionalShimmer(isActive: isPlaceholder))
@@ -156,7 +156,7 @@ private struct PoolLayoutItem: View {
                         .frame(width: 1)
                         .frame(maxHeight: .infinity)
 
-                    Text(String(format: String(.suffixPointText), score))
+                    Text(.suffixPointText(score))
                         .font(.subheadline)
                         .foregroundStyle(Color.white)
                         .modifier(ConditionalShimmer(isActive: isPlaceholder))
@@ -192,14 +192,14 @@ private struct PoolMenuSection: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: boxSpacing.small) {
-            Text(String(.poolSectionTitle).uppercased())
+            Text(String(localized: .poolSectionTitle).uppercased())
                 .font(.caption)
                 .foregroundStyle(Color.secondary)
 
             VStack(spacing: 0) {
                 DrawerMenuRow(
                     icon: { Image(sharedResource: .personAdd) },
-                    title: String(.inviteAction),
+                    title: String(localized: .inviteAction),
                     action: onInvite
                 )
 
@@ -208,7 +208,7 @@ private struct PoolMenuSection: View {
 
                     DrawerMenuRow(
                         icon: { Image(sharedResource: .deleteForever) },
-                        title: String(.deletePoolAction),
+                        title: String(localized: .deletePoolAction),
                         tint: Color(sharedResource: .error),
                         action: onDeletePool
                     )
@@ -273,7 +273,7 @@ private struct SignOutButton: View {
                     .resizable()
                     .scaledToFit()
                     .frame(width: 18, height: 18)
-                Text(String(.logOutAction))
+                Text(.logOutAction)
             }
             .frame(maxWidth: .infinity)
         }

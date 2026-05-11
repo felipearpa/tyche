@@ -7,14 +7,14 @@ enum BetLocalizedError: LocalizedError {
     public var errorDescription: String? {
         switch self {
         case .forbidden:
-            return String(.forbiddenBetFailureDescription)
+            return String(localized: .forbiddenBetFailureDescription)
         }
     }
     
     public var failureReason: String? {
         switch self {
         case .forbidden:
-            return String(.forbiddenBetFailureReason)
+            return String(localized: .forbiddenBetFailureReason)
         }
     }
 }

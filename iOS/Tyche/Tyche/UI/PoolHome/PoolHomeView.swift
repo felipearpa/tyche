@@ -122,7 +122,7 @@ private struct PoolHomeContent: View {
             .tag(PoolHomeTab.gamblerScores)
             .tabItem {
                 Label(
-                    title: { Text(String(.scoreTab)) },
+                    title: { Text(.scoreTab) },
                     icon: { Image(.sportScore) }
                 )
             }
@@ -140,7 +140,7 @@ private struct PoolHomeContent: View {
             .tag(PoolHomeTab.bets)
             .tabItem {
                 Label(
-                    title: { Text(String(.betTab)) },
+                    title: { Text(.betTab) },
                     icon: { Image(.money) }
                 )
             }
@@ -158,7 +158,7 @@ private struct PoolHomeContent: View {
             .tag(PoolHomeTab.historyBet)
             .tabItem {
                 Label(
-                    title: { Text(String(.historyBetsTab)) },
+                    title: { Text(.historyBetsTab) },
                     icon: { Image(.money) }
                 )
             }
@@ -226,11 +226,11 @@ private extension PoolHomeTab {
     var title: String {
         switch self {
         case .gamblerScores:
-            return String(.scoreTab)
+            return String(localized: .scoreTab)
         case .bets:
-            return String(.betTab)
+            return String(localized: .betTab)
         case .historyBet:
-            return String(.historyBetsTab)
+            return String(localized: .historyBetsTab)
         }
     }
 }

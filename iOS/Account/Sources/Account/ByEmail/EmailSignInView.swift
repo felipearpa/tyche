@@ -17,7 +17,7 @@ public struct EmailSignInView: View {
             signInWithEmail: viewModel.sendSignInLinkToEmail,
             reset: viewModel.reset
         )
-        .navigationTitle(String(.signInTitle))
+        .navigationTitle(String(localized: .signInTitle))
         .navigationBarBackButtonHidden(viewModel.state.isLoading())
     }
 }
@@ -57,7 +57,7 @@ private struct EmailSignInStatefulView: View {
                     .errorAlert(.constant(error.localizedErrorOrNil()!), onDismiss: reset)
             }
         }
-        .navigationTitle(String(.signInTitle))
+        .navigationTitle(String(localized: .signInTitle))
         .navigationBarBackButtonHidden(viewState.isLoading())
     }
 }
@@ -74,7 +74,7 @@ private struct EmailSignInContent: View {
                 .textFieldStyle(.liquidGlass)
 
             Button(action: signIn ?? {}) {
-                Text((String(.signInAction)))
+                Text(.signInAction)
                     .frame(maxWidth: .infinity)
             }
             .buttonStyle(.liquidGlassProminent)
@@ -98,11 +98,11 @@ private struct SuccessContent: View {
                 .frame(width: EMAIL_ICON_SIZE, height: EMAIL_ICON_SIZE)
 
             VStack(spacing: boxSpacing.medium) {
-                Text(String(.verificationEmailSentTitle))
+                Text(.verificationEmailSentTitle)
                     .font(.title)
                     .multilineTextAlignment(.center)
 
-                Text(String(.verificationEmailSentDescription))
+                Text(.verificationEmailSentDescription)
                     .multilineTextAlignment(.leading)
 
                 Label {
@@ -120,7 +120,7 @@ private struct SuccessContent: View {
                 .padding(.bottom, boxSpacing.medium)
 
                 Label {
-                    Text(String(.verificationEmailSentWarning))
+                    Text(.verificationEmailSentWarning)
                 } icon: {
                     Image(.warning)
                         .resizable()

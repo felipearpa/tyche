@@ -112,11 +112,11 @@ private struct SuccessContent: View {
                     .frame(width: ICON_SIZE, height: ICON_SIZE)
 
                 VStack(spacing: boxSpacing.medium) {
-                    Text(String(.readyToJoinTitle))
+                    Text(.readyToJoinTitle)
                         .multilineTextAlignment(.center)
                         .font(.title)
 
-                    Text(String(.readyToJoinSubtitle))
+                    Text(.readyToJoinSubtitle)
                         .multilineTextAlignment(.center)
                 }
 
@@ -127,13 +127,13 @@ private struct SuccessContent: View {
 
             VStack(spacing: boxSpacing.small) {
                 Button(action: onJoinPool) {
-                    Text(String(.joinPoolAction))
+                    Text(.joinPoolAction)
                         .frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.liquidGlassProminent)
 
                 Button(action: onAbort) {
-                    Text(String(.goToMyPoolsAction))
+                    Text(.goToMyPoolsAction)
                         .frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.liquidGlass)
@@ -184,14 +184,14 @@ private struct JoinFailureContent: View {
             VStack(spacing: boxSpacing.small) {
                 if !(localizedError is JoinPoolLocalizedError) {
                     Button(action: onRetry) {
-                        Text(String(sharedResource: .retryAction))
+                        Text(sharedResource: .retryAction)
                             .frame(maxWidth: .infinity)
                     }
                     .buttonStyle(.liquidGlassProminent)
                 }
 
                 Button(action: onAbort) {
-                    Text(String(.goToMyPoolsAction))
+                    Text(.goToMyPoolsAction)
                         .frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.liquidGlass)
@@ -217,7 +217,7 @@ private struct LoadFailureContent: View {
             Spacer()
 
             Button(action: onAbort) {
-                Text(String(.goToMyPoolsAction))
+                Text(.goToMyPoolsAction)
                     .frame(maxWidth: .infinity)
             }
             .buttonStyle(.liquidGlassProminent)

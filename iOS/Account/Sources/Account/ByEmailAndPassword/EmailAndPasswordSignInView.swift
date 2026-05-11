@@ -25,7 +25,7 @@ public struct EmailAndPasswordSignInView: View {
             onReset: { viewModel.reset() },
             onAuthenticate: onSignIn
         )
-        .navigationTitle(String(.signInTitle))
+        .navigationTitle(String(localized: .signInTitle))
     }
 }
 
@@ -99,13 +99,13 @@ private struct SignInContent: View {
             Button(action: {
                 onSignIn?()
             }) {
-                Text(String(.signInAction))
+                Text(.signInAction)
                     .frame(maxWidth: .infinity)
             }
             .buttonStyle(.liquidGlassProminent)
             .disabled(onSignIn == nil)
 
-            Text(String(.noRecoveryPasswordWarning))
+            Text(.noRecoveryPasswordWarning)
                 .font(.caption)
                 .foregroundColor(Color(sharedResource: .onSurfaceVariant))
                 .padding(.vertical, boxSpacing.small)

@@ -19,7 +19,7 @@ public struct PoolJoinRequiresSignInView: View {
             Spacer()
 
             Button(action: onDismiss) {
-                Text(String(.gotItAction))
+                Text(.gotItAction)
                     .frame(maxWidth: .infinity)
             }
             .buttonStyle(.liquidGlassProminent)

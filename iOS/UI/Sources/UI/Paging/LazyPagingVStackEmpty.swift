@@ -9,7 +9,7 @@ public struct LazyPagingVStackEmpty: View {
     public var body: some View {
         MessageView(
             icon: Image(.search),
-            message: String(.emptyListMessage)
+            message: String(localized: .emptyListMessage)
         )
         .frame(minHeight: parentSize.height - parentSafeAreaInsets.top - parentSafeAreaInsets.bottom)
     }

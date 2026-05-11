@@ -104,8 +104,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/felipearpa/lazy-paging-swift.git",
       "state" : {
-        "branch" : "main",
-        "revision" : "e1c1c6b8da56b7653dadea381ba869c10195a6e5"
+        "revision" : "e1c1c6b8da56b7653dadea381ba869c10195a6e5",
+        "version" : "0.0.1"
       }
     },
     {
@@ -165,7 +165,7 @@
     {
       "identity" : "viewing-state-swift",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/felipearpa/viewing-state-swift.git",
+      "location" : "https://github.com/felipearpa/viewing-state-swift",
       "state" : {
         "revision" : "e80a7b7b3af0c13d11a849483a0f58bc4ef12c01",
         "version" : "0.0.1"

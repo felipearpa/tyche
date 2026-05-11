@@ -68,7 +68,7 @@ private struct PoolFromLayoutCreatorStepOneStatefulView: View {
     var body: some View {
         VStack(spacing: boxSpacing.medium) {
             HStack {
-                Text(String(.choosePoolLayoutText))
+                Text(.choosePoolLayoutText)
                     .font(.title3)
                 Spacer()
             }

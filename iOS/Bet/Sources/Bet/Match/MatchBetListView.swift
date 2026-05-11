@@ -45,7 +45,7 @@ public struct MatchBetListView: View {
             ),
             onGamblerOpen: onGamblerOpen
         )
-        .navigationTitle(String(.matchBetsViewTitle))
+        .navigationTitle(String(localized: .matchBetsViewTitle))
         .navigationBarTitleDisplayMode(.inline)
         .navigationBarItems(trailing: navigationBarTrailing())
     }
@@ -133,7 +133,7 @@ private struct FailureContent: View {
             ErrorView(localizedError: localizedError)
 
             Button(action: onRetry) {
-                Text(String(sharedResource: .retryAction))
+                Text(sharedResource: .retryAction)
             }
         }
         .padding(.all, boxSpacing.large)
@@ -153,11 +153,11 @@ private struct PredictionsOpenContent: View {
                 .foregroundStyle(Color.accentColor)
 
             VStack(spacing: boxSpacing.medium) {
-                Text(String(.predictionsOpenTitle))
+                Text(.predictionsOpenTitle)
                     .font(.headline)
                     .multilineTextAlignment(.center)
 
-                Text(String(.predictionsOpenMessage))
+                Text(.predictionsOpenMessage)
                     .font(.body)
                     .foregroundStyle(Color.secondary)
                     .multilineTextAlignment(.center)

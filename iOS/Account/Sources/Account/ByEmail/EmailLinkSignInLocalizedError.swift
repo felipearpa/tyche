@@ -7,21 +7,21 @@ enum EmailLinkSignInLocalizedError: LocalizedError {
     public var errorDescription: String? {
         return switch self {
         case .invalidEmailLink:
-            String(.invalidEmailLinkSignInFailureDescription)
+            String(localized: .invalidEmailLinkSignInFailureDescription)
         }
     }
     
     public var failureReason: String? {
         return switch self {
         case .invalidEmailLink:
-            String(.invalidEmailLinkSignInFailureReason)
+            String(localized: .invalidEmailLinkSignInFailureReason)
         }
     }
     
     public var recoverySuggestion: String? {
         return switch self {
         case .invalidEmailLink:
-            String(.invalidEmailLinkSignInFailureRecoverySuggestion)
+            String(localized: .invalidEmailLinkSignInFailureRecoverySuggestion)
         }
     }
 }

@@ -28,7 +28,6 @@
 		D2127F4F2A2C2F270047DED7 /* TycheTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2127F4E2A2C2F270047DED7 /* TycheTests.swift */; };
 		D2127F592A2C2F270047DED7 /* TycheUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2127F582A2C2F270047DED7 /* TycheUITests.swift */; };
 		D2127F5B2A2C2F270047DED7 /* TycheUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2127F5A2A2C2F270047DED7 /* TycheUITestsLaunchTests.swift */; };
-		D2127F752A2C33210047DED7 /* StringResource.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2127F742A2C33210047DED7 /* StringResource.swift */; };
 		D21495EC2ABFD65E00C18C71 /* SessionRouterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D21495EB2ABFD65E00C18C71 /* SessionRouterView.swift */; };
 		D29956132A74215600F8878E /* Bet in Frameworks */ = {isa = PBXBuildFile; productRef = D29956122A74215600F8878E /* Bet */; };
 		D2A7804D2AC8BB1A00F01A02 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = D2A7804C2AC8BB1A00F01A02 /* Localizable.xcstrings */; };
@@ -76,7 +75,6 @@
 		D2127F542A2C2F270047DED7 /* TycheUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TycheUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		D2127F582A2C2F270047DED7 /* TycheUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TycheUITests.swift; sourceTree = "<group>"; };
 		D2127F5A2A2C2F270047DED7 /* TycheUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TycheUITestsLaunchTests.swift; sourceTree = "<group>"; };
-		D2127F742A2C33210047DED7 /* StringResource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringResource.swift; sourceTree = "<group>"; };
 		D21495EB2ABFD65E00C18C71 /* SessionRouterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionRouterView.swift; sourceTree = "<group>"; };
 		D2A7804C2AC8BB1A00F01A02 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -218,7 +216,6 @@
 			isa = PBXGroup;
 			children = (
 				D2A7804C2AC8BB1A00F01A02 /* Localizable.xcstrings */,
-				D2127F742A2C33210047DED7 /* StringResource.swift */,
 			);
 			path = Localizable;
 			sourceTree = "<group>";
@@ -384,7 +381,6 @@
 			files = (
 				55F9FDCA2B56EAD500066BBA /* EmailLinkSignInRouter.swift in Sources */,
 				55ACE9FF2E634A5C000CEF99 /* UrlMatcher.swift in Sources */,
-				D2127F752A2C33210047DED7 /* StringResource.swift in Sources */,
 				D2127F392A2C2F240047DED7 /* TycheApp.swift in Sources */,
 				55FA8F932FAF6F4300EA591D /* AccountHeaderDrawer.swift in Sources */,
 				D21495EC2ABFD65E00C18C71 /* SessionRouterView.swift in Sources */,

@@ -88,7 +88,7 @@ private struct FailureContent: View {
             Spacer()
 
             Button(action: onRetry) {
-                Text((String(sharedResource: .retryAction)))
+                Text(sharedResource: .retryAction)
                     .frame(maxWidth: .infinity)
             }
             .buttonStyle(.liquidGlassProminent)
@@ -114,11 +114,11 @@ private struct SuccessContent: View {
                     .frame(width: ICON_SIZE, height: ICON_SIZE)
 
                 VStack(spacing: boxSpacing.medium) {
-                    Text(String(.accountVerifiedTitle))
+                    Text(.accountVerifiedTitle)
                         .multilineTextAlignment(.center)
                         .font(.title)
 
-                    Text(String(.accountVerifiedDescription))
+                    Text(.accountVerifiedDescription)
                         .multilineTextAlignment(.center)
                 }
 
@@ -128,7 +128,7 @@ private struct SuccessContent: View {
             Spacer()
 
             Button(action: start) {
-                Text((String(.startAction)))
+                Text(.startAction)
                     .frame(maxWidth: .infinity)
             }
             .buttonStyle(.liquidGlassProminent)

@@ -7,21 +7,21 @@ enum JoinPoolLocalizedError: LocalizedError {
     public var errorDescription: String? {
         switch self {
         case .alreadyJoined:
-            return String(.poolAlreadyJoinedErrorDescription)
+            return String(localized: .poolAlreadyJoinedErrorDescription)
         }
     }
 
     public var failureReason: String? {
         switch self {
         case .alreadyJoined:
-            return String(.poolAlreadyJoinedFailureReason)
+            return String(localized: .poolAlreadyJoinedFailureReason)
         }
     }
 
     public var recoverySuggestion: String? {
         switch self {
         case .alreadyJoined:
-            return String(.poolAlreadyJoinedRecoverySuggestion)
+            return String(localized: .poolAlreadyJoinedRecoverySuggestion)
         }
     }
 }

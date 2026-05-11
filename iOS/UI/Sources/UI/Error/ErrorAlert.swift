@@ -12,7 +12,7 @@ public extension View {
             isPresented: .constant(unwrappedLocalizedError != nil),
             error: unwrappedLocalizedError
         ) { _ in
-            Button(String(.doneAction)) {
+            Button(String(localized: .doneAction)) {
                 localizedError.wrappedValue = nil
                 onDismiss()
             }

@@ -152,11 +152,11 @@ private struct EditableDefaultActionBar: View {
         Spacer()
         
         Button(action: reset) {
-            Text(String(sharedResource: .cancelAction))
+            Text(sharedResource: .cancelAction)
         }.buttonStyle(.liquidGlass)
-        
+
         Button(action: bet) {
-            Text(String(sharedResource: .saveAction))
+            Text(sharedResource: .saveAction)
         }
         .buttonStyle(.liquidGlassProminent)
     }
@@ -174,7 +174,7 @@ private struct NonEditableDefaultActionBar: View {
 
         if !viewModelState.activeValue().isLocked {
             Button(action: edit) {
-                Text(String(sharedResource: .editAction))
+                Text(sharedResource: .editAction)
             }
         }
     }
@@ -203,13 +203,13 @@ private struct FailureActionBar: View {
             Spacer()
             
             Button(action: { reset() }) {
-                Text(String(sharedResource: .cancelAction))
+                Text(sharedResource: .cancelAction)
             }
             .buttonStyle(.liquidGlass)
             .tint(Color(sharedResource: .error))
-            
+
             Button(action: { retryBet() }) {
-                Text(String(sharedResource: .retryAction))
+                Text(sharedResource: .retryAction)
             }
             .buttonStyle(.liquidGlassProminent)
             .tint(Color(sharedResource: .error))

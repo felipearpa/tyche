@@ -25,7 +25,7 @@ struct AccountHeaderDrawer: View {
                 .lineLimit(2)
                 .truncationMode(.tail)
 
-            Text(String(.connectedAccountText))
+            Text(.connectedAccountText)
                 .font(.caption)
                 .foregroundStyle(Color.secondary)
 
