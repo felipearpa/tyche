@@ -2,6 +2,7 @@ import SwiftUI
 import Session
 import UI
 import Core
+import ViewingState
 
 public struct EmailAndPasswordSignInView: View {
     @StateObject var viewModel: EmailAndPasswordSignInViewModel
@@ -29,7 +30,7 @@ public struct EmailAndPasswordSignInView: View {
 }
 
 private struct EmailAndPasswordSignInStatefulView: View {
-    let viewState: LoadableViewState<AccountBundle>
+    let viewState: LoadState<AccountBundle>
     let onSignIn: (String, String) -> Void
     let onReset: () -> Void
     let onAuthenticate: (AccountBundle) -> Void
@@ -50,7 +51,7 @@ private struct EmailAndPasswordSignInStatefulView: View {
 
     var body: some View {
         switch viewState {
-        case .initial:
+        case .idle:
             SignInContent(
                 email: $email,
                 password: $password,
@@ -63,7 +64,7 @@ private struct EmailAndPasswordSignInStatefulView: View {
                     password: $password,
                 )
             }
-        case .success(let accountBundle):
+        case .loaded(let accountBundle):
             LoadingContainerView {
                 SignInContent(
                     email: $email,
@@ -124,7 +125,7 @@ private struct SignInContent: View {
 
 #Preview("initial") {
     EmailAndPasswordSignInStatefulView(
-        viewState: .initial,
+        viewState: .idle,
         onSignIn: {_,_ in },
         onReset: {},
         onAuthenticate: { _ in },
@@ -142,7 +143,7 @@ private struct SignInContent: View {
 
 #Preview("success") {
     EmailAndPasswordSignInStatefulView(
-        viewState: .success(AccountBundle(accountId: "", externalAccountId: "", email: "")),
+        viewState: .loaded(AccountBundle(accountId: "", externalAccountId: "", email: "")),
         onSignIn: {_,_ in },
         onReset: {},
         onAuthenticate: { _ in },

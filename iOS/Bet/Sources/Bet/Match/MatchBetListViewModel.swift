@@ -3,6 +3,7 @@ import Core
 import UI
 import LazyPaging
 import DataBet
+import ViewingState
 
 public class MatchBetListViewModel: ObservableObject {
     private let getPoolGamblerBetUseCase: GetPoolGamblerBetUseCase
@@ -11,7 +12,7 @@ public class MatchBetListViewModel: ObservableObject {
     private let gamblerId: String
     private let matchId: String
     private var pagingSource: LazyPagingCursorSource<PoolGamblerBetModel>!
-    @Published var poolGamblerBetState: LoadableViewState<PoolGamblerBetModel> = .initial
+    @Published var poolGamblerBetState: ViewingState.LoadState<PoolGamblerBetModel> = .idle
 
     @MainActor
     lazy var lazyPager: LazyPaging.LazyPagingItems<String, PoolGamblerBetModel> = {
@@ -60,7 +61,7 @@ public class MatchBetListViewModel: ObservableObject {
         )
         switch result {
         case .success(let bet):
-            poolGamblerBetState = .success(bet.toPoolGamblerBetModel())
+            poolGamblerBetState = .loaded(bet.toPoolGamblerBetModel())
         case .failure(let error):
             poolGamblerBetState = .failure(error)
         }

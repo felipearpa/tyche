@@ -2,10 +2,11 @@ import Foundation
 import Core
 import UI
 import Session
+import ViewingState
 
 public class EmailLinkSignInViewModel: ObservableObject {
-    @Published @MainActor private(set) var state: LoadableViewState<AccountBundle> = .initial
-    
+    @Published @MainActor private(set) var state: LoadState<AccountBundle> = .idle
+
     private let signInWithEmailLinkUseCase: SignInWithEmailLinkUseCase
     
     public init(signInWithEmailLinkUseCase: SignInWithEmailLinkUseCase) {
@@ -14,18 +15,18 @@ public class EmailLinkSignInViewModel: ObservableObject {
     
     @MainActor
     func reset() {
-        state = .initial
+        state = .idle
     }
     
     @MainActor
     func signInWithEmailLink(email: String, emailLink: String) {
         Task {
             state = .loading
-            
+
             let result = await signInWithEmailLinkUseCase.execute(email: Email(email)!, emailLink: emailLink)
             switch result {
             case .success(let accountBundle):
-                state = .success(accountBundle)
+                state = .loaded(accountBundle)
             case .failure(let error):
                 state = .failure(error.mapOrDefaultLocalized { $0.asEmailLinkSignInLocalizedError() })
             }

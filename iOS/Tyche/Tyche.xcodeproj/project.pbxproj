@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		550F21DD2B16C7EF004D5A51 /* DataBet in Frameworks */ = {isa = PBXBuildFile; productRef = 550F21DC2B16C7EF004D5A51 /* DataBet */; };
 		5556C5172E515434004F34D5 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5556C5162E51542F004F34D5 /* AppDelegate.swift */; };
+		556747072FB15A0800907CF9 /* ViewingState in Frameworks */ = {isa = PBXBuildFile; productRef = 556747062FB15A0800907CF9 /* ViewingState */; };
 		556EBA612B16CB8F008D4ABD /* Session in Frameworks */ = {isa = PBXBuildFile; productRef = 556EBA602B16CB8F008D4ABD /* Session */; };
 		557D1EAA2B40AD2B000FF9F9 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 557D1EA92B40AD2B000FF9F9 /* GoogleService-Info.plist */; };
 		558C522E2B40A046004AF956 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 558C522D2B40A046004AF956 /* FirebaseAuth */; };
@@ -16,7 +17,6 @@
 		55905C362B16C23E003EB79F /* DataPool in Frameworks */ = {isa = PBXBuildFile; productRef = 55905C352B16C23E003EB79F /* DataPool */; };
 		55921B2C2F8FC85100BF5C43 /* tyche.icon in Resources */ = {isa = PBXBuildFile; fileRef = 55921B2B2F8FC85100BF5C43 /* tyche.icon */; };
 		55ACE9FF2E634A5C000CEF99 /* UrlMatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55ACE9FE2E634A51000CEF99 /* UrlMatcher.swift */; };
-		55B782CD2E2D449C00E78408 /* AppConfig.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 55B782CC2E2D449C00E78408 /* AppConfig.xcconfig */; };
 		55BE0001A0001A002B0CDEF2 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 55BE0001A0001A002B0CDEF1 /* LaunchScreen.storyboard */; };
 		55D5929D2FA43C71003D4E59 /* LocalURLBasePathProviderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55D5929C2FA43C71003D4E59 /* LocalURLBasePathProviderTests.swift */; };
 		55F9FDCA2B56EAD500066BBA /* EmailLinkSignInRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55F9FDC92B56EAD500066BBA /* EmailLinkSignInRouter.swift */; };
@@ -94,6 +94,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				556747072FB15A0800907CF9 /* ViewingState in Frameworks */,
 				D2C23D612A3E428D003CC860 /* UI in Frameworks */,
 				55905C322B168C9F003EB79F /* Account in Frameworks */,
 				D2BB75112A5B65D500C7AE04 /* Pool in Frameworks */,
@@ -255,6 +256,7 @@
 				550F21DC2B16C7EF004D5A51 /* DataBet */,
 				556EBA602B16CB8F008D4ABD /* Session */,
 				558C522D2B40A046004AF956 /* FirebaseAuth */,
+				556747062FB15A0800907CF9 /* ViewingState */,
 			);
 			productName = Tyche;
 			productReference = D2127F352A2C2F240047DED7 /* Tyche.app */;
@@ -304,7 +306,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1430;
-				LastUpgradeCheck = 1500;
+				LastUpgradeCheck = 2640;
 				TargetAttributes = {
 					D2127F342A2C2F240047DED7 = {
 						CreatedOnToolsVersion = 14.3.1;
@@ -332,6 +334,7 @@
 			mainGroup = D2127F2C2A2C2F240047DED7;
 			packageReferences = (
 				558C522C2B40A046004AF956 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+				556747052FB15A0800907CF9 /* XCRemoteSwiftPackageReference "viewing-state-swift" */,
 			);
 			productRefGroup = D2127F362A2C2F240047DED7 /* Products */;
 			projectDirPath = "";
@@ -350,7 +353,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				D2127F402A2C2F260047DED7 /* Preview Assets.xcassets in Resources */,
-				55B782CD2E2D449C00E78408 /* AppConfig.xcconfig in Resources */,
 				557D1EAA2B40AD2B000FF9F9 /* GoogleService-Info.plist in Resources */,
 				D2A7804D2AC8BB1A00F01A02 /* Localizable.xcstrings in Resources */,
 				55921B2C2F8FC85100BF5C43 /* tyche.icon in Resources */,
@@ -463,6 +465,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = H7N4H27ULJ;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -485,6 +488,7 @@
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
@@ -528,6 +532,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = H7N4H27ULJ;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -543,6 +548,7 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				VALIDATE_PRODUCT = YES;
@@ -559,7 +565,6 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 7;
 				DEVELOPMENT_ASSET_PATHS = "\"Tyche/Preview Content\"";
-				DEVELOPMENT_TEAM = H7N4H27ULJ;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Tyche/Info.plist;
@@ -594,7 +599,6 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 7;
 				DEVELOPMENT_ASSET_PATHS = "\"Tyche/Preview Content\"";
-				DEVELOPMENT_TEAM = H7N4H27ULJ;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Tyche/Info.plist;
@@ -622,11 +626,9 @@
 		D2127F622A2C2F270047DED7 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 2;
-				DEVELOPMENT_TEAM = H7N4H27ULJ;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				MARKETING_VERSION = 1.1;
@@ -642,11 +644,9 @@
 		D2127F632A2C2F270047DED7 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 2;
-				DEVELOPMENT_TEAM = H7N4H27ULJ;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				MARKETING_VERSION = 1.1;
@@ -662,10 +662,8 @@
 		D2127F652A2C2F270047DED7 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 2;
-				DEVELOPMENT_TEAM = H7N4H27ULJ;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.felipearpa.TycheUITests;
@@ -680,10 +678,8 @@
 		D2127F662A2C2F270047DED7 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 2;
-				DEVELOPMENT_TEAM = H7N4H27ULJ;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.felipearpa.TycheUITests;
@@ -737,6 +733,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		556747052FB15A0800907CF9 /* XCRemoteSwiftPackageReference "viewing-state-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/felipearpa/viewing-state-swift";
+			requirement = {
+				kind = exactVersion;
+				version = 0.0.1;
+			};
+		};
 		558C522C2B40A046004AF956 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
@@ -751,6 +755,11 @@
 		550F21DC2B16C7EF004D5A51 /* DataBet */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = DataBet;
+		};
+		556747062FB15A0800907CF9 /* ViewingState */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 556747052FB15A0800907CF9 /* XCRemoteSwiftPackageReference "viewing-state-swift" */;
+			productName = ViewingState;
 		};
 		556EBA602B16CB8F008D4ABD /* Session */ = {
 			isa = XCSwiftPackageProductDependency;

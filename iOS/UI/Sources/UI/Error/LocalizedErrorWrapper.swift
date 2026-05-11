@@ -1,4 +1,5 @@
 import Foundation
+import ViewingState
 
 public struct LocalizedErrorWrapper: LocalizedError {
     var underlyingError: LocalizedError
@@ -31,7 +32,7 @@ public extension Error {
     }
 }
 
-public extension LoadableViewState {
+public extension LoadState {
     @inlinable
     func localizedErrorOrNil() -> LocalizedErrorWrapper? {
         if case .failure(let error) = self {

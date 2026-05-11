@@ -3,6 +3,7 @@ import Session
 import DataPool
 import Pool
 import UI
+import ViewingState
 
 class PoolHomeDrawerViewModel: ObservableObject {
     let poolId: String
@@ -14,10 +15,10 @@ class PoolHomeDrawerViewModel: ObservableObject {
     private let deletePoolUseCase: DeletePoolUseCase
     private let accountStorage: AccountStorage
 
-    @Published var state: LoadableViewState<PoolGamblerScoreModel> = .initial
+    @Published var state: LoadState<PoolGamblerScoreModel> = .idle
     @Published var email: String = ""
     @Published var isOwner: Bool = false
-    @Published var deleteState: LoadableViewState<Void> = .initial
+    @Published var deleteState: LoadState<Void> = .idle
 
     init(
         poolId: String,
@@ -59,7 +60,7 @@ class PoolHomeDrawerViewModel: ObservableObject {
 
             switch result {
             case .success(let score):
-                self.state = .success(score.toPoolGamblerScoreModel())
+                self.state = .loaded(score.toPoolGamblerScoreModel())
             case .failure(let error):
                 self.state = .failure(error)
             }
@@ -91,7 +92,7 @@ class PoolHomeDrawerViewModel: ObservableObject {
 
             switch result {
             case .success:
-                self.deleteState = .success(())
+                self.deleteState = .loaded(())
                 onSuccess()
             case .failure(let error):
                 self.deleteState = .failure(error)
@@ -101,6 +102,6 @@ class PoolHomeDrawerViewModel: ObservableObject {
 
     @MainActor
     func resetDeleteState() {
-        deleteState = .initial
+        deleteState = .idle
     }
 }

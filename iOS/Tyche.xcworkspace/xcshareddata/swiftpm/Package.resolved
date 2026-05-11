@@ -163,6 +163,15 @@
       }
     },
     {
+      "identity" : "viewing-state-swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/felipearpa/viewing-state-swift.git",
+      "state" : {
+        "revision" : "e80a7b7b3af0c13d11a849483a0f58bc4ef12c01",
+        "version" : "0.0.1"
+      }
+    },
+    {
       "identity" : "viewinspector",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/nalexn/ViewInspector",

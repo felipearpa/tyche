@@ -2,9 +2,10 @@ import Foundation
 import Core
 import UI
 import Session
+import ViewingState
 
 public class EmailSignInViewModel: ObservableObject {
-    @Published @MainActor private(set) var state: LoadableViewState<String> = .initial
+    @Published @MainActor private(set) var state: LoadState<String> = .idle
 
     private let sendSignInLinkToEmailUseCase: SendSignInLinkToEmailUseCase
 
@@ -14,7 +15,7 @@ public class EmailSignInViewModel: ObservableObject {
 
     @MainActor
     func reset() {
-        state = .initial
+        state = .idle
     }
 
     @MainActor
@@ -25,7 +26,7 @@ public class EmailSignInViewModel: ObservableObject {
             let result = await sendSignInLinkToEmailUseCase.execute(email: Email(email)!)
             switch result {
             case .success:
-                state = .success(email)
+                state = .loaded(email)
             case .failure(let error):
                 state = .failure(error.mapOrDefaultLocalized { $0.asSendSignInLinkToEmailLocalizedError() })
             }

@@ -1,6 +1,7 @@
 import SwiftUI
 import UI
 import Core
+import ViewingState
 
 struct PendingBetItemView: View {
     @StateObject private var viewModel: PendingBetItemViewModel
@@ -17,7 +18,7 @@ struct PendingBetItemView: View {
 
     var body: some View {
         StatefulPendingBetItemView(
-            viewModelState: viewModel.state ?? .initial(poolGamblerBet),
+            viewModelState: viewModel.state ?? .idle(poolGamblerBet),
             viewState: $viewState,
             bet: {
                 viewModel.bet(
@@ -38,7 +39,7 @@ struct PendingBetItemView: View {
         .onReceive(viewModel.$state) { state in
             guard let state = state else { return }
             viewState = switch state {
-            case .initial(let poolGamblerBet):
+            case .idle(let poolGamblerBet):
                 viewState.copy(
                     value: PartialPoolGamblerBetModel(
                         homeTeamBet: poolGamblerBet.homeTeamBetRawValue(),
@@ -52,7 +53,7 @@ struct PendingBetItemView: View {
 }
 
 private struct StatefulPendingBetItemView: View {
-    let viewModelState: EditableViewState<PoolGamblerBetModel>
+    let viewModelState: MutationState<PoolGamblerBetModel>
     @Binding var viewState: PendingBetItemViewState
     let bet: () -> Void
     let retryBet: () -> Void
@@ -60,7 +61,7 @@ private struct StatefulPendingBetItemView: View {
     let edit: () -> Void
     
     init(
-        viewModelState: EditableViewState<PoolGamblerBetModel>,
+        viewModelState: MutationState<PoolGamblerBetModel>,
         viewState: Binding<PendingBetItemViewState>,
         bet: @escaping () -> Void = {},
         retryBet: @escaping () -> Void = {},
@@ -78,7 +79,7 @@ private struct StatefulPendingBetItemView: View {
     var body: some View {
         VStack {
             switch viewModelState {
-            case .initial(let poolGamblerBet), .success(_, succeeded: let poolGamblerBet):
+            case .idle(let poolGamblerBet), .mutated(_, updated: let poolGamblerBet):
                 PendingBetItem(
                     poolGamblerBet: poolGamblerBet,
                     viewState: $viewState
@@ -90,13 +91,13 @@ private struct StatefulPendingBetItemView: View {
                     reset: reset,
                     edit: edit
                 )
-            case .saving(_, target: let poolGamblerBet):
+            case .mutating(_, updated: let poolGamblerBet):
                 PendingBetItem(
                     poolGamblerBet: poolGamblerBet,
                     viewState: .constant(.visualization(viewState.value))
                 )
                 LoadingActionBar(viewModelState: viewModelState)
-            case .failure(_, failed: let poolGamblerBet, _):
+            case .failure(_, updated: let poolGamblerBet, _):
                 PendingBetItem(
                     poolGamblerBet: poolGamblerBet,
                     viewState: .constant(.visualization(viewState.value))
@@ -112,7 +113,7 @@ private struct StatefulPendingBetItemView: View {
 }
 
 private struct DefaultActionBar: View {
-    let viewModelState: EditableViewState<PoolGamblerBetModel>
+    let viewModelState: MutationState<PoolGamblerBetModel>
     @Binding var viewState: PendingBetItemViewState
     let bet: () -> Void
     let reset: () -> Void
@@ -140,7 +141,7 @@ private struct DefaultActionBar: View {
 }
 
 private struct EditableDefaultActionBar: View {
-    let viewModelState: EditableViewState<PoolGamblerBetModel>
+    let viewModelState: MutationState<PoolGamblerBetModel>
     @Binding var viewState: PendingBetItemViewState
     let bet: () -> Void
     let reset: () -> Void
@@ -162,7 +163,7 @@ private struct EditableDefaultActionBar: View {
 }
 
 private struct NonEditableDefaultActionBar: View {
-    let viewModelState: EditableViewState<PoolGamblerBetModel>
+    let viewModelState: MutationState<PoolGamblerBetModel>
     @Binding var viewState: PendingBetItemViewState
     let edit: () -> Void
 
@@ -171,7 +172,7 @@ private struct NonEditableDefaultActionBar: View {
 
         Spacer()
 
-        if !viewModelState.relevantValue().isLocked {
+        if !viewModelState.activeValue().isLocked {
             Button(action: edit) {
                 Text(String(sharedResource: .editAction))
             }
@@ -180,8 +181,8 @@ private struct NonEditableDefaultActionBar: View {
 }
 
 private struct LoadingActionBar: View {
-    let viewModelState: EditableViewState<PoolGamblerBetModel>
-    
+    let viewModelState: MutationState<PoolGamblerBetModel>
+
     var body: some View {
         HStack(spacing: 8) {
             StateIndicator(state: viewModelState)
@@ -191,7 +192,7 @@ private struct LoadingActionBar: View {
 }
 
 private struct FailureActionBar: View {
-    let viewModelState: EditableViewState<PoolGamblerBetModel>
+    let viewModelState: MutationState<PoolGamblerBetModel>
     let retryBet: () -> Void
     let reset: () -> Void
     
@@ -217,10 +218,10 @@ private struct FailureActionBar: View {
 }
 
 private struct StateIndicator: View {
-    let viewModelstate: EditableViewState<PoolGamblerBetModel>
+    let viewModelstate: MutationState<PoolGamblerBetModel>
     let isEditable: Bool
     
-    init(state: EditableViewState<PoolGamblerBetModel>, isEditable: Bool = false) {
+    init(state: MutationState<PoolGamblerBetModel>, isEditable: Bool = false) {
         self.viewModelstate = state
         self.isEditable = isEditable
     }
@@ -233,10 +234,10 @@ private struct StateIndicator: View {
             case .failure:
                 Image(sharedResource: .error)
                     .foregroundStyle(Color(sharedResource: .error))
-            case .saving:
+            case .mutating:
                 BallSpinner()
                     .frame(width: ICON_SIZE, height: ICON_SIZE)
-            case .initial(let poolGamblerBet), .success(_, succeeded: let poolGamblerBet):
+            case .idle(let poolGamblerBet), .mutated(_, updated: let poolGamblerBet):
                 ContentIndicator(poolGamblerBet: poolGamblerBet)
             }
         }
@@ -263,23 +264,23 @@ private let ICON_SIZE: CGFloat = 24
 
 #Preview("Non Editable Initial") {
     StatefulPendingBetItemView(
-        viewModelState: .initial(poolGamblerBetDummyModel()),
+        viewModelState: .idle(poolGamblerBetDummyModel()),
         viewState: .constant(.visualization(partialPoolGamblerBetDummyModel()))
     )
 }
 
 #Preview("Editable Initial") {
     StatefulPendingBetItemView(
-        viewModelState: .initial(poolGamblerBetDummyModel()),
+        viewModelState: .idle(poolGamblerBetDummyModel()),
         viewState: .constant(.edition(partialPoolGamblerBetDummyModel()))
     )
 }
 
 #Preview("Non Editable Loading") {
     StatefulPendingBetItemView(
-        viewModelState: .saving(
-            current: poolGamblerBetDummyModel(),
-            target: poolGamblerBetDummyModel()
+        viewModelState: .mutating(
+            original: poolGamblerBetDummyModel(),
+            updated: poolGamblerBetDummyModel()
         ),
         viewState: .constant(.visualization(partialPoolGamblerBetDummyModel()))
     )
@@ -287,9 +288,9 @@ private let ICON_SIZE: CGFloat = 24
 
 #Preview("Editable Loading") {
     StatefulPendingBetItemView(
-        viewModelState: .saving(
-            current: poolGamblerBetDummyModel(),
-            target: poolGamblerBetDummyModel()
+        viewModelState: .mutating(
+            original: poolGamblerBetDummyModel(),
+            updated: poolGamblerBetDummyModel()
         ),
         viewState: .constant(.edition(partialPoolGamblerBetDummyModel()))
     )
@@ -298,8 +299,8 @@ private let ICON_SIZE: CGFloat = 24
 #Preview("Non Editable Failure") {
     StatefulPendingBetItemView(
         viewModelState: .failure(
-            current: poolGamblerBetDummyModel(),
-            failed: poolGamblerBetDummyModel(),
+            original: poolGamblerBetDummyModel(),
+            updated: poolGamblerBetDummyModel(),
             error: UnknownLocalizedError()
         ),
         viewState: .constant(.visualization(partialPoolGamblerBetDummyModel()))
@@ -309,8 +310,8 @@ private let ICON_SIZE: CGFloat = 24
 #Preview("Editable Failure") {
     StatefulPendingBetItemView(
         viewModelState: .failure(
-            current: poolGamblerBetDummyModel(),
-            failed: poolGamblerBetDummyModel(),
+            original: poolGamblerBetDummyModel(),
+            updated: poolGamblerBetDummyModel(),
             error: UnknownLocalizedError()
         ),
         viewState: .constant(.edition(partialPoolGamblerBetDummyModel()))

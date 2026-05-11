@@ -2,10 +2,11 @@ import Foundation
 import Core
 import UI
 import Session
+import ViewingState
 
 public class EmailAndPasswordSignInViewModel: ObservableObject {
-    @Published @MainActor private(set) var state: LoadableViewState<AccountBundle> = .initial
-    
+    @Published @MainActor private(set) var state: LoadState<AccountBundle> = .idle
+
     private let signInWithEmailAndPasswordUseCase: SignInWithEmailAndPasswordUseCase
 
     public init(signInWithEmailAndPasswordUseCase: SignInWithEmailAndPasswordUseCase) {
@@ -14,7 +15,7 @@ public class EmailAndPasswordSignInViewModel: ObservableObject {
     
     @MainActor
     func reset() {
-        state = .initial
+        state = .idle
     }
     
     @MainActor
@@ -25,7 +26,7 @@ public class EmailAndPasswordSignInViewModel: ObservableObject {
             let result = await signInWithEmailAndPasswordUseCase.execute(email: Email(email)!, password: password)
             switch result {
             case .success(let accountBundle):
-                state = .success(accountBundle)
+                state = .loaded(accountBundle)
             case .failure(let error):
                 state = .failure(error.mapOrDefaultLocalized { $0.asEmailAndPasswordSignInLocalizedError() })
             }

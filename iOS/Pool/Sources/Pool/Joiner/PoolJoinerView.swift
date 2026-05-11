@@ -1,5 +1,7 @@
+import Combine
 import SwiftUI
 import UI
+import ViewingState
 
 public struct PoolJoinerView: View {
     @StateObject private var viewModel: PoolJoinerViewModel
@@ -34,8 +36,8 @@ public struct PoolJoinerView: View {
         .onAppearOnce {
             viewModel.loadPool(poolId: poolId)
         }
-        .onChange(of: viewModel.joinPoolState) { state in
-            if state.isSuccess() {
+        .onReceive(viewModel.$joinPoolState) { state in
+            if state.isLoaded() {
                 onJoinPool()
             }
         }
@@ -43,8 +45,8 @@ public struct PoolJoinerView: View {
 }
 
 private struct PoolJoinerStatefulView: View {
-    let poolState: LoadableViewState<PoolModel>
-    let joinPoolState: LoadableViewState<Void>
+    let poolState: LoadState<PoolModel>
+    let joinPoolState: LoadState<Void>
     let onJoinPool: () -> Void
     let onAbort: () -> Void
 
@@ -52,9 +54,9 @@ private struct PoolJoinerStatefulView: View {
 
     var body: some View {
         switch joinPoolState {
-        case .initial:
+        case .idle:
             PoolLoadStatefulView(poolState: poolState, onJoinPool: onJoinPool, onAbort: onAbort)
-        case .loading, .success:
+        case .loading, .loaded:
             LoadingContainerView {
                 PoolLoadStatefulView(poolState: poolState, onJoinPool: {}, onAbort: {})
             }
@@ -70,7 +72,7 @@ private struct PoolJoinerStatefulView: View {
 }
 
 private struct PoolLoadStatefulView: View {
-    let poolState: LoadableViewState<PoolModel>
+    let poolState: LoadState<PoolModel>
     let onJoinPool: () -> Void
     let onAbort: () -> Void
 
@@ -78,9 +80,9 @@ private struct PoolLoadStatefulView: View {
 
     var body: some View {
         switch poolState {
-        case .initial, .loading:
+        case .idle, .loading:
             LoadingContainerView { EmptyView() }
-        case .success(let pool):
+        case .loaded(let pool):
             SuccessContent(pool: pool, onJoinPool: onJoinPool, onAbort: onAbort)
                 .padding(boxSpacing.medium)
         case .failure(let error):
@@ -230,8 +232,8 @@ private let PILL_ICON_SIZE: CGFloat = 16
 
 #Preview("initial") {
     PoolJoinerStatefulView(
-        poolState: .success(PoolModel(id: "id", name: "American Cup 2024")),
-        joinPoolState: .initial,
+        poolState: .loaded(PoolModel(id: "id", name: "American Cup 2024")),
+        joinPoolState: .idle,
         onJoinPool: {},
         onAbort: {},
     )
@@ -239,7 +241,7 @@ private let PILL_ICON_SIZE: CGFloat = 16
 
 #Preview("loading") {
     PoolJoinerStatefulView(
-        poolState: .success(PoolModel(id: "id", name: "American Cup 2024")),
+        poolState: .loaded(PoolModel(id: "id", name: "American Cup 2024")),
         joinPoolState: .loading,
         onJoinPool: {},
         onAbort: {},
@@ -248,7 +250,7 @@ private let PILL_ICON_SIZE: CGFloat = 16
 
 #Preview("join failure") {
     PoolJoinerStatefulView(
-        poolState: .success(PoolModel(id: "id", name: "American Cup 2024")),
+        poolState: .loaded(PoolModel(id: "id", name: "American Cup 2024")),
         joinPoolState: .failure(UnknownLocalizedError()),
         onJoinPool: {},
         onAbort: {},
@@ -258,7 +260,7 @@ private let PILL_ICON_SIZE: CGFloat = 16
 #Preview("load failure") {
     PoolJoinerStatefulView(
         poolState: .failure(UnknownLocalizedError()),
-        joinPoolState: .initial,
+        joinPoolState: .idle,
         onJoinPool: {},
         onAbort: {},
     )

@@ -1,13 +1,14 @@
 import Foundation
 import DataPool
 import UI
+import ViewingState
 
 public class PoolJoinerViewModel: ObservableObject {
     private let getPoolUseCase: GetPoolUseCase
     private let joinPoolUseCase: JoinPoolUseCase
 
-    @Published private(set) var poolState: LoadableViewState<PoolModel> = .initial
-    @Published private(set) var joinPoolState: LoadableViewState<Void> = .initial
+    @Published private(set) var poolState: LoadState<PoolModel> = .idle
+    @Published private(set) var joinPoolState: LoadState<Void> = .idle
 
     public init(getPoolUseCase: GetPoolUseCase, joinPoolUseCase: JoinPoolUseCase) {
         self.getPoolUseCase = getPoolUseCase
@@ -22,7 +23,7 @@ public class PoolJoinerViewModel: ObservableObject {
 
             switch result {
             case .success(let pool):
-                poolState = .success(pool.toPoolModel())
+                poolState = .loaded(pool.toPoolModel())
             case .failure(let error):
                 poolState = .failure(error)
             }
@@ -39,7 +40,7 @@ public class PoolJoinerViewModel: ObservableObject {
 
             switch result {
             case .success:
-                joinPoolState = .success(())
+                joinPoolState = .loaded(())
             case .failure(let error):
                 joinPoolState = .failure(error.asJoinPoolLocalizedError())
             }

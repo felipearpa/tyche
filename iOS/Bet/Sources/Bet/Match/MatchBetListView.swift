@@ -2,6 +2,7 @@ import SwiftUI
 import Core
 import UI
 import DataBet
+import ViewingState
 
 public struct MatchBetListView: View {
     let poolId: String
@@ -84,7 +85,7 @@ private struct MatchBetListContent: View {
 
         Group {
             switch viewModel.poolGamblerBetState {
-            case .initial, .loading:
+            case .idle, .loading:
                 VStack(spacing: boxSpacing.medium) {
                     MatchHeaderPlaceholderItem()
                         .padding(.horizontal, boxSpacing.medium)
@@ -99,7 +100,7 @@ private struct MatchBetListContent: View {
                     onRetry: { Task { await viewModel.loadPoolGamblerBet() } }
                 )
 
-            case .success(let bet):
+            case .loaded(let bet):
                 VStack(spacing: boxSpacing.medium) {
                     MatchHeader(bet: bet)
                         .padding(.horizontal, boxSpacing.medium)

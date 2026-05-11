@@ -1,6 +1,7 @@
 import SwiftUI
 import UI
 import Pool
+import ViewingState
 
 struct PoolHomeDrawerView: View {
     @ObservedObject var viewModel: PoolHomeDrawerViewModel
@@ -55,7 +56,7 @@ struct PoolHomeDrawerView: View {
 
 private struct PoolHomeDrawerStatefulView: View {
     let email: String
-    let poolGamblerScoreState: LoadableViewState<PoolGamblerScoreModel>
+    let poolGamblerScoreState: LoadState<PoolGamblerScoreModel>
     let isOwner: Bool
     let isDeleting: Bool
     let onSignOut: () -> Void
@@ -95,17 +96,17 @@ private struct PoolHomeDrawerStatefulView: View {
 }
 
 private struct PoolLayout: View {
-    let poolGamblerScoreState: LoadableViewState<PoolGamblerScoreModel>
+    let poolGamblerScoreState: LoadState<PoolGamblerScoreModel>
 
     var body: some View {
         switch poolGamblerScoreState {
-        case .initial, .loading:
+        case .idle, .loading:
             PoolLayoutItem(
                 poolGamblerScore: poolGamblerScorePlaceholderModel(),
                 isPlaceholder: true
             )
 
-        case .success(let score):
+        case .loaded(let score):
             PoolLayoutItem(poolGamblerScore: score, isPlaceholder: false)
 
         case .failure(let error):
@@ -287,7 +288,7 @@ private let SECTION_CORNER_RADIUS: CGFloat = 12
 #Preview("Light") {
     PoolHomeDrawerStatefulView(
         email: "felipearpa@email.com",
-        poolGamblerScoreState: .success(poolGamblerScoreDummyModel()),
+        poolGamblerScoreState: .loaded(poolGamblerScoreDummyModel()),
         isOwner: true,
         isDeleting: false,
         onSignOut: {},
@@ -300,7 +301,7 @@ private let SECTION_CORNER_RADIUS: CGFloat = 12
 #Preview("Dark") {
     PoolHomeDrawerStatefulView(
         email: "felipearpa@email.com",
-        poolGamblerScoreState: .success(poolGamblerScoreDummyModel()),
+        poolGamblerScoreState: .loaded(poolGamblerScoreDummyModel()),
         isOwner: true,
         isDeleting: false,
         onSignOut: {},
