@@ -30,7 +30,7 @@ internal class StepOneViewModel(
             config = PagingConfig(
                 pageSize = pageSize,
                 prefetchDistance = PREFETCH_DISTANCE,
-                enablePlaceholders = true,
+                enablePlaceholders = false,
             ),
             pagingSourceFactory = {
                 PoolLayoutPagingSource(

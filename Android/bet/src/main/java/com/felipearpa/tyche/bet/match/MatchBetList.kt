@@ -18,7 +18,7 @@ import androidx.paging.compose.itemContentType
 import androidx.paging.compose.itemKey
 import com.felipearpa.tyche.bet.PoolGamblerBetModel
 import com.felipearpa.tyche.bet.poolGamblerBetDummyModels
-import com.felipearpa.tyche.ui.lazy.RefreshableStatefulLazyColumn
+import com.felipearpa.tyche.ui.lazy.RefreshableLazyPagingColumn
 import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
 import com.felipearpa.tyche.ui.theme.TycheTheme
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -30,10 +30,10 @@ fun MatchBetList(
     placeholderCount: Int = 0,
     onGamblerOpen: ((poolId: String, gamblerId: String, gamblerUsername: String) -> Unit)? = null,
 ) {
-    RefreshableStatefulLazyColumn(
+    RefreshableLazyPagingColumn(
         lazyPagingItems = lazyPoolGamblerBets,
         loadingContent = { matchGamblerBetPlaceholderList(count = placeholderCount) },
-        loadingContentOnConcatenate = { matchGamblerBetPlaceholderItem() },
+        appendLoadingContent = { item { matchGamblerBetPlaceholderItemRow() } },
         modifier = modifier,
     ) {
         items(
@@ -41,7 +41,7 @@ fun MatchBetList(
             key = lazyPoolGamblerBets.itemKey { Pair(it.poolId, it.gamblerId) },
             contentType = lazyPoolGamblerBets.itemContentType { "MatchGamblerBet" },
         ) { index ->
-            val item = lazyPoolGamblerBets[index]!!
+            val item = lazyPoolGamblerBets[index] ?: return@items
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -68,20 +68,19 @@ fun MatchBetList(
 
 private fun LazyListScope.matchGamblerBetPlaceholderList(count: Int) {
     repeat(count) {
-        matchGamblerBetPlaceholderItem()
+        item { matchGamblerBetPlaceholderItemRow() }
     }
 }
 
-private fun LazyListScope.matchGamblerBetPlaceholderItem() {
-    item {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = LocalBoxSpacing.current.medium),
-        ) {
-            MatchGamblerBetPlaceholderItem(modifier = Modifier.matchGamblerBetItem())
-            HorizontalDivider()
-        }
+@Composable
+private fun matchGamblerBetPlaceholderItemRow() {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = LocalBoxSpacing.current.medium),
+    ) {
+        MatchGamblerBetPlaceholderItem(modifier = Modifier.matchGamblerBetItem())
+        HorizontalDivider()
     }
 }
 

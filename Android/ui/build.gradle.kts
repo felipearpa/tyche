@@ -69,6 +69,7 @@ dependencies {
     implementation(libs.navigation.compose)
     implementation(libs.google.accompanist.placeholder)
     implementation(libs.felipearpa.foundation)
+    implementation(libs.felipearpa.lazy.paging)
     implementation(libs.cloudy)
     implementation(libs.coil.compose)
 

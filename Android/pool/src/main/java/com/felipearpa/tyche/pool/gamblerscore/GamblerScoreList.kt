@@ -1,7 +1,6 @@
 package com.felipearpa.tyche.pool.gamblerscore
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -11,9 +10,7 @@ import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
@@ -22,10 +19,7 @@ import androidx.paging.compose.itemContentType
 import androidx.paging.compose.itemKey
 import com.felipearpa.tyche.pool.PoolGamblerScoreModel
 import com.felipearpa.tyche.pool.poolGamblerScoreDummyModels
-import com.felipearpa.tyche.ui.exception.localizedOrDefault
-import com.felipearpa.tyche.ui.lazy.Empty
-import com.felipearpa.tyche.ui.lazy.Failure
-import com.felipearpa.tyche.ui.lazy.RefreshableStatefulLazyColumn
+import com.felipearpa.tyche.ui.lazy.RefreshableLazyPagingColumn
 import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
 import com.felipearpa.tyche.ui.theme.TycheTheme
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -38,38 +32,11 @@ fun GamblerScoreList(
     placeholderCount: Int = 0,
     onGamblerOpen: ((poolId: String, gamblerId: String, gamblerUsername: String) -> Unit)? = null,
 ) {
-    RefreshableStatefulLazyColumn(
+    RefreshableLazyPagingColumn(
         modifier = modifier,
         lazyPagingItems = lazyPoolGamblerScores,
         loadingContent = { gamblerScorePlaceholderList(count = placeholderCount) },
-        loadingContentOnConcatenate = { gamblerScorePlaceholderItem() },
-        emptyContent = {
-            item {
-                Box(
-                    contentAlignment = Alignment.Center,
-                    modifier = Modifier
-                        .fillParentMaxSize()
-                        .padding(all = LocalBoxSpacing.current.medium),
-                ) {
-                    Empty(modifier = Modifier.fillMaxWidth())
-                }
-            }
-        },
-        errorContent = { exception ->
-            item {
-                Box(
-                    contentAlignment = Alignment.Center,
-                    modifier = Modifier
-                        .fillParentMaxSize()
-                        .padding(all = LocalBoxSpacing.current.medium),
-                ) {
-                    Failure(
-                        localizedException = exception.localizedOrDefault(),
-                        modifier = Modifier.fillMaxWidth(),
-                    )
-                }
-            }
-        },
+        appendLoadingContent = { gamblerScorePlaceholderItemRow() },
     ) {
         items(
             count = lazyPoolGamblerScores.itemCount,
@@ -84,7 +51,6 @@ fun GamblerScoreList(
             contentType = lazyPoolGamblerScores.itemContentType { "GamblerScore" },
         ) { index ->
             val item = lazyPoolGamblerScores[index] ?: return@items
-
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -116,11 +82,11 @@ fun GamblerScoreList(
 
 private fun LazyListScope.gamblerScorePlaceholderList(count: Int) {
     repeat(count) {
-        gamblerScorePlaceholderItem()
+        gamblerScorePlaceholderItemRow()
     }
 }
 
-private fun LazyListScope.gamblerScorePlaceholderItem() {
+private fun LazyListScope.gamblerScorePlaceholderItemRow() {
     item {
         Column(
             modifier = Modifier
@@ -154,14 +120,18 @@ private fun GamblerScoreListPreview() {
     }
 }
 
-@Preview(showBackground = true)
+@PreviewLightDark
 @Composable
 private fun GamblerScoreFakeListPreview() {
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(all = LocalBoxSpacing.current.medium),
-    ) {
-        gamblerScorePlaceholderList(count = 50)
+    TycheTheme {
+        Surface {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(all = LocalBoxSpacing.current.medium),
+            ) {
+                gamblerScorePlaceholderList(count = 50)
+            }
+        }
     }
 }

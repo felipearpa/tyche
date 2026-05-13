@@ -37,12 +37,6 @@ fun Empty(modifier: Modifier = Modifier) {
             textAlign = TextAlign.Center,
             style = MaterialTheme.typography.titleMedium,
         )
-
-        Text(
-            text = stringResource(id = R.string.empty_list_recovery_message),
-            textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.bodySmall,
-        )
     }
 }
 

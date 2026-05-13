@@ -14,6 +14,7 @@ import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -22,7 +23,7 @@ import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
@@ -33,7 +34,7 @@ import com.felipearpa.tyche.bet.isPending
 import com.felipearpa.tyche.bet.poolGamblerBetDummyModels
 import com.felipearpa.tyche.ui.exception.localizedOrDefault
 import com.felipearpa.tyche.ui.lazy.Failure
-import com.felipearpa.tyche.ui.lazy.RefreshableStatefulLazyColumn
+import com.felipearpa.tyche.ui.lazy.RefreshableLazyPagingColumn
 import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
 import com.felipearpa.tyche.ui.theme.TycheTheme
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -48,19 +49,19 @@ fun PendingBetList(
     fakeItemCount: Int = 0,
     onMatchOpen: ((PoolGamblerBetModel) -> Unit)? = null,
 ) {
-    RefreshableStatefulLazyColumn(
+    RefreshableLazyPagingColumn(
         modifier = modifier,
         lazyPagingItems = lazyPoolGamblerBets,
         loadingContent = { pendingBetPlaceholderList(count = fakeItemCount) },
-        loadingContentOnConcatenate = { pendingBetPlaceholderItem() },
         emptyContent = { emptyContent() },
         errorContent = { error(it) },
+        appendLoadingContent = { item { pendingBetPlaceholderItemRow() } },
     ) {
         val poolGamblerBetsCount = lazyPoolGamblerBets.itemCount
         var lastMatchDate: LocalDate? = null
 
         repeat(poolGamblerBetsCount) { index ->
-            val poolGamblerBet = lazyPoolGamblerBets[index]!!
+            val poolGamblerBet = lazyPoolGamblerBets[index] ?: return@repeat
 
             if (lastMatchDate != poolGamblerBet.matchDateTime.date) {
                 val localDateString = poolGamblerBet.matchDateTime.toShortDateString()
@@ -117,7 +118,7 @@ fun PendingBetList(
 
 private fun LazyListScope.pendingBetPlaceholderList(count: Int) {
     repeat(count) {
-        pendingBetPlaceholderItem()
+        item { pendingBetPlaceholderItemRow() }
     }
 }
 
@@ -148,11 +149,10 @@ private fun LazyListScope.emptyContent() {
     }
 }
 
-private fun LazyListScope.pendingBetPlaceholderItem() {
-    item {
-        PendingBetPlaceholderItem(modifier = Modifier.pendingBetItem())
-        HorizontalDivider(modifier = Modifier.padding(horizontal = LocalBoxSpacing.current.large))
-    }
+@Composable
+private fun pendingBetPlaceholderItemRow() {
+    PendingBetPlaceholderItem(modifier = Modifier.pendingBetItem())
+    HorizontalDivider(modifier = Modifier.padding(horizontal = LocalBoxSpacing.current.large))
 }
 
 private fun LazyListScope.error(exception: Throwable) {
@@ -189,20 +189,26 @@ private fun Modifier.pendingHeaderBetItemView(isFirst: Boolean) =
 
 private val iconSize = 64.dp
 
-@Preview(showBackground = true)
+@PreviewLightDark
 @Composable
 private fun PendingBetListPreview() {
     val items =
         MutableStateFlow(PagingData.from(poolGamblerBetDummyModels())).collectAsLazyPagingItems()
     TycheTheme {
-        PendingBetList(lazyPoolGamblerBets = items, modifier = Modifier.fillMaxSize())
+        Surface {
+            PendingBetList(lazyPoolGamblerBets = items, modifier = Modifier.fillMaxSize())
+        }
     }
 }
 
-@Preview(showBackground = true)
+@PreviewLightDark
 @Composable
 private fun PendingBetPlaceholderListPreview() {
-    LazyColumn(modifier = Modifier.fillMaxSize()) {
-        pendingBetPlaceholderList(count = 50)
+    TycheTheme {
+        Surface {
+            LazyColumn(modifier = Modifier.fillMaxSize()) {
+                pendingBetPlaceholderList(count = 50)
+            }
+        }
     }
 }
