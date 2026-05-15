@@ -16,6 +16,13 @@ struct PoolFromLayoutCreatorList: View {
             lazyPagingItems: lazyPagingItems,
             spacing: boxSpacing.small,
             loadingContent: { PoolFromLayoutCreatorPlaceholderList(count: fakeItemCount) },
+            appendLoadingContent: {
+                PoolFromLayoutCreatorItem(
+                    poolLayout: poolLayoutFakeModel(),
+                    isSelected: false
+                )
+                .shimmer()
+            },
         ) { index in
             if let poolLayout = lazyPagingItems.peek(at: index) {
                 PoolFromLayoutCreatorItem(

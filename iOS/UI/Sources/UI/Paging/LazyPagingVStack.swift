@@ -9,7 +9,12 @@ public extension LazyPaging.LazyPagingVStack where EmptyContent == LazyPagingVSt
         pinnedViews: PinnedScrollableViews = [],
         @ViewBuilder loadingContent: @escaping () -> LoadingContent,
         @ViewBuilder rowContent: @escaping (Int) -> RowContent
-    ) {
+    ) where
+        PrependLoadingContent == EmptyView,
+        AppendLoadingContent == EmptyView,
+        PrependErrorContent == EmptyView,
+        AppendErrorContent == EmptyView
+    {
         self.init(
             lazyPagingItems: lazyPagingItems,
             spacing: spacing,

@@ -24,6 +24,7 @@ struct MatchBetList: View {
         RefreshableLazyPagingVStack(
             lazyPagingItems: lazyPagingItems,
             loadingContent: { MatchBetPlaceholderList() },
+            appendLoadingContent: { MatchBetPlaceholderRow() },
         ) { index in
             if let poolGamblerBet = lazyPagingItems.peek(at: index) {
                 if let onGamblerOpen {
@@ -62,17 +63,23 @@ struct MatchBetList: View {
 }
 
 private struct MatchBetPlaceholderList: View {
+    var body: some View {
+        ForEach(1...10, id: \.self) { _ in
+            MatchBetPlaceholderRow()
+        }
+    }
+}
+
+private struct MatchBetPlaceholderRow: View {
     @Environment(\.boxSpacing) private var boxSpacing
 
     var body: some View {
-        ForEach(1...10, id: \.self) { _ in
-            VStack(spacing: 0) {
-                MatchBetPlaceholderItem()
-                    .padding(boxSpacing.medium)
-                Divider()
-            }
-            .padding(.horizontal, boxSpacing.medium)
+        VStack(spacing: 0) {
+            MatchBetPlaceholderItem()
+                .padding(boxSpacing.medium)
+            Divider()
         }
+        .padding(.horizontal, boxSpacing.medium)
     }
 }
 

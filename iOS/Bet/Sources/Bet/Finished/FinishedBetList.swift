@@ -22,6 +22,7 @@ struct FinishedBetList: View {
             lazyPagingItems: lazyPagingItems,
             pinnedViews: [.sectionHeaders],
             loadingContent: { FinishedPoolGamblerBetFakeList(count: 50) },
+            appendLoadingContent: { FinishedPoolGamblerBetFakeItem() },
         ) { index in
             if let poolGamblerBet = lazyPagingItems.peek(at: index) {
                 let currentDate = poolGamblerBet.matchDateTime.toShortDateString()

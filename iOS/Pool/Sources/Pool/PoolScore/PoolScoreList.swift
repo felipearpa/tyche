@@ -28,6 +28,10 @@ struct PoolScoreList: View {
                 )
             },
             errorContent: { error in PoolScoreErrorList(error: error) },
+            prependLoadingContent: { EmptyView() },
+            appendLoadingContent: { PoolScorePlaceholderRow() },
+            prependErrorContent: { _ in EmptyView() },
+            appendErrorContent: { _ in EmptyView() },
         ) { index in
             if let poolGamblerScore = lazyPagingItems.peek(at: index) {
                 VStack(spacing: 0) {
@@ -56,17 +60,29 @@ private struct PoolScorePlaceholderList : View {
         poolGamblerScorePlaceholderModel()
     }
 
-    @Environment(\.boxSpacing) private var boxSpacing
-
     var body: some View {
         ForEach(poolGamblerScores) { poolGamblerScore in
-            VStack(spacing: 0) {
-                PoolScoreItem(poolGamblerScore: poolGamblerScore, onJoin: {})
-                    .shimmer()
-                Divider()
-            }
-            .padding(.horizontal, boxSpacing.medium)
+            PoolScorePlaceholderRow(poolGamblerScore: poolGamblerScore)
         }
+    }
+}
+
+private struct PoolScorePlaceholderRow: View {
+    let poolGamblerScore: PoolGamblerScoreModel
+
+    @Environment(\.boxSpacing) private var boxSpacing
+
+    init(poolGamblerScore: PoolGamblerScoreModel = poolGamblerScorePlaceholderModel()) {
+        self.poolGamblerScore = poolGamblerScore
+    }
+
+    var body: some View {
+        VStack(spacing: 0) {
+            PoolScoreItem(poolGamblerScore: poolGamblerScore, onJoin: {})
+                .shimmer()
+            Divider()
+        }
+        .padding(.horizontal, boxSpacing.medium)
     }
 }
 

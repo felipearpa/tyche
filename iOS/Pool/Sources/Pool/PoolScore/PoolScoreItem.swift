@@ -12,8 +12,6 @@ struct PoolScoreItem: View {
             HStack(spacing: boxSpacing.medium) {
                 if let position = poolGamblerScore.position {
                     PostionIndicator(postion: position, isSignedIdUser: false)
-                } else {
-                    NonPostionIndicator()
                 }
 
                 Text(poolGamblerScore.poolName)
@@ -37,13 +35,21 @@ struct PoolScoreItem: View {
     }
 }
 
-#Preview("Normal") {
+#Preview("Normal Light") {
     PoolScoreItem(poolGamblerScore: poolGamblerScoreDummyModel(), onJoin: {})
-        .padding()
+        .preferredColorScheme(.light)
+}
+
+#Preview("Normal Dark") {
+    PoolScoreItem(poolGamblerScore: poolGamblerScoreDummyModel(), onJoin: {})
+        .preferredColorScheme(.dark)
+}
+
+#Preview("Without position") {
+    PoolScoreItem(poolGamblerScore: poolGamblerScoreWithoutPositionDummyModel(), onJoin: {})
 }
 
 #Preview("Placeholder") {
     PoolScoreItem(poolGamblerScore: poolGamblerScoreDummyModel(), onJoin: {})
         .shimmer()
-        .padding()
 }

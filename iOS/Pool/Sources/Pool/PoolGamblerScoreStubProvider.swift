@@ -24,6 +24,18 @@ public func poolGamblerScoreDummyModel() -> PoolGamblerScoreModel {
     )
 }
 
+public func poolGamblerScoreWithoutPositionDummyModel() -> PoolGamblerScoreModel {
+    return PoolGamblerScoreModel(
+        poolId: "A3C2E1",
+        poolName: "Neptune World Series 2023",
+        gamblerId: "YF23H1",
+        gamblerUsername: "neptune-player",
+        position: nil,
+        beforePosition: nil,
+        score: nil
+    )
+}
+
 public func poolGamblerScoreDummyModelWithoutPositionData() -> PoolGamblerScoreModel {
     return PoolGamblerScoreModel(
         poolId: "P6Z8V4",

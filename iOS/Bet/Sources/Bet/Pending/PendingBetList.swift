@@ -26,6 +26,7 @@ struct PendingBetList: View {
             lazyPagingItems: lazyPagingItems,
             pinnedViews: [.sectionHeaders],
             loadingContent: { PendingBetPlaceholderList() },
+            appendLoadingContent: { PendingBetPlaceholderRow() },
         ) { index in
             if let poolGamblerBet = lazyPagingItems.peek(at: index) {
                 let currentDate = poolGamblerBet.matchDateTime.toShortDateString()
@@ -95,17 +96,23 @@ func invokeMatchOpen(_ handler: MatchOpenHandler?, _ poolGamblerBet: PoolGambler
 }
 
 private struct PendingBetPlaceholderList: View {
+    var body: some View {
+        ForEach(1...50, id: \.self) { _ in
+            PendingBetPlaceholderRow()
+        }
+    }
+}
+
+private struct PendingBetPlaceholderRow: View {
     @Environment(\.boxSpacing) private var boxSpacing
 
     var body: some View {
-        ForEach(1...50, id: \.self) { _ in
-            PendingBetPlaceholderItem()
-                .frame(maxWidth: .infinity)
-                .padding(.horizontal, boxSpacing.large)
-                .padding(.vertical, boxSpacing.medium)
-            Divider()
-                .padding(.horizontal, boxSpacing.large)
-        }
+        PendingBetPlaceholderItem()
+            .frame(maxWidth: .infinity)
+            .padding(.horizontal, boxSpacing.large)
+            .padding(.vertical, boxSpacing.medium)
+        Divider()
+            .padding(.horizontal, boxSpacing.large)
     }
 }
 

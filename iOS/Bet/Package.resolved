@@ -30,7 +30,7 @@
     {
       "identity" : "firebase-ios-sdk",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/firebase/firebase-ios-sdk",
+      "location" : "https://github.com/firebase/firebase-ios-sdk.git",
       "state" : {
         "revision" : "4e62da1e5e6baf61674d3f5ae23d6d60c19f9c4a",
         "version" : "12.0.0"
@@ -86,8 +86,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/google/gtm-session-fetcher.git",
       "state" : {
-        "revision" : "0be208810d2e8b90fcd2464d1816723b47819fe7",
-        "version" : "5.2.0"
+        "revision" : "c0ac7575d70050c2973ba2318bd5af47f8e8153a",
+        "version" : "5.3.0"
       }
     },
     {
@@ -165,19 +165,10 @@
     {
       "identity" : "viewing-state-swift",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/felipearpa/viewing-state-swift",
+      "location" : "https://github.com/felipearpa/viewing-state-swift.git",
       "state" : {
         "revision" : "e80a7b7b3af0c13d11a849483a0f58bc4ef12c01",
         "version" : "0.0.1"
-      }
-    },
-    {
-      "identity" : "viewinspector",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/nalexn/ViewInspector",
-      "state" : {
-        "revision" : "a6fcac8485bc8f57b2d2b55bb6d97138e8659e4b",
-        "version" : "0.10.2"
       }
     }
   ],

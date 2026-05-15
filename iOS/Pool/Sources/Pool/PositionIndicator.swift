@@ -11,15 +11,7 @@ public struct PostionIndicator: View {
         .frame(width: indicatorSize, height: indicatorSize)
         .background(isSignedIdUser ? Color(sharedResource: .primaryContainer) : Color(sharedResource: .secondaryContainer))
         .foregroundColor(isSignedIdUser ? Color(sharedResource: .onPrimaryContainter) : Color(sharedResource: .onSecondaryContainer))
-        .clipShape(Circle())
-    }
-}
-
-public struct NonPostionIndicator: View {
-    public var body: some View {
-        ZStack {
-        }
-        .frame(width: indicatorSize, height: indicatorSize)
+        .clipShape(RoundedRectangle(cornerRadius: 8))
     }
 }
 

@@ -49,12 +49,14 @@ module DependencyInjectionConfigurator =
             .AddScoped<GetGamblerBetsTimeline>()
             .AddScoped<GetPoolGamblerScoreById>()
             .AddScoped<GetPoolById>()
+            .AddScoped<GetPoolGamblerBetById>()
             .AddScoped<Bet>()
             .AddScoped<CreatePool>()
             .AddScoped<JoinPool>()
             .AddScoped<DeletePool>()
             .AddScoped<IPoolLayoutRepository, PoolLayoutDynamoDbRepository>()
             .AddScoped<GetOpenPoolLayouts>()
+            .AddScoped<IPoolLayoutVersionResolver, PoolLayoutVersionResolver>()
         |> ignore
 
     let registerJwt (app: WebApplicationBuilder) =

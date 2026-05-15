@@ -26,6 +26,7 @@ struct GamblerScoreList: View {
         RefreshableLazyPagingVStack(
             lazyPagingItems: lazyPagingItems,
             loadingContent: { GamblerScorePlaceholderList() },
+            appendLoadingContent: { GamblerScorePlaceholderRow() },
         ) { index in
             if let poolGamblerScore = lazyPagingItems.peek(at: index) {
                 if let onGamblerOpen {
@@ -74,25 +75,37 @@ struct GamblerScoreList: View {
 }
 
 struct GamblerScorePlaceholderList: View {
-    @Environment(\.boxSpacing) private var boxSpacing
-
     private let poolGamblerScores: [PoolGamblerScoreModel] = (1...50).lazy.map { _ in
         poolGamblerScorePlaceholderModel()
     }
 
     var body: some View {
         ForEach(poolGamblerScores) { poolGamblerScore in
-            VStack(spacing: 0) {
-                GamblerScoreItem(
-                    poolGamblerScore: poolGamblerScore,
-                    isCurrentUser: false
-                )
-                .shimmer()
-                .padding(boxSpacing.medium)
-                Divider()
-            }
-            .padding(.horizontal, boxSpacing.medium)
+            GamblerScorePlaceholderRow(poolGamblerScore: poolGamblerScore)
         }
+    }
+}
+
+struct GamblerScorePlaceholderRow: View {
+    let poolGamblerScore: PoolGamblerScoreModel
+
+    @Environment(\.boxSpacing) private var boxSpacing
+
+    init(poolGamblerScore: PoolGamblerScoreModel = poolGamblerScorePlaceholderModel()) {
+        self.poolGamblerScore = poolGamblerScore
+    }
+
+    var body: some View {
+        VStack(spacing: 0) {
+            GamblerScoreItem(
+                poolGamblerScore: poolGamblerScore,
+                isCurrentUser: false
+            )
+            .shimmer()
+            .padding(boxSpacing.medium)
+            Divider()
+        }
+        .padding(.horizontal, boxSpacing.medium)
     }
 }
 

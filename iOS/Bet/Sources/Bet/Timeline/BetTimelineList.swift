@@ -23,6 +23,7 @@ struct BetTimelineList: View {
             lazyPagingItems: lazyPagingItems,
             pinnedViews: [.sectionHeaders],
             loadingContent: { BetTimelinePlaceholderList(count: 50) },
+            appendLoadingContent: { BetTimelinePlaceholderRow() },
         ) { index in
             if let poolGamblerBet = lazyPagingItems.peek(at: index) {
                 let currentDate = poolGamblerBet.matchDateTime.toShortDateString()
@@ -67,14 +68,20 @@ struct BetTimelineList: View {
 private struct BetTimelinePlaceholderList: View {
     let count: Int
 
+    var body: some View {
+        ForEach(0..<count, id: \.self) { _ in
+            BetTimelinePlaceholderRow()
+        }
+    }
+}
+
+private struct BetTimelinePlaceholderRow: View {
     @Environment(\.boxSpacing) private var boxSpacing
 
     var body: some View {
-        ForEach(0..<count, id: \.self) { _ in
-            BetTimelinePlaceholderItem()
-            Divider()
-                .padding(.horizontal, boxSpacing.large)
-        }
+        BetTimelinePlaceholderItem()
+        Divider()
+            .padding(.horizontal, boxSpacing.large)
     }
 }
 
