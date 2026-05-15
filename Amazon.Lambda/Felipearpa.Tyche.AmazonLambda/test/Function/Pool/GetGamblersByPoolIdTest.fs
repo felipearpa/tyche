@@ -34,7 +34,8 @@ module GetGamblersByPoolIdTest =
                       Position = None
                       BeforePosition = None
                       Score = None
-                      BeforeScore = None }
+                      BeforeScore = None
+                      GamblerCount = None }
 
                     { PoolId = "01KZXZNSK2WT2BVRZBW1H7E92Y"
                       PoolName = "Hola mundo"
@@ -43,7 +44,8 @@ module GetGamblersByPoolIdTest =
                       Position = None
                       BeforePosition = None
                       Score = None
-                      BeforeScore = None }
+                      BeforeScore = None
+                      GamblerCount = None }
                 }
               Next = None }
 

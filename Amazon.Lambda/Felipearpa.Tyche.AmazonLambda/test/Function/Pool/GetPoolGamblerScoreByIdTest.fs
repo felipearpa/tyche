@@ -31,7 +31,8 @@ module GetPoolGamblerScoreByIdTest =
               Position = None
               BeforePosition = None
               Score = None
-              BeforeScore = None }
+              BeforeScore = None
+              GamblerCount = None }
 
         let client = Mock<IAmazonDynamoDB>()
 
