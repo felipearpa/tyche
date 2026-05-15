@@ -9,24 +9,25 @@ androidx-test-ext-junit = "1.3.0"
 espresso-core = "3.7.0"
 lifecycle-runtime-ktx = "2.10.0"
 activity-compose = "1.13.0"
-compose-bom = "2026.04.01"
+compose-bom = "2026.05.00"
 koin = "4.2.1"
-paging-compose = "3.4.2"
+paging-compose = "3.5.0"
 ktor = "3.4.3"
 google-accompanist-placeholder = "0.36.0"
 navigation-compose = "2.9.8"
 constraint-layout-compose = "1.1.1"
 io-mockk = "1.14.9"
-kotlinx-coroutines-test = "1.10.2"
+kotlinx-coroutines-test = "1.11.0"
 androidx-security-crypto = "1.1.0"
 google-gms-services = "4.4.4"
-firebase-bom = "34.12.0"
+firebase-bom = "34.13.0"
 junit5 = "6.0.3"
 kotest = "6.1.11"
 kotlinx-serialization-json = "1.11.0"
-kotlinx-datetime = "0.7.1"
+kotlinx-datetime = "0.8.0"
 felipearpa-viewing-state = "v0.0.2"
 felipearpa-foundation = "v0.0.1"
+felipearpa-lazy-paging = "0.0.2"
 cloudy = "0.5.0"
 coil = "3.4.0"
 
@@ -81,6 +82,7 @@ kotest-runner-junit4 = { group = "io.kotest", name = "kotest-runner-junit4", ver
 kotlinx-datetime = { group = "org.jetbrains.kotlinx", name = "kotlinx-datetime", version.ref = "kotlinx-datetime" }
 felipearpa-viewing-state = { group = "com.github.felipearpa", name = "viewing-state-android", version.ref = "felipearpa-viewing-state" }
 felipearpa-foundation = { group = "com.github.felipearpa", name = "foundation-android", version.ref = "felipearpa-foundation" }
+felipearpa-lazy-paging = { group = "com.felipearpa", name = "lazy-paging", version.ref = "felipearpa-lazy-paging" }
 cloudy = { group = "com.github.skydoves", name = "cloudy", version.ref = "cloudy" }
 coil-compose = { group = "io.coil-kt.coil3", name = "coil-compose", version.ref = "coil" }
 

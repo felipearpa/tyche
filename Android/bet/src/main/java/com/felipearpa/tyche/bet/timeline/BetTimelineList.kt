@@ -20,7 +20,7 @@ import com.felipearpa.foundation.time.toShortDateString
 import com.felipearpa.tyche.bet.PoolGamblerBetModel
 import com.felipearpa.tyche.bet.pending.PendingBetPlaceholderItem
 import com.felipearpa.tyche.bet.poolGamblerBetDummyModels
-import com.felipearpa.tyche.ui.lazy.RefreshableStatefulLazyColumn
+import com.felipearpa.tyche.ui.lazy.RefreshableLazyPagingColumn
 import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
 import com.felipearpa.tyche.ui.theme.TycheTheme
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -34,17 +34,17 @@ fun BetTimelineList(
     placeholderCount: Int = 0,
     onMatchOpen: ((PoolGamblerBetModel) -> Unit)? = null,
 ) {
-    RefreshableStatefulLazyColumn(
+    RefreshableLazyPagingColumn(
         modifier = modifier,
         lazyPagingItems = lazyBets,
         loadingContent = { betTimelinePlaceholderList(count = placeholderCount) },
-        loadingContentOnConcatenate = { betTimelinePlaceholderItem() },
+        appendLoadingContent = { item { betTimelinePlaceholderItemRow() } },
     ) {
         val poolGamblerBetsCount = lazyBets.itemCount
         var lastMatchDate: LocalDate? = null
 
         repeat(poolGamblerBetsCount) { index ->
-            val poolGamblerBet = lazyBets[index]!!
+            val poolGamblerBet = lazyBets[index] ?: return@repeat
 
             if (lastMatchDate != poolGamblerBet.matchDateTime.date) {
                 val localDateString = poolGamblerBet.matchDateTime.toShortDateString()
@@ -88,15 +88,14 @@ fun BetTimelineList(
 
 private fun LazyListScope.betTimelinePlaceholderList(count: Int) {
     repeat(count) {
-        betTimelinePlaceholderItem()
+        item { betTimelinePlaceholderItemRow() }
     }
 }
 
-private fun LazyListScope.betTimelinePlaceholderItem() {
-    item {
-        PendingBetPlaceholderItem(modifier = Modifier.betTimelineItem())
-        HorizontalDivider(modifier = Modifier.padding(horizontal = LocalBoxSpacing.current.large))
-    }
+@Composable
+private fun betTimelinePlaceholderItemRow() {
+    PendingBetPlaceholderItem(modifier = Modifier.betTimelineItem())
+    HorizontalDivider(modifier = Modifier.padding(horizontal = LocalBoxSpacing.current.large))
 }
 
 @Composable

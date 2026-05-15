@@ -16,19 +16,23 @@ module PoolGamblerScoreDictionaryTransformer =
           GamblerUsername = dictionary[PoolTable.Attribute.gamblerUsername].S |> NonEmptyString100.newOf
           Position =
             dictionary
-            |> tryGetAttributeValueOrNone (PoolTable.Attribute.position)
+            |> tryGetAttributeValueOrNone PoolTable.Attribute.position
             |> noneIfZero
           BeforePosition =
             dictionary
-            |> tryGetAttributeValueOrNone (PoolTable.Attribute.beforePosition)
+            |> tryGetAttributeValueOrNone PoolTable.Attribute.beforePosition
             |> noneIfZero
           Score =
             dictionary
-            |> tryGetAttributeValueOrNone (PoolTable.Attribute.score)
+            |> tryGetAttributeValueOrNone PoolTable.Attribute.score
             |> Option.map (fun attributeValue -> int attributeValue.N)
           BeforeScore =
             dictionary
-            |> tryGetAttributeValueOrNone (PoolTable.Attribute.beforeScore)
+            |> tryGetAttributeValueOrNone PoolTable.Attribute.beforeScore
+            |> Option.map (fun attributeValue -> int attributeValue.N)
+          GamblerCount =
+            dictionary
+            |> tryGetAttributeValueOrNone PoolTable.Attribute.gamblerCount
             |> Option.map (fun attributeValue -> int attributeValue.N) }
 
     type Extensions =

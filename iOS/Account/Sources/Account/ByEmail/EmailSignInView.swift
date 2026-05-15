@@ -2,6 +2,7 @@ import SwiftUI
 import Core
 import UI
 import Session
+import ViewingState
 
 public struct EmailSignInView: View {
     @StateObject private var viewModel: EmailSignInViewModel
@@ -16,18 +17,18 @@ public struct EmailSignInView: View {
             signInWithEmail: viewModel.sendSignInLinkToEmail,
             reset: viewModel.reset
         )
-        .navigationTitle(String(.signInTitle))
+        .navigationTitle(String(localized: .signInTitle))
         .navigationBarBackButtonHidden(viewModel.state.isLoading())
     }
 }
 
 private struct EmailSignInStatefulView: View {
-    let viewState: LoadableViewState<String>
+    let viewState: LoadState<String>
     let signInWithEmail: (String) -> Void
     let reset: () -> Void
 
     init(
-        viewState: LoadableViewState<String>,
+        viewState: LoadState<String>,
         signInWithEmail: @escaping (String) -> Void = { _ in },
         reset: @escaping () -> Void = {}
     ) {
@@ -43,20 +44,20 @@ private struct EmailSignInStatefulView: View {
 
         ZStack {
             switch viewState {
-            case .initial:
+            case .idle:
                 EmailSignInContent(email: $email, signIn: signIn)
             case .loading:
                 LoadingContainerView {
                     EmailSignInContent(email: .constant(email), signIn: {})
                 }
-            case .success(let sentEmail):
+            case .loaded(let sentEmail):
                 SuccessContent(email: sentEmail)
             case .failure(let error):
                 EmailSignInContent(email: .constant(email), signIn: {})
                     .errorAlert(.constant(error.localizedErrorOrNil()!), onDismiss: reset)
             }
         }
-        .navigationTitle(String(.signInTitle))
+        .navigationTitle(String(localized: .signInTitle))
         .navigationBarBackButtonHidden(viewState.isLoading())
     }
 }
@@ -73,7 +74,7 @@ private struct EmailSignInContent: View {
                 .textFieldStyle(.liquidGlass)
 
             Button(action: signIn ?? {}) {
-                Text((String(.signInAction)))
+                Text(.signInAction)
                     .frame(maxWidth: .infinity)
             }
             .buttonStyle(.liquidGlassProminent)
@@ -97,11 +98,11 @@ private struct SuccessContent: View {
                 .frame(width: EMAIL_ICON_SIZE, height: EMAIL_ICON_SIZE)
 
             VStack(spacing: boxSpacing.medium) {
-                Text(String(.verificationEmailSentTitle))
+                Text(.verificationEmailSentTitle)
                     .font(.title)
                     .multilineTextAlignment(.center)
 
-                Text(String(.verificationEmailSentDescription))
+                Text(.verificationEmailSentDescription)
                     .multilineTextAlignment(.leading)
 
                 Label {
@@ -119,7 +120,7 @@ private struct SuccessContent: View {
                 .padding(.bottom, boxSpacing.medium)
 
                 Label {
-                    Text(String(.verificationEmailSentWarning))
+                    Text(.verificationEmailSentWarning)
                 } icon: {
                     Image(.warning)
                         .resizable()
@@ -142,7 +143,7 @@ private let EMAIL_ICON_SIZE: CGFloat = 64
 private let WARNING_ICON_SIZE: CGFloat = 16
 
 #Preview("Initial") {
-    EmailSignInStatefulView(viewState: .initial)
+    EmailSignInStatefulView(viewState: .idle)
 }
 
 #Preview("Loading") {
@@ -150,7 +151,7 @@ private let WARNING_ICON_SIZE: CGFloat = 16
 }
 
 #Preview("Success") {
-    EmailSignInStatefulView(viewState: .success("preview@example.com"))
+    EmailSignInStatefulView(viewState: .loaded("preview@example.com"))
 }
 
 #Preview("Failure") {

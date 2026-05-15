@@ -16,6 +16,8 @@ let package = Package(
     dependencies: [
         // Dependencies declare other packages that this package depends on.
         // .package(url: /* package url */, from: "1.0.0"),
+        .package(url: "https://github.com/felipearpa/viewing-state-swift.git", from: "0.0.1"),
+        .package(url: "https://github.com/felipearpa/lazy-paging-swift.git", exact: "0.0.2"),
         .package(url: "https://github.com/markiv/SwiftUI-Shimmer.git", exact: "1.5.1"),
         .package(path: "../Core"),
         .package(url: "https://github.com/nalexn/ViewInspector", exact: "0.10.2"),
@@ -26,6 +28,8 @@ let package = Package(
         .target(
             name: "UI",
             dependencies: [
+                .product(name: "ViewingState", package: "viewing-state-swift"),
+                .product(name: "LazyPaging", package: "lazy-paging-swift"),
                 .product(name: "Shimmer", package: "SwiftUI-Shimmer"),
                 "Core",
             ],

@@ -7,14 +7,14 @@ public enum NetworkLocalizedError: LocalizedError {
     public var errorDescription: String? {
         switch self {
         case .remoteCommunication:
-            return String(.remoteCommunicationFailureTitle)
+            return String(localized: .remoteCommunicationFailureTitle)
         }
     }
     
     public var failureReason: String? {
         switch self {
         case .remoteCommunication:
-            return String(.remoteCommunicationFailureMessage)
+            return String(localized: .remoteCommunicationFailureMessage)
         }
     }
 }

@@ -20,7 +20,7 @@ struct PasswordTextField: View {
 
     init(value: Binding<String>, validation: TextFieldValidation? = TextFieldValidation(
         isValid: Password.isValid,
-        errorMessage: String(.passwordValidationFailureMessage),
+        errorMessage: String(localized: .passwordValidationFailureMessage),
     )) {
         self._value = value
         self.validation = validation
@@ -74,7 +74,7 @@ private struct InternalSecureField : View {
     @Binding var isPasswordTextVisible : Bool
     
     var body: some View {
-        SecureField(String(.passwordLabel), text: $value)
+        SecureField(String(localized: .passwordLabel), text: $value)
             .overlay(alignment: .trailing) {
                 Image(systemName: isPasswordTextVisible ? "eye.slash.fill" : "eye.fill")
                     .padding(.horizontal)
@@ -89,7 +89,7 @@ private struct InternalTextField : View {
     @Binding var isPasswordTextVisible : Bool
     
     var body: some View {
-        TextField(String(.passwordLabel), text: $value)
+        TextField(String(localized: .passwordLabel), text: $value)
             .autocapitalization(.none)
             .autocorrectionDisabled(true)
             .overlay(alignment: .trailing) {

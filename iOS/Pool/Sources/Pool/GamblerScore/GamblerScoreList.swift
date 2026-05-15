@@ -1,14 +1,15 @@
 import SwiftUI
 import Core
 import UI
+import LazyPaging
 
 struct GamblerScoreList: View {
-    var lazyPagingItems: LazyPagingItems<String, PoolGamblerScoreModel>
+    var lazyPagingItems: LazyPaging.LazyPagingItems<String, PoolGamblerScoreModel>
     let isCurrentUser: String?
     let onGamblerOpen: ((_ poolId: String, _ gamblerId: String, _ gamblerUsername: String) -> Void)?
 
     init(
-        lazyPagingItems: LazyPagingItems<String, PoolGamblerScoreModel>,
+        lazyPagingItems: LazyPaging.LazyPagingItems<String, PoolGamblerScoreModel>,
         isCurrentUser: String?,
         onGamblerOpen: ((_ poolId: String, _ gamblerId: String, _ gamblerUsername: String) -> Void)? = nil
     ) {
@@ -22,47 +23,48 @@ struct GamblerScoreList: View {
     var body: some View {
         let _ = Self._printChangesIfDebug()
 
-        RefreshableStatefulLazyVStack(
+        RefreshableLazyPagingVStack(
             lazyPagingItems: lazyPagingItems,
             loadingContent: { GamblerScorePlaceholderList() },
-            loadingContentOnConcatenate: {
-                VStack(spacing: 0) {
-                    PoolScoreItem(poolGamblerScore: poolGamblerScorePlaceholderModel(), onJoin: {})
-                        .shimmer()
-                    Divider()
-                }
-                .padding(.horizontal, boxSpacing.medium)
-            },
-            errorContent: { error in
-                StatefulLazyVStackError(localizedError: error.localizedErrorOrDefault())
-                    .padding(boxSpacing.medium)
-            },
-            emptyContent: { StatefulLazyVStackEmpty().padding(boxSpacing.medium) },
-        ) { poolGamblerScore in
-            if let onGamblerOpen {
-                VStack(spacing: 0) {
-                    GamblerScoreItem(
-                        poolGamblerScore: poolGamblerScore,
-                        isCurrentUser: isCurrentUser != nil ? isCurrentUser == poolGamblerScore.gamblerId : false
-                    )
-                    .padding(boxSpacing.medium)
-                    Divider()
-                }
-                .padding(.horizontal, boxSpacing.medium)
-                .contentShape(Rectangle())
-                .onTapGesture {
-                    onGamblerOpen(
-                        poolGamblerScore.poolId,
-                        poolGamblerScore.gamblerId,
-                        poolGamblerScore.gamblerUsername
-                    )
+            appendLoadingContent: { GamblerScorePlaceholderRow() },
+        ) { index in
+            if let poolGamblerScore = lazyPagingItems.peek(at: index) {
+                if let onGamblerOpen {
+                    VStack(spacing: 0) {
+                        GamblerScoreItem(
+                            poolGamblerScore: poolGamblerScore,
+                            isCurrentUser: isCurrentUser != nil ? isCurrentUser == poolGamblerScore.gamblerId : false
+                        )
+                        .padding(boxSpacing.medium)
+                        Divider()
+                    }
+                    .padding(.horizontal, boxSpacing.medium)
+                    .contentShape(Rectangle())
+                    .onTapGesture {
+                        onGamblerOpen(
+                            poolGamblerScore.poolId,
+                            poolGamblerScore.gamblerId,
+                            poolGamblerScore.gamblerUsername
+                        )
+                    }
+                } else {
+                    VStack(spacing: 0) {
+                        GamblerScoreItem(
+                            poolGamblerScore: poolGamblerScore,
+                            isCurrentUser: isCurrentUser != nil ? isCurrentUser == poolGamblerScore.gamblerId : false
+                        )
+                        .padding(boxSpacing.medium)
+                        Divider()
+                    }
+                    .padding(.horizontal, boxSpacing.medium)
                 }
             } else {
                 VStack(spacing: 0) {
                     GamblerScoreItem(
-                        poolGamblerScore: poolGamblerScore,
-                        isCurrentUser: isCurrentUser != nil ? isCurrentUser == poolGamblerScore.gamblerId : false
+                        poolGamblerScore: poolGamblerScorePlaceholderModel(),
+                        isCurrentUser: false
                     )
+                    .shimmer()
                     .padding(boxSpacing.medium)
                     Divider()
                 }
@@ -73,34 +75,46 @@ struct GamblerScoreList: View {
 }
 
 struct GamblerScorePlaceholderList: View {
-    @Environment(\.boxSpacing) private var boxSpacing
-
     private let poolGamblerScores: [PoolGamblerScoreModel] = (1...50).lazy.map { _ in
         poolGamblerScorePlaceholderModel()
     }
 
     var body: some View {
         ForEach(poolGamblerScores) { poolGamblerScore in
-            VStack(spacing: 0) {
-                GamblerScoreItem(
-                    poolGamblerScore: poolGamblerScore,
-                    isCurrentUser: false
-                )
-                .shimmer()
-                .padding(boxSpacing.medium)
-                Divider()
-            }
-            .padding(.horizontal, boxSpacing.medium)
+            GamblerScorePlaceholderRow(poolGamblerScore: poolGamblerScore)
         }
     }
 }
 
+struct GamblerScorePlaceholderRow: View {
+    let poolGamblerScore: PoolGamblerScoreModel
+
+    @Environment(\.boxSpacing) private var boxSpacing
+
+    init(poolGamblerScore: PoolGamblerScoreModel = poolGamblerScorePlaceholderModel()) {
+        self.poolGamblerScore = poolGamblerScore
+    }
+
+    var body: some View {
+        VStack(spacing: 0) {
+            GamblerScoreItem(
+                poolGamblerScore: poolGamblerScore,
+                isCurrentUser: false
+            )
+            .shimmer()
+            .padding(boxSpacing.medium)
+            Divider()
+        }
+        .padding(.horizontal, boxSpacing.medium)
+    }
+}
+
 #Preview("List") {
-    let lazyPagingItems = LazyPagingItems(
-        pagingData: PagingData(
-            pagingConfig: PagingConfig(prefetchDistance: 5),
+    let lazyPagingItems = LazyPaging.LazyPagingItems(
+        pager: Pager(
+            config: LazyPaging.PagingConfig(pageSize: 25, prefetchDistance: 5),
             pagingSourceFactory: {
-                PoolGamblerScorePagingSource(
+                LazyPagingCursorSource<PoolGamblerScoreModel>(
                     pagingQuery: { _ in .success(CursorPage(items: poolGamblerScoresDummyModels(), next: nil)) }
                 )
             }

@@ -18,10 +18,7 @@ struct PoolFromLayoutCreatorItem: View {
                         .font(.title3)
                         .foregroundColor(foregroundColor)
 
-                    Text(String(
-                        format: String(.startingFromDateText),
-                        poolLayout.startDateTime.toShortDateString()
-                    ))
+                    Text(.startingFromDateText(poolLayout.startDateTime.toShortDateString()))
                     .font(.footnote)
                     .foregroundColor(foregroundColor)
                 }

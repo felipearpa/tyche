@@ -1,12 +1,14 @@
+import SwiftUI
+
 public struct SharedStringResource {
-    let resource: StringResource
-    
-    init(_ resource: StringResource) {
+    let resource: LocalizedStringResource
+
+    init(_ resource: LocalizedStringResource) {
         self.resource = resource
     }
 }
 
-public extension SharedStringResource  {
+public extension SharedStringResource {
     static let searchingLabel = SharedStringResource(.searchingLabel)
     static let retryAction = SharedStringResource(.retryAction)
     static let cancelAction = SharedStringResource(.cancelAction)
@@ -16,6 +18,12 @@ public extension SharedStringResource  {
 }
 
 public extension String {
+    init(sharedResource resource: SharedStringResource) {
+        self.init(localized: resource.resource)
+    }
+}
+
+public extension Text {
     init(sharedResource resource: SharedStringResource) {
         self.init(resource.resource)
     }

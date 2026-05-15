@@ -1,10 +1,11 @@
 import SwiftUI
 import Core
 import UI
+import LazyPaging
 
 struct PoolScoreList: View {
-    let lazyPagingItems: LazyPagingItems<String, PoolGamblerScoreModel>
-    let lazyPoolLayouts: LazyPagingItems<String, PoolLayoutModel>
+    let lazyPagingItems: LazyPaging.LazyPagingItems<String, PoolGamblerScoreModel>
+    let lazyPoolLayouts: LazyPaging.LazyPagingItems<String, PoolLayoutModel>
     let onPoolOpen: (String) -> Void
     let onPoolJoin: (String) -> Void
     let onPoolLayoutSelect: (PoolLayoutModel) -> Void
@@ -16,18 +17,9 @@ struct PoolScoreList: View {
     var body: some View {
         let _ = Self._printChangesIfDebug()
 
-        RefreshableStatefulLazyVStack(
+        RefreshableLazyPagingVStack(
             lazyPagingItems: lazyPagingItems,
             loadingContent: { PoolScorePlaceholderList() },
-            loadingContentOnConcatenate: {
-                VStack(spacing: 0) {
-                    PoolScoreItem(poolGamblerScore: poolGamblerScorePlaceholderModel(), onJoin: {})
-                        .shimmer()
-                    Divider()
-                }
-                .padding(.horizontal, boxSpacing.medium)
-            },
-            errorContent: { error in PoolScoreErrorList(error: error) },
             emptyContent: {
                 PoolScoreEmptyList(
                     lazyPoolLayouts: lazyPoolLayouts,
@@ -35,15 +27,29 @@ struct PoolScoreList: View {
                     onSeeAllTemplates: onSeeAllTemplates,
                 )
             },
-        ) { poolGamblerScore in
-            VStack(spacing: 0) {
-                PoolScoreItem(poolGamblerScore: poolGamblerScore, onJoin: { onPoolJoin(poolGamblerScore.poolId) })
-                Divider()
-            }
-            .padding(.horizontal, boxSpacing.medium)
-            .contentShape(Rectangle())
-            .onTapGesture {
-                onPoolOpen(poolGamblerScore.poolId)
+            errorContent: { error in PoolScoreErrorList(error: error) },
+            prependLoadingContent: { EmptyView() },
+            appendLoadingContent: { PoolScorePlaceholderRow() },
+            prependErrorContent: { _ in EmptyView() },
+            appendErrorContent: { _ in EmptyView() },
+        ) { index in
+            if let poolGamblerScore = lazyPagingItems.peek(at: index) {
+                VStack(spacing: 0) {
+                    PoolScoreItem(poolGamblerScore: poolGamblerScore, onJoin: { onPoolJoin(poolGamblerScore.poolId) })
+                    Divider()
+                }
+                .padding(.horizontal, boxSpacing.medium)
+                .contentShape(Rectangle())
+                .onTapGesture {
+                    onPoolOpen(poolGamblerScore.poolId)
+                }
+            } else {
+                VStack(spacing: 0) {
+                    PoolScoreItem(poolGamblerScore: poolGamblerScorePlaceholderModel(), onJoin: {})
+                        .shimmer()
+                    Divider()
+                }
+                .padding(.horizontal, boxSpacing.medium)
             }
         }
     }
@@ -54,22 +60,34 @@ private struct PoolScorePlaceholderList : View {
         poolGamblerScorePlaceholderModel()
     }
 
-    @Environment(\.boxSpacing) private var boxSpacing
-
     var body: some View {
         ForEach(poolGamblerScores) { poolGamblerScore in
-            VStack(spacing: 0) {
-                PoolScoreItem(poolGamblerScore: poolGamblerScore, onJoin: {})
-                    .shimmer()
-                Divider()
-            }
-            .padding(.horizontal, boxSpacing.medium)
+            PoolScorePlaceholderRow(poolGamblerScore: poolGamblerScore)
         }
     }
 }
 
+private struct PoolScorePlaceholderRow: View {
+    let poolGamblerScore: PoolGamblerScoreModel
+
+    @Environment(\.boxSpacing) private var boxSpacing
+
+    init(poolGamblerScore: PoolGamblerScoreModel = poolGamblerScorePlaceholderModel()) {
+        self.poolGamblerScore = poolGamblerScore
+    }
+
+    var body: some View {
+        VStack(spacing: 0) {
+            PoolScoreItem(poolGamblerScore: poolGamblerScore, onJoin: {})
+                .shimmer()
+            Divider()
+        }
+        .padding(.horizontal, boxSpacing.medium)
+    }
+}
+
 private struct PoolScoreEmptyList: View {
-    @ObservedObject var lazyPoolLayouts: LazyPagingItems<String, PoolLayoutModel>
+    @ObservedObject var lazyPoolLayouts: LazyPaging.LazyPagingItems<String, PoolLayoutModel>
     let onPoolLayoutSelect: (PoolLayoutModel) -> Void
     let onSeeAllTemplates: () -> Void
 
@@ -82,7 +100,7 @@ private struct PoolScoreEmptyList: View {
                 .padding(.vertical, emptyStateHeroVerticalPadding)
                 .frame(maxWidth: .infinity)
 
-            Text(String(.poolScoreEmptyListTemplatesSection))
+            Text(.poolScoreEmptyListTemplatesSection)
                 .font(.headline)
                 .padding(.horizontal, emptyStateHorizontalPadding)
                 .padding(.bottom, boxSpacing.medium)
@@ -108,11 +126,11 @@ private struct Hero: View {
                 .frame(width: heroImageWidth, height: heroImageHeight)
 
             VStack(spacing: boxSpacing.medium) {
-                Text(String(.poolScoreEmptyListTitle))
+                Text(.poolScoreEmptyListTitle)
                     .font(.title2)
                     .multilineTextAlignment(.center)
 
-                Text(String(.poolScoreEmptyListSubtitle))
+                Text(.poolScoreEmptyListSubtitle)
                     .font(.callout)
                     .multilineTextAlignment(.center)
                     .foregroundColor(.secondary)
@@ -122,7 +140,7 @@ private struct Hero: View {
 }
 
 private struct TemplatesContent: View {
-    @ObservedObject var lazyPoolLayouts: LazyPagingItems<String, PoolLayoutModel>
+    @ObservedObject var lazyPoolLayouts: LazyPaging.LazyPagingItems<String, PoolLayoutModel>
     let onPoolLayoutSelect: (PoolLayoutModel) -> Void
     let onSeeAllTemplates: () -> Void
 
@@ -137,12 +155,12 @@ private struct TemplatesContent: View {
                 }
             }
             .padding(.horizontal, emptyStateHorizontalPadding)
-        } else if case .failure(let error, _) = lazyPoolLayouts.loadState.refresh {
-            StatefulLazyVStackError(localizedError: error.localizedErrorOrDefault())
+        } else if case .failure(let error) = lazyPoolLayouts.loadState.refresh {
+            LazyPagingVStackError(localizedError: error.localizedErrorOrDefault())
                 .padding(.horizontal, emptyStateHorizontalPadding)
                 .padding(.vertical, boxSpacing.medium)
         } else {
-            let visibleLayouts = Array(lazyPoolLayouts.prefix(popularTemplatesCount))
+            let visibleLayouts = Array(lazyPoolLayouts.loadedItems.prefix(popularTemplatesCount))
 
             VStack(spacing: boxSpacing.medium) {
                 ForEach(visibleLayouts) { poolLayout in
@@ -158,7 +176,7 @@ private struct TemplatesContent: View {
                 HStack {
                     Spacer()
                     Button(action: onSeeAllTemplates) {
-                        Text(String(.seeAllTemplatesAction))
+                        Text(.seeAllTemplatesAction)
                     }
                     Spacer()
                 }
@@ -176,7 +194,7 @@ private struct PoolScoreErrorList: View {
     @Environment(\.boxSpacing) private var boxSpacing
 
     var body: some View {
-        StatefulLazyVStackError(localizedError: error.localizedErrorOrDefault())
+        LazyPagingVStackError(localizedError: error.localizedErrorOrDefault())
             .padding(boxSpacing.medium)
     }
 }
@@ -189,21 +207,21 @@ private let popularTemplatesCount: Int = 3
 
 #Preview("PoolScoreList") {
     PoolScoreList(
-        lazyPagingItems: LazyPagingItems(
-            pagingData: PagingData(
-                pagingConfig: PagingConfig(prefetchDistance: 5),
+        lazyPagingItems: LazyPaging.LazyPagingItems(
+            pager: Pager(
+                config: PagingConfig(pageSize: 25, prefetchDistance: 5),
                 pagingSourceFactory: {
-                    PoolGamblerScorePagingSource(
+                    LazyPagingCursorSource<PoolGamblerScoreModel>(
                         pagingQuery: { _ in .success(CursorPage(items: poolGamblerScoresDummyModels(), next: nil)) }
                     )
                 }
             )
         ),
-        lazyPoolLayouts: LazyPagingItems(
-            pagingData: PagingData(
-                pagingConfig: PagingConfig(prefetchDistance: 5),
+        lazyPoolLayouts: LazyPaging.LazyPagingItems(
+            pager: Pager(
+                config: PagingConfig(pageSize: 25, prefetchDistance: 5),
                 pagingSourceFactory: {
-                    OpenPoolLayoutPagingSource(
+                    LazyPagingCursorSource<PoolLayoutModel>(
                         pagingQuery: { _ in .success(CursorPage(items: poolLayoutDummyModels(), next: nil)) }
                     )
                 }
@@ -216,25 +234,25 @@ private let popularTemplatesCount: Int = 3
     )
 }
 
-@ViewBuilder
+@MainActor @ViewBuilder
 private func poolScoreEmptyListPreview() -> some View {
     NavigationStack {
         PoolScoreList(
-            lazyPagingItems: LazyPagingItems(
-                pagingData: PagingData(
-                    pagingConfig: PagingConfig(prefetchDistance: 5),
+            lazyPagingItems: LazyPaging.LazyPagingItems(
+                pager: Pager(
+                    config: PagingConfig(pageSize: 25, prefetchDistance: 5),
                     pagingSourceFactory: {
-                        PoolGamblerScorePagingSource(
+                        LazyPagingCursorSource<PoolGamblerScoreModel>(
                             pagingQuery: { _ in .success(CursorPage(items: [], next: nil)) }
                         )
                     }
                 )
             ),
-            lazyPoolLayouts: LazyPagingItems(
-                pagingData: PagingData(
-                    pagingConfig: PagingConfig(prefetchDistance: 5),
+            lazyPoolLayouts: LazyPaging.LazyPagingItems(
+                pager: Pager(
+                    config: PagingConfig(pageSize: 25, prefetchDistance: 5),
                     pagingSourceFactory: {
-                        OpenPoolLayoutPagingSource(
+                        LazyPagingCursorSource<PoolLayoutModel>(
                             pagingQuery: { _ in .success(CursorPage(items: poolLayoutDummyModels(), next: nil)) }
                         )
                     }

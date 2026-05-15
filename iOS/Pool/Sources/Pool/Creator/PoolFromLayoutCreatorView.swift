@@ -2,6 +2,7 @@ import SwiftUI
 import Core
 import UI
 import DataPool
+import ViewingState
 
 public struct PoolFromLayoutCreatorView: View {
     @StateObject var viewModel: PoolFromLayoutCreatorViewModel
@@ -32,13 +33,13 @@ public struct PoolFromLayoutCreatorView: View {
             preselectedPoolLayoutId: preselectedPoolLayoutId,
             preselectedPoolName: preselectedPoolName,
         )
-        .navigationTitle(String(.poolFromLayoutCreatorTitle))
+        .navigationTitle(String(localized: .poolFromLayoutCreatorTitle))
         .padding(boxSpacing.medium)
     }
 }
 
 private struct PoolFromLayoutCreatorStatefulView: View {
-    let state: EditableViewState<CreatePoolModel>
+    let state: MutationState<CreatePoolModel>
     let onSaveClick: (CreatePoolModel) -> Void
     let onPoolCreated: (String) -> Void
     let reset: () -> Void
@@ -49,7 +50,7 @@ private struct PoolFromLayoutCreatorStatefulView: View {
     @State private var step: Step
 
     init(
-        state: EditableViewState<CreatePoolModel>,
+        state: MutationState<CreatePoolModel>,
         onSaveClick: @escaping (CreatePoolModel) -> Void,
         onPoolCreated: @escaping (String) -> Void,
         reset: @escaping () -> Void,
@@ -76,7 +77,7 @@ private struct PoolFromLayoutCreatorStatefulView: View {
 
     var body: some View {
         switch state {
-        case .initial:
+        case .idle:
             StepperView(
                 poolFromLayoutCreatorStepOneViewModel: PoolFromLayoutCreatorStepOneViewModel(
                     getOpenPoolLayoutsUseCase: diResolver.resolve(GetOpenPoolLayoutsUseCase.self)!,
@@ -88,7 +89,7 @@ private struct PoolFromLayoutCreatorStatefulView: View {
                 initialCreatePoolModel: initialCreatePoolModel,
             )
 
-        case .saving:
+        case .mutating:
             LoadingContainerView {
                 StepperView(
                     poolFromLayoutCreatorStepOneViewModel: PoolFromLayoutCreatorStepOneViewModel(
@@ -100,7 +101,7 @@ private struct PoolFromLayoutCreatorStatefulView: View {
                 )
             }
 
-        case .success(_, let succededCreatePoolModel):
+        case .mutated(_, let succededCreatePoolModel):
             LoadingContainerView {
                 StepperView(
                     poolFromLayoutCreatorStepOneViewModel: PoolFromLayoutCreatorStepOneViewModel(

@@ -34,7 +34,8 @@ module GetOpenPoolLayoutsTest =
                       Position = Some 1
                       BeforePosition = Some 2
                       Score = Some 15
-                      BeforeScore = Some 10 }
+                      BeforeScore = Some 10
+                      GamblerCount = None }
 
                     { PoolId = "01KZXZNSK2WT2BVRZBW1H7E92Y"
                       PoolName = "Hola mundo"
@@ -43,7 +44,8 @@ module GetOpenPoolLayoutsTest =
                       Position = Some 3
                       BeforePosition = Some 4
                       Score = Some 20
-                      BeforeScore = Some 12 }
+                      BeforeScore = Some 12
+                      GamblerCount = None }
                 }
               Next = None }
 

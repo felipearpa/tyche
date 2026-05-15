@@ -14,6 +14,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material3.Button
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -25,7 +26,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
@@ -43,11 +43,12 @@ import com.felipearpa.tyche.pool.creator.poolLayoutFakeModel
 import com.felipearpa.tyche.pool.poolGamblerScoreDummyModels
 import com.felipearpa.tyche.ui.exception.localizedOrDefault
 import com.felipearpa.tyche.ui.lazy.Failure
-import com.felipearpa.tyche.ui.lazy.RefreshableStatefulLazyColumn
+import com.felipearpa.tyche.ui.lazy.RefreshableLazyPagingColumn
 import com.felipearpa.tyche.ui.shimmer
 import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
 import com.felipearpa.tyche.ui.theme.TycheTheme
 import kotlinx.coroutines.flow.MutableStateFlow
+import com.felipearpa.tyche.ui.R as SharedR
 
 @Composable
 fun PoolScoreList(
@@ -61,12 +62,11 @@ fun PoolScoreList(
     onSeeAllTemplates: () -> Unit,
     fakeItemCount: Int = 50,
 ) {
-    RefreshableStatefulLazyColumn(
+    RefreshableLazyPagingColumn(
         modifier = modifier,
         lazyPagingItems = lazyPoolGamblerScores,
         lazyListState = lazyListState,
         loadingContent = { poolScorePlaceholderList(count = fakeItemCount) },
-        loadingContentOnConcatenate = { poolScorePlaceholderItem() },
         emptyContent = {
             poolScoreEmptyList(
                 lazyPoolLayouts = lazyPoolLayouts,
@@ -74,7 +74,8 @@ fun PoolScoreList(
                 onSeeAllTemplates = onSeeAllTemplates,
             )
         },
-        errorContent = { exception -> poolScoreErrorList(exception) },
+        errorContent = { exception -> poolScoreErrorList(exception) { lazyPoolGamblerScores.retry() } },
+        appendLoadingContent = { poolScorePlaceholderItemRow() },
     ) {
         items(
             count = lazyPoolGamblerScores.itemCount,
@@ -247,7 +248,7 @@ private fun LazyListScope.poolLayoutPlaceholderList(count: Int) {
     }
 }
 
-private fun LazyListScope.poolScoreErrorList(exception: Throwable) {
+private fun LazyListScope.poolScoreErrorList(exception: Throwable, onRetry: () -> Unit) {
     item {
         Box(
             contentAlignment = Alignment.Center,
@@ -255,21 +256,30 @@ private fun LazyListScope.poolScoreErrorList(exception: Throwable) {
                 .fillParentMaxSize()
                 .padding(all = LocalBoxSpacing.current.medium),
         ) {
-            Failure(
-                localizedException = exception.localizedOrDefault(),
-                modifier = Modifier.fillMaxWidth(),
-            )
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.medium),
+            ) {
+                Failure(
+                    localizedException = exception.localizedOrDefault(),
+                    modifier = Modifier.fillMaxWidth(),
+                )
+
+                Button(onClick = onRetry) {
+                    Text(text = stringResource(id = SharedR.string.retry_action))
+                }
+            }
         }
     }
 }
 
 private fun LazyListScope.poolScorePlaceholderList(count: Int) {
     repeat(count) {
-        poolScorePlaceholderItem()
+        poolScorePlaceholderItemRow()
     }
 }
 
-private fun LazyListScope.poolScorePlaceholderItem() {
+private fun LazyListScope.poolScorePlaceholderItemRow() {
     item {
         Column(
             modifier = Modifier
@@ -287,22 +297,26 @@ private val emptyStateHorizontalPadding = 16.dp
 private val emptyStateHeroVerticalPadding = 32.dp
 private const val popularTemplatesCount = 3
 
-@Preview(showBackground = true)
+@PreviewLightDark
 @Composable
 private fun PoolScoreListPreview() {
     val items =
         MutableStateFlow(PagingData.from(poolGamblerScoreDummyModels())).collectAsLazyPagingItems()
     val emptyLayouts =
         MutableStateFlow(PagingData.empty<PoolLayoutModel>()).collectAsLazyPagingItems()
-    PoolScoreList(
-        lazyPoolGamblerScores = items,
-        lazyPoolLayouts = emptyLayouts,
-        onPoolOpen = { _, _ -> },
-        onPoolJoin = {},
-        onPoolLayoutSelect = {},
-        onSeeAllTemplates = {},
-        modifier = Modifier.fillMaxSize(),
-    )
+    TycheTheme {
+        Surface {
+            PoolScoreList(
+                lazyPoolGamblerScores = items,
+                lazyPoolLayouts = emptyLayouts,
+                onPoolOpen = { _, _ -> },
+                onPoolJoin = {},
+                onPoolLayoutSelect = {},
+                onSeeAllTemplates = {},
+                modifier = Modifier.fillMaxSize(),
+            )
+        }
+    }
 }
 
 @PreviewLightDark
@@ -327,15 +341,19 @@ private fun PoolScoreEmptyListPreview() {
     }
 }
 
-@Preview(showBackground = true)
+@PreviewLightDark
 @Composable
 private fun PoolScorePlaceholderListPreview() {
-    LazyColumn(
-        verticalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.medium),
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(all = LocalBoxSpacing.current.medium),
-    ) {
-        poolScorePlaceholderList(count = 50)
+    TycheTheme {
+        Surface {
+            LazyColumn(
+                verticalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.medium),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(all = LocalBoxSpacing.current.medium),
+            ) {
+                poolScorePlaceholderList(count = 50)
+            }
+        }
     }
 }

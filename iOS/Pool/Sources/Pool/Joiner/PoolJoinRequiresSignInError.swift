@@ -6,21 +6,21 @@ enum PoolJoinRequiresSignInError: LocalizedError {
     public var errorDescription: String? {
         return switch self {
         case .requiresSignIn:
-            String(.poolJoinRequiresSignInFailureDescription)
+            String(localized: .poolJoinRequiresSignInFailureDescription)
         }
     }
 
     public var failureReason: String? {
         return switch self {
         case .requiresSignIn:
-            String(.poolJoinRequiresSignInFailureReason)
+            String(localized: .poolJoinRequiresSignInFailureReason)
         }
     }
 
     public var recoverySuggestion: String? {
         return switch self {
         case .requiresSignIn:
-            String(.poolJoinRequiresSignInFailureRecoverySuggestion)
+            String(localized: .poolJoinRequiresSignInFailureRecoverySuggestion)
         }
     }
 }

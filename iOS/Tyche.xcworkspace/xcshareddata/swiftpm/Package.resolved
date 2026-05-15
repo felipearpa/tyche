@@ -100,6 +100,15 @@
       }
     },
     {
+      "identity" : "lazy-paging-swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/felipearpa/lazy-paging-swift.git",
+      "state" : {
+        "revision" : "302fa9491452c9039bdb31f524bd1b1062b2d35e",
+        "version" : "0.0.2"
+      }
+    },
+    {
       "identity" : "leveldb",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/firebase/leveldb.git",
@@ -151,6 +160,15 @@
       "state" : {
         "revision" : "be9dbcc7b86811bc131539a20c6f9c2d3e56919f",
         "version" : "2.9.1"
+      }
+    },
+    {
+      "identity" : "viewing-state-swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/felipearpa/viewing-state-swift",
+      "state" : {
+        "revision" : "e80a7b7b3af0c13d11a849483a0f58bc4ef12c01",
+        "version" : "0.0.1"
       }
     },
     {

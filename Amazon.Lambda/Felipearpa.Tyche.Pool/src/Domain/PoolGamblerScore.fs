@@ -10,4 +10,5 @@ type PoolGamblerScore =
       Position: int option
       BeforePosition: int option
       Score: int option
-      BeforeScore: int option }
+      BeforeScore: int option
+      GamblerCount: int option }

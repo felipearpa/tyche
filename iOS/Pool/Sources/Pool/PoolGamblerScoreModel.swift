@@ -1,9 +1,9 @@
-public struct PoolGamblerScoreModelId: Hashable, Codable {
+public struct PoolGamblerScoreModelId: Hashable, Codable, Sendable {
     public let poolId: String
     public let gamblerId: String
 }
 
-public struct PoolGamblerScoreModel: Identifiable, Hashable, Codable {
+public struct PoolGamblerScoreModel: Identifiable, Hashable, Codable, Sendable {
     public let poolId: String
     public let poolName: String
     public let gamblerId: String

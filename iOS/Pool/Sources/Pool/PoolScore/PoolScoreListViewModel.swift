@@ -1,35 +1,34 @@
 import Foundation
 import Core
 import UI
+import LazyPaging
 import DataPool
 
 public class PoolScoreListViewModel: ObservableObject {
     private let getPoolGamblerScoresByGamblerUseCase : GetPoolGamblerScoresByGamblerUseCase
     private let getOpenPoolLayoutsUseCase: GetOpenPoolLayoutsUseCase
-
     private let joinPoolUrlTemplate: JoinPoolUrlTemplateProvider
-
     private let gamblerId: String
-
     private var searchText: String? = nil
+    private var pagingSource: LazyPagingCursorSource<PoolGamblerScoreModel>!
+    private var poolLayoutsPagingSource: LazyPagingCursorSource<PoolLayoutModel>!
 
-    private var pagingSource: PoolGamblerScorePagingSource!
-    private var poolLayoutsPagingSource: OpenPoolLayoutPagingSource!
-
-    lazy var lazyPagingItems: LazyPagingItems<String, PoolGamblerScoreModel> = {
-        LazyPagingItems(
-            pagingData: PagingData(
-                pagingConfig: PagingConfig(prefetchDistance: 5),
-                pagingSourceFactory: { self.pagingSource }
+    @MainActor
+    lazy var lazyPagingItems: LazyPaging.LazyPagingItems<String, PoolGamblerScoreModel> = {
+        LazyPaging.LazyPagingItems(
+            pager: Pager(
+                config: LazyPaging.PagingConfig(pageSize: 25, prefetchDistance: 5),
+                pagingSourceFactory: { [pagingSource = self.pagingSource!] in pagingSource }
             )
         )
     }()
 
-    lazy var lazyPoolLayouts: LazyPagingItems<String, PoolLayoutModel> = {
-        LazyPagingItems(
-            pagingData: PagingData(
-                pagingConfig: PagingConfig(prefetchDistance: 5),
-                pagingSourceFactory: { self.poolLayoutsPagingSource }
+    @MainActor
+    lazy var lazyPoolLayouts: LazyPaging.LazyPagingItems<String, PoolLayoutModel> = {
+        LazyPaging.LazyPagingItems(
+            pager: Pager(
+                config: LazyPaging.PagingConfig(pageSize: 25, prefetchDistance: 5),
+                pagingSourceFactory: { [poolLayoutsPagingSource = self.poolLayoutsPagingSource!] in poolLayoutsPagingSource }
             )
         )
     }()
@@ -45,7 +44,7 @@ public class PoolScoreListViewModel: ObservableObject {
         self.joinPoolUrlTemplate = joinPoolUrlTemplate
         self.gamblerId = gamblerId
 
-        self.pagingSource = PoolGamblerScorePagingSource(
+        self.pagingSource = LazyPagingCursorSource(
             pagingQuery: { [unowned self] next in
                 await getPoolGamblerScoresByGamblerUseCase.execute(
                     gamblerId: self.gamblerId,
@@ -57,7 +56,7 @@ public class PoolScoreListViewModel: ObservableObject {
             }
         )
 
-        self.poolLayoutsPagingSource = OpenPoolLayoutPagingSource(
+        self.poolLayoutsPagingSource = LazyPagingCursorSource(
             pagingQuery: { [unowned self] next in
                 await self.getOpenPoolLayoutsUseCase.execute(next: next, searchText: nil)
                     .map { page in page.map { poolLayout in poolLayout.toPoolLayoutModel() }}
@@ -85,7 +84,6 @@ private extension Error {
         if let networkError = self as? NetworkError {
             return networkError.toNetworkLocalizedError()
         }
-        
         return UnknownLocalizedError()
     }
 }

@@ -7,21 +7,21 @@ enum EmailAndPasswordSignInLocalizedError: LocalizedError {
     public var errorDescription: String? {
         return switch self {
         case .invalidCredentials:
-            String(.invalidCredentialSignInFailureDescription)
+            String(localized: .invalidCredentialSignInFailureDescription)
         }
     }
     
     public var failureReason: String? {
         return switch self {
         case .invalidCredentials:
-            String(.invalidCredentialSignInFailureReason)
+            String(localized: .invalidCredentialSignInFailureReason)
         }
     }
     
     public var recoverySuggestion: String? {
         return switch self {
         case .invalidCredentials:
-            String(.invalidCredentialSignInFailureRecoverySuggestion)
+            String(localized: .invalidCredentialSignInFailureRecoverySuggestion)
         }
     }
 }

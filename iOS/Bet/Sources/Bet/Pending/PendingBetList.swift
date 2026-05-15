@@ -1,17 +1,18 @@
 import SwiftUI
 import UI
 import Core
+import LazyPaging
 import DataBet
 
 struct PendingBetList: View {
-    var lazyPagingItems: LazyPagingItems<String, PoolGamblerBetModel>
+    var lazyPagingItems: LazyPaging.LazyPagingItems<String, PoolGamblerBetModel>
     let onMatchOpen: MatchOpenHandler?
 
     @Environment(\.boxSpacing) private var boxSpacing
     @Environment(\.diResolver) private var diResolver: DIResolver
 
     init(
-        lazyPagingItems: LazyPagingItems<String, PoolGamblerBetModel>,
+        lazyPagingItems: LazyPaging.LazyPagingItems<String, PoolGamblerBetModel>,
         onMatchOpen: MatchOpenHandler? = nil
     ) {
         self.lazyPagingItems = lazyPagingItems
@@ -21,51 +22,64 @@ struct PendingBetList: View {
     var body: some View {
         let _ = Self._printChangesIfDebug()
 
-        RefreshableStatefulLazyVStack(
+        RefreshableLazyPagingVStack(
             lazyPagingItems: lazyPagingItems,
+            pinnedViews: [.sectionHeaders],
             loadingContent: { PendingBetPlaceholderList() },
-            loadingContentOnConcatenate: {
-                PendingBetPlaceholderItem()
+            appendLoadingContent: { PendingBetPlaceholderRow() },
+        ) { index in
+            if let poolGamblerBet = lazyPagingItems.peek(at: index) {
+                let currentDate = poolGamblerBet.matchDateTime.toShortDateString()
+                let previousDate = index > 0
+                    ? lazyPagingItems.peek(at: index - 1)?.matchDateTime.toShortDateString()
+                    : nil
+                let isFirstInSection = currentDate != previousDate
+                let isFirstSection = index == 0
+
+                Section {
+                    Group {
+                        if isInPreviewMode() {
+                            PendingBetItem(
+                                poolGamblerBet: poolGamblerBet,
+                                viewState: .constant(PendingBetItemViewState.emptyVisualization())
+                            )
+                        } else {
+                            PendingBetItemView(
+                                viewModel: PendingBetItemViewModel(
+                                    betUseCase: diResolver.resolve(BetUseCase.self)!
+                                ),
+                                poolGamblerBet: poolGamblerBet
+                            )
+                        }
+                    }
                     .frame(maxWidth: .infinity)
                     .padding(.horizontal, boxSpacing.large)
                     .padding(.vertical, boxSpacing.medium)
-                Divider()
-                    .padding(.horizontal, boxSpacing.large)
-            },
-            sectionKey: { $0.matchDateTime.toShortDateString() },
-            sectionHeader: { dateString, isFirst in
-                Text(dateString)
-                    .font(.body)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(.horizontal, boxSpacing.medium)
-                    .padding(.top, isFirst ? boxSpacing.medium : boxSpacing.medium + boxSpacing.medium)
-                    .padding(.bottom, boxSpacing.medium)
-            }
-        ) { poolGamblerBet in
-            VStack(spacing: 0) {
-                Group {
-                    if isInPreviewMode() {
-                        PendingBetItem(
-                            poolGamblerBet: poolGamblerBet,
-                            viewState: .constant(PendingBetItemViewState.emptyVisualization())
-                        )
-                    } else {
-                        PendingBetItemView(
-                            viewModel: PendingBetItemViewModel(
-                                betUseCase: diResolver.resolve(BetUseCase.self)!
-                            ),
-                            poolGamblerBet: poolGamblerBet
-                        )
+                    .contentShape(Rectangle())
+                    .onTapGesture { invokeMatchOpen(onMatchOpen, poolGamblerBet) }
+
+                    Divider()
+                        .padding(.horizontal, boxSpacing.large)
+                } header: {
+                    if isFirstInSection {
+                        Text(currentDate)
+                            .font(.body)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .padding(.horizontal, boxSpacing.medium)
+                            .padding(.top, isFirstSection ? boxSpacing.medium : boxSpacing.medium + boxSpacing.medium)
+                            .padding(.bottom, boxSpacing.medium)
+                            .background(.background)
                     }
                 }
-                .frame(maxWidth: .infinity)
-                .padding(.horizontal, boxSpacing.large)
-                .padding(.vertical, boxSpacing.medium)
-                .contentShape(Rectangle())
-                .onTapGesture { invokeMatchOpen(onMatchOpen, poolGamblerBet) }
-
-                Divider()
-                    .padding(.horizontal, boxSpacing.large)
+            } else {
+                Section {
+                    PendingBetPlaceholderItem()
+                        .frame(maxWidth: .infinity)
+                        .padding(.horizontal, boxSpacing.large)
+                        .padding(.vertical, boxSpacing.medium)
+                    Divider()
+                        .padding(.horizontal, boxSpacing.large)
+                }
             }
         }
     }
@@ -82,17 +96,23 @@ func invokeMatchOpen(_ handler: MatchOpenHandler?, _ poolGamblerBet: PoolGambler
 }
 
 private struct PendingBetPlaceholderList: View {
+    var body: some View {
+        ForEach(1...50, id: \.self) { _ in
+            PendingBetPlaceholderRow()
+        }
+    }
+}
+
+private struct PendingBetPlaceholderRow: View {
     @Environment(\.boxSpacing) private var boxSpacing
 
     var body: some View {
-        ForEach(1...50, id: \.self) { _ in
-            PendingBetPlaceholderItem()
-                .frame(maxWidth: .infinity)
-                .padding(.horizontal, boxSpacing.large)
-                .padding(.vertical, boxSpacing.medium)
-            Divider()
-                .padding(.horizontal, boxSpacing.large)
-        }
+        PendingBetPlaceholderItem()
+            .frame(maxWidth: .infinity)
+            .padding(.horizontal, boxSpacing.large)
+            .padding(.vertical, boxSpacing.medium)
+        Divider()
+            .padding(.horizontal, boxSpacing.large)
     }
 }
 
@@ -107,11 +127,11 @@ private struct PendingBetPlaceholderItem: View {
 
 #Preview("List") {
     PendingBetList(
-        lazyPagingItems: LazyPagingItems(
-            pagingData: PagingData(
-                pagingConfig: PagingConfig(prefetchDistance: 5),
+        lazyPagingItems: LazyPaging.LazyPagingItems(
+            pager: Pager(
+                config: LazyPaging.PagingConfig(pageSize: 25, prefetchDistance: 5),
                 pagingSourceFactory: {
-                    PoolGamblerBetPagingSource(
+                    LazyPagingCursorSource<PoolGamblerBetModel>(
                         pagingQuery: { _ in .success(CursorPage(items: poolGamblerBetDummyModels(), next: nil)) }
                     )
                 }

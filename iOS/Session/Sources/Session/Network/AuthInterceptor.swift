@@ -1,7 +1,7 @@
 import Foundation
 import Alamofire
 
-class AuthInterceptor: RequestInterceptor {
+final class AuthInterceptor: RequestInterceptor {
     private let authTokenRetriever: AuthTokenRetriever
     
     init(authTokenRetriever: AuthTokenRetriever) {

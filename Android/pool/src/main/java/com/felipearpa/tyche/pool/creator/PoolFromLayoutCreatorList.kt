@@ -9,17 +9,19 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemContentType
 import androidx.paging.compose.itemKey
-import com.felipearpa.tyche.ui.lazy.RefreshableStatefulLazyColumn
+import com.felipearpa.tyche.ui.lazy.RefreshableLazyPagingColumn
 import com.felipearpa.tyche.ui.shimmer
 import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
+import com.felipearpa.tyche.ui.theme.TycheTheme
 import kotlinx.coroutines.flow.MutableStateFlow
 
 @Composable
@@ -31,12 +33,14 @@ fun PoolFromLayoutCreatorList(
     modifier: Modifier = Modifier,
     lazyListState: LazyListState = rememberLazyListState(),
 ) {
-    RefreshableStatefulLazyColumn(
+    RefreshableLazyPagingColumn(
         modifier = modifier,
         lazyPagingItems = poolLayouts,
         lazyListState = lazyListState,
         loadingContent = { poolFromLayoutCreatorPlaceholderList(count = fakeItemCount) },
-        loadingContentOnConcatenate = { poolFromLayoutCreatorPlaceholderItem() },
+        appendLoadingContent = {
+            item { PoolFromLayoutCreatorFakeItem(modifier = Modifier.poolFromLayoutCreatorItem()) }
+        },
         verticalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.small),
     ) {
         items(
@@ -44,28 +48,23 @@ fun PoolFromLayoutCreatorList(
             key = poolLayouts.itemKey { poolLayout -> poolLayout.id },
             contentType = poolLayouts.itemContentType { "PoolLayout" },
         ) { index ->
-            poolLayouts[index]?.let { poolLayout ->
-                PoolFromLayoutCreatorItem(
-                    poolLayout = poolLayout,
-                    modifier = Modifier
-                        .poolFromLayoutCreatorItem()
-                        .clickable { onPoolLayoutChange(poolLayout) },
-                    isSelected = poolLayout == selectedPoolLayout,
-                )
-            }
+            val poolLayout = poolLayouts[index] ?: return@items
+            PoolFromLayoutCreatorItem(
+                poolLayout = poolLayout,
+                modifier = Modifier
+                    .poolFromLayoutCreatorItem()
+                    .clickable { onPoolLayoutChange(poolLayout) },
+                isSelected = poolLayout == selectedPoolLayout,
+            )
         }
     }
 }
 
 private fun LazyListScope.poolFromLayoutCreatorPlaceholderList(count: Int) {
     repeat(count) {
-        poolFromLayoutCreatorPlaceholderItem()
-    }
-}
-
-private fun LazyListScope.poolFromLayoutCreatorPlaceholderItem() {
-    item {
-        PoolFromLayoutCreatorFakeItem(modifier = Modifier.poolFromLayoutCreatorItem())
+        item {
+            PoolFromLayoutCreatorFakeItem(modifier = Modifier.poolFromLayoutCreatorItem())
+        }
     }
 }
 
@@ -82,36 +81,48 @@ private fun PoolFromLayoutCreatorFakeItem(modifier: Modifier = Modifier) {
 private fun Modifier.poolFromLayoutCreatorItem() =
     fillMaxWidth()
 
-@Preview(showBackground = true)
+@PreviewLightDark
 @Composable
 private fun PoolFromLayoutCreatorListPreview() {
     val items =
         MutableStateFlow(PagingData.from(poolLayoutDummyModels())).collectAsLazyPagingItems()
-    PoolFromLayoutCreatorList(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(LocalBoxSpacing.current.medium),
-        poolLayouts = items,
-        fakeItemCount = 5,
-        selectedPoolLayout = null,
-        onPoolLayoutChange = {},
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun PoolFromLayoutCreatorListFakePreview() {
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(LocalBoxSpacing.current.medium),
-    ) {
-        poolFromLayoutCreatorPlaceholderList(count = 3)
+    TycheTheme {
+        Surface {
+            PoolFromLayoutCreatorList(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(LocalBoxSpacing.current.medium),
+                poolLayouts = items,
+                fakeItemCount = 5,
+                selectedPoolLayout = null,
+                onPoolLayoutChange = {},
+            )
+        }
     }
 }
 
-@Preview(showBackground = true)
+@PreviewLightDark
+@Composable
+private fun PoolFromLayoutCreatorListFakePreview() {
+    TycheTheme {
+        Surface {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(LocalBoxSpacing.current.medium),
+            ) {
+                poolFromLayoutCreatorPlaceholderList(count = 3)
+            }
+        }
+    }
+}
+
+@PreviewLightDark
 @Composable
 private fun PoolFromLayoutCreatorFakeItemPreview() {
-    PoolFromLayoutCreatorFakeItem(modifier = Modifier.fillMaxWidth())
+    TycheTheme {
+        Surface {
+            PoolFromLayoutCreatorFakeItem(modifier = Modifier.fillMaxWidth())
+        }
+    }
 }

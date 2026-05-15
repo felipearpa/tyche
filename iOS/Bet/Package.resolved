@@ -86,8 +86,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/google/gtm-session-fetcher.git",
       "state" : {
-        "revision" : "0be208810d2e8b90fcd2464d1816723b47819fe7",
-        "version" : "5.2.0"
+        "revision" : "c0ac7575d70050c2973ba2318bd5af47f8e8153a",
+        "version" : "5.3.0"
       }
     },
     {
@@ -97,6 +97,15 @@
       "state" : {
         "revision" : "040d087ac2267d2ddd4cca36c757d1c6a05fdbfe",
         "version" : "101.0.0"
+      }
+    },
+    {
+      "identity" : "lazy-paging-swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/felipearpa/lazy-paging-swift.git",
+      "state" : {
+        "revision" : "302fa9491452c9039bdb31f524bd1b1062b2d35e",
+        "version" : "0.0.2"
       }
     },
     {
@@ -151,6 +160,15 @@
       "state" : {
         "revision" : "be9dbcc7b86811bc131539a20c6f9c2d3e56919f",
         "version" : "2.9.1"
+      }
+    },
+    {
+      "identity" : "viewing-state-swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/felipearpa/viewing-state-swift.git",
+      "state" : {
+        "revision" : "e80a7b7b3af0c13d11a849483a0f58bc4ef12c01",
+        "version" : "0.0.1"
       }
     }
   ],

@@ -7,21 +7,21 @@ enum SendSignInLinkToEmailLocalizedError: LocalizedError {
     public var errorDescription: String? {
         switch self {
         case .tooManyRequests:
-            return String(.sendSignInLinkToEmailTooManyRequestsFailureDescription)
+            return String(localized: .sendSignInLinkToEmailTooManyRequestsFailureDescription)
         }
     }
 
     public var failureReason: String? {
         switch self {
         case .tooManyRequests:
-            return String(.sendSignInLinkToEmailTooManyRequestsFailureReason)
+            return String(localized: .sendSignInLinkToEmailTooManyRequestsFailureReason)
         }
     }
 
     public var recoverySuggestion: String? {
         switch self {
         case .tooManyRequests:
-            return String(.sendSignInLinkToEmailTooManyRequestsFailureRecoverySuggestion)
+            return String(localized: .sendSignInLinkToEmailTooManyRequestsFailureRecoverySuggestion)
         }
     }
 }

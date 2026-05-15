@@ -1,6 +1,7 @@
 import Foundation
 import Core
 import UI
+import LazyPaging
 import DataPool
 
 public class GamblerScoreListViewModel: ObservableObject {
@@ -8,17 +9,18 @@ public class GamblerScoreListViewModel: ObservableObject {
     let gamblerId: String
     private let poolId: String
     private var searchText: String? = nil
-    private var pagingSource: PoolGamblerScorePagingSource!
-    
-    lazy var lazyPager: LazyPagingItems<String, PoolGamblerScoreModel> = {
-        LazyPagingItems(
-            pagingData: PagingData(
-                pagingConfig: PagingConfig(prefetchDistance: 5),
-                pagingSourceFactory: { self.pagingSource }
+    private var pagingSource: LazyPagingCursorSource<PoolGamblerScoreModel>!
+
+    @MainActor
+    lazy var lazyPager: LazyPaging.LazyPagingItems<String, PoolGamblerScoreModel> = {
+        LazyPaging.LazyPagingItems(
+            pager: Pager(
+                config: LazyPaging.PagingConfig(pageSize: 25, prefetchDistance: 5),
+                pagingSourceFactory: { [pagingSource = self.pagingSource!] in pagingSource }
             )
         )
     }()
-    
+
     public init(
         getPoolGamblerScoresByPoolUseCase : GetPoolGamblerScoresByPoolUseCase,
         gamblerId: String,
@@ -27,8 +29,8 @@ public class GamblerScoreListViewModel: ObservableObject {
         self.getPoolGamblerScoresByPoolUseCase = getPoolGamblerScoresByPoolUseCase
         self.gamblerId = gamblerId
         self.poolId = poolId
-        
-        self.pagingSource = PoolGamblerScorePagingSource(
+
+        self.pagingSource = LazyPagingCursorSource(
             pagingQuery: { [unowned self] next in
                 await getPoolGamblerScoresByPoolUseCase.execute(
                     poolId: self.poolId,
@@ -40,7 +42,7 @@ public class GamblerScoreListViewModel: ObservableObject {
             }
         )
     }
-    
+
     func search(_ newSearchText: String) {
         searchText = newSearchText
         pagingSource.invalidate()
@@ -52,7 +54,7 @@ private extension Error {
         if let networkError = self as? NetworkError {
             return networkError.toNetworkLocalizedError()
         }
-        
+
         return UnknownLocalizedError()
     }
 }

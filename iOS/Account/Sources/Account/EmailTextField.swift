@@ -22,7 +22,7 @@ struct EmailTextField : View {
         value: Binding<String>,
         validation: TextFieldValidation? = TextFieldValidation(
             isValid: Email.isValid,
-            errorMessage: String(.emailValidationFailureMessage)
+            errorMessage: String(localized: .emailValidationFailureMessage)
         )
     ) {
         self._value = value
@@ -31,7 +31,7 @@ struct EmailTextField : View {
 
     var body: some View {
         VStack(spacing: boxSpacing.small) {
-            TextField(String(.emailLabel), text: $value)
+            TextField(String(localized: .emailLabel), text: $value)
                 .autocapitalization(.none)
                 .onChange(of: value) { newValue in
                     withAnimation {

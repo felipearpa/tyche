@@ -13,4 +13,5 @@ module PoolGamblerScoreTransformer =
           Position = poolGamblerScore.Position
           BeforePosition = poolGamblerScore.BeforePosition
           Score = poolGamblerScore.Score
-          BeforeScore = poolGamblerScore.BeforeScore }
+          BeforeScore = poolGamblerScore.BeforeScore
+          GamblerCount = poolGamblerScore.GamblerCount }

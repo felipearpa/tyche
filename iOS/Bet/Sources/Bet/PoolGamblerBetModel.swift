@@ -1,13 +1,13 @@
 import Foundation
 import Core
 
-struct PoolGamblerBetModelId: Hashable, Codable {
+struct PoolGamblerBetModelId: Hashable, Codable, Sendable {
     let poolId: String
     let gamblerId: String
     let matchId: String
 }
 
-struct PoolGamblerBetModel: Codable, Identifiable, Hashable {
+struct PoolGamblerBetModel: Codable, Identifiable, Hashable, Sendable {
     let poolId: String
     let gamblerId: String
     let gamblerUsername: String

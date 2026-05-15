@@ -2,11 +2,12 @@ import Foundation
 import UI
 import Core
 import DataBet
+import ViewingState
 
 class PendingBetItemViewModel: ObservableObject {
     private let betUseCase: BetUseCase
 
-    @Published @MainActor private(set) var state: EditableViewState<PoolGamblerBetModel>?
+    @Published @MainActor private(set) var state: MutationState<PoolGamblerBetModel>?
 
     @MainActor
     public init(betUseCase: BetUseCase) {
@@ -17,18 +18,18 @@ class PendingBetItemViewModel: ObservableObject {
     @MainActor
     func bind(_ poolGamblerBet: PoolGamblerBetModel) {
         switch state {
-        case nil, .initial:
-            state = .initial(poolGamblerBet)
-        case .success(let old, _):
-            state = .success(old: old, succeeded: poolGamblerBet)
-        case .saving, .failure:
+        case nil, .idle:
+            state = .idle(poolGamblerBet)
+        case .mutated(let old, _):
+            state = .mutated(original: old, updated: poolGamblerBet)
+        case .mutating, .failure:
             break
         }
     }
 
     @MainActor
     func retryBet() {
-        guard case .failure(_, failed: let poolGamblerBet, _) = state else { return }
+        guard case .failure(_, updated: let poolGamblerBet, _) = state else { return }
         guard let betScore = poolGamblerBet.betScore else { return }
         bet(betScore: betScore)
     }
@@ -37,13 +38,13 @@ class PendingBetItemViewModel: ObservableObject {
     func bet(betScore: TeamScore<Int>) {
         Task { [self] in
             guard let currentState = state else { return }
-            var currentPoolGamblerBet = currentState.relevantValue()
+            var currentPoolGamblerBet = currentState.activeValue()
 
             let targetPoolGamblerBet = currentPoolGamblerBet.copy { builder in
                 builder.betScore = betScore
             }
 
-            state = .saving(current: currentPoolGamblerBet, target: targetPoolGamblerBet)
+            state = .mutating(original: currentPoolGamblerBet, updated: targetPoolGamblerBet)
 
             let bet = Bet(
                 poolId: targetPoolGamblerBet.poolId,
@@ -56,18 +57,18 @@ class PendingBetItemViewModel: ObservableObject {
 
             switch result {
             case .success(let updatedPoolGamblerBet):
-                state = .success(
-                    old: currentPoolGamblerBet,
-                    succeeded: updatedPoolGamblerBet.toPoolGamblerBetModel()
+                state = .mutated(
+                    original: currentPoolGamblerBet,
+                    updated: updatedPoolGamblerBet.toPoolGamblerBetModel()
                 )
             case .failure(let error):
                 if case BetError.forbidden = error {
                     currentPoolGamblerBet.lock()
-                    state = .initial(currentPoolGamblerBet)
+                    state = .idle(currentPoolGamblerBet)
                 } else {
                     state = .failure(
-                        current: currentPoolGamblerBet,
-                        failed: targetPoolGamblerBet,
+                        original: currentPoolGamblerBet,
+                        updated: targetPoolGamblerBet,
                         error: error.mapOrDefaultLocalized { error in error.asBetLocalizedError() }
                     )
                 }
@@ -78,6 +79,6 @@ class PendingBetItemViewModel: ObservableObject {
     @MainActor
     func reset() {
         guard let currentState = state else { return }
-        state = .initial(currentState.relevantValue())
+        state = .idle(currentState.activeValue())
     }
 }

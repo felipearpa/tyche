@@ -54,7 +54,7 @@ private struct SignOutButton: View {
             HStack(spacing: boxSpacing.small) {
                 Image(.logOut)
                     .renderingMode(.template)
-                Text(String(.logOutAction))
+                Text(.logOutAction)
             }
             .frame(maxWidth: .infinity, alignment: .center)
         }

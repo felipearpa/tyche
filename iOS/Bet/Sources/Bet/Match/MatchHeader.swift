@@ -73,7 +73,7 @@ private struct LiveIndicator: View {
                     value: isPulsing
                 )
 
-            Text(String(.liveLabel))
+            Text(.liveLabel)
                 .font(.caption2)
                 .foregroundStyle(Color.accentColor)
         }

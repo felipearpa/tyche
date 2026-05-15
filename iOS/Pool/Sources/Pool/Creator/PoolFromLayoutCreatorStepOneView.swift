@@ -1,6 +1,7 @@
 import SwiftUI
 import UI
 import Core
+import LazyPaging
 
 struct PoolFromLayoutCreatorStepOneView: View {
     @StateObject private var viewModel: PoolFromLayoutCreatorStepOneViewModel
@@ -56,7 +57,7 @@ struct PoolFromLayoutCreatorStepOneObservedView: View {
 }
 
 private struct PoolFromLayoutCreatorStepOneStatefulView: View {
-    let lazyPagingItems: LazyPagingItems<String, PoolLayoutModel>
+    let lazyPagingItems: LazyPaging.LazyPagingItems<String, PoolLayoutModel>
     let fakeItemCount: Int
     var createPoolModel: CreatePoolModel
     let onNextClick: (CreatePoolModel) -> Void
@@ -67,7 +68,7 @@ private struct PoolFromLayoutCreatorStepOneStatefulView: View {
     var body: some View {
         VStack(spacing: boxSpacing.medium) {
             HStack {
-                Text(String(.choosePoolLayoutText))
+                Text(.choosePoolLayoutText)
                     .font(.title3)
                 Spacer()
             }
@@ -95,11 +96,11 @@ private struct PoolFromLayoutCreatorStepOneStatefulView: View {
 
         var body: some View {
             PoolFromLayoutCreatorStepOneStatefulView(
-                lazyPagingItems: LazyPagingItems(
-                    pagingData: PagingData(
-                        pagingConfig: PagingConfig(prefetchDistance: 5),
+                lazyPagingItems: LazyPaging.LazyPagingItems(
+                    pager: Pager(
+                        config: LazyPaging.PagingConfig(pageSize: 25, prefetchDistance: 5),
                         pagingSourceFactory: {
-                            OpenPoolLayoutPagingSource(
+                            LazyPagingCursorSource<PoolLayoutModel>(
                                 pagingQuery: { _ in .success(CursorPage(items: poolLayoutDummyModels(), next: nil)) }
                             )
                         }

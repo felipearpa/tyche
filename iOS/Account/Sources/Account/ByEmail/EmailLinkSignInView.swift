@@ -1,6 +1,7 @@
 import SwiftUI
 import Session
 import UI
+import ViewingState
 
 public struct EmailLinkSignInView: View {
     @StateObject var viewModel: EmailLinkSignInViewModel
@@ -36,7 +37,7 @@ public struct EmailLinkSignInView: View {
 }
 
 private struct EmailLinkSignInStatefulView: View {
-    let viewState: LoadableViewState<AccountBundle>
+    let viewState: LoadState<AccountBundle>
     let email: String
     let onStart: (AccountBundle) -> Void
     let onRetry: () -> Void
@@ -44,7 +45,7 @@ private struct EmailLinkSignInStatefulView: View {
     @Environment(\.boxSpacing) private var boxSpacing
 
     init(
-        viewState: LoadableViewState<AccountBundle>,
+        viewState: LoadState<AccountBundle>,
         email: String,
         onStart: @escaping (AccountBundle) -> Void = { _ in },
         onRetry: @escaping () -> Void,
@@ -57,9 +58,9 @@ private struct EmailLinkSignInStatefulView: View {
 
     var body: some View {
         switch viewState {
-        case .initial, .loading:
+        case .idle, .loading:
             LoadingContainerView { EmptyView() }
-        case .success(let accountBundle):
+        case .loaded(let accountBundle):
             SuccessContent(email: email, start: { onStart(accountBundle) })
                 .padding(boxSpacing.medium)
         case .failure(let error):
@@ -87,7 +88,7 @@ private struct FailureContent: View {
             Spacer()
 
             Button(action: onRetry) {
-                Text((String(sharedResource: .retryAction)))
+                Text(sharedResource: .retryAction)
                     .frame(maxWidth: .infinity)
             }
             .buttonStyle(.liquidGlassProminent)
@@ -113,11 +114,11 @@ private struct SuccessContent: View {
                     .frame(width: ICON_SIZE, height: ICON_SIZE)
 
                 VStack(spacing: boxSpacing.medium) {
-                    Text(String(.accountVerifiedTitle))
+                    Text(.accountVerifiedTitle)
                         .multilineTextAlignment(.center)
                         .font(.title)
 
-                    Text(String(.accountVerifiedDescription))
+                    Text(.accountVerifiedDescription)
                         .multilineTextAlignment(.center)
                 }
 
@@ -127,7 +128,7 @@ private struct SuccessContent: View {
             Spacer()
 
             Button(action: start) {
-                Text((String(.startAction)))
+                Text(.startAction)
                     .frame(maxWidth: .infinity)
             }
             .buttonStyle(.liquidGlassProminent)
@@ -163,12 +164,12 @@ private let ICON_SIZE: CGFloat = 64
 private let PILL_ICON_SIZE: CGFloat = 16
 
 #Preview("initial, loading") {
-    EmailLinkSignInStatefulView(viewState: .initial, email: "", onRetry: {})
+    EmailLinkSignInStatefulView(viewState: .idle, email: "", onRetry: {})
 }
 
 #Preview("success") {
     EmailLinkSignInStatefulView(
-        viewState: .success(AccountBundle(accountId: "", externalAccountId: "", email: "")),
+        viewState: .loaded(AccountBundle(accountId: "", externalAccountId: "", email: "")),
         email: "preview@example.com",
         onRetry: {},
     )

@@ -1,25 +1,25 @@
 import Foundation
 import Core
 import UI
+import LazyPaging
 import DataBet
+import ViewingState
 
 public class MatchBetListViewModel: ObservableObject {
     private let getPoolGamblerBetUseCase: GetPoolGamblerBetUseCase
     private let getPoolMatchGamblerBetsUseCase: GetPoolMatchGamblerBetsUseCase
-
     private let poolId: String
     private let gamblerId: String
     private let matchId: String
+    private var pagingSource: LazyPagingCursorSource<PoolGamblerBetModel>!
+    @Published var poolGamblerBetState: ViewingState.LoadState<PoolGamblerBetModel> = .idle
 
-    private var pagingSource: PoolGamblerBetPagingSource!
-
-    @Published var poolGamblerBetState: LoadableViewState<PoolGamblerBetModel> = .initial
-
-    lazy var lazyPager: LazyPagingItems<String, PoolGamblerBetModel> = {
-        LazyPagingItems(
-            pagingData: PagingData(
-                pagingConfig: PagingConfig(prefetchDistance: 5),
-                pagingSourceFactory: { self.pagingSource }
+    @MainActor
+    lazy var lazyPager: LazyPaging.LazyPagingItems<String, PoolGamblerBetModel> = {
+        LazyPaging.LazyPagingItems(
+            pager: Pager(
+                config: LazyPaging.PagingConfig(pageSize: 25, prefetchDistance: 5),
+                pagingSourceFactory: { [pagingSource = self.pagingSource!] in pagingSource }
             )
         )
     }()
@@ -37,7 +37,7 @@ public class MatchBetListViewModel: ObservableObject {
         self.gamblerId = gamblerId
         self.matchId = matchId
 
-        let pagingSource = PoolGamblerBetPagingSource(
+        let pagingSource = LazyPagingCursorSource<PoolGamblerBetModel>(
             pagingQuery: { next in
                 await getPoolMatchGamblerBetsUseCase.execute(
                     poolId: poolId,
@@ -61,7 +61,7 @@ public class MatchBetListViewModel: ObservableObject {
         )
         switch result {
         case .success(let bet):
-            poolGamblerBetState = .success(bet.toPoolGamblerBetModel())
+            poolGamblerBetState = .loaded(bet.toPoolGamblerBetModel())
         case .failure(let error):
             poolGamblerBetState = .failure(error)
         }
@@ -77,7 +77,6 @@ private extension Error {
         if let networkError = self as? NetworkError {
             return networkError.toNetworkLocalizedError()
         }
-
         return UnknownLocalizedError()
     }
 }

@@ -1,9 +1,10 @@
 import SwiftUI
 import Core
 import UI
+import LazyPaging
 
 struct PoolFromLayoutCreatorList: View {
-    var lazyPagingItems: LazyPagingItems<String, PoolLayoutModel>
+    var lazyPagingItems: LazyPaging.LazyPagingItems<String, PoolLayoutModel>
     var fakeItemCount: Int
     var selectedPoolLayout: PoolLayoutModel?
     var onPoolLayoutChange: (PoolLayoutModel) -> Void
@@ -11,24 +12,32 @@ struct PoolFromLayoutCreatorList: View {
     @Environment(\.boxSpacing) private var boxSpacing
 
     var body: some View {
-        StatefulLazyVStack(
+        RefreshableLazyPagingVStack(
             lazyPagingItems: lazyPagingItems,
+            spacing: boxSpacing.small,
             loadingContent: { PoolFromLayoutCreatorPlaceholderList(count: fakeItemCount) },
-            loadingContentOnConcatenate: {
+            appendLoadingContent: {
                 PoolFromLayoutCreatorItem(
                     poolLayout: poolLayoutFakeModel(),
                     isSelected: false
                 )
                 .shimmer()
             },
-            spacing: boxSpacing.small,
-        ) { poolLayout in
-            PoolFromLayoutCreatorItem(
-                poolLayout: poolLayout,
-                isSelected: poolLayout.id == selectedPoolLayout?.id
-            )
-            .onTapGesture {
-                onPoolLayoutChange(poolLayout)
+        ) { index in
+            if let poolLayout = lazyPagingItems.peek(at: index) {
+                PoolFromLayoutCreatorItem(
+                    poolLayout: poolLayout,
+                    isSelected: poolLayout.id == selectedPoolLayout?.id
+                )
+                .onTapGesture {
+                    onPoolLayoutChange(poolLayout)
+                }
+            } else {
+                PoolFromLayoutCreatorItem(
+                    poolLayout: poolLayoutFakeModel(),
+                    isSelected: false
+                )
+                .shimmer()
             }
         }
     }
@@ -52,13 +61,12 @@ private struct PoolFromLayoutCreatorPlaceholderList: View {
 
 #Preview("PoolFromLayoutCreatorList") {
     PoolFromLayoutCreatorList(
-        lazyPagingItems: LazyPagingItems(
-            pagingData: PagingData(
-                pagingConfig: PagingConfig(prefetchDistance: 5),
+        lazyPagingItems: LazyPaging.LazyPagingItems(
+            pager: Pager(
+                config: LazyPaging.PagingConfig(pageSize: 25, prefetchDistance: 5),
                 pagingSourceFactory: {
-                    OpenPoolLayoutPagingSource(
-                        pagingQuery: { _ in .success(CursorPage(items: poolLayoutDummyModels(), next: nil))
-                        }
+                    LazyPagingCursorSource<PoolLayoutModel>(
+                        pagingQuery: { _ in .success(CursorPage(items: poolLayoutDummyModels(), next: nil)) }
                     )
                 }
             )

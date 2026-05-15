@@ -1,27 +1,29 @@
 import SwiftUI
 import UI
+import LazyPaging
 import DataBet
 import Core
 
 public class FinishedBetListViewModel: ObservableObject {
     private let getFinishedPoolGamblerBetsUseCase: GetFinishedPoolGamblerBetsUseCase
-    
+
     private let gamblerId: String
     private let poolId: String
-    
-    private var searchText: String? = nil
-    
-    private var pagingSource: PoolGamblerBetPagingSource!
 
-    lazy var lazyPager: LazyPagingItems<String, PoolGamblerBetModel> = {
-        LazyPagingItems(
-            pagingData: PagingData(
-                pagingConfig: PagingConfig(prefetchDistance: 5),
-                pagingSourceFactory: { self.pagingSource }
+    private var searchText: String? = nil
+
+    private var pagingSource: LazyPagingCursorSource<PoolGamblerBetModel>!
+
+    @MainActor
+    lazy var lazyPager: LazyPaging.LazyPagingItems<String, PoolGamblerBetModel> = {
+        LazyPaging.LazyPagingItems(
+            pager: Pager(
+                config: LazyPaging.PagingConfig(pageSize: 25, prefetchDistance: 5),
+                pagingSourceFactory: { [pagingSource = self.pagingSource!] in pagingSource }
             )
         )
     }()
-    
+
     public init(
         getFinishedPoolGamblerBetsUseCase: GetFinishedPoolGamblerBetsUseCase,
         gamblerId: String,
@@ -30,8 +32,8 @@ public class FinishedBetListViewModel: ObservableObject {
         self.getFinishedPoolGamblerBetsUseCase = getFinishedPoolGamblerBetsUseCase
         self.gamblerId = gamblerId
         self.poolId = poolId
-        
-        let pagingSource = PoolGamblerBetPagingSource(
+
+        let pagingSource = LazyPagingCursorSource<PoolGamblerBetModel>(
             pagingQuery: { next in
                 await getFinishedPoolGamblerBetsUseCase.execute(
                     poolId: poolId,
@@ -45,14 +47,14 @@ public class FinishedBetListViewModel: ObservableObject {
         )
         self.pagingSource = pagingSource
     }
-    
+
     func search(_ text: String) {
         searchText = text
         pagingSource.invalidate()
     }
-    
+
     func refresh() {
-//        lazyPager.refresh()
+        pagingSource.invalidate()
     }
 }
 

@@ -22,7 +22,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.paging.PagingData
@@ -31,7 +30,7 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import com.felipearpa.foundation.time.toShortDateString
 import com.felipearpa.tyche.bet.PoolGamblerBetModel
 import com.felipearpa.tyche.bet.poolGamblerBetDummyModels
-import com.felipearpa.tyche.ui.lazy.RefreshableStatefulLazyColumn
+import com.felipearpa.tyche.ui.lazy.RefreshableLazyPagingColumn
 import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
 import com.felipearpa.tyche.ui.theme.TycheTheme
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -46,18 +45,18 @@ fun FinishedBetList(
     placeholderCount: Int = 0,
     onMatchOpen: ((PoolGamblerBetModel) -> Unit)? = null,
 ) {
-    RefreshableStatefulLazyColumn(
+    RefreshableLazyPagingColumn(
         modifier = modifier,
         lazyPagingItems = lazyPoolGamblerBets,
         loadingContent = { finishedPoolGamblerBetFakeList(count = placeholderCount) },
-        loadingContentOnConcatenate = { finishedPoolGamblerBetPlaceholderItem() },
         emptyContent = { emptyContent() },
+        appendLoadingContent = { item { finishedPoolGamblerBetPlaceholderItemRow() } },
     ) {
         val poolGamblerBetsCount = lazyPoolGamblerBets.itemCount
         var lastMatchDate: LocalDate? = null
 
         repeat(poolGamblerBetsCount) { index ->
-            val poolGamblerBet = lazyPoolGamblerBets[index]!!
+            val poolGamblerBet = lazyPoolGamblerBets[index] ?: return@repeat
             if (lastMatchDate != poolGamblerBet.matchDateTime.date) {
                 val localDateString = poolGamblerBet.matchDateTime.toShortDateString()
                 val isFirstHeader = lastMatchDate == null
@@ -100,15 +99,14 @@ fun FinishedBetList(
 
 private fun LazyListScope.finishedPoolGamblerBetFakeList(count: Int) {
     repeat(count) {
-        finishedPoolGamblerBetPlaceholderItem()
+        item { finishedPoolGamblerBetPlaceholderItemRow() }
     }
 }
 
-private fun LazyListScope.finishedPoolGamblerBetPlaceholderItem() {
-    item {
-        FinishedBetPlaceholderItem(modifier = Modifier.finishedBetItem())
-        HorizontalDivider(modifier = Modifier.padding(horizontal = LocalBoxSpacing.current.large))
-    }
+@Composable
+private fun finishedPoolGamblerBetPlaceholderItemRow() {
+    FinishedBetPlaceholderItem(modifier = Modifier.finishedBetItem())
+    HorizontalDivider(modifier = Modifier.padding(horizontal = LocalBoxSpacing.current.large))
 }
 
 @Composable
@@ -169,14 +167,18 @@ private fun FinishedBetListPreview() {
     }
 }
 
-@Preview(showBackground = true)
+@PreviewLightDark
 @Composable
 private fun FinishedBetFakeListPreview() {
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(all = LocalBoxSpacing.current.medium),
-    ) {
-        finishedPoolGamblerBetFakeList(count = 50)
+    TycheTheme {
+        Surface {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(all = LocalBoxSpacing.current.medium),
+            ) {
+                finishedPoolGamblerBetFakeList(count = 50)
+            }
+        }
     }
 }

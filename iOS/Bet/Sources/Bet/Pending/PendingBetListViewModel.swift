@@ -1,28 +1,30 @@
 import Foundation
 import Core
 import UI
+import LazyPaging
 import DataBet
 
 public class PendingBetListViewModel: ObservableObject {
     private let getPoolGamblerBetsUseCase : GetPendingPoolGamblerBetsUseCase
-    
-    private let gamblerId: String
-    
-    private let poolId: String
-    
-    private var searchText: String? = nil
-    
-    private var pagingSource: PoolGamblerBetPagingSource!
 
-    lazy var lazyPager: LazyPagingItems<String, PoolGamblerBetModel> = {
-        LazyPagingItems(
-            pagingData: PagingData(
-                pagingConfig: PagingConfig(prefetchDistance: 5),
-                pagingSourceFactory: { self.pagingSource }
+    private let gamblerId: String
+
+    private let poolId: String
+
+    private var searchText: String? = nil
+
+    private var pagingSource: LazyPagingCursorSource<PoolGamblerBetModel>!
+
+    @MainActor
+    lazy var lazyPager: LazyPaging.LazyPagingItems<String, PoolGamblerBetModel> = {
+        LazyPaging.LazyPagingItems(
+            pager: Pager(
+                config: LazyPaging.PagingConfig(pageSize: 25, prefetchDistance: 5),
+                pagingSourceFactory: { [pagingSource = self.pagingSource!] in pagingSource }
             )
         )
     }()
-    
+
     public init(
         getPoolGamblerBetsUseCase : GetPendingPoolGamblerBetsUseCase,
         gamblerId: String,
@@ -31,8 +33,8 @@ public class PendingBetListViewModel: ObservableObject {
         self.getPoolGamblerBetsUseCase = getPoolGamblerBetsUseCase
         self.gamblerId = gamblerId
         self.poolId = poolId
-        
-        let pagingSource = PoolGamblerBetPagingSource(
+
+        let pagingSource = LazyPagingCursorSource<PoolGamblerBetModel>(
             pagingQuery: { next in
                 await getPoolGamblerBetsUseCase.execute(
                     poolId: poolId,
@@ -46,12 +48,12 @@ public class PendingBetListViewModel: ObservableObject {
         )
         self.pagingSource = pagingSource
     }
-    
+
     func search(_ text: String) {
         searchText = text
         pagingSource.invalidate()
     }
-    
+
     func refresh() {
         pagingSource.invalidate()
     }
@@ -62,7 +64,7 @@ private extension Error {
         if let networkError = self as? NetworkError {
             return networkError.toNetworkLocalizedError()
         }
-        
+
         return UnknownLocalizedError()
     }
 }

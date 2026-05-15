@@ -46,26 +46,26 @@ struct HomeView: View {
     }
 
     private func informationSection() -> some View {
-        Text(String(.playPoolText))
+        Text(.playPoolText)
             .font(.largeTitle)
             .multilineTextAlignment(.center)
     }
 
     private func signInSection() -> some View {
         VStack(spacing: boxSpacing.small) {
-            Text(String(.continueWithText))
+            Text(.continueWithText)
                 .font(.headline)
 
             Spacer().frame(height: boxSpacing.small)
 
             Button(action: onSignInWithEmail) {
-                Text(String(.signInWithEmailAction))
+                Text(.signInWithEmailAction)
                     .frame(maxWidth:.infinity)
             }
             .buttonStyle(.liquidGlassProminent)
 
             Button(action: onSignInWithEmailAndPassword) {
-                Text(String(.signInWithEmailAndPasswordAction))
+                Text(.signInWithEmailAndPasswordAction)
                     .frame(maxWidth:.infinity)
             }
             .buttonStyle(.liquidGlass)

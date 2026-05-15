@@ -25,7 +25,7 @@ struct PoolFromLayoutCreatorStepTwoView: View {
     var body: some View {
         VStack(spacing: boxSpacing.large) {
             HStack {
-                Text(String(.fillPoolFieldsTitle))
+                Text(.fillPoolFieldsTitle)
                     .font(.title3)
                 Spacer()
             }
@@ -37,7 +37,7 @@ struct PoolFromLayoutCreatorStepTwoView: View {
             }) {
                 HStack(spacing: boxSpacing.small) {
                     Image(sharedResource: .done)
-                    Text(String(sharedResource: .doneAction))
+                    Text(sharedResource: .doneAction)
                 }
                 .frame(maxWidth: .infinity)
             }
@@ -67,10 +67,10 @@ private struct PoolNameTextField: View {
 
     var body: some View {
         ValidatableTextField(
-            label: String(.poolNameLabel),
+            label: String(localized: .poolNameLabel),
             value: $value,
             isValid: isValid,
-            errorMessage: String(.poolNameLengthValidationError),
+            errorMessage: String(localized: .poolNameLengthValidationError),
         )
         .textFieldStyle(.liquidGlass)
     }

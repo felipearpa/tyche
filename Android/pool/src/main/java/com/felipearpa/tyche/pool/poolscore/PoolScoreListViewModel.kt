@@ -68,7 +68,7 @@ class PoolScoreListViewModel(
             config = PagingConfig(
                 pageSize = pageSize,
                 prefetchDistance = PREFETCH_DISTANCE,
-                enablePlaceholders = true,
+                enablePlaceholders = false,
             ),
             pagingSourceFactory = {
                 PoolGamblerScorePagingSource(
