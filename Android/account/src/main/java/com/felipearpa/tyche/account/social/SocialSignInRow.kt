@@ -4,7 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.Icon
+import androidx.compose.foundation.Image
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -68,7 +68,7 @@ fun SocialSignInRow(
             onClick = onSignInWithGoogle,
             enabled = !isOverlayVisible,
         ) {
-            Icon(
+            Image(
                 painter = painterResource(id = R.drawable.google_logo),
                 contentDescription = null,
                 modifier = Modifier.size(iconSize),

@@ -76,6 +76,13 @@ public class LoginAssembly : Assembly {
             )
         }
 
+        container.register(SignInWithGoogleUseCase.self) { resolver in
+            SignInWithGoogleUseCase(
+                authenticationRepository: resolver.resolve(AuthenticationRepository.self)!,
+                accountStorage: resolver.resolve(AccountStorage.self)!
+            )
+        }
+
         container.register(LogOutUseCase.self) { resolver in
             LogOutUseCase(
                 authenticationRepository: resolver.resolve(AuthenticationRepository.self)!,

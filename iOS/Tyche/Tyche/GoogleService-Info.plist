@@ -2,6 +2,12 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>CLIENT_ID</key>
+	<string>201372633982-1njh2t94g6mrt6v42l52jnen4k023u0t.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.201372633982-1njh2t94g6mrt6v42l52jnen4k023u0t</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>201372633982-1qipfd1c4ev58loipm6e91rah8se9sdi.apps.googleusercontent.com</string>
 	<key>API_KEY</key>
 	<string>AIzaSyDOeCEIRr-Unywhy7asmPrMeguB4nKGmaY</string>
 	<key>GCM_SENDER_ID</key>
@@ -13,7 +19,7 @@
 	<key>PROJECT_ID</key>
 	<string>tyche-588ce</string>
 	<key>STORAGE_BUCKET</key>
-	<string>tyche-588ce.appspot.com</string>
+	<string>tyche-588ce.firebasestorage.app</string>
 	<key>IS_ADS_ENABLED</key>
 	<false></false>
 	<key>IS_ANALYTICS_ENABLED</key>
