@@ -30,14 +30,22 @@ import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import com.felipearpa.foundation.emptyString
 import com.felipearpa.tyche.R
+import com.felipearpa.tyche.account.social.SocialSignInRow
+import com.felipearpa.tyche.ui.exception.UnknownLocalizedException
 import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
 import com.felipearpa.tyche.ui.theme.TycheTheme
+import com.felipearpa.ui.state.LoadableViewState
 
 @Composable
-fun HomeView(onSignInWithEmail: () -> Unit, onSignInWithEmailAndPassword: () -> Unit) {
+fun HomeView(
+    onSignInWithEmail: () -> Unit,
+    onSignInWithEmailAndPassword: () -> Unit,
+    socialSignInSlot: @Composable () -> Unit,
+) {
     HomeView(
         onSignInWithEmail = onSignInWithEmail,
         onSignInWithEmailAndPassword = onSignInWithEmailAndPassword,
+        socialSignInSlot = socialSignInSlot,
         modifier = Modifier
             .fillMaxSize()
             .padding(all = LocalBoxSpacing.current.medium),
@@ -48,6 +56,7 @@ fun HomeView(onSignInWithEmail: () -> Unit, onSignInWithEmailAndPassword: () -> 
 private fun HomeView(
     onSignInWithEmail: () -> Unit,
     onSignInWithEmailAndPassword: () -> Unit,
+    socialSignInSlot: @Composable () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val backgroundColor = Brush.verticalGradient(
@@ -74,6 +83,7 @@ private fun HomeView(
                 SignInSection(
                     onSignInWithEmail = onSignInWithEmail,
                     onSignInWithEmailAndPassword = onSignInWithEmailAndPassword,
+                    socialSignInSlot = socialSignInSlot,
                 )
             }
         }
@@ -118,7 +128,11 @@ private fun InformationSection() {
 }
 
 @Composable
-private fun SignInSection(onSignInWithEmail: () -> Unit, onSignInWithEmailAndPassword: () -> Unit) {
+private fun SignInSection(
+    onSignInWithEmail: () -> Unit,
+    onSignInWithEmailAndPassword: () -> Unit,
+    socialSignInSlot: @Composable () -> Unit,
+) {
     Column(
         modifier = Modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.small),
@@ -131,6 +145,8 @@ private fun SignInSection(onSignInWithEmail: () -> Unit, onSignInWithEmailAndPas
         )
 
         Spacer(modifier = Modifier.height(LocalBoxSpacing.current.small))
+
+        socialSignInSlot()
 
         Button(
             onClick = onSignInWithEmail,
@@ -152,7 +168,7 @@ private val titleIconSize = 64.dp
 
 @PreviewLightDark
 @Composable
-fun HomeViewPreview() {
+fun HomeViewWithSocialInitialPreview() {
     TycheTheme(dynamicColor = false) {
         Surface {
             HomeView(
@@ -161,6 +177,62 @@ fun HomeViewPreview() {
                     .padding(all = LocalBoxSpacing.current.medium),
                 onSignInWithEmail = {},
                 onSignInWithEmailAndPassword = {},
+                socialSignInSlot = {
+                    SocialSignInRow(
+                        googleState = LoadableViewState.Initial,
+                        onSignInWithGoogle = {},
+                        onResetGoogleState = {},
+                        onAuthenticate = {},
+                    )
+                },
+            )
+        }
+    }
+}
+
+@PreviewLightDark
+@Composable
+fun HomeViewWithSocialLoadingPreview() {
+    TycheTheme(dynamicColor = false) {
+        Surface {
+            HomeView(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(all = LocalBoxSpacing.current.medium),
+                onSignInWithEmail = {},
+                onSignInWithEmailAndPassword = {},
+                socialSignInSlot = {
+                    SocialSignInRow(
+                        googleState = LoadableViewState.Loading,
+                        onSignInWithGoogle = {},
+                        onResetGoogleState = {},
+                        onAuthenticate = {},
+                    )
+                },
+            )
+        }
+    }
+}
+
+@PreviewLightDark
+@Composable
+fun HomeViewWithSocialFailurePreview() {
+    TycheTheme(dynamicColor = false) {
+        Surface {
+            HomeView(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(all = LocalBoxSpacing.current.medium),
+                onSignInWithEmail = {},
+                onSignInWithEmailAndPassword = {},
+                socialSignInSlot = {
+                    SocialSignInRow(
+                        googleState = LoadableViewState.Failure(UnknownLocalizedException()),
+                        onSignInWithGoogle = {},
+                        onResetGoogleState = {},
+                        onAuthenticate = {},
+                    )
+                },
             )
         }
     }

@@ -12,6 +12,8 @@ interface AuthenticationRepository {
         password: String,
     ): Result<ExternalAccountId>
 
+    suspend fun signInWithGoogle(idToken: String): Result<GoogleSignInResult>
+
     suspend fun logout(): Result<Unit>
 
     suspend fun linkAccount(accountLink: AccountLink): Result<AccountBundle>

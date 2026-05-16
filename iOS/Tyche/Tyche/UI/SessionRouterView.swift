@@ -1,5 +1,6 @@
 import SwiftUI
 import Swinject
+import GoogleSignIn
 import UI
 import Core
 import Session
@@ -38,7 +39,10 @@ struct SessionRouterView: View {
                           matchURL(url.absoluteString, to: String(format: joinPoolUrlTemplate(), "{poolId}")) != nil {
                     PoolJoinRequiresSignInView(onDismiss: { universalLink = nil })
                 } else {
-                    HomeRouter(onSignIn: { accountBundle in signedInAccountBundle = accountBundle })
+                    HomeRouter(
+                        onSignIn: { accountBundle in signedInAccountBundle = accountBundle },
+                        diResolver: diResolver,
+                    )
                 }
             case .some(.some(let accountBundle)):
                 let joinPoolUrlTemplate = diResolver.resolve(JoinPoolUrlTemplateProvider.self)!
@@ -72,6 +76,7 @@ struct SessionRouterView: View {
             signedInAccountBundle = try? await accountStorage.retrieve()
         }
         .onOpenURL { url in
+            if GIDSignIn.sharedInstance.handle(url) { return }
             universalLink = url
         }
     }

@@ -54,6 +54,28 @@ func handleFirebaseSignInWithEmailAndPassword<Value>(_ perform: () async throws 
     }
 }
 
+func handleFirebaseSignInWithGoogle<Value>(_ perform: () async throws -> Value) async -> Result<Value, Error> {
+    do {
+        return try await Result.success(perform())
+    } catch let error as NSError {
+        let finalError = mapFirebaseAuthError(error) { code in
+            switch code {
+            case .invalidCredential:
+                return GoogleSignInError.invalidCredential
+            case .accountExistsWithDifferentCredential:
+                return GoogleSignInError.accountExistsWithDifferentCredential
+            case .networkError:
+                return GoogleSignInError.networkError
+            default:
+                return nil
+            }
+        }
+        return Result.failure(finalError)
+    } catch let error {
+        return Result.failure(error)
+    }
+}
+
 private func mapFirebaseAuthError(
     _ error: NSError,
     mapping: (AuthErrorCode) -> Error?

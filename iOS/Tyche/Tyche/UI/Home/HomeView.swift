@@ -2,11 +2,22 @@ import SwiftUI
 import UI
 import Account
 
-struct HomeView: View {
+struct HomeView<SocialSlot: View>: View {
     let onSignInWithEmail: () -> Void
     let onSignInWithEmailAndPassword: () -> Void
+    private let socialSignInSlot: SocialSlot
 
     @Environment(\.boxSpacing) var boxSpacing
+
+    init(
+        onSignInWithEmail: @escaping () -> Void,
+        onSignInWithEmailAndPassword: @escaping () -> Void,
+        @ViewBuilder socialSignInSlot: () -> SocialSlot
+    ) {
+        self.onSignInWithEmail = onSignInWithEmail
+        self.onSignInWithEmailAndPassword = onSignInWithEmailAndPassword
+        self.socialSignInSlot = socialSignInSlot()
+    }
 
     var body: some View {
         ZStack {
@@ -52,21 +63,23 @@ struct HomeView: View {
     }
 
     private func signInSection() -> some View {
-        VStack(spacing: boxSpacing.small) {
+        VStack(spacing: boxSpacing.medium) {
             Text(.continueWithText)
                 .font(.headline)
 
             Spacer().frame(height: boxSpacing.small)
 
+            socialSignInSlot
+
             Button(action: onSignInWithEmail) {
                 Text(.signInWithEmailAction)
-                    .frame(maxWidth:.infinity)
+                    .frame(maxWidth: .infinity)
             }
             .buttonStyle(.liquidGlassProminent)
 
             Button(action: onSignInWithEmailAndPassword) {
                 Text(.signInWithEmailAndPasswordAction)
-                    .frame(maxWidth:.infinity)
+                    .frame(maxWidth: .infinity)
             }
             .buttonStyle(.liquidGlass)
         }
@@ -75,11 +88,34 @@ struct HomeView: View {
 
 private let titleIconSize: CGFloat = 64
 
-#Preview("Light mode") {
-    HomeView(onSignInWithEmail: {}, onSignInWithEmailAndPassword: {})
+#Preview("Initial - Light") {
+    HomeView(
+        onSignInWithEmail: {},
+        onSignInWithEmailAndPassword: {},
+        socialSignInSlot: {
+            SocialSignInRow(googleState: .idle, onSignInWithGoogle: {})
+        },
+    )
 }
 
-#Preview("Dark mode") {
-    HomeView(onSignInWithEmail: {}, onSignInWithEmailAndPassword: {})
-        .preferredColorScheme(.dark)
+#Preview("Initial - Dark") {
+    HomeView(
+        onSignInWithEmail: {},
+        onSignInWithEmailAndPassword: {},
+        socialSignInSlot: {
+            SocialSignInRow(googleState: .idle, onSignInWithGoogle: {})
+        },
+    )
+    .preferredColorScheme(.dark)
+}
+
+#Preview("Loading - Dark") {
+    HomeView(
+        onSignInWithEmail: {},
+        onSignInWithEmailAndPassword: {},
+        socialSignInSlot: {
+            SocialSignInRow(googleState: .loading, onSignInWithGoogle: {})
+        },
+    )
+    .preferredColorScheme(.dark)
 }

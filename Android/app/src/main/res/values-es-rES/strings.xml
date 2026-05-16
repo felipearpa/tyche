@@ -11,6 +11,7 @@
     <string name="history_bets_tab">Historial</string>
     <string name="change_pool_action">Cambiar quiniela</string>
     <string name="sign_in_with_email_and_password">Correo electrónico y contraseña</string>
+    <string name="sign_in_with_google_action">Google</string>
     <string name="continue_with_text">Continuar con:</string>
     <string name="suffix_point_text">%s puntos</string>
     <string name="playing_now_text">Jugando ahora</string>

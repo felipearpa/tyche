@@ -16,7 +16,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import com.felipearpa.tyche.pool.PoolGamblerScoreModel
 import com.felipearpa.tyche.pool.PositionIndicator
@@ -48,10 +47,10 @@ fun PoolScoreItem(
             horizontalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.medium),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            if (poolGamblerScore.position != null) {
+            poolGamblerScore.position?.let {
                 PositionIndicator(
-                    position = poolGamblerScore.position,
-                    isCurrentUser = true,
+                    position = it,
+                    shouldUsePrimaryColor = true,
                     shimmerModifier = placeholderModifier,
                 )
             }
@@ -110,18 +109,26 @@ private fun PoolScoreItemPreview() {
     }
 }
 
-@Preview(showBackground = true)
+@PreviewLightDark
 @Composable
 private fun PoolScoreItemPreviewWithoutScore() {
-    PoolScoreItem(
-        poolGamblerScore = poolGamblerScoreWithoutScoreDummyModel(),
-        onJoin = {},
-        modifier = Modifier.fillMaxWidth(),
-    )
+    TycheTheme {
+        Surface {
+            PoolScoreItem(
+                poolGamblerScore = poolGamblerScoreWithoutScoreDummyModel(),
+                onJoin = {},
+                modifier = Modifier.fillMaxWidth(),
+            )
+        }
+    }
 }
 
-@Preview(showBackground = true)
+@PreviewLightDark
 @Composable
 private fun PoolScoreFakeItemPreview() {
-    PoolScorePlaceholderItem(modifier = Modifier.fillMaxWidth())
+    TycheTheme {
+        Surface {
+            PoolScorePlaceholderItem(modifier = Modifier.fillMaxWidth())
+        }
+    }
 }

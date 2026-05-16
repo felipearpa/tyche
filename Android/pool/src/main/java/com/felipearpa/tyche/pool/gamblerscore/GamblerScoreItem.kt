@@ -46,7 +46,7 @@ fun GamblerScoreItem(
             if (poolGamblerScore.position != null) {
                 PositionIndicator(
                     position = poolGamblerScore.position,
-                    isCurrentUser = isCurrentUser,
+                    shouldUsePrimaryColor = isCurrentUser,
                     shimmerModifier = shimmerModifier,
                 )
             } else {

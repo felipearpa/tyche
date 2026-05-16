@@ -10,7 +10,7 @@ struct GamblerScoreItem: View {
     var body: some View {
         HStack(spacing: boxSpacing.medium) {
             if let currentPosition = poolGamblerScore.position {
-                PostionIndicator(postion: currentPosition, isSignedIdUser: isCurrentUser)
+                PostionIndicator(postion: currentPosition, shouldUsePrimeryColor: isCurrentUser)
             } else {
                 Color.clear.frame(width: indicatorSize, height: indicatorSize)
             }

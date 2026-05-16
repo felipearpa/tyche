@@ -37,6 +37,15 @@ class AuthenticationFirebaseDataSource: AuthenticationExternalDataSource {
         return authResult.user.uid
     }
 
+    func signInWithGoogle(idToken: String, accessToken: String) async throws -> GoogleSignInResult {
+        let credential = GoogleAuthProvider.credential(withIDToken: idToken, accessToken: accessToken)
+        let authResult = try await firebaseAuth.signIn(with: credential)
+        return GoogleSignInResult(
+            externalAccountId: authResult.user.uid,
+            email: authResult.user.email ?? ""
+        )
+    }
+
     func isSignInWithEmailLink(emailLink: String) async -> Bool {
         firebaseAuth.isSignIn(withEmailLink: emailLink)
     }

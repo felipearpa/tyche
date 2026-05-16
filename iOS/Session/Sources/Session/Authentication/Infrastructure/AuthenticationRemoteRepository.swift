@@ -37,6 +37,12 @@ class AuthenticationRemoteRepository: AuthenticationRepository {
         }
     }
 
+    func signInWithGoogle(idToken: String, accessToken: String) async -> Result<GoogleSignInResult, Error> {
+        return await handleFirebaseSignInWithGoogle {
+            try await authenticationExternalDataSource.signInWithGoogle(idToken: idToken, accessToken: accessToken)
+        }
+    }
+
     func logOut() async -> Result<Void, Error> {
         do {
             try await authenticationExternalDataSource.signOut()

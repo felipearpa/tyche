@@ -18,7 +18,7 @@ import com.felipearpa.tyche.ui.theme.TycheTheme
 @Composable
 fun PositionIndicator(
     position: Int,
-    isCurrentUser: Boolean,
+    shouldUsePrimaryColor: Boolean,
     modifier: Modifier = Modifier,
     shimmerModifier: Modifier = Modifier,
 ) {
@@ -26,13 +26,13 @@ fun PositionIndicator(
         modifier = modifier
             .size(scoreSize)
             .clip(RoundedCornerShape(8.dp))
-            .background(color = if (isCurrentUser) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.secondaryContainer)
+            .background(color = if (shouldUsePrimaryColor) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.secondaryContainer)
             .then(shimmerModifier),
         contentAlignment = Alignment.Center,
     ) {
         Text(
             text = position.toString(),
-            color = if (isCurrentUser) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSecondaryContainer,
+            color = if (shouldUsePrimaryColor) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSecondaryContainer,
         )
     }
 }
@@ -46,7 +46,7 @@ private fun SignedInPositionIndicatorPreview() {
         Surface {
             PositionIndicator(
                 position = 1,
-                isCurrentUser = true,
+                shouldUsePrimaryColor = true,
             )
         }
     }
@@ -59,7 +59,20 @@ private fun NonSignedInPositionIndicatorPreview() {
         Surface {
             PositionIndicator(
                 position = 1,
-                isCurrentUser = false,
+                shouldUsePrimaryColor = false,
+            )
+        }
+    }
+}
+
+@PreviewLightDark
+@Composable
+private fun NonSignedInPositionIndicatorWithoutPositionPreview() {
+    TycheTheme {
+        Surface {
+            PositionIndicator(
+                position = 1,
+                shouldUsePrimaryColor = false,
             )
         }
     }

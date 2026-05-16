@@ -12,7 +12,12 @@
           "package_name": "com.felipearpa.fortuna"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "201372633982-uf1hb8pnp0f9d0bhek63nr5c8cd3pcne.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyAoSNbacD0KaQATsmzbj9yE2FhAxAov2Cg"
@@ -20,26 +25,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:201372633982:android:701168b1c141e98d83412f",
-        "android_client_info": {
-          "package_name": "com.felipearpa.tyche"
-        }
-      },
-      "oauth_client": [],
-      "api_key": [
-        {
-          "current_key": "AIzaSyAoSNbacD0KaQATsmzbj9yE2FhAxAov2Cg"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "201372633982-024c3nomc58uscgkddhlcuu0d8lh6bka.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "201372633982-1njh2t94g6mrt6v42l52jnen4k023u0t.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.felipearpa.tyche"
+              }
+            }
+          ]
         }
       }
     }

@@ -8,6 +8,7 @@ import com.felipearpa.tyche.session.authentication.domain.AuthenticationExternal
 import com.felipearpa.tyche.session.authentication.domain.AuthenticationRepository
 import com.felipearpa.tyche.session.authentication.domain.EmailLinkSignInException
 import com.felipearpa.tyche.session.authentication.domain.ExternalAccountId
+import com.felipearpa.tyche.session.authentication.domain.GoogleSignInResult
 import com.felipearpa.tyche.session.authentication.domain.toLinkAccountRequest
 
 internal class AuthenticationRemoteRepository(
@@ -44,6 +45,12 @@ internal class AuthenticationRemoteRepository(
                 email = email,
                 password = password,
             )
+        }
+    }
+
+    override suspend fun signInWithGoogle(idToken: String): Result<GoogleSignInResult> {
+        return handleFirebaseSignInWithGoogle {
+            authenticationExternalDataSource.signInWithGoogle(idToken = idToken)
         }
     }
 

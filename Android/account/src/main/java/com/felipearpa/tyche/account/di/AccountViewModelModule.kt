@@ -3,6 +3,9 @@ package com.felipearpa.tyche.account.di
 import com.felipearpa.tyche.account.byemail.EmailLinkSignInViewModel
 import com.felipearpa.tyche.account.byemail.EmailSignInViewModel
 import com.felipearpa.tyche.account.byemailandpassword.EmailAndPasswordSignInViewModel
+import com.felipearpa.tyche.account.bygoogle.CredentialManagerGoogleCredentialProvider
+import com.felipearpa.tyche.account.bygoogle.GoogleCredentialProvider
+import com.felipearpa.tyche.account.bygoogle.GoogleSignInViewModel
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
@@ -10,4 +13,6 @@ val accountViewModelModule = module {
     viewModel { EmailSignInViewModel(sendSignInLinkToEmail = get()) }
     viewModel { EmailAndPasswordSignInViewModel(signInWithEmailAndPassword = get()) }
     viewModel { EmailLinkSignInViewModel(signInLinkToEmail = get()) }
+    viewModel { GoogleSignInViewModel(credentialProvider = get(), signInWithGoogle = get()) }
+    factory<GoogleCredentialProvider> { CredentialManagerGoogleCredentialProvider(webClientIdProvider = get()) }
 }

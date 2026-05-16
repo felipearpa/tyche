@@ -56,6 +56,10 @@ dependencies {
     implementation(libs.felipearpa.viewing.state)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.felipearpa.foundation)
+    implementation(libs.androidx.credentials)
+    implementation(libs.androidx.credentials.play.services.auth)
+    implementation(libs.google.id)
+    implementation(libs.lifecycle.process)
 
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)
