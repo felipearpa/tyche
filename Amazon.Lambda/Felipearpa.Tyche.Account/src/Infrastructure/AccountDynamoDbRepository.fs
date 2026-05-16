@@ -103,6 +103,17 @@ type AccountDynamoDbRepository(client: IAmazonDynamoDB) =
                 | Error _ -> return Error()
             }
 
+        member this.UpdateUsernameAsync(accountId, username) =
+            async {
+                let request = UpdateUsernameRequestBuilder.build accountId username
+
+                try
+                    let! _ = client.UpdateItemAsync request |> Async.AwaitTask
+                    return Ok()
+                with _ ->
+                    return Error()
+            }
+
         member this.GetByIdAsync(id) =
             async {
                 let request = GetByIdRequestBuilder.build (id |> Ulid.value)

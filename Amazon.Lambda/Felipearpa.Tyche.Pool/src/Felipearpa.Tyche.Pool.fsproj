@@ -60,6 +60,9 @@
         <Compile Include="Infrastructure\GetGamblersByPoolLayoutRequestBuilder.fs" />
         <Compile Include="Infrastructure\GetPoolGamblerKeysRequestBuilder.fs" />
         <Compile Include="Infrastructure\GetPoolGamblerBetKeysRequestBuilder.fs" />
+        <Compile Include="Infrastructure\GetGamblerScoreItemsRequestBuilder.fs" />
+        <Compile Include="Infrastructure\UpdateGamblerScoreUsernameRequestBuilder.fs" />
+        <Compile Include="Infrastructure\UpdateGamblerBetUsernameRequestBuilder.fs" />
         <Compile Include="Infrastructure\PoolDynamoDBRepository.fs" />
         <Compile Include="Application\GetPoolGamblerScoresByGambler.fs" />
         <Compile Include="Application\GetPoolGamblerScoresByPool.fs" />
@@ -80,6 +83,7 @@
         <Compile Include="Application\UpdatePositions.fs" />
         <Compile Include="Application\AddMatches.fs" />
         <Compile Include="Application\FanOutMatchToGamblers.fs" />
+        <Compile Include="Application\UpdateUsername.fs" />
     </ItemGroup>
 
     <ItemGroup>

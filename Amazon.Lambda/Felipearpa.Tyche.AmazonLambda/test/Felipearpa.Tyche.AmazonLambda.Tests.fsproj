@@ -43,5 +43,6 @@
     <Compile Include="Function\Bet\BetTest.fs" />
     <Compile Include="Function\PoolLayout\GetOpenPoolLayoutsTest.fs" />
     <Compile Include="Function\Account\LinkAccountTest.fs" />
+    <Compile Include="Function\Account\UpdateUsernameTest.fs" />
   </ItemGroup>
 </Project>

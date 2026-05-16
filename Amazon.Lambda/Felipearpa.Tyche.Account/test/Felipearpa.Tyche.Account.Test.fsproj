@@ -9,6 +9,7 @@
 
     <ItemGroup>
         <Compile Include="Infrastructure\AccountDynamoDbRepositoryTest.fs" />
+        <Compile Include="Infrastructure\UpdateUsernameRequestBuilderTest.fs" />
     </ItemGroup>
 
     <ItemGroup>

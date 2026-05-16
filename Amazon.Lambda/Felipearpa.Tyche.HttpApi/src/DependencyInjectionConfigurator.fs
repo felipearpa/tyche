@@ -54,6 +54,7 @@ module DependencyInjectionConfigurator =
             .AddScoped<CreatePool>()
             .AddScoped<JoinPool>()
             .AddScoped<DeletePool>()
+            .AddScoped<UpdateUsername>()
             .AddScoped<IPoolLayoutRepository, PoolLayoutDynamoDbRepository>()
             .AddScoped<GetOpenPoolLayouts>()
             .AddScoped<IPoolLayoutVersionResolver, PoolLayoutVersionResolver>()

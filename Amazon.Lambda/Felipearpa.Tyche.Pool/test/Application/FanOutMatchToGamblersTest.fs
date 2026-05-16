@@ -44,6 +44,7 @@ module FanOutMatchToGamblersTest =
                 member _.JoinPoolAsync(_) = failwith "not used"
                 member _.IsPoolMemberAsync(_, _) = failwith "not used"
                 member _.DeletePoolAsync(_) = failwith "not used"
+                member _.PropagateGamblerUsernameAsync(_, _) = failwith "not used"
 
                 member _.GetGamblersByPoolLayoutAsync(layoutId, next) =
                     queryCalls.Add(layoutId, next)

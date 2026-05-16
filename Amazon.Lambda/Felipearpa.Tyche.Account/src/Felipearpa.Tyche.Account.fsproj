@@ -12,6 +12,7 @@
         <Compile Include="Domain\IAccountRepository.fs" />
         <Compile Include="Domain\AccountDictionaryTransformer.fs" />
         <Compile Include="Infrastructure\UpdateLinkRequestBuilder.fs" />
+        <Compile Include="Infrastructure\UpdateUsernameRequestBuilder.fs" />
         <Compile Include="Infrastructure\LinkRequestBuilder.fs" />
         <Compile Include="Infrastructure\GetByEmailRequestBuilder.fs" />
         <Compile Include="Infrastructure\GetByIdRequestBuilder.fs" />
@@ -21,6 +22,7 @@
         <Compile Include="Application\LinkAccountInput.fs" />
         <Compile Include="Application\LinkAccountTransformer.fs" />
         <Compile Include="Application\LinkAccount.fs" />
+        <Compile Include="Application\UpdateUsernameInput.fs" />
     </ItemGroup>
 
     <ItemGroup>
