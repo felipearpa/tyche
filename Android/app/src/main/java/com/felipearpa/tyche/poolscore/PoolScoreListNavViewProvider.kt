@@ -1,12 +1,18 @@
 package com.felipearpa.tyche.poolscore
 
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
+import com.felipearpa.tyche.EmailAvatar
 import com.felipearpa.tyche.home.HomeRoute
 import com.felipearpa.tyche.pool.creator.PoolFromLayoutCreatorRoute
 import com.felipearpa.tyche.pool.poolscore.PoolScoreListRoute
@@ -17,6 +23,7 @@ import com.felipearpa.tyche.poolscore.drawer.DrawerView
 import com.felipearpa.tyche.poolscore.drawer.drawerViewModel
 
 const val POOL_CREATED_KEY = "pool_created"
+private const val NAVIGATION_AVATAR_SIZE = 32
 
 fun NavGraphBuilder.poolScoreListNavView(
     navController: NavController,
@@ -38,16 +45,27 @@ fun NavGraphBuilder.poolScoreListNavView(
             }
         }
 
+        val drawerVM = drawerViewModel()
+        val email by drawerVM.email.collectAsStateWithLifecycle()
+
         PoolScoreListView(
             viewModel = poolScoreListViewModel(gamblerId = poolScoreListRoute.gamblerId),
             drawerView = {
                 DrawerView(
-                    viewModel = drawerViewModel(),
+                    viewModel = drawerVM,
                     onSignOut = {
                         navController.navigate(route = HomeRoute) {
                             popUpTo(route = initialRoute) { inclusive = true }
                         }
                     },
+                )
+            },
+            navigationIcon = {
+                EmailAvatar(
+                    email = email,
+                    modifier = Modifier
+                        .size(NAVIGATION_AVATAR_SIZE.dp)
+                        .clip(CircleShape),
                 )
             },
             onPoolOpen = { poolId, gamblerId ->

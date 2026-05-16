@@ -33,6 +33,7 @@ private struct PoolScoreListDrawerStatefulView : View {
     var body: some View {
         VStack(spacing: 0) {
             AccountHeaderDrawer(email: email)
+                .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.top, boxSpacing.large)
                 .padding(.horizontal, boxSpacing.medium)
 

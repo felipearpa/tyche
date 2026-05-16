@@ -77,11 +77,11 @@ struct PoolScoreListRouter: View {
 
     private func navigationBarLeading() -> some View {
         Button(action: { drawerVisible.toggle() }) {
-            Image(sharedResource: .menu)
-                .resizable()
-                .frame(width: iconSize, height: iconSize)
-                .tint(.primary)
+            EmailAvatar(email: accountBundle.email)
+                .frame(width: navigationAvatarSize, height: navigationAvatarSize)
+                .clipShape(Circle())
         }
+        .buttonStyle(.plain)
     }
 
     private func navigationBarTrailing() -> some View {
@@ -95,7 +95,7 @@ struct PoolScoreListRouter: View {
     }
 }
 
-private let iconSize: CGFloat = 24
+private let navigationAvatarSize: CGFloat = 32
 private let createIconSize: CGFloat = 32
 
 private func poolScoreListFakeResolver() -> DIResolver {

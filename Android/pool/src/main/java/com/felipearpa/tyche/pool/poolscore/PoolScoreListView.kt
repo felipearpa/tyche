@@ -57,6 +57,7 @@ fun PoolScoreListView(
     onPoolOpen: (poolId: String, gamblerId: String) -> Unit,
     onPoolCreate: () -> Unit,
     onPoolLayoutSelect: (PoolLayoutModel) -> Unit,
+    navigationIcon: @Composable () -> Unit = { DefaultNavigationIcon() },
 ) {
     val lazyItems = viewModel.poolGamblerScores.collectAsLazyPagingItems()
     val lazyPoolLayouts = viewModel.poolLayouts.collectAsLazyPagingItems()
@@ -68,6 +69,7 @@ fun PoolScoreListView(
         lazyPoolLayouts = lazyPoolLayouts,
         pageSize = pageSize,
         drawerView = drawerView,
+        navigationIcon = navigationIcon,
         onPoolOpen = onPoolOpen,
         onPoolCreate = onPoolCreate,
         onPoolLayoutSelect = onPoolLayoutSelect,
@@ -110,6 +112,7 @@ private fun PoolScoreListView(
     onPoolJoin: (poolId: String) -> Unit,
     onPoolCreate: () -> Unit,
     onPoolLayoutSelect: (PoolLayoutModel) -> Unit,
+    navigationIcon: @Composable () -> Unit = { DefaultNavigationIcon() },
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val coroutineScope = rememberCoroutineScope()
@@ -128,6 +131,7 @@ private fun PoolScoreListView(
                 TopAppBar(
                     title = { Text(text = stringResource(id = R.string.gambler_pool_list_title)) },
                     scrollBehavior = scrollBehavior,
+                    navigationIcon = navigationIcon,
                     onAccountOpen = {
                         coroutineScope.launch {
                             drawerState.apply {
@@ -161,6 +165,7 @@ private fun PoolScoreListView(
 private fun TopAppBar(
     title: @Composable () -> Unit,
     scrollBehavior: TopAppBarScrollBehavior,
+    navigationIcon: @Composable () -> Unit,
     onAccountOpen: () -> Unit,
     onPoolCreate: () -> Unit,
 ) {
@@ -168,10 +173,7 @@ private fun TopAppBar(
         title = title,
         navigationIcon = {
             IconButton(onClick = onAccountOpen) {
-                Icon(
-                    painter = painterResource(id = SharedR.drawable.menu),
-                    contentDescription = emptyString(),
-                )
+                navigationIcon()
             }
         },
         actions = {
@@ -185,6 +187,14 @@ private fun TopAppBar(
             }
         },
         scrollBehavior = scrollBehavior,
+    )
+}
+
+@Composable
+private fun DefaultNavigationIcon() {
+    Icon(
+        painter = painterResource(id = SharedR.drawable.menu),
+        contentDescription = emptyString(),
     )
 }
 

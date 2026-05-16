@@ -8,8 +8,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedIconButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -71,7 +71,7 @@ fun PoolScoreItem(
 
             Spacer(modifier = Modifier.height(LocalBoxSpacing.current.medium))
 
-            IconButton(
+            OutlinedIconButton(
                 onClick = onJoin,
                 modifier = placeholderModifier,
             ) {

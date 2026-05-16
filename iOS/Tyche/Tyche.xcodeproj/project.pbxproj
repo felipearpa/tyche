@@ -21,6 +21,7 @@
 		55D5929D2FA43C71003D4E59 /* LocalURLBasePathProviderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55D5929C2FA43C71003D4E59 /* LocalURLBasePathProviderTests.swift */; };
 		55F9FDCA2B56EAD500066BBA /* EmailLinkSignInRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55F9FDC92B56EAD500066BBA /* EmailLinkSignInRouter.swift */; };
 		55FA8F932FAF6F4300EA591D /* AccountHeaderDrawer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55FA8F922FAF6F3300EA591D /* AccountHeaderDrawer.swift */; };
+		55EA1A012FEA1A0100EA1A01 /* EmailAvatar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55EA1A002FEA1A0000EA1A00 /* EmailAvatar.swift */; };
 		D2127F392A2C2F240047DED7 /* TycheApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2127F382A2C2F240047DED7 /* TycheApp.swift */; };
 		D2127F3D2A2C2F260047DED7 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D2127F3C2A2C2F260047DED7 /* Assets.xcassets */; };
 		D2127F402A2C2F260047DED7 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D2127F3F2A2C2F260047DED7 /* Preview Assets.xcassets */; };
@@ -64,6 +65,7 @@
 		55D5929C2FA43C71003D4E59 /* LocalURLBasePathProviderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalURLBasePathProviderTests.swift; sourceTree = "<group>"; };
 		55F9FDC92B56EAD500066BBA /* EmailLinkSignInRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmailLinkSignInRouter.swift; sourceTree = "<group>"; };
 		55FA8F922FAF6F3300EA591D /* AccountHeaderDrawer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountHeaderDrawer.swift; sourceTree = "<group>"; };
+		55EA1A002FEA1A0000EA1A00 /* EmailAvatar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmailAvatar.swift; sourceTree = "<group>"; };
 		D204461A2A367F1400390319 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		D2127F352A2C2F240047DED7 /* Tyche.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Tyche.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D2127F382A2C2F240047DED7 /* TycheApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TycheApp.swift; sourceTree = "<group>"; };
@@ -203,6 +205,7 @@
 			isa = PBXGroup;
 			children = (
 				55FA8F922FAF6F3300EA591D /* AccountHeaderDrawer.swift */,
+				55EA1A002FEA1A0000EA1A00 /* EmailAvatar.swift */,
 				55C9D92E2E2B1D24007B79CA /* Home */,
 				55C9D9102E2AE2A9007B79CA /* PoolHome */,
 				55DC0E1C2E283C32007F7BD9 /* PoolScoreList */,
@@ -383,6 +386,7 @@
 				55ACE9FF2E634A5C000CEF99 /* UrlMatcher.swift in Sources */,
 				D2127F392A2C2F240047DED7 /* TycheApp.swift in Sources */,
 				55FA8F932FAF6F4300EA591D /* AccountHeaderDrawer.swift in Sources */,
+				55EA1A012FEA1A0100EA1A01 /* EmailAvatar.swift in Sources */,
 				D21495EC2ABFD65E00C18C71 /* SessionRouterView.swift in Sources */,
 				5556C5172E515434004F34D5 /* AppDelegate.swift in Sources */,
 				D2127F452A2C2F260047DED7 /* Tyche.xcdatamodeld in Sources */,

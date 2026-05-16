@@ -68,7 +68,7 @@ private struct PoolHomeDrawerStatefulView: View {
     var body: some View {
         VStack(spacing: boxSpacing.medium) {
             AccountHeaderDrawer(email: email)
-                .frame(maxWidth: .infinity)
+                .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.top, boxSpacing.large)
                 .padding(.horizontal, boxSpacing.medium)
                 .padding(.bottom, boxSpacing.medium)
