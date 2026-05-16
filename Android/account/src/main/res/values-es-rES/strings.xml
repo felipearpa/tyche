@@ -29,4 +29,13 @@
     <string name="send_sign_in_link_to_email_too_many_requests_failure_description">El inicio de sesión por correo no está disponible temporalmente</string>
     <string name="send_sign_in_link_to_email_too_many_requests_failure_reason">Has superado el límite diario de solicitudes de inicio de sesión por correo</string>
     <string name="send_sign_in_link_to_email_too_many_requests_failure_recovery_suggestion">Vuelve a intentarlo dentro de unas horas</string>
+    <string name="google_sign_in_invalid_credential_failure_description">Falló el inicio con Google</string>
+    <string name="google_sign_in_invalid_credential_failure_reason">No pudimos verificar tus credenciales de Google</string>
+    <string name="google_sign_in_invalid_credential_failure_recovery_suggestion">Inténtalo de nuevo</string>
+    <string name="google_sign_in_account_exists_failure_description">La cuenta ya existe</string>
+    <string name="google_sign_in_account_exists_failure_reason">Ya existe una cuenta con este correo usando otro método de inicio de sesión</string>
+    <string name="google_sign_in_account_exists_failure_recovery_suggestion">Inicia sesión con el método original para vincular tu cuenta de Google</string>
+    <string name="google_sign_in_network_failure_description">Error de red</string>
+    <string name="google_sign_in_network_failure_reason">No pudimos conectar con el servicio de inicio de sesión</string>
+    <string name="google_sign_in_network_failure_recovery_suggestion">Revisa tu conexión e inténtalo de nuevo</string>
 </resources>

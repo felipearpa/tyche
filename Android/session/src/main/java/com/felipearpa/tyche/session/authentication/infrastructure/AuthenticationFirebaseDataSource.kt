@@ -5,7 +5,9 @@ import com.felipearpa.tyche.core.IosBundleIdProvider
 import com.felipearpa.tyche.session.SignInLinkUrlTemplateProvider
 import com.felipearpa.tyche.session.authentication.domain.AuthenticationExternalDataSource
 import com.felipearpa.tyche.session.authentication.domain.ExternalAccountId
+import com.felipearpa.tyche.session.authentication.domain.GoogleSignInResult
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.actionCodeSettings
 import kotlinx.coroutines.tasks.await
 
@@ -37,6 +39,16 @@ internal class AuthenticationFirebaseDataSource(
     ): ExternalAccountId {
         val authResult = firebaseAuth.signInWithEmailAndPassword(email, password).await()
         return authResult.user!!.uid
+    }
+
+    override suspend fun signInWithGoogle(idToken: String): GoogleSignInResult {
+        val credential = GoogleAuthProvider.getCredential(idToken, null)
+        val authResult = firebaseAuth.signInWithCredential(credential).await()
+        val user = authResult.user!!
+        return GoogleSignInResult(
+            externalAccountId = user.uid,
+            email = user.email.orEmpty(),
+        )
     }
 
     override suspend fun isSignInWithEmailLink(emailLink: String): Boolean =

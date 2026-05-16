@@ -29,4 +29,13 @@
     <string name="send_sign_in_link_to_email_too_many_requests_failure_description">Email sign-in is temporarily unavailable</string>
     <string name="send_sign_in_link_to_email_too_many_requests_failure_reason">You have exceeded the daily limit for email sign-in requests</string>
     <string name="send_sign_in_link_to_email_too_many_requests_failure_recovery_suggestion">Please try again in a few hours</string>
+    <string name="google_sign_in_invalid_credential_failure_description">Google sign-in failed</string>
+    <string name="google_sign_in_invalid_credential_failure_reason">We couldn’t verify your Google credentials</string>
+    <string name="google_sign_in_invalid_credential_failure_recovery_suggestion">Try signing in again</string>
+    <string name="google_sign_in_account_exists_failure_description">Account already exists</string>
+    <string name="google_sign_in_account_exists_failure_reason">An account with this email already exists using a different sign-in method</string>
+    <string name="google_sign_in_account_exists_failure_recovery_suggestion">Sign in with the original method to link your Google account</string>
+    <string name="google_sign_in_network_failure_description">Network error</string>
+    <string name="google_sign_in_network_failure_reason">We couldn’t reach the sign-in service</string>
+    <string name="google_sign_in_network_failure_recovery_suggestion">Check your connection and try again</string>
 </resources>

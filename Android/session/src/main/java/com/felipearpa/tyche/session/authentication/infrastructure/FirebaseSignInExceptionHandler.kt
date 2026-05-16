@@ -2,10 +2,13 @@ package com.felipearpa.tyche.session.authentication.infrastructure
 
 import com.felipearpa.tyche.session.authentication.domain.EmailAndPasswordSignInException
 import com.felipearpa.tyche.session.authentication.domain.EmailLinkSignInException
+import com.felipearpa.tyche.session.authentication.domain.GoogleSignInException
 import com.felipearpa.tyche.session.authentication.domain.SendSignInLinkToEmailException
+import com.google.firebase.FirebaseNetworkException
 import com.google.firebase.FirebaseTooManyRequestsException
 import com.google.firebase.auth.FirebaseAuthActionCodeException
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
+import com.google.firebase.auth.FirebaseAuthUserCollisionException
 
 suspend fun <Value> handleFirebaseSendSignInLinkToEmail(block: suspend () -> Value): Result<Value> {
     return try {
@@ -34,6 +37,20 @@ suspend fun <Value> handleFirebaseSignInWithEmailAndPassword(block: suspend () -
         Result.success(block())
     } catch (_: FirebaseAuthInvalidCredentialsException) {
         Result.failure(EmailAndPasswordSignInException.InvalidCredentials)
+    } catch (exception: Exception) {
+        Result.failure(exception)
+    }
+}
+
+suspend fun <Value> handleFirebaseSignInWithGoogle(block: suspend () -> Value): Result<Value> {
+    return try {
+        Result.success(block())
+    } catch (_: FirebaseAuthInvalidCredentialsException) {
+        Result.failure(GoogleSignInException.InvalidCredential)
+    } catch (_: FirebaseAuthUserCollisionException) {
+        Result.failure(GoogleSignInException.AccountExistsWithDifferentCredential)
+    } catch (_: FirebaseNetworkException) {
+        Result.failure(GoogleSignInException.NetworkError)
     } catch (exception: Exception) {
         Result.failure(exception)
     }

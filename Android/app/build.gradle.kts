@@ -6,6 +6,7 @@ val urlBasePath: String by project
 val signInLinkUrlTemplate: String by project
 val joinPoolUrlTemplate: String by project
 val iosBundleId: String by project
+val googleWebClientId: String by project
 
 plugins {
     alias(libs.plugins.android.application)
@@ -48,6 +49,7 @@ android {
             buildConfigField(type = "String", name = "SIGN_IN_LINK_URL_TEMPLATE", value = """"$signInLinkUrlTemplate"""")
             buildConfigField(type = "String", name = "JOIN_POOL_URL_TEMPLATE", value = """"$joinPoolUrlTemplate"""")
             buildConfigField(type = "String", name = "IOS_BUNDLE_ID", value = """"$iosBundleId"""")
+            buildConfigField(type = "String", name = "GOOGLE_WEB_CLIENT_ID", value = """"$googleWebClientId"""")
         }
     }
     compileOptions {

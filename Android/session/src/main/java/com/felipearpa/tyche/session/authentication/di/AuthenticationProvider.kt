@@ -4,6 +4,7 @@ import com.felipearpa.tyche.session.authentication.application.LogOut
 import com.felipearpa.tyche.session.authentication.application.SendSignInLinkToEmail
 import com.felipearpa.tyche.session.authentication.application.SignInWithEmailAndPassword
 import com.felipearpa.tyche.session.authentication.application.SignInWithEmailLink
+import com.felipearpa.tyche.session.authentication.application.SignInWithGoogle
 import com.felipearpa.tyche.session.authentication.domain.AuthenticationDataSource
 import com.felipearpa.tyche.session.authentication.domain.AuthenticationExternalDataSource
 import com.felipearpa.tyche.session.authentication.domain.AuthenticationRepository
@@ -19,6 +20,7 @@ val authenticationModule = module {
     factory { SendSignInLinkToEmail(authenticationRepository = get()) }
     factory { SignInWithEmailLink(authenticationRepository = get(), accountStorage = get()) }
     factory { SignInWithEmailAndPassword(authenticationRepository = get(), accountStorage = get()) }
+    factory { SignInWithGoogle(authenticationRepository = get(), accountStorage = get()) }
     factory { LogOut(authenticationRepository = get(), accountStorage = get()) }
 
     factory<AuthenticationRepository> {

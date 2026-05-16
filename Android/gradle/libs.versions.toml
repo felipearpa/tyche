@@ -30,6 +30,8 @@ felipearpa-foundation = "v0.0.1"
 felipearpa-lazy-paging = "0.0.2"
 cloudy = "0.5.0"
 coil = "3.4.0"
+androidx-credentials = "1.5.0"
+google-id = "1.1.1"
 
 [libraries]
 core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "core-ktx" }
@@ -85,6 +87,9 @@ felipearpa-foundation = { group = "com.github.felipearpa", name = "foundation-an
 felipearpa-lazy-paging = { group = "com.felipearpa", name = "lazy-paging", version.ref = "felipearpa-lazy-paging" }
 cloudy = { group = "com.github.skydoves", name = "cloudy", version.ref = "cloudy" }
 coil-compose = { group = "io.coil-kt.coil3", name = "coil-compose", version.ref = "coil" }
+androidx-credentials = { group = "androidx.credentials", name = "credentials", version.ref = "androidx-credentials" }
+androidx-credentials-play-services-auth = { group = "androidx.credentials", name = "credentials-play-services-auth", version.ref = "androidx-credentials" }
+google-id = { group = "com.google.android.libraries.identity.googleid", name = "googleid", version.ref = "google-id" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

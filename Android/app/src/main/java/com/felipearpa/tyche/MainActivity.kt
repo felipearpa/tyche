@@ -61,7 +61,7 @@ class MainActivity : ComponentActivity() {
 
         val intentData = intent.data?.toString()
 
-        enableEdgeToEdge()
+        makeEdgeToEdge()
 
         setContent {
             if (isReady) {
@@ -83,6 +83,13 @@ class MainActivity : ComponentActivity() {
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         deepLinkIntent = intent
+    }
+
+    private fun makeEdgeToEdge() {
+        enableEdgeToEdge()
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
+            window.isNavigationBarContrastEnforced = false
+        }
     }
 }
 
