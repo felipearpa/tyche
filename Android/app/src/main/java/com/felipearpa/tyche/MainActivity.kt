@@ -1,10 +1,8 @@
 package com.felipearpa.tyche
 
 import android.content.Intent
-import android.graphics.Color
 import android.os.Bundle
 import androidx.activity.ComponentActivity
-import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.material3.Surface
@@ -87,12 +85,7 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun makeEdgeToEdge() {
-        enableEdgeToEdge(
-            navigationBarStyle = SystemBarStyle.auto(
-                Color.TRANSPARENT,
-                Color.TRANSPARENT,
-            ),
-        )
+        enableEdgeToEdge()
 
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
             window.isNavigationBarContrastEnforced = false

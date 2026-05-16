@@ -5,15 +5,20 @@ import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -27,7 +32,7 @@ import androidx.compose.ui.unit.dp
 private const val DRAWER_WIDTH_RATIO = 0.85f
 private const val ANIMATION_DURATION_MS = 300
 private val CORNER_RADIUS: Dp = 25.dp
-private const val OPEN_DIM_ALPHA = 0.25f
+private const val OPEN_DIM_ALPHA = 0.15f
 private const val OPEN_SHADOW_ELEVATION = 16f
 private const val DRAG_THRESHOLD_PX = 50f
 
@@ -39,6 +44,8 @@ fun PushDrawer(
     modifier: Modifier = Modifier,
     content: @Composable () -> Unit,
 ) {
+    val dimColor = if (isSystemInDarkTheme()) Color.White else Color.Black
+
     BoxWithConstraints(modifier.fillMaxSize()) {
         val drawerWidth = maxWidth * DRAWER_WIDTH_RATIO
 
@@ -66,7 +73,9 @@ fun PushDrawer(
         Box(
             Modifier
                 .width(drawerWidth)
-                .fillMaxHeight(),
+                .fillMaxHeight()
+                .background(MaterialTheme.colorScheme.background)
+                .windowInsetsPadding(WindowInsets.systemBars),
         ) {
             drawerContent()
         }
@@ -102,7 +111,7 @@ fun PushDrawer(
                 Box(
                     Modifier
                         .matchParentSize()
-                        .background(Color.Black.copy(alpha = dim))
+                        .background(dimColor.copy(alpha = dim))
                         .pointerInput(Unit) {
                             detectTapGestures { onOpenChange(false) }
                         },

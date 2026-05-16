@@ -71,7 +71,6 @@ struct PoolScoreListRouter: View {
                 onSignOut: onSignOut,
             )
         }
-        .drawerStyle(.liquidGlass)
         .withParentGeometryProxy()
     }
 

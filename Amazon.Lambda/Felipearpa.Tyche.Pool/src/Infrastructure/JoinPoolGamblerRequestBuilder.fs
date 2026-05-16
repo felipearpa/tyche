@@ -26,6 +26,7 @@ module JoinPoolGamblerRequestBuilder =
                   PoolTable.Attribute.poolName, AttributeValue(S = createPoolInput.PoolName.Value)
                   PoolTable.Attribute.gamblerId, AttributeValue(S = gamblerId)
                   PoolTable.Attribute.gamblerUsername, AttributeValue(S = createPoolInput.OwnerGamblerUsername.Value)
+                  PoolTable.Attribute.gamblerEmail, AttributeValue(S = createPoolInput.OwnerGamblerUsername.Value)
                   PoolTable.Attribute.status, AttributeValue(S = "OPENED")
                   PoolTable.Attribute.filter,
                   AttributeValue(S = $"{createPoolInput.PoolName} {createPoolInput.OwnerGamblerUsername}")

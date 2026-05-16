@@ -47,6 +47,13 @@ module JoinPoolGamblerRequestBuilderTest =
         put.Item["score"].N |> shouldEqual "0"
 
     [<Fact>]
+    let ``given a resolved create pool input when built then gamblerEmail mirrors gamblerUsername`` () =
+        let put = JoinPoolGamblerRequestBuilder.build (input ())
+
+        put.Item["gamblerEmail"].S |> shouldEqual "felipe@tyche.com"
+        put.Item["gamblerUsername"].S |> shouldEqual "felipe@tyche.com"
+
+    [<Fact>]
     let ``given a resolved create pool input when built then it has the attribute_not_exists condition`` () =
         let put = JoinPoolGamblerRequestBuilder.build (input ())
 

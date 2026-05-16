@@ -41,6 +41,13 @@ module InitialPoolGamblerBetTransformerTest =
         item.ContainsKey("groupName") |> shouldEqual false
 
     [<Fact>]
+    let ``given a bet when transformed then gamblerEmail mirrors gamblerUsername`` () =
+        let item = bet () |> toAmazonItem
+
+        item["gamblerEmail"].S |> shouldEqual "felipe@tyche.com"
+        item["gamblerUsername"].S |> shouldEqual "felipe@tyche.com"
+
+    [<Fact>]
     let ``given a bet with a group name when transformed then groupName is written`` () =
         let item =
             { bet () with

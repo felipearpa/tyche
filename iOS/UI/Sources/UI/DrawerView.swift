@@ -6,11 +6,11 @@ private struct DrawerContainer<Base: View, DrawerContent: View>: View {
     let drawerContent: () -> DrawerContent
 
     @Environment(\.drawerStyle) private var style
+    @Environment(\.colorScheme) private var colorScheme
 
     private let drawerWidthRatio: CGFloat = 0.85
     private let dragThreshold: CGFloat = 50
     private let cornerRadius: CGFloat = 25
-    private let openBlurRadius: CGFloat = 4
 
     var body: some View {
         GeometryReader { geometry in
@@ -32,7 +32,12 @@ private struct DrawerContainer<Base: View, DrawerContent: View>: View {
 
                 base
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .blur(radius: isShowing ? openBlurRadius : 0)
+                    .overlay(
+                        (colorScheme == .dark ? Color.white : Color.black)
+                            .opacity(isShowing ? 0.15 : 0)
+                            .onTapGesture { isShowing = false }
+                            .allowsHitTesting(isShowing)
+                    )
                     .compositingGroup()
                     .clipShape(
                         .rect(
@@ -45,12 +50,6 @@ private struct DrawerContainer<Base: View, DrawerContent: View>: View {
                     .shadow(color: .black.opacity(isShowing ? 0.3 : 0), radius: 10, x: -3)
                     .offset(x: isShowing ? drawerWidth : 0)
                     .disabled(isShowing)
-                    .overlay(
-                        Color.black
-                            .opacity(isShowing ? 0.25 : 0)
-                            .onTapGesture { isShowing = false }
-                            .allowsHitTesting(isShowing)
-                    )
             }
             .ignoresSafeArea()
             .animation(.easeOut(duration: 0.3), value: isShowing)

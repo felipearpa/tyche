@@ -164,7 +164,6 @@ private struct PoolHomeRouterContent: View {
                 }
             )
         }
-        .drawerStyle(.liquidGlass)
         .sheet(item: $inviteUrl) { inviteUrl in
             ShareSheet(activityItems: [URL(string: inviteUrl.id)!])
                 .presentationDetents([.medium, .large])
