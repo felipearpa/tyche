@@ -7,28 +7,30 @@ struct PoolScoreItem: View {
 
     @Environment(\.boxSpacing) private var boxSpacing
 
+    private let inviteIconSize: CGFloat = 20
+
     var body: some View {
-        VStack(spacing: boxSpacing.medium) {
-            HStack(spacing: boxSpacing.medium) {
-                if let position = poolGamblerScore.position {
-                    PostionIndicator(postion: position, shouldUsePrimeryColor: false)
-                }
-
-                Text(poolGamblerScore.poolName)
-
-                Spacer()
-
-                if let difference = poolGamblerScore.difference() {
-                    TrendIndicator(difference: difference)
-                }
-
-                Spacer().frame(width: boxSpacing.medium)
-
-                Button { onJoin() } label: {
-                    Image(.personAdd)
-                }
-                .labelStyle(.iconOnly)
+        HStack(spacing: boxSpacing.medium) {
+            if let position = poolGamblerScore.position {
+                PostionIndicator(position: position, shouldUsePrimeryColor: false)
             }
+
+            Text(poolGamblerScore.poolName)
+
+            Spacer()
+
+            if let difference = poolGamblerScore.difference() {
+                TrendIndicator(difference: difference)
+            }
+
+            Button(action: onJoin) {
+                Image(.personAdd)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: inviteIconSize, height: inviteIconSize)
+            }
+            .buttonStyle(.liquidGlass)
+            .buttonBorderShape(.capsule)
         }
         .padding(boxSpacing.medium)
         .frame(maxWidth: .infinity)
