@@ -1,24 +1,90 @@
 import SwiftUI
 import Swinject
 import Core
+import UI
 import Session
 import DataPool
 import Bet
+import Pool
 
 struct PoolHomeRouter: View {
     let user: AccountBundle
     let pool: PoolProfile
     let onChangePool: () -> Void
     let onSignOut: () -> Void
-    @State private var path = NavigationPath()
+
+    @Environment(\.diResolver) private var diResolver: DIResolver
 
     var body: some View {
+        PoolHomeRouterContent(
+            user: user,
+            pool: pool,
+            onChangePool: onChangePool,
+            onSignOut: onSignOut,
+            drawerViewModel: PoolHomeDrawerViewModel(
+                poolId: pool.poolId,
+                gamblerId: user.accountId,
+                logoutUseCase: diResolver.resolve(LogOutUseCase.self)!,
+                getPoolGamblerScoreUseCase: diResolver.resolve(GetPoolGamblerScoreUseCase.self)!,
+                getPoolUseCase: diResolver.resolve(GetPoolUseCase.self)!,
+                deletePoolUseCase: diResolver.resolve(DeletePoolUseCase.self)!,
+                accountStorage: diResolver.resolve(AccountStorage.self)!
+            )
+        )
+    }
+}
+
+private struct PoolHomeRouterContent: View {
+    let user: AccountBundle
+    let pool: PoolProfile
+    let onChangePool: () -> Void
+    let onSignOut: () -> Void
+
+    @Environment(\.diResolver) private var diResolver: DIResolver
+    @State private var path = NavigationPath()
+    @State private var drawerVisible = false
+    @State private var inviteUrl: ShareablePoolUrl?
+    @StateObject private var drawerViewModel: PoolHomeDrawerViewModel
+
+    init(
+        user: AccountBundle,
+        pool: PoolProfile,
+        onChangePool: @escaping () -> Void,
+        onSignOut: @escaping () -> Void,
+        drawerViewModel: @autoclosure @escaping () -> PoolHomeDrawerViewModel
+    ) {
+        self.user = user
+        self.pool = pool
+        self.onChangePool = onChangePool
+        self.onSignOut = onSignOut
+        self._drawerViewModel = StateObject(wrappedValue: drawerViewModel())
+    }
+
+    var body: some View {
+        Group {
+            if drawerViewModel.deleteState.isLoading() {
+                LoadingContainerView { mainContent }
+            } else {
+                mainContent
+            }
+        }
+        .errorAlert(
+            Binding(
+                get: { drawerViewModel.deleteState.localizedErrorOrNil() },
+                set: { _ in drawerViewModel.resetDeleteState() }
+            ),
+            onDismiss: {}
+        )
+    }
+
+    @ViewBuilder
+    private var mainContent: some View {
         NavigationStack(path: $path) {
             PoolHomeView(
                 gamblerId: user.accountId,
                 poolId: pool.poolId,
                 onChangePool: onChangePool,
-                onSignOut: onSignOut,
+                onMenuTap: { drawerVisible.toggle() },
                 onGamblerOpen: { tappedPoolId, tappedGamblerId, tappedGamblerUsername in
                     if tappedGamblerId != user.accountId {
                         path.append(
@@ -77,6 +143,50 @@ struct PoolHomeRouter: View {
                 )
             }
         }
+        .drawer(isShowing: $drawerVisible) {
+            PoolHomeDrawerView(
+                viewModel: drawerViewModel,
+                onLogout: {
+                    drawerVisible = false
+                    onSignOut()
+                },
+                onInvite: {
+                    drawerVisible = false
+                    let template = diResolver.resolve(JoinPoolUrlTemplateProvider.self)!
+                    inviteUrl = ShareablePoolUrl(String(format: template(), pool.poolId))
+                },
+                onPoolDeleting: {
+                    drawerVisible = false
+                },
+                onPoolDeleted: {
+                    drawerVisible = false
+                    onChangePool()
+                }
+            )
+        }
+        .drawerStyle(.liquidGlass)
+        .sheet(item: $inviteUrl) { inviteUrl in
+            ShareSheet(activityItems: [URL(string: inviteUrl.id)!])
+                .presentationDetents([.medium, .large])
+        }
         .withParentGeometryProxy()
     }
+}
+
+private struct ShareablePoolUrl: Identifiable {
+    let id: String
+
+    init(_ id: String) {
+        self.id = id
+    }
+}
+
+private struct ShareSheet: UIViewControllerRepresentable {
+    let activityItems: [Any]
+
+    func makeUIViewController(context: Context) -> UIActivityViewController {
+        UIActivityViewController(activityItems: activityItems, applicationActivities: nil)
+    }
+
+    func updateUIViewController(_ uiViewController: UIActivityViewController, context: Context) {}
 }
