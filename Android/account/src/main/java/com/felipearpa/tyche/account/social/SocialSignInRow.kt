@@ -16,15 +16,12 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Dialog
-import androidx.compose.ui.window.DialogProperties
 import com.felipearpa.tyche.account.R
 import com.felipearpa.tyche.account.bygoogle.googleSignInViewModel
 import com.felipearpa.tyche.session.AccountBundle
 import com.felipearpa.tyche.ui.exception.ExceptionAlertDialog
 import com.felipearpa.tyche.ui.exception.UnknownLocalizedException
 import com.felipearpa.tyche.ui.exception.localizedOrDefault
-import com.felipearpa.tyche.ui.loading.LoadingContainerView
 import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
 import com.felipearpa.tyche.ui.theme.TycheTheme
 import com.felipearpa.ui.state.LoadableViewState
@@ -76,20 +73,6 @@ fun SocialSignInRow(
                 contentDescription = null,
                 modifier = Modifier.size(iconSize),
             )
-        }
-    }
-
-    if (isOverlayVisible) {
-        Dialog(
-            onDismissRequest = {},
-            properties = DialogProperties(
-                dismissOnBackPress = false,
-                dismissOnClickOutside = false,
-                usePlatformDefaultWidth = false,
-                decorFitsSystemWindows = false,
-            ),
-        ) {
-            LoadingContainerView {}
         }
     }
 

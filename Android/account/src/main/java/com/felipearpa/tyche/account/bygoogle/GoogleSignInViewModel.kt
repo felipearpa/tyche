@@ -26,13 +26,9 @@ class GoogleSignInViewModel(
 
     fun signInWithGoogle(context: Context) {
         viewModelScope.launch {
-            _state.emit(LoadableViewState.Loading)
-
             val idTokenResult = credentialProvider.getIdToken(activityContext = context)
             val idToken = idTokenResult.getOrElse { exception ->
-                if (exception == GoogleSignInException.Cancelled) {
-                    _state.emit(LoadableViewState.Initial)
-                } else {
+                if (exception != GoogleSignInException.Cancelled) {
                     _state.emit(
                         LoadableViewState.Failure(
                             exception.mapOrDefaultLocalized { it.asGoogleSignInLocalized() },
@@ -41,6 +37,8 @@ class GoogleSignInViewModel(
                 }
                 return@launch
             }
+
+            _state.emit(LoadableViewState.Loading)
 
             signInWithGoogle.execute(idToken = idToken)
                 .onSuccess { accountBundle -> _state.emit(LoadableViewState.Success(accountBundle)) }
