@@ -59,6 +59,7 @@ dependencies {
     implementation(libs.androidx.credentials)
     implementation(libs.androidx.credentials.play.services.auth)
     implementation(libs.google.id)
+    implementation(libs.lifecycle.process)
 
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)
