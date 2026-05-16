@@ -3,7 +3,6 @@ module PoolDynamoDbRepositoryJoinPoolTest
 #nowarn "3536"
 
 open System
-open System.Collections.Generic
 open System.Threading
 open System.Threading.Tasks
 open Amazon.DynamoDBv2
@@ -21,6 +20,7 @@ let private joinInput () : ResolvedJoinPoolInput =
       PoolName = NonEmptyString100.newOf "Polla 2026"
       GamblerId = Ulid.newOf "01K1PX1TX2NM1HG851S1V0QG6C"
       GamblerUsername = NonEmptyString100.newOf "felipe@tyche.com"
+      GamblerEmail = NonEmptyString100.newOf "felipe@tyche.com"
       PoolLayoutId = Ulid.newOf "01K1PX1TX2NM1HG851S1V0QG6B"
       PoolLayoutVersion = 1 }
 

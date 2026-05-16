@@ -14,7 +14,8 @@ module JoinPoolGamblerRequestBuilderTest =
           PoolLayoutId = Ulid.newOf "01K1PX1TX2NM1HG851S1V0QG6B"
           PoolLayoutVersion = 7
           OwnerGamblerId = Ulid.newOf "01K1PX1TX2NM1HG851S1V0QG6C"
-          OwnerGamblerUsername = NonEmptyString100.newOf "felipe@tyche.com" }
+          OwnerGamblerUsername = NonEmptyString100.newOf "felipe@tyche.com"
+          OwnerGamblerEmail = NonEmptyString100.newOf "felipe@tyche.com" }
 
     [<Fact>]
     let ``given a resolved create pool input when built then the actual layout version is written`` () =

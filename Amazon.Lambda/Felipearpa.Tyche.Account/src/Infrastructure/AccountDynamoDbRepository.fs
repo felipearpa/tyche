@@ -45,6 +45,7 @@ type AccountDynamoDbRepository(client: IAmazonDynamoDB) =
                 | Ok _ ->
                     { Account.Email = accountLink.Email
                       AccountId = newAccountId
+                      Username = accountLink.Email |> Email.value |> NonEmptyString100.newOf
                       ExternalAccountId = NonEmptyString.newOf accountLink.ExternalAccountId }
                     |> Ok
                 | Error _ -> Error()
@@ -60,6 +61,7 @@ type AccountDynamoDbRepository(client: IAmazonDynamoDB) =
                 return
                     { Account.Email = accountLink.Email
                       AccountId = account.AccountId
+                      Username = account.Username
                       ExternalAccountId = NonEmptyString.newOf accountLink.ExternalAccountId }
                     |> Ok
             with _ ->

@@ -7,5 +7,6 @@ type ResolvedJoinPoolInput =
       PoolName: NonEmptyString100
       GamblerId: Ulid
       GamblerUsername: NonEmptyString100
+      GamblerEmail: NonEmptyString100
       PoolLayoutId: Ulid
       PoolLayoutVersion: int }

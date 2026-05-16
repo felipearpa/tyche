@@ -22,6 +22,9 @@ module AccountTable =
         let email = "email"
 
         [<Literal>]
+        let username = "username"
+
+        [<Literal>]
         let externalAccountId = "externalAccountId"
 
     module Index =

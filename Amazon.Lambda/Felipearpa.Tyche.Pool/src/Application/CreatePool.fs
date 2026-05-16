@@ -34,7 +34,8 @@ type CreatePool
                       PoolId = createPoolInput.PoolId
                       PoolName = createPoolInput.PoolName
                       OwnerGamblerId = createPoolInput.OwnerGamblerId
-                      OwnerGamblerUsername = account.Email |> Email.value |> NonEmptyString100.newOf }
+                      OwnerGamblerUsername = account.Username
+                      OwnerGamblerEmail = account.Email |> Email.value |> NonEmptyString100.newOf }
 
                 let! result = poolRepository.CreatePoolAsync resolvedInput
 

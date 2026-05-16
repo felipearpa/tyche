@@ -85,6 +85,7 @@ type PoolDynamoDbRepository(keySerializer: IKeySerializer, client: IAmazonDynamo
                           PoolName = joinPoolInput.PoolName
                           OwnerGamblerId = joinPoolInput.GamblerId
                           OwnerGamblerUsername = joinPoolInput.GamblerUsername
+                          OwnerGamblerEmail = joinPoolInput.GamblerEmail
                           PoolLayoutId = joinPoolInput.PoolLayoutId
                           PoolLayoutVersion = joinPoolInput.PoolLayoutVersion }
 

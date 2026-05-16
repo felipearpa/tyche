@@ -7,4 +7,5 @@ type PoolLayoutGambler =
       PoolLayoutId: Ulid
       PoolLayoutVersion: int
       GamblerId: Ulid
-      GamblerUsername: NonEmptyString100 }
+      GamblerUsername: NonEmptyString100
+      GamblerEmail: NonEmptyString100 }

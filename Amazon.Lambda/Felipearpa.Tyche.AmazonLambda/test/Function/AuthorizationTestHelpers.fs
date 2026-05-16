@@ -31,11 +31,10 @@ module AuthorizationTestHelpers =
         let account: Account =
             { AccountId = Ulid.newOf callerGamblerId
               Email = Email.newOf testEmail
+              Username = NonEmptyString100.newOf testEmail
               ExternalAccountId = NonEmptyString.newOf "external-id" }
 
-        mock
-            .Setup(fun repo -> repo.GetByEmailAsync(It.IsAny<Email>()))
-            .Returns(async { return Ok(Some account) })
+        mock.Setup(fun repo -> repo.GetByEmailAsync(It.IsAny<Email>())).Returns(async { return Ok(Some account) })
         |> ignore
 
         mock

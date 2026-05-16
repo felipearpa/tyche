@@ -13,7 +13,8 @@ module JoinPoolGamblerRequestBuilder =
         let poolId = createPoolInput.PoolId.Value
         let gamblerId = createPoolInput.OwnerGamblerId.Value
 
-        let gamblersByPoolLayoutPk = KeyPrefix.build PoolTable.Prefix.poolLayout poolLayoutId
+        let gamblersByPoolLayoutPk =
+            KeyPrefix.build PoolTable.Prefix.poolLayout poolLayoutId
 
         let gamblersByPoolLayoutSk =
             $"{KeyPrefix.build PoolTable.Prefix.pool poolId}#{KeyPrefix.build PoolTable.Prefix.gambler gamblerId}"
@@ -26,7 +27,7 @@ module JoinPoolGamblerRequestBuilder =
                   PoolTable.Attribute.poolName, AttributeValue(S = createPoolInput.PoolName.Value)
                   PoolTable.Attribute.gamblerId, AttributeValue(S = gamblerId)
                   PoolTable.Attribute.gamblerUsername, AttributeValue(S = createPoolInput.OwnerGamblerUsername.Value)
-                  PoolTable.Attribute.gamblerEmail, AttributeValue(S = createPoolInput.OwnerGamblerUsername.Value)
+                  PoolTable.Attribute.gamblerEmail, AttributeValue(S = createPoolInput.OwnerGamblerEmail.Value)
                   PoolTable.Attribute.status, AttributeValue(S = "OPENED")
                   PoolTable.Attribute.filter,
                   AttributeValue(S = $"{createPoolInput.PoolName} {createPoolInput.OwnerGamblerUsername}")

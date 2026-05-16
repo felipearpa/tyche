@@ -36,7 +36,8 @@ type JoinPool
                               PoolId = joinPoolInput.PoolId
                               PoolName = pool.PoolName
                               GamblerId = joinPoolInput.GamblerId
-                              GamblerUsername = account.Email |> Email.value |> NonEmptyString100.newOf }
+                              GamblerUsername = account.Username
+                              GamblerEmail = account.Email |> Email.value |> NonEmptyString100.newOf }
 
                     return
                         match result with

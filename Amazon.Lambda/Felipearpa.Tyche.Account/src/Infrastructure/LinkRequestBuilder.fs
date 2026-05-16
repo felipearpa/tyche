@@ -13,6 +13,7 @@ module LinkRequestBuilder =
             [ Key.pk, AttributeValue(S = KeyPrefix.build AccountTable.Prefix.account newAccountId.Value)
               AccountTable.Attribute.accountId, AttributeValue(S = newAccountId.Value)
               AccountTable.Attribute.email, AttributeValue(S = account.Email.Value)
+              AccountTable.Attribute.username, AttributeValue(S = account.Email.Value)
               AccountTable.Attribute.externalAccountId, AttributeValue(S = account.ExternalAccountId) ]
 
     let private buildUniqueEmailMap (accountLink: AccountLink) =
