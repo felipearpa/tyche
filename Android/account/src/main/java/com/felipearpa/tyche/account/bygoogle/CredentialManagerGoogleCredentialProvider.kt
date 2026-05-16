@@ -1,7 +1,6 @@
 package com.felipearpa.tyche.account.bygoogle
 
 import android.content.Context
-import android.util.Log
 import androidx.credentials.CredentialManager
 import androidx.credentials.CustomCredential
 import androidx.credentials.GetCredentialRequest
@@ -34,14 +33,11 @@ internal class CredentialManagerGoogleCredentialProvider(
             } else {
                 Result.failure(GoogleSignInException.InvalidCredential)
             }
-        } catch (exception: GetCredentialCancellationException) {
-            Log.w(LOG_TAG, "Credential Manager returned cancellation (may mask a backend rejection)", exception)
+        } catch (_: GetCredentialCancellationException) {
             Result.failure(GoogleSignInException.Cancelled)
-        } catch (exception: NoCredentialException) {
-            Log.w(LOG_TAG, "No Google credential available", exception)
+        } catch (_: NoCredentialException) {
             Result.failure(GoogleSignInException.InvalidCredential)
         } catch (exception: Exception) {
-            Log.e(LOG_TAG, "Unexpected Credential Manager failure", exception)
             Result.failure(exception)
         }
     }
