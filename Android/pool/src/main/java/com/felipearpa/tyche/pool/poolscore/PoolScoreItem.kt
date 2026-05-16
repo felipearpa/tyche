@@ -47,11 +47,13 @@ fun PoolScoreItem(
             horizontalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.medium),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            PositionIndicator(
-                position = poolGamblerScore.position,
-                shouldUsePrimaryColor = true,
-                shimmerModifier = placeholderModifier,
-            )
+            poolGamblerScore.position?.let {
+                PositionIndicator(
+                    position = it,
+                    shouldUsePrimaryColor = true,
+                    shimmerModifier = placeholderModifier,
+                )
+            }
 
             Text(
                 text = poolGamblerScore.poolName,

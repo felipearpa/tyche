@@ -17,7 +17,7 @@ import com.felipearpa.tyche.ui.theme.TycheTheme
 
 @Composable
 fun PositionIndicator(
-    position: Int?,
+    position: Int,
     shouldUsePrimaryColor: Boolean,
     modifier: Modifier = Modifier,
     shimmerModifier: Modifier = Modifier,
@@ -30,12 +30,10 @@ fun PositionIndicator(
             .then(shimmerModifier),
         contentAlignment = Alignment.Center,
     ) {
-        position?.let {
-            Text(
-                text = it.toString(),
-                color = if (shouldUsePrimaryColor) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSecondaryContainer,
-            )
-        }
+        Text(
+            text = position.toString(),
+            color = if (shouldUsePrimaryColor) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSecondaryContainer,
+        )
     }
 }
 
@@ -48,19 +46,6 @@ private fun SignedInPositionIndicatorPreview() {
         Surface {
             PositionIndicator(
                 position = 1,
-                shouldUsePrimaryColor = true,
-            )
-        }
-    }
-}
-
-@PreviewLightDark
-@Composable
-private fun SignedInPositionIndicatorWithoutPositionPreview() {
-    TycheTheme {
-        Surface {
-            PositionIndicator(
-                position = null,
                 shouldUsePrimaryColor = true,
             )
         }

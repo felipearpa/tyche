@@ -11,7 +11,7 @@ struct PoolScoreItem: View {
         VStack(spacing: boxSpacing.medium) {
             HStack(spacing: boxSpacing.medium) {
                 if let position = poolGamblerScore.position {
-                    PostionIndicator(postion: position, isSignedIdUser: false)
+                    PostionIndicator(postion: position, shouldUsePrimeryColor: false)
                 }
 
                 Text(poolGamblerScore.poolName)
