@@ -32,7 +32,7 @@ struct PoolScoreItem: View {
             .buttonStyle(.liquidGlass)
             .buttonBorderShape(.capsule)
         }
-        .padding(boxSpacing.medium)
+        .padding(boxSpacing.large)
         .frame(maxWidth: .infinity)
     }
 }

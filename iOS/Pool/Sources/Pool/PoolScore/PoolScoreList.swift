@@ -31,7 +31,12 @@ struct PoolScoreList: View {
             prependLoadingContent: { EmptyView() },
             appendLoadingContent: { PoolScorePlaceholderRow() },
             prependErrorContent: { _ in EmptyView() },
-            appendErrorContent: { _ in EmptyView() },
+            appendErrorContent: { error in
+                LazyPagingVStackConcatenateError(
+                    localizedError: error.localizedErrorOrDefault(),
+                    retry: { Task { await lazyPagingItems.retry() } }
+                )
+            },
         ) { index in
             if let poolGamblerScore = lazyPagingItems.peek(at: index) {
                 VStack(spacing: 0) {
@@ -43,13 +48,6 @@ struct PoolScoreList: View {
                 .onTapGesture {
                     onPoolOpen(poolGamblerScore.poolId)
                 }
-            } else {
-                VStack(spacing: 0) {
-                    PoolScoreItem(poolGamblerScore: poolGamblerScorePlaceholderModel(), onJoin: {})
-                        .shimmer()
-                    Divider()
-                }
-                .padding(.horizontal, boxSpacing.medium)
             }
         }
     }

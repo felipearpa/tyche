@@ -1,8 +1,10 @@
 package com.felipearpa.tyche
 
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.material3.Surface
@@ -48,6 +50,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         val splashScreen = installSplashScreen()
+        makeEdgeToEdge()
         super.onCreate(savedInstanceState)
 
         splashScreen.setKeepOnScreenCondition { !isReady }
@@ -60,8 +63,6 @@ class MainActivity : ComponentActivity() {
         }
 
         val intentData = intent.data?.toString()
-
-        makeEdgeToEdge()
 
         setContent {
             if (isReady) {
@@ -86,7 +87,12 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun makeEdgeToEdge() {
-        enableEdgeToEdge()
+        enableEdgeToEdge(
+            navigationBarStyle = SystemBarStyle.auto(
+                Color.TRANSPARENT,
+                Color.TRANSPARENT,
+            ),
+        )
 
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
             window.isNavigationBarContrastEnforced = false

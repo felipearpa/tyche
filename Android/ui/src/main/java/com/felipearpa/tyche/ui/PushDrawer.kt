@@ -17,17 +17,16 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.blur
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 
 private const val DRAWER_WIDTH_RATIO = 0.85f
 private const val ANIMATION_DURATION_MS = 300
 private val CORNER_RADIUS: Dp = 25.dp
-private val OPEN_BLUR_RADIUS: Dp = 4.dp
 private const val OPEN_DIM_ALPHA = 0.25f
 private const val OPEN_SHADOW_ELEVATION = 16f
 private const val DRAG_THRESHOLD_PX = 50f
@@ -53,11 +52,6 @@ fun PushDrawer(
             animationSpec = tween(ANIMATION_DURATION_MS, easing = FastOutSlowInEasing),
             label = "drawerCorner",
         )
-        val blurRadius by animateDpAsState(
-            targetValue = if (isOpen) OPEN_BLUR_RADIUS else 0.dp,
-            animationSpec = tween(ANIMATION_DURATION_MS, easing = FastOutSlowInEasing),
-            label = "drawerBlur",
-        )
         val dim by animateFloatAsState(
             targetValue = if (isOpen) OPEN_DIM_ALPHA else 0f,
             animationSpec = tween(ANIMATION_DURATION_MS, easing = FastOutSlowInEasing),
@@ -80,13 +74,12 @@ fun PushDrawer(
         Box(
             Modifier
                 .fillMaxSize()
-                .offset(x = offsetX)
+                .offset { IntOffset(x = offsetX.roundToPx(), y = 0) }
                 .graphicsLayer {
                     shape = RoundedCornerShape(topStart = corner, bottomStart = corner)
                     clip = true
                     shadowElevation = shadow
                 }
-                .blur(blurRadius)
                 .pointerInput(isOpen) {
                     var totalDrag = 0f
                     detectHorizontalDragGestures(
