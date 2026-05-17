@@ -3,16 +3,26 @@ import SwiftUI
 public struct LiquidGlassTextFieldStyle: TextFieldStyle {
     public init() {}
 
-    @ViewBuilder
     public func _body(configuration: TextField<Self._Label>) -> some View {
-        if #available(iOS 26.0, *) {
-            configuration
-                .padding()
-                .glassEffect(.regular, in: .capsule)
-        } else {
-            configuration
-                .padding()
-                .background(.ultraThinMaterial, in: .capsule)
+        Body(configuration: configuration)
+    }
+
+    private struct Body: View {
+        @Environment(\.isEnabled) private var isEnabled
+        let configuration: TextField<LiquidGlassTextFieldStyle._Label>
+
+        @ViewBuilder
+        var body: some View {
+            if #available(iOS 26.0, *) {
+                configuration
+                    .padding()
+                    .glassEffect(.regular, in: .capsule)
+                    .opacity(isEnabled ? 1.0 : 0.5)
+            } else {
+                configuration
+                    .padding()
+                    .background(.ultraThinMaterial, in: .capsule)
+            }
         }
     }
 }
