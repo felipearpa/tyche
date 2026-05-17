@@ -23,7 +23,7 @@
     <string name="delete_action">Eliminar</string>
     <string name="edit_username_title">Editar nombre de usuario</string>
     <string name="username_label">Nombre de usuario</string>
-    <string name="username_required_error">El nombre de usuario is obligatorio</string>
     <string name="update_account_failure_message">No se pudo guardar los cambios. Por favor vuelva a intentarlo.</string>
     <string name="edit_username_action">Editar nombre de usuario</string>
+    <string name="edit_user_name_subtitle">Así te verán otros jugadores en las quinielas</string>
 </resources>

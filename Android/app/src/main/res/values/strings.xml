@@ -23,7 +23,7 @@
     <string name="delete_action">Delete</string>
     <string name="edit_username_title">Edit username</string>
     <string name="username_label">Username</string>
-    <string name="username_required_error">Username is required</string>
     <string name="update_account_failure_message">Couldn\'t save your changes. Please try again.</string>
     <string name="edit_username_action">Edit username</string>
+    <string name="edit_user_name_subtitle">This is how other players will see you in the pools</string>
 </resources>

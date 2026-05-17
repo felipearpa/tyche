@@ -61,7 +61,7 @@ private struct UsernameEditorStatefulView: View {
         VStack(alignment: .leading, spacing: boxSpacing.large) {
             HStack(spacing: boxSpacing.medium) {
                 Text(.editUsernameTitle)
-                    .font(.title2)
+                    .font(.title)
                     .frame(maxWidth: .infinity, alignment: .leading)
 
                 if isSaving {
@@ -73,6 +73,9 @@ private struct UsernameEditorStatefulView: View {
                         .frame(width: iconSize, height: iconSize)
                 }
             }
+
+            Text(.editUsernameSubtitle)
+                .frame(maxWidth: .infinity, alignment: .leading)
 
             formContent
 

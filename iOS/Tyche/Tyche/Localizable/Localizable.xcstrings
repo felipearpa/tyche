@@ -282,6 +282,29 @@
         }
       }
     },
+    "edit_username_subtitle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This is how other players will see you in the pools"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Así te verán otros jugadores en las pollas"
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Así te verán otros jugadores en las quinielas"
+          }
+        }
+      }
+    },
     "edit_username_title" : {
       "extractionState" : "manual",
       "localizations" : {

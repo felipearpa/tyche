@@ -153,6 +153,8 @@ private fun UsernameEditorLayout(
             }
         }
 
+        Text(text = stringResource(id = R.string.edit_user_name_subtitle))
+
         UsernameEditorContent(
             draft = draft,
             onDraftChange = onDraftChange,
@@ -259,11 +261,6 @@ private fun UsernameForm(
         singleLine = true,
         enabled = enabled,
         isError = showRequiredError,
-        supportingText = {
-            if (showRequiredError) {
-                Text(text = stringResource(id = R.string.username_required_error))
-            }
-        },
         modifier = Modifier.fillMaxWidth(),
     )
 }
