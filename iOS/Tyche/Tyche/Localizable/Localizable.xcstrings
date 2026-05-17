@@ -259,48 +259,48 @@
         }
       }
     },
-    "edit_profile_action" : {
+    "edit_username_action" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Edit profile"
+            "value" : "Edit username"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Editar perfil"
+            "value" : "Editar nombre de usuario"
           }
         },
         "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Editar perfil"
+            "value" : "Editar nombre de usuario"
           }
         }
       }
     },
-    "edit_profile_title" : {
+    "edit_username_title" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Edit profile"
+            "value" : "Edit username"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Editar perfil"
+            "value" : "Editar nombre de usuario"
           }
         },
         "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Editar perfil"
+            "value" : "Editar nombre de usuario"
           }
         }
       }

@@ -88,6 +88,7 @@ fun PoolHomeView(
         drawerContent = {
             DrawerView(
                 viewModel = drawerViewModel,
+                onCloseDrawer = { isDrawerOpen = false },
                 onSignOut = onSignOut,
                 onInvite = {
                     isDrawerOpen = false

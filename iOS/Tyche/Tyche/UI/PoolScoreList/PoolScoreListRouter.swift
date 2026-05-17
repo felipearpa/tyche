@@ -34,8 +34,10 @@ struct PoolScoreListRouter: View {
             poolScoreViewModel: poolScoreViewModel,
             drawerViewModel: PoolScoreListDrawerViewModel(
                 logOutUseCase: diResolver.resolve(LogOutUseCase.self)!,
-                updateUsernameUseCase: diResolver.resolve(UpdateUsernameUseCase.self)!,
                 accountStorage: diResolver.resolve(AccountStorage.self)!
+            ),
+            usernameEditorViewModel: UsernameEditorViewModel(
+                updateUsernameUseCase: diResolver.resolve(UpdateUsernameUseCase.self)!
             )
         )
     }
@@ -47,6 +49,7 @@ private struct PoolScoreListRouterContent: View {
     let onSignOut: () -> Void
     @ObservedObject var poolScoreViewModel: PoolScoreListViewModel
     @StateObject private var drawerViewModel: PoolScoreListDrawerViewModel
+    @StateObject private var usernameEditorViewModel: UsernameEditorViewModel
 
     @Environment(\.diResolver) private var diResolver: DIResolver
     @State private var path = NavigationPath()
@@ -59,13 +62,15 @@ private struct PoolScoreListRouterContent: View {
         onPoolSelect: @escaping (PoolProfile) -> Void,
         onSignOut: @escaping () -> Void,
         poolScoreViewModel: PoolScoreListViewModel,
-        drawerViewModel: @autoclosure @escaping () -> PoolScoreListDrawerViewModel
+        drawerViewModel: @autoclosure @escaping () -> PoolScoreListDrawerViewModel,
+        usernameEditorViewModel: @autoclosure @escaping () -> UsernameEditorViewModel
     ) {
         self.accountBundle = accountBundle
         self.onPoolSelect = onPoolSelect
         self.onSignOut = onSignOut
         self.poolScoreViewModel = poolScoreViewModel
         self._drawerViewModel = StateObject(wrappedValue: drawerViewModel())
+        self._usernameEditorViewModel = StateObject(wrappedValue: usernameEditorViewModel())
     }
 
     var body: some View {
@@ -108,31 +113,25 @@ private struct PoolScoreListRouterContent: View {
                 viewModel: drawerViewModel,
                 onSignOut: onSignOut,
                 onEditAccount: {
+                    drawerVisible = false
                     isEditingAccount = true
                 }
             )
         }
         .withParentGeometryProxy()
-        .overlay {
-            if isEditingAccount {
-                AccountEditDialog(
-                    initialUsername: drawerViewModel.username,
-                    isSaving: drawerViewModel.isSavingUsername,
-                    serverError: drawerViewModel.usernameError == PoolScoreListDrawerViewModel.usernameUpdateFailed
-                        ? "Couldn't save your changes. Please try again."
-                        : nil,
-                    onSave: { value in
-                        drawerViewModel.changeUsername(value) {
-                            isEditingAccount = false
-                        }
-                    },
-                    onClearError: drawerViewModel.clearUsernameError,
-                    onDismiss: {
-                        drawerViewModel.clearUsernameError()
-                        isEditingAccount = false
-                    }
-                )
-            }
+        .sheet(isPresented: $isEditingAccount) {
+            UsernameEditor(
+                initialUsername: drawerViewModel.username,
+                viewModel: usernameEditorViewModel,
+                onSaved: { newUsername in
+                    drawerViewModel.applyUsername(newUsername)
+                    isEditingAccount = false
+                },
+                onDismiss: {
+                    isEditingAccount = false
+                }
+            )
+            .presentationDetents([.large])
         }
     }
 

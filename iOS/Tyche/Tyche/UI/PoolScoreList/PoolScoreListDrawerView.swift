@@ -20,10 +20,7 @@ struct PoolScoreListDrawerView : View {
         PoolScoreListDrawerStatefulView(
             email: viewModel.email,
             username: viewModel.username,
-            onEditAccount: {
-                viewModel.clearUsernameError()
-                onEditAccount()
-            },
+            onEditAccount: onEditAccount,
             onSignOut: {
                 viewModel.logOut()
                 onSignOut()

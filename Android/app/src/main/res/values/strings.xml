@@ -21,9 +21,9 @@
     <string name="delete_pool_alert_title">Delete pool?</string>
     <string name="delete_pool_alert_message">This will permanently delete the pool and every gambler\'s bets. This action cannot be undone.</string>
     <string name="delete_action">Delete</string>
-    <string name="edit_profile_title">Edit profile</string>
+    <string name="edit_username_title">Edit username</string>
     <string name="username_label">Username</string>
     <string name="username_required_error">Username is required</string>
     <string name="update_account_failure_message">Couldn\'t save your changes. Please try again.</string>
-    <string name="edit_profile_action">Edit profile</string>
+    <string name="edit_username_action">Edit username</string>
 </resources>

@@ -33,7 +33,7 @@ struct AccountHeaderDrawer: View {
             Button(action: onEditAccount) {
                 HStack(spacing: boxSpacing.large) {
                     Image(sharedResource: .edit)
-                    Text(.editProfileAction)
+                    Text(.editUsernameAction)
                     Spacer()
                 }
             }

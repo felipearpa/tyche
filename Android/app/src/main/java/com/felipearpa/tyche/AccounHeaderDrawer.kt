@@ -67,7 +67,7 @@ fun AccountHeaderDrawer(
         }
 
         Row(
-            horizontalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.large),
+            horizontalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.small),
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .fillMaxWidth()
@@ -82,7 +82,7 @@ fun AccountHeaderDrawer(
                 modifier = Modifier.size(24.dp),
             )
 
-            Text(text = stringResource(id = R.string.edit_profile_action))
+            Text(text = stringResource(id = R.string.edit_username_action))
         }
     }
 }

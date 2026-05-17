@@ -36,10 +36,7 @@ struct PoolHomeDrawerView: View {
             poolGamblerScoreState: viewModel.state,
             isOwner: viewModel.isOwner,
             isDeleting: viewModel.deleteState.isLoading(),
-            onEditAccount: {
-                viewModel.clearUsernameError()
-                onEditAccount()
-            },
+            onEditAccount: onEditAccount,
             onSignOut: {
                 viewModel.signOut()
                 onSignOut()

@@ -50,9 +50,10 @@ fun NavGraphBuilder.poolScoreListNavView(
 
         PoolScoreListView(
             viewModel = poolScoreListViewModel(gamblerId = poolScoreListRoute.gamblerId),
-            drawerView = {
+            drawerView = { onCloseDrawer ->
                 DrawerView(
                     viewModel = drawerVM,
+                    onCloseDrawer = onCloseDrawer,
                     onSignOut = {
                         navController.navigate(route = HomeRoute) {
                             popUpTo(route = initialRoute) { inclusive = true }

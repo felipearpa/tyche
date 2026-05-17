@@ -48,7 +48,7 @@ import com.felipearpa.tyche.ui.R as SharedR
 @Composable
 fun PoolScoreListView(
     viewModel: PoolScoreListViewModel,
-    drawerView: @Composable () -> Unit,
+    drawerView: @Composable (onCloseDrawer: () -> Unit) -> Unit,
     onPoolOpen: (poolId: String, gamblerId: String) -> Unit,
     onPoolCreate: () -> Unit,
     onPoolLayoutSelect: (PoolLayoutModel) -> Unit,
@@ -102,7 +102,7 @@ private fun PoolScoreListView(
     lazyItems: LazyPagingItems<PoolGamblerScoreModel>,
     lazyPoolLayouts: LazyPagingItems<PoolLayoutModel>,
     pageSize: Int = 50,
-    drawerView: @Composable () -> Unit,
+    drawerView: @Composable (onCloseDrawer: () -> Unit) -> Unit,
     onPoolOpen: (poolId: String, gamblerId: String) -> Unit,
     onPoolJoin: (poolId: String) -> Unit,
     onPoolCreate: () -> Unit,
@@ -115,7 +115,7 @@ private fun PoolScoreListView(
     PushDrawer(
         isOpen = isDrawerOpen,
         onOpenChange = { isDrawerOpen = it },
-        drawerContent = { drawerView() },
+        drawerContent = { drawerView { isDrawerOpen = false } },
         modifier = Modifier.fillMaxSize(),
     ) {
         Scaffold(
@@ -201,7 +201,7 @@ private fun PoolScoreListViewPreview() {
             PoolScoreListView(
                 lazyItems = items,
                 lazyPoolLayouts = layouts,
-                drawerView = {},
+                drawerView = { _ -> },
                 onPoolOpen = { _, _ -> },
                 onPoolJoin = {},
                 onPoolCreate = {},

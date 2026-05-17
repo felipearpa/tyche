@@ -28,8 +28,10 @@ struct PoolHomeRouter: View {
                 getPoolGamblerScoreUseCase: diResolver.resolve(GetPoolGamblerScoreUseCase.self)!,
                 getPoolUseCase: diResolver.resolve(GetPoolUseCase.self)!,
                 deletePoolUseCase: diResolver.resolve(DeletePoolUseCase.self)!,
-                updateUsernameUseCase: diResolver.resolve(UpdateUsernameUseCase.self)!,
                 accountStorage: diResolver.resolve(AccountStorage.self)!
+            ),
+            usernameEditorViewModel: UsernameEditorViewModel(
+                updateUsernameUseCase: diResolver.resolve(UpdateUsernameUseCase.self)!
             )
         )
     }
@@ -47,19 +49,22 @@ private struct PoolHomeRouterContent: View {
     @State private var isEditingAccount = false
     @State private var inviteUrl: ShareablePoolUrl?
     @StateObject private var drawerViewModel: PoolHomeDrawerViewModel
+    @StateObject private var usernameEditorViewModel: UsernameEditorViewModel
 
     init(
         user: AccountBundle,
         pool: PoolProfile,
         onChangePool: @escaping () -> Void,
         onSignOut: @escaping () -> Void,
-        drawerViewModel: @autoclosure @escaping () -> PoolHomeDrawerViewModel
+        drawerViewModel: @autoclosure @escaping () -> PoolHomeDrawerViewModel,
+        usernameEditorViewModel: @autoclosure @escaping () -> UsernameEditorViewModel
     ) {
         self.user = user
         self.pool = pool
         self.onChangePool = onChangePool
         self.onSignOut = onSignOut
         self._drawerViewModel = StateObject(wrappedValue: drawerViewModel())
+        self._usernameEditorViewModel = StateObject(wrappedValue: usernameEditorViewModel())
     }
 
     var body: some View {
@@ -77,26 +82,19 @@ private struct PoolHomeRouterContent: View {
             ),
             onDismiss: {}
         )
-        .overlay {
-            if isEditingAccount {
-                AccountEditDialog(
-                    initialUsername: drawerViewModel.username,
-                    isSaving: drawerViewModel.isSavingUsername,
-                    serverError: drawerViewModel.usernameError == PoolHomeDrawerViewModel.usernameUpdateFailed
-                        ? "Couldn't save your changes. Please try again."
-                        : nil,
-                    onSave: { value in
-                        drawerViewModel.changeUsername(value) {
-                            isEditingAccount = false
-                        }
-                    },
-                    onClearError: drawerViewModel.clearUsernameError,
-                    onDismiss: {
-                        drawerViewModel.clearUsernameError()
-                        isEditingAccount = false
-                    }
-                )
-            }
+        .sheet(isPresented: $isEditingAccount) {
+            UsernameEditor(
+                initialUsername: drawerViewModel.username,
+                viewModel: usernameEditorViewModel,
+                onSaved: { newUsername in
+                    drawerViewModel.applyUsername(newUsername)
+                    isEditingAccount = false
+                },
+                onDismiss: {
+                    isEditingAccount = false
+                }
+            )
+            .presentationDetents([.large])
         }
     }
 
@@ -186,6 +184,7 @@ private struct PoolHomeRouterContent: View {
                     onChangePool()
                 },
                 onEditAccount: {
+                    drawerVisible = false
                     isEditingAccount = true
                 }
             )

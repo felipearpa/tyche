@@ -13,18 +13,13 @@ class PoolHomeDrawerViewModel: ObservableObject {
     private let getPoolGamblerScoreUseCase: GetPoolGamblerScoreUseCase
     private let getPoolUseCase: GetPoolUseCase
     private let deletePoolUseCase: DeletePoolUseCase
-    private let updateUsernameUseCase: UpdateUsernameUseCase
     private let accountStorage: AccountStorage
 
     @Published var state: LoadState<PoolGamblerScoreModel> = .idle
     @Published var email: String = ""
     @Published var username: String = ""
-    @Published var isSavingUsername: Bool = false
-    @Published var usernameError: String? = nil
     @Published var isOwner: Bool = false
     @Published var deleteState: LoadState<Void> = .idle
-
-    static let usernameUpdateFailed = "USERNAME_UPDATE_FAILED"
 
     init(
         poolId: String,
@@ -33,7 +28,6 @@ class PoolHomeDrawerViewModel: ObservableObject {
         getPoolGamblerScoreUseCase: GetPoolGamblerScoreUseCase,
         getPoolUseCase: GetPoolUseCase,
         deletePoolUseCase: DeletePoolUseCase,
-        updateUsernameUseCase: UpdateUsernameUseCase,
         accountStorage: AccountStorage
     ) {
         self.poolId = poolId
@@ -42,7 +36,6 @@ class PoolHomeDrawerViewModel: ObservableObject {
         self.getPoolGamblerScoreUseCase = getPoolGamblerScoreUseCase
         self.getPoolUseCase = getPoolUseCase
         self.deletePoolUseCase = deletePoolUseCase
-        self.updateUsernameUseCase = updateUsernameUseCase
         self.accountStorage = accountStorage
 
         Task {
@@ -116,31 +109,7 @@ class PoolHomeDrawerViewModel: ObservableObject {
     }
 
     @MainActor
-    func changeUsername(_ newUsername: String, onSaved: @escaping () -> Void = {}) {
-        guard !isSavingUsername else { return }
-        let trimmed = newUsername.trimmingCharacters(in: .whitespacesAndNewlines)
-        if trimmed.isEmpty || trimmed == username {
-            onSaved()
-            return
-        }
-
-        Task {
-            self.isSavingUsername = true
-            self.usernameError = nil
-            let result = await updateUsernameUseCase.execute(username: trimmed)
-            switch result {
-            case .success(let saved):
-                self.username = saved
-                onSaved()
-            case .failure:
-                self.usernameError = PoolHomeDrawerViewModel.usernameUpdateFailed
-            }
-            self.isSavingUsername = false
-        }
-    }
-
-    @MainActor
-    func clearUsernameError() {
-        usernameError = nil
+    func applyUsername(_ newUsername: String) {
+        self.username = newUsername
     }
 }
