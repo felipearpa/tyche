@@ -38,8 +38,8 @@ import com.felipearpa.tyche.core.type.TeamScore
 import com.felipearpa.tyche.ui.exception.UnknownLocalizedException
 import com.felipearpa.tyche.ui.loading.BallSpinner
 import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
-import com.felipearpa.ui.state.EditableViewState
-import com.felipearpa.ui.state.relevantValue
+import com.felipearpa.ui.state.MutationState
+import com.felipearpa.ui.state.activeValue
 import com.felipearpa.tyche.ui.R as SharedR
 
 private val ICON_SIZE = 24.dp
@@ -77,7 +77,7 @@ fun PendingBetItemView(
 
     LaunchedEffect(currentViewModelState) {
         viewState = when (currentViewModelState) {
-            is EditableViewState.Initial -> {
+            is MutationState.Idle -> {
                 val poolGamblerBet = currentViewModelState.value
                 PendingBetItemViewState.Visualization(
                     PartialPoolGamblerBetModel(
@@ -95,7 +95,7 @@ fun PendingBetItemView(
 @Composable
 private fun PendingBetItemView(
     modifier: Modifier = Modifier,
-    viewModelState: EditableViewState<PoolGamblerBetModel>,
+    viewModelState: MutationState<PoolGamblerBetModel>,
     viewState: PendingBetItemViewState,
     onViewStateChanged: (PendingBetItemViewState) -> Unit = {},
     bet: () -> Unit = {},
@@ -108,10 +108,10 @@ private fun PendingBetItemView(
         verticalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.medium),
     ) {
         when (viewModelState) {
-            is EditableViewState.Initial, is EditableViewState.Success -> {
+            is MutationState.Idle, is MutationState.Mutated -> {
                 val poolGamblerBet = when (viewModelState) {
-                    is EditableViewState.Initial -> viewModelState.value
-                    is EditableViewState.Success -> viewModelState.succeeded
+                    is MutationState.Idle -> viewModelState.value
+                    is MutationState.Mutated -> viewModelState.updated
                 }
                 PendingBetItem(
                     poolGamblerBet = poolGamblerBet,
@@ -135,9 +135,9 @@ private fun PendingBetItemView(
                 )
             }
 
-            is EditableViewState.Saving -> {
+            is MutationState.Mutating -> {
                 PendingBetItem(
-                    poolGamblerBet = viewModelState.target,
+                    poolGamblerBet = viewModelState.updated,
                     viewState = PendingBetItemViewState.Visualization(viewState.value),
                     modifier = Modifier.fillMaxWidth(),
                 )
@@ -147,9 +147,9 @@ private fun PendingBetItemView(
                 )
             }
 
-            is EditableViewState.Failure -> {
+            is MutationState.Failure -> {
                 PendingBetItem(
-                    poolGamblerBet = viewModelState.failed,
+                    poolGamblerBet = viewModelState.updated,
                     viewState = PendingBetItemViewState.Visualization(viewState.value),
                     modifier = Modifier.fillMaxWidth(),
                 )
@@ -166,7 +166,7 @@ private fun PendingBetItemView(
 
 @Composable
 private fun DefaultActionBar(
-    viewModelState: EditableViewState<PoolGamblerBetModel>,
+    viewModelState: MutationState<PoolGamblerBetModel>,
     viewState: PendingBetItemViewState,
     bet: () -> Unit,
     reset: () -> Unit,
@@ -193,13 +193,13 @@ private fun DefaultActionBar(
 
 @Composable
 private fun EditableDefaultActionBar(
-    viewModelState: EditableViewState<PoolGamblerBetModel>,
+    viewModelState: MutationState<PoolGamblerBetModel>,
     viewState: PendingBetItemViewState,
     bet: () -> Unit,
     reset: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val poolGamblerBet = viewModelState.relevantValue()
+    val poolGamblerBet = viewModelState.activeValue()
     var isRecomposition by remember { mutableStateOf(false) }
     var maxButtonWidth by remember { mutableStateOf(0.dp) }
     val density = LocalDensity.current
@@ -254,12 +254,12 @@ private fun EditableDefaultActionBar(
 
 @Composable
 private fun NonEditableDefaultActionBar(
-    viewModelState: EditableViewState<PoolGamblerBetModel>,
+    viewModelState: MutationState<PoolGamblerBetModel>,
     viewState: PendingBetItemViewState,
     edit: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val poolGamblerBet = viewModelState.relevantValue()
+    val poolGamblerBet = viewModelState.activeValue()
 
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -281,7 +281,7 @@ private fun NonEditableDefaultActionBar(
 
 @Composable
 private fun LoadingActionBar(
-    viewModelState: EditableViewState<PoolGamblerBetModel>,
+    viewModelState: MutationState<PoolGamblerBetModel>,
     modifier: Modifier = Modifier,
 ) {
     Row(modifier = modifier) {
@@ -291,7 +291,7 @@ private fun LoadingActionBar(
 
 @Composable
 private fun FailureActionBar(
-    viewModelState: EditableViewState<PoolGamblerBetModel>,
+    viewModelState: MutationState<PoolGamblerBetModel>,
     retryBet: () -> Unit,
     reset: () -> Unit,
     modifier: Modifier = Modifier,
@@ -345,7 +345,7 @@ private fun FailureActionBar(
 
 @Composable
 private fun StateIndicator(
-    viewModelState: EditableViewState<PoolGamblerBetModel>,
+    viewModelState: MutationState<PoolGamblerBetModel>,
     isEditable: Boolean = false,
 ) {
     if (isEditable) {
@@ -355,21 +355,21 @@ private fun StateIndicator(
         )
     } else {
         when (viewModelState) {
-            is EditableViewState.Failure ->
+            is MutationState.Failure ->
                 Icon(
                     painter = painterResource(id = SharedR.drawable.error),
                     contentDescription = emptyString(),
                     tint = MaterialTheme.colorScheme.error,
                 )
 
-            is EditableViewState.Saving -> BallSpinner(
+            is MutationState.Mutating -> BallSpinner(
                 modifier = Modifier.size(ICON_SIZE),
             )
 
-            is EditableViewState.Initial, is EditableViewState.Success -> {
+            is MutationState.Idle, is MutationState.Mutated -> {
                 val poolGamblerBet = when (viewModelState) {
-                    is EditableViewState.Initial -> viewModelState.value
-                    is EditableViewState.Success -> viewModelState.succeeded
+                    is MutationState.Idle -> viewModelState.value
+                    is MutationState.Mutated -> viewModelState.updated
                 }
                 ContentIndicator(poolGamblerBet = poolGamblerBet)
             }
@@ -405,7 +405,7 @@ private fun NonEditableInitialPendingBetItemViewPreview() {
     MaterialTheme {
         Surface {
             PendingBetItemView(
-                viewModelState = EditableViewState.Initial(poolGamblerBetDummyModel()),
+                viewModelState = MutationState.Idle(poolGamblerBetDummyModel()),
                 viewState = PendingBetItemViewState.Visualization(
                     partialPoolGamblerBetDummyModel(),
                 ),
@@ -420,7 +420,7 @@ private fun EditableInitialPendingBetItemViewPreview() {
     MaterialTheme {
         Surface {
             PendingBetItemView(
-                viewModelState = EditableViewState.Initial(poolGamblerBetDummyModel()),
+                viewModelState = MutationState.Idle(poolGamblerBetDummyModel()),
                 viewState = PendingBetItemViewState.Edition(partialPoolGamblerBetDummyModel()),
             )
         }
@@ -433,9 +433,9 @@ private fun NonEditableLoadingPendingBetItemViewPreview() {
     MaterialTheme {
         Surface {
             PendingBetItemView(
-                viewModelState = EditableViewState.Saving(
-                    current = poolGamblerBetDummyModel(),
-                    target = poolGamblerBetDummyModel(),
+                viewModelState = MutationState.Mutating(
+                    original = poolGamblerBetDummyModel(),
+                    updated = poolGamblerBetDummyModel(),
                 ),
                 viewState = PendingBetItemViewState.Visualization(
                     partialPoolGamblerBetDummyModel(),
@@ -451,9 +451,9 @@ private fun EditableLoadingPendingBetItemViewPreview() {
     MaterialTheme {
         Surface {
             PendingBetItemView(
-                viewModelState = EditableViewState.Saving(
-                    current = poolGamblerBetDummyModel(),
-                    target = poolGamblerBetDummyModel(),
+                viewModelState = MutationState.Mutating(
+                    original = poolGamblerBetDummyModel(),
+                    updated = poolGamblerBetDummyModel(),
                 ),
                 viewState = PendingBetItemViewState.Edition(partialPoolGamblerBetDummyModel()),
             )
@@ -467,9 +467,9 @@ private fun NonEditableFailurePendingBetItemViewPreview() {
     MaterialTheme {
         Surface {
             PendingBetItemView(
-                viewModelState = EditableViewState.Failure(
-                    current = poolGamblerBetDummyModel(),
-                    failed = poolGamblerBetDummyModel(),
+                viewModelState = MutationState.Failure(
+                    original = poolGamblerBetDummyModel(),
+                    updated = poolGamblerBetDummyModel(),
                     exception = UnknownLocalizedException(),
                 ),
                 viewState = PendingBetItemViewState.Visualization(
@@ -486,9 +486,9 @@ private fun EditableFailurePendingBetItemViewPreview() {
     MaterialTheme {
         Surface {
             PendingBetItemView(
-                viewModelState = EditableViewState.Failure(
-                    current = poolGamblerBetDummyModel(),
-                    failed = poolGamblerBetDummyModel(),
+                viewModelState = MutationState.Failure(
+                    original = poolGamblerBetDummyModel(),
+                    updated = poolGamblerBetDummyModel(),
                     exception = UnknownLocalizedException(),
                 ),
                 viewState = PendingBetItemViewState.Edition(partialPoolGamblerBetDummyModel()),

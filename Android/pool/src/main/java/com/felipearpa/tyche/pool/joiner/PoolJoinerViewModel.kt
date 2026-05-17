@@ -5,7 +5,8 @@ import androidx.lifecycle.viewModelScope
 import com.felipearpa.tyche.data.pool.application.GetPool
 import com.felipearpa.tyche.data.pool.application.JoinPool
 import com.felipearpa.tyche.data.pool.domain.JoinPoolInput
-import com.felipearpa.ui.state.LoadableViewState
+import com.felipearpa.ui.state.LoadState
+import com.felipearpa.ui.state.SaveState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -15,34 +16,34 @@ class PoolJoinerViewModel(
     private val joinPoolAction: JoinPool,
 ) : ViewModel() {
     private val _poolState =
-        MutableStateFlow<LoadableViewState<PoolModel>>(LoadableViewState.Initial)
+        MutableStateFlow<LoadState<PoolModel>>(LoadState.Idle)
     val poolState = _poolState.asStateFlow()
 
     private val _joinPoolState =
-        MutableStateFlow<LoadableViewState<Unit>>(LoadableViewState.Initial)
+        MutableStateFlow<SaveState<Unit>>(SaveState.Idle)
     val joinPoolState = _joinPoolState.asStateFlow()
 
     fun loadPool(poolId: String) {
         viewModelScope.launch {
-            _poolState.emit(LoadableViewState.Loading)
+            _poolState.emit(LoadState.Loading)
             val result = getPool.execute(poolId = poolId)
             result.onSuccess { pool ->
-                _poolState.emit(LoadableViewState.Success(pool.toPoolModel()))
+                _poolState.emit(LoadState.Loaded(pool.toPoolModel()))
             }.onFailure {
-                _poolState.emit(LoadableViewState.Failure(it))
+                _poolState.emit(LoadState.Failure(it))
             }
         }
     }
 
     fun joinPool(poolId: String, gamblerId: String) {
         viewModelScope.launch {
-            _joinPoolState.emit(LoadableViewState.Loading)
+            _joinPoolState.emit(SaveState.Saving(Unit))
             val result =
                 joinPoolAction.execute(JoinPoolInput(poolId = poolId, gamblerId = gamblerId))
             result.onSuccess {
-                _joinPoolState.emit(LoadableViewState.Success(Unit))
+                _joinPoolState.emit(SaveState.Saved(Unit))
             }.onFailure {
-                _joinPoolState.emit(LoadableViewState.Failure(it.asJoinPoolLocalizedException()))
+                _joinPoolState.emit(SaveState.Failure(Unit, it.asJoinPoolLocalizedException()))
             }
         }
     }

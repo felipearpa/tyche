@@ -57,9 +57,9 @@ import com.felipearpa.tyche.ui.exception.LocalizedException
 import com.felipearpa.tyche.ui.exception.localizedOrDefault
 import com.felipearpa.tyche.ui.loading.LoadingContainerView
 import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
-import com.felipearpa.ui.state.LoadableViewState
+import com.felipearpa.ui.state.SaveState
 import com.felipearpa.ui.state.isFailure
-import com.felipearpa.ui.state.isLoading
+import com.felipearpa.ui.state.isSaving
 import org.koin.compose.koinInject
 import com.felipearpa.tyche.ui.R as SharedR
 
@@ -170,7 +170,7 @@ fun PoolHomeView(
             }
         }
 
-        if (deleteState.isLoading()) {
+        if (deleteState.isSaving()) {
             LoadingContainerView { mainContent() }
         } else {
             mainContent()
@@ -178,7 +178,7 @@ fun PoolHomeView(
     }
 
     if (deleteState.isFailure()) {
-        val exception = (deleteState as LoadableViewState.Failure).exception
+        val exception = (deleteState as SaveState.Failure).exception
         ExceptionAlertDialog(
             exception = exception as? LocalizedException ?: exception.localizedOrDefault(),
             onDismiss = { drawerViewModel.resetDeleteState() },

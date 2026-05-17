@@ -10,7 +10,8 @@ import com.felipearpa.tyche.pool.toPoolGamblerScoreModel
 import com.felipearpa.tyche.session.AccountStorage
 import com.felipearpa.tyche.session.authentication.application.LogOut
 import com.felipearpa.tyche.ui.exception.orDefaultLocalized
-import com.felipearpa.ui.state.LoadableViewState
+import com.felipearpa.ui.state.LoadState
+import com.felipearpa.ui.state.SaveState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -26,7 +27,7 @@ class DrawerViewModel(
     private val accountStorage: AccountStorage,
 ) : ViewModel() {
     private val _state =
-        MutableStateFlow<LoadableViewState<PoolGamblerScoreModel>>(LoadableViewState.Initial)
+        MutableStateFlow<LoadState<PoolGamblerScoreModel>>(LoadState.Idle)
     val state = _state.asStateFlow()
 
     private val _email = MutableStateFlow("")
@@ -39,7 +40,7 @@ class DrawerViewModel(
     val isOwner: StateFlow<Boolean> = _isOwner.asStateFlow()
 
     private val _deleteState =
-        MutableStateFlow<LoadableViewState<Unit>>(LoadableViewState.Initial)
+        MutableStateFlow<SaveState<Unit>>(SaveState.Idle)
     val deleteState = _deleteState.asStateFlow()
 
     init {
@@ -50,14 +51,14 @@ class DrawerViewModel(
 
     init {
         viewModelScope.launch {
-            _state.emit(LoadableViewState.Loading)
+            _state.emit(LoadState.Loading)
 
             val poolResult =
                 getPoolGamblerScore.execute(poolId = poolId, gamblerId = gamblerId)
             poolResult.onSuccess { poolGamblerScore ->
-                _state.emit(LoadableViewState.Success(poolGamblerScore.toPoolGamblerScoreModel()))
+                _state.emit(LoadState.Loaded(poolGamblerScore.toPoolGamblerScoreModel()))
             }.onFailure { exception ->
-                _state.emit(LoadableViewState.Failure(exception.orDefaultLocalized()))
+                _state.emit(LoadState.Failure(exception.orDefaultLocalized()))
             }
         }
     }
@@ -78,21 +79,21 @@ class DrawerViewModel(
 
     fun deletePool(onSuccess: () -> Unit) {
         viewModelScope.launch {
-            _deleteState.emit(LoadableViewState.Loading)
+            _deleteState.emit(SaveState.Saving(Unit))
 
             deletePool.execute(poolId = poolId, gamblerId = gamblerId)
                 .onSuccess {
-                    _deleteState.emit(LoadableViewState.Success(Unit))
+                    _deleteState.emit(SaveState.Saved(Unit))
                     onSuccess()
                 }
                 .onFailure { exception ->
-                    _deleteState.emit(LoadableViewState.Failure(exception.orDefaultLocalized()))
+                    _deleteState.emit(SaveState.Failure(Unit, exception.orDefaultLocalized()))
                 }
         }
     }
 
     fun resetDeleteState() {
-        _deleteState.value = LoadableViewState.Initial
+        _deleteState.value = SaveState.Idle
     }
 
     fun applyUsername(newUsername: String) {

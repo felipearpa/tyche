@@ -53,8 +53,8 @@ import com.felipearpa.tyche.ui.shimmer
 import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
 import com.felipearpa.tyche.ui.theme.TycheTheme
 import com.felipearpa.tyche.usernameEditorViewModel
-import com.felipearpa.ui.state.LoadableViewState
-import com.felipearpa.ui.state.isLoading
+import com.felipearpa.ui.state.LoadState
+import com.felipearpa.ui.state.isSaving
 import com.felipearpa.tyche.ui.R as SharedR
 
 @Composable
@@ -79,7 +79,7 @@ fun DrawerView(
         onCloseDrawer = onCloseDrawer,
         poolGamblerScoreState = poolGamblerScoreState,
         isOwner = isOwner,
-        isDeleting = deleteState.isLoading(),
+        isDeleting = deleteState.isSaving(),
         logout = {
             viewModel.logout()
             onSignOut()
@@ -101,7 +101,7 @@ private fun DrawerView(
     username: String,
     onUsernameSaved: (String) -> Unit,
     onCloseDrawer: () -> Unit,
-    poolGamblerScoreState: LoadableViewState<PoolGamblerScoreModel>,
+    poolGamblerScoreState: LoadState<PoolGamblerScoreModel>,
     isOwner: Boolean,
     isDeleting: Boolean,
     modifier: Modifier = Modifier,
@@ -191,24 +191,24 @@ private fun DrawerView(
 
 @Composable
 private fun PoolLayout(
-    poolGamblerScoreState: LoadableViewState<PoolGamblerScoreModel>,
+    poolGamblerScoreState: LoadState<PoolGamblerScoreModel>,
     modifier: Modifier = Modifier,
 ) {
     when (poolGamblerScoreState) {
-        LoadableViewState.Initial, LoadableViewState.Loading ->
+        LoadState.Idle, LoadState.Loading ->
             PoolLayoutItem(
                 poolGamblerScore = poolGamblerScorePlaceholderModel(),
                 modifier = modifier,
                 placeholderModifier = Modifier.shimmer(),
             )
 
-        is LoadableViewState.Success ->
+        is LoadState.Loaded ->
             PoolLayoutItem(
                 poolGamblerScore = poolGamblerScoreState.value,
                 modifier = modifier,
             )
 
-        is LoadableViewState.Failure ->
+        is LoadState.Failure ->
             ExceptionView(localizedException = poolGamblerScoreState.exception.localizedOrDefault())
     }
 
@@ -421,7 +421,7 @@ private fun DrawerViewPreview() {
         Surface {
             PreviewDrawer(
                 isOwner = true,
-                poolGamblerScoreState = LoadableViewState.Success(poolGamblerScoreDummyModel()),
+                poolGamblerScoreState = LoadState.Loaded(poolGamblerScoreDummyModel()),
             )
         }
     }
@@ -434,7 +434,7 @@ private fun DrawerViewNonOwnerPreview() {
         Surface {
             PreviewDrawer(
                 isOwner = false,
-                poolGamblerScoreState = LoadableViewState.Success(poolGamblerScoreDummyModel()),
+                poolGamblerScoreState = LoadState.Loaded(poolGamblerScoreDummyModel()),
             )
         }
     }
@@ -447,7 +447,7 @@ private fun LoadingDrawerViewPreview() {
         Surface {
             PreviewDrawer(
                 isOwner = false,
-                poolGamblerScoreState = LoadableViewState.Loading,
+                poolGamblerScoreState = LoadState.Loading,
             )
         }
     }
@@ -456,7 +456,7 @@ private fun LoadingDrawerViewPreview() {
 @Composable
 private fun PreviewDrawer(
     isOwner: Boolean,
-    poolGamblerScoreState: LoadableViewState<PoolGamblerScoreModel>,
+    poolGamblerScoreState: LoadState<PoolGamblerScoreModel>,
 ) {
     Column(
         modifier = Modifier.fillMaxSize(),

@@ -30,9 +30,9 @@ import com.felipearpa.tyche.ui.exception.localizedOrDefault
 import com.felipearpa.tyche.ui.loading.LoadingContainerView
 import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
 import com.felipearpa.tyche.ui.theme.TycheTheme
-import com.felipearpa.ui.state.LoadableViewState
-import com.felipearpa.ui.state.isLoading
-import com.felipearpa.ui.state.isSuccess
+import com.felipearpa.ui.state.SaveState
+import com.felipearpa.ui.state.isSaved
+import com.felipearpa.ui.state.isSaving
 import com.felipearpa.tyche.ui.R as SharedR
 
 @Composable
@@ -49,7 +49,7 @@ fun UsernameEditor(
 
     LaunchedEffect(saveState) {
         val current = saveState
-        if (current.isSuccess()) onSaved(current.value)
+        if (current.isSaved()) onSaved(current.value)
     }
 
     UsernameEditor(
@@ -66,7 +66,7 @@ fun UsernameEditor(
 @Composable
 private fun UsernameEditor(
     initialUsername: String,
-    saveState: LoadableViewState<String>,
+    saveState: SaveState<String>,
     onSave: (String) -> Unit,
     onRetry: () -> Unit,
     onResetError: () -> Unit,
@@ -90,7 +90,7 @@ private fun UsernameEditor(
         onSave(trimmed)
     }
 
-    if (saveState.isLoading()) {
+    if (saveState.isSaving()) {
         LoadingContainerView {
             UsernameEditorLayout(
                 draft = draft,
@@ -132,7 +132,7 @@ private fun UsernameEditor(
 private fun UsernameEditorLayout(
     draft: String,
     onDraftChange: (String) -> Unit,
-    saveState: LoadableViewState<String>,
+    saveState: SaveState<String>,
     showRequiredError: Boolean,
     onSave: () -> Unit,
     onRetry: () -> Unit,
@@ -183,10 +183,10 @@ private fun UsernameEditorLayout(
 private fun UsernameEditorContent(
     draft: String,
     onDraftChange: (String) -> Unit,
-    saveState: LoadableViewState<String>,
+    saveState: SaveState<String>,
     showRequiredError: Boolean,
 ) {
-    val failure = saveState as? LoadableViewState.Failure
+    val failure = saveState as? SaveState.Failure
 
     if (failure != null) {
         ExceptionContent(
@@ -198,19 +198,19 @@ private fun UsernameEditorContent(
             draft = draft,
             onDraftChange = onDraftChange,
             showRequiredError = showRequiredError,
-            enabled = saveState !is LoadableViewState.Loading,
+            enabled = saveState !is SaveState.Saving,
         )
     }
 }
 
 @Composable
 private fun UsernameEditorConfirmButton(
-    saveState: LoadableViewState<String>,
+    saveState: SaveState<String>,
     onSave: () -> Unit,
     onRetry: () -> Unit,
 ) {
-    val isSaving = saveState is LoadableViewState.Loading
-    val failure = saveState as? LoadableViewState.Failure
+    val isSaving = saveState is SaveState.Saving
+    val failure = saveState as? SaveState.Failure
 
     if (failure != null) {
         Button(
@@ -232,12 +232,12 @@ private fun UsernameEditorConfirmButton(
 
 @Composable
 private fun UsernameEditorDismissButton(
-    saveState: LoadableViewState<String>,
+    saveState: SaveState<String>,
     onDismiss: () -> Unit,
     onResetError: () -> Unit,
 ) {
-    val isSaving = saveState is LoadableViewState.Loading
-    val failure = saveState as? LoadableViewState.Failure
+    val isSaving = saveState is SaveState.Saving
+    val failure = saveState as? SaveState.Failure
 
     if (failure != null) {
         OutlinedButton(
@@ -314,7 +314,7 @@ fun UsernameEditorInitialPreview() {
         Surface {
             UsernameEditor(
                 initialUsername = "felipearpa",
-                saveState = LoadableViewState.Initial,
+                saveState = SaveState.Idle,
                 onSave = {},
                 onRetry = {},
                 onResetError = {},
@@ -332,7 +332,7 @@ fun UsernameEditorLoadingPreview() {
         Surface {
             UsernameEditor(
                 initialUsername = "felipearpa",
-                saveState = LoadableViewState.Loading,
+                saveState = SaveState.Saving("felipearpa"),
                 onSave = {},
                 onRetry = {},
                 onResetError = {},
@@ -350,7 +350,7 @@ fun UsernameEditorFailurePreview() {
         Surface {
             UsernameEditor(
                 initialUsername = "felipearpa",
-                saveState = LoadableViewState.Failure(UnknownLocalizedException()),
+                saveState = SaveState.Failure("felipearpa", UnknownLocalizedException()),
                 onSave = {},
                 onRetry = {},
                 onResetError = {},

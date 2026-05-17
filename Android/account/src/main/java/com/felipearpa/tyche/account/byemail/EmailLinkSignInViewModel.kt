@@ -6,7 +6,7 @@ import com.felipearpa.tyche.core.type.Email
 import com.felipearpa.tyche.session.AccountBundle
 import com.felipearpa.tyche.session.authentication.application.SignInWithEmailLink
 import com.felipearpa.tyche.ui.exception.mapOrDefaultLocalized
-import com.felipearpa.ui.state.LoadableViewState
+import com.felipearpa.ui.state.LoadState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -15,21 +15,21 @@ class EmailLinkSignInViewModel(
     private val signInLinkToEmail: SignInWithEmailLink,
 ) : ViewModel() {
     private val _state =
-        MutableStateFlow<LoadableViewState<AccountBundle>>(LoadableViewState.Initial)
+        MutableStateFlow<LoadState<AccountBundle>>(LoadState.Idle)
     val state = _state.asStateFlow()
 
     fun reset() {
-        _state.value = LoadableViewState.Initial
+        _state.value = LoadState.Idle
     }
 
     fun signInWithEmailLink(email: String, emailLink: String) {
         viewModelScope.launch {
-            _state.emit(LoadableViewState.Loading)
+            _state.emit(LoadState.Loading)
             signInLinkToEmail.execute(email = Email(email), emailLink = emailLink)
-                .onSuccess { accountBundle -> _state.emit(LoadableViewState.Success(accountBundle)) }
+                .onSuccess { accountBundle -> _state.emit(LoadState.Loaded(accountBundle)) }
                 .onFailure { exception ->
                     _state.emit(
-                        LoadableViewState.Failure(
+                        LoadState.Failure(
                             exception.mapOrDefaultLocalized { it.asEmailLinkSignInLocalizedException() },
                         ),
                     )

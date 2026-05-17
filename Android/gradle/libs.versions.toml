@@ -25,7 +25,7 @@ junit5 = "6.0.3"
 kotest = "6.1.11"
 kotlinx-serialization-json = "1.11.0"
 kotlinx-datetime = "0.8.0"
-felipearpa-viewing-state = "v0.0.2"
+felipearpa-viewing-state = "1.0.0"
 felipearpa-foundation = "v0.0.1"
 felipearpa-lazy-paging = "0.0.2"
 cloudy = "0.5.0"
@@ -83,7 +83,7 @@ kotest-assertions-core = { group = "io.kotest", name = "kotest-assertions-core",
 kotest-property = { group = "io.kotest", name = "kotest-property", version.ref = "kotest" }
 kotest-runner-junit4 = { group = "io.kotest", name = "kotest-runner-junit4", version.ref = "kotest" }
 kotlinx-datetime = { group = "org.jetbrains.kotlinx", name = "kotlinx-datetime", version.ref = "kotlinx-datetime" }
-felipearpa-viewing-state = { group = "com.github.felipearpa", name = "viewing-state-android", version.ref = "felipearpa-viewing-state" }
+felipearpa-viewing-state = { group = "com.felipearpa", name = "viewing-state", version.ref = "felipearpa-viewing-state" }
 felipearpa-foundation = { group = "com.github.felipearpa", name = "foundation-android", version.ref = "felipearpa-foundation" }
 felipearpa-lazy-paging = { group = "com.felipearpa", name = "lazy-paging", version.ref = "felipearpa-lazy-paging" }
 cloudy = { group = "com.github.skydoves", name = "cloudy", version.ref = "cloudy" }

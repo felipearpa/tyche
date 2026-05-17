@@ -34,7 +34,7 @@ import com.felipearpa.tyche.account.social.SocialSignInRow
 import com.felipearpa.tyche.ui.exception.UnknownLocalizedException
 import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
 import com.felipearpa.tyche.ui.theme.TycheTheme
-import com.felipearpa.ui.state.LoadableViewState
+import com.felipearpa.ui.state.LoadState
 
 @Composable
 fun HomeView(
@@ -179,7 +179,7 @@ fun HomeViewWithSocialInitialPreview() {
                 onSignInWithEmailAndPassword = {},
                 socialSignInSlot = {
                     SocialSignInRow(
-                        googleState = LoadableViewState.Initial,
+                        googleState = LoadState.Idle,
                         onSignInWithGoogle = {},
                         onResetGoogleState = {},
                         onAuthenticate = {},
@@ -203,7 +203,7 @@ fun HomeViewWithSocialLoadingPreview() {
                 onSignInWithEmailAndPassword = {},
                 socialSignInSlot = {
                     SocialSignInRow(
-                        googleState = LoadableViewState.Loading,
+                        googleState = LoadState.Loading,
                         onSignInWithGoogle = {},
                         onResetGoogleState = {},
                         onAuthenticate = {},
@@ -227,7 +227,7 @@ fun HomeViewWithSocialFailurePreview() {
                 onSignInWithEmailAndPassword = {},
                 socialSignInSlot = {
                     SocialSignInRow(
-                        googleState = LoadableViewState.Failure(UnknownLocalizedException()),
+                        googleState = LoadState.Failure(UnknownLocalizedException()),
                         onSignInWithGoogle = {},
                         onResetGoogleState = {},
                         onAuthenticate = {},

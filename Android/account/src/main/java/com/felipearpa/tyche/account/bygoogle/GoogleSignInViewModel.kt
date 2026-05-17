@@ -10,7 +10,7 @@ import com.felipearpa.tyche.session.AccountBundle
 import com.felipearpa.tyche.session.authentication.application.SignInWithGoogle
 import com.felipearpa.tyche.session.authentication.domain.GoogleSignInException
 import com.felipearpa.tyche.ui.exception.mapOrDefaultLocalized
-import com.felipearpa.ui.state.LoadableViewState
+import com.felipearpa.ui.state.LoadState
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -21,7 +21,7 @@ class GoogleSignInViewModel(
     private val signInWithGoogle: SignInWithGoogle,
 ) : ViewModel(), DefaultLifecycleObserver {
     private val _state =
-        MutableStateFlow<LoadableViewState<AccountBundle>>(LoadableViewState.Initial)
+        MutableStateFlow<LoadState<AccountBundle>>(LoadState.Idle)
     val state = _state.asStateFlow()
 
     private var signInJob: Job? = null
@@ -31,7 +31,7 @@ class GoogleSignInViewModel(
     }
 
     fun reset() {
-        _state.value = LoadableViewState.Initial
+        _state.value = LoadState.Idle
     }
 
     override fun onStop(owner: LifecycleOwner) {
@@ -55,7 +55,7 @@ class GoogleSignInViewModel(
             val idToken = idTokenResult.getOrElse { exception ->
                 if (exception != GoogleSignInException.Cancelled) {
                     _state.emit(
-                        LoadableViewState.Failure(
+                        LoadState.Failure(
                             exception.mapOrDefaultLocalized { it.asGoogleSignInLocalized() },
                         ),
                     )
@@ -63,13 +63,13 @@ class GoogleSignInViewModel(
                 return@launch
             }
 
-            _state.emit(LoadableViewState.Loading)
+            _state.emit(LoadState.Loading)
 
             signInWithGoogle.execute(idToken = idToken)
-                .onSuccess { accountBundle -> _state.emit(LoadableViewState.Success(accountBundle)) }
+                .onSuccess { accountBundle -> _state.emit(LoadState.Loaded(accountBundle)) }
                 .onFailure { exception ->
                     _state.emit(
-                        LoadableViewState.Failure(
+                        LoadState.Failure(
                             exception.mapOrDefaultLocalized { it.asGoogleSignInLocalized() },
                         ),
                     )

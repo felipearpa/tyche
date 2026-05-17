@@ -10,8 +10,8 @@ import com.felipearpa.tyche.data.bet.application.PlaceBet
 import com.felipearpa.tyche.data.bet.domain.Bet
 import com.felipearpa.tyche.data.bet.domain.BetException
 import com.felipearpa.tyche.ui.exception.mapOrDefaultLocalized
-import com.felipearpa.ui.state.EditableViewState
-import com.felipearpa.ui.state.relevantValue
+import com.felipearpa.ui.state.MutationState
+import com.felipearpa.ui.state.activeValue
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -24,24 +24,24 @@ class PendingBetItemViewModel(
 ) : ViewModel() {
 
     private val _state =
-        MutableStateFlow<EditableViewState<PoolGamblerBetModel>?>(null)
+        MutableStateFlow<MutationState<PoolGamblerBetModel>?>(null)
     val state = _state.asStateFlow()
 
     fun bind(poolGamblerBet: PoolGamblerBetModel) {
         _state.update { current ->
             when (current) {
-                null, is EditableViewState.Initial -> EditableViewState.Initial(poolGamblerBet)
-                is EditableViewState.Success ->
-                    EditableViewState.Success(old = current.old, succeeded = poolGamblerBet)
+                null, is MutationState.Idle -> MutationState.Idle(poolGamblerBet)
+                is MutationState.Mutated ->
+                    MutationState.Mutated(original = current.original, updated = poolGamblerBet)
 
-                is EditableViewState.Saving, is EditableViewState.Failure -> current
+                is MutationState.Mutating, is MutationState.Failure -> current
             }
         }
     }
 
     fun retryBet() {
         val poolGamblerBet = when (val stateValue = this.state.value) {
-            is EditableViewState.Failure -> stateValue.failed
+            is MutationState.Failure -> stateValue.updated
             else -> return
         }
         val betScore = poolGamblerBet.betScore ?: return
@@ -51,13 +51,13 @@ class PendingBetItemViewModel(
     fun bet(betScore: TeamScore<Int>) {
         viewModelScope.launch {
             val (currentPoolGamblerBet, targetPoolGamblerBet) = _state.updateAndGet { currentState ->
-                val currentPoolGamblerBet = currentState?.relevantValue() ?: return@launch
+                val currentPoolGamblerBet = currentState?.activeValue() ?: return@launch
                 val targetPoolGamblerBet = currentPoolGamblerBet.copy(betScore = betScore)
-                EditableViewState.Saving(
-                    current = currentPoolGamblerBet,
-                    target = targetPoolGamblerBet,
+                MutationState.Mutating(
+                    original = currentPoolGamblerBet,
+                    updated = targetPoolGamblerBet,
                 )
-            } as EditableViewState.Saving
+            } as MutationState.Mutating
 
             val bet = Bet(
                 poolId = currentPoolGamblerBet.poolId,
@@ -70,21 +70,21 @@ class PendingBetItemViewModel(
             placeBet.execute(bet = bet)
                 .onSuccess { updatedPoolGamblerBet ->
                     _state.emit(
-                        EditableViewState.Success(
-                            old = currentPoolGamblerBet,
-                            succeeded = updatedPoolGamblerBet.toPoolGamblerBetModel(),
+                        MutationState.Mutated(
+                            original = currentPoolGamblerBet,
+                            updated = updatedPoolGamblerBet.toPoolGamblerBetModel(),
                         ),
                     )
                 }.onFailure { exception ->
                     if (exception is BetException.Forbidden) {
                         _state.emit(
-                            EditableViewState.Initial(currentPoolGamblerBet.copy(isLocked = true)),
+                            MutationState.Idle(currentPoolGamblerBet.copy(isLocked = true)),
                         )
                     } else {
                         _state.emit(
-                            EditableViewState.Failure(
-                                current = currentPoolGamblerBet,
-                                failed = targetPoolGamblerBet,
+                            MutationState.Failure(
+                                original = currentPoolGamblerBet,
+                                updated = targetPoolGamblerBet,
                                 exception = exception.mapOrDefaultLocalized {
                                     it.asBetLocalizedExceptionOnMatch()
                                 },
@@ -97,8 +97,8 @@ class PendingBetItemViewModel(
 
     fun reset() {
         _state.update { currentState ->
-            val poolGamblerBet = currentState?.relevantValue() ?: return@update currentState
-            EditableViewState.Initial(
+            val poolGamblerBet = currentState?.activeValue() ?: return@update currentState
+            MutationState.Idle(
                 poolGamblerBet.copy(
                     instanceId = UUID.randomUUID().toString(),
                 ),

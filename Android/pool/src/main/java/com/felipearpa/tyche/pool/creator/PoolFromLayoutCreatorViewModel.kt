@@ -3,8 +3,8 @@ package com.felipearpa.tyche.pool.creator
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.felipearpa.tyche.data.pool.application.CreatePool
-import com.felipearpa.ui.state.EditableViewState
-import com.felipearpa.ui.state.relevantValue
+import com.felipearpa.ui.state.MutationState
+import com.felipearpa.ui.state.activeValue
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -14,15 +14,15 @@ class PoolFromLayoutCreatorViewModel(
     private val createPool: CreatePool,
     private val gamblerId: String,
 ) : ViewModel() {
-    private val _state = MutableStateFlow<EditableViewState<CreatePoolModel>>(
-        EditableViewState.Initial(emptyCreatePoolModel()),
+    private val _state = MutableStateFlow<MutationState<CreatePoolModel>>(
+        MutationState.Idle(emptyCreatePoolModel()),
     )
     val state = _state.asStateFlow()
 
     fun createPool(createPoolModel: CreatePoolModel) {
-        val currentCreatePoolModel = _state.value.relevantValue()
+        val currentCreatePoolModel = _state.value.activeValue()
         _state.value =
-            EditableViewState.Saving(current = currentCreatePoolModel, target = createPoolModel)
+            MutationState.Mutating(original = currentCreatePoolModel, updated = createPoolModel)
         viewModelScope.launch {
             val result =
                 createPool.execute(
@@ -31,14 +31,14 @@ class PoolFromLayoutCreatorViewModel(
                     ),
                 )
             result.onSuccess { createPoolOutput ->
-                _state.value = EditableViewState.Success(
-                    old = currentCreatePoolModel,
-                    succeeded = createPoolModel.copy(poolId = createPoolOutput.poolId),
+                _state.value = MutationState.Mutated(
+                    original = currentCreatePoolModel,
+                    updated = createPoolModel.copy(poolId = createPoolOutput.poolId),
                 )
             }.onFailure {
-                _state.value = EditableViewState.Failure(
-                    current = currentCreatePoolModel,
-                    failed = createPoolModel,
+                _state.value = MutationState.Failure(
+                    original = currentCreatePoolModel,
+                    updated = createPoolModel,
                     exception = it,
                 )
             }
@@ -46,6 +46,6 @@ class PoolFromLayoutCreatorViewModel(
     }
 
     fun reset() {
-        _state.update { EditableViewState.Initial(it.relevantValue()) }
+        _state.update { MutationState.Idle(it.activeValue()) }
     }
 }
