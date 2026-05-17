@@ -9,7 +9,7 @@ struct AccountHeaderDrawer: View {
     @Environment(\.boxSpacing) private var boxSpacing
 
     var body: some View {
-        VStack(spacing: boxSpacing.medium) {
+        VStack(spacing: 0) {
             HStack(spacing: boxSpacing.medium) {
                 EmailAvatar(email: email)
                     .frame(width: AVATAR_SIZE, height: AVATAR_SIZE)
@@ -30,14 +30,11 @@ struct AccountHeaderDrawer: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
 
-            Button(action: onEditAccount) {
-                HStack(spacing: boxSpacing.small) {
-                    Image(sharedResource: .edit)
-                    Text(.editUsernameAction)
-                    Spacer()
-                }
+            DrawerButtonRow(icon: {
+                Image(sharedResource: .edit)
+            }, title: String(localized: .editUsernameAction)) {
+                onEditAccount()
             }
-            .buttonStyle(.plain)
         }
     }
 }

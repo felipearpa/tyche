@@ -13,10 +13,6 @@
 		558C522E2B40A046004AF956 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 558C522D2B40A046004AF956 /* FirebaseAuth */; };
 		55905C322B168C9F003EB79F /* Account in Frameworks */ = {isa = PBXBuildFile; productRef = 55905C312B168C9F003EB79F /* Account */; };
 		55905C362B16C23E003EB79F /* DataPool in Frameworks */ = {isa = PBXBuildFile; productRef = 55905C352B16C23E003EB79F /* DataPool */; };
-		55D5929D2FA43C71003D4E59 /* LocalURLBasePathProviderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55D5929C2FA43C71003D4E59 /* LocalURLBasePathProviderTests.swift */; };
-		D2127F4F2A2C2F270047DED7 /* TycheTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2127F4E2A2C2F270047DED7 /* TycheTests.swift */; };
-		D2127F592A2C2F270047DED7 /* TycheUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2127F582A2C2F270047DED7 /* TycheUITests.swift */; };
-		D2127F5B2A2C2F270047DED7 /* TycheUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2127F5A2A2C2F270047DED7 /* TycheUITestsLaunchTests.swift */; };
 		D29956132A74215600F8878E /* Bet in Frameworks */ = {isa = PBXBuildFile; productRef = D29956122A74215600F8878E /* Bet */; };
 		D2BB75112A5B65D500C7AE04 /* Pool in Frameworks */ = {isa = PBXBuildFile; productRef = D2BB75102A5B65D500C7AE04 /* Pool */; };
 		D2C23D612A3E428D003CC860 /* UI in Frameworks */ = {isa = PBXBuildFile; productRef = D2C23D602A3E428D003CC860 /* UI */; };
@@ -41,13 +37,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		55D5929C2FA43C71003D4E59 /* LocalURLBasePathProviderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalURLBasePathProviderTests.swift; sourceTree = "<group>"; };
 		D2127F352A2C2F240047DED7 /* Tyche.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Tyche.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D2127F4A2A2C2F270047DED7 /* TycheTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TycheTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		D2127F4E2A2C2F270047DED7 /* TycheTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TycheTests.swift; sourceTree = "<group>"; };
 		D2127F542A2C2F270047DED7 /* TycheUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TycheUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		D2127F582A2C2F270047DED7 /* TycheUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TycheUITests.swift; sourceTree = "<group>"; };
-		D2127F5A2A2C2F270047DED7 /* TycheUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TycheUITestsLaunchTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -63,6 +55,8 @@
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		552E198A2FBA75C600DA8129 /* Tyche */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (552E19AC2FBA75C700DA8129 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = Tyche; sourceTree = "<group>"; };
+		552E19AF2FBA841F00DA8129 /* TycheTests */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = TycheTests; sourceTree = "<group>"; };
+		552E19B42FBA842300DA8129 /* TycheUITests */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = TycheUITests; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -104,8 +98,8 @@
 			isa = PBXGroup;
 			children = (
 				552E198A2FBA75C600DA8129 /* Tyche */,
-				D2127F4D2A2C2F270047DED7 /* TycheTests */,
-				D2127F572A2C2F270047DED7 /* TycheUITests */,
+				552E19AF2FBA841F00DA8129 /* TycheTests */,
+				552E19B42FBA842300DA8129 /* TycheUITests */,
 				D2127F362A2C2F240047DED7 /* Products */,
 				D2127F672A2C2FD50047DED7 /* Frameworks */,
 			);
@@ -119,24 +113,6 @@
 				D2127F542A2C2F270047DED7 /* TycheUITests.xctest */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		D2127F4D2A2C2F270047DED7 /* TycheTests */ = {
-			isa = PBXGroup;
-			children = (
-				D2127F4E2A2C2F270047DED7 /* TycheTests.swift */,
-				55D5929C2FA43C71003D4E59 /* LocalURLBasePathProviderTests.swift */,
-			);
-			path = TycheTests;
-			sourceTree = "<group>";
-		};
-		D2127F572A2C2F270047DED7 /* TycheUITests */ = {
-			isa = PBXGroup;
-			children = (
-				D2127F582A2C2F270047DED7 /* TycheUITests.swift */,
-				D2127F5A2A2C2F270047DED7 /* TycheUITestsLaunchTests.swift */,
-			);
-			path = TycheUITests;
 			sourceTree = "<group>";
 		};
 		D2127F672A2C2FD50047DED7 /* Frameworks */ = {
@@ -194,6 +170,9 @@
 			dependencies = (
 				D2127F4C2A2C2F270047DED7 /* PBXTargetDependency */,
 			);
+			fileSystemSynchronizedGroups = (
+				552E19AF2FBA841F00DA8129 /* TycheTests */,
+			);
 			name = TycheTests;
 			productName = TycheTests;
 			productReference = D2127F4A2A2C2F270047DED7 /* TycheTests.xctest */;
@@ -211,6 +190,9 @@
 			);
 			dependencies = (
 				D2127F562A2C2F270047DED7 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				552E19B42FBA842300DA8129 /* TycheUITests */,
 			);
 			name = TycheUITests;
 			productName = TycheUITests;
@@ -302,8 +284,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				55D5929D2FA43C71003D4E59 /* LocalURLBasePathProviderTests.swift in Sources */,
-				D2127F4F2A2C2F270047DED7 /* TycheTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -311,8 +291,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D2127F5B2A2C2F270047DED7 /* TycheUITestsLaunchTests.swift in Sources */,
-				D2127F592A2C2F270047DED7 /* TycheUITests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

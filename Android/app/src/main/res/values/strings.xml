@@ -26,4 +26,5 @@
     <string name="update_account_failure_message">Couldn\'t save your changes. Please try again.</string>
     <string name="edit_username_action">Edit username</string>
     <string name="edit_user_name_subtitle">This is how other players will see you in the pools</string>
+    <string name="position_small_suffix">%sº</string>
 </resources>

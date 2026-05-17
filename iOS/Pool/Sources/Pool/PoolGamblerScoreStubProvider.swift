@@ -32,7 +32,7 @@ public func poolGamblerScoreWithoutPositionDummyModel() -> PoolGamblerScoreModel
         gamblerUsername: "neptune-player",
         position: nil,
         beforePosition: nil,
-        score: nil
+        score: 0
     )
 }
 

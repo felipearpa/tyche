@@ -1,8 +1,6 @@
 package com.felipearpa.tyche.poolhome.drawer
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -13,10 +11,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
@@ -33,20 +29,21 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.felipearpa.tyche.AccountHeaderDrawer
+import com.felipearpa.tyche.DrawerButtonRow
 import com.felipearpa.tyche.R
 import com.felipearpa.tyche.UsernameEditor
 import com.felipearpa.tyche.pool.PoolGamblerScoreModel
 import com.felipearpa.tyche.pool.poolGamblerScoreDummyModel
 import com.felipearpa.tyche.pool.poolGamblerScorePlaceholderModel
+import com.felipearpa.tyche.pool.poolGamblerScoreWithoutPositionDummyModel
 import com.felipearpa.tyche.ui.exception.ExceptionView
 import com.felipearpa.tyche.ui.exception.localizedOrDefault
 import com.felipearpa.tyche.ui.shimmer
@@ -262,20 +259,20 @@ private fun PoolLayoutItem(
             horizontalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.medium),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Text(
-                text = "${poolGamblerScore.position}º",
-                style = MaterialTheme.typography.titleSmall,
-                color = MaterialTheme.colorScheme.onPrimary,
-                modifier = placeholderModifier,
-            )
-
-            poolGamblerScore.score?.let {
-                VerticalDivider(
+            poolGamblerScore.position?.let { position ->
+                Text(
+                    text = stringResource(id = R.string.position_small_suffix, position),
+                    style = MaterialTheme.typography.titleSmall,
                     color = MaterialTheme.colorScheme.onPrimary,
+                    modifier = placeholderModifier,
                 )
 
+                VerticalDivider(color = MaterialTheme.colorScheme.onPrimary)
+            }
+
+            poolGamblerScore.score?.let { score ->
                 Text(
-                    text = stringResource(id = R.string.suffix_point_text, it),
+                    text = stringResource(id = R.string.suffix_point_text, score),
                     style = MaterialTheme.typography.titleSmall,
                     color = MaterialTheme.colorScheme.onPrimary,
                     modifier = placeholderModifier,
@@ -303,26 +300,15 @@ private fun PoolMenuSection(
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
 
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(SECTION_CORNER_RADIUS.dp))
-                .border(
-                    width = 1.dp,
-                    color = MaterialTheme.colorScheme.outlineVariant,
-                    shape = RoundedCornerShape(SECTION_CORNER_RADIUS.dp),
-                ),
-        ) {
-            DrawerMenuRow(
+        Column(modifier = Modifier.fillMaxWidth()) {
+            DrawerButtonRow(
                 iconResId = SharedR.drawable.person_add,
                 title = stringResource(id = R.string.invite_action),
                 onClick = onInvite,
             )
 
             if (isOwner) {
-                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
-
-                DrawerMenuRow(
+                DrawerButtonRow(
                     iconResId = SharedR.drawable.delete_forever,
                     title = stringResource(id = R.string.delete_pool_action),
                     tint = MaterialTheme.colorScheme.error,
@@ -331,41 +317,6 @@ private fun PoolMenuSection(
                 )
             }
         }
-    }
-}
-
-@Composable
-private fun DrawerMenuRow(
-    iconResId: Int,
-    title: String,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier,
-    tint: Color = MaterialTheme.colorScheme.onSurface,
-    enabled: Boolean = true,
-) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.medium),
-        modifier = modifier
-            .fillMaxWidth()
-            .clickable(enabled = enabled, onClick = onClick)
-            .padding(
-                horizontal = LocalBoxSpacing.current.medium,
-                vertical = LocalBoxSpacing.current.medium,
-            ),
-    ) {
-        Icon(
-            painter = painterResource(id = iconResId),
-            contentDescription = null,
-            tint = tint,
-            modifier = Modifier.size(MENU_ICON_SIZE.dp),
-        )
-
-        Text(
-            text = title,
-            style = MaterialTheme.typography.bodyLarge,
-            color = tint,
-        )
     }
 }
 
@@ -411,10 +362,7 @@ private fun SignOutButton(onSignOut: () -> Unit, modifier: Modifier = Modifier) 
     }
 }
 
-private const val MENU_ICON_SIZE = 22
-private const val SECTION_CORNER_RADIUS = 12
-
-@Preview(showBackground = true)
+@PreviewLightDark
 @Composable
 private fun DrawerViewPreview() {
     TycheTheme {
@@ -427,7 +375,7 @@ private fun DrawerViewPreview() {
     }
 }
 
-@Preview(showBackground = true)
+@PreviewLightDark
 @Composable
 private fun DrawerViewNonOwnerPreview() {
     TycheTheme {
@@ -442,11 +390,20 @@ private fun DrawerViewNonOwnerPreview() {
 
 @Preview(showBackground = true)
 @Composable
+private fun DrawerViewWithoutPositionPreview() {
+    PreviewDrawer(
+        isOwner = true,
+        poolGamblerScoreState = LoadState.Loaded(poolGamblerScoreWithoutPositionDummyModel()),
+    )
+}
+
+@PreviewLightDark
+@Composable
 private fun LoadingDrawerViewPreview() {
     TycheTheme {
         Surface {
             PreviewDrawer(
-                isOwner = false,
+                isOwner = true,
                 poolGamblerScoreState = LoadState.Loading,
             )
         }

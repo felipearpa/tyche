@@ -22,7 +22,7 @@ import com.felipearpa.tyche.pool.PositionIndicator
 import com.felipearpa.tyche.pool.difference
 import com.felipearpa.tyche.pool.poolGamblerScoreDummyModel
 import com.felipearpa.tyche.pool.poolGamblerScorePlaceholderModel
-import com.felipearpa.tyche.pool.poolGamblerScoreWithoutScoreDummyModel
+import com.felipearpa.tyche.pool.poolGamblerScoreWithoutPositionDummyModel
 import com.felipearpa.tyche.ui.TrendIndicator
 import com.felipearpa.tyche.ui.shimmer
 import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
@@ -115,7 +115,7 @@ private fun PoolScoreItemPreviewWithoutScore() {
     TycheTheme {
         Surface {
             PoolScoreItem(
-                poolGamblerScore = poolGamblerScoreWithoutScoreDummyModel(),
+                poolGamblerScore = poolGamblerScoreWithoutPositionDummyModel(),
                 onJoin = {},
                 modifier = Modifier.fillMaxWidth(),
             )
