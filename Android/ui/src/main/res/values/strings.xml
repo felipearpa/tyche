@@ -5,14 +5,11 @@
     <string name="remote_communication_failure_reason">We\'re having trouble connecting to our servers right now</string>
     <string name="unknown_failure_description">Unexpected error</string>
     <string name="unknown_failure_reason">Something went wrong and we\'re not sure what</string>
-    <string name="searching_label">Type to search</string>
     <string name="retry_action">Retry</string>
     <string name="empty_list_message">Nothing to show</string>
-    <string name="empty_list_recovery_message">Try adjusting your filter settings or resetting them to see more items</string>
     <string name="cancel_action">Cancel</string>
     <string name="save_action">Save</string>
     <string name="edit_action">Edit</string>
     <string name="unknown_failure_recovery_suggestion">Please try again. If the problem continues, please contact our support team for assistance</string>
     <string name="remote_communication_failure_recovery_suggestion">Please check your internet connection and give it another shot later. If the problem continues, please contact our support team for assistance</string>
-    <string name="next_action">Next</string>
 </resources>

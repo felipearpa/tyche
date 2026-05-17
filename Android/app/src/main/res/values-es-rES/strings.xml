@@ -1,17 +1,12 @@
 <resources>
     <string name="app_name">Fortuna</string>
-    <string name="create_account_action">Crear cuenta</string>
-    <string name="account_exists_text">¿Ya tienes una cuenta?</string>
     <string name="sign_in_with_email_action">Correo electrónico</string>
     <string name="sign_out_action">Cerrar sesión</string>
-    <string name="connected_account_text">Cuenta conectada</string>
     <string name="play_pool_text">Mira quién ha acertado más resultados y atrévete a retarlo ahora</string>
     <string name="score_tab">Puntuaciones</string>
     <string name="bet_tab">Apuestas</string>
     <string name="history_bets_tab">Historial</string>
-    <string name="change_pool_action">Cambiar quiniela</string>
     <string name="sign_in_with_email_and_password">Correo electrónico y contraseña</string>
-    <string name="sign_in_with_google_action">Google</string>
     <string name="continue_with_text">Continuar con:</string>
     <string name="suffix_point_text">%s puntos</string>
     <string name="playing_now_text">Jugando ahora</string>
@@ -23,7 +18,6 @@
     <string name="delete_action">Eliminar</string>
     <string name="edit_username_title">Editar nombre de usuario</string>
     <string name="username_label">Nombre de usuario</string>
-    <string name="update_account_failure_message">No se pudo guardar los cambios. Por favor vuelva a intentarlo.</string>
     <string name="edit_username_action">Editar nombre de usuario</string>
     <string name="edit_user_name_subtitle">Así te verán otros jugadores en las pollas</string>
     <string name="position_small_suffix">%sº</string>
