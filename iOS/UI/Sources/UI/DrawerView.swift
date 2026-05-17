@@ -47,12 +47,23 @@ private struct DrawerContainer<Base: View, DrawerContent: View>: View {
                             topTrailingRadius: 0,
                         )
                     )
-                    .shadow(color: .black.opacity(isShowing ? 0.3 : 0), radius: 10, x: -3)
+                    .overlay(
+                        UnevenRoundedRectangle(
+                            topLeadingRadius: isShowing ? cornerRadius : 0,
+                            bottomLeadingRadius: isShowing ? cornerRadius : 0,
+                            bottomTrailingRadius: 0,
+                            topTrailingRadius: 0,
+                        )
+                        .strokeBorder(
+                            Color(.separator).opacity(isShowing ? 1 : 0),
+                            lineWidth: 1,
+                        )
+                    )
                     .offset(x: isShowing ? drawerWidth : 0)
                     .disabled(isShowing)
             }
             .ignoresSafeArea()
-            .animation(.easeOut(duration: 0.3), value: isShowing)
+            .animation(.timingCurve(0.4, 0.0, 0.2, 1.0, duration: 0.3), value: isShowing)
             .gesture(
                 DragGesture()
                     .onEnded { value in

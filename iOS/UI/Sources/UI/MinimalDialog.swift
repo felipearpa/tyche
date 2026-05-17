@@ -29,7 +29,6 @@ private struct MinimalDialogContainer<Base: View, DialogContent: View>: View {
                 }
                 .background(BackgroundClearView())
             }
-            .transaction { $0.disablesAnimations = true }
     }
 }
 
