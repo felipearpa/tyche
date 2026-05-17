@@ -29,7 +29,7 @@ public struct BetTimelineListView: View {
         let _ = Self._printChangesIfDebug()
 
         BetTimelineListContent(
-            viewModel: BetsTimelineViewModel(
+            viewModel: BetTimelineListViewModel(
                 getGamblerBetsTimelineUseCase: GetGamblerBetsTimelineUseCase(
                     poolGamblerBetRepository: diResolver.resolve(PoolGamblerBetRepository.self)!
                 ),
@@ -61,13 +61,13 @@ public struct BetTimelineListView: View {
 private let HOME_ICON_SIZE: CGFloat = 24
 
 private struct BetTimelineListContent: View {
-    @StateObject private var viewModel: BetsTimelineViewModel
+    @StateObject private var viewModel: BetTimelineListViewModel
     private let onMatchOpen: MatchOpenHandler?
     private let gamblerUsername: String
     @Environment(\.boxSpacing) private var boxSpacing
 
     init(
-        viewModel: @autoclosure @escaping () -> BetsTimelineViewModel,
+        viewModel: @autoclosure @escaping () -> BetTimelineListViewModel,
         gamblerUsername: String,
         onMatchOpen: MatchOpenHandler? = nil
     ) {

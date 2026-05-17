@@ -3,9 +3,7 @@ package com.felipearpa.tyche.pool.gamblerscore
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -21,6 +19,7 @@ import com.felipearpa.tyche.pool.PoolGamblerScoreModel
 import com.felipearpa.tyche.pool.PositionIndicator
 import com.felipearpa.tyche.pool.difference
 import com.felipearpa.tyche.pool.poolGamblerScoreDummyModel
+import com.felipearpa.tyche.pool.poolGamblerScoreDummyModelWithoutPosition
 import com.felipearpa.tyche.pool.poolGamblerScorePlaceholderModel
 import com.felipearpa.tyche.ui.TrendIndicator
 import com.felipearpa.tyche.ui.shimmer
@@ -49,8 +48,6 @@ fun GamblerScoreItem(
                     shouldUsePrimaryColor = isCurrentUser,
                     shimmerModifier = shimmerModifier,
                 )
-            } else {
-                Box(modifier = Modifier.size(scoreSize))
             }
 
             Text(
@@ -62,7 +59,7 @@ fun GamblerScoreItem(
             )
         }
 
-        Row {
+        Row(horizontalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.medium)) {
             poolGamblerScore.score?.let { score ->
                 Text(text = score.toString(), modifier = shimmerModifier)
             }
@@ -78,8 +75,6 @@ fun GamblerScoreItem(
                         shimmerModifier = shimmerModifier,
                     )
                 }
-            } else {
-                Spacer(modifier = Modifier.width(trendIndicatorSize))
             }
         }
     }
@@ -118,20 +113,22 @@ private fun CurrentUserGamblerScoreItemPreview() {
     TycheTheme {
         Surface {
             GamblerScoreItem(
-                poolGamblerScore = PoolGamblerScoreModel(
-                    poolId = "X".repeat(15),
-                    poolName = "Tyche American Cup YYYY",
-                    gamblerId = "X".repeat(15),
-                    gamblerUsername = "user-tyche",
-                    position = 1,
-                    beforePosition = 2,
-                    score = 10,
-                ),
+                poolGamblerScore = poolGamblerScoreDummyModel(),
                 isCurrentUser = true,
                 modifier = Modifier.fillMaxWidth(),
             )
         }
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun GamblerScoreItemWithoutPositionPreview() {
+    GamblerScoreItem(
+        poolGamblerScore = poolGamblerScoreDummyModelWithoutPosition(),
+        isCurrentUser = true,
+        modifier = Modifier.fillMaxWidth(),
+    )
 }
 
 @Preview(showBackground = true)

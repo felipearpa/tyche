@@ -26,7 +26,15 @@ struct GamblerScoreList: View {
         RefreshableLazyPagingVStack(
             lazyPagingItems: lazyPagingItems,
             loadingContent: { GamblerScorePlaceholderList() },
+            prependLoadingContent: { EmptyView() },
             appendLoadingContent: { GamblerScorePlaceholderRow() },
+            prependErrorContent: { _ in EmptyView() },
+            appendErrorContent: { error in
+                LazyPagingVStackConcatenateError(
+                    localizedError: error.localizedErrorOrDefault(),
+                    retry: { Task { await lazyPagingItems.retry() } }
+                )
+            },
         ) { index in
             if let poolGamblerScore = lazyPagingItems.peek(at: index) {
                 if let onGamblerOpen {
@@ -58,17 +66,6 @@ struct GamblerScoreList: View {
                     }
                     .padding(.horizontal, boxSpacing.medium)
                 }
-            } else {
-                VStack(spacing: 0) {
-                    GamblerScoreItem(
-                        poolGamblerScore: poolGamblerScorePlaceholderModel(),
-                        isCurrentUser: false
-                    )
-                    .shimmer()
-                    .padding(boxSpacing.medium)
-                    Divider()
-                }
-                .padding(.horizontal, boxSpacing.medium)
             }
         }
     }
