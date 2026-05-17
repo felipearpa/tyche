@@ -7,11 +7,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -26,13 +24,13 @@ import com.felipearpa.foundation.emptyString
 import com.felipearpa.tyche.AccountHeaderDrawer
 import com.felipearpa.tyche.R
 import com.felipearpa.tyche.UsernameEditor
+import com.felipearpa.tyche.ui.MinimalDialog
 import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
 import com.felipearpa.tyche.usernameEditorViewModel
 
 @Composable
 fun DrawerView(
     viewModel: DrawerViewModel,
-    onCloseDrawer: () -> Unit,
     onSignOut: () -> Unit,
 ) {
     val email by viewModel.email.collectAsStateWithLifecycle()
@@ -43,7 +41,6 @@ fun DrawerView(
         email = email,
         username = username,
         onUsernameSaved = viewModel::applyUsername,
-        onCloseDrawer = onCloseDrawer,
         logout = {
             viewModel.logout()
             onSignOut()
@@ -59,10 +56,10 @@ private fun DrawerView(
     email: String = emptyString(),
     username: String = emptyString(),
     onUsernameSaved: (String) -> Unit = {},
-    onCloseDrawer: () -> Unit = {},
     logout: () -> Unit = {},
 ) {
-    var isEditingAccount by remember { mutableStateOf(false) }
+    var accountEditorVisible by remember { mutableStateOf(false) }
+    val usernameEditorViewModel = usernameEditorViewModel()
 
     Column(
         modifier = modifier.padding(all = LocalBoxSpacing.current.medium),
@@ -71,10 +68,7 @@ private fun DrawerView(
         AccountHeaderDrawer(
             username = username,
             email = email,
-            onEditAccount = {
-                onCloseDrawer()
-                isEditingAccount = true
-            },
+            onEditAccount = { accountEditorVisible = true },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = LocalBoxSpacing.current.large),
@@ -86,24 +80,17 @@ private fun DrawerView(
         )
     }
 
-    if (isEditingAccount) {
-        val editorViewModel = usernameEditorViewModel()
-        val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-
-        ModalBottomSheet(
-            onDismissRequest = { isEditingAccount = false },
-            sheetState = sheetState,
-            modifier = Modifier.fillMaxSize()
-        ) {
+    if (accountEditorVisible) {
+        MinimalDialog(onDismiss = { accountEditorVisible = false }) {
             UsernameEditor(
                 initialUsername = username,
-                viewModel = editorViewModel,
+                viewModel = usernameEditorViewModel,
                 onSaved = { saved ->
                     onUsernameSaved(saved)
-                    isEditingAccount = false
+                    accountEditorVisible = false
                 },
-                onDismiss = { isEditingAccount = false },
-                modifier = Modifier.fillMaxSize()
+                onDismiss = { accountEditorVisible = false },
+                modifier = Modifier.fillMaxWidth(),
             )
         }
     }

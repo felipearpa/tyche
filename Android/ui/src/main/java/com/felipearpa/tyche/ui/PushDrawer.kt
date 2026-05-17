@@ -67,6 +67,11 @@ fun PushDrawer(
             animationSpec = tween(ANIMATION_DURATION_MS, easing = FastOutSlowInEasing),
             label = "drawerDim",
         )
+        val borderAlpha by animateFloatAsState(
+            targetValue = if (isOpen) 1f else 0f,
+            animationSpec = tween(ANIMATION_DURATION_MS, easing = FastOutSlowInEasing),
+            label = "drawerBorderAlpha",
+        )
 
         Box(
             Modifier
@@ -86,10 +91,14 @@ fun PushDrawer(
                     shape = RoundedCornerShape(topStart = corner, bottomStart = corner)
                     clip = true
                 }
-                .border(
-                    width = 1.dp,
-                    color = MaterialTheme.colorScheme.outlineVariant,
-                    shape = RoundedCornerShape(topStart = corner, bottomStart = corner),
+                .then(
+                    if (borderAlpha > 0f) {
+                        Modifier.border(
+                            width = 1.dp,
+                            color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = borderAlpha),
+                            shape = RoundedCornerShape(topStart = corner, bottomStart = corner),
+                        )
+                    } else Modifier,
                 )
                 .pointerInput(isOpen) {
                     var totalDrag = 0f
@@ -129,7 +138,37 @@ fun PushDrawer(
 
 @PreviewLightDark
 @Composable
-private fun PushDrawerOpenPreview() {
+private fun PushDrawerClosedPreview() {
+    TycheTheme {
+        Surface {
+            PushDrawer(
+                isOpen = false,
+                onOpenChange = {},
+                drawerContent = {
+                    Box(
+                        Modifier
+                            .fillMaxSize()
+                            .background(Color.Gray),
+                    ) {
+                        Text(text = "Drawer Content", modifier = Modifier.padding(16.dp))
+                    }
+                },
+            ) {
+                Box(
+                    Modifier
+                        .fillMaxSize()
+                        .background(MaterialTheme.colorScheme.surface),
+                ) {
+                    Text(text = "Main Content", modifier = Modifier.padding(16.dp))
+                }
+            }
+        }
+    }
+}
+
+@PreviewLightDark
+@Composable
+private fun PushDrawerOpenedPreview() {
     TycheTheme {
         Surface {
             PushDrawer(
