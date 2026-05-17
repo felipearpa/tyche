@@ -82,7 +82,7 @@ private struct PoolHomeRouterContent: View {
             ),
             onDismiss: {}
         )
-        .sheet(isPresented: $isEditingAccount) {
+        .minimalDialog(isPresented: $isEditingAccount) {
             UsernameEditor(
                 initialUsername: drawerViewModel.username,
                 viewModel: usernameEditorViewModel,
@@ -94,7 +94,6 @@ private struct PoolHomeRouterContent: View {
                     isEditingAccount = false
                 }
             )
-            .presentationDetents([.large])
         }
     }
 
@@ -184,7 +183,6 @@ private struct PoolHomeRouterContent: View {
                     onChangePool()
                 },
                 onEditAccount: {
-                    drawerVisible = false
                     isEditingAccount = true
                 }
             )

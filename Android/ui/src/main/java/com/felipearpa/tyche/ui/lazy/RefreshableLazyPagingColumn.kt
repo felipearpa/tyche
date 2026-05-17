@@ -32,13 +32,13 @@ fun <Item : Any> RefreshableLazyPagingColumn(
     prependErrorContent: LazyListScope.(Throwable) -> Unit = {
         lazyPagingConcatenateError(
             exception = it,
-            retry = lazyPagingItems::retry,
+            onRetry = lazyPagingItems::retry,
         )
     },
     appendErrorContent: LazyListScope.(Throwable) -> Unit = {
         lazyPagingConcatenateError(
             exception = it,
-            retry = lazyPagingItems::retry,
+            onRetry = lazyPagingItems::retry,
         )
     },
     itemContent: LazyListScope.() -> Unit,

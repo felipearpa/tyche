@@ -134,10 +134,8 @@ private fun CurrentUserGamblerScoreItemPreview() {
     }
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 private fun GamblerScorePlaceholderItemPreview() {
-    Surface {
-        GamblerScorePlaceholderItem(modifier = Modifier.fillMaxWidth())
-    }
+    GamblerScorePlaceholderItem(modifier = Modifier.fillMaxWidth())
 }

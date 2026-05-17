@@ -44,6 +44,7 @@ import com.felipearpa.tyche.pool.poolGamblerScoreDummyModels
 import com.felipearpa.tyche.ui.exception.localizedOrDefault
 import com.felipearpa.tyche.ui.lazy.Failure
 import com.felipearpa.tyche.ui.lazy.RefreshableLazyPagingColumn
+import com.felipearpa.tyche.ui.lazy.lazyPagingConcatenateError
 import com.felipearpa.tyche.ui.shimmer
 import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
 import com.felipearpa.tyche.ui.theme.TycheTheme
@@ -76,6 +77,12 @@ fun PoolScoreList(
         },
         errorContent = { exception -> poolScoreErrorList(exception) { lazyPoolGamblerScores.retry() } },
         appendLoadingContent = { poolScorePlaceholderItemRow() },
+        prependErrorContent = { exception ->
+            lazyPagingConcatenateError(
+                exception = exception,
+                onRetry = { lazyPoolGamblerScores.retry() },
+            )
+        },
     ) {
         items(
             count = lazyPoolGamblerScores.itemCount,

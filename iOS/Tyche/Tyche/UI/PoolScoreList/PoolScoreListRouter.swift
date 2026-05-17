@@ -112,14 +112,11 @@ private struct PoolScoreListRouterContent: View {
             PoolScoreListDrawerView(
                 viewModel: drawerViewModel,
                 onSignOut: onSignOut,
-                onEditAccount: {
-                    drawerVisible = false
-                    isEditingAccount = true
-                }
+                onEditAccount: { isEditingAccount = true }
             )
         }
         .withParentGeometryProxy()
-        .sheet(isPresented: $isEditingAccount) {
+        .minimalDialog(isPresented: $isEditingAccount) {
             UsernameEditor(
                 initialUsername: drawerViewModel.username,
                 viewModel: usernameEditorViewModel,
@@ -131,7 +128,6 @@ private struct PoolScoreListRouterContent: View {
                     isEditingAccount = false
                 }
             )
-            .presentationDetents([.large])
         }
     }
 

@@ -18,7 +18,7 @@ import com.felipearpa.tyche.ui.exception.UnknownLocalizedException
 import com.felipearpa.tyche.ui.exception.localizedOrDefault
 import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
 
-fun LazyListScope.lazyPagingConcatenateError(exception: Throwable, retry: () -> Unit) {
+fun LazyListScope.lazyPagingConcatenateError(exception: Throwable, onRetry: () -> Unit) {
     item {
         Column(
             modifier = Modifier
@@ -32,7 +32,7 @@ fun LazyListScope.lazyPagingConcatenateError(exception: Throwable, retry: () -> 
                 modifier = Modifier.fillMaxWidth(),
             )
 
-            Button(onClick = { retry() }) {
+            Button(onClick = { onRetry() }) {
                 Text(text = stringResource(id = R.string.retry_action))
             }
         }
@@ -43,6 +43,6 @@ fun LazyListScope.lazyPagingConcatenateError(exception: Throwable, retry: () -> 
 @Composable
 private fun LazyPagingConcatenateErrorPreview() {
     LazyColumn {
-        lazyPagingConcatenateError(exception = UnknownLocalizedException(), retry = {})
+        lazyPagingConcatenateError(exception = UnknownLocalizedException(), onRetry = {})
     }
 }

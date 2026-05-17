@@ -3,11 +3,38 @@ import UI
 import ViewingState
 
 private let USERNAME_MAX_GRAPHEMES = 100
+private let iconSize: CGFloat = 24
 
 struct UsernameEditor: View {
     let initialUsername: String
     @ObservedObject var viewModel: UsernameEditorViewModel
     let onSaved: (String) -> Void
+    let onDismiss: () -> Void
+
+    var body: some View {
+        UsernameEditorStatefulView(
+            initialUsername: initialUsername,
+            saveState: viewModel.saveState,
+            onSave: { viewModel.save($0) },
+            onRetry: { viewModel.retry() },
+            onResetError: { viewModel.resetError() },
+            onDismiss: onDismiss
+        )
+        .onAppear {
+            viewModel.reset()
+        }
+        .onChange(of: viewModel.saveState) { newState in
+            if case .loaded(let saved) = newState { onSaved(saved) }
+        }
+    }
+}
+
+private struct UsernameEditorStatefulView: View {
+    let initialUsername: String
+    let saveState: LoadState<String>
+    let onSave: (String) -> Void
+    let onRetry: () -> Void
+    let onResetError: () -> Void
     let onDismiss: () -> Void
 
     @State private var draft: String = ""
@@ -20,40 +47,34 @@ struct UsernameEditor: View {
     }
 
     private var isSaving: Bool {
-        viewModel.saveState.isLoading()
+        saveState.isLoading()
     }
 
     private var failureError: LocalizedError? {
-        if case .failure(let error) = viewModel.saveState {
+        if case .failure(let error) = saveState {
             return (error as? LocalizedError) ?? UnknownLocalizedError()
         }
         return nil
     }
 
     var body: some View {
-        Group {
-            if isSaving {
-                LoadingContainerView { editorLayout }
-            } else {
-                editorLayout
-            }
-        }
-        .onAppear {
-            draft = initialUsername
-            viewModel.reset()
-        }
-        .onChange(of: viewModel.saveState) { newState in
-            if case .loaded(let saved) = newState { onSaved(saved) }
-        }
-    }
-
-    private var editorLayout: some View {
         VStack(alignment: .leading, spacing: boxSpacing.large) {
-            Text(.editUsernameTitle)
-                .font(.title2)
+            HStack(spacing: boxSpacing.medium) {
+                Text(.editUsernameTitle)
+                    .font(.title2)
+                    .frame(maxWidth: .infinity, alignment: .leading)
 
-            content
-                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+                if isSaving {
+                    BallSpinner()
+                        .frame(width: iconSize, height: iconSize)
+                } else if failureError != nil {
+                    Image(sharedResource: .error)
+                        .resizable()
+                        .frame(width: iconSize, height: iconSize)
+                }
+            }
+
+            formContent
 
             VStack(spacing: boxSpacing.small) {
                 confirmButton
@@ -62,16 +83,9 @@ struct UsernameEditor: View {
         }
         .padding(.horizontal, boxSpacing.large)
         .padding(.vertical, boxSpacing.medium)
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-    }
-
-    @ViewBuilder
-    private var content: some View {
-        if let error = failureError {
-            ErrorView(localizedError: error)
-                .frame(maxWidth: .infinity)
-        } else {
-            formContent
+        .frame(maxWidth: .infinity)
+        .onAppear {
+            draft = initialUsername
         }
     }
 
@@ -97,36 +111,36 @@ struct UsernameEditor: View {
     @ViewBuilder
     private var confirmButton: some View {
         if failureError != nil {
-            Button(String(sharedResource: .retryAction)) {
-                viewModel.retry()
+            Button(action: onRetry) {
+                Text(sharedResource: .retryAction)
+                    .frame(maxWidth: .infinity)
             }
-            .buttonStyle(.borderedProminent)
-            .controlSize(.large)
-            .frame(maxWidth: .infinity)
+            .buttonStyle(.liquidGlassProminent)
         } else {
-            Button(String(sharedResource: .saveAction), action: save)
-                .buttonStyle(.borderedProminent)
-                .controlSize(.large)
-                .frame(maxWidth: .infinity)
-                .disabled(isSaving)
+            Button(action: save) {
+                Text(sharedResource: .saveAction)
+                    .frame(maxWidth: .infinity)
+            }
+            .buttonStyle(.liquidGlassProminent)
+            .disabled(isSaving)
         }
     }
 
     @ViewBuilder
     private var dismissButton: some View {
         if failureError != nil {
-            Button(String(sharedResource: .cancelAction)) {
-                viewModel.resetError()
+            Button(action: onResetError) {
+                Text(sharedResource: .cancelAction)
+                    .frame(maxWidth: .infinity)
             }
-            .buttonStyle(.bordered)
-            .controlSize(.large)
-            .frame(maxWidth: .infinity)
+            .buttonStyle(.liquidGlass)
         } else {
-            Button(String(sharedResource: .cancelAction), action: onDismiss)
-                .buttonStyle(.bordered)
-                .controlSize(.large)
-                .frame(maxWidth: .infinity)
-                .disabled(isSaving)
+            Button(action: onDismiss) {
+                Text(sharedResource: .cancelAction)
+                    .frame(maxWidth: .infinity)
+            }
+            .buttonStyle(.liquidGlass)
+            .disabled(isSaving)
         }
     }
 
@@ -139,7 +153,7 @@ struct UsernameEditor: View {
             onDismiss()
             return
         }
-        viewModel.save(trimmed)
+        onSave(trimmed)
     }
 }
 
@@ -147,4 +161,37 @@ private func clampToGraphemes(_ value: String, max: Int) -> String {
     let graphemes = Array(value)
     if graphemes.count <= max { return value }
     return String(graphemes.prefix(max))
+}
+
+#Preview("idle") {
+    UsernameEditorStatefulView(
+        initialUsername: "felipearpa",
+        saveState: .idle,
+        onSave: { _ in },
+        onRetry: {},
+        onResetError: {},
+        onDismiss: {}
+    )
+}
+
+#Preview("saving") {
+    UsernameEditorStatefulView(
+        initialUsername: "felipearpa",
+        saveState: .loading,
+        onSave: { _ in },
+        onRetry: {},
+        onResetError: {},
+        onDismiss: {}
+    )
+}
+
+#Preview("failure") {
+    UsernameEditorStatefulView(
+        initialUsername: "felipearpa",
+        saveState: .failure(UnknownLocalizedError()),
+        onSave: { _ in },
+        onRetry: {},
+        onResetError: {},
+        onDismiss: {}
+    )
 }

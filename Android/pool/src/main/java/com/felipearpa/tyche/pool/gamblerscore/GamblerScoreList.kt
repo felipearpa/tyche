@@ -20,6 +20,7 @@ import androidx.paging.compose.itemKey
 import com.felipearpa.tyche.pool.PoolGamblerScoreModel
 import com.felipearpa.tyche.pool.poolGamblerScoreDummyModels
 import com.felipearpa.tyche.ui.lazy.RefreshableLazyPagingColumn
+import com.felipearpa.tyche.ui.lazy.lazyPagingConcatenateError
 import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
 import com.felipearpa.tyche.ui.theme.TycheTheme
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -37,6 +38,12 @@ fun GamblerScoreList(
         lazyPagingItems = lazyPoolGamblerScores,
         loadingContent = { gamblerScorePlaceholderList(count = placeholderCount) },
         appendLoadingContent = { gamblerScorePlaceholderItemRow() },
+        appendErrorContent = { exception ->
+            lazyPagingConcatenateError(
+                exception = exception,
+                onRetry = { lazyPoolGamblerScores.retry() },
+            )
+        },
     ) {
         items(
             count = lazyPoolGamblerScores.itemCount,
