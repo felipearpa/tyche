@@ -13,6 +13,7 @@ val poolHomeViewModelModule = module {
             getPoolGamblerScore = get(),
             getPool = get(),
             deletePool = get(),
+            updateUsername = get(),
             accountStorage = get(),
         )
     }

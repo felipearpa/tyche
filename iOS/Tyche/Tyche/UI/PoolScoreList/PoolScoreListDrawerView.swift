@@ -3,36 +3,50 @@ import UI
 
 struct PoolScoreListDrawerView : View {
     @StateObject var viewModel: PoolScoreListDrawerViewModel
-    let email: String
     let onSignOut: () -> Void
+    let onEditAccount: () -> Void
 
     init(
         viewModel: @autoclosure @escaping () -> PoolScoreListDrawerViewModel,
-        email: String,
-        onSignOut: @escaping () -> Void
+        onSignOut: @escaping () -> Void,
+        onEditAccount: @escaping () -> Void
     ) {
         self._viewModel = .init(wrappedValue: viewModel())
-        self.email = email
         self.onSignOut = onSignOut
+        self.onEditAccount = onEditAccount
     }
 
     var body: some View {
-        PoolScoreListDrawerStatefulView(email: email, onSignOut: {
-            viewModel.logOut()
-            onSignOut()
-        })
+        PoolScoreListDrawerStatefulView(
+            email: viewModel.email,
+            username: viewModel.username,
+            onEditAccount: {
+                viewModel.clearUsernameError()
+                onEditAccount()
+            },
+            onSignOut: {
+                viewModel.logOut()
+                onSignOut()
+            }
+        )
     }
 }
 
 private struct PoolScoreListDrawerStatefulView : View {
     let email: String
+    let username: String
+    let onEditAccount: () -> Void
     let onSignOut: () -> Void
 
     @Environment(\.boxSpacing) private var boxSpacing
 
     var body: some View {
         VStack(spacing: 0) {
-            AccountHeaderDrawer(email: email)
+            AccountHeaderDrawer(
+                username: username,
+                email: email,
+                onEditAccount: onEditAccount
+            )
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.top, boxSpacing.large)
                 .padding(.horizontal, boxSpacing.medium)
@@ -64,5 +78,10 @@ private struct SignOutButton: View {
 }
 
 #Preview {
-    PoolScoreListDrawerStatefulView(email: "felipearpa@email.com", onSignOut: {})
+    PoolScoreListDrawerStatefulView(
+        email: "felipearpa@email.com",
+        username: "felipearpa",
+        onEditAccount: {},
+        onSignOut: {}
+    )
 }

@@ -13,9 +13,6 @@ struct PoolScoreListRouter: View {
     @StateObject var poolScoreViewModel: PoolScoreListViewModel
 
     @Environment(\.diResolver) private var diResolver: DIResolver
-    @State private var path = NavigationPath()
-    @State private var drawerVisible = false
-    @State private var wasPoolCreated: Bool = false
 
     init(
         accountBundle: AccountBundle,
@@ -27,6 +24,48 @@ struct PoolScoreListRouter: View {
         self.onPoolSelect = onPoolSelect
         self.onSignOut = onSignOut
         self._poolScoreViewModel = .init(wrappedValue: poolScoreViewModel())
+    }
+
+    var body: some View {
+        PoolScoreListRouterContent(
+            accountBundle: accountBundle,
+            onPoolSelect: onPoolSelect,
+            onSignOut: onSignOut,
+            poolScoreViewModel: poolScoreViewModel,
+            drawerViewModel: PoolScoreListDrawerViewModel(
+                logOutUseCase: diResolver.resolve(LogOutUseCase.self)!,
+                updateUsernameUseCase: diResolver.resolve(UpdateUsernameUseCase.self)!,
+                accountStorage: diResolver.resolve(AccountStorage.self)!
+            )
+        )
+    }
+}
+
+private struct PoolScoreListRouterContent: View {
+    let accountBundle: AccountBundle
+    let onPoolSelect: (PoolProfile) -> Void
+    let onSignOut: () -> Void
+    @ObservedObject var poolScoreViewModel: PoolScoreListViewModel
+    @StateObject private var drawerViewModel: PoolScoreListDrawerViewModel
+
+    @Environment(\.diResolver) private var diResolver: DIResolver
+    @State private var path = NavigationPath()
+    @State private var drawerVisible = false
+    @State private var isEditingAccount = false
+    @State private var wasPoolCreated: Bool = false
+
+    init(
+        accountBundle: AccountBundle,
+        onPoolSelect: @escaping (PoolProfile) -> Void,
+        onSignOut: @escaping () -> Void,
+        poolScoreViewModel: PoolScoreListViewModel,
+        drawerViewModel: @autoclosure @escaping () -> PoolScoreListDrawerViewModel
+    ) {
+        self.accountBundle = accountBundle
+        self.onPoolSelect = onPoolSelect
+        self.onSignOut = onSignOut
+        self.poolScoreViewModel = poolScoreViewModel
+        self._drawerViewModel = StateObject(wrappedValue: drawerViewModel())
     }
 
     var body: some View {
@@ -66,12 +105,35 @@ struct PoolScoreListRouter: View {
         }
         .drawer(isShowing: $drawerVisible) {
             PoolScoreListDrawerView(
-                viewModel: PoolScoreListDrawerViewModel(logOutUseCase: diResolver.resolve(LogOutUseCase.self)!),
-                email: accountBundle.email,
+                viewModel: drawerViewModel,
                 onSignOut: onSignOut,
+                onEditAccount: {
+                    isEditingAccount = true
+                }
             )
         }
         .withParentGeometryProxy()
+        .overlay {
+            if isEditingAccount {
+                AccountEditDialog(
+                    initialUsername: drawerViewModel.username,
+                    isSaving: drawerViewModel.isSavingUsername,
+                    serverError: drawerViewModel.usernameError == PoolScoreListDrawerViewModel.usernameUpdateFailed
+                        ? "Couldn't save your changes. Please try again."
+                        : nil,
+                    onSave: { value in
+                        drawerViewModel.changeUsername(value) {
+                            isEditingAccount = false
+                        }
+                    },
+                    onClearError: drawerViewModel.clearUsernameError,
+                    onDismiss: {
+                        drawerViewModel.clearUsernameError()
+                        isEditingAccount = false
+                    }
+                )
+            }
+        }
     }
 
     private func navigationBarLeading() -> some View {

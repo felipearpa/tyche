@@ -9,6 +9,7 @@ import com.felipearpa.tyche.session.authentication.domain.AuthenticationReposito
 import com.felipearpa.tyche.session.authentication.domain.EmailLinkSignInException
 import com.felipearpa.tyche.session.authentication.domain.ExternalAccountId
 import com.felipearpa.tyche.session.authentication.domain.GoogleSignInResult
+import com.felipearpa.tyche.session.authentication.domain.UpdateUsernameRequest
 import com.felipearpa.tyche.session.authentication.domain.toLinkAccountRequest
 
 internal class AuthenticationRemoteRepository(
@@ -71,7 +72,15 @@ internal class AuthenticationRemoteRepository(
                         accountId = this.accountId,
                         externalAccountId = accountLink.externalAccountId,
                         email = accountLink.email.value,
+                        storedUsername = this.username.ifEmpty { accountLink.email.value },
                     )
                 }
+        }
+
+    override suspend fun updateUsername(accountId: String, username: String): Result<Unit> =
+        networkExceptionHandler.handle {
+            authenticationDataSource.updateUsername(
+                request = UpdateUsernameRequest(accountId = accountId, username = username),
+            )
         }
 }

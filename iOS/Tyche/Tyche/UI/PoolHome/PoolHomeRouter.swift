@@ -28,6 +28,7 @@ struct PoolHomeRouter: View {
                 getPoolGamblerScoreUseCase: diResolver.resolve(GetPoolGamblerScoreUseCase.self)!,
                 getPoolUseCase: diResolver.resolve(GetPoolUseCase.self)!,
                 deletePoolUseCase: diResolver.resolve(DeletePoolUseCase.self)!,
+                updateUsernameUseCase: diResolver.resolve(UpdateUsernameUseCase.self)!,
                 accountStorage: diResolver.resolve(AccountStorage.self)!
             )
         )
@@ -43,6 +44,7 @@ private struct PoolHomeRouterContent: View {
     @Environment(\.diResolver) private var diResolver: DIResolver
     @State private var path = NavigationPath()
     @State private var drawerVisible = false
+    @State private var isEditingAccount = false
     @State private var inviteUrl: ShareablePoolUrl?
     @StateObject private var drawerViewModel: PoolHomeDrawerViewModel
 
@@ -75,6 +77,27 @@ private struct PoolHomeRouterContent: View {
             ),
             onDismiss: {}
         )
+        .overlay {
+            if isEditingAccount {
+                AccountEditDialog(
+                    initialUsername: drawerViewModel.username,
+                    isSaving: drawerViewModel.isSavingUsername,
+                    serverError: drawerViewModel.usernameError == PoolHomeDrawerViewModel.usernameUpdateFailed
+                        ? "Couldn't save your changes. Please try again."
+                        : nil,
+                    onSave: { value in
+                        drawerViewModel.changeUsername(value) {
+                            isEditingAccount = false
+                        }
+                    },
+                    onClearError: drawerViewModel.clearUsernameError,
+                    onDismiss: {
+                        drawerViewModel.clearUsernameError()
+                        isEditingAccount = false
+                    }
+                )
+            }
+        }
     }
 
     @ViewBuilder
@@ -161,6 +184,9 @@ private struct PoolHomeRouterContent: View {
                 onPoolDeleted: {
                     drawerVisible = false
                     onChangePool()
+                },
+                onEditAccount: {
+                    isEditingAccount = true
                 }
             )
         }

@@ -89,6 +89,13 @@ public class LoginAssembly : Assembly {
                 accountStorage: resolver.resolve(AccountStorage.self)!
             )
         }
+
+        container.register(UpdateUsernameUseCase.self) { resolver in
+            UpdateUsernameUseCase(
+                authenticationRepository: resolver.resolve(AuthenticationRepository.self)!,
+                accountStorage: resolver.resolve(AccountStorage.self)!
+            )
+        }
         
         container.register(AuthTokenRetriever.self) { resolver in
             AuthTokenFirebaseRetriever(firebaseAuth: resolver.resolve(Auth.self)!)

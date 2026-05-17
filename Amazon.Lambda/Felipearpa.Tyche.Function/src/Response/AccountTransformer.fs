@@ -9,4 +9,5 @@ module AccountTransformer =
         member this.ToAccountResponse() =
             { AccountResponse.AccountId = this.AccountId |> Ulid.value
               Email = this.Email |> Email.value
+              Username = this.Username |> NonEmptyString100.value
               ExternalAccountId = this.ExternalAccountId |> NonEmptyString.value }

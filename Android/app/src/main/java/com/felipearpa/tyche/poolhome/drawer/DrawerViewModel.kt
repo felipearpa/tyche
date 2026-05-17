@@ -9,6 +9,7 @@ import com.felipearpa.tyche.pool.PoolGamblerScoreModel
 import com.felipearpa.tyche.pool.toPoolGamblerScoreModel
 import com.felipearpa.tyche.session.AccountStorage
 import com.felipearpa.tyche.session.authentication.application.LogOut
+import com.felipearpa.tyche.session.authentication.application.UpdateUsername
 import com.felipearpa.tyche.ui.exception.orDefaultLocalized
 import com.felipearpa.ui.state.LoadableViewState
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,6 +24,7 @@ class DrawerViewModel(
     private val getPoolGamblerScore: GetPoolGamblerScore,
     private val getPool: GetPool,
     private val deletePool: DeletePool,
+    private val updateUsername: UpdateUsername,
     private val accountStorage: AccountStorage,
 ) : ViewModel() {
     private val _state =
@@ -32,6 +34,15 @@ class DrawerViewModel(
     private val _email = MutableStateFlow("")
     val email: StateFlow<String> = _email.asStateFlow()
 
+    private val _username = MutableStateFlow("")
+    val username: StateFlow<String> = _username.asStateFlow()
+
+    private val _isSavingUsername = MutableStateFlow(false)
+    val isSavingUsername: StateFlow<Boolean> = _isSavingUsername.asStateFlow()
+
+    private val _usernameError = MutableStateFlow<String?>(null)
+    val usernameError: StateFlow<String?> = _usernameError.asStateFlow()
+
     private val _isOwner = MutableStateFlow(false)
     val isOwner: StateFlow<Boolean> = _isOwner.asStateFlow()
 
@@ -40,7 +51,9 @@ class DrawerViewModel(
     val deleteState = _deleteState.asStateFlow()
 
     init {
-        _email.value = accountStorage.state.value?.email.orEmpty()
+        val bundle = accountStorage.state.value
+        _email.value = bundle?.email.orEmpty()
+        _username.value = bundle?.username.orEmpty()
     }
 
     init {
@@ -88,5 +101,34 @@ class DrawerViewModel(
 
     fun resetDeleteState() {
         _deleteState.value = LoadableViewState.Initial
+    }
+
+    fun changeUsername(newUsername: String, onSaved: () -> Unit = {}) {
+        if (_isSavingUsername.value) return
+        val trimmed = newUsername.trim()
+        if (trimmed.isEmpty() || trimmed == _username.value) {
+            onSaved()
+            return
+        }
+
+        viewModelScope.launch {
+            _isSavingUsername.value = true
+            _usernameError.value = null
+            updateUsername.execute(trimmed)
+                .onSuccess { saved ->
+                    _username.value = saved
+                    onSaved()
+                }
+                .onFailure { _usernameError.value = USERNAME_UPDATE_FAILED }
+            _isSavingUsername.value = false
+        }
+    }
+
+    fun clearUsernameError() {
+        _usernameError.value = null
+    }
+
+    companion object {
+        const val USERNAME_UPDATE_FAILED = "USERNAME_UPDATE_FAILED"
     }
 }

@@ -9,6 +9,7 @@ struct PoolHomeDrawerView: View {
     let onInvite: () -> Void
     let onPoolDeleting: () -> Void
     let onPoolDeleted: () -> Void
+    let onEditAccount: () -> Void
 
     @State private var isConfirmingDelete = false
 
@@ -17,21 +18,28 @@ struct PoolHomeDrawerView: View {
         onLogout: @escaping () -> Void,
         onInvite: @escaping () -> Void,
         onPoolDeleting: @escaping () -> Void,
-        onPoolDeleted: @escaping () -> Void
+        onPoolDeleted: @escaping () -> Void,
+        onEditAccount: @escaping () -> Void
     ) {
         self.viewModel = viewModel
         self.onSignOut = onLogout
         self.onInvite = onInvite
         self.onPoolDeleting = onPoolDeleting
         self.onPoolDeleted = onPoolDeleted
+        self.onEditAccount = onEditAccount
     }
 
     var body: some View {
         PoolHomeDrawerStatefulView(
             email: viewModel.email,
+            username: viewModel.username,
             poolGamblerScoreState: viewModel.state,
             isOwner: viewModel.isOwner,
             isDeleting: viewModel.deleteState.isLoading(),
+            onEditAccount: {
+                viewModel.clearUsernameError()
+                onEditAccount()
+            },
             onSignOut: {
                 viewModel.signOut()
                 onSignOut()
@@ -56,9 +64,11 @@ struct PoolHomeDrawerView: View {
 
 private struct PoolHomeDrawerStatefulView: View {
     let email: String
+    let username: String
     let poolGamblerScoreState: LoadState<PoolGamblerScoreModel>
     let isOwner: Bool
     let isDeleting: Bool
+    let onEditAccount: () -> Void
     let onSignOut: () -> Void
     let onInvite: () -> Void
     let onDeletePool: () -> Void
@@ -67,7 +77,11 @@ private struct PoolHomeDrawerStatefulView: View {
 
     var body: some View {
         VStack(spacing: boxSpacing.medium) {
-            AccountHeaderDrawer(email: email)
+            AccountHeaderDrawer(
+                username: username,
+                email: email,
+                onEditAccount: onEditAccount
+            )
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.top, boxSpacing.large)
                 .padding(.horizontal, boxSpacing.medium)
@@ -288,9 +302,11 @@ private let SECTION_CORNER_RADIUS: CGFloat = 12
 #Preview("Light") {
     PoolHomeDrawerStatefulView(
         email: "felipearpa@email.com",
+        username: "felipearpa",
         poolGamblerScoreState: .loaded(poolGamblerScoreDummyModel()),
         isOwner: true,
         isDeleting: false,
+        onEditAccount: {},
         onSignOut: {},
         onInvite: {},
         onDeletePool: {}
@@ -301,9 +317,11 @@ private let SECTION_CORNER_RADIUS: CGFloat = 12
 #Preview("Dark") {
     PoolHomeDrawerStatefulView(
         email: "felipearpa@email.com",
+        username: "felipearpa",
         poolGamblerScoreState: .loaded(poolGamblerScoreDummyModel()),
         isOwner: true,
         isDeleting: false,
+        onEditAccount: {},
         onSignOut: {},
         onInvite: {},
         onDeletePool: {}
@@ -314,9 +332,11 @@ private let SECTION_CORNER_RADIUS: CGFloat = 12
 #Preview("Loading") {
     PoolHomeDrawerStatefulView(
         email: "felipearpa@email.com",
+        username: "felipearpa",
         poolGamblerScoreState: .loading,
         isOwner: false,
         isDeleting: false,
+        onEditAccount: {},
         onSignOut: {},
         onInvite: {},
         onDeletePool: {}

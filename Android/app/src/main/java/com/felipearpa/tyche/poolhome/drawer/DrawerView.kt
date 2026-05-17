@@ -38,6 +38,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.felipearpa.tyche.AccountEditDialog
 import com.felipearpa.tyche.AccountHeaderDrawer
 import com.felipearpa.tyche.R
 import com.felipearpa.tyche.pool.PoolGamblerScoreModel
@@ -61,12 +62,20 @@ fun DrawerView(
     onPoolDeleted: () -> Unit,
 ) {
     val email by viewModel.email.collectAsStateWithLifecycle()
+    val username by viewModel.username.collectAsStateWithLifecycle()
+    val isSavingUsername by viewModel.isSavingUsername.collectAsStateWithLifecycle()
+    val usernameError by viewModel.usernameError.collectAsStateWithLifecycle()
     val poolGamblerScoreState by viewModel.state.collectAsStateWithLifecycle()
     val isOwner by viewModel.isOwner.collectAsStateWithLifecycle()
     val deleteState by viewModel.deleteState.collectAsStateWithLifecycle()
 
     DrawerView(
         email = email,
+        username = username,
+        isSavingUsername = isSavingUsername,
+        usernameError = usernameError,
+        onSaveUsername = viewModel::changeUsername,
+        onClearUsernameError = viewModel::clearUsernameError,
         poolGamblerScoreState = poolGamblerScoreState,
         isOwner = isOwner,
         isDeleting = deleteState.isLoading(),
@@ -83,9 +92,15 @@ fun DrawerView(
     )
 }
 
+
 @Composable
 private fun DrawerView(
     email: String,
+    username: String,
+    isSavingUsername: Boolean,
+    usernameError: String?,
+    onSaveUsername: (String, () -> Unit) -> Unit,
+    onClearUsernameError: () -> Unit,
     poolGamblerScoreState: LoadableViewState<PoolGamblerScoreModel>,
     isOwner: Boolean,
     isDeleting: Boolean,
@@ -95,13 +110,19 @@ private fun DrawerView(
     onConfirmDelete: () -> Unit = {},
 ) {
     var isConfirmingDelete by remember { mutableStateOf(false) }
+    var isEditingAccount by remember { mutableStateOf(false) }
 
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.medium),
     ) {
         AccountHeaderDrawer(
+            username = username,
             email = email,
+            onEditAccount = {
+                onClearUsernameError()
+                isEditingAccount = true
+            },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = LocalBoxSpacing.current.large)
@@ -142,6 +163,28 @@ private fun DrawerView(
                 onConfirmDelete()
             },
             onDismiss = { isConfirmingDelete = false },
+        )
+    }
+
+    if (isEditingAccount) {
+        val resolvedError = when (usernameError) {
+            DrawerViewModel.USERNAME_UPDATE_FAILED ->
+                stringResource(id = R.string.update_account_failure_message)
+
+            else -> null
+        }
+        AccountEditDialog(
+            initialUsername = username,
+            isSaving = isSavingUsername,
+            serverError = resolvedError,
+            onSave = { value: String ->
+                onSaveUsername(value) { isEditingAccount = false }
+            },
+            onClearError = onClearUsernameError,
+            onDismiss = {
+                onClearUsernameError()
+                isEditingAccount = false
+            },
         )
     }
 }
@@ -379,6 +422,11 @@ private fun DrawerViewPreview() {
             DrawerView(
                 modifier = Modifier.fillMaxSize(),
                 email = "felipearpa@email.com",
+                username = "felipearpa",
+                isSavingUsername = false,
+                onSaveUsername = { _, _ -> },
+                onClearUsernameError = {},
+                usernameError = null,
                 poolGamblerScoreState = LoadableViewState.Success(poolGamblerScoreDummyModel()),
                 isOwner = true,
                 isDeleting = false,
@@ -395,6 +443,11 @@ private fun DrawerViewNonOwnerPreview() {
             DrawerView(
                 modifier = Modifier.fillMaxSize(),
                 email = "felipearpa@email.com",
+                username = "felipearpa",
+                isSavingUsername = false,
+                onSaveUsername = { _, _ -> },
+                onClearUsernameError = {},
+                usernameError = null,
                 poolGamblerScoreState = LoadableViewState.Success(poolGamblerScoreDummyModel()),
                 isOwner = false,
                 isDeleting = false,
@@ -411,6 +464,11 @@ private fun LoadingDrawerViewPreview() {
             DrawerView(
                 modifier = Modifier.fillMaxSize(),
                 email = "felipearpa@email.com",
+                username = "felipearpa",
+                isSavingUsername = false,
+                onSaveUsername = { _, _ -> },
+                onClearUsernameError = {},
+                usernameError = null,
                 poolGamblerScoreState = LoadableViewState.Loading,
                 isOwner = false,
                 isDeleting = false,
