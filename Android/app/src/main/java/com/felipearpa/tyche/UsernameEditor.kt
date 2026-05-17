@@ -91,7 +91,7 @@ private fun UsernameEditor(
     }
 
     if (saveState.isLoading()) {
-        LoadingContainerView(modifier = modifier) {
+        LoadingContainerView {
             UsernameEditorLayout(
                 draft = draft,
                 onDraftChange = { next ->

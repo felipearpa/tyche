@@ -22,15 +22,7 @@ import com.skydoves.cloudy.cloudy
 
 @Composable
 fun LoadingContainerView(content: @Composable () -> Unit) {
-    LoadingContainerView(modifier = Modifier.fillMaxSize(), content = content)
-}
-
-@Composable
-fun LoadingContainerView(
-    modifier: Modifier = Modifier,
-    content: @Composable () -> Unit,
-) {
-    Box(modifier = modifier) {
+    Box(modifier = Modifier.fillMaxSize()) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
