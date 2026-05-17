@@ -5,35 +5,38 @@ import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
-import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import com.felipearpa.tyche.ui.theme.TycheTheme
 
 private const val DRAWER_WIDTH_RATIO = 0.85f
 private const val ANIMATION_DURATION_MS = 300
 private val CORNER_RADIUS: Dp = 25.dp
 private const val OPEN_DIM_ALPHA = 0.15f
-private const val OPEN_SHADOW_ELEVATION = 16f
 private const val DRAG_THRESHOLD_PX = 50f
 
 @Composable
@@ -64,11 +67,6 @@ fun PushDrawer(
             animationSpec = tween(ANIMATION_DURATION_MS, easing = FastOutSlowInEasing),
             label = "drawerDim",
         )
-        val shadow by animateFloatAsState(
-            targetValue = if (isOpen) OPEN_SHADOW_ELEVATION else 0f,
-            animationSpec = tween(ANIMATION_DURATION_MS, easing = FastOutSlowInEasing),
-            label = "drawerShadow",
-        )
 
         Box(
             Modifier
@@ -83,12 +81,16 @@ fun PushDrawer(
         Box(
             Modifier
                 .fillMaxSize()
-                .offset { IntOffset(x = offsetX.roundToPx(), y = 0) }
                 .graphicsLayer {
+                    translationX = offsetX.toPx()
                     shape = RoundedCornerShape(topStart = corner, bottomStart = corner)
                     clip = true
-                    shadowElevation = shadow
                 }
+                .border(
+                    width = 1.dp,
+                    color = MaterialTheme.colorScheme.outlineVariant,
+                    shape = RoundedCornerShape(topStart = corner, bottomStart = corner),
+                )
                 .pointerInput(isOpen) {
                     var totalDrag = 0f
                     detectHorizontalDragGestures(
@@ -107,15 +109,49 @@ fun PushDrawer(
         ) {
             content()
 
-            if (isOpen) {
+            if (dim > 0f) {
                 Box(
                     Modifier
                         .matchParentSize()
                         .background(dimColor.copy(alpha = dim))
-                        .pointerInput(Unit) {
-                            detectTapGestures { onOpenChange(false) }
-                        },
+                        .then(
+                            if (isOpen) {
+                                Modifier.pointerInput(Unit) {
+                                    detectTapGestures { onOpenChange(false) }
+                                }
+                            } else Modifier,
+                        ),
                 )
+            }
+        }
+    }
+}
+
+@PreviewLightDark
+@Composable
+private fun PushDrawerOpenPreview() {
+    TycheTheme {
+        Surface {
+            PushDrawer(
+                isOpen = true,
+                onOpenChange = {},
+                drawerContent = {
+                    Box(
+                        Modifier
+                            .fillMaxSize()
+                            .background(Color.Gray),
+                    ) {
+                        Text(text = "Drawer Content", modifier = Modifier.padding(16.dp))
+                    }
+                },
+            ) {
+                Box(
+                    Modifier
+                        .fillMaxSize()
+                        .background(MaterialTheme.colorScheme.surface),
+                ) {
+                    Text(text = "Main Content", modifier = Modifier.padding(16.dp))
+                }
             }
         }
     }
