@@ -17,7 +17,7 @@ public struct LiquidGlassTextFieldStyle: TextFieldStyle {
                 configuration
                     .padding()
                     .glassEffect(.regular, in: .capsule)
-                    .opacity(isEnabled ? 1.0 : 0.5)
+                    .opacity(isEnabled ? 1.0 : 0.3)
             } else {
                 configuration
                     .padding()
