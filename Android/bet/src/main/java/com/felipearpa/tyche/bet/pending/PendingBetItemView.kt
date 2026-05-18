@@ -58,7 +58,7 @@ fun PendingBetItemView(
     LaunchedEffect(poolGamblerBet) { viewModel.bind(poolGamblerBet) }
 
     val viewModelState by viewModel.state.collectAsState()
-    val currentViewModelState = viewModelState ?: return
+    val currentViewModelState = viewModelState ?: MutationState.Idle(poolGamblerBet)
     var viewState by remember {
         mutableStateOf<PendingBetItemViewState>(
             PendingBetItemViewState.Visualization(

@@ -55,7 +55,7 @@ fun PendingBetList(
         loadingContent = { pendingBetPlaceholderList(count = fakeItemCount) },
         emptyContent = { emptyContent() },
         errorContent = { error(it) },
-        appendLoadingContent = { item { pendingBetPlaceholderItemRow() } },
+        appendLoadingContent = { pendingBetPlaceholderItemRow() },
     ) {
         val poolGamblerBetsCount = lazyPoolGamblerBets.itemCount
         var lastMatchDate: LocalDate? = null
@@ -118,7 +118,7 @@ fun PendingBetList(
 
 private fun LazyListScope.pendingBetPlaceholderList(count: Int) {
     repeat(count) {
-        item { pendingBetPlaceholderItemRow() }
+        pendingBetPlaceholderItemRow()
     }
 }
 
@@ -149,10 +149,11 @@ private fun LazyListScope.emptyContent() {
     }
 }
 
-@Composable
-private fun pendingBetPlaceholderItemRow() {
-    PendingBetPlaceholderItem(modifier = Modifier.pendingBetItem())
-    HorizontalDivider(modifier = Modifier.padding(horizontal = LocalBoxSpacing.current.large))
+private fun LazyListScope.pendingBetPlaceholderItemRow() {
+    item {
+        PendingBetPlaceholderItem(modifier = Modifier.pendingBetItem())
+        HorizontalDivider(modifier = Modifier.padding(horizontal = LocalBoxSpacing.current.large))
+    }
 }
 
 private fun LazyListScope.error(exception: Throwable) {
