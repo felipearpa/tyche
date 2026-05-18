@@ -1,5 +1,6 @@
 import SwiftUI
 import UI
+import Account
 
 struct AccountHeaderDrawer: View {
     let username: String

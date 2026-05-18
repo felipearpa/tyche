@@ -7,6 +7,7 @@ import Pool
 import DataBet
 import Bet
 import Session
+import Account
 
 struct PoolHomeView: View {
     let gamblerId: String
@@ -84,11 +85,10 @@ struct PoolHomeView: View {
 
     private func navigationBarLeading() -> some View {
         Button(action: onMenuTap) {
-            Image(sharedResource: .menu)
-                .resizable()
-                .frame(width: ICON_SIZE, height: ICON_SIZE)
-                .tint(.primary)
+            AutoEmailAvatar()
+                .navigationEmailAvatar()
         }
+        .buttonStyle(.plain)
     }
 
     private func navigationBarTrailing() -> some View {

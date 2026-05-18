@@ -1,11 +1,37 @@
 import SwiftUI
+import Core
+import Session
 
-struct EmailAvatar: View {
+public struct AutoEmailAvatar: View {
+    private let explicitEmail: String?
+    @Environment(\.diResolver) private var diResolver: DIResolver
+    @Environment(\.colorScheme) private var colorScheme
+    @State private var resolvedEmail: String = ""
+
+    public init(email: String) { self.explicitEmail = email }
+    public init() { self.explicitEmail = nil }
+
+    private var email: String { explicitEmail ?? resolvedEmail }
+
+    public var body: some View {
+        EmailAvatar(email: resolvedEmail)
+            .task {
+                guard explicitEmail == nil else { return }
+                guard let storage = diResolver.resolve(AccountStorage.self) else { return }
+                resolvedEmail = (try? await storage.retrieve())?.email ?? ""
+            }
+    }
+}
+
+public struct EmailAvatar: View {
     let email: String
-
     @Environment(\.colorScheme) private var colorScheme
 
-    var body: some View {
+    public init(email: String) {
+        self.email = email
+    }
+
+    public var body: some View {
         GeometryReader { proxy in
             let diameter = min(proxy.size.width, proxy.size.height)
             if let initial = email.avatarInitial {
@@ -42,6 +68,14 @@ struct EmailAvatar: View {
     }
 }
 
+public extension View {
+    func navigationEmailAvatar() -> some View {
+        self
+            .frame(width: navigationAvatarSize, height: navigationAvatarSize)
+            .clipShape(Circle())
+    }
+}
+
 private extension String {
     var avatarInitial: Character? {
         let localPart = split(
@@ -54,8 +88,6 @@ private extension String {
             .first
     }
 
-    // Mirrors Java's String.hashCode so a given email maps to the same hue on iOS and Android.
-    // Swift's built-in hashValue is randomized per-process, which would make the color drift between launches.
     var javaHashCode: Int32 {
         var h: Int32 = 0
         for codeUnit in utf16 {
@@ -80,10 +112,6 @@ private func avatarColors(
     return (background.color, foreground.color)
 }
 
-// Picks the most vivid background (lightness closest to 0.5) that still meets the
-// target contrast ratio against the chosen foreground. Always finds a solution
-// because the search bound (pure black for white text, pure white for black text)
-// trivially exceeds the target.
 private func mostColorfulBackground(
     hue: Double,
     saturation: Double,
@@ -178,6 +206,7 @@ private let fallbackIconRatio: Double = 0.6
 private let avatarSaturation: Double = 0.65
 private let targetContrastRatio: Double = 7.0
 private let contrastSearchSteps = 20
+private let navigationAvatarSize: CGFloat = 32
 
 #Preview("Default") {
     EmailAvatar(email: "felipearpa@email.com")
