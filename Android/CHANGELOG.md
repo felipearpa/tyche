@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.6
+
+- Edit your account username from the drawer via a bottom sheet
+- Drawer redesigned with a sliding push animation, swipe-to-dismiss gestures, and an email-initials avatar in the header
+- Dark mode support across the app, including the splash screen
+- Edge-to-edge layout with transparent status and navigation bars
+- Pending bet items animate smoothly between idle, editing, saving, and saved states
+- Score column width stays steady so the row no longer jitters as you type
+- Pool, gambler-score, and bet-timeline lists retry inline on load failures instead of reloading the whole screen
+- Larger page size for smoother scrolling through long lists
+
 ## 1.5
 
 - Delete a pool you created from the home drawer, with a confirmation prompt before every gambler and bet is removed

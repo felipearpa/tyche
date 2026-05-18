@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.5
+
+- New `PATCH /accounts` endpoint that updates an account username and cascades the change to every related pool gambler and bet row in a single transaction
+- `gamblerEmail` denormalized onto pool gambler and bet entities so clients can render avatars and contact info without an extra account lookup
+- Internal: account `PoolEvent` extended for username propagation, new request builders and integration tests covering the cascade
+
 ## 1.4
 
 - New `DELETE /pools/{poolId}` endpoint that cascades the removal of every gambler, score, and bet in the pool
