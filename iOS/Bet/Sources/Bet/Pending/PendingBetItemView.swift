@@ -48,7 +48,7 @@ struct PendingBetItemView: View {
         .task(id: poolGamblerBet) { viewModel.bind(poolGamblerBet) }
         .onReceive(viewModel.$state) { state in
             guard let state = state else { return }
-            let poolGamblerBet = state.activeValue()
+            let poolGamblerBet = state.attemptedValue()
             withAnimation(stateAnimation) {
                 viewState = .visualization(poolGamblerBet.toPartialPoolGamblerBet())
             }

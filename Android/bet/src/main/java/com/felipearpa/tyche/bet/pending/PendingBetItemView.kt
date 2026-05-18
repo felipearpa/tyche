@@ -45,6 +45,7 @@ import com.felipearpa.tyche.ui.loading.BallSpinner
 import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
 import com.felipearpa.ui.state.MutationState
 import com.felipearpa.ui.state.activeValue
+import com.felipearpa.ui.state.attemptedValue
 import com.felipearpa.tyche.ui.R as SharedR
 
 private val ICON_SIZE = 24.dp
@@ -62,7 +63,7 @@ fun PendingBetItemView(
     var viewState by remember {
         mutableStateOf<PendingBetItemViewState>(
             PendingBetItemViewState.Visualization(
-                currentViewModelState.activeValue().toPartialPoolGamblerBetModel(),
+                currentViewModelState.attemptedValue().toPartialPoolGamblerBetModel(),
             ),
         )
     }
@@ -86,7 +87,7 @@ fun PendingBetItemView(
     )
 
     LaunchedEffect(currentViewModelState) {
-        val poolGamblerBet = currentViewModelState.activeValue()
+        val poolGamblerBet = currentViewModelState.attemptedValue()
         viewState = PendingBetItemViewState.Visualization(poolGamblerBet.toPartialPoolGamblerBetModel())
     }
 }
@@ -102,7 +103,7 @@ private fun PendingBetItemView(
     retryBet: () -> Unit = {},
     edit: () -> Unit = {},
 ) {
-    val activePoolGamblerBet = viewModelState.activeValue()
+    val activePoolGamblerBet = viewModelState.attemptedValue()
     val effectiveViewState = when (viewModelState) {
         is MutationState.Idle, is MutationState.Mutated -> viewState
         is MutationState.Mutating -> PendingBetItemViewState.Visualization(
