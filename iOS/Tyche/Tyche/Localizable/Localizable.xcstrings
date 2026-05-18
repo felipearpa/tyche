@@ -1,29 +1,6 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
-    "account_exists_text" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Do you have an account already?"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "¿Ya tienes una cuenta?"
-          }
-        },
-        "es-ES" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "¿Ya tienes una cuenta?"
-          }
-        }
-      }
-    },
     "bet_tab" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -70,52 +47,6 @@
         }
       }
     },
-    "change_pool_action" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Change pool"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Cambiar polla"
-          }
-        },
-        "es-ES" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Cambiar quiniela"
-          }
-        }
-      }
-    },
-    "connected_account_text" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Connected account"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Cuenta conectada"
-          }
-        },
-        "es-ES" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Cuenta conectada"
-          }
-        }
-      }
-    },
     "continue_with_text" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -135,29 +66,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Continuar con:"
-          }
-        }
-      }
-    },
-    "create_account_action" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Create account"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Crear cuenta"
-          }
-        },
-        "es-ES" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Crear cuenta"
           }
         }
       }
@@ -369,52 +277,6 @@
         }
       }
     },
-    "log_in_action" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Log in"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Inicia sesión"
-          }
-        },
-        "es-ES" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Inicia sesión"
-          }
-        }
-      }
-    },
-    "log_out_action" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Log out"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Cerrar sesión"
-          }
-        },
-        "es-ES" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Cerrar sesión"
-          }
-        }
-      }
-    },
     "play_pool_text" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -553,25 +415,25 @@
         }
       }
     },
-    "sign_in_with_google_action" : {
+    "sign_out_action" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Google"
+            "value" : "Sign out"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Google"
+            "value" : "Cerrar sesión"
           }
         },
         "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Google"
+            "value" : "Cerrar sesión"
           }
         }
       }
@@ -641,29 +503,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Nombre de usuario"
-          }
-        }
-      }
-    },
-    "username_required_error" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Username is required"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "El nombre de usuario es obligatorio"
-          }
-        },
-        "es-ES" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "El nombre de usuario es obligatorio"
           }
         }
       }

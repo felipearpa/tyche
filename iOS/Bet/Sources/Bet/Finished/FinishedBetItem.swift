@@ -50,7 +50,7 @@ struct FinishedBetItem: View {
                     .scoreWidth()
             }
 
-            Text("+\(poolGamblerBet.score.map { String($0) } ?? "")")
+            Text("+\(poolGamblerBet.score.map { String($0) } ?? "")".excludeLocalize)
                 .font(.largeTitle)
                 .frame(maxWidth: .infinity, alignment: .trailing)
         }

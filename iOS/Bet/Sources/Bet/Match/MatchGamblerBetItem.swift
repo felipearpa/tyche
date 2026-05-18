@@ -15,14 +15,14 @@ struct MatchGamblerBetItem: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
 
             if poolGamblerBet.betScore != nil {
-                Text("\(poolGamblerBet.homeTeamBetRawValue()) - \(poolGamblerBet.awayTeamBetRawValue())")
+                Text("\(poolGamblerBet.homeTeamBetRawValue()) - \(poolGamblerBet.awayTeamBetRawValue())".excludeLocalize)
                     .font(.headline)
                     .multilineTextAlignment(.center)
             }
 
             Spacer().frame(width: boxSpacing.medium)
 
-            Text(poolGamblerBet.score.map { "+\($0)" } ?? "")
+            Text(poolGamblerBet.score.map { "+\($0)".excludeLocalize } ?? "".excludeLocalize)
                 .font(.title2)
                 .multilineTextAlignment(.trailing)
         }

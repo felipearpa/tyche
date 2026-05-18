@@ -102,12 +102,6 @@ private struct UsernameEditorStatefulView: View {
                     if clamped != newValue { draft = clamped }
                     if showRequiredError && !trimmed.isEmpty { showRequiredError = false }
                 }
-
-            if showRequiredError && trimmed.isEmpty {
-                Text(.usernameRequiredError)
-                    .font(.caption)
-                    .foregroundStyle(.red)
-            }
         }
     }
 

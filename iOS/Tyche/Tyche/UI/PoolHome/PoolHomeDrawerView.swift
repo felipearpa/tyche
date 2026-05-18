@@ -243,7 +243,7 @@ private struct SignOutButton: View {
                     .resizable()
                     .scaledToFit()
                     .frame(width: 18, height: 18)
-                Text(.logOutAction)
+                Text(.signOutAction)
             }
             .frame(maxWidth: .infinity)
         }

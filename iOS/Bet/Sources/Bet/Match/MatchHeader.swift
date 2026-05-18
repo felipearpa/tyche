@@ -29,7 +29,7 @@ struct MatchHeader: View {
                     Text(bet.matchScore.map { String($0.homeTeamValue) } ?? "")
                         .font(.title2)
 
-                    Text("-")
+                    Text("-".excludeLocalize)
 
                     Text(bet.matchScore.map { String($0.awayTeamValue) } ?? "")
                         .font(.title2)
