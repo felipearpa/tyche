@@ -11,7 +11,7 @@ public class PoolGamblerBetFakeRepository: PoolGamblerBetRepository {
     ) async -> Result<CursorPage<PoolGamblerBet>, Error> {
         return .success(
             CursorPage(
-                items: dummyPoolGamblerBets(),
+                items: poolGamblerBetPendingDummyModels(),
                 next: nil
             )
         )
@@ -25,7 +25,7 @@ public class PoolGamblerBetFakeRepository: PoolGamblerBetRepository {
     ) async -> Result<CursorPage<PoolGamblerBet>, Error> {
         return .success(
             CursorPage(
-                items: dummyPoolGamblerBets(),
+                items: poolGamblerBetFinishedDummyModels(),
                 next: nil
             )
         )
@@ -39,7 +39,7 @@ public class PoolGamblerBetFakeRepository: PoolGamblerBetRepository {
     ) async -> Result<CursorPage<PoolGamblerBet>, Error> {
         return .success(
             CursorPage(
-                items: dummyPoolGamblerBets(),
+                items: poolGamblerBetDummyModels(),
                 next: nil
             )
         )
@@ -52,7 +52,7 @@ public class PoolGamblerBetFakeRepository: PoolGamblerBetRepository {
     ) async -> Result<CursorPage<PoolGamblerBet>, Error> {
         return .success(
             CursorPage(
-                items: dummyPoolGamblerBets(),
+                items: poolGamblerBetDummyModels(),
                 next: nil
             )
         )
@@ -73,7 +73,7 @@ public class PoolGamblerBetFakeRepository: PoolGamblerBetRepository {
     ) async -> Result<CursorPage<PoolGamblerBet>, Error> {
         return .success(
             CursorPage(
-                items: dummyPoolGamblerBets(),
+                items: poolGamblerBetDummyModels(),
                 next: nil
             )
         )

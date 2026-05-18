@@ -4,6 +4,7 @@ import Core
 import UI
 import Session
 import DataPool
+import DataBet
 import Bet
 import Pool
 
@@ -211,4 +212,81 @@ private struct ShareSheet: UIViewControllerRepresentable {
     }
 
     func updateUIViewController(_ uiViewController: UIActivityViewController, context: Context) {}
+}
+
+private func poolHomeFakeResolver() -> DIResolver {
+    let container = Container()
+    container.register(LogOutUseCase.self) { _ in
+        LogOutUseCase.preview()
+    }
+    container.register(UpdateUsernameUseCase.self) { _ in
+        UpdateUsernameUseCase.preview()
+    }
+    container.register(AccountStorage.self) { _ in
+        PreviewAccountStorage()
+    }
+    container.register(GetPoolGamblerScoreUseCase.self) { _ in
+        GetPoolGamblerScoreUseCase(
+            poolGamblerScoreRepository: PoolGamblerScoreFakeRepository()
+        )
+    }
+    container.register(GetPoolUseCase.self) { _ in
+        GetPoolUseCase(poolRepository: PoolFakePreviewRepository())
+    }
+    container.register(DeletePoolUseCase.self) { _ in
+        DeletePoolUseCase(poolRepository: PoolFakePreviewRepository())
+    }
+    container.register(JoinPoolUrlTemplateProvider.self) { _ in
+        JoinPoolUrlTemplateFakeProvider()
+    }
+    container.register(PoolGamblerScoreRepository.self) { _ in
+        PoolGamblerScoreFakeRepository()
+    }
+    container.register(PoolGamblerBetRepository.self) { _ in
+        PoolGamblerBetFakeRepository()
+    }
+    return DIResolver(resolver: container.synchronize())
+}
+
+private class PoolFakePreviewRepository: PoolRepository {
+    func getPool(id: String) async -> Result<Pool, Error> {
+        .success(Pool(id: id, name: "Preview Pool", creatorGamblerId: "gambler-id"))
+    }
+    func createPool(createPoolInput: CreatePoolInput) async -> Result<CreatePoolOutput, Error> { .failure(NSError()) }
+    func joinPool(joinPoolInput: JoinPoolInput) async -> Result<Void, Error> { .failure(NSError()) }
+    func deletePool(poolId: String, gamblerId: String) async -> Result<Void, Error> { .success(()) }
+}
+
+private struct JoinPoolUrlTemplateFakeProvider: JoinPoolUrlTemplateProvider {
+    func callAsFunction() -> String { "https://example.com/pools/{poolId}/join?gambler={gamblerId}" }
+}
+
+#Preview("Light") {
+    PoolHomeRouter(
+        user: AccountBundle(
+            accountId: "gambler-id",
+            externalAccountId: "external-id",
+            email: "preview@example.com"
+        ),
+        pool: PoolProfile(poolId: "pool-id"),
+        onChangePool: {},
+        onSignOut: {}
+    )
+    .environment(\.diResolver, poolHomeFakeResolver())
+    .preferredColorScheme(.light)
+}
+
+#Preview("Dark") {
+    PoolHomeRouter(
+        user: AccountBundle(
+            accountId: "gambler-id",
+            externalAccountId: "external-id",
+            email: "preview@example.com"
+        ),
+        pool: PoolProfile(poolId: "pool-id"),
+        onChangePool: {},
+        onSignOut: {}
+    )
+    .environment(\.diResolver, poolHomeFakeResolver())
+    .preferredColorScheme(.dark)
 }

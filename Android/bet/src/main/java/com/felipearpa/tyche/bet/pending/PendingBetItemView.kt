@@ -93,7 +93,7 @@ fun PendingBetItemView(
 }
 
 @Composable
-private fun PendingBetItemView(
+fun PendingBetItemView(
     modifier: Modifier = Modifier,
     viewModelState: MutationState<PoolGamblerBetModel>,
     viewState: PendingBetItemViewState,

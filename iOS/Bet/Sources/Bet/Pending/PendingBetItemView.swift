@@ -58,7 +58,7 @@ struct PendingBetItemView: View {
 
 private let stateAnimation: Animation = .spring(response: 0.35, dampingFraction: 0.85)
 
-private struct StatefulPendingBetItemView: View {
+struct StatefulPendingBetItemView: View {
     let viewModelState: MutationState<PoolGamblerBetModel>
     @Binding var viewState: PendingBetItemViewState
     let bet: () -> Void

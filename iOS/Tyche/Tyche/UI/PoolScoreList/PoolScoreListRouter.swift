@@ -159,6 +159,15 @@ private func poolScoreListFakeResolver() -> DIResolver {
     container.register(CreatePoolUseCase.self) { _ in
         CreatePoolUseCase(poolRepository: PoolFakePreviewRepository())
     }
+    container.register(LogOutUseCase.self) { _ in
+        LogOutUseCase.preview()
+    }
+    container.register(UpdateUsernameUseCase.self) { _ in
+        UpdateUsernameUseCase.preview()
+    }
+    container.register(AccountStorage.self) { _ in
+        PreviewAccountStorage()
+    }
     return DIResolver(resolver: container.synchronize())
 }
 
@@ -179,7 +188,7 @@ private struct JoinPoolUrlTemplateFakeProvider: JoinPoolUrlTemplateProvider {
     func callAsFunction() -> String { "https://example.com/pools/{poolId}/join?gambler={gamblerId}" }
 }
 
-#Preview {
+#Preview("Light") {
     PoolScoreListRouter(
         accountBundle: AccountBundle(
             accountId: "gambler-id",
@@ -200,4 +209,29 @@ private struct JoinPoolUrlTemplateFakeProvider: JoinPoolUrlTemplateProvider {
         )
     )
     .environment(\.diResolver, poolScoreListFakeResolver())
+    .preferredColorScheme(.light)
+}
+
+#Preview("Dark") {
+    PoolScoreListRouter(
+        accountBundle: AccountBundle(
+            accountId: "gambler-id",
+            externalAccountId: "external-id",
+            email: "preview@example.com"
+        ),
+        onPoolSelect: { _ in },
+        onSignOut: {},
+        poolScoreViewModel: PoolScoreListViewModel(
+            getPoolGamblerScoresByGamblerUseCase: GetPoolGamblerScoresByGamblerUseCase(
+                poolGamblerScoreRepository: PoolGamblerScoreFakeRepository()
+            ),
+            getOpenPoolLayoutsUseCase: GetOpenPoolLayoutsUseCase(
+                poolLayoutRepository: PoolLayoutFakePreviewRepository()
+            ),
+            joinPoolUrlTemplate: JoinPoolUrlTemplateFakeProvider(),
+            gamblerId: "gambler-id"
+        )
+    )
+    .environment(\.diResolver, poolScoreListFakeResolver())
+    .preferredColorScheme(.dark)
 }

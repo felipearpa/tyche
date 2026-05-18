@@ -1,16 +1,20 @@
 package com.felipearpa.tyche.pool.gamblerscore
 
+import android.content.res.Configuration
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.felipearpa.tyche.pool.PoolGamblerScoreModel
 import com.felipearpa.tyche.pool.poolGamblerScoreDummyModels
 import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
+import com.felipearpa.tyche.ui.theme.TycheTheme
 import kotlinx.coroutines.flow.MutableStateFlow
 
 @Composable
@@ -49,17 +53,22 @@ private fun GamblerScoreListView(
     )
 }
 
-@Preview(showBackground = true)
+@PreviewLightDark
 @Composable
-private fun GamblerScoreListViewPreview() {
+fun GamblerScoreListViewPreview() {
     val items = MutableStateFlow(PagingData.from(poolGamblerScoreDummyModels())).collectAsLazyPagingItems()
-    GamblerScoreListView(
-        lazyPoolGamblerScores = items,
-        gamblerId = "gambler001",
-        placeholderItemCount = 50,
-        onGamblerOpen = { _, _, _ -> },
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(vertical = LocalBoxSpacing.current.medium),
-    )
+
+    TycheTheme {
+        Surface {
+            GamblerScoreListView(
+                lazyPoolGamblerScores = items,
+                gamblerId = "gambler001",
+                placeholderItemCount = 50,
+                onGamblerOpen = { _, _, _ -> },
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(vertical = LocalBoxSpacing.current.medium),
+            )
+        }
+    }
 }

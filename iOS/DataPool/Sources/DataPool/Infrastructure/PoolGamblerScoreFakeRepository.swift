@@ -10,7 +10,7 @@ public class PoolGamblerScoreFakeRepository: PoolGamblerScoreRepository {
     ) async -> Result<CursorPage<PoolGamblerScore>, Error> {
         return .success(
             CursorPage(
-                items: dummyPoolGamblerScores(),
+                items: poolGamblerScoreDummyModels(),
                 next: nil
             )
         )
@@ -23,7 +23,7 @@ public class PoolGamblerScoreFakeRepository: PoolGamblerScoreRepository {
     ) async -> Result<CursorPage<PoolGamblerScore>, Error> {
         return .success(
             CursorPage(
-                items: dummyPoolGamblerScores(),
+                items: poolGamblerScoreDummyModels(),
                 next: nil
             )
         )

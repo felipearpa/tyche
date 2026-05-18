@@ -37,6 +37,7 @@ import com.felipearpa.tyche.ui.lazy.Failure
 import com.felipearpa.tyche.ui.lazy.RefreshableLazyPagingColumn
 import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
 import com.felipearpa.tyche.ui.theme.TycheTheme
+import com.felipearpa.ui.state.MutationState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.datetime.LocalDate
 import com.felipearpa.tyche.ui.R as SharedR
@@ -98,9 +99,9 @@ fun PendingBetList(
                     .pendingBetItem()
 
                 if (LocalInspectionMode.current) {
-                    PendingBetItem(
-                        poolGamblerBet = poolGamblerBet,
-                        viewState = PendingBetItemViewState.dummyVisualization(),
+                    PendingBetItemView(
+                        viewModelState = MutationState.Idle(poolGamblerBet),
+                        viewState = PendingBetItemViewState.Visualization(poolGamblerBet.toPartialPoolGamblerBetModel()),
                         modifier = itemModifier,
                     )
                 } else {

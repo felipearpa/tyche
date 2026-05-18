@@ -39,9 +39,9 @@ struct PendingBetList: View {
                 Section {
                     Group {
                         if isInPreviewMode() {
-                            PendingBetItem(
-                                poolGamblerBet: poolGamblerBet,
-                                viewState: .constant(PendingBetItemViewState.emptyVisualization())
+                            StatefulPendingBetItemView(
+                                viewModelState: .idle(poolGamblerBet),
+                                viewState: .constant(PendingBetItemViewState.visualization(poolGamblerBet.toPartialPoolGamblerBet()))
                             )
                         } else {
                             PendingBetItemView(

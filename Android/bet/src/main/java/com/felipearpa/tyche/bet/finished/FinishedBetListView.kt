@@ -1,14 +1,16 @@
 package com.felipearpa.tyche.bet.finished
 
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.felipearpa.tyche.bet.PoolGamblerBetModel
-import com.felipearpa.tyche.bet.poolGamblerBetDummyModels
+import com.felipearpa.tyche.bet.poolGamblerBetFinishedDummyModels
+import com.felipearpa.tyche.ui.theme.TycheTheme
 import kotlinx.coroutines.flow.MutableStateFlow
 
 @Composable
@@ -42,14 +44,19 @@ private fun FinishedBetListView(
     )
 }
 
-@Preview(showBackground = true)
+@PreviewLightDark
 @Composable
-private fun FinishedBetListViewPreview() {
-    val lazyItems = MutableStateFlow(PagingData.from(poolGamblerBetDummyModels())).collectAsLazyPagingItems()
-    FinishedBetListView(
-        lazyGamblerBets = lazyItems,
-        placeholderCount = 50,
-        onMatchOpen = {},
-        modifier = Modifier.fillMaxSize(),
-    )
+fun FinishedBetListViewPreview() {
+    val lazyItems = MutableStateFlow(PagingData.from(poolGamblerBetFinishedDummyModels())).collectAsLazyPagingItems()
+
+    TycheTheme {
+        Surface {
+            FinishedBetListView(
+                lazyGamblerBets = lazyItems,
+                placeholderCount = 50,
+                onMatchOpen = {},
+                modifier = Modifier.fillMaxSize(),
+            )
+        }
+    }
 }

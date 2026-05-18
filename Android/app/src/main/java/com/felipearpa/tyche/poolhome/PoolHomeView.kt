@@ -1,6 +1,7 @@
 package com.felipearpa.tyche.poolhome
 
 import android.content.Intent
+import android.content.res.Configuration
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
@@ -17,6 +18,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -37,7 +39,9 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import com.felipearpa.foundation.emptyString
 import com.felipearpa.tyche.R
@@ -45,11 +49,14 @@ import com.felipearpa.tyche.account.AutoEmailAvatar
 import com.felipearpa.tyche.account.navigationEmailAvatar
 import com.felipearpa.tyche.bet.PoolGamblerBetModel
 import com.felipearpa.tyche.bet.finished.FinishedBetListView
+import com.felipearpa.tyche.bet.finished.FinishedBetListViewPreview
 import com.felipearpa.tyche.bet.finished.finishedBetListViewModel
 import com.felipearpa.tyche.bet.pending.PendingBetListView
+import com.felipearpa.tyche.bet.pending.PendingBetListViewPreview
 import com.felipearpa.tyche.bet.pending.pendingBetListViewModel
 import com.felipearpa.tyche.core.JoinPoolUrlTemplateProvider
 import com.felipearpa.tyche.pool.gamblerscore.GamblerScoreListView
+import com.felipearpa.tyche.pool.gamblerscore.GamblerScoreListViewPreview
 import com.felipearpa.tyche.pool.gamblerscore.gamblerScoreListViewModel
 import com.felipearpa.tyche.poolhome.drawer.DrawerView
 import com.felipearpa.tyche.poolhome.drawer.DrawerViewModel
@@ -372,24 +379,73 @@ private val Tab.title: String
     }
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview(showBackground = true)
+@PreviewLightDark
+@Preview(locale = "es-rCO", uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Preview(locale = "es-rCO", uiMode = Configuration.UI_MODE_NIGHT_YES, device = Devices.NEXUS_7)
+@Preview(locale = "es-rCO", uiMode = Configuration.UI_MODE_NIGHT_YES, device = Devices.PIXEL_TABLET)
 @Composable
-private fun PoolHomePreview() {
+private fun PoolHomeScoreTabPreview() {
     TycheTheme {
-        PoolHomeContent(
-            selectedTabIndex = Tab.GAMBLER_SCORE,
-            onTabChange = {},
-            isDrawerOpen = false,
-            onDrawerOpenChange = {},
-            scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(),
-            onPoolChange = {},
-            drawerContent = { Text("Drawer Content") },
-            isSaving = false,
-            content = {
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text("Main Content")
-                }
-            },
-        )
+        Surface {
+            PoolHomeContent(
+                selectedTabIndex = Tab.GAMBLER_SCORE,
+                onTabChange = {},
+                isDrawerOpen = false,
+                onDrawerOpenChange = {},
+                scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(),
+                onPoolChange = {},
+                drawerContent = { Text("Drawer Content") },
+                isSaving = false,
+                content = { GamblerScoreListViewPreview() },
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@PreviewLightDark
+@Preview(locale = "es-rCO", uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Preview(locale = "es-rCO", uiMode = Configuration.UI_MODE_NIGHT_YES, device = Devices.NEXUS_7)
+@Preview(locale = "es-rCO", uiMode = Configuration.UI_MODE_NIGHT_YES, device = Devices.PIXEL_TABLET)
+@Composable
+private fun PoolHomeBetsTabPreview() {
+    TycheTheme {
+        Surface {
+            PoolHomeContent(
+                selectedTabIndex = Tab.BET_EDITOR,
+                onTabChange = {},
+                isDrawerOpen = false,
+                onDrawerOpenChange = {},
+                scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(),
+                onPoolChange = {},
+                drawerContent = { Text("Drawer Content") },
+                isSaving = false,
+                content = { PendingBetListViewPreview() },
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@PreviewLightDark
+@Preview(locale = "es-rCO", uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Preview(locale = "es-rCO", uiMode = Configuration.UI_MODE_NIGHT_YES, device = Devices.NEXUS_7)
+@Preview(locale = "es-rCO", uiMode = Configuration.UI_MODE_NIGHT_YES, device = Devices.PIXEL_TABLET)
+@Composable
+private fun PoolHomeHistoryTabPreview() {
+    TycheTheme {
+        Surface {
+            PoolHomeContent(
+                selectedTabIndex = Tab.HISTORY_BET,
+                onTabChange = {},
+                isDrawerOpen = false,
+                onDrawerOpenChange = {},
+                scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(),
+                onPoolChange = {},
+                drawerContent = { Text("Drawer Content") },
+                isSaving = false,
+                content = { FinishedBetListViewPreview() },
+            )
+        }
     }
 }
