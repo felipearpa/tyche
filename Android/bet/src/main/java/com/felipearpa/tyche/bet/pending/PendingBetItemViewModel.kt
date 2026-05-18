@@ -31,10 +31,7 @@ class PendingBetItemViewModel(
         _state.update { current ->
             when (current) {
                 null, is MutationState.Idle -> MutationState.Idle(poolGamblerBet)
-                is MutationState.Mutated ->
-                    MutationState.Mutated(original = current.original, updated = poolGamblerBet)
-
-                is MutationState.Mutating, is MutationState.Failure -> current
+                is MutationState.Mutated, is MutationState.Mutating, is MutationState.Failure -> current
             }
         }
     }

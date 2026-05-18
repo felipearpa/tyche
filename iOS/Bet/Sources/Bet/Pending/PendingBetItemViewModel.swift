@@ -20,9 +20,7 @@ class PendingBetItemViewModel: ObservableObject {
         switch state {
         case nil, .idle:
             state = .idle(poolGamblerBet)
-        case .mutated(let old, _):
-            state = .mutated(original: old, updated: poolGamblerBet)
-        case .mutating, .failure:
+        case .mutated, .mutating, .failure:
             break
         }
     }

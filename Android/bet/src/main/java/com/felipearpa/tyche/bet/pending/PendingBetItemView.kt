@@ -54,7 +54,6 @@ fun PendingBetItemView(
 
     val viewModelState by viewModel.state.collectAsState()
     var viewState by remember { mutableStateOf(PendingBetItemViewState.emptyVisualization()) }
-
     val currentViewModelState = viewModelState ?: return
 
     PendingBetItemView(
@@ -76,19 +75,8 @@ fun PendingBetItemView(
     )
 
     LaunchedEffect(currentViewModelState) {
-        viewState = when (currentViewModelState) {
-            is MutationState.Idle -> {
-                val poolGamblerBet = currentViewModelState.value
-                PendingBetItemViewState.Visualization(
-                    PartialPoolGamblerBetModel(
-                        homeTeamBet = poolGamblerBet.homeTeamBetRawValue(),
-                        awayTeamBet = poolGamblerBet.awayTeamBetRawValue(),
-                    ),
-                )
-            }
-
-            else -> PendingBetItemViewState.Visualization(viewState.value)
-        }
+        val poolGamblerBet = currentViewModelState.activeValue()
+        viewState = PendingBetItemViewState.Visualization(poolGamblerBet.toPartialPoolGamblerBetModel())
     }
 }
 
@@ -136,9 +124,10 @@ private fun PendingBetItemView(
             }
 
             is MutationState.Mutating -> {
+                val poolGamblerBet = viewModelState.updated
                 PendingBetItem(
-                    poolGamblerBet = viewModelState.updated,
-                    viewState = PendingBetItemViewState.Visualization(viewState.value),
+                    poolGamblerBet = poolGamblerBet,
+                    viewState = PendingBetItemViewState.Visualization(poolGamblerBet.toPartialPoolGamblerBetModel()),
                     modifier = Modifier.fillMaxWidth(),
                 )
                 LoadingActionBar(

@@ -38,16 +38,8 @@ struct PendingBetItemView: View {
         .task(id: poolGamblerBet) { viewModel.bind(poolGamblerBet) }
         .onReceive(viewModel.$state) { state in
             guard let state = state else { return }
-            viewState = switch state {
-            case .idle(let poolGamblerBet):
-                viewState.copy(
-                    value: PartialPoolGamblerBetModel(
-                        homeTeamBet: poolGamblerBet.homeTeamBetRawValue(),
-                        awayTeamBet: poolGamblerBet.awayTeamBetRawValue()
-                    )
-                )
-            default: .visualization(viewState.value)
-            }
+            let poolGamblerBet = state.activeValue()
+            viewState = .visualization(poolGamblerBet.toPartialPoolGamblerBet())
         }
     }
 }
@@ -94,7 +86,7 @@ private struct StatefulPendingBetItemView: View {
             case .mutating(_, updated: let poolGamblerBet):
                 PendingBetItem(
                     poolGamblerBet: poolGamblerBet,
-                    viewState: .constant(.visualization(viewState.value))
+                    viewState: .constant(.visualization(poolGamblerBet.toPartialPoolGamblerBet()))
                 )
                 LoadingActionBar(viewModelState: viewModelState)
             case .failure(_, updated: let poolGamblerBet, _):
