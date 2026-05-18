@@ -5,7 +5,7 @@ import ViewingState
 
 struct PendingBetItemView: View {
     @StateObject private var viewModel: PendingBetItemViewModel
-    @State private var viewState = PendingBetItemViewState.emptyVisualization()
+    @State private var viewState: PendingBetItemViewState
     let poolGamblerBet: PoolGamblerBetModel
 
     init(
@@ -14,6 +14,7 @@ struct PendingBetItemView: View {
     ) {
         self._viewModel = .init(wrappedValue: viewModel())
         self.poolGamblerBet = poolGamblerBet
+        self.viewState = .visualization(poolGamblerBet.toPartialPoolGamblerBet())
     }
 
     var body: some View {
