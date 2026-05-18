@@ -102,64 +102,50 @@ private fun PendingBetItemView(
     retryBet: () -> Unit = {},
     edit: () -> Unit = {},
 ) {
+    val activePoolGamblerBet = viewModelState.activeValue()
+    val effectiveViewState = when (viewModelState) {
+        is MutationState.Idle, is MutationState.Mutated -> viewState
+        is MutationState.Mutating -> PendingBetItemViewState.Visualization(
+            activePoolGamblerBet.toPartialPoolGamblerBetModel(),
+        )
+
+        is MutationState.Failure -> PendingBetItemViewState.Visualization(viewState.value)
+    }
+
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.medium),
     ) {
+        PendingBetItem(
+            poolGamblerBet = activePoolGamblerBet,
+            viewState = effectiveViewState,
+            onBetChanged = { newPartialPoolGamblerBet ->
+                onViewStateChanged(viewState.copy(newPartialPoolGamblerBet))
+            },
+            modifier = Modifier.fillMaxWidth(),
+        )
+
         when (viewModelState) {
-            is MutationState.Idle, is MutationState.Mutated -> {
-                val poolGamblerBet = when (viewModelState) {
-                    is MutationState.Idle -> viewModelState.value
-                    is MutationState.Mutated -> viewModelState.updated
-                }
-                PendingBetItem(
-                    poolGamblerBet = poolGamblerBet,
-                    viewState = viewState,
-                    onBetChanged = { newPartialPoolGamblerBet ->
-                        onViewStateChanged(
-                            viewState.copy(
-                                newPartialPoolGamblerBet,
-                            ),
-                        )
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                )
-                DefaultActionBar(
-                    viewModelState = viewModelState,
-                    viewState = viewState,
-                    bet = bet,
-                    reset = reset,
-                    edit = edit,
-                    modifier = Modifier.fillMaxWidth(),
-                )
-            }
+            is MutationState.Idle, is MutationState.Mutated -> DefaultActionBar(
+                viewModelState = viewModelState,
+                viewState = effectiveViewState,
+                bet = bet,
+                reset = reset,
+                edit = edit,
+                modifier = Modifier.fillMaxWidth(),
+            )
 
-            is MutationState.Mutating -> {
-                val poolGamblerBet = viewModelState.updated
-                PendingBetItem(
-                    poolGamblerBet = poolGamblerBet,
-                    viewState = PendingBetItemViewState.Visualization(poolGamblerBet.toPartialPoolGamblerBetModel()),
-                    modifier = Modifier.fillMaxWidth(),
-                )
-                LoadingActionBar(
-                    viewModelState = viewModelState,
-                    modifier = Modifier.fillMaxWidth(),
-                )
-            }
+            is MutationState.Mutating -> LoadingActionBar(
+                viewModelState = viewModelState,
+                modifier = Modifier.fillMaxWidth(),
+            )
 
-            is MutationState.Failure -> {
-                PendingBetItem(
-                    poolGamblerBet = viewModelState.updated,
-                    viewState = PendingBetItemViewState.Visualization(viewState.value),
-                    modifier = Modifier.fillMaxWidth(),
-                )
-                FailureActionBar(
-                    viewModelState = viewModelState,
-                    retryBet = retryBet,
-                    reset = reset,
-                    modifier = Modifier.fillMaxWidth(),
-                )
-            }
+            is MutationState.Failure -> FailureActionBar(
+                viewModelState = viewModelState,
+                retryBet = retryBet,
+                reset = reset,
+                modifier = Modifier.fillMaxWidth(),
+            )
         }
     }
 }

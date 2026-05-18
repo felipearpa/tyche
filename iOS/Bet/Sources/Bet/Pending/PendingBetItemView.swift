@@ -22,6 +22,9 @@ struct PendingBetItemView: View {
             viewModelState: viewModel.state ?? .idle(poolGamblerBet),
             viewState: $viewState,
             bet: {
+                withAnimation(stateAnimation) {
+                    viewState = .visualization(viewState.value)
+                }
                 viewModel.bet(
                     betScore: TeamScore(
                         homeTeamValue: Int(viewState.value.homeTeamBet)!,
@@ -79,14 +82,29 @@ private struct StatefulPendingBetItemView: View {
         self.edit = edit
     }
     
+    private var effectiveViewState: PendingBetItemViewState {
+        switch viewModelState {
+        case .idle, .mutated:
+            return viewState
+        case .mutating(_, updated: let poolGamblerBet):
+            return .visualization(poolGamblerBet.toPartialPoolGamblerBet())
+        case .failure:
+            return .visualization(viewState.value)
+        }
+    }
+
     var body: some View {
         VStack {
-            switch viewModelState {
-            case .idle(let poolGamblerBet), .mutated(_, updated: let poolGamblerBet):
-                PendingBetItem(
-                    poolGamblerBet: poolGamblerBet,
-                    viewState: $viewState
+            PendingBetItem(
+                poolGamblerBet: viewModelState.activeValue(),
+                viewState: Binding(
+                    get: { effectiveViewState },
+                    set: { viewState = $0 }
                 )
+            )
+
+            switch viewModelState {
+            case .idle, .mutated:
                 DefaultActionBar(
                     viewModelState: viewModelState,
                     viewState: $viewState,
@@ -94,17 +112,9 @@ private struct StatefulPendingBetItemView: View {
                     reset: reset,
                     edit: edit
                 )
-            case .mutating(_, updated: let poolGamblerBet):
-                PendingBetItem(
-                    poolGamblerBet: poolGamblerBet,
-                    viewState: .constant(.visualization(poolGamblerBet.toPartialPoolGamblerBet()))
-                )
+            case .mutating:
                 LoadingActionBar(viewModelState: viewModelState)
-            case .failure(_, updated: let poolGamblerBet, _):
-                PendingBetItem(
-                    poolGamblerBet: poolGamblerBet,
-                    viewState: .constant(.visualization(viewState.value))
-                )
+            case .failure:
                 FailureActionBar(
                     viewModelState: viewModelState,
                     retryBet: retryBet,
