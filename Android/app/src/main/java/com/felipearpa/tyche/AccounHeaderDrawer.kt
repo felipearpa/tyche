@@ -17,6 +17,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
+import com.felipearpa.tyche.account.EmailAvatar
 import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
 import com.felipearpa.tyche.ui.theme.TycheTheme
 import com.felipearpa.tyche.ui.R as SharedR

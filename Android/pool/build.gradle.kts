@@ -78,5 +78,6 @@ dependencies {
 dependencies {
     implementation(project(":core"))
     implementation(project(":ui"))
+    implementation(project(":account"))
     implementation(project(":data:pool"))
 }

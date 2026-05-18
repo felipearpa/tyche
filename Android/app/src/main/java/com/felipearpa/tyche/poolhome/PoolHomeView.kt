@@ -37,9 +37,12 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.felipearpa.foundation.emptyString
 import com.felipearpa.tyche.R
+import com.felipearpa.tyche.account.AutoEmailAvatar
+import com.felipearpa.tyche.account.navigationEmailAvatar
 import com.felipearpa.tyche.bet.PoolGamblerBetModel
 import com.felipearpa.tyche.bet.finished.FinishedBetListView
 import com.felipearpa.tyche.bet.finished.finishedBetListViewModel
@@ -57,6 +60,7 @@ import com.felipearpa.tyche.ui.exception.LocalizedException
 import com.felipearpa.tyche.ui.exception.localizedOrDefault
 import com.felipearpa.tyche.ui.loading.LoadingContainerView
 import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
+import com.felipearpa.tyche.ui.theme.TycheTheme
 import com.felipearpa.ui.state.SaveState
 import com.felipearpa.ui.state.isFailure
 import com.felipearpa.ui.state.isSaving
@@ -82,9 +86,13 @@ fun PoolHomeView(
     val joinPoolUrlTemplate = koinInject<JoinPoolUrlTemplateProvider>()
     var invitePoolUrl by remember { mutableStateOf(emptyString()) }
 
-    PushDrawer(
-        isOpen = isDrawerOpen,
-        onOpenChange = { isDrawerOpen = it },
+    PoolHomeContent(
+        selectedTabIndex = selectedTabIndex,
+        onTabChange = { selectedTabIndex = it },
+        isDrawerOpen = isDrawerOpen,
+        onDrawerOpenChange = { isDrawerOpen = it },
+        scrollBehavior = scrollBehavior,
+        onPoolChange = onPoolChange,
         drawerContent = {
             DrawerView(
                 viewModel = drawerViewModel,
@@ -100,8 +108,68 @@ fun PoolHomeView(
                 onPoolDeleted = onPoolChange,
             )
         },
+        isSaving = deleteState.isSaving(),
+        content = {
+            when (selectedTabIndex) {
+                Tab.GAMBLER_SCORE -> GamblerScoreListView(
+                    viewModel = gamblerScoreListViewModel(
+                        poolId = poolId,
+                        gamblerId = gamblerId,
+                    ),
+                    onGamblerOpen = onGamblerOpen,
+                )
+
+                Tab.BET_EDITOR -> PendingBetListView(
+                    viewModel = pendingBetListViewModel(
+                        poolId = poolId,
+                        gamblerId = gamblerId,
+                    ),
+                    onMatchOpen = onMatchOpen,
+                )
+
+                Tab.HISTORY_BET -> FinishedBetListView(
+                    viewModel = finishedBetListViewModel(
+                        poolId = poolId,
+                        gamblerId = gamblerId,
+                    ),
+                    onMatchOpen = onMatchOpen,
+                )
+            }
+        },
+    )
+
+    if (deleteState.isFailure()) {
+        val exception = (deleteState as SaveState.Failure).exception
+        ExceptionAlertDialog(
+            exception = exception as? LocalizedException ?: exception.localizedOrDefault(),
+            onDismiss = { drawerViewModel.resetDeleteState() },
+        )
+    }
+
+    if (invitePoolUrl.isNotEmpty()) {
+        InvitePoolSharer(url = invitePoolUrl, onClose = { invitePoolUrl = emptyString() })
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun PoolHomeContent(
+    selectedTabIndex: Tab,
+    onTabChange: (Tab) -> Unit,
+    isDrawerOpen: Boolean,
+    onDrawerOpenChange: (Boolean) -> Unit,
+    scrollBehavior: TopAppBarScrollBehavior,
+    onPoolChange: () -> Unit,
+    drawerContent: @Composable () -> Unit,
+    isSaving: Boolean,
+    content: @Composable () -> Unit,
+) {
+    PushDrawer(
+        isOpen = isDrawerOpen,
+        onOpenChange = onDrawerOpenChange,
+        drawerContent = drawerContent,
     ) {
-        val mainContent: @Composable () -> Unit = {
+        val scaffoldContent = @Composable {
             Scaffold(
                 modifier = Modifier
                     .fillMaxSize()
@@ -109,7 +177,7 @@ fun PoolHomeView(
                 topBar = {
                     AppTopBar(
                         title = selectedTabIndex.title,
-                        onAccountShow = { isDrawerOpen = !isDrawerOpen },
+                        onAccountShow = { onDrawerOpenChange(!isDrawerOpen) },
                         onPoolChange = onPoolChange,
                         scrollBehavior = scrollBehavior,
                     )
@@ -123,15 +191,15 @@ fun PoolHomeView(
                     ) {
                         GamblerScoreTab(
                             selected = selectedTabIndex == Tab.GAMBLER_SCORE,
-                            onClick = { selectedTabIndex = Tab.GAMBLER_SCORE },
+                            onClick = { onTabChange(Tab.GAMBLER_SCORE) },
                         )
                         BetEditorTab(
                             selected = selectedTabIndex == Tab.BET_EDITOR,
-                            onClick = { selectedTabIndex = Tab.BET_EDITOR },
+                            onClick = { onTabChange(Tab.BET_EDITOR) },
                         )
                         HistoryBetTab(
                             selected = selectedTabIndex == Tab.HISTORY_BET,
-                            onClick = { selectedTabIndex = Tab.HISTORY_BET },
+                            onClick = { onTabChange(Tab.HISTORY_BET) },
                         )
                     }
                 },
@@ -141,52 +209,16 @@ fun PoolHomeView(
                         .padding(paddingValues = innerPadding)
                         .fillMaxSize(),
                 ) {
-                    when (selectedTabIndex) {
-                        Tab.GAMBLER_SCORE -> GamblerScoreListView(
-                            viewModel = gamblerScoreListViewModel(
-                                poolId = poolId,
-                                gamblerId = gamblerId,
-                            ),
-                            onGamblerOpen = onGamblerOpen,
-                        )
-
-                        Tab.BET_EDITOR -> PendingBetListView(
-                            viewModel = pendingBetListViewModel(
-                                poolId = poolId,
-                                gamblerId = gamblerId,
-                            ),
-                            onMatchOpen = onMatchOpen,
-                        )
-
-                        Tab.HISTORY_BET -> FinishedBetListView(
-                            viewModel = finishedBetListViewModel(
-                                poolId = poolId,
-                                gamblerId = gamblerId,
-                            ),
-                            onMatchOpen = onMatchOpen,
-                        )
-                    }
+                    content()
                 }
             }
         }
 
-        if (deleteState.isSaving()) {
-            LoadingContainerView { mainContent() }
+        if (isSaving) {
+            LoadingContainerView { scaffoldContent() }
         } else {
-            mainContent()
+            scaffoldContent()
         }
-    }
-
-    if (deleteState.isFailure()) {
-        val exception = (deleteState as SaveState.Failure).exception
-        ExceptionAlertDialog(
-            exception = exception as? LocalizedException ?: exception.localizedOrDefault(),
-            onDismiss = { drawerViewModel.resetDeleteState() },
-        )
-    }
-
-    if (invitePoolUrl.isNotEmpty()) {
-        InvitePoolSharer(url = invitePoolUrl, onClose = { invitePoolUrl = emptyString() })
     }
 }
 
@@ -307,10 +339,7 @@ private fun AppTopBar(
         },
         navigationIcon = {
             IconButton(onClick = onAccountShow) {
-                Icon(
-                    painter = painterResource(id = SharedR.drawable.menu),
-                    contentDescription = emptyString(),
-                )
+                AutoEmailAvatar(modifier = Modifier.navigationEmailAvatar())
             }
         },
         actions = {
@@ -341,3 +370,26 @@ private val Tab.title: String
         Tab.BET_EDITOR -> stringResource(id = R.string.bet_tab)
         Tab.HISTORY_BET -> stringResource(id = R.string.history_bets_tab)
     }
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview(showBackground = true)
+@Composable
+private fun PoolHomePreview() {
+    TycheTheme {
+        PoolHomeContent(
+            selectedTabIndex = Tab.GAMBLER_SCORE,
+            onTabChange = {},
+            isDrawerOpen = false,
+            onDrawerOpenChange = {},
+            scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(),
+            onPoolChange = {},
+            drawerContent = { Text("Drawer Content") },
+            isSaving = false,
+            content = {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Text("Main Content")
+                }
+            },
+        )
+    }
+}

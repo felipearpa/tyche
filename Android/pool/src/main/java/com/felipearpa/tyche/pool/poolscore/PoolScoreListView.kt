@@ -19,7 +19,6 @@ import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -34,6 +33,8 @@ import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.felipearpa.foundation.emptyString
+import com.felipearpa.tyche.account.AutoEmailAvatar
+import com.felipearpa.tyche.account.navigationEmailAvatar
 import com.felipearpa.tyche.pool.PoolGamblerScoreModel
 import com.felipearpa.tyche.pool.R
 import com.felipearpa.tyche.pool.creator.PoolLayoutModel
@@ -52,7 +53,6 @@ fun PoolScoreListView(
     onPoolOpen: (poolId: String, gamblerId: String) -> Unit,
     onPoolCreate: () -> Unit,
     onPoolLayoutSelect: (PoolLayoutModel) -> Unit,
-    navigationIcon: @Composable () -> Unit = { DefaultNavigationIcon() },
 ) {
     val lazyItems = viewModel.poolGamblerScores.collectAsLazyPagingItems()
     val lazyPoolLayouts = viewModel.poolLayouts.collectAsLazyPagingItems()
@@ -64,7 +64,6 @@ fun PoolScoreListView(
         lazyPoolLayouts = lazyPoolLayouts,
         pageSize = pageSize,
         drawerView = drawerView,
-        navigationIcon = navigationIcon,
         onPoolOpen = onPoolOpen,
         onPoolCreate = onPoolCreate,
         onPoolLayoutSelect = onPoolLayoutSelect,
@@ -107,7 +106,6 @@ private fun PoolScoreListView(
     onPoolJoin: (poolId: String) -> Unit,
     onPoolCreate: () -> Unit,
     onPoolLayoutSelect: (PoolLayoutModel) -> Unit,
-    navigationIcon: @Composable () -> Unit = { DefaultNavigationIcon() },
 ) {
     var isDrawerOpen by remember { mutableStateOf(false) }
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
@@ -126,7 +124,6 @@ private fun PoolScoreListView(
                 TopAppBar(
                     title = { Text(text = stringResource(id = R.string.gambler_pool_list_title)) },
                     scrollBehavior = scrollBehavior,
-                    navigationIcon = navigationIcon,
                     onAccountOpen = { isDrawerOpen = !isDrawerOpen },
                     onPoolCreate = onPoolCreate,
                 )
@@ -154,7 +151,6 @@ private fun PoolScoreListView(
 private fun TopAppBar(
     title: @Composable () -> Unit,
     scrollBehavior: TopAppBarScrollBehavior,
-    navigationIcon: @Composable () -> Unit,
     onAccountOpen: () -> Unit,
     onPoolCreate: () -> Unit,
 ) {
@@ -162,7 +158,7 @@ private fun TopAppBar(
         title = title,
         navigationIcon = {
             IconButton(onClick = onAccountOpen) {
-                navigationIcon()
+                AutoEmailAvatar(modifier = Modifier.navigationEmailAvatar())
             }
         },
         actions = {
@@ -176,14 +172,6 @@ private fun TopAppBar(
             }
         },
         scrollBehavior = scrollBehavior,
-    )
-}
-
-@Composable
-private fun DefaultNavigationIcon() {
-    Icon(
-        painter = painterResource(id = SharedR.drawable.menu),
-        contentDescription = emptyString(),
     )
 }
 
