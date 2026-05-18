@@ -1,30 +1,55 @@
-package com.felipearpa.tyche
+package com.felipearpa.tyche.account
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.felipearpa.foundation.emptyString
+import com.felipearpa.tyche.session.AccountStorage
 import com.felipearpa.tyche.ui.theme.TycheTheme
+import org.koin.compose.koinInject
 import kotlin.math.pow
 import com.felipearpa.tyche.ui.R as SharedR
 
 @Composable
-internal fun EmailAvatar(email: String, modifier: Modifier = Modifier) {
+fun AutoEmailAvatar(modifier: Modifier = Modifier) {
+    if (LocalInspectionMode.current) {
+        EmailAvatar(
+            email = "felipearpa@tyche.com",
+            modifier = modifier,
+        )
+        return
+    }
+
+    val accountStorage = koinInject<AccountStorage>()
+    val account by accountStorage.state.collectAsStateWithLifecycle()
+    EmailAvatar(
+        email = account?.email.orEmpty(),
+        modifier = modifier,
+    )
+}
+
+@Composable
+fun EmailAvatar(email: String, modifier: Modifier = Modifier) {
     val initial = email.avatarInitial()
     if (initial == null) {
         Box(modifier = modifier, contentAlignment = Alignment.Center) {
@@ -59,6 +84,10 @@ internal fun EmailAvatar(email: String, modifier: Modifier = Modifier) {
     }
 }
 
+fun Modifier.navigationEmailAvatar() =
+    size(NAVIGATION_AVATAR_SIZE.dp)
+        .clip(CircleShape)
+
 private fun String.avatarInitial(): Char? =
     substringBefore('@').firstOrNull { it.isLetterOrDigit() }?.uppercaseChar()
 
@@ -77,10 +106,6 @@ private fun avatarColorsFor(key: String, isDark: Boolean): Pair<Color, Color> {
     return background to foreground
 }
 
-// Picks the most vivid background (lightness closest to 0.5) that still meets the
-// target contrast ratio against the chosen foreground. Always finds a solution
-// because the search bound (pure black for white text, pure white for black text)
-// trivially exceeds the target.
 private fun mostColorfulBackground(
     hue: Float,
     saturation: Float,
@@ -131,6 +156,7 @@ private fun Color.relativeLuminance(): Double {
             0.0722 * channel(blue.toDouble())
 }
 
+private const val NAVIGATION_AVATAR_SIZE = 32
 private const val INITIAL_FONT_RATIO = 0.45f
 private const val FALLBACK_ICON_RATIO = 0.6f
 private const val AVATAR_SATURATION = 0.65f

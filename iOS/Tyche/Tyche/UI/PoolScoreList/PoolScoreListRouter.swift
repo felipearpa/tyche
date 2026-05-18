@@ -5,6 +5,7 @@ import Core
 import Session
 import DataPool
 import Pool
+import Account
 
 struct PoolScoreListRouter: View {
     let accountBundle: AccountBundle
@@ -133,9 +134,8 @@ private struct PoolScoreListRouterContent: View {
 
     private func navigationBarLeading() -> some View {
         Button(action: { drawerVisible.toggle() }) {
-            EmailAvatar(email: accountBundle.email)
-                .frame(width: navigationAvatarSize, height: navigationAvatarSize)
-                .clipShape(Circle())
+            AutoEmailAvatar()
+                .navigationEmailAvatar()
         }
         .buttonStyle(.plain)
     }
