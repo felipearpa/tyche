@@ -59,15 +59,6 @@ struct FinishedBetItem: View {
 
 private let flagSize: CGFloat = 24
 
-private extension View {
-    func scoreWidth() -> some View {
-        let width = String(repeating: "8", count: 3)
-            .widthOfString(usingFont: UIFont.preferredFont(from: .body))
-        let height: CGFloat = UIFont.preferredFont(from: .body).lineHeight
-        return self.frame(width: width, height: height)
-    }
-}
-
 #Preview {
     FinishedBetItem(poolGamblerBet: poolGamblerBetDummyModel())
 }

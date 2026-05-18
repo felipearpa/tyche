@@ -70,7 +70,8 @@ struct PendingBetItem: View {
                 .transition(.opacity)
         case .edition:
             BetTextField(value: bet)
-                .betStyle()
+                .font(.body)
+                .scoreWidth()
                 .matchedGeometryEffect(id: geoID, in: scoreNamespace)
                 .transition(.opacity)
         }
@@ -78,15 +79,6 @@ struct PendingBetItem: View {
 }
 
 private let flagSize: CGFloat = 32
-
-private extension View {
-    func betStyle() -> some View {
-        let textWidth = String(repeating: "X", count: 4)
-            .widthOfString(usingFont: UIFont.preferredFont(from: .body))
-        return self.frame(width: textWidth)
-            .font(.body)
-    }
-}
 
 #Preview("Non Editable") {
     PendingBetItem(

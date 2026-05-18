@@ -1,6 +1,8 @@
 import SwiftUI
 
 public struct LiquidGlassTextFieldStyle: TextFieldStyle {
+    public static let contentPadding: CGFloat = 16
+
     public init() {}
 
     public func _body(configuration: TextField<Self._Label>) -> some View {
@@ -15,12 +17,12 @@ public struct LiquidGlassTextFieldStyle: TextFieldStyle {
         var body: some View {
             if #available(iOS 26.0, *) {
                 configuration
-                    .padding()
+                    .padding(LiquidGlassTextFieldStyle.contentPadding)
                     .glassEffect(.regular, in: .capsule)
                     .opacity(isEnabled ? 1.0 : 0.3)
             } else {
                 configuration
-                    .padding()
+                    .padding(LiquidGlassTextFieldStyle.contentPadding)
                     .background(.ultraThinMaterial, in: .capsule)
             }
         }

@@ -8,6 +8,7 @@ struct BetTextField: View {
         let _ = Self._printChangesIfDebug()
 
         TextField("".excludeLocalize, text: $value)
+            .multilineTextAlignment(.center)
             .textFieldStyle(.liquidGlass)
             .keyboardType(.numberPad)
             .onChange(of: value) { newValue in
