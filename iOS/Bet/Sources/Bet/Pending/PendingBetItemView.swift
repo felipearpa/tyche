@@ -31,19 +31,29 @@ struct PendingBetItemView: View {
             },
             retryBet: viewModel.retryBet,
             reset: {
-                viewState = .visualization(viewState.value)
+                withAnimation(stateAnimation) {
+                    viewState = .visualization(viewState.value)
+                }
                 viewModel.reset()
             },
-            edit: { viewState = .edition(viewState.value) }
+            edit: {
+                withAnimation(stateAnimation) {
+                    viewState = .edition(viewState.value)
+                }
+            }
         )
         .task(id: poolGamblerBet) { viewModel.bind(poolGamblerBet) }
         .onReceive(viewModel.$state) { state in
             guard let state = state else { return }
             let poolGamblerBet = state.activeValue()
-            viewState = .visualization(poolGamblerBet.toPartialPoolGamblerBet())
+            withAnimation(stateAnimation) {
+                viewState = .visualization(poolGamblerBet.toPartialPoolGamblerBet())
+            }
         }
     }
 }
+
+private let stateAnimation: Animation = .spring(response: 0.35, dampingFraction: 0.85)
 
 private struct StatefulPendingBetItemView: View {
     let viewModelState: MutationState<PoolGamblerBetModel>
@@ -111,23 +121,29 @@ private struct DefaultActionBar: View {
     let bet: () -> Void
     let reset: () -> Void
     let edit: () -> Void
-    
+
     var body: some View {
-        HStack(spacing: 8) {
+        ZStack {
             switch viewState {
             case .visualization:
-                NonEditableDefaultActionBar(
-                    viewModelState: viewModelState,
-                    viewState: $viewState,
-                    edit: edit
-                )
+                HStack(spacing: 8) {
+                    NonEditableDefaultActionBar(
+                        viewModelState: viewModelState,
+                        viewState: $viewState,
+                        edit: edit
+                    )
+                }
+                .transition(.opacity)
             case .edition:
-                EditableDefaultActionBar(
-                    viewModelState: viewModelState,
-                    viewState: $viewState,
-                    bet: bet,
-                    reset: reset
-                )
+                HStack(spacing: 8) {
+                    EditableDefaultActionBar(
+                        viewModelState: viewModelState,
+                        viewState: $viewState,
+                        bet: bet,
+                        reset: reset
+                    )
+                }
+                .transition(.opacity)
             }
         }
     }

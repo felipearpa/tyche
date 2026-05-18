@@ -1,5 +1,10 @@
 package com.felipearpa.tyche.bet.pending
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -168,21 +173,31 @@ private fun DefaultActionBar(
     edit: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    if (viewState is PendingBetItemViewState.Edition) {
-        EditableDefaultActionBar(
-            viewModelState = viewModelState,
-            viewState = viewState,
-            bet = bet,
-            reset = reset,
-            modifier = modifier,
-        )
-    } else {
-        NonEditableDefaultActionBar(
-            viewModelState = viewModelState,
-            viewState = viewState,
-            edit = edit,
-            modifier = modifier,
-        )
+    AnimatedContent(
+        targetState = viewState is PendingBetItemViewState.Edition,
+        transitionSpec = {
+            fadeIn(animationSpec = tween(150)) togetherWith
+                fadeOut(animationSpec = tween(150))
+        },
+        modifier = modifier,
+        label = "actionBar",
+    ) { editing ->
+        if (editing) {
+            EditableDefaultActionBar(
+                viewModelState = viewModelState,
+                viewState = viewState,
+                bet = bet,
+                reset = reset,
+                modifier = Modifier.fillMaxWidth(),
+            )
+        } else {
+            NonEditableDefaultActionBar(
+                viewModelState = viewModelState,
+                viewState = viewState,
+                edit = edit,
+                modifier = Modifier.fillMaxWidth(),
+            )
+        }
     }
 }
 

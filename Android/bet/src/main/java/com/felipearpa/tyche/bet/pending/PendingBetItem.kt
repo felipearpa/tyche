@@ -1,12 +1,19 @@
 package com.felipearpa.tyche.bet.pending
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.SizeTransform
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -16,6 +23,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -38,166 +46,106 @@ fun PendingBetItem(
     viewState: PendingBetItemViewState,
     onBetChanged: (PartialPoolGamblerBetModel) -> Unit = {},
 ) {
-    val enterTransition = fadeIn() + expandVertically()
-    val exitTransition = shrinkVertically() + fadeOut()
+    val isEdition = viewState is PendingBetItemViewState.Edition
+    val rowSpacing by animateDpAsState(
+        targetValue = if (isEdition) LocalBoxSpacing.current.small else LocalBoxSpacing.current.medium,
+        label = "rowSpacing",
+    )
 
-    Box {
-        AnimatedVisibility(
-            visible = viewState is PendingBetItemViewState.Visualization,
-            enter = enterTransition,
-            exit = exitTransition,
-        ) {
-            NonEditablePendingBetItem(
-                modifier = modifier,
-                shimmerModifier = shimmerModifier,
-                poolGamblerBet = poolGamblerBet,
-                partialPoolGamblerBet = viewState.value,
-            )
-        }
-
-        AnimatedVisibility(
-            visible = viewState is PendingBetItemViewState.Edition,
-            enter = enterTransition,
-            exit = exitTransition,
-        ) {
-            EditablePendingBetItem(
-                modifier = modifier,
-                shimmerModifier = shimmerModifier,
-                poolGamblerBet = poolGamblerBet,
-                partialPoolGamblerBet = viewState.value,
-                onBetChanged = onBetChanged,
-            )
-        }
-    }
-}
-
-@Composable
-fun NonEditablePendingBetItem(
-    modifier: Modifier = Modifier,
-    shimmerModifier: Modifier = Modifier,
-    poolGamblerBet: PoolGamblerBetModel,
-    partialPoolGamblerBet: PartialPoolGamblerBetModel,
-) {
     Column(
-        verticalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.medium),
-        modifier = modifier,
+        modifier = modifier.animateContentSize(
+            animationSpec = spring(
+                stiffness = Spring.StiffnessMediumLow,
+                dampingRatio = Spring.DampingRatioNoBouncy,
+            ),
+        ),
+        verticalArrangement = Arrangement.spacedBy(rowSpacing),
     ) {
-        Row(
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth(),
-        ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.small),
-            ) {
-                FlagImage(
-                    teamId = poolGamblerBet.homeTeamId,
-                    modifier = Modifier
-                        .size(flagSize)
-                        .then(shimmerModifier),
-                )
-                Text(text = poolGamblerBet.homeTeamName, modifier = shimmerModifier)
-            }
-            Text(text = partialPoolGamblerBet.homeTeamBet, modifier = shimmerModifier)
-        }
-
-        Row(
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth(),
-        ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.small),
-            ) {
-                FlagImage(
-                    teamId = poolGamblerBet.awayTeamId,
-                    modifier = Modifier
-                        .size(flagSize)
-                        .then(shimmerModifier),
-                )
-                Text(text = poolGamblerBet.awayTeamName, modifier = shimmerModifier)
-            }
-            Text(text = partialPoolGamblerBet.awayTeamBet, modifier = shimmerModifier)
-        }
-
-        Text(
-            text = poolGamblerBet.matchDateTime.toShortDateTimeString(),
-            style = MaterialTheme.typography.bodySmall,
-            modifier = Modifier
-                .padding(start = LocalBoxSpacing.current.large)
-                .then(shimmerModifier),
+        TeamRow(
+            teamId = poolGamblerBet.homeTeamId,
+            teamName = poolGamblerBet.homeTeamName,
+            bet = viewState.value.homeTeamBet,
+            isEdition = isEdition,
+            onBetChange = { newHomeTeamBet ->
+                onBetChanged(viewState.value.copy(homeTeamBet = newHomeTeamBet))
+            },
+            shimmerModifier = shimmerModifier,
         )
+
+        TeamRow(
+            teamId = poolGamblerBet.awayTeamId,
+            teamName = poolGamblerBet.awayTeamName,
+            bet = viewState.value.awayTeamBet,
+            isEdition = isEdition,
+            onBetChange = { newAwayTeamBet ->
+                onBetChanged(viewState.value.copy(awayTeamBet = newAwayTeamBet))
+            },
+            shimmerModifier = shimmerModifier,
+        )
+
+        AnimatedVisibility(
+            visible = !isEdition,
+            enter = fadeIn() + expandVertically(),
+            exit = shrinkVertically() + fadeOut(),
+        ) {
+            Text(
+                text = poolGamblerBet.matchDateTime.toShortDateTimeString(),
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier
+                    .padding(start = LocalBoxSpacing.current.large)
+                    .then(shimmerModifier),
+            )
+        }
     }
 }
 
 @Composable
-fun EditablePendingBetItem(
-    modifier: Modifier = Modifier,
-    shimmerModifier: Modifier = Modifier,
-    poolGamblerBet: PoolGamblerBetModel,
-    partialPoolGamblerBet: PartialPoolGamblerBetModel,
-    onBetChanged: (PartialPoolGamblerBetModel) -> Unit = {},
+private fun TeamRow(
+    teamId: String,
+    teamName: String,
+    bet: String,
+    isEdition: Boolean,
+    onBetChange: (String) -> Unit,
+    shimmerModifier: Modifier,
 ) {
-    Column(
-        verticalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.small),
-        modifier = modifier,
+    Row(
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.fillMaxWidth(),
     ) {
         Row(
-            horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.small),
         ) {
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.small),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                FlagImage(
-                    teamId = poolGamblerBet.homeTeamId,
-                    modifier = Modifier
-                        .size(flagSize)
-                        .then(shimmerModifier),
-                )
-                Text(text = poolGamblerBet.homeTeamName, modifier = shimmerModifier)
-            }
-            BetTextField(
-                value = partialPoolGamblerBet.homeTeamBet,
-                onValueChange = { newHomeTeamBet ->
-                    onBetChanged(partialPoolGamblerBet.copy(homeTeamBet = newHomeTeamBet))
-                },
+            FlagImage(
+                teamId = teamId,
                 modifier = Modifier
-                    .scoreWidth()
+                    .size(flagSize)
                     .then(shimmerModifier),
             )
+            Text(text = teamName, modifier = shimmerModifier)
         }
 
-        Row(
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth(),
-        ) {
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.small),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                FlagImage(
-                    teamId = poolGamblerBet.awayTeamId,
+        AnimatedContent(
+            targetState = isEdition,
+            transitionSpec = {
+                (fadeIn(animationSpec = tween(150)) togetherWith
+                    fadeOut(animationSpec = tween(150)))
+                    .using(SizeTransform(clip = false))
+            },
+            label = "scoreCell",
+        ) { editing ->
+            if (editing) {
+                BetTextField(
+                    value = bet,
+                    onValueChange = onBetChange,
                     modifier = Modifier
-                        .size(flagSize)
+                        .scoreWidth()
                         .then(shimmerModifier),
                 )
-                Text(text = poolGamblerBet.awayTeamName, modifier = shimmerModifier)
+            } else {
+                Text(text = bet, modifier = shimmerModifier)
             }
-            BetTextField(
-                value = partialPoolGamblerBet.awayTeamBet,
-                onValueChange = { newAwayTeamBet ->
-                    onBetChanged(partialPoolGamblerBet.copy(awayTeamBet = newAwayTeamBet))
-                },
-                modifier = Modifier
-                    .scoreWidth()
-                    .then(shimmerModifier),
-            )
         }
     }
 }
@@ -219,10 +167,12 @@ private val flagSize = 32.dp
 private fun NonEditablePendingBetItemPreview() {
     MaterialTheme {
         Surface {
-            NonEditablePendingBetItem(
+            PendingBetItem(
                 modifier = Modifier.fillMaxWidth(),
                 poolGamblerBet = poolGamblerBetDummyModel(),
-                partialPoolGamblerBet = partialPoolGamblerBetDummyModel(),
+                viewState = PendingBetItemViewState.Visualization(
+                    partialPoolGamblerBetDummyModel(),
+                ),
             )
         }
     }
@@ -233,11 +183,12 @@ private fun NonEditablePendingBetItemPreview() {
 private fun EditablePendingBetItemPreview() {
     MaterialTheme {
         Surface {
-            EditablePendingBetItem(
+            PendingBetItem(
                 modifier = Modifier.fillMaxWidth(),
                 poolGamblerBet = poolGamblerBetDummyModel(),
-                partialPoolGamblerBet = partialPoolGamblerBetDummyModel(),
-                onBetChanged = {},
+                viewState = PendingBetItemViewState.Edition(
+                    partialPoolGamblerBetDummyModel(),
+                ),
             )
         }
     }
