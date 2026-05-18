@@ -176,8 +176,7 @@ private fun DefaultActionBar(
     AnimatedContent(
         targetState = viewState is PendingBetItemViewState.Edition,
         transitionSpec = {
-            fadeIn(animationSpec = tween(150)) togetherWith
-                fadeOut(animationSpec = tween(150))
+            fadeIn(animationSpec = tween(150)) togetherWith fadeOut(animationSpec = tween(150))
         },
         modifier = modifier,
         label = "actionBar",

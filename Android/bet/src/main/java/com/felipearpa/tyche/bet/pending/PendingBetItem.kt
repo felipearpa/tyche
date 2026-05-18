@@ -3,11 +3,11 @@ package com.felipearpa.tyche.bet.pending
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.SizeTransform
+import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -130,7 +130,7 @@ private fun TeamRow(
             targetState = isEdition,
             transitionSpec = {
                 (fadeIn(animationSpec = tween(150)) togetherWith
-                    fadeOut(animationSpec = tween(150)))
+                        fadeOut(animationSpec = tween(150)))
                     .using(SizeTransform(clip = false))
             },
             label = "scoreCell",
