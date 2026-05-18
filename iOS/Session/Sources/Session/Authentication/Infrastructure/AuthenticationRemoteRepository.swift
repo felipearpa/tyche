@@ -58,7 +58,18 @@ class AuthenticationRemoteRepository: AuthenticationRepository {
             return AccountBundle(
                 accountId: linkAccountResponse.accountId,
                 externalAccountId: accountLink.externalAccountId,
-                email: accountLink.email.value
+                email: accountLink.email.value,
+                username: linkAccountResponse.username?.isEmpty == false
+                    ? linkAccountResponse.username!
+                    : accountLink.email.value
+            )
+        }
+    }
+
+    func updateUsername(accountId: String, username: String) async -> Result<Void, Error> {
+        return await networkErrorHandler.handle {
+            try await authenticationRemoteDataSource.updateUsername(
+                request: UpdateUsernameRequest(accountId: accountId, username: username)
             )
         }
     }

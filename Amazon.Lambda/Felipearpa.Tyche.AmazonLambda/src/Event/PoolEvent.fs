@@ -40,6 +40,9 @@ type PoolEvent(configureServices: IServiceCollection -> unit) =
     let gamblerUsernameField = "gamblerUsername"
 
     [<Literal>]
+    let gamblerEmailField = "gamblerEmail"
+
+    [<Literal>]
     let poolLayoutIdField = "poolLayoutId"
 
     [<Literal>]
@@ -81,6 +84,7 @@ type PoolEvent(configureServices: IServiceCollection -> unit) =
                 image.ContainsKey(poolIdField)
                 && image.ContainsKey(gamblerIdField)
                 && image.ContainsKey(gamblerUsernameField)
+                && image.ContainsKey(gamblerEmailField)
                 && image.ContainsKey(poolLayoutIdField)
                 && image.ContainsKey(poolLayoutVersionField)
                 && image.ContainsKey(pkField)
@@ -100,6 +104,7 @@ type PoolEvent(configureServices: IServiceCollection -> unit) =
                         image[poolIdField].S |> Ulid.newOf,
                         image[gamblerIdField].S |> Ulid.newOf,
                         image[gamblerUsernameField].S |> NonEmptyString100.newOf,
+                        image[gamblerEmailField].S |> NonEmptyString100.newOf,
                         image[poolLayoutIdField].S |> Ulid.newOf,
                         image[poolLayoutVersionField].N |> int
                     )
@@ -109,7 +114,7 @@ type PoolEvent(configureServices: IServiceCollection -> unit) =
     let applyPendingLayoutMatches
         (getPendingPoolLayoutMatches: GetPendingPoolLayoutMatches)
         (addMatches: AddMatches)
-        (poolId, gamblerId, gamblerUsername, poolLayoutId, poolLayoutVersion)
+        (poolId, gamblerId, gamblerUsername, gamblerEmail, poolLayoutId, poolLayoutVersion)
         : Async<unit> =
         let computedRequestId = Ulid.random().ToString()
         let computedDateTime = DateTime.UtcNow
@@ -119,6 +124,7 @@ type PoolEvent(configureServices: IServiceCollection -> unit) =
                 { InitialPoolGamblerBet.PoolId = poolId
                   GamblerId = gamblerId
                   GamblerUsername = gamblerUsername
+                  GamblerEmail = gamblerEmail
                   MatchId = m.MatchId
                   PoolLayoutId = poolLayoutId
                   HomeTeamId = m.HomeTeamId

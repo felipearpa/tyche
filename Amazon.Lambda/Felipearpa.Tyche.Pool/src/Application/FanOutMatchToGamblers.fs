@@ -17,14 +17,14 @@ type FanOutMatchInput =
       Round: string
       GroupName: string option }
 
-type FanOutMatchToGamblers
-    (poolRepository: IPoolRepository, poolGamblerBetRepository: IPoolGamblerBetRepository) =
+type FanOutMatchToGamblers(poolRepository: IPoolRepository, poolGamblerBetRepository: IPoolGamblerBetRepository) =
 
     member this.ExecuteAsync(input: FanOutMatchInput) : Async<unit> =
         let buildBet (gambler: PoolLayoutGambler) =
             { InitialPoolGamblerBet.PoolId = gambler.PoolId
               GamblerId = gambler.GamblerId
               GamblerUsername = gambler.GamblerUsername
+              GamblerEmail = gambler.GamblerEmail
               MatchId = input.MatchId
               PoolLayoutId = input.PoolLayoutId
               HomeTeamId = input.HomeTeamId

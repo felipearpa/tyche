@@ -8,4 +8,5 @@ type ResolvedCreatePoolInput =
       PoolLayoutId: Ulid
       PoolLayoutVersion: int
       OwnerGamblerId: Ulid
-      OwnerGamblerUsername: NonEmptyString100 }
+      OwnerGamblerUsername: NonEmptyString100
+      OwnerGamblerEmail: NonEmptyString100 }

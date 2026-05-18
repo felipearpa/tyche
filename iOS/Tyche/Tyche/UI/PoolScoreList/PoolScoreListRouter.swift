@@ -13,9 +13,6 @@ struct PoolScoreListRouter: View {
     @StateObject var poolScoreViewModel: PoolScoreListViewModel
 
     @Environment(\.diResolver) private var diResolver: DIResolver
-    @State private var path = NavigationPath()
-    @State private var drawerVisible = false
-    @State private var wasPoolCreated: Bool = false
 
     init(
         accountBundle: AccountBundle,
@@ -27,6 +24,53 @@ struct PoolScoreListRouter: View {
         self.onPoolSelect = onPoolSelect
         self.onSignOut = onSignOut
         self._poolScoreViewModel = .init(wrappedValue: poolScoreViewModel())
+    }
+
+    var body: some View {
+        PoolScoreListRouterContent(
+            accountBundle: accountBundle,
+            onPoolSelect: onPoolSelect,
+            onSignOut: onSignOut,
+            poolScoreViewModel: poolScoreViewModel,
+            drawerViewModel: PoolScoreListDrawerViewModel(
+                logOutUseCase: diResolver.resolve(LogOutUseCase.self)!,
+                accountStorage: diResolver.resolve(AccountStorage.self)!
+            ),
+            usernameEditorViewModel: UsernameEditorViewModel(
+                updateUsernameUseCase: diResolver.resolve(UpdateUsernameUseCase.self)!
+            )
+        )
+    }
+}
+
+private struct PoolScoreListRouterContent: View {
+    let accountBundle: AccountBundle
+    let onPoolSelect: (PoolProfile) -> Void
+    let onSignOut: () -> Void
+    @ObservedObject var poolScoreViewModel: PoolScoreListViewModel
+    @StateObject private var drawerViewModel: PoolScoreListDrawerViewModel
+    @StateObject private var usernameEditorViewModel: UsernameEditorViewModel
+
+    @Environment(\.diResolver) private var diResolver: DIResolver
+    @State private var path = NavigationPath()
+    @State private var drawerVisible = false
+    @State private var isEditingAccount = false
+    @State private var wasPoolCreated: Bool = false
+
+    init(
+        accountBundle: AccountBundle,
+        onPoolSelect: @escaping (PoolProfile) -> Void,
+        onSignOut: @escaping () -> Void,
+        poolScoreViewModel: PoolScoreListViewModel,
+        drawerViewModel: @autoclosure @escaping () -> PoolScoreListDrawerViewModel,
+        usernameEditorViewModel: @autoclosure @escaping () -> UsernameEditorViewModel
+    ) {
+        self.accountBundle = accountBundle
+        self.onPoolSelect = onPoolSelect
+        self.onSignOut = onSignOut
+        self.poolScoreViewModel = poolScoreViewModel
+        self._drawerViewModel = StateObject(wrappedValue: drawerViewModel())
+        self._usernameEditorViewModel = StateObject(wrappedValue: usernameEditorViewModel())
     }
 
     var body: some View {
@@ -66,22 +110,34 @@ struct PoolScoreListRouter: View {
         }
         .drawer(isShowing: $drawerVisible) {
             PoolScoreListDrawerView(
-                viewModel: PoolScoreListDrawerViewModel(logOutUseCase: diResolver.resolve(LogOutUseCase.self)!),
-                email: accountBundle.email,
+                viewModel: drawerViewModel,
                 onSignOut: onSignOut,
+                onEditAccount: { isEditingAccount = true }
             )
         }
-        .drawerStyle(.liquidGlass)
         .withParentGeometryProxy()
+        .minimalDialog(isPresented: $isEditingAccount) {
+            UsernameEditor(
+                initialUsername: drawerViewModel.username,
+                viewModel: usernameEditorViewModel,
+                onSaved: { newUsername in
+                    drawerViewModel.applyUsername(newUsername)
+                    isEditingAccount = false
+                },
+                onDismiss: {
+                    isEditingAccount = false
+                }
+            )
+        }
     }
 
     private func navigationBarLeading() -> some View {
         Button(action: { drawerVisible.toggle() }) {
-            Image(sharedResource: .menu)
-                .resizable()
-                .frame(width: iconSize, height: iconSize)
-                .tint(.primary)
+            EmailAvatar(email: accountBundle.email)
+                .frame(width: navigationAvatarSize, height: navigationAvatarSize)
+                .clipShape(Circle())
         }
+        .buttonStyle(.plain)
     }
 
     private func navigationBarTrailing() -> some View {
@@ -95,7 +151,7 @@ struct PoolScoreListRouter: View {
     }
 }
 
-private let iconSize: CGFloat = 24
+private let navigationAvatarSize: CGFloat = 32
 private let createIconSize: CGFloat = 32
 
 private func poolScoreListFakeResolver() -> DIResolver {

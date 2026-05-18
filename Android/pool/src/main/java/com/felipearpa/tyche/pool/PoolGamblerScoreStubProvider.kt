@@ -22,7 +22,7 @@ fun poolGamblerScoreDummyModel() =
         score = 150,
     )
 
-fun poolGamblerScoreWithoutScoreDummyModel() =
+fun poolGamblerScoreDummyModelWithoutPosition() =
     PoolGamblerScoreModel(
         poolId = "pool123",
         poolName = "Champions League",
@@ -30,7 +30,18 @@ fun poolGamblerScoreWithoutScoreDummyModel() =
         gamblerUsername = "AceBettor",
         position = null,
         beforePosition = null,
-        score = null,
+        score = 0,
+    )
+
+fun poolGamblerScoreWithoutPositionDummyModel() =
+    PoolGamblerScoreModel(
+        poolId = "pool123",
+        poolName = "Champions League",
+        gamblerId = "gambler001",
+        gamblerUsername = "AceBettor",
+        position = null,
+        beforePosition = null,
+        score = 0,
     )
 
 fun poolGamblerScoreDummyModels() =

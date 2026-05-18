@@ -8,8 +8,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedIconButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -22,7 +22,7 @@ import com.felipearpa.tyche.pool.PositionIndicator
 import com.felipearpa.tyche.pool.difference
 import com.felipearpa.tyche.pool.poolGamblerScoreDummyModel
 import com.felipearpa.tyche.pool.poolGamblerScorePlaceholderModel
-import com.felipearpa.tyche.pool.poolGamblerScoreWithoutScoreDummyModel
+import com.felipearpa.tyche.pool.poolGamblerScoreWithoutPositionDummyModel
 import com.felipearpa.tyche.ui.TrendIndicator
 import com.felipearpa.tyche.ui.shimmer
 import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
@@ -71,7 +71,7 @@ fun PoolScoreItem(
 
             Spacer(modifier = Modifier.height(LocalBoxSpacing.current.medium))
 
-            IconButton(
+            OutlinedIconButton(
                 onClick = onJoin,
                 modifier = placeholderModifier,
             ) {
@@ -115,7 +115,7 @@ private fun PoolScoreItemPreviewWithoutScore() {
     TycheTheme {
         Surface {
             PoolScoreItem(
-                poolGamblerScore = poolGamblerScoreWithoutScoreDummyModel(),
+                poolGamblerScore = poolGamblerScoreWithoutPositionDummyModel(),
                 onJoin = {},
                 modifier = Modifier.fillMaxWidth(),
             )

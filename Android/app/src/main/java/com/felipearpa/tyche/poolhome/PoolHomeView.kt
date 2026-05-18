@@ -11,13 +11,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalDrawerSheet
-import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab
@@ -25,7 +22,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
-import androidx.compose.material3.rememberDrawerState
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -33,7 +29,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -56,15 +51,15 @@ import com.felipearpa.tyche.pool.gamblerscore.gamblerScoreListViewModel
 import com.felipearpa.tyche.poolhome.drawer.DrawerView
 import com.felipearpa.tyche.poolhome.drawer.DrawerViewModel
 import com.felipearpa.tyche.poolhome.drawer.drawerViewModel
+import com.felipearpa.tyche.ui.PushDrawer
 import com.felipearpa.tyche.ui.exception.ExceptionAlertDialog
 import com.felipearpa.tyche.ui.exception.LocalizedException
 import com.felipearpa.tyche.ui.exception.localizedOrDefault
 import com.felipearpa.tyche.ui.loading.LoadingContainerView
 import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
-import com.felipearpa.ui.state.LoadableViewState
+import com.felipearpa.ui.state.SaveState
 import com.felipearpa.ui.state.isFailure
-import com.felipearpa.ui.state.isLoading
-import kotlinx.coroutines.launch
+import com.felipearpa.ui.state.isSaving
 import org.koin.compose.koinInject
 import com.felipearpa.tyche.ui.R as SharedR
 
@@ -79,8 +74,7 @@ fun PoolHomeView(
     onMatchOpen: ((PoolGamblerBetModel) -> Unit)? = null,
 ) {
     var selectedTabIndex by rememberSaveable { mutableStateOf(Tab.GAMBLER_SCORE) }
-    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
-    val coroutineScope = rememberCoroutineScope()
+    var isDrawerOpen by remember { mutableStateOf(false) }
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
 
     val drawerViewModel: DrawerViewModel = drawerViewModel(poolId = poolId, gamblerId = gamblerId)
@@ -88,23 +82,23 @@ fun PoolHomeView(
     val joinPoolUrlTemplate = koinInject<JoinPoolUrlTemplateProvider>()
     var invitePoolUrl by remember { mutableStateOf(emptyString()) }
 
-    ModalNavigationDrawer(
-        drawerState = drawerState,
+    PushDrawer(
+        isOpen = isDrawerOpen,
+        onOpenChange = { isDrawerOpen = it },
         drawerContent = {
-            ModalDrawerSheet {
-                DrawerView(
-                    viewModel = drawerViewModel,
-                    onSignOut = onSignOut,
-                    onInvite = {
-                        coroutineScope.launch { drawerState.close() }
-                        invitePoolUrl = String.format(joinPoolUrlTemplate(), poolId)
-                    },
-                    onPoolDeleting = {
-                        coroutineScope.launch { drawerState.close() }
-                    },
-                    onPoolDeleted = onPoolChange,
-                )
-            }
+            DrawerView(
+                viewModel = drawerViewModel,
+                onCloseDrawer = { isDrawerOpen = false },
+                onSignOut = onSignOut,
+                onInvite = {
+                    isDrawerOpen = false
+                    invitePoolUrl = String.format(joinPoolUrlTemplate(), poolId)
+                },
+                onPoolDeleting = {
+                    isDrawerOpen = false
+                },
+                onPoolDeleted = onPoolChange,
+            )
         },
     ) {
         val mainContent: @Composable () -> Unit = {
@@ -115,13 +109,7 @@ fun PoolHomeView(
                 topBar = {
                     AppTopBar(
                         title = selectedTabIndex.title,
-                        onAccountShow = {
-                            coroutineScope.launch {
-                                drawerState.apply {
-                                    if (isClosed) open() else close()
-                                }
-                            }
-                        },
+                        onAccountShow = { isDrawerOpen = !isDrawerOpen },
                         onPoolChange = onPoolChange,
                         scrollBehavior = scrollBehavior,
                     )
@@ -182,7 +170,7 @@ fun PoolHomeView(
             }
         }
 
-        if (deleteState.isLoading()) {
+        if (deleteState.isSaving()) {
             LoadingContainerView { mainContent() }
         } else {
             mainContent()
@@ -190,7 +178,7 @@ fun PoolHomeView(
     }
 
     if (deleteState.isFailure()) {
-        val exception = (deleteState as LoadableViewState.Failure).exception
+        val exception = (deleteState as SaveState.Failure).exception
         ExceptionAlertDialog(
             exception = exception as? LocalizedException ?: exception.localizedOrDefault(),
             onDismiss = { drawerViewModel.resetDeleteState() },

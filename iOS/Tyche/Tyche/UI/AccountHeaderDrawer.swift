@@ -1,43 +1,50 @@
 import SwiftUI
+import UI
 
 struct AccountHeaderDrawer: View {
+    let username: String
     let email: String
+    let onEditAccount: () -> Void
 
     @Environment(\.boxSpacing) private var boxSpacing
 
     var body: some View {
-        VStack(spacing: boxSpacing.medium) {
-            ZStack {
-                Circle()
-                    .stroke(Color.accentColor, lineWidth: AVATAR_RING_WIDTH)
+        VStack(spacing: 0) {
+            HStack(spacing: boxSpacing.medium) {
+                EmailAvatar(email: email)
                     .frame(width: AVATAR_SIZE, height: AVATAR_SIZE)
+                    .clipShape(Circle())
 
-                Image(.filledPerson)
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: AVATAR_ICON_SIZE, height: AVATAR_ICON_SIZE)
-                    .foregroundStyle(Color.secondary)
+                VStack(alignment: .leading, spacing: boxSpacing.small) {
+                    Text(username.isEmpty ? email : username)
+                        .font(.headline)
+                        .lineLimit(1)
+                        .truncationMode(.tail)
+
+                    Text(email)
+                        .font(.caption)
+                        .foregroundStyle(Color.secondary)
+                        .lineLimit(1)
+                        .truncationMode(.tail)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
             }
 
-            Text(email)
-                .font(.headline)
-                .multilineTextAlignment(.center)
-                .lineLimit(2)
-                .truncationMode(.tail)
-
-            Text(.connectedAccountText)
-                .font(.caption)
-                .foregroundStyle(Color.secondary)
-
-            RoundedRectangle(cornerRadius: ACCENT_LINE_HEIGHT / 2)
-                .fill(Color.accentColor)
-                .frame(width: ACCENT_LINE_WIDTH, height: ACCENT_LINE_HEIGHT)
+            DrawerButtonRow(icon: {
+                Image(sharedResource: .edit)
+            }, title: String(localized: .editUsernameAction)) {
+                onEditAccount()
+            }
         }
     }
 }
 
-private let AVATAR_SIZE: CGFloat = 96
-private let AVATAR_ICON_SIZE: CGFloat = 56
-private let AVATAR_RING_WIDTH: CGFloat = 3
-private let ACCENT_LINE_WIDTH: CGFloat = 48
-private let ACCENT_LINE_HEIGHT: CGFloat = 3
+private let AVATAR_SIZE: CGFloat = 48
+
+#Preview {
+    AccountHeaderDrawer(
+        username: "felipearpa",
+        email: "felipearpa@tyche.com",
+        onEditAccount: {}
+    )
+}

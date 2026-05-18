@@ -12,3 +12,4 @@ type IPoolRepository =
     abstract IsPoolMemberAsync: Ulid * Ulid -> Result<bool, unit> Async
     abstract GetGamblersByPoolLayoutAsync: Ulid * string option -> Async<PoolLayoutGambler CursorPage>
     abstract DeletePoolAsync: Ulid -> unit Async
+    abstract PropagateGamblerUsernameAsync: Ulid * NonEmptyString100 -> unit Async

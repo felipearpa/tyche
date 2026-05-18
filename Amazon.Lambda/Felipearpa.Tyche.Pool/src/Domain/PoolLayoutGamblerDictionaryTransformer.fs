@@ -13,7 +13,8 @@ module PoolLayoutGamblerDictionaryTransformer =
           PoolLayoutId = dictionary[PoolTable.Attribute.poolLayoutId].S |> Ulid.newOf
           PoolLayoutVersion = dictionary[PoolTable.Attribute.poolLayoutVersion].N |> int
           GamblerId = dictionary[PoolTable.Attribute.gamblerId].S |> Ulid.newOf
-          GamblerUsername = dictionary[PoolTable.Attribute.gamblerUsername].S |> NonEmptyString100.newOf }
+          GamblerUsername = dictionary[PoolTable.Attribute.gamblerUsername].S |> NonEmptyString100.newOf
+          GamblerEmail = dictionary[PoolTable.Attribute.gamblerEmail].S |> NonEmptyString100.newOf }
 
     type Extensions =
         [<Extension>]

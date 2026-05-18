@@ -48,6 +48,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         val splashScreen = installSplashScreen()
+        makeEdgeToEdge()
         super.onCreate(savedInstanceState)
 
         splashScreen.setKeepOnScreenCondition { !isReady }
@@ -60,8 +61,6 @@ class MainActivity : ComponentActivity() {
         }
 
         val intentData = intent.data?.toString()
-
-        makeEdgeToEdge()
 
         setContent {
             if (isReady) {

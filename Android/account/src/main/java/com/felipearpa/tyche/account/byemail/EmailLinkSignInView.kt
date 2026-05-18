@@ -41,7 +41,7 @@ import com.felipearpa.tyche.ui.exception.localizedOrDefault
 import com.felipearpa.tyche.ui.loading.LoadingContainerView
 import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
 import com.felipearpa.tyche.ui.theme.LocalExtendedColorScheme
-import com.felipearpa.ui.state.LoadableViewState
+import com.felipearpa.ui.state.LoadState
 import com.felipearpa.tyche.ui.R as SharedR
 
 @Composable
@@ -69,13 +69,13 @@ fun EmailLinkSignInView(
 
 @Composable
 fun EmailLinkSignInView(
-    state: LoadableViewState<AccountBundle>,
+    state: LoadState<AccountBundle>,
     email: String,
     onStart: (AccountBundle) -> Unit = {},
     onRetry: () -> Unit,
 ) {
     when (state) {
-        is LoadableViewState.Failure -> {
+        is LoadState.Failure -> {
             FailureContent(
                 localizedException = state().localizedOrDefault(),
                 onRetry = onRetry,
@@ -87,11 +87,11 @@ fun EmailLinkSignInView(
             )
         }
 
-        LoadableViewState.Initial, LoadableViewState.Loading -> {
+        LoadState.Idle, LoadState.Loading -> {
             LoadingContainerView {}
         }
 
-        is LoadableViewState.Success ->
+        is LoadState.Loaded ->
             SuccessContent(
                 email = email,
                 onStart = { onStart(state.value) },
@@ -220,7 +220,7 @@ private fun FailureContent(
 @Composable
 private fun SuccessSignInWithEmailLinkViewPreview() {
     EmailLinkSignInView(
-        state = LoadableViewState.Success(emptyAccountBundle()),
+        state = LoadState.Loaded(emptyAccountBundle()),
         email = "preview@example.com",
         onRetry = {},
     )
@@ -230,7 +230,7 @@ private fun SuccessSignInWithEmailLinkViewPreview() {
 @Composable
 private fun FailureSignInWithEmailLinkViewPreview() {
     EmailLinkSignInView(
-        state = LoadableViewState.Failure(UnknownLocalizedException()),
+        state = LoadState.Failure(UnknownLocalizedException()),
         email = "preview@example.com",
         onRetry = {},
     )

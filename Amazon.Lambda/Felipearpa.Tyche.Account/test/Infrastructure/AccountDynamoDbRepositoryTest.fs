@@ -25,6 +25,7 @@ let accountMap =
         [ "pk", AttributeValue("ACCOUNT#01H1CMCDHH99FH8FDY36S0YH3A")
           "accountId", AttributeValue("01H1CMCDHH99FH8FDY36S0YH3A")
           "email", AttributeValue("email@felipearpa.com")
+          "username", AttributeValue("email@felipearpa.com")
           "externalAccountId", AttributeValue("ZaGjvMlgGxbhW0yK5mYK0Lg6Wl93") ]
 
 let accountLink =
@@ -34,6 +35,7 @@ let accountLink =
 let account =
     { Account.AccountId = Ulid.newOf "01H1CMCDHH99FH8FDY36S0YH3A"
       Email = Email.newOf email
+      Username = NonEmptyString100.newOf email
       ExternalAccountId = NonEmptyString.newOf "ZaGjvMlgGxbhW0yK5mYK0Lg6Wl93" }
 
 let accountRepository =
@@ -56,9 +58,7 @@ let ``given a no associated email`` () =
     |> ignore
 
 let ``given an exception causing email`` () =
-    clientMock
-        .Setup(fun client -> client.QueryAsync(It.IsAny<QueryRequest>()))
-        .Throws<Exception>()
+    clientMock.Setup(fun client -> client.QueryAsync(It.IsAny<QueryRequest>())).Throws<Exception>()
     |> ignore
 
 let ``when an account is searched by the email`` () =

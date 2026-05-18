@@ -1,57 +1,96 @@
 import SwiftUI
 
-private struct DrawerView<ContentView: View>: View {
+private struct DrawerContainer<Base: View, DrawerContent: View>: View {
     @Binding var isShowing: Bool
-    var content: () -> ContentView
-    var edgeTransition: AnyTransition = .move(edge: .leading)
+    let base: Base
+    let drawerContent: () -> DrawerContent
 
     @Environment(\.drawerStyle) private var style
+    @Environment(\.colorScheme) private var colorScheme
 
-    init(isShowing: Binding<Bool>, @ViewBuilder content: @escaping () -> ContentView) {
-        self._isShowing = isShowing
-        self.content = content
-    }
+    private let drawerWidthRatio: CGFloat = 0.85
+    private let dragThreshold: CGFloat = 50
+    private let cornerRadius: CGFloat = 25
 
     var body: some View {
         GeometryReader { geometry in
-            ZStack(alignment:.leading) {
-                if (isShowing) {
-                    Rectangle()
-                        .fill(.ultraThinMaterial)
-                        .opacity(0.5)
-                        .onTapGesture {
-                            isShowing.toggle()
-                        }
+            let fullWidth = geometry.size.width
+                + geometry.safeAreaInsets.leading
+                + geometry.safeAreaInsets.trailing
+            let drawerWidth = fullWidth * drawerWidthRatio
 
-                    style.makeBody(configuration: DrawerStyleConfiguration(
-                        content: DrawerStyleConfiguration.Content(view: AnyView(
-                            ZStack {
-                                content()
-                                    .padding(.top, geometry.safeAreaInsets.top)
-                                    .padding(.bottom, geometry.safeAreaInsets.bottom)
-                            }
-                            .frame(width: UIScreen.main.bounds.width * 0.9)
-                        ))
+            ZStack(alignment: .leading) {
+                style.makeBody(configuration: DrawerStyleConfiguration(
+                    content: DrawerStyleConfiguration.Content(view: AnyView(
+                        drawerContent()
+                            .padding(.top, geometry.safeAreaInsets.top)
+                            .padding(.bottom, geometry.safeAreaInsets.bottom)
                     ))
-                    .transition(edgeTransition)
-                }
+                ))
+                .frame(width: drawerWidth)
+                .frame(maxHeight: .infinity)
+
+                base
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .overlay(
+                        (colorScheme == .dark ? Color.white : Color.black)
+                            .opacity(isShowing ? 0.15 : 0)
+                            .onTapGesture { isShowing = false }
+                            .allowsHitTesting(isShowing)
+                    )
+                    .compositingGroup()
+                    .clipShape(
+                        .rect(
+                            topLeadingRadius: isShowing ? cornerRadius : 0,
+                            bottomLeadingRadius: isShowing ? cornerRadius : 0,
+                            bottomTrailingRadius: 0,
+                            topTrailingRadius: 0,
+                        )
+                    )
+                    .overlay(
+                        UnevenRoundedRectangle(
+                            topLeadingRadius: isShowing ? cornerRadius : 0,
+                            bottomLeadingRadius: isShowing ? cornerRadius : 0,
+                            bottomTrailingRadius: 0,
+                            topTrailingRadius: 0,
+                        )
+                        .strokeBorder(
+                            Color(.separator).opacity(isShowing ? 1 : 0),
+                            lineWidth: 1,
+                        )
+                    )
+                    .offset(x: isShowing ? drawerWidth : 0)
+                    .disabled(isShowing)
             }
             .ignoresSafeArea()
-            .animation(.easeInOut, value: isShowing)
+            .animation(.timingCurve(0.4, 0.0, 0.2, 1.0, duration: 0.3), value: isShowing)
+            .gesture(
+                DragGesture()
+                    .onEnded { value in
+                        if value.translation.width < -dragThreshold {
+                            isShowing = false
+                        } else if value.translation.width > dragThreshold {
+                            isShowing = true
+                        }
+                    }
+            )
         }
     }
 }
 
 public extension View {
-    func drawer<Content: View>(isShowing: Binding<Bool>, @ViewBuilder content: @escaping () -> Content) -> some View {
-        self.overlay(
-            DrawerView(isShowing: isShowing, content: content)
-        )
+    func drawer<Content: View>(
+        isShowing: Binding<Bool>,
+        @ViewBuilder content: @escaping () -> Content,
+    ) -> some View {
+        DrawerContainer(isShowing: isShowing, base: self, drawerContent: content)
     }
 }
 
 #Preview {
-    DrawerView(isShowing: .constant(true)) {
-        Text("Content")
-    }
+    Color.blue
+        .ignoresSafeArea()
+        .drawer(isShowing: .constant(true)) {
+            Text("Content")
+        }
 }

@@ -17,6 +17,7 @@ class PoolHomeDrawerViewModel: ObservableObject {
 
     @Published var state: LoadState<PoolGamblerScoreModel> = .idle
     @Published var email: String = ""
+    @Published var username: String = ""
     @Published var isOwner: Bool = false
     @Published var deleteState: LoadState<Void> = .idle
 
@@ -38,16 +39,18 @@ class PoolHomeDrawerViewModel: ObservableObject {
         self.accountStorage = accountStorage
 
         Task {
-            await self.loadEmail()
+            await self.loadAccount()
             await self.loadPoolGamblerScore()
             await self.loadOwnership()
         }
     }
 
     @MainActor
-    func loadEmail() {
+    func loadAccount() {
         Task {
-            self.email = (try? await accountStorage.retrieve()?.email) ?? ""
+            let bundle = try? await accountStorage.retrieve()
+            self.email = bundle?.email ?? ""
+            self.username = bundle?.username ?? ""
         }
     }
 
@@ -103,5 +106,10 @@ class PoolHomeDrawerViewModel: ObservableObject {
     @MainActor
     func resetDeleteState() {
         deleteState = .idle
+    }
+
+    @MainActor
+    func applyUsername(_ newUsername: String) {
+        self.username = newUsername
     }
 }

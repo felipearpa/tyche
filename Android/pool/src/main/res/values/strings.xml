@@ -14,7 +14,6 @@
     <string name="pool_score_empty_list_subtitle">Pick a tournament template, create your pool and invite your friends.</string>
     <string name="pool_score_empty_list_templates_section">Popular templates</string>
     <string name="see_all_templates_action">See all templates</string>
-    <string name="create_pool_action">Create</string>
     <string name="go_to_my_pools_action">Go to my pools</string>
     <string name="pool_join_requires_sign_in_failure_description">Sign-in required to join</string>
     <string name="pool_join_requires_sign_in_failure_reason">You need to be signed in to open this pool join link</string>

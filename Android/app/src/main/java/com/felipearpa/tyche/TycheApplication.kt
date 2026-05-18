@@ -3,10 +3,10 @@ package com.felipearpa.tyche
 import android.app.Application
 import com.felipearpa.tyche.account.di.accountViewModelModule
 import com.felipearpa.tyche.bet.di.betViewModelModule
-import com.felipearpa.tyche.config.di.configModule
 import com.felipearpa.tyche.core.di.coreModule
 import com.felipearpa.tyche.data.bet.di.betDataModule
 import com.felipearpa.tyche.data.pool.di.poolDataModule
+import com.felipearpa.tyche.di.appModule
 import com.felipearpa.tyche.network.di.networkModule
 import com.felipearpa.tyche.pool.di.poolViewModelModule
 import com.felipearpa.tyche.poolhome.di.poolHomeViewModelModule
@@ -22,7 +22,7 @@ class TycheApplication : Application() {
         startKoin {
             androidContext(this@TycheApplication)
             modules(
-                configModule,
+                appModule,
                 coreModule,
                 networkModule,
                 sessionModule,

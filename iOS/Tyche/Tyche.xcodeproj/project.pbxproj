@@ -3,34 +3,17 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 70;
+	objectVersion = 71;
 	objects = {
 
 /* Begin PBXBuildFile section */
 		550F21DD2B16C7EF004D5A51 /* DataBet in Frameworks */ = {isa = PBXBuildFile; productRef = 550F21DC2B16C7EF004D5A51 /* DataBet */; };
-		5556C5172E515434004F34D5 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5556C5162E51542F004F34D5 /* AppDelegate.swift */; };
 		556747072FB15A0800907CF9 /* ViewingState in Frameworks */ = {isa = PBXBuildFile; productRef = 556747062FB15A0800907CF9 /* ViewingState */; };
 		556EBA612B16CB8F008D4ABD /* Session in Frameworks */ = {isa = PBXBuildFile; productRef = 556EBA602B16CB8F008D4ABD /* Session */; };
-		557D1EAA2B40AD2B000FF9F9 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 557D1EA92B40AD2B000FF9F9 /* GoogleService-Info.plist */; };
 		558C522E2B40A046004AF956 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 558C522D2B40A046004AF956 /* FirebaseAuth */; };
 		55905C322B168C9F003EB79F /* Account in Frameworks */ = {isa = PBXBuildFile; productRef = 55905C312B168C9F003EB79F /* Account */; };
 		55905C362B16C23E003EB79F /* DataPool in Frameworks */ = {isa = PBXBuildFile; productRef = 55905C352B16C23E003EB79F /* DataPool */; };
-		55921B2C2F8FC85100BF5C43 /* tyche.icon in Resources */ = {isa = PBXBuildFile; fileRef = 55921B2B2F8FC85100BF5C43 /* tyche.icon */; };
-		55ACE9FF2E634A5C000CEF99 /* UrlMatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55ACE9FE2E634A51000CEF99 /* UrlMatcher.swift */; };
-		55BE0001A0001A002B0CDEF2 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 55BE0001A0001A002B0CDEF1 /* LaunchScreen.storyboard */; };
-		55D5929D2FA43C71003D4E59 /* LocalURLBasePathProviderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55D5929C2FA43C71003D4E59 /* LocalURLBasePathProviderTests.swift */; };
-		55F9FDCA2B56EAD500066BBA /* EmailLinkSignInRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55F9FDC92B56EAD500066BBA /* EmailLinkSignInRouter.swift */; };
-		55FA8F932FAF6F4300EA591D /* AccountHeaderDrawer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55FA8F922FAF6F3300EA591D /* AccountHeaderDrawer.swift */; };
-		D2127F392A2C2F240047DED7 /* TycheApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2127F382A2C2F240047DED7 /* TycheApp.swift */; };
-		D2127F3D2A2C2F260047DED7 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D2127F3C2A2C2F260047DED7 /* Assets.xcassets */; };
-		D2127F402A2C2F260047DED7 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D2127F3F2A2C2F260047DED7 /* Preview Assets.xcassets */; };
-		D2127F452A2C2F260047DED7 /* Tyche.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = D2127F432A2C2F260047DED7 /* Tyche.xcdatamodeld */; };
-		D2127F4F2A2C2F270047DED7 /* TycheTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2127F4E2A2C2F270047DED7 /* TycheTests.swift */; };
-		D2127F592A2C2F270047DED7 /* TycheUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2127F582A2C2F270047DED7 /* TycheUITests.swift */; };
-		D2127F5B2A2C2F270047DED7 /* TycheUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2127F5A2A2C2F270047DED7 /* TycheUITestsLaunchTests.swift */; };
-		D21495EC2ABFD65E00C18C71 /* SessionRouterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D21495EB2ABFD65E00C18C71 /* SessionRouterView.swift */; };
 		D29956132A74215600F8878E /* Bet in Frameworks */ = {isa = PBXBuildFile; productRef = D29956122A74215600F8878E /* Bet */; };
-		D2A7804D2AC8BB1A00F01A02 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = D2A7804C2AC8BB1A00F01A02 /* Localizable.xcstrings */; };
 		D2BB75112A5B65D500C7AE04 /* Pool in Frameworks */ = {isa = PBXBuildFile; productRef = D2BB75102A5B65D500C7AE04 /* Pool */; };
 		D2C23D612A3E428D003CC860 /* UI in Frameworks */ = {isa = PBXBuildFile; productRef = D2C23D602A3E428D003CC860 /* UI */; };
 		D2C23D632A3E4290003CC860 /* Core in Frameworks */ = {isa = PBXBuildFile; productRef = D2C23D622A3E4290003CC860 /* Core */; };
@@ -54,37 +37,26 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		5556C5162E51542F004F34D5 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		557942532B4C413400B1B3DA /* Tyche.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Tyche.entitlements; sourceTree = "<group>"; };
-		557D1EA92B40AD2B000FF9F9 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
-		55921B2B2F8FC85100BF5C43 /* tyche.icon */ = {isa = PBXFileReference; lastKnownFileType = folder.iconcomposer.icon; path = tyche.icon; sourceTree = "<group>"; };
-		55ACE9FE2E634A51000CEF99 /* UrlMatcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UrlMatcher.swift; sourceTree = "<group>"; };
-		55B782CC2E2D449C00E78408 /* AppConfig.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = AppConfig.xcconfig; sourceTree = "<group>"; };
-		55BE0001A0001A002B0CDEF1 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
-		55D5929C2FA43C71003D4E59 /* LocalURLBasePathProviderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalURLBasePathProviderTests.swift; sourceTree = "<group>"; };
-		55F9FDC92B56EAD500066BBA /* EmailLinkSignInRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmailLinkSignInRouter.swift; sourceTree = "<group>"; };
-		55FA8F922FAF6F3300EA591D /* AccountHeaderDrawer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountHeaderDrawer.swift; sourceTree = "<group>"; };
-		D204461A2A367F1400390319 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		D2127F352A2C2F240047DED7 /* Tyche.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Tyche.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		D2127F382A2C2F240047DED7 /* TycheApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TycheApp.swift; sourceTree = "<group>"; };
-		D2127F3C2A2C2F260047DED7 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		D2127F3F2A2C2F260047DED7 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
-		D2127F442A2C2F260047DED7 /* Tyche.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Tyche.xcdatamodel; sourceTree = "<group>"; };
 		D2127F4A2A2C2F270047DED7 /* TycheTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TycheTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		D2127F4E2A2C2F270047DED7 /* TycheTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TycheTests.swift; sourceTree = "<group>"; };
 		D2127F542A2C2F270047DED7 /* TycheUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TycheUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		D2127F582A2C2F270047DED7 /* TycheUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TycheUITests.swift; sourceTree = "<group>"; };
-		D2127F5A2A2C2F270047DED7 /* TycheUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TycheUITestsLaunchTests.swift; sourceTree = "<group>"; };
-		D21495EB2ABFD65E00C18C71 /* SessionRouterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionRouterView.swift; sourceTree = "<group>"; };
-		D2A7804C2AC8BB1A00F01A02 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		552E19AC2FBA75C700DA8129 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				AppConfig.xcconfig,
+				Info.plist,
+			);
+			target = D2127F342A2C2F240047DED7 /* Tyche */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		55B782D02E2D46CB00E78408 /* DI */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = DI; sourceTree = "<group>"; };
-		55BC17DE2E2D55F80078BE7F /* Config */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Config; sourceTree = "<group>"; };
-		55C9D9102E2AE2A9007B79CA /* PoolHome */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = PoolHome; sourceTree = "<group>"; };
-		55C9D92E2E2B1D24007B79CA /* Home */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Home; sourceTree = "<group>"; };
-		55DC0E1C2E283C32007F7BD9 /* PoolScoreList */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = PoolScoreList; sourceTree = "<group>"; };
+		552E198A2FBA75C600DA8129 /* Tyche */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (552E19AC2FBA75C700DA8129 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = Tyche; sourceTree = "<group>"; };
+		552E19AF2FBA841F00DA8129 /* TycheTests */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = TycheTests; sourceTree = "<group>"; };
+		552E19B42FBA842300DA8129 /* TycheUITests */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = TycheUITests; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -125,9 +97,9 @@
 		D2127F2C2A2C2F240047DED7 = {
 			isa = PBXGroup;
 			children = (
-				D2127F372A2C2F240047DED7 /* Tyche */,
-				D2127F4D2A2C2F270047DED7 /* TycheTests */,
-				D2127F572A2C2F270047DED7 /* TycheUITests */,
+				552E198A2FBA75C600DA8129 /* Tyche */,
+				552E19AF2FBA841F00DA8129 /* TycheTests */,
+				552E19B42FBA842300DA8129 /* TycheUITests */,
 				D2127F362A2C2F240047DED7 /* Products */,
 				D2127F672A2C2FD50047DED7 /* Frameworks */,
 			);
@@ -143,81 +115,11 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		D2127F372A2C2F240047DED7 /* Tyche */ = {
-			isa = PBXGroup;
-			children = (
-				55921B2B2F8FC85100BF5C43 /* tyche.icon */,
-				55ACE9FE2E634A51000CEF99 /* UrlMatcher.swift */,
-				55BC17DE2E2D55F80078BE7F /* Config */,
-				55B782D02E2D46CB00E78408 /* DI */,
-				557942532B4C413400B1B3DA /* Tyche.entitlements */,
-				D204461A2A367F1400390319 /* Info.plist */,
-				557D1EA92B40AD2B000FF9F9 /* GoogleService-Info.plist */,
-				55BE0001A0001A002B0CDEF1 /* LaunchScreen.storyboard */,
-				D2A7804E2AC8BBD700F01A02 /* Localizable */,
-				D2127F762A2C33340047DED7 /* UI */,
-				D2127F382A2C2F240047DED7 /* TycheApp.swift */,
-				5556C5162E51542F004F34D5 /* AppDelegate.swift */,
-				D2127F3C2A2C2F260047DED7 /* Assets.xcassets */,
-				D2127F432A2C2F260047DED7 /* Tyche.xcdatamodeld */,
-				D2127F3E2A2C2F260047DED7 /* Preview Content */,
-				55B782CC2E2D449C00E78408 /* AppConfig.xcconfig */,
-			);
-			path = Tyche;
-			sourceTree = "<group>";
-		};
-		D2127F3E2A2C2F260047DED7 /* Preview Content */ = {
-			isa = PBXGroup;
-			children = (
-				D2127F3F2A2C2F260047DED7 /* Preview Assets.xcassets */,
-			);
-			path = "Preview Content";
-			sourceTree = "<group>";
-		};
-		D2127F4D2A2C2F270047DED7 /* TycheTests */ = {
-			isa = PBXGroup;
-			children = (
-				D2127F4E2A2C2F270047DED7 /* TycheTests.swift */,
-				55D5929C2FA43C71003D4E59 /* LocalURLBasePathProviderTests.swift */,
-			);
-			path = TycheTests;
-			sourceTree = "<group>";
-		};
-		D2127F572A2C2F270047DED7 /* TycheUITests */ = {
-			isa = PBXGroup;
-			children = (
-				D2127F582A2C2F270047DED7 /* TycheUITests.swift */,
-				D2127F5A2A2C2F270047DED7 /* TycheUITestsLaunchTests.swift */,
-			);
-			path = TycheUITests;
-			sourceTree = "<group>";
-		};
 		D2127F672A2C2FD50047DED7 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
 			);
 			name = Frameworks;
-			sourceTree = "<group>";
-		};
-		D2127F762A2C33340047DED7 /* UI */ = {
-			isa = PBXGroup;
-			children = (
-				55FA8F922FAF6F3300EA591D /* AccountHeaderDrawer.swift */,
-				55C9D92E2E2B1D24007B79CA /* Home */,
-				55C9D9102E2AE2A9007B79CA /* PoolHome */,
-				55DC0E1C2E283C32007F7BD9 /* PoolScoreList */,
-				D21495EB2ABFD65E00C18C71 /* SessionRouterView.swift */,
-				55F9FDC92B56EAD500066BBA /* EmailLinkSignInRouter.swift */,
-			);
-			path = UI;
-			sourceTree = "<group>";
-		};
-		D2A7804E2AC8BBD700F01A02 /* Localizable */ = {
-			isa = PBXGroup;
-			children = (
-				D2A7804C2AC8BB1A00F01A02 /* Localizable.xcstrings */,
-			);
-			path = Localizable;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -236,11 +138,7 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				55B782D02E2D46CB00E78408 /* DI */,
-				55BC17DE2E2D55F80078BE7F /* Config */,
-				55C9D9102E2AE2A9007B79CA /* PoolHome */,
-				55C9D92E2E2B1D24007B79CA /* Home */,
-				55DC0E1C2E283C32007F7BD9 /* PoolScoreList */,
+				552E198A2FBA75C600DA8129 /* Tyche */,
 			);
 			name = Tyche;
 			packageProductDependencies = (
@@ -272,6 +170,9 @@
 			dependencies = (
 				D2127F4C2A2C2F270047DED7 /* PBXTargetDependency */,
 			);
+			fileSystemSynchronizedGroups = (
+				552E19AF2FBA841F00DA8129 /* TycheTests */,
+			);
 			name = TycheTests;
 			productName = TycheTests;
 			productReference = D2127F4A2A2C2F270047DED7 /* TycheTests.xctest */;
@@ -289,6 +190,9 @@
 			);
 			dependencies = (
 				D2127F562A2C2F270047DED7 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				552E19B42FBA842300DA8129 /* TycheUITests */,
 			);
 			name = TycheUITests;
 			productName = TycheUITests;
@@ -349,12 +253,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D2127F402A2C2F260047DED7 /* Preview Assets.xcassets in Resources */,
-				557D1EAA2B40AD2B000FF9F9 /* GoogleService-Info.plist in Resources */,
-				D2A7804D2AC8BB1A00F01A02 /* Localizable.xcstrings in Resources */,
-				55921B2C2F8FC85100BF5C43 /* tyche.icon in Resources */,
-				D2127F3D2A2C2F260047DED7 /* Assets.xcassets in Resources */,
-				55BE0001A0001A002B0CDEF2 /* LaunchScreen.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -379,13 +277,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				55F9FDCA2B56EAD500066BBA /* EmailLinkSignInRouter.swift in Sources */,
-				55ACE9FF2E634A5C000CEF99 /* UrlMatcher.swift in Sources */,
-				D2127F392A2C2F240047DED7 /* TycheApp.swift in Sources */,
-				55FA8F932FAF6F4300EA591D /* AccountHeaderDrawer.swift in Sources */,
-				D21495EC2ABFD65E00C18C71 /* SessionRouterView.swift in Sources */,
-				5556C5172E515434004F34D5 /* AppDelegate.swift in Sources */,
-				D2127F452A2C2F260047DED7 /* Tyche.xcdatamodeld in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -393,8 +284,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				55D5929D2FA43C71003D4E59 /* LocalURLBasePathProviderTests.swift in Sources */,
-				D2127F4F2A2C2F270047DED7 /* TycheTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -402,8 +291,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D2127F5B2A2C2F270047DED7 /* TycheUITestsLaunchTests.swift in Sources */,
-				D2127F592A2C2F270047DED7 /* TycheUITests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -425,7 +312,8 @@
 /* Begin XCBuildConfiguration section */
 		D2127F5C2A2C2F270047DED7 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 55B782CC2E2D449C00E78408 /* AppConfig.xcconfig */;
+			baseConfigurationReferenceAnchor = 552E198A2FBA75C600DA8129 /* Tyche */;
+			baseConfigurationReferenceRelativePath = AppConfig.xcconfig;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_ASSET_SYMBOLS = YES;
@@ -492,7 +380,8 @@
 		};
 		D2127F5D2A2C2F270047DED7 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 55B782CC2E2D449C00E78408 /* AppConfig.xcconfig */;
+			baseConfigurationReferenceAnchor = 552E198A2FBA75C600DA8129 /* Tyche */;
+			baseConfigurationReferenceRelativePath = AppConfig.xcconfig;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_ASSET_SYMBOLS = YES;
@@ -559,7 +448,7 @@
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_ENTITLEMENTS = Tyche/Tyche.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 7;
+				CURRENT_PROJECT_VERSION = 8;
 				DEVELOPMENT_ASSET_PATHS = "\"Tyche/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -576,7 +465,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.5;
+				MARKETING_VERSION = 1.6;
 				PRODUCT_BUNDLE_IDENTIFIER = com.felipearpa.tyche;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -593,7 +482,7 @@
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_ENTITLEMENTS = Tyche/Tyche.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 7;
+				CURRENT_PROJECT_VERSION = 8;
 				DEVELOPMENT_ASSET_PATHS = "\"Tyche/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -610,7 +499,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.5;
+				MARKETING_VERSION = 1.6;
 				PRODUCT_BUNDLE_IDENTIFIER = com.felipearpa.tyche;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -791,19 +680,6 @@
 			productName = Core;
 		};
 /* End XCSwiftPackageProductDependency section */
-
-/* Begin XCVersionGroup section */
-		D2127F432A2C2F260047DED7 /* Tyche.xcdatamodeld */ = {
-			isa = XCVersionGroup;
-			children = (
-				D2127F442A2C2F260047DED7 /* Tyche.xcdatamodel */,
-			);
-			currentVersion = D2127F442A2C2F260047DED7 /* Tyche.xcdatamodel */;
-			path = Tyche.xcdatamodeld;
-			sourceTree = "<group>";
-			versionGroupType = wrapper.xcdatamodel;
-		};
-/* End XCVersionGroup section */
 	};
 	rootObject = D2127F2D2A2C2F240047DED7 /* Project object */;
 }

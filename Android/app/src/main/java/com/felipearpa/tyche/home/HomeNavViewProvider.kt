@@ -15,17 +15,17 @@ import com.felipearpa.tyche.account.bygoogle.googleSignInViewModel
 import com.felipearpa.tyche.account.social.SocialSignInRow
 import com.felipearpa.tyche.pool.poolscore.PoolScoreListRoute
 import com.felipearpa.tyche.ui.loading.LoadingContainerView
-import com.felipearpa.ui.state.LoadableViewState
+import com.felipearpa.ui.state.LoadState
 import com.felipearpa.ui.state.isLoading
 
 fun NavGraphBuilder.homeNavView(navController: NavController) {
     composable<HomeRoute> {
         val googleViewModel = googleSignInViewModel()
-        val googleState by googleViewModel.state.collectAsState(initial = LoadableViewState.Initial)
+        val googleState by googleViewModel.state.collectAsState(initial = LoadState.Idle)
         val context = LocalContext.current
 
         val isLoadingOverlayVisible =
-            googleState.isLoading() || googleState is LoadableViewState.Success
+            googleState.isLoading() || googleState is LoadState.Loaded
 
         Box(modifier = Modifier.fillMaxSize()) {
             HomeView(

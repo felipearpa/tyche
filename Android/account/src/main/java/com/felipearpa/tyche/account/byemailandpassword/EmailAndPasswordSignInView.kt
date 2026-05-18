@@ -39,10 +39,10 @@ import com.felipearpa.tyche.ui.exception.UnknownLocalizedException
 import com.felipearpa.tyche.ui.exception.localizedOrDefault
 import com.felipearpa.tyche.ui.loading.LoadingContainerView
 import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
-import com.felipearpa.ui.state.LoadableViewState
+import com.felipearpa.ui.state.LoadState
 import com.felipearpa.ui.state.isLoading
 import com.felipearpa.ui.state.onFailure
-import com.felipearpa.ui.state.onSuccess
+import com.felipearpa.ui.state.onLoaded
 import com.felipearpa.tyche.ui.R as SharedR
 
 @Composable
@@ -51,7 +51,7 @@ fun EmailAndPasswordSignInView(
     onBack: () -> Unit,
     onSignIn: (AccountBundle) -> Unit,
 ) {
-    val viewState by viewModel.state.collectAsState(initial = LoadableViewState.Initial)
+    val viewState by viewModel.state.collectAsState(initial = LoadState.Idle)
     EmailAndPasswordSignInView(
         viewState = viewState,
         onBack = onBack,
@@ -63,7 +63,7 @@ fun EmailAndPasswordSignInView(
 
 @Composable
 private fun EmailAndPasswordSignInView(
-    viewState: LoadableViewState<AccountBundle>,
+    viewState: LoadState<AccountBundle>,
     onSignIn: (String, String) -> Unit,
     onBack: () -> Unit,
     onReset: () -> Unit,
@@ -93,7 +93,7 @@ private fun EmailAndPasswordSignInView(
         }
     }
 
-    val isOverlayVisible = viewState.isLoading() || viewState is LoadableViewState.Success
+    val isOverlayVisible = viewState.isLoading() || viewState is LoadState.Loaded
 
     Box(modifier = Modifier.fillMaxSize()) {
         Scaffold(
@@ -102,9 +102,9 @@ private fun EmailAndPasswordSignInView(
             },
         ) { innerPadding ->
             when (viewState) {
-                LoadableViewState.Initial,
-                LoadableViewState.Loading,
-                is LoadableViewState.Success,
+                LoadState.Idle,
+                LoadState.Loading,
+                is LoadState.Loaded,
                     ->
                     EmailAndPasswordSignInView(
                         email = email,
@@ -115,7 +115,7 @@ private fun EmailAndPasswordSignInView(
                         modifier = Modifier.viewStyle(paddingValues = innerPadding),
                     )
 
-                is LoadableViewState.Failure -> FailureContent(
+                is LoadState.Failure -> FailureContent(
                     email = email,
                     password = password,
                     viewState = viewState,
@@ -131,7 +131,7 @@ private fun EmailAndPasswordSignInView(
     }
 
     LaunchedEffect(viewState) {
-        viewState.onSuccess { accountBundle ->
+        viewState.onLoaded { accountBundle ->
             onAuthenticate(accountBundle)
         }
     }
@@ -196,7 +196,7 @@ private fun FailureContent(
     modifier: Modifier = Modifier,
     email: String,
     password: String,
-    viewState: LoadableViewState<Unit>,
+    viewState: LoadState<AccountBundle>,
     reset: () -> Unit,
 ) {
     viewState.onFailure { exception ->
@@ -243,7 +243,7 @@ private fun Modifier.viewStyle(paddingValues: PaddingValues) =
 @Composable
 private fun InitialEmailAndPasswordSignInViewPreview() {
     EmailAndPasswordSignInView(
-        viewState = LoadableViewState.Initial,
+        viewState = LoadState.Idle,
         onSignIn = { _, _ -> },
         onBack = {},
         onReset = {},
@@ -255,7 +255,7 @@ private fun InitialEmailAndPasswordSignInViewPreview() {
 @Composable
 private fun LoadingEmailAndPasswordSignInViewPreview() {
     EmailAndPasswordSignInView(
-        viewState = LoadableViewState.Loading,
+        viewState = LoadState.Loading,
         onSignIn = { _, _ -> },
         onBack = {},
         onReset = {},
@@ -267,7 +267,7 @@ private fun LoadingEmailAndPasswordSignInViewPreview() {
 @Composable
 private fun SuccessEmailAndPasswordSignInViewPreview() {
     EmailAndPasswordSignInView(
-        viewState = LoadableViewState.Success(
+        viewState = LoadState.Loaded(
             AccountBundle(
                 accountId = emptyString(),
                 externalAccountId = emptyString(),
@@ -284,7 +284,7 @@ private fun SuccessEmailAndPasswordSignInViewPreview() {
 @Composable
 private fun FailureEmailAndPasswordSignInViewPreview() {
     EmailAndPasswordSignInView(
-        viewState = LoadableViewState.Failure(UnknownLocalizedException()),
+        viewState = LoadState.Failure(UnknownLocalizedException()),
         onSignIn = { _, _ -> },
         onBack = {},
         onReset = {},

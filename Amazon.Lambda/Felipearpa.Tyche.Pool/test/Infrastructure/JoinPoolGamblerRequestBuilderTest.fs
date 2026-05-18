@@ -14,7 +14,8 @@ module JoinPoolGamblerRequestBuilderTest =
           PoolLayoutId = Ulid.newOf "01K1PX1TX2NM1HG851S1V0QG6B"
           PoolLayoutVersion = 7
           OwnerGamblerId = Ulid.newOf "01K1PX1TX2NM1HG851S1V0QG6C"
-          OwnerGamblerUsername = NonEmptyString100.newOf "felipe@tyche.com" }
+          OwnerGamblerUsername = NonEmptyString100.newOf "felipe@tyche.com"
+          OwnerGamblerEmail = NonEmptyString100.newOf "felipe@tyche.com" }
 
     [<Fact>]
     let ``given a resolved create pool input when built then the actual layout version is written`` () =
@@ -45,6 +46,13 @@ module JoinPoolGamblerRequestBuilderTest =
         let put = JoinPoolGamblerRequestBuilder.build (input ())
 
         put.Item["score"].N |> shouldEqual "0"
+
+    [<Fact>]
+    let ``given a resolved create pool input when built then gamblerEmail mirrors gamblerUsername`` () =
+        let put = JoinPoolGamblerRequestBuilder.build (input ())
+
+        put.Item["gamblerEmail"].S |> shouldEqual "felipe@tyche.com"
+        put.Item["gamblerUsername"].S |> shouldEqual "felipe@tyche.com"
 
     [<Fact>]
     let ``given a resolved create pool input when built then it has the attribute_not_exists condition`` () =

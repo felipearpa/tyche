@@ -1,18 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="sign_in_title">Iniciar sesión</string>
-    <string name="back_action">Atrás</string>
     <string name="done_action">Hecho</string>
-    <string name="create_action">Crear</string>
     <string name="sign_in_action">Entrar</string>
     <string name="email_label">Correo electrónico</string>
     <string name="email_validation_failure_message">Debe ser un correo electrónico válido</string>
     <string name="password_label">Contraseña</string>
     <string name="password_validation_failure_message">La contraseña debe tener entre 8 y 16 caracteres e incluir al menos una letra mayúscula, una letra minúscula, un número y un carácter especial</string>
-    <string name="invalid_credential_failure_description">Inicio de sesión fallido</string>
-    <string name="invalid_credential_failure_reason">Usuario o contraseña incorrectos</string>
-    <string name="invalid_credential_recovery_suggestion">Por favor, comprueba tu nombre de usuario y contraseña, y vuelve a intentarlo. Si has olvidado tu contraseña, puedes restablecerla utilizando el enlace \'¿Olvidaste tu contraseña?\'</string>
-    <string name="user_success_login_message">¡Enhorabuena! Has iniciado sesión correctamente y ya puedes hacer tu apuesta. ¡Que empiece la diversión!</string>
     <string name="account_verified_title">Ya estás verificado</string>
     <string name="account_verified_description">Toca abajo para empezar a jugar</string>
     <string name="start_action">Empezar</string>

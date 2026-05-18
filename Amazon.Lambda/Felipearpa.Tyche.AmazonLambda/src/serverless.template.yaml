@@ -478,6 +478,35 @@ Resources:
             Path: /accounts
             Method: POST
             ApiId: !Ref AuthGatewayHttpApi
+
+  UpdateUsername:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: Felipearpa.Tyche.AmazonLambda::Felipearpa.Tyche.AmazonLambda.Function.AccountFunction::UpdateUsernameAsync
+      Runtime: dotnet10
+      CodeUri: .
+      MemorySize: 1024
+      Timeout: 60
+      Policies:
+        - AWSLambdaBasicExecutionRole
+        - Statement:
+            - Effect: Allow
+              Action:
+                - dynamodb:Query
+                - dynamodb:UpdateItem
+              Resource:
+                - arn:aws:dynamodb:us-east-2:567776770335:table/Account
+                - arn:aws:dynamodb:us-east-2:567776770335:table/Account/index/GetByEmail-index
+                - arn:aws:dynamodb:us-east-2:567776770335:table/Pool
+                - arn:aws:dynamodb:us-east-2:567776770335:table/Pool/index/GetPoolGamblerScoresByGambler-index
+      Architectures: [ arm64 ]
+      Events:
+        HttpApi:
+          Type: HttpApi
+          Properties:
+            Path: /accounts
+            Method: PATCH
+            ApiId: !Ref AuthGatewayHttpApi
   
   OnPoolChange:
     Type: AWS::Serverless::Function

@@ -46,7 +46,7 @@ import com.felipearpa.tyche.ui.exception.localizedOrDefault
 import com.felipearpa.tyche.ui.lazy.Failure
 import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
 import com.felipearpa.tyche.ui.theme.TycheTheme
-import com.felipearpa.ui.state.LoadableViewState
+import com.felipearpa.ui.state.LoadState
 import kotlinx.coroutines.flow.MutableStateFlow
 import com.felipearpa.tyche.ui.R as SharedR
 
@@ -81,7 +81,7 @@ fun MatchBetListView(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun MatchBetListView(
-    poolGamblerBetState: LoadableViewState<PoolGamblerBetModel>,
+    poolGamblerBetState: LoadState<PoolGamblerBetModel>,
     lazyPoolGamblerBets: LazyPagingItems<PoolGamblerBetModel>,
     pageSize: Int,
     onBack: () -> Unit,
@@ -118,7 +118,7 @@ private fun MatchBetListView(
 
 @Composable
 private fun MatchBetListContent(
-    poolGamblerBetState: LoadableViewState<PoolGamblerBetModel>,
+    poolGamblerBetState: LoadState<PoolGamblerBetModel>,
     lazyPoolGamblerBets: LazyPagingItems<PoolGamblerBetModel>,
     pageSize: Int,
     onRetry: () -> Unit,
@@ -126,7 +126,7 @@ private fun MatchBetListContent(
     modifier: Modifier = Modifier,
 ) {
     when (poolGamblerBetState) {
-        is LoadableViewState.Initial, LoadableViewState.Loading -> {
+        is LoadState.Idle, LoadState.Loading -> {
             Column(
                 verticalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.medium),
                 modifier = modifier,
@@ -142,7 +142,7 @@ private fun MatchBetListContent(
             }
         }
 
-        is LoadableViewState.Failure -> {
+        is LoadState.Failure -> {
             Box(
                 modifier = modifier,
                 contentAlignment = Alignment.Center,
@@ -166,7 +166,7 @@ private fun MatchBetListContent(
             }
         }
 
-        is LoadableViewState.Success -> {
+        is LoadState.Loaded -> {
             Column(
                 verticalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.medium),
                 modifier = modifier,
@@ -259,11 +259,11 @@ private fun AppTopBar(
     )
 }
 
-private class MatchBetListViewStateProvider : PreviewParameterProvider<LoadableViewState<PoolGamblerBetModel>> {
+private class MatchBetListViewStateProvider : PreviewParameterProvider<LoadState<PoolGamblerBetModel>> {
     override val values = sequenceOf(
-        LoadableViewState.Loading,
-        LoadableViewState.Failure(Exception("Error loading bets")),
-        LoadableViewState.Success(poolGamblerBetDummyModel()),
+        LoadState.Loading,
+        LoadState.Failure(Exception("Error loading bets")),
+        LoadState.Loaded(poolGamblerBetDummyModel()),
     )
 }
 
@@ -271,7 +271,7 @@ private class MatchBetListViewStateProvider : PreviewParameterProvider<LoadableV
 @PreviewLightDark
 @Composable
 private fun MatchBetListViewPreview(
-    @PreviewParameter(MatchBetListViewStateProvider::class) state: LoadableViewState<PoolGamblerBetModel>,
+    @PreviewParameter(MatchBetListViewStateProvider::class) state: LoadState<PoolGamblerBetModel>,
 ) {
     val lazyItems =
         MutableStateFlow(PagingData.from(poolGamblerBetDummyModels())).collectAsLazyPagingItems()
@@ -302,7 +302,7 @@ private fun MatchBetListViewPendingPreview() {
     TycheTheme {
         Surface {
             MatchBetListView(
-                poolGamblerBetState = LoadableViewState.Success(
+                poolGamblerBetState = LoadState.Loaded(
                     poolGamblerBetDummyModel().copy(isLocked = false, isComputed = false),
                 ),
                 lazyPoolGamblerBets = lazyItems,
@@ -327,7 +327,7 @@ private fun MatchBetListViewLivePreview() {
     TycheTheme {
         Surface {
             MatchBetListView(
-                poolGamblerBetState = LoadableViewState.Success(
+                poolGamblerBetState = LoadState.Loaded(
                     poolGamblerBetDummyModel().copy(isLocked = true, isComputed = false),
                 ),
                 lazyPoolGamblerBets = lazyItems,
@@ -352,7 +352,7 @@ private fun MatchBetListViewComputedPreview() {
     TycheTheme {
         Surface {
             MatchBetListView(
-                poolGamblerBetState = LoadableViewState.Success(
+                poolGamblerBetState = LoadState.Loaded(
                     poolGamblerBetDummyModel().copy(isLocked = true, isComputed = true),
                 ),
                 lazyPoolGamblerBets = lazyItems,

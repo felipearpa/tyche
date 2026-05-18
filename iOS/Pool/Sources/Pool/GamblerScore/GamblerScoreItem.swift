@@ -10,9 +10,7 @@ struct GamblerScoreItem: View {
     var body: some View {
         HStack(spacing: boxSpacing.medium) {
             if let currentPosition = poolGamblerScore.position {
-                PostionIndicator(postion: currentPosition, shouldUsePrimeryColor: isCurrentUser)
-            } else {
-                Color.clear.frame(width: indicatorSize, height: indicatorSize)
+                PostionIndicator(position: currentPosition, shouldUsePrimeryColor: isCurrentUser)
             }
 
             Text(poolGamblerScore.gamblerUsername).fontWeight(isCurrentUser ? .bold : .regular)
@@ -26,8 +24,6 @@ struct GamblerScoreItem: View {
             if let difference = poolGamblerScore.difference() {
                 TrendIndicator(difference: difference)
                     .frame(width: indicatorSize)
-            } else {
-                Color.clear.frame(width: indicatorSize)
             }
         }
     }

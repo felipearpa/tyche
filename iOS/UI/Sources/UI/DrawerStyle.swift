@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 
 public protocol DrawerStyle {
     associatedtype Body: View
@@ -32,15 +33,7 @@ public struct DefaultDrawerStyle: DrawerStyle {
 
     public func makeBody(configuration: Configuration) -> some View {
         configuration.content
-            .background(.regularMaterial)
-            .clipShape(
-                .rect(
-                    topLeadingRadius: 0,
-                    bottomLeadingRadius: 0,
-                    bottomTrailingRadius: 25,
-                    topTrailingRadius: 25
-                )
-            )
+            .background(Color(uiColor: .systemBackground))
     }
 }
 

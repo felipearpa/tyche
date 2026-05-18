@@ -14,7 +14,6 @@
     <string name="pool_score_empty_list_subtitle">Elige una plantilla, crea tu polla e invita a tus amigos.</string>
     <string name="pool_score_empty_list_templates_section">Plantillas populares</string>
     <string name="see_all_templates_action">Ver todas las plantillas</string>
-    <string name="create_pool_action">Crear</string>
     <string name="go_to_my_pools_action">Ir a mis pollas</string>
     <string name="pool_join_requires_sign_in_failure_description">Inicio de sesión requerido</string>
     <string name="pool_join_requires_sign_in_failure_reason">Necesitas iniciar sesión para abrir este enlace de invitación a la polla</string>

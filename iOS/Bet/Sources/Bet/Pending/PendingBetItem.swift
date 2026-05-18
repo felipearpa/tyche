@@ -3,9 +3,12 @@ import UI
 import Core
 
 struct PendingBetItem: View {
-    private let poolGamblerBet: PoolGamblerBetModel
-    @Binding private var viewState: PendingBetItemViewState
-    
+    let poolGamblerBet: PoolGamblerBetModel
+    @Binding var viewState: PendingBetItemViewState
+    @Namespace private var scoreNamespace
+
+    @Environment(\.boxSpacing) private var boxSpacing
+
     init(
         poolGamblerBet: PoolGamblerBetModel,
         viewState: Binding<PendingBetItemViewState>
@@ -13,115 +16,88 @@ struct PendingBetItem: View {
         self.poolGamblerBet = poolGamblerBet
         self._viewState = viewState
     }
-    
+
     var body: some View {
+        VStack(spacing: boxSpacing.medium) {
+            teamRow(
+                teamId: poolGamblerBet.homeTeamId,
+                teamName: poolGamblerBet.homeTeamName,
+                bet: $viewState.value.homeTeamBet,
+                geoID: "home"
+            )
+
+            teamRow(
+                teamId: poolGamblerBet.awayTeamId,
+                teamName: poolGamblerBet.awayTeamName,
+                bet: $viewState.value.awayTeamBet,
+                geoID: "away"
+            )
+
+            if case .visualization = viewState {
+                HStack {
+                    Text(poolGamblerBet.matchDateTime.toShortDateTimeString())
+                        .font(.footnote)
+                        .padding(.leading, boxSpacing.medium)
+                    Spacer()
+                }
+                .transition(.opacity.combined(with: .move(edge: .top)))
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func teamRow(
+        teamId: String,
+        teamName: String,
+        bet: Binding<String>,
+        geoID: String
+    ) -> some View {
+        HStack {
+            FlagImage(teamCode: teamId)
+                .frame(width: flagSize, height: flagSize)
+            Text(teamName)
+                .frame(maxWidth: .infinity, alignment: .leading)
+            scoreCell(bet: bet, geoID: geoID)
+        }
+    }
+
+    @ViewBuilder
+    private func scoreCell(bet: Binding<String>, geoID: String) -> some View {
         switch viewState {
         case .visualization:
-            NonEditablePendingBetItem(
-                poolGamblerBet: poolGamblerBet,
-                partialPoolGamblerBet: viewState.value
-            )
+            Text(bet.wrappedValue)
+                .matchedGeometryEffect(id: geoID, in: scoreNamespace)
+                .transition(.opacity)
         case .edition:
-            EditablePendingBetItem(
-                poolGamblerBet: poolGamblerBet,
-                partialPoolGamblerBet: $viewState.value
-            )
-        }
-    }
-}
-
-struct NonEditablePendingBetItem: View {
-    let poolGamblerBet: PoolGamblerBetModel
-    let partialPoolGamblerBet: PartialPoolGamblerBetModel
-
-    @Environment(\.boxSpacing) private var boxSpacing
-
-    var body: some View {
-        VStack(spacing: boxSpacing.medium) {
-            HStack {
-                FlagImage(teamCode: poolGamblerBet.homeTeamId)
-                    .frame(width: flagSize, height: flagSize)
-                Text(poolGamblerBet.homeTeamName)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                Text(partialPoolGamblerBet.homeTeamBet)
-            }
-
-            HStack {
-                FlagImage(teamCode: poolGamblerBet.awayTeamId)
-                    .frame(width: flagSize, height: flagSize)
-                Text(poolGamblerBet.awayTeamName)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                Text(partialPoolGamblerBet.awayTeamBet)
-            }
-
-            HStack {
-                Text(poolGamblerBet.matchDateTime.toShortDateTimeString())
-                    .font(.footnote)
-                    .padding(.leading, boxSpacing.medium)
-                Spacer()
-            }
-        }
-    }
-}
-
-private struct EditablePendingBetItem: View {
-    let poolGamblerBet: PoolGamblerBetModel
-    @Binding var partialPoolGamblerBet: PartialPoolGamblerBetModel
-
-    @Environment(\.boxSpacing) private var boxSpacing
-
-    var body: some View {
-        VStack(spacing: boxSpacing.medium) {
-            HStack {
-                FlagImage(teamCode: poolGamblerBet.homeTeamId)
-                    .frame(width: flagSize, height: flagSize)
-                Text(poolGamblerBet.homeTeamName)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                BetTextField(value: $partialPoolGamblerBet.homeTeamBet)
-                    .betStyle()
-            }
-
-            HStack {
-                FlagImage(teamCode: poolGamblerBet.awayTeamId)
-                    .frame(width: flagSize, height: flagSize)
-                Text(poolGamblerBet.awayTeamName)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                BetTextField(value: $partialPoolGamblerBet.awayTeamBet)
-                    .betStyle()
-            }
+            BetTextField(value: bet)
+                .font(.body)
+                .scoreWidth()
+                .matchedGeometryEffect(id: geoID, in: scoreNamespace)
+                .transition(.opacity)
         }
     }
 }
 
 private let flagSize: CGFloat = 32
 
-private extension View {
-    func betStyle() -> some View {
-        let textWidth = String(repeating: "X", count: 4)
-            .widthOfString(usingFont: UIFont.preferredFont(from: .body))
-        return self.frame(width: textWidth)
-            .font(.body)
-    }
-}
-
 #Preview("Non Editable") {
-    NonEditablePendingBetItem(
+    PendingBetItem(
         poolGamblerBet: poolGamblerBetDummyModel(),
-        partialPoolGamblerBet: partialPoolGamblerBetDummyModel()
+        viewState: .constant(.visualization(partialPoolGamblerBetDummyModel()))
     )
 }
 
 #Preview("Editable") {
-    EditablePendingBetItem(
+    PendingBetItem(
         poolGamblerBet: poolGamblerBetDummyModel(),
-        partialPoolGamblerBet: .constant(partialPoolGamblerBetDummyModel())
+        viewState: .constant(.edition(partialPoolGamblerBetDummyModel()))
     )
 }
 
 #Preview("Placeholder") {
-    NonEditablePendingBetItem(
+    PendingBetItem(
         poolGamblerBet: poolGamblerBetPlaceholderModel(isLocked: false, isComputed: false),
-        partialPoolGamblerBet: PartialPoolGamblerBetModel(homeTeamBet: "", awayTeamBet: "")
+        viewState: .constant(.visualization(PartialPoolGamblerBetModel(homeTeamBet: "", awayTeamBet: "")))
     )
     .shimmer()
 }

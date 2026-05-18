@@ -85,6 +85,7 @@ type PoolDynamoDbRepository(keySerializer: IKeySerializer, client: IAmazonDynamo
                           PoolName = joinPoolInput.PoolName
                           OwnerGamblerId = joinPoolInput.GamblerId
                           OwnerGamblerUsername = joinPoolInput.GamblerUsername
+                          OwnerGamblerEmail = joinPoolInput.GamblerEmail
                           PoolLayoutId = joinPoolInput.PoolLayoutId
                           PoolLayoutVersion = joinPoolInput.PoolLayoutVersion }
 
@@ -138,6 +139,69 @@ type PoolDynamoDbRepository(keySerializer: IKeySerializer, client: IAmazonDynamo
                     return response.IsItemSet |> Ok
                 with _ ->
                     return Error()
+            }
+
+        member this.PropagateGamblerUsernameAsync(gamblerId, username) =
+            let maxConcurrency = 25
+
+            let queryAllAsync buildRequest =
+                let rec loop acc maybeNext =
+                    async {
+                        let! response = client.QueryAsync(buildRequest maybeNext: QueryRequest) |> Async.AwaitTask
+                        let acc = (response.Items |> List.ofSeq) @ acc
+
+                        match response.LastEvaluatedKey |> Option.ofObj with
+                        | Some lek when lek.Count > 0 -> return! loop acc (Some(lek :> IDictionary<_, _>))
+                        | _ -> return acc
+                    }
+
+                loop [] None
+
+            let parsePoolId (pk: string) =
+                let prefix = $"{PoolTable.Prefix.pool}#"
+                pk.Substring(prefix.Length) |> Ulid.newOf
+
+            let updateScoreAsync (item: IDictionary<string, AttributeValue>) =
+                async {
+                    let request =
+                        UpdateGamblerScoreUsernameRequestBuilder.build
+                            item[Key.pk].S
+                            item[Key.sk].S
+                            item[PoolTable.Attribute.poolName].S
+                            username
+
+                    let! _ = client.UpdateItemAsync request |> Async.AwaitTask
+                    return ()
+                }
+
+            let updateBetAsync (key: IDictionary<string, AttributeValue>) =
+                async {
+                    let request = UpdateGamblerBetUsernameRequestBuilder.build key username
+                    let! _ = client.UpdateItemAsync request |> Async.AwaitTask
+                    return ()
+                }
+
+            async {
+                let! scoreItems =
+                    queryAllAsync (fun maybeNext -> GetGamblerScoreItemsRequestBuilder.build gamblerId maybeNext)
+
+                let poolIds = scoreItems |> List.map (fun item -> parsePoolId item[Key.pk].S)
+
+                let! betKeysPerPool =
+                    poolIds
+                    |> List.map (fun poolId ->
+                        queryAllAsync (fun maybeNext ->
+                            GetPoolGamblerBetKeysRequestBuilder.build poolId gamblerId maybeNext))
+                    |> Async.Parallel
+
+                let scoreUpdates = scoreItems |> List.map updateScoreAsync
+
+                let betUpdates =
+                    betKeysPerPool |> Array.toList |> List.collect (List.map updateBetAsync)
+
+                let! _ = Async.Parallel(scoreUpdates @ betUpdates, maxDegreeOfParallelism = maxConcurrency)
+
+                return ()
             }
 
         member this.DeletePoolAsync(poolId) =

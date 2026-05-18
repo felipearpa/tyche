@@ -11,7 +11,7 @@ import com.felipearpa.tyche.bet.pending.PendingBetPagingSource
 import com.felipearpa.tyche.bet.toPoolGamblerBetModel
 import com.felipearpa.tyche.data.bet.application.GetPoolGamblerBet
 import com.felipearpa.tyche.data.bet.application.GetPoolMatchGamblerBets
-import com.felipearpa.ui.state.LoadableViewState
+import com.felipearpa.ui.state.LoadState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -30,8 +30,8 @@ class MatchBetListViewModel(
     val pageSize = PAGE_SIZE
 
     private val _poolGamblerBetState =
-        MutableStateFlow<LoadableViewState<PoolGamblerBetModel>>(LoadableViewState.Loading)
-    val poolGamblerBetState: StateFlow<LoadableViewState<PoolGamblerBetModel>> = _poolGamblerBetState.asStateFlow()
+        MutableStateFlow<LoadState<PoolGamblerBetModel>>(LoadState.Loading)
+    val poolGamblerBetState: StateFlow<LoadState<PoolGamblerBetModel>> = _poolGamblerBetState.asStateFlow()
 
     val poolGamblerBets = buildPager().flow
         .cachedIn(scope = viewModelScope)
@@ -42,16 +42,16 @@ class MatchBetListViewModel(
         )
 
     fun loadPoolGamblerBet() {
-        _poolGamblerBetState.value = LoadableViewState.Loading
+        _poolGamblerBetState.value = LoadState.Loading
         viewModelScope.launch {
             getPoolGamblerBet.execute(
                 poolId = poolId,
                 gamblerId = gamblerId,
                 matchId = matchId,
             ).onSuccess { bet ->
-                _poolGamblerBetState.value = LoadableViewState.Success(bet.toPoolGamblerBetModel())
+                _poolGamblerBetState.value = LoadState.Loaded(bet.toPoolGamblerBetModel())
             }.onFailure { exception ->
-                _poolGamblerBetState.value = LoadableViewState.Failure(exception)
+                _poolGamblerBetState.value = LoadState.Failure(exception)
             }
         }
     }

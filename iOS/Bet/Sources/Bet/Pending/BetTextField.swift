@@ -3,11 +3,12 @@ import UI
 
 struct BetTextField: View {
     @Binding var value: String
-    
+
     var body: some View {
         let _ = Self._printChangesIfDebug()
-        
-        TextField("", text: $value)
+
+        TextField("".excludeLocalize, text: $value)
+            .multilineTextAlignment(.center)
             .textFieldStyle(.liquidGlass)
             .keyboardType(.numberPad)
             .onChange(of: value) { newValue in

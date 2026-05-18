@@ -17,13 +17,22 @@ class DrawerViewModel(
     private val _email = MutableStateFlow(emptyString())
     val email: StateFlow<String> = _email.asStateFlow()
 
+    private val _username = MutableStateFlow(emptyString())
+    val username: StateFlow<String> = _username.asStateFlow()
+
     init {
-        _email.value = accountStorage.state.value?.email.orEmpty()
+        val bundle = accountStorage.state.value
+        _email.value = bundle?.email.orEmpty()
+        _username.value = bundle?.username.orEmpty()
     }
 
     fun logout() {
         viewModelScope.launch {
             logOut.execute()
         }
+    }
+
+    fun applyUsername(newUsername: String) {
+        _username.value = newUsername
     }
 }

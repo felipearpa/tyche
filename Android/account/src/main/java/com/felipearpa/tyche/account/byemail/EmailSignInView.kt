@@ -43,7 +43,7 @@ import com.felipearpa.tyche.ui.exception.localizedOrDefault
 import com.felipearpa.tyche.ui.loading.LoadingContainerView
 import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
 import com.felipearpa.tyche.ui.theme.LocalExtendedColorScheme
-import com.felipearpa.ui.state.LoadableViewState
+import com.felipearpa.ui.state.LoadState
 import com.felipearpa.ui.state.exceptionOrNull
 import com.felipearpa.ui.state.isLoading
 import com.felipearpa.tyche.ui.R as SharedR
@@ -53,7 +53,7 @@ fun EmailSignInView(
     viewModel: EmailSignInViewModel,
     onBack: () -> Unit,
 ) {
-    val viewState by viewModel.state.collectAsState(initial = LoadableViewState.Initial)
+    val viewState by viewModel.state.collectAsState(initial = LoadState.Idle)
 
     EmailSignInView(
         viewState = viewState,
@@ -65,7 +65,7 @@ fun EmailSignInView(
 
 @Composable
 private fun EmailSignInView(
-    viewState: LoadableViewState<String>,
+    viewState: LoadState<String>,
     onSignInWithEmail: (String) -> Unit,
     onReset: () -> Unit,
     onBack: () -> Unit,
@@ -88,8 +88,8 @@ private fun EmailSignInView(
             topBar = { TopBar(onBack = back) },
         ) { innerPadding ->
             when (viewState) {
-                LoadableViewState.Initial,
-                LoadableViewState.Loading,
+                LoadState.Idle,
+                LoadState.Loading,
                     -> EmailSignInView(
                     email = email,
                     onEdit = edit,
@@ -100,7 +100,7 @@ private fun EmailSignInView(
                         .padding(horizontal = LocalBoxSpacing.current.medium),
                 )
 
-                is LoadableViewState.Success -> SuccessContent(
+                is LoadState.Loaded -> SuccessContent(
                     email = viewState.value,
                     modifier = Modifier
                         .padding(paddingValues = innerPadding)
@@ -108,7 +108,7 @@ private fun EmailSignInView(
                         .padding(LocalBoxSpacing.current.medium),
                 )
 
-                is LoadableViewState.Failure -> FailureContent(
+                is LoadState.Failure -> FailureContent(
                     modifier = Modifier
                         .padding(paddingValues = innerPadding)
                         .fillMaxWidth()
@@ -283,7 +283,7 @@ private fun WarningChip(text: String, modifier: Modifier = Modifier) {
 private fun FailureContent(
     modifier: Modifier = Modifier,
     email: String,
-    viewState: LoadableViewState<String>,
+    viewState: LoadState<String>,
     onReset: () -> Unit,
 ) {
     Column(modifier = modifier) {
@@ -306,7 +306,7 @@ private val warningIconSize = 16.dp
 @Composable
 private fun InitialEmailSignInViewPreview() {
     EmailSignInView(
-        viewState = LoadableViewState.Initial,
+        viewState = LoadState.Idle,
         onSignInWithEmail = {},
         onReset = {},
         onBack = {},
@@ -317,7 +317,7 @@ private fun InitialEmailSignInViewPreview() {
 @Composable
 private fun LoadingEmailSignInViewPreview() {
     EmailSignInView(
-        viewState = LoadableViewState.Loading,
+        viewState = LoadState.Loading,
         onSignInWithEmail = {},
         onReset = {},
         onBack = {},
@@ -328,7 +328,7 @@ private fun LoadingEmailSignInViewPreview() {
 @Composable
 private fun SuccessEmailSignInViewPreview() {
     EmailSignInView(
-        viewState = LoadableViewState.Success("preview@example.com"),
+        viewState = LoadState.Loaded("preview@example.com"),
         onSignInWithEmail = {},
         onReset = {},
         onBack = {},
@@ -339,7 +339,7 @@ private fun SuccessEmailSignInViewPreview() {
 @Composable
 private fun FailureEmailSignInViewPreview() {
     EmailSignInView(
-        viewState = LoadableViewState.Failure(UnknownLocalizedException()),
+        viewState = LoadState.Failure(UnknownLocalizedException()),
         onSignInWithEmail = {},
         onReset = {},
         onBack = {},

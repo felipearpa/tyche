@@ -32,7 +32,7 @@ public func poolGamblerScoreWithoutPositionDummyModel() -> PoolGamblerScoreModel
         gamblerUsername: "neptune-player",
         position: nil,
         beforePosition: nil,
-        score: nil
+        score: 0
     )
 }
 
@@ -57,7 +57,7 @@ public func poolGamblerScoresDummyModels() -> [PoolGamblerScoreModel] {
             gamblerUsername: "neptune-player",
             position: nil,
             beforePosition: nil,
-            score: nil
+            score: 0
         ),
         PoolGamblerScoreModel(
             poolId: "X4D7B9",
@@ -65,7 +65,7 @@ public func poolGamblerScoresDummyModels() -> [PoolGamblerScoreModel] {
             gamblerId: "ZT94Q5",
             gamblerUsername: "ares-bettor",
             position: 2,
-            beforePosition: nil,
+            beforePosition: 1,
             score: 10
         ),
         PoolGamblerScoreModel(

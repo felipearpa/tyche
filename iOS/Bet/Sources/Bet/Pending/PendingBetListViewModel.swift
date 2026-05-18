@@ -19,7 +19,7 @@ public class PendingBetListViewModel: ObservableObject {
     lazy var lazyPager: LazyPaging.LazyPagingItems<String, PoolGamblerBetModel> = {
         LazyPaging.LazyPagingItems(
             pager: Pager(
-                config: LazyPaging.PagingConfig(pageSize: 25, prefetchDistance: 5),
+                config: LazyPaging.PagingConfig(pageSize: 50, prefetchDistance: 5, enablePlaceholders: false),
                 pagingSourceFactory: { [pagingSource = self.pagingSource!] in pagingSource }
             )
         )

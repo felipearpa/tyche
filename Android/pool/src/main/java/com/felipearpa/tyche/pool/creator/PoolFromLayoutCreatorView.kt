@@ -44,8 +44,8 @@ import com.felipearpa.tyche.ui.exception.localizedOrDefault
 import com.felipearpa.tyche.ui.loading.LoadingContainerView
 import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
 import com.felipearpa.tyche.ui.theme.TycheTheme
-import com.felipearpa.ui.state.EditableViewState
-import com.felipearpa.ui.state.isSuccess
+import com.felipearpa.ui.state.MutationState
+import com.felipearpa.ui.state.isMutated
 import kotlinx.coroutines.flow.MutableStateFlow
 import com.felipearpa.tyche.ui.R as SharedR
 
@@ -87,7 +87,7 @@ fun PoolFromLayoutCreatorView(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun PoolFromLayoutCreatorView(
-    state: EditableViewState<CreatePoolModel>,
+    state: MutationState<CreatePoolModel>,
     onSaveClick: (createPoolModel: CreatePoolModel) -> Unit,
     onPoolCreated: (poolId: String) -> Unit,
     onBackClick: () -> Unit,
@@ -115,7 +115,7 @@ private fun PoolFromLayoutCreatorView(
         )
     }
 
-    val isOverlayVisible = state is EditableViewState.Saving || state is EditableViewState.Success
+    val isOverlayVisible = state is MutationState.Mutating || state is MutationState.Mutated
 
     Box(modifier = Modifier.fillMaxSize()) {
         Scaffold(
@@ -138,7 +138,7 @@ private fun PoolFromLayoutCreatorView(
             },
         ) { paddingValues ->
             when (state) {
-                is EditableViewState.Initial ->
+                is MutationState.Idle ->
                     Stepper(
                         step = step,
                         onStepChange = { newStep -> step = newStep },
@@ -155,8 +155,8 @@ private fun PoolFromLayoutCreatorView(
                             .padding(all = LocalBoxSpacing.current.medium),
                     )
 
-                is EditableViewState.Saving,
-                is EditableViewState.Success,
+                is MutationState.Mutating,
+                is MutationState.Mutated,
                     ->
                     Stepper(
                         step = step,
@@ -172,7 +172,7 @@ private fun PoolFromLayoutCreatorView(
                             .padding(all = LocalBoxSpacing.current.medium),
                     )
 
-                is EditableViewState.Failure -> {
+                is MutationState.Failure -> {
                     Stepper(
                         step = step,
                         onStepChange = {},
@@ -200,8 +200,8 @@ private fun PoolFromLayoutCreatorView(
     }
 
     LaunchedEffect(state) {
-        if (state.isSuccess()) {
-            state.succeeded.poolId?.let { poolId ->
+        if (state.isMutated()) {
+            state.updated.poolId?.let { poolId ->
                 onPoolCreated(poolId)
             }
         }
@@ -329,7 +329,7 @@ private fun PoolFromLayoutCreatorViewPreview() {
     TycheTheme {
         Surface {
             PoolFromLayoutCreatorView(
-                state = EditableViewState.Initial(emptyCreatePoolModel()),
+                state = MutationState.Idle(emptyCreatePoolModel()),
                 onSaveClick = {},
                 onPoolCreated = {},
                 onBackClick = {},

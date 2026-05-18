@@ -24,10 +24,10 @@ import com.felipearpa.tyche.ui.exception.UnknownLocalizedException
 import com.felipearpa.tyche.ui.exception.localizedOrDefault
 import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
 import com.felipearpa.tyche.ui.theme.TycheTheme
-import com.felipearpa.ui.state.LoadableViewState
+import com.felipearpa.ui.state.LoadState
 import com.felipearpa.ui.state.isLoading
 import com.felipearpa.ui.state.onFailure
-import com.felipearpa.ui.state.onSuccess
+import com.felipearpa.ui.state.onLoaded
 
 @Composable
 fun SocialSignInRow(
@@ -35,7 +35,7 @@ fun SocialSignInRow(
     modifier: Modifier = Modifier,
 ) {
     val googleViewModel = googleSignInViewModel()
-    val googleState by googleViewModel.state.collectAsState(initial = LoadableViewState.Initial)
+    val googleState by googleViewModel.state.collectAsState(initial = LoadState.Idle)
     val context = LocalContext.current
 
     SocialSignInRow(
@@ -49,13 +49,13 @@ fun SocialSignInRow(
 
 @Composable
 fun SocialSignInRow(
-    googleState: LoadableViewState<AccountBundle>,
+    googleState: LoadState<AccountBundle>,
     onSignInWithGoogle: () -> Unit,
     onResetGoogleState: () -> Unit,
     onAuthenticate: (AccountBundle) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val isOverlayVisible = googleState.isLoading() || googleState is LoadableViewState.Success
+    val isOverlayVisible = googleState.isLoading() || googleState is LoadState.Loaded
 
     Row(
         modifier = modifier.fillMaxWidth(),
@@ -84,7 +84,7 @@ fun SocialSignInRow(
     }
 
     LaunchedEffect(googleState) {
-        googleState.onSuccess { accountBundle ->
+        googleState.onLoaded { accountBundle ->
             onAuthenticate(accountBundle)
         }
     }
@@ -97,7 +97,7 @@ private val iconSize = 32.dp
 private fun InitialSocialSignInRowPreview() {
     TycheTheme {
         SocialSignInRow(
-            googleState = LoadableViewState.Initial,
+            googleState = LoadState.Idle,
             onSignInWithGoogle = {},
             onResetGoogleState = {},
             onAuthenticate = {},
@@ -110,7 +110,7 @@ private fun InitialSocialSignInRowPreview() {
 private fun LoadingSocialSignInRowPreview() {
     TycheTheme {
         SocialSignInRow(
-            googleState = LoadableViewState.Loading,
+            googleState = LoadState.Loading,
             onSignInWithGoogle = {},
             onResetGoogleState = {},
             onAuthenticate = {},
@@ -123,7 +123,7 @@ private fun LoadingSocialSignInRowPreview() {
 private fun FailureSocialSignInRowPreview() {
     TycheTheme {
         SocialSignInRow(
-            googleState = LoadableViewState.Failure(UnknownLocalizedException()),
+            googleState = LoadState.Failure(UnknownLocalizedException()),
             onSignInWithGoogle = {},
             onResetGoogleState = {},
             onAuthenticate = {},

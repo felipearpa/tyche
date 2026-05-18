@@ -30,7 +30,8 @@ module FanOutMatchToGamblersTest =
           PoolLayoutId = poolLayoutId
           PoolLayoutVersion = version
           GamblerId = Ulid.newOf id
-          GamblerUsername = NonEmptyString100.newOf $"gambler-{id}@tyche.com" }
+          GamblerUsername = NonEmptyString100.newOf $"gambler-{id}@tyche.com"
+          GamblerEmail = NonEmptyString100.newOf $"gambler-{id}@tyche.com" }
 
     let private fakePoolRepo (pages: PoolLayoutGambler list list) =
         let mutable index = 0
@@ -43,6 +44,7 @@ module FanOutMatchToGamblersTest =
                 member _.JoinPoolAsync(_) = failwith "not used"
                 member _.IsPoolMemberAsync(_, _) = failwith "not used"
                 member _.DeletePoolAsync(_) = failwith "not used"
+                member _.PropagateGamblerUsernameAsync(_, _) = failwith "not used"
 
                 member _.GetGamblersByPoolLayoutAsync(layoutId, next) =
                     queryCalls.Add(layoutId, next)
@@ -108,9 +110,14 @@ module FanOutMatchToGamblersTest =
     [<Fact>]
     let ``given gamblers at any version when execute then materializes for each`` () =
         async {
-            let alreadyAtVersion = gambler "01K1PX1TX2NM1HG851S1V0QG6Q" "01K1PX1TX2NM1HG851S1V0QG6T" newVersion
-            let aheadOfVersion = gambler "01K1PX1TX2NM1HG851S1V0QG6R" "01K1PX1TX2NM1HG851S1V0QG6W" (newVersion + 1)
-            let needsUpdate = gambler "01K1PX1TX2NM1HG851S1V0QG6S" "01K1PX1TX2NM1HG851S1V0QG6V" 1
+            let alreadyAtVersion =
+                gambler "01K1PX1TX2NM1HG851S1V0QG6Q" "01K1PX1TX2NM1HG851S1V0QG6T" newVersion
+
+            let aheadOfVersion =
+                gambler "01K1PX1TX2NM1HG851S1V0QG6R" "01K1PX1TX2NM1HG851S1V0QG6W" (newVersion + 1)
+
+            let needsUpdate =
+                gambler "01K1PX1TX2NM1HG851S1V0QG6S" "01K1PX1TX2NM1HG851S1V0QG6V" 1
 
             let poolRepo, _ = fakePoolRepo [ [ alreadyAtVersion; aheadOfVersion; needsUpdate ] ]
             let betRepo, captured = fakeBetRepo ()

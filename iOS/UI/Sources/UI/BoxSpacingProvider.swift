@@ -1,6 +1,15 @@
 import SwiftUI
 
-public let LocalBoxSpacing = BoxSpacing(small: 4, medium: 8, large: 16)
+public let LocalBoxSpacing = BoxSpacing(
+    small: 4,
+    medium: 8,
+    large: 16,
+    extraLarge: 24,
+    xxLarge: 32,
+    xxxLarge: 40,
+    huge: 48,
+    massive: 64
+)
 
 public struct BoxSpacingKey: EnvironmentKey {
     public static let defaultValue: BoxSpacing = LocalBoxSpacing

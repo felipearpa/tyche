@@ -19,9 +19,7 @@ open Xunit
 module LinkAccountTest =
 
     let private setupMockLinkAccountWhenExistWrite (client: Mock<IAmazonDynamoDB>) =
-        client
-            .Setup(_.UpdateItemAsync(It.IsAny<UpdateItemRequest>()))
-            .ReturnsAsync(UpdateItemResponse())
+        client.Setup(_.UpdateItemAsync(It.IsAny<UpdateItemRequest>())).ReturnsAsync(UpdateItemResponse())
         |> ignore
 
     let private setupMockLinkAccountWhenNotExistWrite (client: Mock<IAmazonDynamoDB>) =
@@ -36,6 +34,7 @@ module LinkAccountTest =
                   [ "pk", AttributeValue(S = "POOL#01K1PX1TX2NM1HG851S1V0QG6N")
                     "accountId", AttributeValue(S = "01K1PX1TX2NM1HG851S1V0QG6N")
                     "email", AttributeValue(S = "tyche@tyche.com")
+                    "username", AttributeValue(S = "tyche@tyche.com")
                     "externalAccountId", AttributeValue(S = "01K1PX1TX2NM1HG851S1V0QG6N") ] ]
 
         client

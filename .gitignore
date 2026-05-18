@@ -3,6 +3,7 @@ Amazon.Lambda/token-query.http
 
 #claude
 .claude/settings.local.json
+.claude/scheduled_tasks.lock
 CLAUDE.md
 
 # globs

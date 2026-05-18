@@ -1,765 +1,719 @@
 {
-  "sourceLanguage": "en",
-  "strings": {
-    "account_verified_description": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Tap below to start playing."
+  "sourceLanguage" : "en",
+  "strings" : {
+    "account_verified_description" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tap below to start playing."
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Toca abajo para empezar a jugar"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Toca abajo para empezar a jugar"
           }
         },
-        "es-ES": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Toca abajo para empezar a jugar"
-          }
-        }
-      }
-    },
-    "account_verified_title": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "You're verified"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Ya estás verificado"
-          }
-        },
-        "es-ES": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Ya estás verificado"
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Toca abajo para empezar a jugar"
           }
         }
       }
     },
-    "continue_action": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Continue"
+    "account_verified_title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You're verified"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Continuar"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ya estás verificado"
           }
         },
-        "es-ES": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Continuar"
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ya estás verificado"
           }
         }
       }
     },
-    "email_label": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Email"
+    "email_label" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Email"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Correo electrónico"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Correo electrónico"
           }
         },
-        "es-ES": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Correo electrónico"
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Correo electrónico"
           }
         }
       }
     },
-    "email_validation_failure_message": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Must be a valid email"
+    "email_validation_failure_message" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Must be a valid email"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Debe ser un correo electrónico válido"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Debe ser un correo electrónico válido"
           }
         },
-        "es-ES": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Debe ser un correo electrónico válido"
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Debe ser un correo electrónico válido"
           }
         }
       }
     },
-    "google_sign_in_account_exists_failure_description": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Account already exists"
+    "google_sign_in_account_exists_failure_description" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Account already exists"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "La cuenta ya existe"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La cuenta ya existe"
           }
         },
-        "es-ES": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "La cuenta ya existe"
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La cuenta ya existe"
           }
         }
       }
     },
-    "google_sign_in_account_exists_failure_reason": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "An account with this email already exists using a different sign-in method"
+    "google_sign_in_account_exists_failure_reason" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "An account with this email already exists using a different sign-in method"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Ya existe una cuenta con este correo usando otro método de inicio de sesión"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ya existe una cuenta con este correo usando otro método de inicio de sesión"
           }
         },
-        "es-ES": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Ya existe una cuenta con este correo usando otro método de inicio de sesión"
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ya existe una cuenta con este correo usando otro método de inicio de sesión"
           }
         }
       }
     },
-    "google_sign_in_account_exists_failure_recovery_suggestion": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Sign in with the original method to link your Google account"
+    "google_sign_in_account_exists_failure_recovery_suggestion" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sign in with the original method to link your Google account"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Inicia sesión con el método original para vincular tu cuenta de Google"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Inicia sesión con el método original para vincular tu cuenta de Google"
           }
         },
-        "es-ES": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Inicia sesión con el método original para vincular tu cuenta de Google"
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Inicia sesión con el método original para vincular tu cuenta de Google"
           }
         }
       }
     },
-    "google_sign_in_invalid_credential_failure_description": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Google sign-in failed"
+    "google_sign_in_invalid_credential_failure_description" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Google sign-in failed"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Falló el inicio con Google"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Falló el inicio con Google"
           }
         },
-        "es-ES": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Falló el inicio con Google"
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Falló el inicio con Google"
           }
         }
       }
     },
-    "google_sign_in_invalid_credential_failure_reason": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "We couldn’t verify your Google credentials"
+    "google_sign_in_invalid_credential_failure_reason" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "We couldn’t verify your Google credentials"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "No pudimos verificar tus credenciales de Google"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No pudimos verificar tus credenciales de Google"
           }
         },
-        "es-ES": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "No pudimos verificar tus credenciales de Google"
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No pudimos verificar tus credenciales de Google"
           }
         }
       }
     },
-    "google_sign_in_invalid_credential_failure_recovery_suggestion": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Try signing in again"
+    "google_sign_in_invalid_credential_failure_recovery_suggestion" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Try signing in again"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Inténtalo de nuevo"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Inténtalo de nuevo"
           }
         },
-        "es-ES": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Inténtalo de nuevo"
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Inténtalo de nuevo"
           }
         }
       }
     },
-    "google_sign_in_network_failure_description": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Network error"
+    "google_sign_in_network_failure_description" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Network error"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Error de red"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Error de red"
           }
         },
-        "es-ES": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Error de red"
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Error de red"
           }
         }
       }
     },
-    "google_sign_in_network_failure_reason": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "We couldn’t reach the sign-in service"
+    "google_sign_in_network_failure_reason" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "We couldn’t reach the sign-in service"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "No pudimos conectar con el servicio de inicio de sesión"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No pudimos conectar con el servicio de inicio de sesión"
           }
         },
-        "es-ES": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "No pudimos conectar con el servicio de inicio de sesión"
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No pudimos conectar con el servicio de inicio de sesión"
           }
         }
       }
     },
-    "google_sign_in_network_failure_recovery_suggestion": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Check your connection and try again"
+    "google_sign_in_network_failure_recovery_suggestion" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Check your connection and try again"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Revisa tu conexión e inténtalo de nuevo"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Revisa tu conexión e inténtalo de nuevo"
           }
         },
-        "es-ES": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Revisa tu conexión e inténtalo de nuevo"
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Revisa tu conexión e inténtalo de nuevo"
           }
         }
       }
     },
-    "invalid_credential_sign_in_failure_description": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Invalid credentials provided"
+    "invalid_credential_sign_in_failure_description" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Invalid credentials provided"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Credenciales inválidas"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Credenciales inválidas"
           }
         },
-        "es-ES": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Credenciales no válidas"
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Credenciales no válidas"
           }
         }
       }
     },
-    "invalid_credential_sign_in_failure_reason": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "That email or password doesn’t seem right"
+    "invalid_credential_sign_in_failure_reason" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "That email or password doesn’t seem right"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Parece que ese correo o contraseña no es correcto"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Parece que ese correo o contraseña no es correcto"
           }
         },
-        "es-ES": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Parece que ese correo o esa contraseña no son correctos"
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Parece que ese correo o esa contraseña no son correctos"
           }
         }
       }
     },
-    "invalid_credential_sign_in_failure_recovery_suggestion": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Double-check your credentials and give it another go"
+    "invalid_credential_sign_in_failure_recovery_suggestion" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Double-check your credentials and give it another go"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Verifica que tu correo y contraseña estén bien escritos"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verifica que tu correo y contraseña estén bien escritos"
           }
         },
-        "es-ES": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Comprueba que tu correo y contraseña estén bien escritos"
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Comprueba que tu correo y contraseña estén bien escritos"
           }
         }
       }
     },
-    "invalid_email_link_sign_in_failure_description": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Invalid sign-in link"
+    "invalid_email_link_sign_in_failure_description" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Invalid sign-in link"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Enlace de inicio de sesión inválido"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enlace de inicio de sesión inválido"
           }
         },
-        "es-ES": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Enlace de inicio de sesión no válido"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "invalid_email_link_sign_in_failure_reason": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "The sign-in link you clicked is either invalid or has expired"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "El enlace de inicio de sesión en el que hiciste clic es inválido o ha expirado"
-          }
-        },
-        "es-ES": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "El enlace de inicio de sesión en el que has hecho clic no es válido o ha caducado"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "invalid_email_link_sign_in_failure_recovery_suggestion": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Please request a new sign-in link. If you're experiencing issues repeatedly, contact our support team for further assistance"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Por favor, solicita un nuevo enlace de inicio de sesión. Si este problema se repite, contacta a nuestro equipo de soporte para obtener más ayuda"
-          }
-        },
-        "es-ES": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Por favor, solicita un nuevo enlace de inicio de sesión. Si el problema se repite, contacta con nuestro equipo de soporte para obtener más ayuda"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "no_recovery_password_warning": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "If you forgot your password, I can’t help with recovery just yet."
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Si olvidaste tu contraseña, aún no puedo ayudarte con eso"
-          }
-        },
-        "es-ES": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Si has olvidado tu contraseña, aún no puedo ayudarte con la recuperación"
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enlace de inicio de sesión no válido"
           }
         }
       }
     },
-    "password_label": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Password"
+    "invalid_email_link_sign_in_failure_reason" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The sign-in link you clicked is either invalid or has expired"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Contraseña"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El enlace de inicio de sesión en el que hiciste clic es inválido o ha expirado"
           }
         },
-        "es-ES": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Contraseña"
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El enlace de inicio de sesión en el que has hecho clic no es válido o ha caducado"
           }
         }
       }
     },
-    "password_validation_failure_message": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Password must be between 8–16 characters and include at least one uppercase letter, one lowercase letter, one number, and one special character"
+    "invalid_email_link_sign_in_failure_recovery_suggestion" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Please request a new sign-in link. If you're experiencing issues repeatedly, contact our support team for further assistance"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "La contraseña debe tener entre 8 y 16 caracteres e incluir al menos una letra mayúscula, una letra minúscula, un número y un carácter especial"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Por favor, solicita un nuevo enlace de inicio de sesión. Si este problema se repite, contacta a nuestro equipo de soporte para obtener más ayuda"
           }
         },
-        "es-ES": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "La contraseña debe tener entre 8 y 16 caracteres e incluir al menos una letra mayúscula, una letra minúscula, un número y un carácter especial"
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Por favor, solicita un nuevo enlace de inicio de sesión. Si el problema se repite, contacta con nuestro equipo de soporte para obtener más ayuda"
           }
         }
       }
     },
-    "send_sign_in_link_to_email_too_many_requests_failure_description": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Email sign-in is temporarily unavailable"
+    "no_recovery_password_warning" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "If you forgot your password, I can’t help with recovery just yet."
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "El inicio de sesión por correo no está disponible temporalmente"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Si olvidaste tu contraseña, aún no puedo ayudarte con eso"
           }
         },
-        "es-ES": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "El inicio de sesión por correo no está disponible temporalmente"
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Si has olvidado tu contraseña, aún no puedo ayudarte con la recuperación"
           }
         }
       }
     },
-    "send_sign_in_link_to_email_too_many_requests_failure_reason": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "You have exceeded the daily limit for email sign-in requests"
+    "password_label" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Password"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Has superado el límite diario de solicitudes de inicio de sesión por correo"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Contraseña"
           }
         },
-        "es-ES": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Has superado el límite diario de solicitudes de inicio de sesión por correo"
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Contraseña"
           }
         }
       }
     },
-    "send_sign_in_link_to_email_too_many_requests_failure_recovery_suggestion": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Please try again in a few hours"
+    "password_validation_failure_message" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Password must be between 8–16 characters and include at least one uppercase letter, one lowercase letter, one number, and one special character"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Inténtalo de nuevo en unas horas"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La contraseña debe tener entre 8 y 16 caracteres e incluir al menos una letra mayúscula, una letra minúscula, un número y un carácter especial"
           }
         },
-        "es-ES": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Vuelve a intentarlo dentro de unas horas"
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La contraseña debe tener entre 8 y 16 caracteres e incluir al menos una letra mayúscula, una letra minúscula, un número y un carácter especial"
           }
         }
       }
     },
-    "sign_in_action": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Sign in"
+    "send_sign_in_link_to_email_too_many_requests_failure_description" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Email sign-in is temporarily unavailable"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Iniciar sesión"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El inicio de sesión por correo no está disponible temporalmente"
           }
         },
-        "es-ES": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Iniciar sesión"
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El inicio de sesión por correo no está disponible temporalmente"
           }
         }
       }
     },
-    "sign_in_title": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Sign in"
+    "send_sign_in_link_to_email_too_many_requests_failure_reason" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You have exceeded the daily limit for email sign-in requests"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Iniciar sesión"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Has superado el límite diario de solicitudes de inicio de sesión por correo"
           }
         },
-        "es-ES": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Iniciar sesión"
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Has superado el límite diario de solicitudes de inicio de sesión por correo"
           }
         }
       }
     },
-    "start_action": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Get started"
+    "send_sign_in_link_to_email_too_many_requests_failure_recovery_suggestion" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Please try again in a few hours"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Iniciar"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Inténtalo de nuevo en unas horas"
           }
         },
-        "es-ES": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Empezar"
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vuelve a intentarlo dentro de unas horas"
           }
         }
       }
     },
-    "success_login_message": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Congratulations! You\\'re in the game and ready to place your bet. Let the fun begin!"
+    "sign_in_action" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sign in"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "¡Felicidades! Has iniciado sesión correctamente y estás listo para hacer tu apuesta. ¡Que empiece la diversión!"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Iniciar sesión"
           }
         },
-        "es-ES": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "¡Enhorabuena! Has iniciado sesión correctamente y ya puedes hacer tu apuesta. ¡Que empiece la diversión!"
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Iniciar sesión"
           }
         }
       }
     },
-    "verification_email_sent_description": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Tap the link in your email to sign in"
+    "sign_in_title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sign in"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Toca el enlace en el correo para entrar"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Iniciar sesión"
           }
         },
-        "es-ES": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Toca el enlace en el correo para entrar"
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Iniciar sesión"
           }
         }
       }
     },
-    "verification_email_sent_title": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "We sent you a link"
+    "start_action" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Get started"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Te enviamos un enlace"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Iniciar"
           }
         },
-        "es-ES": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Te enviamos un enlace"
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Empezar"
           }
         }
       }
     },
-    "verification_email_sent_warning": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Make sure to open it on this device"
+    "verification_email_sent_description" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tap the link in your email to sign in"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Asegúrate de abrirlo desde este teléfono"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Toca el enlace en el correo para entrar"
           }
         },
-        "es-ES": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Asegúrate de abrirlo desde este teléfono"
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Toca el enlace en el correo para entrar"
+          }
+        }
+      }
+    },
+    "verification_email_sent_title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "We sent you a link"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Te enviamos un enlace"
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Te enviamos un enlace"
+          }
+        }
+      }
+    },
+    "verification_email_sent_warning" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Make sure to open it on this device"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Asegúrate de abrirlo desde este teléfono"
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Asegúrate de abrirlo desde este teléfono"
           }
         }
       }
     }
   },
-  "version": "1.0"
+  "version" : "1.0"
 }

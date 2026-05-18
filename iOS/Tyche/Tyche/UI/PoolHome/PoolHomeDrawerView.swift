@@ -9,6 +9,7 @@ struct PoolHomeDrawerView: View {
     let onInvite: () -> Void
     let onPoolDeleting: () -> Void
     let onPoolDeleted: () -> Void
+    let onEditAccount: () -> Void
 
     @State private var isConfirmingDelete = false
 
@@ -17,21 +18,25 @@ struct PoolHomeDrawerView: View {
         onLogout: @escaping () -> Void,
         onInvite: @escaping () -> Void,
         onPoolDeleting: @escaping () -> Void,
-        onPoolDeleted: @escaping () -> Void
+        onPoolDeleted: @escaping () -> Void,
+        onEditAccount: @escaping () -> Void
     ) {
         self.viewModel = viewModel
         self.onSignOut = onLogout
         self.onInvite = onInvite
         self.onPoolDeleting = onPoolDeleting
         self.onPoolDeleted = onPoolDeleted
+        self.onEditAccount = onEditAccount
     }
 
     var body: some View {
         PoolHomeDrawerStatefulView(
             email: viewModel.email,
+            username: viewModel.username,
             poolGamblerScoreState: viewModel.state,
             isOwner: viewModel.isOwner,
             isDeleting: viewModel.deleteState.isLoading(),
+            onEditAccount: onEditAccount,
             onSignOut: {
                 viewModel.signOut()
                 onSignOut()
@@ -56,9 +61,11 @@ struct PoolHomeDrawerView: View {
 
 private struct PoolHomeDrawerStatefulView: View {
     let email: String
+    let username: String
     let poolGamblerScoreState: LoadState<PoolGamblerScoreModel>
     let isOwner: Bool
     let isDeleting: Bool
+    let onEditAccount: () -> Void
     let onSignOut: () -> Void
     let onInvite: () -> Void
     let onDeletePool: () -> Void
@@ -67,8 +74,12 @@ private struct PoolHomeDrawerStatefulView: View {
 
     var body: some View {
         VStack(spacing: boxSpacing.medium) {
-            AccountHeaderDrawer(email: email)
-                .frame(maxWidth: .infinity)
+            AccountHeaderDrawer(
+                username: username,
+                email: email,
+                onEditAccount: onEditAccount
+            )
+                .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.top, boxSpacing.large)
                 .padding(.horizontal, boxSpacing.medium)
                 .padding(.bottom, boxSpacing.medium)
@@ -145,17 +156,19 @@ private struct PoolLayoutItem: View {
                 .modifier(ConditionalShimmer(isActive: isPlaceholder))
 
             HStack(spacing: boxSpacing.medium) {
-                Text("\(poolGamblerScore.position ?? 0)º")
-                    .font(.subheadline)
-                    .foregroundStyle(Color.white)
-                    .modifier(ConditionalShimmer(isActive: isPlaceholder))
+                if let position = poolGamblerScore.position {
+                    Text(.smallSuffixPosition(position))
+                        .font(.subheadline)
+                        .foregroundStyle(Color.white)
+                        .modifier(ConditionalShimmer(isActive: isPlaceholder))
 
-                if let score = poolGamblerScore.score {
                     Rectangle()
                         .fill(Color.white)
                         .frame(width: 1)
                         .frame(maxHeight: .infinity)
+                }
 
+                if let score = poolGamblerScore.score {
                     Text(.suffixPointText(score))
                         .font(.subheadline)
                         .foregroundStyle(Color.white)
@@ -197,16 +210,14 @@ private struct PoolMenuSection: View {
                 .foregroundStyle(Color.secondary)
 
             VStack(spacing: 0) {
-                DrawerMenuRow(
+                DrawerButtonRow(
                     icon: { Image(sharedResource: .personAdd) },
                     title: String(localized: .inviteAction),
                     action: onInvite
                 )
 
                 if isOwner {
-                    Divider()
-
-                    DrawerMenuRow(
+                    DrawerButtonRow(
                         icon: { Image(sharedResource: .deleteForever) },
                         title: String(localized: .deletePoolAction),
                         tint: Color(sharedResource: .error),
@@ -216,47 +227,6 @@ private struct PoolMenuSection: View {
                 }
             }
             .padding(.horizontal, boxSpacing.medium)
-            .overlay(
-                RoundedRectangle(cornerRadius: SECTION_CORNER_RADIUS)
-                    .stroke(Color(.separator), lineWidth: 1)
-            )
-        }
-    }
-}
-
-private struct DrawerMenuRow<Icon: View>: View {
-    let icon: Icon
-    let title: String
-    var tint: Color = .primary
-    let action: () -> Void
-
-    init(
-        @ViewBuilder icon: () -> Icon,
-        title: String,
-        tint: Color = .primary,
-        action: @escaping () -> Void
-    ) {
-        self.icon = icon()
-        self.title = title
-        self.tint = tint
-        self.action = action
-    }
-
-    @Environment(\.boxSpacing) private var boxSpacing
-
-    var body: some View {
-        Button(action: action) {
-            HStack(spacing: boxSpacing.medium) {
-                icon
-                    .frame(width: MENU_ICON_SIZE, height: MENU_ICON_SIZE)
-                    .foregroundStyle(tint)
-
-                Text(title)
-                    .foregroundStyle(tint)
-
-                Spacer()
-            }
-            .padding(.vertical, boxSpacing.medium)
         }
     }
 }
@@ -273,7 +243,7 @@ private struct SignOutButton: View {
                     .resizable()
                     .scaledToFit()
                     .frame(width: 18, height: 18)
-                Text(.logOutAction)
+                Text(.signOutAction)
             }
             .frame(maxWidth: .infinity)
         }
@@ -281,16 +251,16 @@ private struct SignOutButton: View {
     }
 }
 
-private let MENU_ICON_SIZE: CGFloat = 22
 private let CHEVRON_SIZE: CGFloat = 14
-private let SECTION_CORNER_RADIUS: CGFloat = 12
 
 #Preview("Light") {
     PoolHomeDrawerStatefulView(
         email: "felipearpa@email.com",
+        username: "felipearpa",
         poolGamblerScoreState: .loaded(poolGamblerScoreDummyModel()),
         isOwner: true,
         isDeleting: false,
+        onEditAccount: {},
         onSignOut: {},
         onInvite: {},
         onDeletePool: {}
@@ -301,9 +271,11 @@ private let SECTION_CORNER_RADIUS: CGFloat = 12
 #Preview("Dark") {
     PoolHomeDrawerStatefulView(
         email: "felipearpa@email.com",
+        username: "felipearpa",
         poolGamblerScoreState: .loaded(poolGamblerScoreDummyModel()),
         isOwner: true,
         isDeleting: false,
+        onEditAccount: {},
         onSignOut: {},
         onInvite: {},
         onDeletePool: {}
@@ -311,12 +283,29 @@ private let SECTION_CORNER_RADIUS: CGFloat = 12
     .preferredColorScheme(.dark)
 }
 
+#Preview("Without position") {
+    PoolHomeDrawerStatefulView(
+        email: "felipearpa@email.com",
+        username: "felipearpa",
+        poolGamblerScoreState: .loaded(poolGamblerScoreWithoutPositionDummyModel()),
+        isOwner: true,
+        isDeleting: false,
+        onEditAccount: {},
+        onSignOut: {},
+        onInvite: {},
+        onDeletePool: {}
+    )
+    .preferredColorScheme(.light)
+}
+
 #Preview("Loading") {
     PoolHomeDrawerStatefulView(
         email: "felipearpa@email.com",
+        username: "felipearpa",
         poolGamblerScoreState: .loading,
         isOwner: false,
         isDeleting: false,
+        onEditAccount: {},
         onSignOut: {},
         onInvite: {},
         onDeletePool: {}

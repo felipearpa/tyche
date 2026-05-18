@@ -34,4 +34,24 @@ class AuthenticationAlamofireDataSource: AuthenticationRemoteDataSource {
             }
         }
     }
+
+    func updateUsername(request: UpdateUsernameRequest) async throws {
+        return try await withCheckedThrowingContinuation { continuation in
+            session.request(
+                urlBasePathProvider.prependBasePath("accounts")!,
+                method: .patch,
+                parameters: request,
+                encoder: JSONParameterEncoder.default
+            )
+            .validate()
+            .response { response in
+                switch response.result {
+                case .success:
+                    continuation.resume(returning: ())
+                case .failure(let error):
+                    continuation.resume(throwing: error)
+                }
+            }
+        }
+    }
 }

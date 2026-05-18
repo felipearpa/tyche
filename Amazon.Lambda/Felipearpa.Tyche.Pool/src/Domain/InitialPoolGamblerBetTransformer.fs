@@ -22,6 +22,7 @@ module InitialPoolGamblerBetTransformer =
                       PoolTable.Attribute.poolId, AttributeValue(S = poolGamblerBet.PoolId.Value)
                       PoolTable.Attribute.gamblerId, AttributeValue(S = poolGamblerBet.GamblerId.Value)
                       PoolTable.Attribute.gamblerUsername, AttributeValue(S = poolGamblerBet.GamblerUsername.Value)
+                      PoolTable.Attribute.gamblerEmail, AttributeValue(S = poolGamblerBet.GamblerEmail.Value)
                       PoolTable.Attribute.matchId, AttributeValue(S = poolGamblerBet.MatchId.Value)
                       PoolTable.Attribute.homeTeamId, AttributeValue(S = poolGamblerBet.HomeTeamId)
                       PoolTable.Attribute.homeTeamName, AttributeValue(S = poolGamblerBet.HomeTeamName.Value)
@@ -64,8 +65,7 @@ module InitialPoolGamblerBetTransformer =
         | None -> ()
 
         match poolGamblerBet.ComputedRequestId with
-        | Some computedRequestId ->
-            item[PoolTable.Attribute.computedRequestId] <- AttributeValue(S = computedRequestId)
+        | Some computedRequestId -> item[PoolTable.Attribute.computedRequestId] <- AttributeValue(S = computedRequestId)
         | None -> ()
 
         item :> IDictionary<string, AttributeValue>

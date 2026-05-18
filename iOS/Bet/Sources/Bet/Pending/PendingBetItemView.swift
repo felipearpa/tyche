@@ -5,7 +5,7 @@ import ViewingState
 
 struct PendingBetItemView: View {
     @StateObject private var viewModel: PendingBetItemViewModel
-    @State private var viewState = PendingBetItemViewState.emptyVisualization()
+    @State private var viewState: PendingBetItemViewState
     let poolGamblerBet: PoolGamblerBetModel
 
     init(
@@ -14,6 +14,7 @@ struct PendingBetItemView: View {
     ) {
         self._viewModel = .init(wrappedValue: viewModel())
         self.poolGamblerBet = poolGamblerBet
+        self.viewState = .visualization(poolGamblerBet.toPartialPoolGamblerBet())
     }
 
     var body: some View {
@@ -21,6 +22,9 @@ struct PendingBetItemView: View {
             viewModelState: viewModel.state ?? .idle(poolGamblerBet),
             viewState: $viewState,
             bet: {
+                withAnimation(stateAnimation) {
+                    viewState = .visualization(viewState.value)
+                }
                 viewModel.bet(
                     betScore: TeamScore(
                         homeTeamValue: Int(viewState.value.homeTeamBet)!,
@@ -30,27 +34,29 @@ struct PendingBetItemView: View {
             },
             retryBet: viewModel.retryBet,
             reset: {
-                viewState = .visualization(viewState.value)
+                withAnimation(stateAnimation) {
+                    viewState = .visualization(viewState.value)
+                }
                 viewModel.reset()
             },
-            edit: { viewState = .edition(viewState.value) }
+            edit: {
+                withAnimation(stateAnimation) {
+                    viewState = .edition(viewState.value)
+                }
+            }
         )
         .task(id: poolGamblerBet) { viewModel.bind(poolGamblerBet) }
         .onReceive(viewModel.$state) { state in
             guard let state = state else { return }
-            viewState = switch state {
-            case .idle(let poolGamblerBet):
-                viewState.copy(
-                    value: PartialPoolGamblerBetModel(
-                        homeTeamBet: poolGamblerBet.homeTeamBetRawValue(),
-                        awayTeamBet: poolGamblerBet.awayTeamBetRawValue()
-                    )
-                )
-            default: .visualization(viewState.value)
+            let poolGamblerBet = state.attemptedValue()
+            withAnimation(stateAnimation) {
+                viewState = .visualization(poolGamblerBet.toPartialPoolGamblerBet())
             }
         }
     }
 }
+
+private let stateAnimation: Animation = .spring(response: 0.35, dampingFraction: 0.85)
 
 private struct StatefulPendingBetItemView: View {
     let viewModelState: MutationState<PoolGamblerBetModel>
@@ -76,14 +82,29 @@ private struct StatefulPendingBetItemView: View {
         self.edit = edit
     }
     
+    private var effectiveViewState: PendingBetItemViewState {
+        switch viewModelState {
+        case .idle, .mutated:
+            return viewState
+        case .mutating(_, updated: let poolGamblerBet):
+            return .visualization(poolGamblerBet.toPartialPoolGamblerBet())
+        case .failure:
+            return .visualization(viewState.value)
+        }
+    }
+
     var body: some View {
         VStack {
-            switch viewModelState {
-            case .idle(let poolGamblerBet), .mutated(_, updated: let poolGamblerBet):
-                PendingBetItem(
-                    poolGamblerBet: poolGamblerBet,
-                    viewState: $viewState
+            PendingBetItem(
+                poolGamblerBet: viewModelState.activeValue(),
+                viewState: Binding(
+                    get: { effectiveViewState },
+                    set: { viewState = $0 }
                 )
+            )
+
+            switch viewModelState {
+            case .idle, .mutated:
                 DefaultActionBar(
                     viewModelState: viewModelState,
                     viewState: $viewState,
@@ -91,17 +112,9 @@ private struct StatefulPendingBetItemView: View {
                     reset: reset,
                     edit: edit
                 )
-            case .mutating(_, updated: let poolGamblerBet):
-                PendingBetItem(
-                    poolGamblerBet: poolGamblerBet,
-                    viewState: .constant(.visualization(viewState.value))
-                )
+            case .mutating:
                 LoadingActionBar(viewModelState: viewModelState)
-            case .failure(_, updated: let poolGamblerBet, _):
-                PendingBetItem(
-                    poolGamblerBet: poolGamblerBet,
-                    viewState: .constant(.visualization(viewState.value))
-                )
+            case .failure:
                 FailureActionBar(
                     viewModelState: viewModelState,
                     retryBet: retryBet,
@@ -118,23 +131,29 @@ private struct DefaultActionBar: View {
     let bet: () -> Void
     let reset: () -> Void
     let edit: () -> Void
-    
+
     var body: some View {
-        HStack(spacing: 8) {
+        ZStack {
             switch viewState {
             case .visualization:
-                NonEditableDefaultActionBar(
-                    viewModelState: viewModelState,
-                    viewState: $viewState,
-                    edit: edit
-                )
+                HStack(spacing: 8) {
+                    NonEditableDefaultActionBar(
+                        viewModelState: viewModelState,
+                        viewState: $viewState,
+                        edit: edit
+                    )
+                }
+                .transition(.opacity)
             case .edition:
-                EditableDefaultActionBar(
-                    viewModelState: viewModelState,
-                    viewState: $viewState,
-                    bet: bet,
-                    reset: reset
-                )
+                HStack(spacing: 8) {
+                    EditableDefaultActionBar(
+                        viewModelState: viewModelState,
+                        viewState: $viewState,
+                        bet: bet,
+                        reset: reset
+                    )
+                }
+                .transition(.opacity)
             }
         }
     }

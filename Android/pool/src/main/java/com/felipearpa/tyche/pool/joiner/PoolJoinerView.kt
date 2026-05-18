@@ -38,8 +38,9 @@ import com.felipearpa.tyche.ui.exception.UnknownLocalizedException
 import com.felipearpa.tyche.ui.exception.localizedOrDefault
 import com.felipearpa.tyche.ui.loading.LoadingContainerView
 import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
-import com.felipearpa.ui.state.LoadableViewState
-import com.felipearpa.ui.state.isSuccess
+import com.felipearpa.ui.state.LoadState
+import com.felipearpa.ui.state.SaveState
+import com.felipearpa.ui.state.isSaved
 import com.felipearpa.tyche.ui.R as SharedR
 
 @Composable
@@ -65,7 +66,7 @@ fun PoolJoinerView(
     }
 
     LaunchedEffect(joinPoolState) {
-        if (joinPoolState.isSuccess()) {
+        if (joinPoolState.isSaved()) {
             onJoinPool()
         }
     }
@@ -73,20 +74,20 @@ fun PoolJoinerView(
 
 @Composable
 private fun PoolJoinerContainer(
-    joinPoolState: LoadableViewState<Unit>,
-    poolState: LoadableViewState<PoolModel>,
+    joinPoolState: SaveState<Unit>,
+    poolState: LoadState<PoolModel>,
     onJoinPool: () -> Unit,
     onAbort: () -> Unit,
 ) {
     when (joinPoolState) {
-        LoadableViewState.Initial ->
+        SaveState.Idle ->
             PoolLoadContainer(
                 poolState = poolState,
                 onJoinPool = onJoinPool,
                 onAbort = onAbort,
             )
 
-        LoadableViewState.Loading, is LoadableViewState.Success -> LoadingContainerView {
+        is SaveState.Saving, is SaveState.Saved -> LoadingContainerView {
             PoolLoadContainer(
                 poolState = poolState,
                 onJoinPool = {},
@@ -94,8 +95,8 @@ private fun PoolJoinerContainer(
             )
         }
 
-        is LoadableViewState.Failure -> JoinFailureContent(
-            localizedException = joinPoolState().localizedOrDefault(),
+        is SaveState.Failure -> JoinFailureContent(
+            localizedException = joinPoolState.exception.localizedOrDefault(),
             onRetry = onJoinPool,
             onAbort = onAbort,
             modifier = Modifier
@@ -109,7 +110,7 @@ private fun PoolJoinerContainer(
 
 @Composable
 private fun PoolLoadContainer(
-    poolState: LoadableViewState<PoolModel>,
+    poolState: LoadState<PoolModel>,
     onJoinPool: () -> Unit,
     onAbort: () -> Unit,
 ) {
@@ -120,8 +121,8 @@ private fun PoolLoadContainer(
         .padding(horizontal = LocalBoxSpacing.current.medium)
 
     when (poolState) {
-        LoadableViewState.Initial, LoadableViewState.Loading -> LoadingContainerView {}
-        is LoadableViewState.Success ->
+        LoadState.Idle, LoadState.Loading -> LoadingContainerView {}
+        is LoadState.Loaded ->
             SuccessContent(
                 pool = poolState(),
                 onJoinPool = onJoinPool,
@@ -129,7 +130,7 @@ private fun PoolLoadContainer(
                 modifier = viewStyle,
             )
 
-        is LoadableViewState.Failure -> LoadFailureContent(
+        is LoadState.Failure -> LoadFailureContent(
             localizedException = poolState().localizedOrDefault(),
             onAbort = onAbort,
             modifier = viewStyle,
@@ -315,10 +316,10 @@ private val pillIconSize = 16.dp
 @Composable
 private fun PoolJoinerInitialPreview() {
     PoolJoinerContainer(
-        poolState = LoadableViewState.Success(
+        poolState = LoadState.Loaded(
             PoolModel(id = "id", name = "American Cup 2024"),
         ),
-        joinPoolState = LoadableViewState.Initial,
+        joinPoolState = SaveState.Idle,
         onJoinPool = {},
         onAbort = {},
     )
@@ -328,10 +329,10 @@ private fun PoolJoinerInitialPreview() {
 @Composable
 private fun PoolJoinerLoadingPreview() {
     PoolJoinerContainer(
-        poolState = LoadableViewState.Success(
+        poolState = LoadState.Loaded(
             PoolModel(id = "id", name = "American Cup 2024"),
         ),
-        joinPoolState = LoadableViewState.Loading,
+        joinPoolState = SaveState.Saving(Unit),
         onJoinPool = {},
         onAbort = {},
     )
@@ -341,10 +342,10 @@ private fun PoolJoinerLoadingPreview() {
 @Composable
 private fun PoolJoinerJoinFailurePreview() {
     PoolJoinerContainer(
-        poolState = LoadableViewState.Success(
+        poolState = LoadState.Loaded(
             PoolModel(id = "id", name = "American Cup 2024"),
         ),
-        joinPoolState = LoadableViewState.Failure(UnknownLocalizedException()),
+        joinPoolState = SaveState.Failure(Unit, UnknownLocalizedException()),
         onJoinPool = {},
         onAbort = {},
     )
@@ -354,8 +355,8 @@ private fun PoolJoinerJoinFailurePreview() {
 @Composable
 private fun PoolJoinerLoadFailurePreview() {
     PoolJoinerContainer(
-        poolState = LoadableViewState.Failure(UnknownLocalizedException()),
-        joinPoolState = LoadableViewState.Initial,
+        poolState = LoadState.Failure(UnknownLocalizedException()),
+        joinPoolState = SaveState.Idle,
         onJoinPool = {},
         onAbort = {},
     )

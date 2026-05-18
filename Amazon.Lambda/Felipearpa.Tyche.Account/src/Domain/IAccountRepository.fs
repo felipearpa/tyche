@@ -6,3 +6,4 @@ type IAccountRepository =
     abstract GetByEmailAsync: Email -> Result<Account Option, unit> Async
     abstract LinkAsync: AccountLink -> Result<Account, unit> Async
     abstract GetByIdAsync: Ulid -> Result<Account option, unit> Async
+    abstract UpdateUsernameAsync: Ulid * NonEmptyString100 -> Result<unit, unit> Async

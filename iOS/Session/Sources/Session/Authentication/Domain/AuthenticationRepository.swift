@@ -5,4 +5,5 @@ protocol AuthenticationRepository {
     func signInWithGoogle(idToken: String, accessToken: String) async -> Result<GoogleSignInResult, Error>
     func logOut() async -> Result<Void, Error>
     func linkAccount(accountLink: AccountLink) async -> Result<AccountBundle, Error>
+    func updateUsername(accountId: String, username: String) async -> Result<Void, Error>
 }

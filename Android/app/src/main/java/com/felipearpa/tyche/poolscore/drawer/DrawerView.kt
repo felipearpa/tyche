@@ -5,12 +5,16 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -19,15 +23,24 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.felipearpa.foundation.emptyString
 import com.felipearpa.tyche.AccountHeaderDrawer
 import com.felipearpa.tyche.R
+import com.felipearpa.tyche.UsernameEditor
+import com.felipearpa.tyche.ui.MinimalDialog
 import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
+import com.felipearpa.tyche.usernameEditorViewModel
 
 @Composable
-fun DrawerView(viewModel: DrawerViewModel, onSignOut: () -> Unit) {
+fun DrawerView(
+    viewModel: DrawerViewModel,
+    onSignOut: () -> Unit,
+) {
     val email by viewModel.email.collectAsStateWithLifecycle()
+    val username by viewModel.username.collectAsStateWithLifecycle()
 
     DrawerView(
         modifier = Modifier.fillMaxSize(),
         email = email,
+        username = username,
+        onUsernameSaved = viewModel::applyUsername,
         logout = {
             viewModel.logout()
             onSignOut()
@@ -35,18 +48,27 @@ fun DrawerView(viewModel: DrawerViewModel, onSignOut: () -> Unit) {
     )
 }
 
+
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun DrawerView(
     modifier: Modifier = Modifier,
     email: String = emptyString(),
+    username: String = emptyString(),
+    onUsernameSaved: (String) -> Unit = {},
     logout: () -> Unit = {},
 ) {
+    var accountEditorVisible by remember { mutableStateOf(false) }
+    val usernameEditorViewModel = usernameEditorViewModel()
+
     Column(
         modifier = modifier.padding(all = LocalBoxSpacing.current.medium),
         verticalArrangement = Arrangement.SpaceBetween,
     ) {
         AccountHeaderDrawer(
+            username = username,
             email = email,
+            onEditAccount = { accountEditorVisible = true },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = LocalBoxSpacing.current.large),
@@ -56,6 +78,21 @@ private fun DrawerView(
             onSignOut = logout,
             modifier = Modifier.fillMaxWidth(),
         )
+    }
+
+    if (accountEditorVisible) {
+        MinimalDialog(onDismiss = { accountEditorVisible = false }) {
+            UsernameEditor(
+                initialUsername = username,
+                viewModel = usernameEditorViewModel,
+                onSaved = { saved ->
+                    onUsernameSaved(saved)
+                    accountEditorVisible = false
+                },
+                onDismiss = { accountEditorVisible = false },
+                modifier = Modifier.fillMaxWidth(),
+            )
+        }
     }
 }
 
@@ -80,9 +117,25 @@ private fun SignOutButton(onSignOut: () -> Unit, modifier: Modifier = Modifier) 
 @Composable
 private fun InitialDrawerViewPreview() {
     Surface {
-        DrawerView(
-            modifier = Modifier.fillMaxSize(),
-            email = "felipearpa@email.com",
-        )
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(all = LocalBoxSpacing.current.medium),
+            verticalArrangement = Arrangement.SpaceBetween,
+        ) {
+            AccountHeaderDrawer(
+                username = "felipearpa",
+                email = "felipearpa@email.com",
+                onEditAccount = {},
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = LocalBoxSpacing.current.large),
+            )
+
+            SignOutButton(
+                onSignOut = {},
+                modifier = Modifier.fillMaxWidth(),
+            )
+        }
     }
 }

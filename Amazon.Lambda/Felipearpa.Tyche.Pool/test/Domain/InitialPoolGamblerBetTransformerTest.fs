@@ -13,6 +13,7 @@ module InitialPoolGamblerBetTransformerTest =
         { PoolId = Ulid.newOf "01K1PX1TX2NM1HG851S1V0QG6N"
           GamblerId = Ulid.newOf "01K1PX1TX2NM1HG851S1V0QG6P"
           GamblerUsername = NonEmptyString100.newOf "felipe@tyche.com"
+          GamblerEmail = NonEmptyString100.newOf "felipe@tyche.com"
           MatchId = Ulid.newOf "01K1PX1TX2NM1HG851S1V0QG6Q"
           PoolLayoutId = Ulid.newOf "01K1PX1TX2NM1HG851S1V0QG6R"
           HomeTeamId = "01K1PX1TX2NM1HG851S1V0QG6S"
@@ -41,6 +42,13 @@ module InitialPoolGamblerBetTransformerTest =
         item.ContainsKey("groupName") |> shouldEqual false
 
     [<Fact>]
+    let ``given a bet when transformed then gamblerEmail mirrors gamblerUsername`` () =
+        let item = bet () |> toAmazonItem
+
+        item["gamblerEmail"].S |> shouldEqual "felipe@tyche.com"
+        item["gamblerUsername"].S |> shouldEqual "felipe@tyche.com"
+
+    [<Fact>]
     let ``given a bet with a group name when transformed then groupName is written`` () =
         let item =
             { bet () with
@@ -59,7 +67,9 @@ module InitialPoolGamblerBetTransformerTest =
         item["round"].S |> shouldEqual "Octavos de final"
 
     [<Fact>]
-    let ``given a backfilled bet for an already-scored match when transformed then all optional fields are present`` () =
+    let ``given a backfilled bet for an already-scored match when transformed then all optional fields are present``
+        ()
+        =
         let computedAt = DateTime(2026, 5, 1, 0, 0, 0, DateTimeKind.Utc)
 
         let backfilled =
