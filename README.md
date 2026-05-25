@@ -41,7 +41,7 @@ Scan a code with your phone camera or tap a badge.
   </tr>
   <tr>
     <td align="center" valign="middle"><strong>iOS</strong> · iPhone &amp; iPad</td>
-    <td align="center" valign="middle"><strong>Android</strong> · <em>closed beta</em></td>
+    <td align="center" valign="middle"><strong>Android</strong> · Phone &amp; Tablet</td>
   </tr>
 </table>
 
