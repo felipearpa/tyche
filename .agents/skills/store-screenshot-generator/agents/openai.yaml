@@ -1,0 +1,8 @@
+interface:
+  display_name: "Store Screenshot Generator"
+  short_description: "Generate Android and iOS store screenshots"
+  brand_color: "#04A86B"
+  default_prompt: "Use $store-screenshot-generator to refresh the Android and iOS store screenshots for this app."
+
+policy:
+  allow_implicit_invocation: true
