@@ -66,6 +66,8 @@ import androidx.paging.compose.itemKey
 import com.felipearpa.foundation.emptyString
 import com.felipearpa.tyche.core.JoinPoolUrlTemplateProvider
 import com.felipearpa.tyche.pool.R
+import com.felipearpa.tyche.ui.exception.localizedOrDefault
+import com.felipearpa.tyche.ui.lazy.Failure
 import com.felipearpa.tyche.ui.lazy.RefreshableLazyPagingColumn
 import com.felipearpa.tyche.ui.lazy.lazyPagingConcatenateError
 import com.felipearpa.tyche.ui.shimmer
@@ -195,6 +197,7 @@ private fun ManageGamblersList(
                 )
             }
         },
+        errorContent = { error(exception = it) },
         appendLoadingContent = { managePlaceholderItemRow() },
         appendErrorContent = { exception ->
             lazyPagingConcatenateError(
@@ -368,7 +371,7 @@ private fun ManageGamblerPlaceholderRow(modifier: Modifier = Modifier) {
 @Composable
 private fun ManageGamblersEmptyView(onInvite: () -> Unit, modifier: Modifier = Modifier) {
     Column(
-        modifier = modifier.padding(LocalBoxSpacing.current.large),
+        modifier = modifier.padding(all = LocalBoxSpacing.current.medium),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(
             space = LocalBoxSpacing.current.large,
@@ -409,12 +412,8 @@ private fun ManageGamblersEmptyView(onInvite: () -> Unit, modifier: Modifier = M
         }
 
         Button(
+            modifier = Modifier.fillMaxWidth(),
             onClick = onInvite,
-            shape = CircleShape,
-            colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.secondary,
-                contentColor = Color.Black,
-            ),
         ) {
             Icon(
                 painter = painterResource(id = SharedR.drawable.person_add),
@@ -524,6 +523,24 @@ private fun InvitePoolSharer(url: String, onClose: () -> Unit) {
 
     LaunchedEffect(Unit) {
         activityResultLauncher.launch(shareIntent)
+    }
+}
+
+fun LazyListScope.error(exception: Throwable) {
+    item {
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier
+                .fillParentMaxSize()
+                .padding(all = LocalBoxSpacing.current.medium),
+        ) {
+            Failure(
+                localizedException = exception.localizedOrDefault(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(all = LocalBoxSpacing.current.medium),
+            )
+        }
     }
 }
 
