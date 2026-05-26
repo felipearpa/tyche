@@ -11,5 +11,7 @@ type IPoolRepository =
     abstract JoinPoolAsync: ResolvedJoinPoolInput -> Result<unit, JoinPoolDomainFailure> Async
     abstract IsPoolMemberAsync: Ulid * Ulid -> Result<bool, unit> Async
     abstract GetGamblersByPoolLayoutAsync: Ulid * string option -> Async<PoolLayoutGambler CursorPage>
+    abstract GetPoolMembersAsync: Ulid * string option -> Async<PoolMember CursorPage>
     abstract DeletePoolAsync: Ulid -> unit Async
+    abstract RemoveGamblerAsync: Ulid * Ulid -> unit Async
     abstract PropagateGamblerUsernameAsync: Ulid * NonEmptyString100 -> unit Async

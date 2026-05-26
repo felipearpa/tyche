@@ -32,3 +32,5 @@ type IPoolGamblerBetRepository =
     abstract AddPoolGamblerMatchesAsync: InitialPoolGamblerBet seq -> Async<Result<PoolGamblerBet, AddMatchFailure> seq>
 
     abstract MaterializeMatchForGamblerAsync: InitialPoolGamblerBet * int -> Async<unit>
+
+    abstract DeleteUncomputedBetsAsync: Ulid * Ulid -> Async<unit>

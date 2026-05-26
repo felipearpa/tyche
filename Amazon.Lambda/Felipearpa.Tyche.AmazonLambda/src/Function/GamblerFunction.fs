@@ -9,6 +9,8 @@ open Amazon.Lambda.Core
 open Felipearpa.Core
 open Felipearpa.Core.Json
 open Felipearpa.Data.DynamoDb
+open Felipearpa.Tyche.Account.Domain
+open Felipearpa.Tyche.Account.Infrastructure
 open Felipearpa.Tyche.AmazonLambda
 open Felipearpa.Tyche.Function.GamblerFunction
 open Felipearpa.Tyche.Pool.Application
@@ -21,6 +23,9 @@ type GamblerFunction(configureServices: IServiceCollection -> unit) =
 
     [<Literal>]
     let gamblerIdParameter = "gamblerId"
+
+    [<Literal>]
+    let poolIdParameter = "poolId"
 
     [<Literal>]
     let nextParameter = "next"
@@ -36,6 +41,7 @@ type GamblerFunction(configureServices: IServiceCollection -> unit) =
             .AddScoped<IPoolGamblerScoreRepository, PoolGamblerScoreDynamoDbRepository>()
             .AddScoped<IPoolGamblerBetRepository, PoolGamblerBetDynamoDbRepository>()
             .AddScoped<IPoolRepository, PoolDynamoDbRepository>()
+            .AddScoped<IAccountRepository, AccountDynamoDbRepository>()
             .AddScoped<GetPoolGamblerScoresByGambler>()
             .AddScoped<GetPoolGamblerScoresByPool>()
             .AddScoped<GetPendingPoolGamblerBets>()
@@ -46,6 +52,8 @@ type GamblerFunction(configureServices: IServiceCollection -> unit) =
             .AddScoped<Bet>()
             .AddScoped<CreatePool>()
             .AddScoped<JoinPool>()
+            .AddScoped<GetPoolMembers>()
+            .AddScoped<RemovePoolGambler>()
         |> ignore
 
         configureServices services
@@ -86,6 +94,86 @@ type GamblerFunction(configureServices: IServiceCollection -> unit) =
                 return! response.ToAmazonProxyResponse()
             | _ ->
                 let errors = [ toErrorOption gamblerIdResult ] |> List.choose id
+
+                return errors |> BadRequestResponseFactory.create
+        }
+        |> Async.StartAsTask
+
+    // GET /pools/{poolId}/members?next={next}
+    member this.GetPoolMembersAsync
+        (request: APIGatewayHttpApiV2ProxyRequest, _: ILambdaContext)
+        : APIGatewayHttpApiV2ProxyResponse Task =
+        async {
+            use scope = serviceProvider.CreateScope()
+
+            let poolIdResult =
+                request.PathParameters
+                |> Option.ofObj
+                |> Option.defaultValue Map.empty
+                |> tryGetUlidParamOrError poolIdParameter
+
+            let maybeNext =
+                request.QueryStringParameters
+                |> Option.ofObj
+                |> Option.defaultValue Map.empty
+                |> tryGetStringParamOrNone nextParameter
+
+            match poolIdResult with
+            | Error error -> return [ error ] |> BadRequestResponseFactory.create
+            | Ok poolId ->
+                let! callerResult =
+                    Authorization.resolveCallerGamblerIdAsync
+                        request
+                        (scope.ServiceProvider.GetService<IAccountRepository>())
+
+                match callerResult with
+                | Error failure -> return Authorization.toResponse failure
+                | Ok callerGamblerId ->
+                    let! response =
+                        getPoolMembersAsync
+                            poolId
+                            callerGamblerId
+                            (maybeNext |> Option.bind noneIfEmpty)
+                            (scope.ServiceProvider.GetService<GetPoolMembers>())
+
+                    return! response.ToAmazonProxyResponse()
+        }
+        |> Async.StartAsTask
+
+    // DELETE /pools/{poolId}/members/{gamblerId}
+    member this.RemoveGamblerAsync
+        (request: APIGatewayHttpApiV2ProxyRequest, _: ILambdaContext)
+        : APIGatewayHttpApiV2ProxyResponse Task =
+        async {
+            use scope = serviceProvider.CreateScope()
+
+            let pathParameters =
+                request.PathParameters |> Option.ofObj |> Option.defaultValue Map.empty
+
+            let poolIdResult = pathParameters |> tryGetUlidParamOrError poolIdParameter
+            let gamblerIdResult = pathParameters |> tryGetUlidParamOrError gamblerIdParameter
+
+            match poolIdResult, gamblerIdResult with
+            | Ok poolId, Ok gamblerId ->
+                let! callerResult =
+                    Authorization.resolveCallerGamblerIdAsync
+                        request
+                        (scope.ServiceProvider.GetService<IAccountRepository>())
+
+                match callerResult with
+                | Error failure -> return Authorization.toResponse failure
+                | Ok callerGamblerId ->
+                    let! response =
+                        removeGamblerAsync
+                            poolId
+                            gamblerId
+                            callerGamblerId
+                            (scope.ServiceProvider.GetService<RemovePoolGambler>())
+
+                    return! response.ToAmazonProxyResponse()
+            | _ ->
+                let errors =
+                    [ toErrorOption poolIdResult; toErrorOption gamblerIdResult ] |> List.choose id
 
                 return errors |> BadRequestResponseFactory.create
         }

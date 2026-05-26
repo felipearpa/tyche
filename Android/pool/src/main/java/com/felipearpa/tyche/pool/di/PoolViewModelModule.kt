@@ -4,6 +4,7 @@ import com.felipearpa.tyche.pool.creator.PoolFromLayoutCreatorViewModel
 import com.felipearpa.tyche.pool.creator.StepOneViewModel
 import com.felipearpa.tyche.pool.gamblerscore.GamblerScoreListViewModel
 import com.felipearpa.tyche.pool.joiner.PoolJoinerViewModel
+import com.felipearpa.tyche.pool.managegamblers.ManageGamblersViewModel
 import com.felipearpa.tyche.pool.poolscore.PoolScoreListViewModel
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
@@ -33,6 +34,14 @@ val poolViewModelModule = module {
         PoolFromLayoutCreatorViewModel(
             createPool = get(),
             gamblerId = params.get(),
+        )
+    }
+
+    viewModel { params ->
+        ManageGamblersViewModel(
+            poolId = params.get(),
+            getPoolMembers = get(),
+            removeGambler = get(),
         )
     }
 }

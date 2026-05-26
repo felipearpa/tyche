@@ -21,6 +21,7 @@ import com.felipearpa.tyche.bet.timeline.betTimelineListView
 import com.felipearpa.tyche.core.JoinPoolUrlTemplateProvider
 import com.felipearpa.tyche.home.HomeRoute
 import com.felipearpa.tyche.home.homeNavView
+import com.felipearpa.tyche.pool.managegamblers.manageGamblersNavView
 import com.felipearpa.tyche.pool.poolJoinerView
 import com.felipearpa.tyche.pool.poolscore.PoolScoreListRoute
 import com.felipearpa.tyche.poolcreator.poolFromLayoutCreatorNavView
@@ -154,6 +155,8 @@ fun Outlet(
             navController = navController,
             initialRoute = initialRoute,
         )
+
+        manageGamblersNavView(navController = navController)
 
         val popToPoolHome: () -> Unit = {
             navController.popBackStack<PoolHomeViewRoute>(inclusive = false)

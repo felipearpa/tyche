@@ -17,6 +17,8 @@
     <Compile Include="Request\UpdateUsernameRequest.fs" />
     <Compile Include="Response\PoolGamblerScoreResponse.fs" />
     <Compile Include="Response\PoolGamblerScoreTransformer.fs" />
+    <Compile Include="Response\PoolMemberResponse.fs" />
+    <Compile Include="Response\PoolMemberTransformer.fs" />
     <Compile Include="Response\PoolGamblerBetResponse.fs" />
     <Compile Include="Response\PoolGamblerBetTransformer.fs" />
     <Compile Include="Response\PoolResponse.fs" />

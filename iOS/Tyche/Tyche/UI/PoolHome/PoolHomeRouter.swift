@@ -163,6 +163,19 @@ private struct PoolHomeRouterContent: View {
                     }
                 )
             }
+            .navigationDestination(for: ManageGamblersRoute.self) { route in
+                ManageGamblersListView(
+                    viewModel: ManageGamblersListViewModel(
+                        getPoolMembersUseCase: diResolver.resolve(GetPoolMembersUseCase.self)!,
+                        removeGamblerUseCase: diResolver.resolve(RemoveGamblerUseCase.self)!,
+                        poolId: route.poolId
+                    ),
+                    onInvite: {
+                        let template = diResolver.resolve(JoinPoolUrlTemplateProvider.self)!
+                        inviteUrl = ShareablePoolUrl(String(format: template(), pool.poolId))
+                    }
+                )
+            }
         }
         .drawer(isShowing: $drawerVisible) {
             PoolHomeDrawerView(
@@ -175,6 +188,10 @@ private struct PoolHomeRouterContent: View {
                     drawerVisible = false
                     let template = diResolver.resolve(JoinPoolUrlTemplateProvider.self)!
                     inviteUrl = ShareablePoolUrl(String(format: template(), pool.poolId))
+                },
+                onManageGamblers: {
+                    drawerVisible = false
+                    path.append(ManageGamblersRoute(poolId: pool.poolId))
                 },
                 onPoolDeleting: {
                     drawerVisible = false

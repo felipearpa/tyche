@@ -27,6 +27,8 @@
         <Compile Include="Domain\ResolvedJoinPoolInput.fs" />
         <Compile Include="Domain\DeletePoolInput.fs" />
         <Compile Include="Domain\Pool.fs" />
+        <Compile Include="Domain\PoolMember.fs" />
+        <Compile Include="Domain\PoolMemberDictionaryTransformer.fs" />
         <Compile Include="Domain\PoolLayoutGambler.fs" />
         <Compile Include="Domain\PoolLayoutGamblerDictionaryTransformer.fs" />
         <Compile Include="Domain\IPoolRepository.fs" />
@@ -52,14 +54,16 @@
         <Compile Include="Infrastructure\UpdateMatchPositionRequestBuilder.fs" />
         <Compile Include="Infrastructure\UpdatePositionsSqsPublisher.fs" />
         <Compile Include="Infrastructure\PoolGamblerScoreDynamoDbRepository.fs" />
+        <Compile Include="Infrastructure\GetPoolGamblerBetKeysRequestBuilder.fs" />
         <Compile Include="Infrastructure\PoolGamblerBetDynamoDbRepository.fs" />
         <Compile Include="Infrastructure\GetPoolByIdRequestBuilder.fs" />
         <Compile Include="Infrastructure\CreatePoolRequestBuilder.fs" />
         <Compile Include="Infrastructure\JoinPoolGamblerRequestBuilder.fs" />
         <Compile Include="Infrastructure\IncrementGamblerCountRequestBuilder.fs" />
+        <Compile Include="Infrastructure\DecrementGamblerCountRequestBuilder.fs" />
         <Compile Include="Infrastructure\GetGamblersByPoolLayoutRequestBuilder.fs" />
+        <Compile Include="Infrastructure\GetPoolMembersRequestBuilder.fs" />
         <Compile Include="Infrastructure\GetPoolGamblerKeysRequestBuilder.fs" />
-        <Compile Include="Infrastructure\GetPoolGamblerBetKeysRequestBuilder.fs" />
         <Compile Include="Infrastructure\GetGamblerScoreItemsRequestBuilder.fs" />
         <Compile Include="Infrastructure\UpdateGamblerScoreUsernameRequestBuilder.fs" />
         <Compile Include="Infrastructure\UpdateGamblerBetUsernameRequestBuilder.fs" />
@@ -77,6 +81,8 @@
         <Compile Include="Application\CreatePool.fs" />
         <Compile Include="Application\JoinPool.fs" />
         <Compile Include="Application\DeletePool.fs" />
+        <Compile Include="Application\GetPoolMembers.fs" />
+        <Compile Include="Application\RemovePoolGambler.fs" />
         <Compile Include="Application\GetPoolById.fs" />
         <Compile Include="Application\AddMatch.fs" />
         <Compile Include="Application\ComputeBets.fs" />

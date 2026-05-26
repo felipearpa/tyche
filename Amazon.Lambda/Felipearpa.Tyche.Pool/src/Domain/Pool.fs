@@ -6,4 +6,5 @@ type Pool =
     { PoolId: Ulid
       PoolName: NonEmptyString100
       PoolLayoutId: Ulid
-      CreatorGamblerId: Ulid }
+      CreatorGamblerId: Ulid
+      GamblerCount: int option }

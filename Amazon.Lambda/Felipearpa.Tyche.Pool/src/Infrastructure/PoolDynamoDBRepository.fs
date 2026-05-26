@@ -13,6 +13,7 @@ open Felipearpa.Tyche.Account.Infrastructure
 open Felipearpa.Tyche.Pool.Domain
 open Felipearpa.Tyche.Pool.Domain.PoolDictionaryTransformer
 open Felipearpa.Tyche.Pool.Domain.PoolLayoutGamblerDictionaryTransformer
+open Felipearpa.Tyche.Pool.Domain.PoolMemberDictionaryTransformer
 open Felipearpa.Type
 
 type PoolDynamoDbRepository(keySerializer: IKeySerializer, client: IAmazonDynamoDB) =
@@ -128,6 +129,57 @@ type PoolDynamoDbRepository(keySerializer: IKeySerializer, client: IAmazonDynamo
                         match maybeLastEvaluatedKey with
                         | Some lastEvaluatedKey -> keySerializer.Serialize(lastEvaluatedKey) |> Some
                         | None -> None }
+            }
+
+        member this.GetPoolMembersAsync(poolId, maybeNext) =
+            async {
+                let request =
+                    GetPoolMembersRequestBuilder.build poolId (maybeNext |> Option.map keySerializer.Deserialize)
+
+                let! response = client.QueryAsync(request) |> Async.AwaitTask
+                let maybeLastEvaluatedKey = response.LastEvaluatedKey |> Option.ofObj
+
+                return
+                    { CursorPage.Items = response.Items |> Seq.map toPoolMember
+                      Next =
+                        match maybeLastEvaluatedKey with
+                        | Some lastEvaluatedKey -> keySerializer.Serialize(lastEvaluatedKey) |> Some
+                        | None -> None }
+            }
+
+        member this.RemoveGamblerAsync(poolId, gamblerId) =
+            async {
+                let gamblerKey =
+                    dict
+                        [ Key.pk, AttributeValue(S = KeyPrefix.build PoolTable.Prefix.pool poolId.Value)
+                          Key.sk, AttributeValue(S = KeyPrefix.build PoolTable.Prefix.gambler gamblerId.Value) ]
+
+                let deleteGambler =
+                    Delete(
+                        TableName = PoolTable.name,
+                        Key = Dictionary gamblerKey,
+                        ConditionExpression = $"attribute_exists({Key.pk})"
+                    )
+
+                let decrementCount = DecrementGamblerCountRequestBuilder.build poolId
+
+                let transaction =
+                    TransactWriteItemsRequest(
+                        TransactItems =
+                            ([ TransactWriteItem(Delete = deleteGambler)
+                               TransactWriteItem(Update = decrementCount) ]
+                             |> List)
+                    )
+
+                try
+                    let! _ = client.TransactWriteItemsAsync(transaction) |> Async.AwaitTask
+                    return ()
+                with error when
+                    (match error.GetBaseException() with
+                     | :? TransactionCanceledException as transactionException ->
+                         isAlreadyJoinedFailure transactionException
+                     | _ -> false) ->
+                    return ()
             }
 
         member this.IsPoolMemberAsync(poolId, gamblerId) =

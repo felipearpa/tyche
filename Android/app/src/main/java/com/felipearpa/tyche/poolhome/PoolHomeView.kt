@@ -81,6 +81,7 @@ fun PoolHomeView(
     gamblerId: String,
     onPoolChange: () -> Unit,
     onSignOut: () -> Unit = {},
+    onManageGamblers: () -> Unit = {},
     onGamblerOpen: ((poolId: String, gamblerId: String, gamblerUsername: String) -> Unit)? = null,
     onMatchOpen: ((PoolGamblerBetModel) -> Unit)? = null,
 ) {
@@ -109,6 +110,7 @@ fun PoolHomeView(
                     isDrawerOpen = false
                     invitePoolUrl = String.format(joinPoolUrlTemplate(), poolId)
                 },
+                onManageGamblers = onManageGamblers,
                 onPoolDeleting = {
                     isDrawerOpen = false
                 },

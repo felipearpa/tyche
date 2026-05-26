@@ -395,6 +395,64 @@ Resources:
             Method: DELETE
             ApiId: !Ref AuthGatewayHttpApi
 
+  GetPoolMembers:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: Felipearpa.Tyche.AmazonLambda::Felipearpa.Tyche.AmazonLambda.Function.GamblerFunction::GetPoolMembersAsync
+      Runtime: dotnet10
+      CodeUri: .
+      MemorySize: 1024
+      Timeout: 30
+      Policies:
+        - AWSLambdaBasicExecutionRole
+        - Statement:
+            - Effect: Allow
+              Action:
+                - dynamodb:Query
+              Resource:
+                - arn:aws:dynamodb:us-east-2:567776770335:table/Pool
+                - arn:aws:dynamodb:us-east-2:567776770335:table/Pool/index/GetPoolGamblersByUsername-index
+                - arn:aws:dynamodb:us-east-2:567776770335:table/Account
+                - arn:aws:dynamodb:us-east-2:567776770335:table/Account/index/GetByEmail-index
+      Architectures: [ arm64 ]
+      Events:
+        HttpApi:
+          Type: HttpApi
+          Properties:
+            Path: /pools/{poolId}/members
+            Method: GET
+            ApiId: !Ref AuthGatewayHttpApi
+
+  RemoveGambler:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: Felipearpa.Tyche.AmazonLambda::Felipearpa.Tyche.AmazonLambda.Function.GamblerFunction::RemoveGamblerAsync
+      Runtime: dotnet10
+      CodeUri: .
+      MemorySize: 1024
+      Timeout: 30
+      Policies:
+        - AWSLambdaBasicExecutionRole
+        - Statement:
+            - Effect: Allow
+              Action:
+                - dynamodb:Query
+                - dynamodb:DeleteItem
+                - dynamodb:UpdateItem
+                - dynamodb:TransactWriteItems
+              Resource:
+                - arn:aws:dynamodb:us-east-2:567776770335:table/Pool
+                - arn:aws:dynamodb:us-east-2:567776770335:table/Account
+                - arn:aws:dynamodb:us-east-2:567776770335:table/Account/index/GetByEmail-index
+      Architectures: [ arm64 ]
+      Events:
+        HttpApi:
+          Type: HttpApi
+          Properties:
+            Path: /pools/{poolId}/members/{gamblerId}
+            Method: DELETE
+            ApiId: !Ref AuthGatewayHttpApi
+
   Bet:
     Type: AWS::Serverless::Function
     Properties:
@@ -527,6 +585,7 @@ Resources:
                 - dynamodb:GetShardIterator
                 - dynamodb:Query
                 - dynamodb:PutItem
+                - dynamodb:DeleteItem
               Resource:
                 - arn:aws:dynamodb:us-east-2:567776770335:table/Pool/stream/2025-08-18T16:45:55.692
                 - arn:aws:dynamodb:us-east-2:567776770335:table/PoolLayout

@@ -19,6 +19,7 @@ class PoolHomeDrawerViewModel: ObservableObject {
     @Published var email: String = ""
     @Published var username: String = ""
     @Published var isOwner: Bool = false
+    @Published var gamblerCount: Int? = nil
     @Published var deleteState: LoadState<Void> = .idle
 
     init(
@@ -76,6 +77,7 @@ class PoolHomeDrawerViewModel: ObservableObject {
             let result = await getPoolUseCase.execute(poolId: poolId)
             if case .success(let pool) = result {
                 self.isOwner = pool.creatorGamblerId == gamblerId
+                self.gamblerCount = pool.gamblerCount
             }
         }
     }

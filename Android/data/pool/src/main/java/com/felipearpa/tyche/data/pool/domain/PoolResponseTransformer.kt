@@ -5,4 +5,5 @@ internal fun PoolResponse.toPool() =
         id = poolId,
         name = poolName,
         creatorGamblerId = creatorGamblerId,
+        gamblerCount = gamblerCount,
     )

@@ -29,6 +29,7 @@ module BetFunctionTest =
             member _.AddPoolGamblerMatchAsync(_) = failwith "not used"
             member _.AddPoolGamblerMatchesAsync(_) = failwith "not used"
             member _.MaterializeMatchForGamblerAsync(_, _) = failwith "not used"
+            member _.DeleteUncomputedBetsAsync(_, _) = failwith "not used"
 
             member _.BetAsync(_, _, _, _) =
                 async { return Error BetFailure.MatchLocked } }

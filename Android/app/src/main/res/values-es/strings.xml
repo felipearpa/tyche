@@ -21,4 +21,5 @@
     <string name="edit_username_action">Editar nombre de usuario</string>
     <string name="edit_user_name_subtitle">Así te verán otros jugadores en las quinielas</string>
     <string name="position_small_suffix">%sº</string>
+    <string name="gamblers_action">Jugadores</string>
 </resources>
