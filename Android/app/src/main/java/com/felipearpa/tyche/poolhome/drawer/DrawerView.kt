@@ -333,7 +333,7 @@ private fun PoolMenuSection(
                         .padding(all = LocalBoxSpacing.current.medium),
                 ) {
                     Icon(
-                        painter = painterResource(id = SharedR.drawable.filled_person),
+                        painter = painterResource(id = SharedR.drawable.group),
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.onSurface,
                         modifier = Modifier.size(24.dp),

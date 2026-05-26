@@ -98,19 +98,12 @@ private struct PoolHomeDrawerStatefulView: View {
                 isOwner: isOwner,
                 isDeleting: isDeleting,
                 onInvite: onInvite,
-                onDeletePool: onDeletePool
+                onDeletePool: onDeletePool,
+                gamblerCount: gamblerCount,
+                onManageGamblers: onManageGamblers
             )
             .padding(.horizontal, boxSpacing.medium)
             .padding(.top, boxSpacing.medium)
-
-            if isOwner {
-                OwnerToolsSection(
-                    gamblerCount: gamblerCount,
-                    onManageGamblers: onManageGamblers
-                )
-                .padding(.horizontal, boxSpacing.medium)
-                .padding(.top, boxSpacing.medium)
-            }
 
             Spacer()
 
@@ -216,6 +209,8 @@ private struct PoolMenuSection: View {
     let isDeleting: Bool
     let onInvite: () -> Void
     let onDeletePool: () -> Void
+    let gamblerCount: Int?
+    let onManageGamblers: () -> Void
 
     @Environment(\.boxSpacing) private var boxSpacing
 
@@ -233,6 +228,11 @@ private struct PoolMenuSection: View {
                 )
 
                 if isOwner {
+                    GamblersMenuRow(
+                        gamblerCount: gamblerCount,
+                        onManageGamblers: onManageGamblers
+                    )
+
                     DrawerButtonRow(
                         icon: { Image(sharedResource: .deleteForever) },
                         title: String(localized: .deletePoolAction),
@@ -247,44 +247,34 @@ private struct PoolMenuSection: View {
     }
 }
 
-private struct OwnerToolsSection: View {
+private struct GamblersMenuRow: View {
     let gamblerCount: Int?
     let onManageGamblers: () -> Void
 
     @Environment(\.boxSpacing) private var boxSpacing
 
     var body: some View {
-        VStack(alignment: .leading, spacing: boxSpacing.small) {
-            Text(String(localized: .ownerToolsSectionTitle).uppercased())
-                .font(.caption)
-                .foregroundStyle(Color.brandAccent)
+        Button(action: onManageGamblers) {
+            HStack(spacing: boxSpacing.medium) {
+                Image(sharedResource: .group)
+                    .frame(width: 24, height: 24)
+                    .foregroundStyle(Color.primary)
 
-            VStack(spacing: 0) {
-                Button(action: onManageGamblers) {
-                    HStack(spacing: boxSpacing.medium) {
-                        Image(systemName: "person.2.fill")
-                            .frame(width: 24, height: 24)
-                            .foregroundStyle(Color.primary)
+                Text(String(localized: .gamblersAction))
+                    .foregroundStyle(Color.primary)
 
-                        Text(String(localized: .gamblersAction))
-                            .foregroundStyle(Color.primary)
+                Spacer()
 
-                        Spacer()
-
-                        if let gamblerCount {
-                            Text("\(gamblerCount)")
-                                .font(.footnote)
-                                .fontWeight(.semibold)
-                                .foregroundStyle(Color.primary)
-                                .padding(.horizontal, boxSpacing.small)
-                                .padding(.vertical, 2)
-                                .background(Color(sharedResource: .surfaceVariant), in: Capsule())
-                        }
-                    }
-                    .padding(.vertical, boxSpacing.medium)
+                if let gamblerCount {
+                    Text("\(gamblerCount)")
+                        .font(.footnote)
+                        .foregroundStyle(Color(sharedResource: .onSurfaceVariant))
+                        .padding(.horizontal, boxSpacing.small)
+                        .padding(.vertical, 2)
+                        .background(Color(sharedResource: .surfaceVariant), in: Capsule())
                 }
             }
-            .padding(.horizontal, boxSpacing.medium)
+            .padding(.vertical, boxSpacing.medium)
         }
     }
 }

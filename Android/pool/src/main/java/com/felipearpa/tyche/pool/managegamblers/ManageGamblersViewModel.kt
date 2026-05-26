@@ -8,9 +8,13 @@ import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.felipearpa.tyche.data.pool.application.GetPoolMembers
 import com.felipearpa.tyche.data.pool.application.RemoveGambler
+import com.felipearpa.tyche.ui.exception.orDefaultLocalized
+import com.felipearpa.ui.state.MutationState
+import com.felipearpa.ui.state.activeValue
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -34,14 +38,19 @@ class ManageGamblersViewModel(
             initialValue = PagingData.empty(),
         )
 
-    private val _deletingGamblerIds = MutableStateFlow<Set<String>>(emptySet())
-    val deletingGamblerIds = _deletingGamblerIds.asStateFlow()
+    private val _removalStates = MutableStateFlow<Map<String, MutationState<PoolMemberModel>>>(emptyMap())
 
-    private val _removedGamblerIds = MutableStateFlow<Set<String>>(emptySet())
-    val removedGamblerIds = _removedGamblerIds.asStateFlow()
+    val deletingGamblerIds: StateFlow<Set<String>> = _removalStates
+        .map { states -> states.filterValues { state -> state is MutationState.Mutating }.keys }
+        .stateIn(viewModelScope, SharingStarted.Lazily, emptySet())
 
-    private val _failedGambler = MutableStateFlow<PoolMemberModel?>(null)
-    val failedGambler = _failedGambler.asStateFlow()
+    val removedGamblerIds: StateFlow<Set<String>> = _removalStates
+        .map { states -> states.filterValues { state -> state is MutationState.Mutated }.keys }
+        .stateIn(viewModelScope, SharingStarted.Lazily, emptySet())
+
+    val failedGambler: StateFlow<PoolMemberModel?> = _removalStates
+        .map { states -> states.values.firstOrNull { state -> state is MutationState.Failure }?.activeValue() }
+        .stateIn(viewModelScope, SharingStarted.Lazily, null)
 
     private fun buildPager() =
         Pager(
@@ -65,22 +74,30 @@ class ManageGamblersViewModel(
 
     fun remove(member: PoolMemberModel) {
         viewModelScope.launch {
-            _failedGambler.value = null
-            _deletingGamblerIds.update { ids -> ids + member.gamblerId }
+            override(member.gamblerId, MutationState.Mutating(original = member, updated = member))
 
             removeGambler.execute(poolId = poolId, gamblerId = member.gamblerId)
                 .onSuccess {
-                    _deletingGamblerIds.update { ids -> ids - member.gamblerId }
-                    _removedGamblerIds.update { ids -> ids + member.gamblerId }
+                    override(member.gamblerId, MutationState.Mutated(original = member, updated = member))
                 }
-                .onFailure {
-                    _deletingGamblerIds.update { ids -> ids - member.gamblerId }
-                    _failedGambler.value = member
+                .onFailure { exception ->
+                    override(
+                        member.gamblerId,
+                        MutationState.Failure(
+                            original = member,
+                            updated = member,
+                            exception = exception.orDefaultLocalized(),
+                        ),
+                    )
                 }
         }
     }
 
     fun dismissFailure() {
-        _failedGambler.value = null
+        _removalStates.update { states -> states.filterValues { state -> state !is MutationState.Failure } }
+    }
+
+    private fun override(gamblerId: String, state: MutationState<PoolMemberModel>) {
+        _removalStates.update { states -> states + (gamblerId to state) }
     }
 }

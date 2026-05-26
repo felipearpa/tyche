@@ -3,6 +3,7 @@ import Core
 import UI
 import LazyPaging
 import DataPool
+import ViewingState
 
 public class ManageGamblersListViewModel: ObservableObject {
     private let getPoolMembersUseCase: GetPoolMembersUseCase
@@ -10,9 +11,10 @@ public class ManageGamblersListViewModel: ObservableObject {
     let poolId: String
     private var pagingSource: LazyPagingCursorSource<PoolMemberModel>!
 
-    @Published var deletingGamblerIds: Set<String> = []
-    @Published var removedGamblerIds: Set<String> = []
-    @Published var failedGambler: PoolMemberModel? = nil
+    /// Per-gambler removal state. Every row starts in `.idle(member)`; a removal overrides that
+    /// original with `.mutating` → `.mutated` (row gone) or `.failure` (revert + show the banner).
+    /// Only non-idle entries are stored — `mutationState(for:)` falls back to `.idle(member)`.
+    @Published private var removalStates: [String: MutationState<PoolMemberModel>] = [:]
 
     @MainActor
     lazy var lazyPager: LazyPaging.LazyPagingItems<String, PoolMemberModel> = {
@@ -45,33 +47,44 @@ public class ManageGamblersListViewModel: ObservableObject {
     @MainActor
     func remove(_ member: PoolMemberModel) {
         Task {
-            failedGambler = nil
-            deletingGamblerIds.insert(member.gamblerId)
+            override(member.gamblerId, with: .mutating(member))
 
             let result = await removeGamblerUseCase.execute(poolId: poolId, gamblerId: member.gamblerId)
 
-            deletingGamblerIds.remove(member.gamblerId)
-
             switch result {
             case .success:
-                removedGamblerIds.insert(member.gamblerId)
-            case .failure:
-                failedGambler = member
+                override(member.gamblerId, with: .mutated(member))
+            case .failure(let error):
+                override(member.gamblerId, with: .failure(value: member, error: error))
             }
         }
     }
 
     @MainActor
     func dismissFailure() {
-        failedGambler = nil
+        removalStates = removalStates.filter { !$0.value.isFailure() }
+    }
+
+    /// The current removal state for a row — `.idle(member)` until a removal overrides it.
+    func mutationState(for member: PoolMemberModel) -> MutationState<PoolMemberModel> {
+        removalStates[member.gamblerId] ?? .idle(member)
     }
 
     func isDeleting(_ member: PoolMemberModel) -> Bool {
-        deletingGamblerIds.contains(member.gamblerId)
+        mutationState(for: member).isMutating()
     }
 
     func isRemoved(_ member: PoolMemberModel) -> Bool {
-        removedGamblerIds.contains(member.gamblerId)
+        mutationState(for: member).isMutated()
+    }
+
+    var failedGambler: PoolMemberModel? {
+        removalStates.values.first(where: { $0.isFailure() })?.activeValue()
+    }
+
+    @MainActor
+    private func override(_ gamblerId: String, with state: MutationState<PoolMemberModel>) {
+        removalStates = removalStates.merging([gamblerId: state]) { _, updated in updated }
     }
 }
 

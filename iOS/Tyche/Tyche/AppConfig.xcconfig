@@ -11,6 +11,6 @@
 SIGN_IN_URL_TEMPLATE = https:/$()/tyche-588ce.web.app/sign-in/%@
 JOIN_POOL_URL_TEMPLATE = https:/$()/tyche-588ce.web.app/pools/%@/join
 ANDROID_PACKAGE_NAME = com.felipearpa.fortuna
-URL_BASE_PATH = https:/$()/tyche-api.felipearpa.com
+URL_BASE_PATH = https:/$()/guiding-terminally-cicada.ngrok-free.app
 GOOGLE_CLIENT_ID = 201372633982-1njh2t94g6mrt6v42l52jnen4k023u0t.apps.googleusercontent.com
 GOOGLE_REVERSED_CLIENT_ID = com.googleusercontent.apps.201372633982-1njh2t94g6mrt6v42l52jnen4k023u0t
