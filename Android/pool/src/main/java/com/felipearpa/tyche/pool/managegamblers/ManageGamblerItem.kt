@@ -2,8 +2,8 @@ package com.felipearpa.tyche.pool.managegamblers
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -15,23 +15,25 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import com.felipearpa.tyche.account.EmailAvatar
-import com.felipearpa.tyche.pool.R
 import com.felipearpa.tyche.ui.loading.BallSpinner
 import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
 import com.felipearpa.tyche.ui.theme.TycheTheme
+import com.felipearpa.ui.state.MutationState
+import com.felipearpa.ui.state.activeValue
 
 @Composable
 fun ManageGamblerItem(
-    member: PoolMemberModel,
-    isDeleting: Boolean,
+    state: MutationState<PoolMemberModel>,
     modifier: Modifier = Modifier,
 ) {
+    val member = state.activeValue()
+    val isDeleting = state is MutationState.Mutating
+
     Row(
         modifier = modifier
             .fillMaxWidth()
@@ -66,11 +68,7 @@ fun ManageGamblerItem(
                 overflow = TextOverflow.Ellipsis,
             )
             Text(
-                text = if (isDeleting) {
-                    stringResource(id = R.string.removing_gambler_text)
-                } else {
-                    member.gamblerEmail
-                },
+                text = member.gamblerEmail,
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 maxLines = 1,
@@ -88,12 +86,13 @@ private fun ManageGamblerItemPreview() {
     TycheTheme {
         Surface {
             ManageGamblerItem(
-                member = PoolMemberModel(
-                    gamblerId = "1",
-                    gamblerUsername = "danielsanto",
-                    gamblerEmail = "daniel@example.com",
+                state = MutationState.Idle(
+                    PoolMemberModel(
+                        gamblerId = "1",
+                        gamblerUsername = "danielsanto",
+                        gamblerEmail = "daniel@example.com",
+                    ),
                 ),
-                isDeleting = false,
             )
         }
     }
@@ -102,15 +101,15 @@ private fun ManageGamblerItemPreview() {
 @PreviewLightDark
 @Composable
 private fun ManageGamblerItemDeletingPreview() {
+    val member = PoolMemberModel(
+        gamblerId = "1",
+        gamblerUsername = "danielsanto",
+        gamblerEmail = "daniel@example.com",
+    )
     TycheTheme {
         Surface {
             ManageGamblerItem(
-                member = PoolMemberModel(
-                    gamblerId = "1",
-                    gamblerUsername = "danielsanto",
-                    gamblerEmail = "daniel@example.com",
-                ),
-                isDeleting = true,
+                state = MutationState.Mutating(original = member, updated = member),
             )
         }
     }

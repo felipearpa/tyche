@@ -70,14 +70,6 @@ public class ManageGamblersListViewModel: ObservableObject {
         removalStates[member.gamblerId] ?? .idle(member)
     }
 
-    func isDeleting(_ member: PoolMemberModel) -> Bool {
-        mutationState(for: member).isMutating()
-    }
-
-    func isRemoved(_ member: PoolMemberModel) -> Bool {
-        mutationState(for: member).isMutated()
-    }
-
     var failedGambler: PoolMemberModel? {
         removalStates.values.first(where: { $0.isFailure() })?.activeValue()
     }

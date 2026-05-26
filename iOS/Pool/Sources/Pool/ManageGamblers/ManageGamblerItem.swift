@@ -1,12 +1,15 @@
 import SwiftUI
 import UI
 import Account
+import ViewingState
 
 struct ManageGamblerItem: View {
-    let member: PoolMemberModel
-    let isDeleting: Bool
+    let state: MutationState<PoolMemberModel>
 
     @Environment(\.boxSpacing) private var boxSpacing
+
+    private var member: PoolMemberModel { state.activeValue() }
+    private var isDeleting: Bool { state.isMutating() }
 
     var body: some View {
         HStack(spacing: boxSpacing.medium) {
@@ -20,17 +23,11 @@ struct ManageGamblerItem: View {
                     .lineLimit(1)
                     .truncationMode(.tail)
 
-                Group {
-                    if isDeleting {
-                        Text(.removingGamblerText)
-                    } else {
-                        Text(member.gamblerEmail)
-                    }
-                }
-                .font(.subheadline)
-                .foregroundStyle(Color.secondary)
-                .lineLimit(1)
-                .truncationMode(.tail)
+                Text(member.gamblerEmail)
+                    .font(.subheadline)
+                    .foregroundStyle(Color.secondary)
+                    .lineLimit(1)
+                    .truncationMode(.tail)
             }
 
             Spacer(minLength: 0)
@@ -56,24 +53,26 @@ private let avatarSize: CGFloat = 40
 
 #Preview("Default") {
     ManageGamblerItem(
-        member: PoolMemberModel(
-            gamblerId: "1",
-            gamblerUsername: "danielsanto",
-            gamblerEmail: "daniel@example.com"
-        ),
-        isDeleting: false
+        state: .idle(
+            PoolMemberModel(
+                gamblerId: "1",
+                gamblerUsername: "danielsanto",
+                gamblerEmail: "daniel@example.com"
+            )
+        )
     )
     .padding()
 }
 
 #Preview("Deleting") {
     ManageGamblerItem(
-        member: PoolMemberModel(
-            gamblerId: "1",
-            gamblerUsername: "danielsanto",
-            gamblerEmail: "daniel@example.com"
-        ),
-        isDeleting: true
+        state: .mutating(
+            PoolMemberModel(
+                gamblerId: "1",
+                gamblerUsername: "danielsanto",
+                gamblerEmail: "daniel@example.com"
+            )
+        )
     )
     .padding()
 }

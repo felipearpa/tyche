@@ -10,11 +10,9 @@ import com.felipearpa.tyche.data.pool.application.GetPoolMembers
 import com.felipearpa.tyche.data.pool.application.RemoveGambler
 import com.felipearpa.tyche.ui.exception.orDefaultLocalized
 import com.felipearpa.ui.state.MutationState
-import com.felipearpa.ui.state.activeValue
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -39,18 +37,7 @@ class ManageGamblersViewModel(
         )
 
     private val _removalStates = MutableStateFlow<Map<String, MutationState<PoolMemberModel>>>(emptyMap())
-
-    val deletingGamblerIds: StateFlow<Set<String>> = _removalStates
-        .map { states -> states.filterValues { state -> state is MutationState.Mutating }.keys }
-        .stateIn(viewModelScope, SharingStarted.Lazily, emptySet())
-
-    val removedGamblerIds: StateFlow<Set<String>> = _removalStates
-        .map { states -> states.filterValues { state -> state is MutationState.Mutated }.keys }
-        .stateIn(viewModelScope, SharingStarted.Lazily, emptySet())
-
-    val failedGambler: StateFlow<PoolMemberModel?> = _removalStates
-        .map { states -> states.values.firstOrNull { state -> state is MutationState.Failure }?.activeValue() }
-        .stateIn(viewModelScope, SharingStarted.Lazily, null)
+    val removalStates = _removalStates.asStateFlow()
 
     private fun buildPager() =
         Pager(

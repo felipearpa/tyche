@@ -2,12 +2,12 @@ import SwiftUI
 import Core
 import UI
 import LazyPaging
+import ViewingState
 
 struct ManageGamblersList: View {
     var lazyPagingItems: LazyPaging.LazyPagingItems<String, PoolMemberModel>
     let isEditing: Bool
-    let isDeleting: (PoolMemberModel) -> Bool
-    let isRemoved: (PoolMemberModel) -> Bool
+    let mutationState: (PoolMemberModel) -> MutationState<PoolMemberModel>
     let onRequestRemove: (PoolMemberModel) -> Void
     let onInvite: () -> Void
 
@@ -32,18 +32,19 @@ struct ManageGamblersList: View {
             }
         ) { index in
             if let member = lazyPagingItems.peek(at: index) {
-                if isRemoved(member) {
+                let state = mutationState(member)
+                if state.isMutated() {
                     EmptyView()
                 } else {
-                    row(for: member)
+                    row(for: member, state: state)
                 }
             }
         }
     }
 
     @ViewBuilder
-    private func row(for member: PoolMemberModel) -> some View {
-        let deleting = isDeleting(member)
+    private func row(for member: PoolMemberModel, state: MutationState<PoolMemberModel>) -> some View {
+        let deleting = state.isMutating()
 
         VStack(spacing: 0) {
             SwipeToDismissBox(
@@ -67,7 +68,7 @@ struct ManageGamblersList: View {
                             .accessibilityLabel(Text(.removeGamblerAction))
                         }
 
-                        ManageGamblerItem(member: member, isDeleting: deleting)
+                        ManageGamblerItem(state: state)
                     }
                     .padding(boxSpacing.medium)
                     .frame(maxWidth: .infinity, alignment: .leading)

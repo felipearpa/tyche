@@ -64,6 +64,8 @@ import com.felipearpa.tyche.pool.R
 import com.felipearpa.tyche.ui.lazy.RefreshableLazyPagingColumn
 import com.felipearpa.tyche.ui.lazy.lazyPagingConcatenateError
 import com.felipearpa.tyche.ui.shimmer
+import com.felipearpa.ui.state.MutationState
+import com.felipearpa.ui.state.activeValue
 import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
 import org.koin.compose.koinInject
 import com.felipearpa.tyche.ui.R as SharedR
@@ -78,9 +80,10 @@ fun ManageGamblersView(
 ) {
     val viewModel = manageGamblersViewModel(poolId = poolId)
     val lazyMembers = viewModel.poolMembers.collectAsLazyPagingItems()
-    val deletingIds by viewModel.deletingGamblerIds.collectAsStateWithLifecycle()
-    val removedIds by viewModel.removedGamblerIds.collectAsStateWithLifecycle()
-    val failedGambler by viewModel.failedGambler.collectAsStateWithLifecycle()
+    val removalStates by viewModel.removalStates.collectAsStateWithLifecycle()
+    val failedGambler = removalStates.values
+        .firstOrNull { state -> state is MutationState.Failure }
+        ?.activeValue()
 
     var isEditing by rememberSaveable { mutableStateOf(false) }
     var gamblerPendingRemoval by remember { mutableStateOf<PoolMemberModel?>(null) }
@@ -131,8 +134,7 @@ fun ManageGamblersView(
             ManageGamblersList(
                 lazyMembers = lazyMembers,
                 isEditing = isEditing,
-                deletingIds = deletingIds,
-                removedIds = removedIds,
+                removalStates = removalStates,
                 onRequestRemove = { gamblerPendingRemoval = it },
                 onInvite = { invitePoolUrl = String.format(joinPoolUrlTemplate(), poolId) },
                 modifier = Modifier.fillMaxSize(),
@@ -170,8 +172,7 @@ fun ManageGamblersView(
 private fun ManageGamblersList(
     lazyMembers: LazyPagingItems<PoolMemberModel>,
     isEditing: Boolean,
-    deletingIds: Set<String>,
-    removedIds: Set<String>,
+    removalStates: Map<String, MutationState<PoolMemberModel>>,
     onRequestRemove: (PoolMemberModel) -> Unit,
     onInvite: () -> Unit,
     modifier: Modifier = Modifier,
@@ -202,11 +203,11 @@ private fun ManageGamblersList(
             contentType = lazyMembers.itemContentType { "PoolMember" },
         ) { index ->
             val member = lazyMembers[index] ?: return@items
-            if (removedIds.contains(member.gamblerId)) return@items
+            val state = removalStates[member.gamblerId] ?: MutationState.Idle(member)
+            if (state is MutationState.Mutated) return@items
             ManageGamblerRow(
-                member = member,
                 isEditing = isEditing,
-                isDeleting = deletingIds.contains(member.gamblerId),
+                state = state,
                 onRequestRemove = { onRequestRemove(member) },
             )
         }
@@ -216,11 +217,11 @@ private fun ManageGamblersList(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ManageGamblerRow(
-    member: PoolMemberModel,
     isEditing: Boolean,
-    isDeleting: Boolean,
+    state: MutationState<PoolMemberModel>,
     onRequestRemove: () -> Unit,
 ) {
+    val isDeleting = state is MutationState.Mutating
     val removeLabel = stringResource(id = R.string.remove_gambler_action)
 
     val dismissState = rememberSwipeToDismissBoxState(
@@ -272,8 +273,7 @@ private fun ManageGamblerRow(
                 }
 
                 ManageGamblerItem(
-                    member = member,
-                    isDeleting = isDeleting,
+                    state = state,
                     modifier = Modifier.weight(1f),
                 )
             }

@@ -24,8 +24,7 @@ public struct ManageGamblersListView: View {
         ManageGamblersList(
             lazyPagingItems: viewModel.lazyPager,
             isEditing: isEditing,
-            isDeleting: { viewModel.isDeleting($0) },
-            isRemoved: { viewModel.isRemoved($0) },
+            mutationState: { viewModel.mutationState(for: $0) },
             onRequestRemove: { gamblerPendingRemoval = $0 },
             onInvite: onInvite
         )

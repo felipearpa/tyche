@@ -25,7 +25,6 @@
     <string name="manage_gamblers_edit_action">Editar</string>
     <string name="manage_gamblers_done_action">Listo</string>
     <string name="remove_gambler_action">Eliminar</string>
-    <string name="removing_gambler_text">Eliminando…</string>
     <string name="remove_gambler_alert_title">¿Eliminar a %1$s de esta quiniela?</string>
     <string name="remove_gambler_alert_message">Esto eliminará a este jugador de la quiniela. Esta acción no se puede deshacer.</string>
     <string name="remove_gambler_failure_title">No se pudo eliminar a %1$s</string>

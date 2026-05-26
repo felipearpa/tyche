@@ -25,7 +25,6 @@
     <string name="manage_gamblers_edit_action">Edit</string>
     <string name="manage_gamblers_done_action">Done</string>
     <string name="remove_gambler_action">Remove</string>
-    <string name="removing_gambler_text">Removing…</string>
     <string name="remove_gambler_alert_title">Remove %1$s from this pool?</string>
     <string name="remove_gambler_alert_message">This will remove this gambler from the pool. This action cannot be undone.</string>
     <string name="remove_gambler_failure_title">Couldn’t remove %1$s</string>
