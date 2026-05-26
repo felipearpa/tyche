@@ -9,7 +9,7 @@ struct ManageGamblerItem: View {
     @Environment(\.boxSpacing) private var boxSpacing
 
     private var member: PoolMemberModel { state.activeValue() }
-    private var isDeleting: Bool { state.isMutating() }
+    private var isDeleting: Bool { state.isMutating() || state.isMutated() }
 
     var body: some View {
         HStack(spacing: boxSpacing.medium) {

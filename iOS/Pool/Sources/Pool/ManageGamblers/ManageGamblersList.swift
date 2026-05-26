@@ -33,11 +33,13 @@ struct ManageGamblersList: View {
         ) { index in
             if let member = lazyPagingItems.peek(at: index) {
                 let state = mutationState(member)
-                if state.isMutated() {
-                    EmptyView()
-                } else {
-                    row(for: member, state: state)
+                VStack(spacing: 0) {
+                    if !state.isMutated() {
+                        row(for: member, state: state)
+                            .transition(.opacity)
+                    }
                 }
+                .animation(.default, value: state.isMutated())
             }
         }
     }

@@ -4,6 +4,8 @@ import android.content.Intent
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -208,12 +210,16 @@ private fun ManageGamblersList(
         ) { index ->
             val member = lazyMembers[index] ?: return@items
             val state = removalStates[member.gamblerId] ?: MutationState.Idle(member)
-            if (state is MutationState.Mutated) return@items
-            ManageGamblerRow(
-                isEditing = isEditing,
-                state = state,
-                onRequestRemove = { onRequestRemove(member) },
-            )
+            AnimatedVisibility(
+                visible = state !is MutationState.Mutated,
+                exit = shrinkVertically() + fadeOut(),
+            ) {
+                ManageGamblerRow(
+                    isEditing = isEditing,
+                    state = state,
+                    onRequestRemove = { onRequestRemove(member) },
+                )
+            }
         }
     }
 }

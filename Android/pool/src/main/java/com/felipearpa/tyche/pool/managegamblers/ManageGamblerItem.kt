@@ -35,7 +35,7 @@ fun ManageGamblerItem(
     modifier: Modifier = Modifier,
 ) {
     val member = state.activeValue()
-    val isDeleting = state is MutationState.Mutating
+    val isDeleting = state is MutationState.Mutating || state is MutationState.Mutated
 
     val rowAlpha by animateFloatAsState(
         targetValue = if (isDeleting) 0.55f else 1f,
@@ -79,7 +79,7 @@ fun ManageGamblerItem(
             )
             Text(
                 text = member.gamblerEmail,
-                style = MaterialTheme.typography.bodyMedium,
+                style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
