@@ -148,18 +148,18 @@ private struct PoolLayoutItem: View {
                     .resizable()
                     .scaledToFit()
                     .frame(width: 12, height: 12)
-                    .foregroundStyle(Color.white)
+                    .foregroundStyle(Color(sharedResource: .onPrimary))
                     .modifier(ConditionalShimmer(isActive: isPlaceholder))
 
                 Text(.playingNowText)
                     .font(.caption)
-                    .foregroundStyle(Color.white)
+                    .foregroundStyle(Color(sharedResource: .onPrimary))
                     .modifier(ConditionalShimmer(isActive: isPlaceholder))
             }
 
             Text(poolGamblerScore.poolName)
                 .font(.title2)
-                .foregroundStyle(Color.white)
+                .foregroundStyle(Color(sharedResource: .onPrimary))
                 .lineLimit(2)
                 .truncationMode(.tail)
                 .modifier(ConditionalShimmer(isActive: isPlaceholder))
@@ -168,11 +168,11 @@ private struct PoolLayoutItem: View {
                 if let position = poolGamblerScore.position {
                     Text(.smallSuffixPosition(position))
                         .font(.subheadline)
-                        .foregroundStyle(Color.white)
+                        .foregroundStyle(Color(sharedResource: .onPrimary))
                         .modifier(ConditionalShimmer(isActive: isPlaceholder))
 
                     Rectangle()
-                        .fill(Color.white)
+                        .fill(Color(sharedResource: .onPrimary))
                         .frame(width: 1)
                         .frame(maxHeight: .infinity)
                 }
@@ -180,7 +180,7 @@ private struct PoolLayoutItem: View {
                 if let score = poolGamblerScore.score {
                     Text(.suffixPointText(score))
                         .font(.subheadline)
-                        .foregroundStyle(Color.white)
+                        .foregroundStyle(Color(sharedResource: .onPrimary))
                         .modifier(ConditionalShimmer(isActive: isPlaceholder))
                 }
             }

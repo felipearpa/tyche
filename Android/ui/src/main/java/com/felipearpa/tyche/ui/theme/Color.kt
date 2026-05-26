@@ -33,7 +33,7 @@ internal val lightErrorContainer = Color(0xFFFFCDD2)
 internal val lightOnErrorContainer = Color(0xFFB71C1C)
 
 internal val darkPrimaryColor = Color(0xFF4CAF50)
-internal val darkOnPrimaryColor = Color(0xFF1B5E20)
+internal val darkOnPrimaryColor = Color(0xFFFFFFFF)
 
 internal val darkPrimaryContainer = Color(0xFF2C6B3A)
 internal val darkOnPrimaryContainer = Color(0xFFA5D6A7)
