@@ -313,7 +313,9 @@ private fun PoolMenuSection(
         Text(
             text = stringResource(id = R.string.pool_section_title).uppercase(),
             style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            // Match iOS, which uses the muted system `Color.secondary` for the section header
+            // rather than the near-solid `onSurfaceVariant`.
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
         )
 
         Column(modifier = Modifier.fillMaxWidth()) {
