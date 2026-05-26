@@ -1,5 +1,7 @@
 package com.felipearpa.tyche.pool.managegamblers
 
+import androidx.compose.animation.Crossfade
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,6 +13,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -34,35 +37,42 @@ fun ManageGamblerItem(
     val member = state.activeValue()
     val isDeleting = state is MutationState.Mutating
 
+    val rowAlpha by animateFloatAsState(
+        targetValue = if (isDeleting) 0.55f else 1f,
+        label = "rowAlpha",
+    )
+
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .alpha(if (isDeleting) 0.55f else 1f),
+            .alpha(rowAlpha),
         horizontalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.medium),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        if (isDeleting) {
-            Surface(
-                shape = CircleShape,
-                color = MaterialTheme.colorScheme.surfaceVariant,
-                modifier = Modifier.size(avatarSize),
-            ) {
-                Box(contentAlignment = Alignment.Center) {
-                    BallSpinner(modifier = Modifier.size(avatarSize * 0.6f))
+        Crossfade(targetState = isDeleting, label = "avatar") { deleting ->
+            if (deleting) {
+                Surface(
+                    shape = CircleShape,
+                    color = MaterialTheme.colorScheme.surfaceVariant,
+                    modifier = Modifier.size(avatarSize),
+                ) {
+                    Box(contentAlignment = Alignment.Center) {
+                        BallSpinner(modifier = Modifier.size(avatarSize * 0.6f))
+                    }
                 }
+            } else {
+                EmailAvatar(
+                    email = member.gamblerEmail,
+                    modifier = Modifier
+                        .size(avatarSize)
+                        .clip(CircleShape),
+                )
             }
-        } else {
-            EmailAvatar(
-                email = member.gamblerEmail,
-                modifier = Modifier
-                    .size(avatarSize)
-                    .clip(CircleShape),
-            )
         }
 
         Column(modifier = Modifier.weight(1f)) {
             Text(
-                text = "@${member.gamblerUsername}",
+                text = member.gamblerUsername,
                 style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Medium),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,

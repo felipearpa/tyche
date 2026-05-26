@@ -3,8 +3,10 @@ package com.felipearpa.tyche.pool.managegamblers
 import android.content.Intent
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -52,6 +54,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.compose.LazyPagingItems
@@ -64,9 +67,10 @@ import com.felipearpa.tyche.pool.R
 import com.felipearpa.tyche.ui.lazy.RefreshableLazyPagingColumn
 import com.felipearpa.tyche.ui.lazy.lazyPagingConcatenateError
 import com.felipearpa.tyche.ui.shimmer
+import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
+import com.felipearpa.tyche.ui.theme.TycheTheme
 import com.felipearpa.ui.state.MutationState
 import com.felipearpa.ui.state.activeValue
-import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
 import org.koin.compose.koinInject
 import com.felipearpa.tyche.ui.R as SharedR
 
@@ -262,14 +266,13 @@ private fun ManageGamblerRow(
                 horizontalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.medium),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                if (isEditing && !isDeleting) {
-                    IconButton(onClick = onRequestRemove) {
-                        Icon(
-                            painter = painterResource(id = SharedR.drawable.delete_forever),
-                            contentDescription = removeLabel,
-                            tint = MaterialTheme.colorScheme.error,
-                        )
-                    }
+                AnimatedVisibility(visible = isEditing && !isDeleting) {
+                    Icon(
+                        painter = painterResource(id = SharedR.drawable.remove_circle),
+                        contentDescription = removeLabel,
+                        tint = MaterialTheme.colorScheme.error,
+                        modifier = Modifier.clickable { onRequestRemove() },
+                    )
                 }
 
                 ManageGamblerItem(
@@ -515,5 +518,96 @@ private fun InvitePoolSharer(url: String, onClose: () -> Unit) {
 
     LaunchedEffect(Unit) {
         activityResultLauncher.launch(shareIntent)
+    }
+}
+
+@PreviewLightDark
+@Composable
+private fun ManageGamblerRowPreview() {
+    val member = PoolMemberModel(
+        gamblerId = "1",
+        gamblerUsername = "felipearpa",
+        gamblerEmail = "felipe@example.com",
+    )
+    TycheTheme {
+        Surface {
+            ManageGamblerRow(
+                isEditing = false,
+                state = MutationState.Idle(member),
+                onRequestRemove = {},
+            )
+        }
+    }
+}
+
+@PreviewLightDark
+@Composable
+private fun ManageGamblerRowEditingPreview() {
+    val member = PoolMemberModel(
+        gamblerId = "1",
+        gamblerUsername = "felipearpa",
+        gamblerEmail = "felipe@example.com",
+    )
+    TycheTheme {
+        Surface {
+            ManageGamblerRow(
+                isEditing = true,
+                state = MutationState.Idle(member),
+                onRequestRemove = {},
+            )
+        }
+    }
+}
+
+@PreviewLightDark
+@Composable
+private fun ManageGamblersEmptyViewPreview() {
+    TycheTheme {
+        Surface {
+            ManageGamblersEmptyView(onInvite = {})
+        }
+    }
+}
+
+@PreviewLightDark
+@Composable
+private fun ManageGamblerErrorBannerPreview() {
+    TycheTheme {
+        Surface {
+            ManageGamblerErrorBanner(
+                username = "felipearpa",
+                onRetry = {},
+            )
+        }
+    }
+}
+
+@PreviewLightDark
+@Composable
+private fun RemoveGamblerConfirmationDialogPreview() {
+    TycheTheme {
+        RemoveGamblerConfirmationDialog(
+            username = "felipearpa",
+            onConfirm = {},
+            onDismiss = {},
+        )
+    }
+}
+
+@PreviewLightDark
+@Composable
+private fun ManageGamblerPlaceholderRowPreview() {
+    TycheTheme {
+        Surface {
+            ManageGamblerPlaceholderRow()
+        }
+    }
+}
+
+@PreviewLightDark
+@Composable
+private fun ManageGamblerSwipeBackgroundPreview() {
+    TycheTheme {
+        ManageGamblerSwipeBackground(isPastThreshold = false)
     }
 }

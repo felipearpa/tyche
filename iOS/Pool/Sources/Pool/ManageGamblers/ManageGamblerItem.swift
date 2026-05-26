@@ -18,7 +18,7 @@ struct ManageGamblerItem: View {
                 .clipShape(Circle())
 
             VStack(alignment: .leading, spacing: boxSpacing.small) {
-                Text("@\(member.gamblerUsername)")
+                Text(member.gamblerUsername)
                     .fontWeight(.medium)
                     .lineLimit(1)
                     .truncationMode(.tail)
@@ -33,6 +33,7 @@ struct ManageGamblerItem: View {
             Spacer(minLength: 0)
         }
         .opacity(isDeleting ? 0.55 : 1)
+        .animation(.default, value: isDeleting)
     }
 
     @ViewBuilder
@@ -43,8 +44,10 @@ struct ManageGamblerItem: View {
                 BallSpinner()
                     .frame(width: avatarSize * 0.6, height: avatarSize * 0.6)
             }
+            .transition(.opacity)
         } else {
             EmailAvatar(email: member.gamblerEmail)
+                .transition(.opacity)
         }
     }
 }
