@@ -109,14 +109,14 @@ private enum PoolHomeTab: Int {
 }
 
 private extension PoolHomeTab {
-    var title: String {
+    var title: Text {
         switch self {
         case .gamblerScores:
-            return String(localized: .scoreTab)
+            return Text(.scoreTab)
         case .bets:
-            return String(localized: .betTab)
+            return Text(.betTab)
         case .historyBet:
-            return String(localized: .historyBetsTab)
+            return Text(.historyBetsTab)
         }
     }
 }

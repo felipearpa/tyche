@@ -1,7 +1,6 @@
 package com.felipearpa.tyche.poolhome
 
 import android.content.Intent
-import android.content.res.Configuration
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
@@ -382,9 +381,9 @@ private val Tab.title: String
 
 @OptIn(ExperimentalMaterial3Api::class)
 @PreviewLightDark
-@Preview(locale = "es-rCO", uiMode = Configuration.UI_MODE_NIGHT_YES)
-@Preview(locale = "es-rCO", uiMode = Configuration.UI_MODE_NIGHT_YES, device = Devices.NEXUS_7)
-@Preview(locale = "es-rCO", uiMode = Configuration.UI_MODE_NIGHT_YES, device = Devices.PIXEL_TABLET)
+@Preview(locale = "es-rCO")
+@Preview(locale = "es-rCO", device = Devices.NEXUS_7)
+@Preview(locale = "es-rCO", device = Devices.PIXEL_TABLET)
 @Composable
 private fun PoolHomeScoreTabPreview() {
     TycheTheme {
@@ -406,9 +405,9 @@ private fun PoolHomeScoreTabPreview() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @PreviewLightDark
-@Preview(locale = "es-rCO", uiMode = Configuration.UI_MODE_NIGHT_YES)
-@Preview(locale = "es-rCO", uiMode = Configuration.UI_MODE_NIGHT_YES, device = Devices.NEXUS_7)
-@Preview(locale = "es-rCO", uiMode = Configuration.UI_MODE_NIGHT_YES, device = Devices.PIXEL_TABLET)
+@Preview(locale = "es-rCO")
+@Preview(locale = "es-rCO", device = Devices.NEXUS_7)
+@Preview(locale = "es-rCO", device = Devices.PIXEL_TABLET)
 @Composable
 private fun PoolHomeBetsTabPreview() {
     TycheTheme {
@@ -430,9 +429,9 @@ private fun PoolHomeBetsTabPreview() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @PreviewLightDark
-@Preview(locale = "es-rCO", uiMode = Configuration.UI_MODE_NIGHT_YES)
-@Preview(locale = "es-rCO", uiMode = Configuration.UI_MODE_NIGHT_YES, device = Devices.NEXUS_7)
-@Preview(locale = "es-rCO", uiMode = Configuration.UI_MODE_NIGHT_YES, device = Devices.PIXEL_TABLET)
+@Preview(locale = "es-rCO")
+@Preview(locale = "es-rCO", device = Devices.NEXUS_7)
+@Preview(locale = "es-rCO", device = Devices.PIXEL_TABLET)
 @Composable
 private fun PoolHomeHistoryTabPreview() {
     TycheTheme {

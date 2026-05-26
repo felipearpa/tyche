@@ -307,3 +307,18 @@ private struct JoinPoolUrlTemplateFakeProvider: JoinPoolUrlTemplateProvider {
     .environment(\.diResolver, poolHomeFakeResolver())
     .preferredColorScheme(.dark)
 }
+
+#Preview("Store") {
+    PoolHomeRouter(
+        user: AccountBundle(
+            accountId: "gambler-id",
+            externalAccountId: "external-id",
+            email: "preview@example.com"
+        ),
+        pool: PoolProfile(poolId: "pool-id"),
+        onChangePool: {},
+        onSignOut: {}
+    )
+    .environment(\.diResolver, poolHomeFakeResolver())
+    .environment(\.locale, .init(identifier: "es-CO"))
+}
