@@ -1,8 +1,5 @@
 package com.felipearpa.tyche.pool.managegamblers
 
-import android.content.Intent
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
@@ -17,7 +14,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -38,7 +34,6 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -54,7 +49,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.onClick
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
@@ -63,8 +57,6 @@ import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemContentType
 import androidx.paging.compose.itemKey
-import com.felipearpa.foundation.emptyString
-import com.felipearpa.tyche.core.JoinPoolUrlTemplateProvider
 import com.felipearpa.tyche.pool.R
 import com.felipearpa.tyche.ui.exception.localizedOrDefault
 import com.felipearpa.tyche.ui.lazy.Failure
@@ -75,7 +67,6 @@ import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
 import com.felipearpa.tyche.ui.theme.TycheTheme
 import com.felipearpa.ui.state.MutationState
 import com.felipearpa.ui.state.activeValue
-import org.koin.compose.koinInject
 import com.felipearpa.tyche.ui.R as SharedR
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -95,9 +86,6 @@ fun ManageGamblersView(
 
     var isEditing by rememberSaveable { mutableStateOf(false) }
     var gamblerPendingRemoval by remember { mutableStateOf<PoolMemberModel?>(null) }
-
-    val joinPoolUrlTemplate = koinInject<JoinPoolUrlTemplateProvider>()
-    var invitePoolUrl by remember { mutableStateOf(emptyString()) }
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
@@ -144,7 +132,6 @@ fun ManageGamblersView(
                 isEditing = isEditing,
                 removalStates = removalStates,
                 onRequestRemove = { gamblerPendingRemoval = it },
-                onInvite = { invitePoolUrl = String.format(joinPoolUrlTemplate(), poolId) },
                 modifier = Modifier.fillMaxSize(),
             )
 
@@ -170,10 +157,6 @@ fun ManageGamblersView(
             onDismiss = { gamblerPendingRemoval = null },
         )
     }
-
-    if (invitePoolUrl.isNotEmpty()) {
-        InvitePoolSharer(url = invitePoolUrl, onClose = { invitePoolUrl = emptyString() })
-    }
 }
 
 @Composable
@@ -182,21 +165,13 @@ private fun ManageGamblersList(
     isEditing: Boolean,
     removalStates: Map<String, MutationState<PoolMemberModel>>,
     onRequestRemove: (PoolMemberModel) -> Unit,
-    onInvite: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     RefreshableLazyPagingColumn(
         modifier = modifier,
         lazyPagingItems = lazyMembers,
         loadingContent = { managePlaceholderList(count = 8) },
-        emptyContent = {
-            item {
-                ManageGamblersEmptyView(
-                    onInvite = onInvite,
-                    modifier = Modifier.fillParentMaxSize(),
-                )
-            }
-        },
+        emptyContent = {},
         errorContent = { error(exception = it) },
         appendLoadingContent = { managePlaceholderItemRow() },
         appendErrorContent = { exception ->
@@ -235,11 +210,13 @@ private fun ManageGamblerRow(
     onRequestRemove: () -> Unit,
 ) {
     val isDeleting = state is MutationState.Mutating
+    val isOwner = state.activeValue().isOwner
+    val isRemovable = !isOwner
     val removeLabel = stringResource(id = R.string.remove_gambler_action)
 
     val dismissState = rememberSwipeToDismissBoxState(
         confirmValueChange = { value ->
-            if (value == SwipeToDismissBoxValue.EndToStart && !isDeleting) {
+            if (value == SwipeToDismissBoxValue.EndToStart && !isDeleting && isRemovable) {
                 onRequestRemove()
             }
             false
@@ -249,18 +226,24 @@ private fun ManageGamblerRow(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .semantics {
-                onClick(label = removeLabel) {
-                    if (!isDeleting) onRequestRemove()
-                    true
-                }
-            }
+            .then(
+                if (isRemovable) {
+                    Modifier.semantics {
+                        onClick(label = removeLabel) {
+                            if (!isDeleting) onRequestRemove()
+                            true
+                        }
+                    }
+                } else {
+                    Modifier
+                },
+            )
             .padding(horizontal = LocalBoxSpacing.current.medium),
     ) {
         SwipeToDismissBox(
             state = dismissState,
             enableDismissFromStartToEnd = false,
-            enableDismissFromEndToStart = !isDeleting,
+            enableDismissFromEndToStart = !isDeleting && isRemovable,
             backgroundContent = {
                 ManageGamblerSwipeBackground(
                     isPastThreshold = dismissState.targetValue == SwipeToDismissBoxValue.EndToStart,
@@ -270,12 +253,18 @@ private fun ManageGamblerRow(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(MaterialTheme.colorScheme.surface)
+                    .background(
+                        if (isOwner) {
+                            MaterialTheme.colorScheme.primaryContainer
+                        } else {
+                            MaterialTheme.colorScheme.surface
+                        },
+                    )
                     .padding(all = LocalBoxSpacing.current.medium),
                 horizontalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.medium),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                AnimatedVisibility(visible = isEditing && !isDeleting) {
+                AnimatedVisibility(visible = isEditing && !isDeleting && isRemovable) {
                     Icon(
                         painter = painterResource(id = SharedR.drawable.remove_circle),
                         contentDescription = removeLabel,
@@ -369,66 +358,6 @@ private fun ManageGamblerPlaceholderRow(modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun ManageGamblersEmptyView(onInvite: () -> Unit, modifier: Modifier = Modifier) {
-    Column(
-        modifier = modifier.padding(all = LocalBoxSpacing.current.medium),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(
-            space = LocalBoxSpacing.current.large,
-            alignment = Alignment.CenterVertically,
-        ),
-    ) {
-        Box(
-            modifier = Modifier
-                .size(96.dp)
-                .clip(CircleShape)
-                .background(MaterialTheme.colorScheme.surfaceVariant),
-            contentAlignment = Alignment.Center,
-        ) {
-            Icon(
-                painter = painterResource(id = SharedR.drawable.filled_person),
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.size(40.dp),
-            )
-        }
-
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.small),
-        ) {
-            Text(
-                text = stringResource(id = R.string.no_other_gamblers_title),
-                style = MaterialTheme.typography.titleMedium,
-                textAlign = TextAlign.Center,
-            )
-            Text(
-                text = stringResource(id = R.string.no_other_gamblers_message),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.widthIn(max = 240.dp),
-            )
-        }
-
-        Button(
-            modifier = Modifier.fillMaxWidth(),
-            onClick = onInvite,
-        ) {
-            Icon(
-                painter = painterResource(id = SharedR.drawable.person_add),
-                contentDescription = null,
-                modifier = Modifier.size(18.dp),
-            )
-            Text(
-                text = stringResource(id = R.string.invite_gamblers_action),
-                modifier = Modifier.padding(start = LocalBoxSpacing.current.small),
-            )
-        }
-    }
-}
-
-@Composable
 private fun ManageGamblerErrorBanner(
     username: String,
     onRetry: () -> Unit,
@@ -508,24 +437,6 @@ private fun RemoveGamblerConfirmationDialog(
     )
 }
 
-@Composable
-private fun InvitePoolSharer(url: String, onClose: () -> Unit) {
-    val activityResultLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.StartActivityForResult(),
-    ) { _ -> onClose() }
-
-    val sendIntent = Intent().apply {
-        action = Intent.ACTION_SEND
-        putExtra(Intent.EXTRA_TEXT, url)
-        type = "text/plain"
-    }
-    val shareIntent = Intent.createChooser(sendIntent, null)
-
-    LaunchedEffect(Unit) {
-        activityResultLauncher.launch(shareIntent)
-    }
-}
-
 fun LazyListScope.error(exception: Throwable) {
     item {
         Box(
@@ -584,10 +495,20 @@ private fun ManageGamblerRowEditingPreview() {
 
 @PreviewLightDark
 @Composable
-private fun ManageGamblersEmptyViewPreview() {
+private fun ManageGamblerOwnerRowPreview() {
+    val owner = PoolMemberModel(
+        gamblerId = "1",
+        gamblerUsername = "felipearpa",
+        gamblerEmail = "felipe@example.com",
+        isOwner = true,
+    )
     TycheTheme {
         Surface {
-            ManageGamblersEmptyView(onInvite = {})
+            ManageGamblerRow(
+                isEditing = true,
+                state = MutationState.Idle(owner),
+                onRequestRemove = {},
+            )
         }
     }
 }

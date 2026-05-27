@@ -7,4 +7,5 @@ internal data class PoolMemberResponse(
     val gamblerId: String,
     val gamblerUsername: String,
     val gamblerEmail: String,
+    val isOwner: Boolean,
 )

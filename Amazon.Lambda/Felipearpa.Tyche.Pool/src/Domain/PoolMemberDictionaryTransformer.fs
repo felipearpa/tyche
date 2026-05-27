@@ -16,7 +16,9 @@ module PoolMemberDictionaryTransformer =
             dictionary
             |> tryGetAttributeValueOrNone PoolTable.Attribute.gamblerEmail
             |> Option.map (fun attributeValue -> attributeValue.S)
-            |> Option.defaultValue "" }
+            |> Option.defaultValue ""
+          // Ownership is resolved by the use case, which knows the pool's creator.
+          IsOwner = false }
 
     type Extensions =
         [<Extension>]

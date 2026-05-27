@@ -20,12 +20,13 @@ struct ManageGamblerItem: View {
             VStack(alignment: .leading, spacing: boxSpacing.small) {
                 Text(member.gamblerUsername)
                     .fontWeight(.medium)
+                    .foregroundStyle(member.isOwner ? Color(sharedResource: .onPrimaryContainter) : Color.primary)
                     .lineLimit(1)
                     .truncationMode(.tail)
 
                 Text(member.gamblerEmail)
                     .font(.subheadline)
-                    .foregroundStyle(Color.secondary)
+                    .foregroundStyle(member.isOwner ? Color(sharedResource: .onPrimaryContainter).opacity(0.7) : Color.secondary)
                     .lineLimit(1)
                     .truncationMode(.tail)
             }

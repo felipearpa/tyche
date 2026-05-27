@@ -5,4 +5,5 @@ internal fun PoolMemberResponse.toPoolMember() =
         gamblerId = this.gamblerId,
         gamblerUsername = this.gamblerUsername,
         gamblerEmail = this.gamblerEmail,
+        isOwner = this.isOwner,
     )

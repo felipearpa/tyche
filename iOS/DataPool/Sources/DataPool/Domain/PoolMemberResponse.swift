@@ -2,6 +2,7 @@ struct PoolMemberResponse: Codable {
     let gamblerId: String
     let gamblerUsername: String
     let gamblerEmail: String
+    let isOwner: Bool
 }
 
 extension PoolMemberResponse {
@@ -9,7 +10,8 @@ extension PoolMemberResponse {
         return PoolMember(
             gamblerId: self.gamblerId,
             gamblerUsername: self.gamblerUsername,
-            gamblerEmail: self.gamblerEmail
+            gamblerEmail: self.gamblerEmail,
+            isOwner: self.isOwner
         )
     }
 }

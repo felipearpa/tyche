@@ -7,6 +7,7 @@ data class PoolMemberModel(
     val gamblerId: String,
     val gamblerUsername: String,
     val gamblerEmail: String,
+    val isOwner: Boolean = false,
 )
 
 fun PoolMember.toPoolMemberModel() =
@@ -14,6 +15,7 @@ fun PoolMember.toPoolMemberModel() =
         gamblerId = this.gamblerId,
         gamblerUsername = this.gamblerUsername,
         gamblerEmail = this.gamblerEmail,
+        isOwner = this.isOwner,
     )
 
 fun poolMemberPlaceholderModel() =

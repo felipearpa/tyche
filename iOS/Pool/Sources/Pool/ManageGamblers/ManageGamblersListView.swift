@@ -5,7 +5,6 @@ import DataPool
 
 public struct ManageGamblersListView: View {
     @StateObject private var viewModel: ManageGamblersListViewModel
-    private let onInvite: () -> Void
 
     @State private var isEditing = false
     @State private var gamblerPendingRemoval: PoolMemberModel?
@@ -13,11 +12,9 @@ public struct ManageGamblersListView: View {
     @Environment(\.boxSpacing) private var boxSpacing
 
     public init(
-        viewModel: @autoclosure @escaping () -> ManageGamblersListViewModel,
-        onInvite: @escaping () -> Void
+        viewModel: @autoclosure @escaping () -> ManageGamblersListViewModel
     ) {
         self._viewModel = .init(wrappedValue: viewModel())
-        self.onInvite = onInvite
     }
 
     public var body: some View {
@@ -25,8 +22,7 @@ public struct ManageGamblersListView: View {
             lazyPagingItems: viewModel.lazyPager,
             isEditing: isEditing,
             mutationState: { viewModel.mutationState(for: $0) },
-            onRequestRemove: { gamblerPendingRemoval = $0 },
-            onInvite: onInvite
+            onRequestRemove: { gamblerPendingRemoval = $0 }
         )
         .padding(.vertical, boxSpacing.medium)
         .navigationBarTitleDisplayMode(.inline)

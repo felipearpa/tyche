@@ -9,7 +9,6 @@ struct ManageGamblersList: View {
     let isEditing: Bool
     let mutationState: (PoolMemberModel) -> MutationState<PoolMemberModel>
     let onRequestRemove: (PoolMemberModel) -> Void
-    let onInvite: () -> Void
 
     @Environment(\.boxSpacing) private var boxSpacing
 
@@ -17,7 +16,7 @@ struct ManageGamblersList: View {
         RefreshableLazyPagingVStack(
             lazyPagingItems: lazyPagingItems,
             loadingContent: { ManageGamblerPlaceholderList() },
-            emptyContent: { ManageGamblersEmptyView(onInvite: onInvite) },
+            emptyContent: { EmptyView() },
             errorContent: { error in
                 LazyPagingVStackError(localizedError: error.orDefaultLocalized())
             },
@@ -47,11 +46,13 @@ struct ManageGamblersList: View {
     @ViewBuilder
     private func row(for member: PoolMemberModel, state: MutationState<PoolMemberModel>) -> some View {
         let deleting = state.isMutating()
+        let isRemovable = !member.isOwner
 
         VStack(spacing: 0) {
             SwipeToDismissBox(
+                isEnabled: !deleting && isRemovable,
                 onConfirm: {
-                    if !deleting {
+                    if !deleting && isRemovable {
                         onRequestRemove(member)
                     }
                 },
@@ -60,7 +61,7 @@ struct ManageGamblersList: View {
                 },
                 content: {
                     HStack(spacing: boxSpacing.medium) {
-                        if isEditing && !deleting {
+                        if isEditing && !deleting && isRemovable {
                             Button(action: { onRequestRemove(member) }) {
                                 Image(systemName: "minus.circle.fill")
                                     .font(.title3)
@@ -74,12 +75,12 @@ struct ManageGamblersList: View {
                     }
                     .padding(boxSpacing.medium)
                     .frame(maxWidth: .infinity, alignment: .leading)
-                    .background(Color(uiColor: .systemBackground))
+                    .background(member.isOwner ? Color(sharedResource: .primaryContainer) : Color(uiColor: .systemBackground))
                 }
             )
             .accessibilityElement(children: .combine)
             .accessibilityAction(named: Text(.removeGamblerAction)) {
-                if !deleting {
+                if !deleting && isRemovable {
                     onRequestRemove(member)
                 }
             }
@@ -143,56 +144,6 @@ struct ManageGamblerPlaceholderRow: View {
             Divider()
         }
         .padding(.horizontal, boxSpacing.medium)
-    }
-}
-
-struct ManageGamblersEmptyView: View {
-    let onInvite: () -> Void
-
-    @Environment(\.boxSpacing) private var boxSpacing
-
-    var body: some View {
-        VStack(spacing: boxSpacing.large) {
-            ZStack {
-                Circle()
-                    .fill(Color(sharedResource: .surfaceVariant))
-                    .frame(width: 96, height: 96)
-                    .overlay(
-                        Circle().stroke(Color(sharedResource: .onSurfaceVariant).opacity(0.2), lineWidth: 1)
-                    )
-
-                Image(systemName: "person.2")
-                    .font(.system(size: 40))
-                    .foregroundStyle(Color(sharedResource: .onSurfaceVariant))
-            }
-
-            VStack(spacing: boxSpacing.small) {
-                Text(.noOtherGamblersTitle)
-                    .font(.title3)
-                    .fontWeight(.semibold)
-                    .multilineTextAlignment(.center)
-
-                Text(.noOtherGamblersMessage)
-                    .font(.subheadline)
-                    .foregroundStyle(Color.secondary)
-                    .multilineTextAlignment(.center)
-                    .frame(maxWidth: 240)
-            }
-
-            Button(action: onInvite) {
-                HStack(spacing: boxSpacing.small) {
-                    Image(systemName: "plus")
-                    Text(.inviteGamblersAction)
-                }
-                .fontWeight(.semibold)
-                .foregroundStyle(Color.black)
-                .padding(.horizontal, boxSpacing.large)
-                .padding(.vertical, boxSpacing.medium)
-                .background(Color.brandAccent, in: Capsule())
-            }
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .padding(boxSpacing.large)
     }
 }
 

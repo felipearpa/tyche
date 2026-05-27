@@ -22,7 +22,8 @@ module GetPoolMembersTest =
     let private gambler (id: string) (username: string) : PoolMember =
         { GamblerId = Ulid.newOf id
           GamblerUsername = NonEmptyString100.newOf username
-          GamblerEmail = $"{username}@tyche.com" }
+          GamblerEmail = $"{username}@tyche.com"
+          IsOwner = false }
 
     let private fakeRepo (maybePool: Pool option) (members: PoolMember list) =
         { new IPoolRepository with
@@ -53,12 +54,13 @@ module GetPoolMembersTest =
         }
 
     [<Fact>]
-    let ``given the owner caller when execute then excludes the owner from the list`` () =
+    let ``given the owner caller when execute then includes the owner flagged as owner`` () =
         async {
             let ownerRow =
                 { PoolMember.GamblerId = ownerId
                   GamblerUsername = NonEmptyString100.newOf "owner"
-                  GamblerEmail = "owner@tyche.com" }
+                  GamblerEmail = "owner@tyche.com"
+                  IsOwner = false }
 
             let alice = gambler "01K1PX1TX2NM1HG851S1V0QG6Q" "alice"
             let bob = gambler "01K1PX1TX2NM1HG851S1V0QG6R" "bob"
@@ -71,7 +73,7 @@ module GetPoolMembersTest =
             match result with
             | Ok page ->
                 let items = page.Items |> List.ofSeq
-                items.Length |> shouldEqual 2
-                items |> List.exists (fun gambler -> gambler.GamblerId = ownerId) |> shouldEqual false
+                items.Length |> shouldEqual 3
+                items |> List.filter (fun gambler -> gambler.IsOwner) |> List.map (fun gambler -> gambler.GamblerId) |> shouldEqual [ ownerId ]
             | Error _ -> failwith "expected Ok"
         }

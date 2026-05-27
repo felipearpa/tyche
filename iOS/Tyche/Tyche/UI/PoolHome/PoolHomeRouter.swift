@@ -169,11 +169,7 @@ private struct PoolHomeRouterContent: View {
                         getPoolMembersUseCase: diResolver.resolve(GetPoolMembersUseCase.self)!,
                         removeGamblerUseCase: diResolver.resolve(RemoveGamblerUseCase.self)!,
                         poolId: route.poolId
-                    ),
-                    onInvite: {
-                        let template = diResolver.resolve(JoinPoolUrlTemplateProvider.self)!
-                        inviteUrl = ShareablePoolUrl(String(format: template(), pool.poolId))
-                    }
+                    )
                 )
             }
         }

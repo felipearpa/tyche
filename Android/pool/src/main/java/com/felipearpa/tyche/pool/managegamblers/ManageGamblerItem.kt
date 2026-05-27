@@ -37,6 +37,15 @@ fun ManageGamblerItem(
     val member = state.activeValue()
     val isDeleting = state is MutationState.Mutating || state is MutationState.Mutated
 
+    val usernameColor =
+        if (member.isOwner) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurface
+    val emailColor =
+        if (member.isOwner) {
+            MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f)
+        } else {
+            MaterialTheme.colorScheme.onSurfaceVariant
+        }
+
     val rowAlpha by animateFloatAsState(
         targetValue = if (isDeleting) 0.55f else 1f,
         label = "rowAlpha",
@@ -74,13 +83,14 @@ fun ManageGamblerItem(
             Text(
                 text = member.gamblerUsername,
                 style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Medium),
+                color = usernameColor,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
             Text(
                 text = member.gamblerEmail,
                 style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                color = emailColor,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )

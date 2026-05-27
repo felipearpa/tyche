@@ -23,9 +23,12 @@ type GetPoolMembers(poolRepository: IPoolRepository) =
             | Ok(Some pool) ->
                 let! page = poolRepository.GetPoolMembersAsync(poolId, next)
 
-                let withoutOwner =
+                let withOwnership =
                     { page with
-                        Items = page.Items |> Seq.filter (fun gambler -> gambler.GamblerId <> pool.CreatorGamblerId) }
+                        Items =
+                            page.Items
+                            |> Seq.map (fun gambler ->
+                                { gambler with IsOwner = gambler.GamblerId = pool.CreatorGamblerId }) }
 
-                return Ok withoutOwner
+                return Ok withOwnership
         }

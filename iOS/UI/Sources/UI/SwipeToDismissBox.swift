@@ -12,6 +12,7 @@ import SwiftUI
 /// react once the commit threshold is crossed.
 public struct SwipeToDismissBox<Background: View, Content: View>: View {
     private let thresholdFraction: CGFloat
+    private let isEnabled: Bool
     private let onConfirm: () -> Void
     private let background: (_ progress: Double, _ isPastThreshold: Bool) -> Background
     private let content: () -> Content
@@ -21,11 +22,13 @@ public struct SwipeToDismissBox<Background: View, Content: View>: View {
 
     public init(
         thresholdFraction: CGFloat = 0.35,
+        isEnabled: Bool = true,
         onConfirm: @escaping () -> Void,
         @ViewBuilder background: @escaping (_ progress: Double, _ isPastThreshold: Bool) -> Background,
         @ViewBuilder content: @escaping () -> Content
     ) {
         self.thresholdFraction = thresholdFraction
+        self.isEnabled = isEnabled
         self.onConfirm = onConfirm
         self.background = background
         self.content = content
@@ -57,7 +60,7 @@ public struct SwipeToDismissBox<Background: View, Content: View>: View {
                     }
                 )
                 .offset(x: offsetX)
-                .gesture(dragGesture)
+                .gesture(dragGesture, including: isEnabled ? .all : .subviews)
         }
     }
 

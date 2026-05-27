@@ -5,4 +5,5 @@ open Felipearpa.Type
 type PoolMember =
     { GamblerId: Ulid
       GamblerUsername: NonEmptyString100
-      GamblerEmail: string }
+      GamblerEmail: string
+      IsOwner: bool }
