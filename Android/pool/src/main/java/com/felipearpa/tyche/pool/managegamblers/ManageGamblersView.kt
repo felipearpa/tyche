@@ -237,8 +237,7 @@ private fun ManageGamblerRow(
                 } else {
                     Modifier
                 },
-            )
-            .padding(horizontal = LocalBoxSpacing.current.medium),
+            ),
     ) {
         SwipeToDismissBox(
             state = dismissState,
@@ -319,8 +318,7 @@ private fun LazyListScope.managePlaceholderItemRow() {
 private fun ManageGamblerPlaceholderRow(modifier: Modifier = Modifier) {
     Column(
         modifier = modifier
-            .fillMaxWidth()
-            .padding(horizontal = LocalBoxSpacing.current.medium),
+            .fillMaxWidth(),
     ) {
         Row(
             modifier = Modifier

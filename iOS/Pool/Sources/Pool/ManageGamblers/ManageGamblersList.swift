@@ -87,7 +87,6 @@ struct ManageGamblersList: View {
 
             Divider()
         }
-        .padding(.horizontal, boxSpacing.medium)
     }
 }
 
@@ -143,7 +142,6 @@ struct ManageGamblerPlaceholderRow: View {
 
             Divider()
         }
-        .padding(.horizontal, boxSpacing.medium)
     }
 }
 
