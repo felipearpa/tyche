@@ -20,7 +20,7 @@ Generate store images from screenshots placed in `android-screenshots/` and `ios
 
 Use always this pattern:
 
-- Full-bleed bright brand-color background ( #1B5E20 and #FFC107 ).
+- Full-bleed brand-color gradient background from the light-theme green #4CAF50 to the light-theme yellow #FFC107.
 - Large, bold, centered headline near the top.
 - Main phone screenshot/device crop below the headline, with rounded device corners.
 - The screenshot is oversized and cropped by the bottom edge when useful.
@@ -72,7 +72,7 @@ Keep existing QR SVG files unless the user explicitly asks to regenerate them:
 
 Match the current Tyche visual system:
 
-- Use a green brand background, preferably a subtle green radial or vignette treatment. Use a center stop of `#2E7D32` and an edge stop of `#0C2F0E` so the background stays consistent across runs.
+- Use a brand-color gradient background from the light-theme green `#4CAF50` to the light-theme yellow `#FFC107` so the background stays consistent across runs. Prefer a diagonal (top-green to bottom-yellow) gradient; favor black headline text where it overlaps the yellow region to keep contrast.
 - Use black or white bold headline text with strong contrast.
 - Feature dark-mode app UI screenshots inside realistic device frames when available.
 - Favor focused sports-prediction messages such as "Make your predictions", "Create your pools", "Compete with friends", and "Track every result".
