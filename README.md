@@ -2,8 +2,6 @@
 
 ### Predict. Compete. Win the bragging rights.
 
-![Feature graphic](android-store/feature-graphic.png)
-
 **Fortuna turns every match into a competition between friends.** Call the scores, climb the leaderboard, and prove once and for all who actually knows football. The classic *polla* (Colombia) and *quiniela* (Spain) experience — now in your pocket, beautifully native on iOS and Android.
 
 > *This repository is the home of Fortuna, developed under the codename **Tyche** — the Greek goddess of fortune, twin to her Roman counterpart.*
@@ -12,7 +10,7 @@
 
 ## Get Fortuna
 
-Scan a code with your phone camera or tap a badge.
+Scan a code with your phone camera, or tap it to open the store.
 
 <table>
   <tr>
@@ -24,18 +22,6 @@ Scan a code with your phone camera or tap a badge.
     <td align="center" valign="middle" width="50%">
       <a href="https://play.google.com/store/apps/details?id=com.felipearpa.fortuna">
         <img src="android-store/play-store-qr.svg" width="180" height="180" alt="Google Play QR" />
-      </a>
-    </td>
-  </tr>
-  <tr>
-    <td align="center" valign="middle">
-      <a href="https://apps.apple.com/app/fortuna/id6762291676">
-        <img src="https://developer.apple.com/assets/elements/badges/download-on-the-app-store.svg" height="56" alt="Download on the App Store" />
-      </a>
-    </td>
-    <td align="center" valign="middle">
-      <a href="https://play.google.com/store/apps/details?id=com.felipearpa.fortuna">
-        <img src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" height="84" alt="Get it on Google Play" />
       </a>
     </td>
   </tr>
@@ -56,26 +42,6 @@ Or visit the landing page at **[fortuna.felipearpa.com](https://fortuna.felipear
 - **Tournament-ready out of the box.** Templates for the biggest events — including **World Cup 2026** — so you're playing in under a minute.
 - **Fluent in your language.** Full English and Spanish localization, including regional Spanish variants.
 - **Truly native.** Swift on iOS, Kotlin on Android. Fast, polished, and at home on every device.
-
-## See it in action
-
-### Android
-
-<p align="center">
-  <img src="android-store/phone-1.png" width="200" alt="Android screenshot 1" />
-  <img src="android-store/phone-2.png" width="200" alt="Android screenshot 2" />
-  <img src="android-store/phone-3.png" width="200" alt="Android screenshot 3" />
-  <img src="android-store/phone-4.png" width="200" alt="Android screenshot 4" />
-</p>
-
-### iOS
-
-<p align="center">
-  <img src="ios-store/iphone-1.png" width="200" alt="iOS screenshot 1" />
-  <img src="ios-store/iphone-2.png" width="200" alt="iOS screenshot 2" />
-  <img src="ios-store/iphone-3.png" width="200" alt="iOS screenshot 3" />
-  <img src="ios-store/iphone-4.png" width="200" alt="iOS screenshot 4" />
-</p>
 
 ## How a round works
 
