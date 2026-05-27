@@ -5,14 +5,14 @@ import androidx.compose.ui.graphics.Color
 internal val lightPrimaryColor = Color(0xFF4CAF50)
 internal val lightOnPrimaryColor = Color(0xFFFFFFFF)
 
-internal val lightPrimaryContainer = Color(0xFFA5D6A7)
-internal val lightOnPrimaryContainer = Color(0xFF1B5E20)
+internal val lightPrimaryContainer = Color(0xFF3D8F44)
+internal val lightOnPrimaryContainer = Color(0xFFFFFFFF)
 
 internal val lightSecondaryColor = Color(0xFFFFC107)
 internal val lightOnSecondaryColor = Color(0xFF212121)
 
-internal val lightSecondaryContainer = Color(0xFFFFF8E1)
-internal val lightOnSecondaryContainer = Color(0xFF3E2723)
+internal val lightSecondaryContainer = Color(0xFFE6A200)
+internal val lightOnSecondaryContainer = Color(0xFF000000)
 
 internal val lightTertiaryColor = Color(0xFF00796B)
 internal val lightOnTertiaryColor = Color(0xFFFFFFFF)
@@ -33,16 +33,16 @@ internal val lightErrorContainer = Color(0xFFFFCDD2)
 internal val lightOnErrorContainer = Color(0xFFB71C1C)
 
 internal val darkPrimaryColor = Color(0xFF4CAF50)
-internal val darkOnPrimaryColor = Color(0xFF1B5E20)
+internal val darkOnPrimaryColor = Color(0xFFFFFFFF)
 
-internal val darkPrimaryContainer = Color(0xFF2C6B3A)
-internal val darkOnPrimaryContainer = Color(0xFFA5D6A7)
+internal val darkPrimaryContainer = Color(0xFF3D8F44)
+internal val darkOnPrimaryContainer = Color(0xFFFFFFFF)
 
 internal val darkSecondaryColor = Color(0xFFFFC107)
 internal val darkOnSecondaryColor = Color(0xFF3E2723)
 
-internal val darkSecondaryContainer = Color(0xFFC79100)
-internal val darkOnSecondaryContainer = Color(0xFFFFF8E1)
+internal val darkSecondaryContainer = Color(0xFFE6A200)
+internal val darkOnSecondaryContainer = Color(0xFF000000)
 
 internal val darkTertiaryColor = Color(0xFF004D40)
 internal val darkOnTertiaryColor = Color(0xFFB2DFDB)

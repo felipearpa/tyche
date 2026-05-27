@@ -1,7 +1,6 @@
 package com.felipearpa.tyche.pool.poolscore
 
 import android.content.Intent
-import android.content.res.Configuration
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.fillMaxSize
@@ -181,9 +180,9 @@ private fun TopAppBar(
 private val createIconSize = 32.dp
 
 @PreviewLightDark
-@Preview(locale = "es-rCO", uiMode = Configuration.UI_MODE_NIGHT_YES)
-@Preview(locale = "es-rCO", uiMode = Configuration.UI_MODE_NIGHT_YES, device = Devices.NEXUS_7)
-@Preview(locale = "es-rCO", uiMode = Configuration.UI_MODE_NIGHT_YES, device = Devices.PIXEL_TABLET)
+@Preview(locale = "es-rCO")
+@Preview(locale = "es-rCO", device = Devices.NEXUS_7)
+@Preview(locale = "es-rCO", device = Devices.PIXEL_TABLET)
 @Composable
 private fun PoolScoreListViewPreview() {
     val items =

@@ -7,4 +7,5 @@ module PoolTransformer =
     let toPoolViewModel (pool: Pool) =
         { PoolResponse.PoolId = pool.PoolId |> Ulid.value
           PoolName = pool.PoolName |> NonEmptyString100.value
-          CreatorGamblerId = pool.CreatorGamblerId |> Ulid.value }
+          CreatorGamblerId = pool.CreatorGamblerId |> Ulid.value
+          GamblerCount = pool.GamblerCount }

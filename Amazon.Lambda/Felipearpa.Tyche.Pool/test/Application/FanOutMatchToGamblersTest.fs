@@ -43,7 +43,9 @@ module FanOutMatchToGamblersTest =
                 member _.CreatePoolAsync(_) = failwith "not used"
                 member _.JoinPoolAsync(_) = failwith "not used"
                 member _.IsPoolMemberAsync(_, _) = failwith "not used"
+                member _.GetPoolMembersAsync(_, _) = failwith "not used"
                 member _.DeletePoolAsync(_) = failwith "not used"
+                member _.RemoveGamblerAsync(_, _) = failwith "not used"
                 member _.PropagateGamblerUsernameAsync(_, _) = failwith "not used"
 
                 member _.GetGamblersByPoolLayoutAsync(layoutId, next) =
@@ -73,6 +75,7 @@ module FanOutMatchToGamblersTest =
                 member _.BetAsync(_, _, _, _) = failwith "not used"
                 member _.AddPoolGamblerMatchAsync(_) = failwith "not used"
                 member _.AddPoolGamblerMatchesAsync(_) = failwith "not used"
+                member _.DeleteUncomputedBetsAsync(_, _) = failwith "not used"
 
                 member _.MaterializeMatchForGamblerAsync(bet, version) =
                     captured.Add(bet, version)

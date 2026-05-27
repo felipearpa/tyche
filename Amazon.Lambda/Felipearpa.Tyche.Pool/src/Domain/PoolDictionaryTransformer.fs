@@ -3,6 +3,7 @@ namespace Felipearpa.Tyche.Pool.Domain
 open System.Collections.Generic
 open System.Runtime.CompilerServices
 open Amazon.DynamoDBv2.Model
+open Felipearpa.Data.DynamoDb.Dictionary
 open Felipearpa.Tyche.Pool.Infrastructure
 open Felipearpa.Type
 
@@ -11,7 +12,11 @@ module PoolDictionaryTransformer =
         { Pool.PoolId = dictionary[PoolTable.Attribute.poolId].S |> Ulid.newOf
           PoolName = dictionary[PoolTable.Attribute.poolName].S |> NonEmptyString100.newOf
           PoolLayoutId = dictionary[PoolTable.Attribute.poolLayoutId].S |> Ulid.newOf
-          CreatorGamblerId = dictionary[PoolTable.Attribute.creatorGamblerId].S |> Ulid.newOf }
+          CreatorGamblerId = dictionary[PoolTable.Attribute.creatorGamblerId].S |> Ulid.newOf
+          GamblerCount =
+            dictionary
+            |> tryGetAttributeValueOrNone PoolTable.Attribute.gamblerCount
+            |> Option.map (fun attributeValue -> int attributeValue.N) }
 
     type Extensions =
         [<Extension>]

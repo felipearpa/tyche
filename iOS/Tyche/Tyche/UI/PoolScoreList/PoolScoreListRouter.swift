@@ -235,3 +235,27 @@ private struct JoinPoolUrlTemplateFakeProvider: JoinPoolUrlTemplateProvider {
     .environment(\.diResolver, poolScoreListFakeResolver())
     .preferredColorScheme(.dark)
 }
+
+#Preview("Store") {
+    PoolScoreListRouter(
+        accountBundle: AccountBundle(
+            accountId: "gambler-id",
+            externalAccountId: "external-id",
+            email: "preview@example.com"
+        ),
+        onPoolSelect: { _ in },
+        onSignOut: {},
+        poolScoreViewModel: PoolScoreListViewModel(
+            getPoolGamblerScoresByGamblerUseCase: GetPoolGamblerScoresByGamblerUseCase(
+                poolGamblerScoreRepository: PoolGamblerScoreFakeRepository()
+            ),
+            getOpenPoolLayoutsUseCase: GetOpenPoolLayoutsUseCase(
+                poolLayoutRepository: PoolLayoutFakePreviewRepository()
+            ),
+            joinPoolUrlTemplate: JoinPoolUrlTemplateFakeProvider(),
+            gamblerId: "gambler-id"
+        )
+    )
+    .environment(\.diResolver, poolScoreListFakeResolver())
+    .environment(\.locale, .init(identifier: "es-CO"))
+}

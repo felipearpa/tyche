@@ -139,3 +139,6 @@ module PoolTable =
 
         [<Literal>]
         let gamblersByPoolLayout = "GetGamblersByPoolLayout-index"
+
+        [<Literal>]
+        let gamblersByUsername = "GetPoolGamblersByUsername-index"

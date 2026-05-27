@@ -25,7 +25,8 @@ module GetPoolByIdTest =
         let expectedPool: PoolResponse =
             { PoolId = "01K0DCFFB08W35AW5Q6F82R6NQ"
               PoolName = "Hello world"
-              CreatorGamblerId = "01K0DCFFB08W35AW5Q6F82R6NR" }
+              CreatorGamblerId = "01K0DCFFB08W35AW5Q6F82R6NR"
+              GamblerCount = None }
 
         let client = Mock<IAmazonDynamoDB>()
 

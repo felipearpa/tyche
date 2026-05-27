@@ -22,4 +22,14 @@
     <string name="pool_already_joined_error_description">You’re already in this pool</string>
     <string name="pool_already_joined_failure_reason">Looks like you joined this one before</string>
     <string name="pool_already_joined_recovery_suggestion">Open it from “My pools” to start playing</string>
+    <string name="manage_gamblers_edit_action">Edit</string>
+    <string name="manage_gamblers_done_action">Done</string>
+    <string name="remove_gambler_action">Remove</string>
+    <string name="remove_gambler_alert_title">Remove %1$s from this pool?</string>
+    <string name="remove_gambler_alert_message">This will remove this gambler from the pool. This action cannot be undone.</string>
+    <string name="remove_gambler_failure_title">Couldn’t remove %1$s</string>
+    <string name="remove_gambler_failure_message">Check your connection and try again.</string>
+    <string name="no_other_gamblers_title">No other gamblers yet</string>
+    <string name="no_other_gamblers_message">Once people join this pool, you’ll be able to manage them from here.</string>
+    <string name="invite_gamblers_action">Invite gamblers</string>
 </resources>

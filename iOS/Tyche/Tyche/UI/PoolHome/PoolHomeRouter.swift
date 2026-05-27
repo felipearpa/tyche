@@ -163,6 +163,15 @@ private struct PoolHomeRouterContent: View {
                     }
                 )
             }
+            .navigationDestination(for: ManageGamblersRoute.self) { route in
+                ManageGamblersListView(
+                    viewModel: ManageGamblersListViewModel(
+                        getPoolMembersUseCase: diResolver.resolve(GetPoolMembersUseCase.self)!,
+                        removeGamblerUseCase: diResolver.resolve(RemoveGamblerUseCase.self)!,
+                        poolId: route.poolId
+                    )
+                )
+            }
         }
         .drawer(isShowing: $drawerVisible) {
             PoolHomeDrawerView(
@@ -175,6 +184,10 @@ private struct PoolHomeRouterContent: View {
                     drawerVisible = false
                     let template = diResolver.resolve(JoinPoolUrlTemplateProvider.self)!
                     inviteUrl = ShareablePoolUrl(String(format: template(), pool.poolId))
+                },
+                onManageGamblers: {
+                    drawerVisible = false
+                    path.append(ManageGamblersRoute(poolId: pool.poolId))
                 },
                 onPoolDeleting: {
                     drawerVisible = false
@@ -289,4 +302,19 @@ private struct JoinPoolUrlTemplateFakeProvider: JoinPoolUrlTemplateProvider {
     )
     .environment(\.diResolver, poolHomeFakeResolver())
     .preferredColorScheme(.dark)
+}
+
+#Preview("Store") {
+    PoolHomeRouter(
+        user: AccountBundle(
+            accountId: "gambler-id",
+            externalAccountId: "external-id",
+            email: "preview@example.com"
+        ),
+        pool: PoolProfile(poolId: "pool-id"),
+        onChangePool: {},
+        onSignOut: {}
+    )
+    .environment(\.diResolver, poolHomeFakeResolver())
+    .environment(\.locale, .init(identifier: "es-CO"))
 }

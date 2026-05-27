@@ -3,6 +3,7 @@ namespace Felipearpa.Tyche.Pool.Infrastructure
 #nowarn "3536"
 
 open System
+open System.Collections.Generic
 open System.Linq
 open Amazon.DynamoDBv2
 open Amazon.DynamoDBv2.Model
@@ -161,4 +162,46 @@ type PoolGamblerBetDynamoDbRepository(keySerializer: IKeySerializer, client: IAm
                     ()
                 with :? AggregateException as error when (error.InnerException :? ConditionalCheckFailedException) ->
                     ()
+            }
+
+        member this.DeleteUncomputedBetsAsync(poolId, gamblerId) =
+            let queryAllKeysAsync () =
+                let rec loop (acc: IDictionary<string, AttributeValue> list) maybeNext =
+                    async {
+                        let request = GetPoolGamblerBetKeysRequestBuilder.build poolId gamblerId maybeNext
+                        let! response = client.QueryAsync(request) |> Async.AwaitTask
+
+                        let acc =
+                            (response.Items |> Seq.cast<IDictionary<string, AttributeValue>> |> List.ofSeq)
+                            @ acc
+
+                        match response.LastEvaluatedKey |> Option.ofObj with
+                        | Some lek when lek.Count > 0 -> return! loop acc (Some(lek :> IDictionary<_, _>))
+                        | _ -> return acc
+                    }
+
+                loop [] None
+
+            let deleteIfUncomputedAsync (key: IDictionary<string, AttributeValue>) =
+                async {
+                    let request =
+                        DeleteItemRequest(
+                            TableName = PoolTable.name,
+                            Key = Dictionary key,
+                            ConditionExpression = $"attribute_not_exists({PoolTable.Attribute.computedRequestId})"
+                        )
+
+                    try
+                        let! _ = client.DeleteItemAsync(request) |> Async.AwaitTask
+                        return ()
+                    with
+                    | :? ConditionalCheckFailedException -> return ()
+                    | :? AggregateException as error when (error.InnerException :? ConditionalCheckFailedException) ->
+                        return ()
+                }
+
+            async {
+                let! keys = queryAllKeysAsync ()
+                do! keys |> List.map deleteIfUncomputedAsync |> Async.Parallel |> Async.Ignore
+                return ()
             }

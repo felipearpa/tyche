@@ -39,6 +39,9 @@ class DrawerViewModel(
     private val _isOwner = MutableStateFlow(false)
     val isOwner: StateFlow<Boolean> = _isOwner.asStateFlow()
 
+    private val _gamblerCount = MutableStateFlow<Int?>(null)
+    val gamblerCount: StateFlow<Int?> = _gamblerCount.asStateFlow()
+
     private val _deleteState =
         MutableStateFlow<SaveState<Unit>>(SaveState.Idle)
     val deleteState = _deleteState.asStateFlow()
@@ -67,6 +70,7 @@ class DrawerViewModel(
         viewModelScope.launch {
             getPool.execute(poolId = poolId).onSuccess { pool ->
                 _isOwner.value = pool.creatorGamblerId == gamblerId
+                _gamblerCount.value = pool.gamblerCount
             }
         }
     }

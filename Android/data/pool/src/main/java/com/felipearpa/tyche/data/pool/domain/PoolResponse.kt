@@ -7,4 +7,5 @@ internal data class PoolResponse(
     val poolId: String,
     val poolName: String,
     val creatorGamblerId: String,
+    val gamblerCount: Int? = null,
 )

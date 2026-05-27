@@ -7,17 +7,23 @@ import com.felipearpa.tyche.data.pool.application.GetPoolGamblerScore
 import com.felipearpa.tyche.data.pool.application.GetPoolGamblerScoresByGambler
 import com.felipearpa.tyche.data.pool.application.GetPoolGamblerScoresByPool
 import com.felipearpa.tyche.data.pool.application.GetPool
+import com.felipearpa.tyche.data.pool.application.GetPoolMembers
 import com.felipearpa.tyche.data.pool.application.JoinPool
+import com.felipearpa.tyche.data.pool.application.RemoveGambler
 import com.felipearpa.tyche.data.pool.domain.PoolDataSource
 import com.felipearpa.tyche.data.pool.domain.PoolGamblerScoreDataSource
 import com.felipearpa.tyche.data.pool.domain.PoolGamblerScoreRepository
 import com.felipearpa.tyche.data.pool.domain.PoolLayoutDataSource
 import com.felipearpa.tyche.data.pool.domain.PoolLayoutRepository
+import com.felipearpa.tyche.data.pool.domain.PoolMemberDataSource
+import com.felipearpa.tyche.data.pool.domain.PoolMemberRepository
 import com.felipearpa.tyche.data.pool.domain.PoolRepository
 import com.felipearpa.tyche.data.pool.infrastructure.PoolGamblerScoreRemoteKtorDataSource
 import com.felipearpa.tyche.data.pool.infrastructure.PoolGamblerScoreRemoteRepository
 import com.felipearpa.tyche.data.pool.infrastructure.PoolLayoutRemoteKtorDataSource
 import com.felipearpa.tyche.data.pool.infrastructure.PoolLayoutRemoteRepository
+import com.felipearpa.tyche.data.pool.infrastructure.PoolMemberRemoteKtorDataSource
+import com.felipearpa.tyche.data.pool.infrastructure.PoolMemberRemoteRepository
 import com.felipearpa.tyche.data.pool.infrastructure.PoolRemoteKtorDataSource
 import com.felipearpa.tyche.data.pool.infrastructure.PoolRemoteRepository
 import com.felipearpa.tyche.core.network.HttpClientQualifier
@@ -34,6 +40,15 @@ val poolDataModule = module {
     factory { JoinPool(poolRepository = get()) }
     factory { GetPool(poolRepository = get()) }
     factory { DeletePool(poolRepository = get()) }
+    factory { GetPoolMembers(poolMemberRepository = get()) }
+    factory { RemoveGambler(poolMemberRepository = get()) }
+
+    factory<PoolMemberRepository> {
+        PoolMemberRemoteRepository(
+            poolMemberDataSource = get(),
+            networkExceptionHandler = get(),
+        )
+    }
 
     factory<PoolGamblerScoreRepository> {
         PoolGamblerScoreRemoteRepository(
@@ -62,5 +77,8 @@ val poolDataModule = module {
     }
     factory<PoolDataSource> {
         PoolRemoteKtorDataSource(httpClient = get<HttpClient>(named(HttpClientQualifier.Auth)))
+    }
+    factory<PoolMemberDataSource> {
+        PoolMemberRemoteKtorDataSource(httpClient = get<HttpClient>(named(HttpClientQualifier.Auth)))
     }
 }

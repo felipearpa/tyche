@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.7.0
+
+- Pool owners can now manage their gamblers: open the new Gamblers screen from the drawer to see everyone in the pool
+- Swipe a gambler to remove them, with a confirmation prompt before they leave the pool
+- The pool owner is protected and can't be removed
+- Empty state when no one else has joined yet, with a quick action to invite gamblers
+- Friendlier error handling when a removal fails
+
 ## 1.6
 
 - Edit your account username from the drawer via a modal sheet

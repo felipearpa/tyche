@@ -22,6 +22,7 @@ public extension SharedImageResource  {
     static let deleteForever = SharedImageResource(.deleteForever)
     static let personAdd = SharedImageResource(.personAdd)
     static let edit = SharedImageResource(.edit)
+    static let group = SharedImageResource(.group)
 }
 
 public extension Image {

@@ -20,6 +20,13 @@ public class PoolAssembly : Assembly {
             )
         }
 
+        container.register(PoolMemberRemoteDataSource.self) { resolver in
+            PoolMemberAlamofireDataSource(
+                urlBasePathProvider: resolver.resolve(URLBasePathProvider.self)!,
+                session: resolver.resolve(AuthenticatedSession.self)!
+            )
+        }
+
         container.register(PoolLayoutRemoteDataSource.self) { resolver in
             PoolLayoutAlamofireDataSource(
                 urlBasePathProvider: resolver.resolve(URLBasePathProvider.self)!,
@@ -37,6 +44,13 @@ public class PoolAssembly : Assembly {
         container.register(PoolRepository.self) { resolver in
             PoolRemoteRepository(
                 poolRemoteDataSource: resolver.resolve(PoolRemoteDataSource.self)!,
+                networkErrorHandler: resolver.resolve(NetworkErrorHandler.self)!
+            )
+        }
+
+        container.register(PoolMemberRepository.self) { resolver in
+            PoolMemberRemoteRepository(
+                poolMemberRemoteDataSource: resolver.resolve(PoolMemberRemoteDataSource.self)!,
                 networkErrorHandler: resolver.resolve(NetworkErrorHandler.self)!
             )
         }
@@ -87,6 +101,18 @@ public class PoolAssembly : Assembly {
         container.register(DeletePoolUseCase.self) { resolver in
             DeletePoolUseCase(
                 poolRepository: resolver.resolve(PoolRepository.self)!
+            )
+        }
+
+        container.register(GetPoolMembersUseCase.self) { resolver in
+            GetPoolMembersUseCase(
+                poolMemberRepository: resolver.resolve(PoolMemberRepository.self)!
+            )
+        }
+
+        container.register(RemoveGamblerUseCase.self) { resolver in
+            RemoveGamblerUseCase(
+                poolMemberRepository: resolver.resolve(PoolMemberRepository.self)!
             )
         }
 

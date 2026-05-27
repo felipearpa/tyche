@@ -31,6 +31,9 @@ type PoolEvent(configureServices: IServiceCollection -> unit) =
     let insertEventName = "INSERT"
 
     [<Literal>]
+    let removeEventName = "REMOVE"
+
+    [<Literal>]
     let poolIdField = "poolId"
 
     [<Literal>]
@@ -111,6 +114,29 @@ type PoolEvent(configureServices: IServiceCollection -> unit) =
                 else
                     None)
 
+    let extractRemovedPoolGamblerRecords (event: DynamoDBEvent) =
+        event.Records
+        |> Seq.filter (fun record -> record.EventName = removeEventName)
+        |> Seq.choose (fun record ->
+            let keys = record.Dynamodb.Keys
+
+            if keys <> null && keys.ContainsKey(pkField) && keys.ContainsKey(skField) then
+                let pk = keys[pkField].S
+                let sk = keys[skField].S
+
+                let keyMatches =
+                    pk.StartsWith($"{poolKeyPrefix}#") && sk.StartsWith($"{gamblerKeyPrefix}#")
+
+                if keyMatches then
+                    Some(
+                        pk.Substring(poolKeyPrefix.Length + 1) |> Ulid.newOf,
+                        sk.Substring(gamblerKeyPrefix.Length + 1) |> Ulid.newOf
+                    )
+                else
+                    None
+            else
+                None)
+
     let applyPendingLayoutMatches
         (getPendingPoolLayoutMatches: GetPendingPoolLayoutMatches)
         (addMatches: AddMatches)
@@ -177,9 +203,17 @@ type PoolEvent(configureServices: IServiceCollection -> unit) =
 
             let addMatches = scope.ServiceProvider.GetRequiredService<AddMatches>()
 
+            let poolGamblerBetRepository =
+                scope.ServiceProvider.GetRequiredService<IPoolGamblerBetRepository>()
+
             do!
                 extractInsertedPoolGamblerRecords event
                 |> Seq.iterAsync (applyPendingLayoutMatches getPendingPoolLayoutMatches addMatches)
+
+            do!
+                extractRemovedPoolGamblerRecords event
+                |> Seq.iterAsync (fun (poolId, gamblerId) ->
+                    poolGamblerBetRepository.DeleteUncomputedBetsAsync(poolId, gamblerId))
 
             return ()
          }

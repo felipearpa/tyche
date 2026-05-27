@@ -75,6 +75,89 @@ def has_store_aspect_ratio(size: tuple[int, int]) -> bool:
     return min(abs(width * 9 - height * 16), abs(width * 16 - height * 9)) <= max(width, height)
 
 
+def frame_visibility_targets() -> list[tuple[str, bool]]:
+    """(relative_path, is_full_device) for device frames whose fit we can check.
+
+    is_full_device=True means the whole device must be inside the canvas (no
+    crop on any edge) — the landscape tablet-10 frames. The portrait frames may
+    crop off the bottom, so only their top/left/right margins are checked.
+    """
+    targets: list[tuple[str, bool]] = []
+    android_src = ROOT / "android-screenshots"
+    ios_src = ROOT / "ios-screenshots"
+    for stem, full in (("phone", False), ("tablet-7", False), ("tablet-10", True)):
+        for index in source_indices(android_src, stem):
+            targets.append((f"android-store/{stem}-{index}.png", full))
+    for stem in ("iphone", "ipad"):
+        for index in source_indices(ios_src, stem):
+            targets.append((f"ios-store/{stem}-{index}.png", False))
+    return targets
+
+
+def check_frame_visibility(failures: list[str]) -> None:
+    """Verify the device frame is completely visible and properly fitted.
+
+    Detects the near-black device bezel and asserts it is not clipped by the
+    canvas where it should not be: every frame must keep a margin on the top and
+    both sides (so the headline gap and side margins survive and no UI is pushed
+    off-canvas), full-device (landscape tablet-10) frames must also keep a bottom
+    margin, and the device must fill a sensible fraction of the canvas. Catches
+    regressions like a landscape tablet cropped at the bottom or a device that
+    overflows/shrinks. Decorative edge stickers are ignored because they never
+    form a full bezel-width dark band.
+    """
+    try:
+        import numpy as np  # noqa: PLC0415
+        from PIL import Image  # noqa: PLC0415
+    except ImportError as exc:  # pragma: no cover - optional dependency
+        missing = getattr(exc, "name", "numpy/Pillow")
+        print(f"Frame-visibility checks skipped: install {missing} (numpy + Pillow) to enable them.")
+        return
+
+    dark_threshold = 40
+    for relative, is_full_device in frame_visibility_targets():
+        path = ROOT / relative
+        if not path.exists():
+            continue  # missing files are already reported by the size checks
+        arr = np.asarray(Image.open(path).convert("RGB")).astype(int)
+        height, width, _ = arr.shape
+        dark = (
+            (arr[:, :, 0] < dark_threshold)
+            & (arr[:, :, 1] < dark_threshold)
+            & (arr[:, :, 2] < dark_threshold)
+        )
+        row_dark = dark.sum(axis=1)
+        col_dark = dark.sum(axis=0)
+        if row_dark.max() < 0.2 * width:
+            failures.append(f"no device frame detected: {relative}")
+            continue
+        # The vertical side rails are the columns that are dark over most of the
+        # device's height; they give the left/right edges directly and, crucially,
+        # the true bottom edge — when a device is cropped at the bottom its bottom
+        # bezel is gone but the rails run to the canvas edge.
+        cols = np.where(col_dark >= 0.5 * col_dark.max())[0]
+        left, right = int(cols.min()), int(cols.max())
+        rail_rows = np.where(dark[:, cols].any(axis=1))[0]
+        top, bottom = int(rail_rows.min()), int(rail_rows.max())
+        margin = max(2, round(width * 0.004))
+        if top < margin:
+            failures.append(f"device touches top edge (no headline gap): {relative}")
+        if left < margin:
+            failures.append(f"device clipped at left edge: {relative}")
+        if right > width - 1 - margin:
+            failures.append(f"device clipped at right edge: {relative}")
+        if is_full_device and bottom > height - 1 - margin:
+            failures.append(
+                f"landscape tablet cropped at bottom (must be fully visible): {relative}"
+            )
+        device_width = right - left
+        if device_width < 0.35 * width:
+            failures.append(
+                f"device too small / poor fit: {relative} "
+                f"({device_width}px = {device_width / width:.0%} of canvas width)"
+            )
+
+
 def main() -> int:
     failures: list[str] = []
     android_constraints, ios_allowed = build_dynamic_expectations()
@@ -130,6 +213,8 @@ def main() -> int:
         if actual not in allowed:
             allowed_text = ", ".join(f"{width}x{height}" for width, height in sorted(allowed))
             failures.append(f"wrong size: {relative}: expected one of {allowed_text}, got {actual[0]}x{actual[1]}")
+
+    check_frame_visibility(failures)
 
     if failures:
         print("Store image validation failed:")

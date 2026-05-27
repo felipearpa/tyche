@@ -131,8 +131,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/felipearpa/lazy-paging-swift.git",
       "state" : {
-        "revision" : "302fa9491452c9039bdb31f524bd1b1062b2d35e",
-        "version" : "0.0.2"
+        "revision" : "119f42b6d98c25830f0a869c9b6a7482239c2d62",
+        "version" : "0.0.3"
       }
     },
     {
