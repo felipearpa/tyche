@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.6.0
+
+- New `GET /pools/{poolId}/members` endpoint listing a pool's members, with the pool owner flagged and cursor pagination
+- New `DELETE /pools/{poolId}/members/{gamblerId}` endpoint — owner-only removal of a gambler; rejects removing the owner and cascades cleanup of the gambler's score row and bets via DynamoDB Streams
+- Caller-to-gambler resolution and ownership authorization for the new member endpoints
+
 ## 1.5
 
 - New `PATCH /accounts` endpoint that updates an account username and cascades the change to every related pool gambler and bet row in a single transaction
