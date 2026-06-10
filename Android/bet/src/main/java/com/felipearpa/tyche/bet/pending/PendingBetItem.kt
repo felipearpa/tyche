@@ -116,6 +116,7 @@ private fun TeamRow(
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.small),
+            modifier = Modifier.weight(1f),
         ) {
             FlagImage(
                 teamId = teamId,

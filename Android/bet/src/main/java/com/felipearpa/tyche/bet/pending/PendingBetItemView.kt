@@ -223,12 +223,14 @@ private fun EditableDefaultActionBar(
                 Text(text = stringResource(id = SharedR.string.cancel_action))
             }
 
+            val isChanged = viewState.value != PartialPoolGamblerBetModel(
+                homeTeamBet = poolGamblerBet.homeTeamBetRawValue(),
+                awayTeamBet = poolGamblerBet.awayTeamBetRawValue(),
+            )
+
             Button(
                 onClick = bet,
-                enabled = viewState.value != PartialPoolGamblerBetModel(
-                    homeTeamBet = poolGamblerBet.homeTeamBetRawValue(),
-                    awayTeamBet = poolGamblerBet.awayTeamBetRawValue(),
-                ),
+                enabled = isChanged && viewState.value.isValid,
                 modifier = Modifier
                     .onSizeChanged { intSize ->
                         if (!isRecomposition) {

@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.7.1
+
+- Fix: long team names in pending bets no longer push the score column out of view
+- Fix: the save button on a pending bet is disabled until both scores are valid numbers
+
 ## 1.7.0
 
 - Pool owners can now manage their gamblers: open the new Gamblers screen from the drawer to see everyone in the pool
