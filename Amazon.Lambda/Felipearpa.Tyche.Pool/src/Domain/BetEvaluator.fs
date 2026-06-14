@@ -16,13 +16,17 @@ module BetEvaluator =
 
     /// Computes the points earned by comparing a predicted score against the actual match score.
     ///
-    /// | Condition                | Points |
-    /// |--------------------------|--------|
-    /// | Correct winner           | 5      |
-    /// | Correct home team score  | 2      |
-    /// | Correct away team score  | 2      |
-    /// | Correct goal difference  | 1      |
-    /// | No prediction            | 0      |
+    /// | Condition                       | Points |
+    /// |---------------------------------|--------|
+    /// | Correct winner                  | 5      |
+    /// | Correct home team score         | 2      |
+    /// | Correct away team score         | 2      |
+    /// | Correct goal difference (magnitude) | 1  |
+    /// | No prediction                   | 0      |
+    ///
+    /// The goal-difference point rewards the absolute margin between the teams, so it is
+    /// awarded even when the winner is reversed (e.g. predicting 1-2 for an actual 2-1
+    /// still matches the one-goal margin).
     ///
     /// Max: 10 (exact score prediction).
     ///
@@ -36,10 +40,11 @@ module BetEvaluator =
     /// | Correct winner + home score      | 2-0       | 2-1    | 7      | 5+2       |
     /// | Correct winner + away score      | 3-1       | 2-1    | 7      | 5+2       |
     /// | Wrong winner                     | 0-2       | 2-1    | 0      | -         |
+    /// | Reversed score, same margin      | 1-2       | 2-1    | 1      | 1         |
     /// | Correct draw, wrong scores       | 0-0       | 1-1    | 6      | 5+1       |
     /// | Exact draw                       | 1-1       | 1-1    | 10     | 5+2+2+1   |
-    /// | Wrong winner, correct home score | 1-2       | 1-0    | 2      | 2         |
-    /// | Wrong winner, correct away score | 0-1       | 2-1    | 2      | 2         |
+    /// | Wrong winner, correct home score | 1-2       | 1-0    | 3      | 2+1       |
+    /// | Wrong winner, correct away score | 0-1       | 2-1    | 3      | 2+1       |
     let delta (maybePredictedScore: TeamScore<BetScore> option) (actualScore: TeamScore<int>) =
         match maybePredictedScore with
         | Some predictedScore ->
@@ -56,7 +61,7 @@ module BetEvaluator =
             let isAwayGoalsCorrect =
                 predictedScore.AwayTeamValue.Value = actualScore.AwayTeamValue
 
-            let isGoalDifferenceCorrect = predictedDifference = actualDifference
+            let isGoalDifferenceCorrect = abs predictedDifference = abs actualDifference
 
             (if isWinnerCorrect then pointsPerWinnerGuessing else 0)
             + (if isHomeGoalsCorrect then pointsPerScoreGuessing else 0)

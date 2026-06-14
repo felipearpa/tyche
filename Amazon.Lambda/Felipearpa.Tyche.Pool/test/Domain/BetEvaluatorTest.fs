@@ -51,9 +51,17 @@ module BetEvaluatorTest =
         BetEvaluator.delta (makePrediction 1 1) (makeActual 1 1) |> should equal 10
 
     [<Fact>]
-    let ``given wrong winner with correct home score when computing delta then only home points are returned`` () =
-        BetEvaluator.delta (makePrediction 1 2) (makeActual 1 0) |> should equal 2
+    let ``given wrong winner with correct home score and same margin when computing delta then home and difference points are returned``
+        ()
+        =
+        BetEvaluator.delta (makePrediction 1 2) (makeActual 1 0) |> should equal 3
 
     [<Fact>]
-    let ``given wrong winner with correct away score when computing delta then only away points are returned`` () =
-        BetEvaluator.delta (makePrediction 0 1) (makeActual 2 1) |> should equal 2
+    let ``given wrong winner with correct away score and same margin when computing delta then away and difference points are returned``
+        ()
+        =
+        BetEvaluator.delta (makePrediction 0 1) (makeActual 2 1) |> should equal 3
+
+    [<Fact>]
+    let ``given reversed score with same margin when computing delta then only difference points are returned`` () =
+        BetEvaluator.delta (makePrediction 1 2) (makeActual 2 1) |> should equal 1
