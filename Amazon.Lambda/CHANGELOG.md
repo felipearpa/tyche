@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.6.2
+
+- Finished bets are now returned newest first, so the bet timeline lists most recently scored matches at the top
+
 ## 1.6.1
 
 - Goal-difference scoring now rewards the absolute margin between the teams, so the 1-point goal-difference bonus is awarded even when the predicted winner is reversed (e.g. predicting 1-2 for an actual 2-1 still matches the one-goal margin)

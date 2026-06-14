@@ -45,6 +45,7 @@ module GetFinishedPoolGamblerBetsRequestBuilder =
             FilterExpression = filterExpression,
             ExpressionAttributeNames = Dictionary attributeNames,
             ExpressionAttributeValues = Dictionary attributeValues,
+            ScanIndexForward = false,
             ExclusiveStartKey =
                 match maybeNext with
                 | None -> null
