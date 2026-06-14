@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.7.1
+
+- The score field you are editing keeps focus while the bet list refreshes in the background, so paging activity no longer kicks you out mid-entry
+- The first score field is focused automatically when you start editing a pending bet
+
 ## 1.7.0
 
 - Pool owners can now manage their gamblers: open the new Gamblers screen from the drawer to see everyone in the pool
