@@ -23,7 +23,8 @@ struct PendingBetItem: View {
                 teamId: poolGamblerBet.homeTeamId,
                 teamName: poolGamblerBet.homeTeamName,
                 bet: $viewState.value.homeTeamBet,
-                geoID: "home"
+                geoID: "home",
+                autoFocus: true
             )
 
             teamRow(
@@ -50,26 +51,27 @@ struct PendingBetItem: View {
         teamId: String,
         teamName: String,
         bet: Binding<String>,
-        geoID: String
+        geoID: String,
+        autoFocus: Bool = false
     ) -> some View {
         HStack {
             FlagImage(teamCode: teamId)
                 .frame(width: flagSize, height: flagSize)
             Text(teamName)
                 .frame(maxWidth: .infinity, alignment: .leading)
-            scoreCell(bet: bet, geoID: geoID)
+            scoreCell(bet: bet, geoID: geoID, autoFocus: autoFocus)
         }
     }
 
     @ViewBuilder
-    private func scoreCell(bet: Binding<String>, geoID: String) -> some View {
+    private func scoreCell(bet: Binding<String>, geoID: String, autoFocus: Bool = false) -> some View {
         switch viewState {
         case .visualization:
             Text(bet.wrappedValue)
                 .matchedGeometryEffect(id: geoID, in: scoreNamespace)
                 .transition(.opacity)
         case .edition:
-            BetTextField(value: bet)
+            BetTextField(value: bet, autoFocus: autoFocus)
                 .font(.body)
                 .scoreWidth()
                 .matchedGeometryEffect(id: geoID, in: scoreNamespace)

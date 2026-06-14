@@ -48,6 +48,11 @@ struct PendingBetItemView: View {
         .task(id: poolGamblerBet) { viewModel.bind(poolGamblerBet) }
         .onReceive(viewModel.$state) { state in
             guard let state = state else { return }
+            // The user leaves edit mode only by saving or cancelling, both of which set
+            // .visualization themselves. A state emission that arrives while we're still
+            // in .edition is a spurious re-publish (e.g. a re-bind driven by paging
+            // activity on a tail row) and must not kick the user out of editing.
+            guard case .visualization = viewState else { return }
             let poolGamblerBet = state.attemptedValue()
             withAnimation(stateAnimation) {
                 viewState = .visualization(poolGamblerBet.toPartialPoolGamblerBet())

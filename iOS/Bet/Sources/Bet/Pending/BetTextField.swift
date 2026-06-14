@@ -3,6 +3,8 @@ import UI
 
 struct BetTextField: View {
     @Binding var value: String
+    var autoFocus: Bool = false
+    @FocusState private var isFocused: Bool
 
     var body: some View {
         let _ = Self._printChangesIfDebug()
@@ -11,8 +13,15 @@ struct BetTextField: View {
             .multilineTextAlignment(.center)
             .textFieldStyle(.liquidGlass)
             .keyboardType(.numberPad)
+            .focused($isFocused)
             .onChange(of: value) { newValue in
                 value = newValue.normalize()
+            }
+            .onAppear {
+                // Anchor focus through @FocusState so it survives the list's
+                // paging re-renders, and claim it on edit-entry so the user can
+                // type without a second tap.
+                if autoFocus { isFocused = true }
             }
     }
 }

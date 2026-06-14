@@ -55,8 +55,7 @@ struct PendingBetList: View {
                     .frame(maxWidth: .infinity)
                     .padding(.horizontal, boxSpacing.large)
                     .padding(.vertical, boxSpacing.medium)
-                    .contentShape(Rectangle())
-                    .onTapGesture { invokeMatchOpen(onMatchOpen, poolGamblerBet) }
+                    .onMatchOpenTap(for: poolGamblerBet, onMatchOpen)
 
                     Divider()
                         .padding(.horizontal, boxSpacing.large)
@@ -92,6 +91,22 @@ func invokeMatchOpen(_ handler: MatchOpenHandler?, _ poolGamblerBet: PoolGambler
             poolGamblerBet.gamblerId,
             poolGamblerBet.matchId
         )
+    }
+}
+
+private extension View {
+    /// Opens the match on tap, but only for non-pending rows. Pending rows hold
+    /// the editable bet text fields, so a row-wide tap recogniser there would
+    /// compete with the fields for the tap and break focus.
+    @ViewBuilder
+    func onMatchOpenTap(for poolGamblerBet: PoolGamblerBetModel, _ handler: MatchOpenHandler?) -> some View {
+        if poolGamblerBet.isPending {
+            self
+        } else {
+            self
+                .contentShape(Rectangle())
+                .onTapGesture { invokeMatchOpen(handler, poolGamblerBet) }
+        }
     }
 }
 
