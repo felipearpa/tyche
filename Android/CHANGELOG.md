@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.7.2
+
+- Fix: the match header now shows each team's own flag instead of the away team's flag for both teams
+
 ## 1.7.1
 
 - Fix: long team names in pending bets no longer push the score column out of view

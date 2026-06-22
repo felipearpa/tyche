@@ -66,7 +66,7 @@ fun MatchHeader(
                 modifier = Modifier.weight(1f),
             ) {
                 FlagImage(
-                    teamId = bet.awayTeamId,
+                    teamId = bet.homeTeamId,
                     modifier = Modifier
                         .size(flagSize)
                         .then(shimmerModifier),
