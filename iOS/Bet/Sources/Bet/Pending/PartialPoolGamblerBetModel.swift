@@ -1,6 +1,10 @@
-struct PartialPoolGamblerBetModel {
+struct PartialPoolGamblerBetModel: Equatable {
     var homeTeamBet: String
     var awayTeamBet: String
+
+    var isValid: Bool {
+        Int(homeTeamBet) != nil && Int(awayTeamBet) != nil
+    }
 }
 
 extension PartialPoolGamblerBetModel {

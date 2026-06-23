@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.7.2
+
+- The Save button on a pending bet stays disabled until both scores are valid, so you can't submit an incomplete prediction by mistake
+
 ## 1.7.1
 
 - The score field you are editing keeps focus while the bet list refreshes in the background, so paging activity no longer kicks you out mid-entry

@@ -169,12 +169,16 @@ private struct EditableDefaultActionBar: View {
     @Binding var viewState: PendingBetItemViewState
     let bet: () -> Void
     let reset: () -> Void
-    
+
+    private var isChanged: Bool {
+        viewState.value != viewModelState.activeValue().toPartial()
+    }
+
     var body: some View {
         StateIndicator(state: viewModelState, isEditable: true)
-        
+
         Spacer()
-        
+
         Button(action: reset) {
             Text(sharedResource: .cancelAction)
         }.buttonStyle(.liquidGlass)
@@ -183,6 +187,7 @@ private struct EditableDefaultActionBar: View {
             Text(sharedResource: .saveAction)
         }
         .buttonStyle(.liquidGlassProminent)
+        .disabled(!(isChanged && viewState.value.isValid))
     }
 }
 
