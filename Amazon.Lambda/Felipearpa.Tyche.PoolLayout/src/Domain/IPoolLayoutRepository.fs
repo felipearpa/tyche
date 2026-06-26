@@ -11,3 +11,5 @@ type IPoolLayoutRepository =
     abstract GetPoolLayoutByIdAsync: Ulid -> Async<PoolLayout option>
 
     abstract GetPoolLayoutMatchesThroughVersionAsync: Ulid * int * string option -> Async<PoolLayoutMatch CursorPage>
+
+    abstract SetMatchFinalScoreAsync: Ulid * Ulid * int * int -> Async<unit>

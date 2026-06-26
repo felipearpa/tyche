@@ -30,6 +30,9 @@
     <Compile Include="Event\PoolLayoutEventFilter.fs" />
     <Compile Include="Event\PoolLayoutEvent.fs" />
     <Compile Include="Event\UpdatePositionsEvent.fs" />
+    <Compile Include="Event\MatchScoreIngestionEventFilter.fs" />
+    <Compile Include="Event\MatchScoreIngestionEvent.fs" />
+    <Compile Include="Event\MatchScoreEvent.fs" />
     <Compile Include="Assembly.fs" />
   </ItemGroup>
   <ItemGroup>
@@ -38,6 +41,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Felipearpa.Tyche.Function\src\Felipearpa.Tyche.Function.fsproj" />
+    <ProjectReference Include="..\..\Felipearpa.Tyche.MatchScoreIngestion\src\Felipearpa.Tyche.MatchScoreIngestion.fsproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Amazon.Lambda.Core" Version="2.8.1" />
@@ -47,5 +51,7 @@
     <PackageReference Include="Amazon.Lambda.APIGatewayEvents" Version="2.7.3" />
     <PackageReference Include="Amazon.Lambda.SQSEvents" Version="2.2.1" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.5" />
+    <PackageReference Include="AWSSDK.Scheduler" Version="4.0.0" />
+    <PackageReference Include="AWSSDK.SimpleSystemsManagement" Version="4.0.0" />
   </ItemGroup>
 </Project>

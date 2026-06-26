@@ -687,6 +687,97 @@ Resources:
             BatchSize: 1
             Enabled: true
 
+  MatchScoreSchedulerRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: scheduler.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: InvokeIngestMatchScore
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action: lambda:InvokeFunction
+                Resource: !GetAtt IngestMatchScore.Arn
+
+  IngestMatchScore:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: Felipearpa.Tyche.AmazonLambda::Felipearpa.Tyche.AmazonLambda.Event.MatchScoreEvent::IngestMatchScoreAsync
+      Runtime: dotnet10
+      CodeUri: .
+      MemorySize: 1024
+      Timeout: 30
+      Environment:
+        Variables:
+          FOOTBALL_DATA_TOKEN_PARAMETER: /tyche/football-data/token
+      Policies:
+        - AWSLambdaBasicExecutionRole
+        - Statement:
+            - Effect: Allow
+              Action:
+                - dynamodb:UpdateItem
+              Resource:
+                - arn:aws:dynamodb:us-east-2:567776770335:table/MatchScoreIngestion
+                - arn:aws:dynamodb:us-east-2:567776770335:table/PoolLayout
+            - Effect: Allow
+              Action:
+                - ssm:GetParameter
+              Resource:
+                - arn:aws:ssm:us-east-2:567776770335:parameter/tyche/football-data/token
+      Architectures: [ arm64 ]
+
+  OnMatchScoreIngestionChange:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: Felipearpa.Tyche.AmazonLambda::Felipearpa.Tyche.AmazonLambda.Event.MatchScoreIngestionEvent::OnMatchScoreIngestionChangeAsync
+      Runtime: dotnet10
+      CodeUri: .
+      MemorySize: 1024
+      Timeout: 60
+      Environment:
+        Variables:
+          INGEST_MATCH_SCORE_FUNCTION_ARN: !GetAtt IngestMatchScore.Arn
+          MATCH_SCORE_SCHEDULER_ROLE_ARN: !GetAtt MatchScoreSchedulerRole.Arn
+      Policies:
+        - AWSLambdaBasicExecutionRole
+        - Statement:
+            - Effect: Allow
+              Action:
+                - dynamodb:ListStreams
+                - dynamodb:DescribeStream
+                - dynamodb:GetRecords
+                - dynamodb:GetShardIterator
+              Resource:
+                - arn:aws:dynamodb:us-east-2:567776770335:table/MatchScoreIngestion/stream/2026-06-17T16:26:29.662
+            - Effect: Allow
+              Action:
+                - scheduler:CreateSchedule
+                - scheduler:DeleteSchedule
+                - scheduler:GetSchedule
+              Resource:
+                - arn:aws:scheduler:us-east-2:567776770335:schedule/default/match-score-*
+            - Effect: Allow
+              Action:
+                - iam:PassRole
+              Resource: !GetAtt MatchScoreSchedulerRole.Arn
+      Architectures: [ arm64 ]
+      Events:
+        MatchScoreIngestionStream:
+          Type: DynamoDB
+          Properties:
+            Stream: arn:aws:dynamodb:us-east-2:567776770335:table/MatchScoreIngestion/stream/2026-06-17T16:26:29.662
+            StartingPosition: LATEST
+            BatchSize: 10
+            MaximumBatchingWindowInSeconds: 1
+            Enabled: true
+
 Outputs:
   ApiURL:
     Description: API endpoint URL for Prod environment

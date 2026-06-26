@@ -60,3 +60,14 @@ type PoolLayoutDynamoDbRepository(keySerializer: IKeySerializer, client: IAmazon
                         | Some lastEvaluatedKey -> keySerializer.Serialize(lastEvaluatedKey) |> Some
                         | None -> None }
             }
+
+        member this.SetMatchFinalScoreAsync(poolLayoutId, matchId, homeTeamScore, awayTeamScore) =
+            ConditionalUpdate.ignoreTransactionConflict (
+                async {
+                    let request =
+                        SetMatchFinalScoreRequestBuilder.build poolLayoutId matchId homeTeamScore awayTeamScore
+
+                    let! _ = client.UpdateItemAsync request |> Async.AwaitTask
+                    return ()
+                }
+            )
