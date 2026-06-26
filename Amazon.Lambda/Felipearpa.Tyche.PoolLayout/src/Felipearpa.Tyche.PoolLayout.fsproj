@@ -16,6 +16,7 @@
         <Compile Include="Infrastructure\GetOpenPoolLayoutRequestBuilder.fs" />
         <Compile Include="Infrastructure\GetPoolLayoutByIdRequestBuilder.fs" />
         <Compile Include="Infrastructure\GetPendingPoolLayoutMatchesRequestBuilder.fs" />
+        <Compile Include="Infrastructure\SetMatchFinalScoreRequestBuilder.fs" />
         <Compile Include="Infrastructure\PoolLayoutDynamoDbRepository.fs" />
         <Compile Include="Application\GetOpenPoolLayouts.fs" />
         <Compile Include="Application\GetPendingPoolLayoutMatches.fs" />
