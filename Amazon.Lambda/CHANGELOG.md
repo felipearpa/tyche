@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.7.0
+
+- Automatic match score ingestion: final results are now fetched and recorded without manual intervention, so standings and bet scores settle on their own once a match ends
+- New `MatchScoreIngestion` bounded context with its own DynamoDB control table whose stream drives self-terminating EventBridge schedules that poll football-data per match and stop once a final score is recorded — no always-on poller
+- Pool layout repository can now persist a match's final score, fanning the result out to every gambler's bet via existing DynamoDB Streams
+- Internal: stream-filtered ingestion events wired into the Amazon.Lambda host, with event-filter unit test coverage
+
 ## 1.6.2
 
 - Finished bets are now returned newest first, so the bet timeline lists most recently scored matches at the top
