@@ -13,6 +13,7 @@ open Felipearpa.Data.DynamoDb
 open Felipearpa.Tyche.Pool.Domain
 open Felipearpa.Tyche.Pool.Domain.InitialPoolGamblerBetTransformer
 open Felipearpa.Tyche.Pool.Domain.PoolGamblerBetDictionaryTransformer
+open Felipearpa.Type
 
 type PoolGamblerBetDynamoDbRepository(keySerializer: IKeySerializer, client: IAmazonDynamoDB) =
 
@@ -84,22 +85,67 @@ type PoolGamblerBetDynamoDbRepository(keySerializer: IKeySerializer, client: IAm
             }
 
         member this.GetPoolMatchGamblerBetsAsync(poolId, matchId, maybeNext) =
+            // Ordered by the gambler's general pool score, so the page is driven by the
+            // leaderboard (already score-ranked) and each gambler's bet is hydrated by key.
+            let rec drainBatchAsync (requestItems: Dictionary<string, KeysAndAttributes>) acc =
+                async {
+                    let! response =
+                        client.BatchGetItemAsync(BatchGetItemRequest(RequestItems = requestItems))
+                        |> Async.AwaitTask
+
+                    let acc =
+                        match response.Responses |> Option.ofObj with
+                        | Some responses ->
+                            match responses.TryGetValue PoolTable.name with
+                            | true, items -> (items |> List.ofSeq) @ acc
+                            | _ -> acc
+                        | None -> acc
+
+                    match response.UnprocessedKeys |> Option.ofObj with
+                    | Some unprocessed when unprocessed.Count > 0 -> return! drainBatchAsync unprocessed acc
+                    | _ -> return acc
+                }
+
+            let getMatchBetsAsync (gamblerIds: Ulid list) =
+                async {
+                    let! chunks =
+                        gamblerIds
+                        |> List.chunkBySize 100
+                        |> List.map (fun chunk ->
+                            let request = GetPoolMatchBetsByGamblersRequestBuilder.build poolId matchId chunk
+                            drainBatchAsync request.RequestItems [])
+                        |> Async.Parallel
+
+                    return chunks |> Array.toList |> List.collect id
+                }
+
             async {
-                let request =
-                    GetPoolMatchGamblerBetsRequestBuilder.build
-                        poolId
-                        matchId
-                        maybeNext
-                        keySerializer.Deserialize
+                let leaderboardRequest =
+                    GetPoolScoresRequestBuilder.build poolId (maybeNext |> Option.map keySerializer.Deserialize)
 
-                let! response = client.QueryAsync(request) |> Async.AwaitTask
+                let! leaderboardResponse = client.QueryAsync(leaderboardRequest) |> Async.AwaitTask
 
-                let maybeLastEvaluatedKey = response.LastEvaluatedKey |> Option.ofObj
+                let rankedGamblerIds =
+                    leaderboardResponse.Items
+                    |> Seq.map (fun item -> item[PoolTable.Attribute.gamblerId].S |> Ulid.newOf)
+                    |> List.ofSeq
+
+                let! betItems = getMatchBetsAsync rankedGamblerIds
+
+                let betByGamblerId =
+                    betItems
+                    |> List.map (toPoolGamblerBet >> fun bet -> bet.GamblerId, bet)
+                    |> Map.ofList
+
+                let items =
+                    rankedGamblerIds
+                    |> List.choose (fun gamblerId -> betByGamblerId |> Map.tryFind gamblerId)
+                    |> List.filter _.isLocked
 
                 return
-                    { CursorPage.Items = response.Items.Select(toPoolGamblerBet)
+                    { CursorPage.Items = items
                       Next =
-                        match maybeLastEvaluatedKey with
+                        match leaderboardResponse.LastEvaluatedKey |> Option.ofObj with
                         | Some lastEvaluatedKey -> keySerializer.Serialize(lastEvaluatedKey) |> Some
                         | None -> None }
             }
