@@ -1,18 +1,5 @@
 # Changelog
 
-## 1.8.0
-
-- The all-gambler bets list for a match is now ordered by the pool leaderboard, so the highest-scoring gamblers' predictions appear first
-- Only locked bets are returned for a match, hiding predictions that are still editable from other gamblers
-- Internal: replaced the GSI query with a score-ranked leaderboard page that hydrates each gambler's bet via batched key reads
-
-## 1.7.0
-
-- Automatic match score ingestion: final scores are now fetched from football-data and written without manual intervention, fanning out to every gambler's bet
-- New `MatchScoreIngestion` bounded context backed by a DynamoDB control table whose stream drives self-terminating EventBridge schedules that poll for each match result
-- Pool layout matches can now persist their final score
-- Internal: stream-filtered ingestion events wired into the Amazon.Lambda host, with the football-data result provider and EventBridge scheduler
-
 ## 1.6.2
 
 - Finished bets are now returned newest first, so the bet timeline lists most recently scored matches at the top
