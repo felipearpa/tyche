@@ -22,19 +22,19 @@ module BetEvaluatorTest =
 
     [<Fact>]
     let ``given exact score prediction when computing delta then max points are returned`` () =
-        BetEvaluator.delta (makePrediction 2 1) (makeActual 2 1) |> should equal 10
+        BetEvaluator.delta (makePrediction 2 1) (makeActual 2 1) |> should equal 20
 
     [<Fact>]
     let ``given correct winner but wrong scores when computing delta then winner points are returned`` () =
-        BetEvaluator.delta (makePrediction 3 0) (makeActual 2 1) |> should equal 5
+        BetEvaluator.delta (makePrediction 3 0) (makeActual 2 1) |> should equal 10
 
     [<Fact>]
     let ``given correct winner and home score when computing delta then winner and home points are returned`` () =
-        BetEvaluator.delta (makePrediction 2 0) (makeActual 2 1) |> should equal 7
+        BetEvaluator.delta (makePrediction 2 0) (makeActual 2 1) |> should equal 14
 
     [<Fact>]
     let ``given correct winner and away score when computing delta then winner and away points are returned`` () =
-        BetEvaluator.delta (makePrediction 3 1) (makeActual 2 1) |> should equal 7
+        BetEvaluator.delta (makePrediction 3 1) (makeActual 2 1) |> should equal 14
 
     [<Fact>]
     let ``given wrong winner when computing delta then zero is returned`` () =
@@ -44,24 +44,24 @@ module BetEvaluatorTest =
     let ``given correct draw prediction but wrong scores when computing delta then winner and difference points are returned``
         ()
         =
-        BetEvaluator.delta (makePrediction 0 0) (makeActual 1 1) |> should equal 6
+        BetEvaluator.delta (makePrediction 0 0) (makeActual 1 1) |> should equal 12
 
     [<Fact>]
     let ``given exact draw prediction when computing delta then max points are returned`` () =
-        BetEvaluator.delta (makePrediction 1 1) (makeActual 1 1) |> should equal 10
+        BetEvaluator.delta (makePrediction 1 1) (makeActual 1 1) |> should equal 20
 
     [<Fact>]
     let ``given wrong winner with correct home score and same margin when computing delta then home and difference points are returned``
         ()
         =
-        BetEvaluator.delta (makePrediction 1 2) (makeActual 1 0) |> should equal 3
+        BetEvaluator.delta (makePrediction 1 2) (makeActual 1 0) |> should equal 6
 
     [<Fact>]
     let ``given wrong winner with correct away score and same margin when computing delta then away and difference points are returned``
         ()
         =
-        BetEvaluator.delta (makePrediction 0 1) (makeActual 2 1) |> should equal 3
+        BetEvaluator.delta (makePrediction 0 1) (makeActual 2 1) |> should equal 6
 
     [<Fact>]
     let ``given reversed score with same margin when computing delta then only difference points are returned`` () =
-        BetEvaluator.delta (makePrediction 1 2) (makeActual 2 1) |> should equal 1
+        BetEvaluator.delta (makePrediction 1 2) (makeActual 2 1) |> should equal 2

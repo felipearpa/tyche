@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.7.1
+
+- Scoring values doubled: a correct winner is now worth 10 points, each exact team score 4, and the goal-difference margin 2 — so an exact prediction earns 20 points instead of 10
+
 ## 1.7.0
 
 - Automatic match score ingestion: final results are now fetched and recorded without manual intervention, so standings and bet scores settle on their own once a match ends
