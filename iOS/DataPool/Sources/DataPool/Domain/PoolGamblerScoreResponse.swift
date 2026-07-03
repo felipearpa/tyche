@@ -6,18 +6,5 @@ struct PoolGamblerScoreResponse : Codable {
     let position: Int?
     let beforePosition: Int?
     let score: Int?
-}
-
-extension PoolGamblerScoreResponse {
-    func toPoolGamblerScore() -> PoolGamblerScore {
-        return PoolGamblerScore(
-            poolId: self.poolId,
-            poolName: self.poolName,
-            gamblerId: self.gamblerId,
-            gamblerUsername: self.gamblerUsername,
-            position: self.position,
-            beforePosition: self.beforePosition,
-            score: self.score
-        )
-    }
+    let gamblerCount: Int?
 }

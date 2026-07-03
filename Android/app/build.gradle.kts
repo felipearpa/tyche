@@ -3,6 +3,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 val projectCompileSdk: String by project
 val projectMinSdk: String by project
 val urlBasePath: String by project
+val urlBasePathLocal: String by project
 val signInLinkUrlTemplate: String by project
 val joinPoolUrlTemplate: String by project
 val iosBundleId: String by project
@@ -28,11 +29,22 @@ android {
     defaultConfig {
         applicationId = "com.felipearpa.fortuna"
         minSdk = projectMinSdk.toInt()
-        versionCode = 11
-        versionName = "1.7.2"
+        versionCode = 12
+        versionName = "2.0.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary = true
+        }
+    }
+    flavorDimensions += "environment"
+    productFlavors {
+        create("prod") {
+            dimension = "environment"
+            buildConfigField(type = "String", name = "URL_BASE_PATH", value = """"$urlBasePath"""")
+        }
+        create("local") {
+            dimension = "environment"
+            buildConfigField(type = "String", name = "URL_BASE_PATH", value = """"$urlBasePathLocal"""")
         }
     }
     buildTypes {
@@ -45,7 +57,6 @@ android {
             )
         }
         all {
-            buildConfigField(type = "String", name = "URL_BASE_BATH", value = """"$urlBasePath"""")
             buildConfigField(type = "String", name = "SIGN_IN_LINK_URL_TEMPLATE", value = """"$signInLinkUrlTemplate"""")
             buildConfigField(type = "String", name = "JOIN_POOL_URL_TEMPLATE", value = """"$joinPoolUrlTemplate"""")
             buildConfigField(type = "String", name = "IOS_BUNDLE_ID", value = """"$iosBundleId"""")
@@ -109,7 +120,6 @@ dependencies {
     androidTestImplementation(libs.io.mockk.android)
 
     debugImplementation(libs.bundles.compose.debug.test)
-
 }
 
 dependencies {

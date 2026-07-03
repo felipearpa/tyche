@@ -21,7 +21,7 @@ struct GamblerScoreItem: View {
                 Text(String(score))
             }
 
-            if let difference = poolGamblerScore.difference() {
+            if let difference = poolGamblerScore.rank() {
                 TrendIndicator(difference: difference)
                     .frame(width: indicatorSize)
             }

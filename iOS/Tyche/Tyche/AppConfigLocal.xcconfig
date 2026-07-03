@@ -1,0 +1,11 @@
+//
+//  AppConfigLocal.xcconfig
+//  Tyche
+//
+//  Local environment — used by the "Debug Local" configuration ("Tyche Local" scheme).
+//  Overrides only the values that differ from AppConfig.xcconfig.
+//
+
+#include "AppConfig.xcconfig"
+
+URL_BASE_PATH = https:/$()/guiding-terminally-cicada.ngrok-free.app

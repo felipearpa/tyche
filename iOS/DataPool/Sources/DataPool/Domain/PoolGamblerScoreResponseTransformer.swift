@@ -1,8 +1,6 @@
-import DataPool
-
-public extension PoolGamblerScore {
-    func toPoolGamblerScoreModel() -> PoolGamblerScoreModel {
-        PoolGamblerScoreModel(
+extension PoolGamblerScoreResponse {
+    func toPoolGamblerScore() -> PoolGamblerScore {
+        return PoolGamblerScore(
             poolId: poolId,
             poolName: poolName,
             gamblerId: gamblerId,
@@ -10,7 +8,7 @@ public extension PoolGamblerScore {
             position: position,
             beforePosition: beforePosition,
             score: score,
-            gamblerCount: gamblerCount,
+            gamblerCount: gamblerCount
         )
     }
 }

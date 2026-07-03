@@ -9,6 +9,7 @@ fun poolGamblerScorePlaceholderModel() =
         position = 1,
         beforePosition = 1,
         score = 1,
+        gamblerCount = 100,
     )
 
 fun poolGamblerScoreDummyModel() =
@@ -20,6 +21,7 @@ fun poolGamblerScoreDummyModel() =
         position = 1,
         beforePosition = 2,
         score = 150,
+        gamblerCount = 55,
     )
 
 fun poolGamblerScoreDummyModelWithoutPosition() =
@@ -31,6 +33,7 @@ fun poolGamblerScoreDummyModelWithoutPosition() =
         position = null,
         beforePosition = null,
         score = 0,
+        gamblerCount = 71,
     )
 
 fun poolGamblerScoreWithoutPositionDummyModel() =
@@ -42,6 +45,7 @@ fun poolGamblerScoreWithoutPositionDummyModel() =
         position = null,
         beforePosition = null,
         score = 0,
+        gamblerCount = 20,
     )
 
 fun poolGamblerScoreDummyModels() =
@@ -54,6 +58,7 @@ fun poolGamblerScoreDummyModels() =
             position = 1,
             beforePosition = 2,
             score = 150,
+            gamblerCount = 100,
         ),
         PoolGamblerScoreModel(
             poolId = "pool002",
@@ -63,6 +68,7 @@ fun poolGamblerScoreDummyModels() =
             position = 5,
             beforePosition = 4,
             score = 120,
+            gamblerCount = 71,
         ),
         PoolGamblerScoreModel(
             poolId = "pool003",
@@ -72,6 +78,7 @@ fun poolGamblerScoreDummyModels() =
             position = 2,
             beforePosition = 2,
             score = 200,
+            gamblerCount = 98,
         ),
         PoolGamblerScoreModel(
             poolId = "pool004",
@@ -81,6 +88,7 @@ fun poolGamblerScoreDummyModels() =
             position = 10,
             beforePosition = 15,
             score = 80,
+            gamblerCount = 35,
         ),
         PoolGamblerScoreModel(
             poolId = "pool005",
@@ -90,6 +98,7 @@ fun poolGamblerScoreDummyModels() =
             position = 3,
             beforePosition = 1,
             score = 95,
+            gamblerCount = 150,
         ),
         PoolGamblerScoreModel(
             poolId = "pool006",
@@ -99,6 +108,7 @@ fun poolGamblerScoreDummyModels() =
             position = 7,
             beforePosition = 8,
             score = 110,
+            gamblerCount = 111,
         ),
         PoolGamblerScoreModel(
             poolId = "pool007",
@@ -108,6 +118,7 @@ fun poolGamblerScoreDummyModels() =
             position = 4,
             beforePosition = 3,
             score = 140,
+            gamblerCount = 26,
         ),
         PoolGamblerScoreModel(
             poolId = "pool008",
@@ -117,6 +128,7 @@ fun poolGamblerScoreDummyModels() =
             position = 6,
             beforePosition = 6,
             score = 130,
+            gamblerCount = 37,
         ),
         PoolGamblerScoreModel(
             poolId = "pool009",
@@ -126,6 +138,7 @@ fun poolGamblerScoreDummyModels() =
             position = 12,
             beforePosition = 10,
             score = 70,
+            gamblerCount = 101,
         ),
         PoolGamblerScoreModel(
             poolId = "pool010",
@@ -135,5 +148,6 @@ fun poolGamblerScoreDummyModels() =
             position = 1,
             beforePosition = 1,
             score = 160,
+            gamblerCount = 78,
         ),
     )

@@ -11,17 +11,33 @@ struct PoolScoreItem: View {
 
     var body: some View {
         HStack(spacing: boxSpacing.medium) {
-            if let position = poolGamblerScore.position {
-                PostionIndicator(position: position, shouldUsePrimeryColor: false)
+            VStack(spacing: boxSpacing.small) {
+                if let position = poolGamblerScore.position {
+                    PostionIndicator(position: position, shouldUsePrimeryColor: false)
+                }
+
+                if let rank = poolGamblerScore.rank() {
+                    TrendIndicator(difference: rank, textStyle: Font.TextStyle.footnote)
+                }
             }
 
-            Text(poolGamblerScore.poolName)
+            VStack(alignment: .leading) {
+                Text(poolGamblerScore.poolName)
+
+                HStack(spacing: boxSpacing.large) {
+                    if let score = poolGamblerScore.score {
+                        Text(.pointsText(score))
+                            .font(.footnote.bold())
+                    }
+
+                    if let gamblerCount = poolGamblerScore.gamblerCount {
+                        Text(.gamblersText(gamblerCount))
+                            .font(.footnote)
+                    }
+                }
+            }
 
             Spacer()
-
-            if let difference = poolGamblerScore.difference() {
-                TrendIndicator(difference: difference)
-            }
 
             Button(action: onJoin) {
                 Image(.personAdd)
@@ -49,6 +65,22 @@ struct PoolScoreItem: View {
 
 #Preview("Without position") {
     PoolScoreItem(poolGamblerScore: poolGamblerScoreWithoutPositionDummyModel(), onJoin: {})
+}
+
+#Preview("Long pool name") {
+    PoolScoreItem(
+        poolGamblerScore: PoolGamblerScoreModel(
+            poolId: "A3C2E1",
+            poolName: "This is a very long pool name to test how it is displayed in the list",
+            gamblerId: "YF23H1",
+            gamblerUsername: "neptune-player",
+            position: 4,
+            beforePosition: 3,
+            score: 8,
+            gamblerCount: 101
+        ),
+        onJoin: {}
+    )
 }
 
 #Preview("Placeholder") {

@@ -35,7 +35,7 @@ module GetOpenPoolLayoutsTest =
                       BeforePosition = Some 2
                       Score = Some 15
                       BeforeScore = Some 10
-                      GamblerCount = None }
+                      GamblerCount = Some 5 }
 
                     { PoolId = "01KZXZNSK2WT2BVRZBW1H7E92Y"
                       PoolName = "Hola mundo"
@@ -45,7 +45,7 @@ module GetOpenPoolLayoutsTest =
                       BeforePosition = Some 4
                       Score = Some 20
                       BeforeScore = Some 12
-                      GamblerCount = None }
+                      GamblerCount = Some 3 }
                 }
               Next = None }
 
@@ -74,6 +74,26 @@ module GetOpenPoolLayoutsTest =
         client
             .Setup(_.QueryAsync(It.IsAny<QueryRequest>()))
             .ReturnsAsync(QueryResponse(Items = (items |> List.map (fun it -> Dictionary it) |> ResizeArray)))
+        |> ignore
+
+        let poolRootItems =
+            [ dict
+                  [ "poolId", AttributeValue(S = "01K0DCFFB08W35AW5Q6F82R6NQ")
+                    "gamblerCount", AttributeValue(N = "5") ]
+              dict
+                  [ "poolId", AttributeValue(S = "01KZXZNSK2WT2BVRZBW1H7E92Y")
+                    "gamblerCount", AttributeValue(N = "3") ] ]
+
+        client
+            .Setup(_.BatchGetItemAsync(It.IsAny<BatchGetItemRequest>()))
+            .ReturnsAsync(
+                BatchGetItemResponse(
+                    Responses =
+                        Dictionary(
+                            dict [ "Pool", ResizeArray(poolRootItems |> List.map (fun it -> Dictionary it)) ]
+                        )
+                )
+            )
         |> ignore
 
         let functions =

@@ -38,6 +38,7 @@
         <Compile Include="Infrastructure\GetGamblerScoresRequestBuilder.fs" />
         <Compile Include="Infrastructure\GetPoolScoresRequestBuilder.fs" />
         <Compile Include="Infrastructure\GetPoolGamblerScoreRequestBuilder.fs" />
+        <Compile Include="Infrastructure\GetGamblerCountsRequestBuilder.fs" />
         <Compile Include="Infrastructure\GetPendingPoolGamblerBetsRequestBuilder.fs" />
         <Compile Include="Infrastructure\GetFinishedPoolGamblerBetsRequestBuilder.fs" />
         <Compile Include="Infrastructure\GetLivePoolGamblerBetsRequestBuilder.fs" />

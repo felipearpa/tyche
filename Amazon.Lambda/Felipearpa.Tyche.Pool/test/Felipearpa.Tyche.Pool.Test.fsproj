@@ -33,6 +33,8 @@
       <Compile Include="Infrastructure\GetPoolMembersRequestBuilderTest.fs" />
       <Compile Include="Infrastructure\JoinPoolGamblerRequestBuilderTest.fs" />
       <Compile Include="Infrastructure\PoolDynamoDbRepositoryJoinPoolTest.fs" />
+      <Compile Include="Infrastructure\GetGamblerCountsRequestBuilderTest.fs" />
+      <Compile Include="Infrastructure\PoolGamblerScoreDynamoDbRepositoryGetGamblerScoresTest.fs" />
       <Compile Include="Infrastructure\UpdateGamblerScoreUsernameRequestBuilderTest.fs" />
       <Compile Include="Infrastructure\UpdateGamblerBetUsernameRequestBuilderTest.fs" />
       <Compile Include="Infrastructure\PoolDynamoDbRepositoryPropagateUsernameTest.fs" />

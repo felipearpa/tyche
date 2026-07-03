@@ -4,11 +4,12 @@ import com.felipearpa.tyche.data.pool.domain.PoolGamblerScore
 
 fun PoolGamblerScore.toPoolGamblerScoreModel() =
     PoolGamblerScoreModel(
-        poolId = this.poolId,
-        poolName = this.poolName,
-        gamblerId = this.gamblerId,
-        gamblerUsername = this.gamblerUsername,
-        position = this.position,
-        beforePosition = this.beforePosition,
-        score = this.score,
+        poolId = poolId,
+        poolName = poolName,
+        gamblerId = gamblerId,
+        gamblerUsername = gamblerUsername,
+        position = position,
+        beforePosition = beforePosition,
+        score = score,
+        gamblerCount = gamblerCount,
     )

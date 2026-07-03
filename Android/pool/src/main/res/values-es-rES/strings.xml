@@ -32,4 +32,6 @@
     <string name="no_other_gamblers_title">Aún no hay otros jugadores</string>
     <string name="no_other_gamblers_message">Cuando alguien se una a esta quiniela, podrás gestionarlos desde aquí.</string>
     <string name="invite_gamblers_action">Invitar jugadores</string>
+    <string name="points_text">%1s pts.</string>
+    <string name="gamblers_text">%1s jugadores</string>
 </resources>

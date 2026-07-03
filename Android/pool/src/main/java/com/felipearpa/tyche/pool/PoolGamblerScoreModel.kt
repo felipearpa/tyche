@@ -8,9 +8,10 @@ data class PoolGamblerScoreModel(
     val position: Int?,
     val beforePosition: Int?,
     val score: Int?,
+    val gamblerCount: Int?,
 )
 
-fun PoolGamblerScoreModel.difference(): Int? {
+fun PoolGamblerScoreModel.rank(): Int? {
     val currentPosition = this.position ?: return null
     val beforePosition = this.beforePosition ?: return null
     return beforePosition - currentPosition

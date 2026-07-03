@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.0.0
+
+- The gambler pool listing now returns each pool's member count, so clients can show how many gamblers each pool has
+- Internal: pool root items are batch-fetched via `BatchGetItem` (chunked with unprocessed-key retries) to enrich score pages with gambler counts
+
 ## 1.7.1
 
 - Scoring values doubled: a correct winner is now worth 10 points, each exact team score 4, and the goal-difference margin 2 — so an exact prediction earns 20 points instead of 10

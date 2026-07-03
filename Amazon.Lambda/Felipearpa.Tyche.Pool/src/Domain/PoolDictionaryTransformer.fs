@@ -18,6 +18,14 @@ module PoolDictionaryTransformer =
             |> tryGetAttributeValueOrNone PoolTable.Attribute.gamblerCount
             |> Option.map (fun attributeValue -> int attributeValue.N) }
 
+    let toGamblerCountEntry (dictionary: IDictionary<string, AttributeValue>) =
+        dictionary
+        |> tryGetAttributeValueOrNone PoolTable.Attribute.gamblerCount
+        |> Option.map (fun gamblerCount -> dictionary[PoolTable.Attribute.poolId].S |> Ulid.newOf, int gamblerCount.N)
+
     type Extensions =
         [<Extension>]
         static member ToPool(this: IDictionary<string, AttributeValue>) = toPool this
+
+        [<Extension>]
+        static member ToGamblerCountEntry(this: IDictionary<string, AttributeValue>) = toGamblerCountEntry this

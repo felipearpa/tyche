@@ -6,4 +6,5 @@ public struct PoolGamblerScore: Codable {
     public let position: Int?
     public let beforePosition: Int?
     public let score: Int?
+    public let gamblerCount: Int?
 }

@@ -93,7 +93,14 @@ private struct PoolScoreListRouterContent: View {
                     poolScoreViewModel.refresh()
                 }
             }
-            .navigationBarItems(leading: navigationBarLeading(), trailing: navigationBarTrailing())
+            .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    navigationBarLeading()
+                }
+                PlainToolbarItem(placement: .topBarTrailing) {
+                    navigationBarTrailing()
+                }
+            }
             .navigationDestination(for: PoolFromLayoutCreatorRoute.self) { route in
                 PoolFromLayoutCreatorView(
                     viewModel: PoolFromLayoutCreatorViewModel(
@@ -147,12 +154,14 @@ private struct PoolScoreListRouterContent: View {
             Image(sharedResource: .filledAddCircle)
                 .resizable()
                 .frame(width: createIconSize, height: createIconSize)
+                .foregroundStyle(Color.accentColor)
         }
+        .buttonStyle(.plain)
     }
 }
 
 private let navigationAvatarSize: CGFloat = 32
-private let createIconSize: CGFloat = 32
+private let createIconSize: CGFloat = 48
 
 private func poolScoreListFakeResolver() -> DIResolver {
     let container = Container()
