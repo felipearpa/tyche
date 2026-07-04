@@ -1,13 +1,18 @@
 {
   "fill" : {
-    "solid" : "extended-gray:1.00000,1.00000"
+    "solid" : "srgb:0.29804,0.68627,0.31373,1.00000"
   },
   "groups" : [
     {
+      "blend-mode" : "normal",
       "blur-material" : null,
       "layers" : [
         {
-          "glass" : false,
+          "blend-mode" : "normal",
+          "fill" : {
+            "solid" : "srgb:1.00000,0.75686,0.02745,1.00000"
+          },
+          "glass" : true,
           "hidden" : false,
           "image-name" : "Icon-App-1024x1024@1x.png",
           "name" : "Icon-App-1024x1024@1x",
@@ -20,10 +25,12 @@
           }
         }
       ],
+      "lighting" : "individual",
       "shadow" : {
         "kind" : "neutral",
         "opacity" : 0.5
       },
+      "specular" : false,
       "translucency" : {
         "enabled" : false,
         "value" : 0.5

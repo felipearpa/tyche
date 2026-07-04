@@ -17,7 +17,7 @@ import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import com.felipearpa.tyche.pool.PoolGamblerScoreModel
 import com.felipearpa.tyche.pool.PositionIndicator
-import com.felipearpa.tyche.pool.difference
+import com.felipearpa.tyche.pool.rank
 import com.felipearpa.tyche.pool.poolGamblerScoreDummyModel
 import com.felipearpa.tyche.pool.poolGamblerScoreDummyModelWithoutPosition
 import com.felipearpa.tyche.pool.poolGamblerScorePlaceholderModel
@@ -64,15 +64,15 @@ fun GamblerScoreItem(
                 Text(text = score.toString(), modifier = shimmerModifier)
             }
 
-            val difference = poolGamblerScore.difference()
+            val difference = poolGamblerScore.rank()
             if (difference != null) {
                 Box(
                     modifier = Modifier.width(trendIndicatorSize),
                     contentAlignment = Alignment.Center,
                 ) {
                     TrendIndicator(
-                        difference = difference,
-                        shimmerModifier = shimmerModifier,
+                        rank = difference,
+                        placeholderModifier = shimmerModifier,
                     )
                 }
             }

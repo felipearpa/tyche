@@ -8,7 +8,8 @@ public func poolGamblerScorePlaceholderModel() -> PoolGamblerScoreModel {
         gamblerUsername: String(repeating: "X", count: 15),
         position: 1,
         beforePosition: 2,
-        score: 10
+        score: 10,
+        gamblerCount: 71
     )
 }
 
@@ -20,7 +21,8 @@ public func poolGamblerScoreDummyModel() -> PoolGamblerScoreModel {
         gamblerUsername: "neptune-player",
         position: 4,
         beforePosition: 3,
-        score: 8
+        score: 8,
+        gamblerCount: 101
     )
 }
 
@@ -32,7 +34,8 @@ public func poolGamblerScoreWithoutPositionDummyModel() -> PoolGamblerScoreModel
         gamblerUsername: "neptune-player",
         position: nil,
         beforePosition: nil,
-        score: 0
+        score: 0,
+        gamblerCount: 69
     )
 }
 
@@ -44,7 +47,8 @@ public func poolGamblerScoreDummyModelWithoutPositionData() -> PoolGamblerScoreM
         gamblerUsername: "athena-challenger",
         position: nil,
         beforePosition: nil,
-        score: 10
+        score: 10,
+        gamblerCount: 32
     )
 }
 
@@ -57,7 +61,8 @@ public func poolGamblerScoresDummyModels() -> [PoolGamblerScoreModel] {
             gamblerUsername: "neptune-player",
             position: nil,
             beforePosition: nil,
-            score: 0
+            score: 0,
+            gamblerCount: 67
         ),
         PoolGamblerScoreModel(
             poolId: "X4D7B9",
@@ -66,7 +71,8 @@ public func poolGamblerScoresDummyModels() -> [PoolGamblerScoreModel] {
             gamblerUsername: "ares-bettor",
             position: 2,
             beforePosition: 1,
-            score: 10
+            score: 10,
+            gamblerCount: 111
         ),
         PoolGamblerScoreModel(
             poolId: "J1K5M7",
@@ -75,7 +81,8 @@ public func poolGamblerScoresDummyModels() -> [PoolGamblerScoreModel] {
             gamblerUsername: "hermes-punter",
             position: 1,
             beforePosition: 4,
-            score: 6
+            score: 6,
+            gamblerCount: 43
         )
     ]
 }

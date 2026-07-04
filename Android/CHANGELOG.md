@@ -1,5 +1,13 @@
 # Changelog
 
+## 2.0.0
+
+- Your pool list now shows your points and how many members each pool has, so you can compare pools at a glance
+- Your ranking trend now appears right under your position in the pool list
+- Brand-new app icon, including a themed icon that adapts to your wallpaper colors
+- Refreshed splash screen logo
+- Long pool names now wrap cleanly instead of crowding the row
+
 ## 1.7.2
 
 - Fix: the match header now shows each team's own flag instead of the away team's flag for both teams

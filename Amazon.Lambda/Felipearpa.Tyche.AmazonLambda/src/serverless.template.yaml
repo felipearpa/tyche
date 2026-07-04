@@ -297,6 +297,7 @@ Resources:
             - Effect: Allow
               Action:
                 - dynamodb:Query
+                - dynamodb:BatchGetItem
               Resource:
                 - arn:aws:dynamodb:us-east-2:567776770335:table/Pool
                 - arn:aws:dynamodb:us-east-2:567776770335:table/Pool/index/GetPoolGamblerScoresByGambler-index

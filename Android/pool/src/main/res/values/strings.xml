@@ -32,4 +32,6 @@
     <string name="no_other_gamblers_title">No other gamblers yet</string>
     <string name="no_other_gamblers_message">Once people join this pool, you’ll be able to manage them from here.</string>
     <string name="invite_gamblers_action">Invite gamblers</string>
+    <string name="points_text">%1s pts.</string>
+    <string name="gamblers_text">%1s members</string>
 </resources>

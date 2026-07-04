@@ -6,7 +6,8 @@ func dummyPoolGamblerScore() -> PoolGamblerScore {
         gamblerUsername: "neptune-player",
         position: 4,
         beforePosition: 3,
-        score: 8
+        score: 8,
+        gamblerCount: 71,
     )
 }
 
@@ -19,7 +20,8 @@ func poolGamblerScoreDummyModels() -> [PoolGamblerScore] {
             gamblerUsername: "ElGoleador",
             position: 1,
             beforePosition: 2,
-            score: 150
+            score: 150,
+            gamblerCount: 100,
         ),
         PoolGamblerScore(
             poolId: "pool002",
@@ -28,7 +30,8 @@ func poolGamblerScoreDummyModels() -> [PoolGamblerScore] {
             gamblerUsername: "Pichichi_88",
             position: 5,
             beforePosition: 4,
-            score: 120
+            score: 120,
+            gamblerCount: 100,
         ),
         PoolGamblerScore(
             poolId: "pool003",
@@ -37,7 +40,8 @@ func poolGamblerScoreDummyModels() -> [PoolGamblerScore] {
             gamblerUsername: "AstroDelBalon",
             position: 2,
             beforePosition: 2,
-            score: 200
+            score: 200,
+            gamblerCount: 111,
         ),
         PoolGamblerScore(
             poolId: "pool004",
@@ -46,7 +50,8 @@ func poolGamblerScoreDummyModels() -> [PoolGamblerScore] {
             gamblerUsername: "ReyDeLasApuestas",
             position: 10,
             beforePosition: 15,
-            score: 80
+            score: 80,
+            gamblerCount: 77,
         ),
         PoolGamblerScore(
             poolId: "pool005",
@@ -55,7 +60,8 @@ func poolGamblerScoreDummyModels() -> [PoolGamblerScore] {
             gamblerUsername: "Fanatico_Futbol",
             position: 3,
             beforePosition: 1,
-            score: 95
+            score: 95,
+            gamblerCount: 35,
         ),
         PoolGamblerScore(
             poolId: "pool006",
@@ -64,7 +70,8 @@ func poolGamblerScoreDummyModels() -> [PoolGamblerScore] {
             gamblerUsername: "MagoDeLaCancha",
             position: 7,
             beforePosition: 8,
-            score: 110
+            score: 110,
+            gamblerCount: 59,
         ),
         PoolGamblerScore(
             poolId: "pool007",
@@ -73,7 +80,8 @@ func poolGamblerScoreDummyModels() -> [PoolGamblerScore] {
             gamblerUsername: "GoleadorEstrella",
             position: 4,
             beforePosition: 3,
-            score: 140
+            score: 140,
+            gamblerCount: 89,
         ),
         PoolGamblerScore(
             poolId: "pool008",
@@ -82,7 +90,8 @@ func poolGamblerScoreDummyModels() -> [PoolGamblerScore] {
             gamblerUsername: "GambetaPro",
             position: 6,
             beforePosition: 6,
-            score: 130
+            score: 130,
+            gamblerCount: 95,
         ),
         PoolGamblerScore(
             poolId: "pool009",
@@ -91,7 +100,8 @@ func poolGamblerScoreDummyModels() -> [PoolGamblerScore] {
             gamblerUsername: "CrackTotal",
             position: 12,
             beforePosition: 10,
-            score: 70
+            score: 70,
+            gamblerCount: 27
         ),
         PoolGamblerScore(
             poolId: "pool010",
@@ -100,7 +110,8 @@ func poolGamblerScoreDummyModels() -> [PoolGamblerScore] {
             gamblerUsername: "TiburonDelArea",
             position: 1,
             beforePosition: 1,
-            score: 160
+            score: 160,
+            gamblerCount: 121,
         )
     ]
 }

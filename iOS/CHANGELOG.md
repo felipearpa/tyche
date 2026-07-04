@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.0.0
+
+- Your pool list now shows your points and how many members each pool has, so you can compare pools at a glance
+- Your ranking trend now appears right under your position in the pool list
+- Brand-new app icon with a Liquid Glass look
+- Refreshed splash screen logo
+
 ## 1.7.2
 
 - The Save button on a pending bet stays disabled until both scores are valid, so you can't submit an incomplete prediction by mistake

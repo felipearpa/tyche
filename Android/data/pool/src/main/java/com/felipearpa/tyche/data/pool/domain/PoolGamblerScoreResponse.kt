@@ -11,4 +11,5 @@ internal data class PoolGamblerScoreResponse(
     val position: Int?,
     val beforePosition: Int?,
     val score: Int?,
+    val gamblerCount: Int?,
 )

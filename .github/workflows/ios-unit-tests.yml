@@ -22,7 +22,7 @@ jobs:
     env:
       WORKSPACE: Tyche.xcworkspace
       SCHEME: Tyche
-      DESTINATION: "platform=iOS Simulator,name=iPhone 16,OS=latest"
+      DESTINATION: "platform=iOS Simulator,name=iPhone 17,OS=latest"
       RESULT_BUNDLE: TestResults.xcresult
 
     steps:

@@ -177,7 +177,7 @@ private fun TopAppBar(
     )
 }
 
-private val createIconSize = 32.dp
+private val createIconSize = 48.dp
 
 @PreviewLightDark
 @Preview(locale = "es-rCO")

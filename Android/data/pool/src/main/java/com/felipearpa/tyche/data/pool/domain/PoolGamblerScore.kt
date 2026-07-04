@@ -8,4 +8,5 @@ data class PoolGamblerScore(
     val position: Int?,
     val beforePosition: Int?,
     val score: Int?,
+    val gamblerCount: Int?,
 )

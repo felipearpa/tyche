@@ -11,6 +11,7 @@ public struct PoolGamblerScoreModel: Identifiable, Hashable, Codable, Sendable {
     public let position: Int?
     public let beforePosition: Int?
     public let score: Int?
+    public let gamblerCount: Int?
 
     public var id: PoolGamblerScoreModelId {
         return PoolGamblerScoreModelId(poolId: poolId, gamblerId: gamblerId)
@@ -18,7 +19,7 @@ public struct PoolGamblerScoreModel: Identifiable, Hashable, Codable, Sendable {
 }
 
 public extension PoolGamblerScoreModel {
-    func difference() -> Int? {
+    func rank() -> Int? {
         guard let currentPosition = self.position else {
             return nil
         }
