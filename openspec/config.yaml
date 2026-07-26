@@ -1,0 +1,16 @@
+schema: spec-driven
+
+context: |
+  Backend: F# on AWS Lambda, DynamoDB (single-table design per bounded context:
+  Account, Pool, PoolLayout, MatchScoreIngestion), SQS FIFO, S3.
+  Mobile: iOS (Swift/SwiftUI), Android (Kotlin/Compose).
+  Consumer-facing app name is "Fortuna" (repo is "Tyche") — use Fortuna in user-facing copy.
+  Idiomatic F#: no mutable collections, no NoOp/stub DI implementations,
+  repositories are data access only (no messaging or orchestration).
+  Read docs/database-model.md before any task that touches persistence.
+
+rules:
+  specs:
+    - Use Given/When/Then format for scenarios
+  tasks:
+    - "Group tasks by platform: backend, iOS, Android"
