@@ -2,6 +2,8 @@
 
 ## 2.0.0
 
+- Add a profile picture: pick a photo or take one, crop it to fit, and it appears in the menu button wherever your account shows
+- New Profile screen, reached from the drawer, where you can change your photo and edit your username in one place
 - Your pool list now shows your points and how many members each pool has, so you can compare pools at a glance
 - Your ranking trend now appears right under your position in the pool list
 - Brand-new app icon, including a themed icon that adapts to your wallpaper colors

@@ -2,6 +2,8 @@
 
 ## 2.0.0
 
+- Profile picture uploads: a new authenticated Account endpoint issues a short-lived presigned S3 upload URL for the caller's own avatar — locked to the caller's account, JPEG only, 1 MB max, 5-minute expiry
+- Avatar photos live at a fixed per-account address and are overwritten on each change, with cache revalidation so clients never keep showing a superseded photo
 - The gambler pool listing now returns each pool's member count, so clients can show how many gamblers each pool has
 - Internal: pool root items are batch-fetched via `BatchGetItem` (chunked with unprocessed-key retries) to enrich score pages with gambler counts
 
