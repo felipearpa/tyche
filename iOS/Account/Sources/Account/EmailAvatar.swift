@@ -5,21 +5,24 @@ import Session
 public struct AutoEmailAvatar: View {
     private let explicitEmail: String?
     @Environment(\.diResolver) private var diResolver: DIResolver
-    @Environment(\.colorScheme) private var colorScheme
     @State private var resolvedEmail: String = ""
+    @State private var resolvedAccountId: String = ""
 
     public init(email: String) { self.explicitEmail = email }
     public init() { self.explicitEmail = nil }
 
-    private var email: String { explicitEmail ?? resolvedEmail }
-
     public var body: some View {
-        EmailAvatar(email: resolvedEmail)
-            .task {
-                guard explicitEmail == nil else { return }
-                guard let storage = diResolver.resolve(AccountStorage.self) else { return }
-                resolvedEmail = (try? await storage.retrieve())?.email ?? ""
-            }
+        AccountAvatar(
+            accountId: explicitEmail == nil ? resolvedAccountId : "",
+            email: explicitEmail ?? resolvedEmail
+        )
+        .task {
+            guard explicitEmail == nil else { return }
+            guard let storage = diResolver.resolve(AccountStorage.self) else { return }
+            let bundle = try? await storage.retrieve()
+            resolvedEmail = bundle?.email ?? ""
+            resolvedAccountId = bundle?.accountId ?? ""
+        }
     }
 }
 

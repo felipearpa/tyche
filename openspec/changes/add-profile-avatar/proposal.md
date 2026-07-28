@@ -9,12 +9,13 @@ Gamblers have no visual identity in Fortuna — the only avatar is a generated l
 - New **avatar upload pipeline**, fully client-side image processing: photo pick (library or camera capture) → square crop UI (pan + pinch-zoom, circular mask preview) → final-result preview → on-device downscale/compress to 512×512 JPEG → upload to S3 via presigned PUT.
 - New **backend endpoint** in the Account bounded context that issues a presigned S3 PUT URL (caller-gated, content-type and size constrained). No image-processing Lambda — the client produces the final image.
 - Avatars are stored at the **deterministic S3 key `avatars/<accountId>.jpg`**, so future consumers can derive the URL from a gambler id with no backend changes.
-- The existing letter avatar (`EmailAvatar`) remains the empty state; the Profile screen renders the photo when one exists.
+- The signed-in gambler's photo also replaces their letter avatar in the **drawer header and the toolbar avatar** on both platforms, so the photo they set is the identity they see everywhere they see themselves.
+- The existing letter avatar (`EmailAvatar`) remains the empty state; every surface showing the signed-in gambler renders the photo when one exists.
 
 ### Non-goals
 
-- Avatars on screens that show **other** gamblers (leaderboard, manage gamblers, drawer header, toolbars) — coming in a separate follow-up proposal.
-- Cache-invalidation strategy for other-user avatars (e.g. `avatarVersion` denormalization vs. CDN TTL) — deferred to that follow-up.
+- Avatars on screens that show **other** gamblers (leaderboard rows, manage-gamblers rows) — coming in a separate follow-up proposal.
+- Cache invalidation for **other** gamblers' avatars (e.g. `avatarVersion` denormalization vs. CDN TTL) — deferred to that follow-up. Freshness of the signed-in gambler's own avatar is in scope here.
 - A Settings hub screen (the reference design's "Settings" back label is aspirational; no Settings screen exists today).
 - Avatar deletion/reset, moderation, and animated avatars.
 
@@ -22,7 +23,7 @@ Gamblers have no visual identity in Fortuna — the only avatar is a generated l
 
 ### New Capabilities
 
-- `profile`: the Profile screen — entry point from the drawer, avatar display (photo or letter fallback), "Change Photo" action, and username row navigating to the username editor.
+- `profile`: the Profile screen — entry point from the drawer, avatar display (photo or letter fallback), "Change Photo" action, and username row navigating to the username editor — plus the signed-in gambler's avatar wherever their own identity is shown (drawer header, toolbar).
 - `avatar-upload`: the end-to-end avatar pipeline — photo selection, square crop with preview, client-side optimization, presigned-URL issuance, and S3 upload/storage contract.
 
 ### Modified Capabilities
@@ -32,7 +33,7 @@ Gamblers have no visual identity in Fortuna — the only avatar is a generated l
 ## Impact
 
 - **Backend (F#)**: new presigned-URL endpoint in `Felipearpa.Tyche.Account` (Lambda function + HttpApi route), new S3 bucket (or bucket path) for avatars with IAM policy for presigned PUTs, SAM template additions. No DynamoDB schema change in v1.
-- **iOS**: new Profile screen + crop/preview screen and view models; drawer entry rework in `PoolHomeDrawerView` / `PoolScoreListDrawerView`; upload client in the `Session`/`Account` package.
-- **Android**: same surface — new Profile + crop/preview composables and view models; drawer rework in both `DrawerView`s; upload client in the `session` module.
+- **iOS**: new Profile screen + crop/preview screen and view models; drawer entry rework in `PoolHomeDrawerView` / `PoolScoreListDrawerView`; upload client in the `Session`/`Account` package; `AutoEmailAvatar` (Account package) learns to prefer the photo, and `AccountHeaderDrawer` gains the account id it currently lacks.
+- **Android**: same surface — new Profile + crop/preview composables and view models; drawer rework in both `DrawerView`s; upload client in the `session` module; same `AutoEmailAvatar` / `AccountHeaderDrawer` changes in the `account` and `app` modules.
 - **Dependencies**: none added — crop component is hand-rolled natively on both platforms; upload uses existing HTTP stacks (Alamofire / Ktor) plus a plain S3 PUT.
 - **Unaffected**: leaderboard and all other-gambler surfaces, `Pool`/`PoolLayout`/`MatchScoreIngestion` contexts, username propagation fan-out.

@@ -42,7 +42,8 @@ fun AutoEmailAvatar(modifier: Modifier = Modifier) {
 
     val accountStorage = koinInject<AccountStorage>()
     val account by accountStorage.state.collectAsStateWithLifecycle()
-    EmailAvatar(
+    AccountAvatar(
+        accountId = account?.accountId.orEmpty(),
         email = account?.email.orEmpty(),
         modifier = modifier,
     )

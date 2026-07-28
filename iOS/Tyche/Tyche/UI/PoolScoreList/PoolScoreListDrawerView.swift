@@ -4,23 +4,22 @@ import UI
 struct PoolScoreListDrawerView : View {
     @StateObject var viewModel: PoolScoreListDrawerViewModel
     let onSignOut: () -> Void
-    let onEditAccount: () -> Void
+    let onProfile: () -> Void
 
     init(
         viewModel: @autoclosure @escaping () -> PoolScoreListDrawerViewModel,
         onSignOut: @escaping () -> Void,
-        onEditAccount: @escaping () -> Void
+        onProfile: @escaping () -> Void
     ) {
         self._viewModel = .init(wrappedValue: viewModel())
         self.onSignOut = onSignOut
-        self.onEditAccount = onEditAccount
+        self.onProfile = onProfile
     }
 
     var body: some View {
         PoolScoreListDrawerStatefulView(
-            email: viewModel.email,
-            username: viewModel.username,
-            onEditAccount: onEditAccount,
+            uiState: viewModel.uiState,
+            onProfile: onProfile,
             onSignOut: {
                 viewModel.logOut()
                 onSignOut()
@@ -30,9 +29,8 @@ struct PoolScoreListDrawerView : View {
 }
 
 private struct PoolScoreListDrawerStatefulView : View {
-    let email: String
-    let username: String
-    let onEditAccount: () -> Void
+    let uiState: PoolScoreListDrawerUiState
+    let onProfile: () -> Void
     let onSignOut: () -> Void
 
     @Environment(\.boxSpacing) private var boxSpacing
@@ -40,9 +38,10 @@ private struct PoolScoreListDrawerStatefulView : View {
     var body: some View {
         VStack(spacing: 0) {
             AccountHeaderDrawer(
-                username: username,
-                email: email,
-                onEditAccount: onEditAccount
+                accountId: uiState.accountId,
+                username: uiState.username,
+                email: uiState.email,
+                onProfile: onProfile
             )
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.top, boxSpacing.large)
@@ -76,9 +75,12 @@ private struct SignOutButton: View {
 
 #Preview {
     PoolScoreListDrawerStatefulView(
-        email: "felipearpa@email.com",
-        username: "felipearpa",
-        onEditAccount: {},
+        uiState: PoolScoreListDrawerUiState(
+            accountId: "account-1",
+            email: "felipearpa@email.com",
+            username: "felipearpa"
+        ),
+        onProfile: {},
         onSignOut: {}
     )
 }

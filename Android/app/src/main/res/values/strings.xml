@@ -22,4 +22,12 @@
     <string name="edit_user_name_subtitle">This is how other players will see you in the pools</string>
     <string name="position_small_suffix">%sº</string>
     <string name="gamblers_action">Gamblers</string>
+    <string name="profile_title">Profile</string>
+    <string name="change_photo_action">Change Photo</string>
+    <string name="choose_from_library_action">Choose from Library</string>
+    <string name="take_photo_action">Take Photo</string>
+    <string name="use_photo_action">Use Photo</string>
+    <string name="avatar_upload_error_title">Photo Not Uploaded</string>
+    <string name="avatar_upload_error_message">Check your connection and try again.</string>
+    <string name="profile_footer_text">This is how other gamblers see you on the leaderboard.</string>
 </resources>

@@ -96,7 +96,33 @@ public class LoginAssembly : Assembly {
                 accountStorage: resolver.resolve(AccountStorage.self)!
             )
         }
-        
+
+        container.register(AvatarRemoteDataSource.self) { resolver in
+            AvatarAlamofireDataSource(
+                urlBasePathProvider: resolver.resolve(URLBasePathProvider.self)!,
+                session: resolver.resolve(AuthenticatedSession.self)!
+            )
+        }
+
+        container.register(AvatarUploadDataSource.self) { _ in
+            AvatarAlamofireUploadDataSource()
+        }
+
+        container.register(AvatarRepository.self) { resolver in
+            AvatarRemoteRepository(
+                avatarRemoteDataSource: resolver.resolve(AvatarRemoteDataSource.self)!,
+                avatarUploadDataSource: resolver.resolve(AvatarUploadDataSource.self)!,
+                networkErrorHandler: resolver.resolve(NetworkErrorHandler.self)!
+            )
+        }
+
+        container.register(UploadAvatarUseCase.self) { resolver in
+            UploadAvatarUseCase(
+                avatarRepository: resolver.resolve(AvatarRepository.self)!,
+                accountStorage: resolver.resolve(AccountStorage.self)!
+            )
+        }
+
         container.register(AuthTokenRetriever.self) { resolver in
             AuthTokenFirebaseRetriever(firebaseAuth: resolver.resolve(Auth.self)!)
         }

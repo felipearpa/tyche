@@ -3,6 +3,7 @@ namespace Felipearpa.Tyche.HttpApi
 #nowarn "3536"
 
 open Amazon.DynamoDBv2
+open Amazon.S3
 open Felipearpa.Core
 open Felipearpa.Core.Json
 open Felipearpa.Core.Jwt
@@ -34,7 +35,9 @@ module DependencyInjectionConfigurator =
             .AddSingleton<IKeySerializer, DynamoDbKeySerializer>()
             .AddDefaultAWSOptions(app.Configuration.GetAWSOptions())
             .AddAWSService<IAmazonDynamoDB>()
+            .AddAWSService<IAmazonS3>()
             .AddScoped<IAccountRepository, AccountDynamoDbRepository>()
+            .AddScoped<IAvatarStorage, AvatarS3Storage>()
             .AddScoped<IGetAccountById, GetAccountById>()
             .AddScoped<LinkAccount>()
             .AddScoped<IPoolGamblerScoreRepository, PoolGamblerScoreDynamoDbRepository>()
@@ -57,6 +60,7 @@ module DependencyInjectionConfigurator =
             .AddScoped<GetPoolMembers>()
             .AddScoped<RemovePoolGambler>()
             .AddScoped<UpdateUsername>()
+            .AddScoped<IssueAvatarUploadUrl>()
             .AddScoped<IPoolLayoutRepository, PoolLayoutDynamoDbRepository>()
             .AddScoped<GetOpenPoolLayouts>()
             .AddScoped<IPoolLayoutVersionResolver, PoolLayoutVersionResolver>()

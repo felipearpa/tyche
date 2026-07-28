@@ -34,7 +34,7 @@ The backend SHALL expose an authenticated endpoint in the Account context that r
 - **THEN** the endpoint rejects the request and no URL is issued
 
 ### Requirement: Avatar upload and storage contract
-The app SHALL upload the optimized JPEG with an HTTP PUT to the presigned URL. Avatar objects SHALL live at the deterministic key `avatars/<accountId>.jpg`, one object per account, overwritten on each change. Upload failures SHALL be reported to the user with the option to retry, leaving the previous avatar intact.
+The app SHALL upload the optimized JPEG with an HTTP PUT to the presigned URL. Avatar objects SHALL live at the deterministic key `avatars/<accountId>.jpg`, one object per account, overwritten on each change. Uploaded objects SHALL carry a cache directive that requires revalidation, so a client holding the fixed URL cannot serve a superseded image indefinitely. Upload failures SHALL be reported to the user with the option to retry, leaving the previous avatar intact.
 
 #### Scenario: Successful upload replaces the avatar
 - **WHEN** the PUT to the presigned URL succeeds

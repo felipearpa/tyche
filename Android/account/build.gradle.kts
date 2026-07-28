@@ -56,6 +56,8 @@ dependencies {
     implementation(libs.felipearpa.viewing.state)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.felipearpa.foundation)
+    implementation(libs.coil.compose)
+    implementation(libs.coil.network.okhttp)
     implementation(libs.androidx.credentials)
     implementation(libs.androidx.credentials.play.services.auth)
     implementation(libs.google.id)

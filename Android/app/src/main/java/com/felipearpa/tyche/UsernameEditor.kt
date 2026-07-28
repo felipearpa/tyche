@@ -162,7 +162,10 @@ private fun UsernameEditorLayout(
             showRequiredError = showRequiredError,
         )
 
-        Column(modifier = Modifier.fillMaxWidth()) {
+        Column(
+            verticalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.small),
+            modifier = Modifier.fillMaxWidth(),
+        ) {
             UsernameEditorConfirmButton(
                 saveState = saveState,
                 onSave = onSave,

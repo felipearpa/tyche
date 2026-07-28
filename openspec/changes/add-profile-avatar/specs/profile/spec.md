@@ -36,3 +36,29 @@ The Profile screen SHALL contain a Username row showing the current username. Ta
 #### Scenario: Drawer header reflects the change
 - **WHEN** the username is saved from the Profile screen
 - **THEN** the drawer header shows the updated username, as it does today
+
+### Requirement: Account avatar in navigation chrome
+The drawer header and the toolbar avatar SHALL display the signed-in account's avatar photo when one exists, and the existing letter avatar (`EmailAvatar`) otherwise. Each platform SHALL render these surfaces through one shared component so they cannot drift apart.
+
+#### Scenario: Signed-in gambler with an avatar photo
+- **WHEN** the drawer header or a toolbar renders the signed-in gambler's avatar and an avatar object exists for the account
+- **THEN** the photo is shown as a circular avatar in place of the letter avatar
+
+#### Scenario: Signed-in gambler without an avatar photo
+- **WHEN** the drawer header or a toolbar renders the signed-in gambler's avatar and no avatar object exists
+- **THEN** the letter avatar is shown, exactly as it is today
+
+#### Scenario: Navigation chrome reflects a new upload
+- **WHEN** the gambler completes an avatar upload from the Profile screen
+- **THEN** the drawer header and toolbar avatar show the new photo without requiring an app restart
+
+### Requirement: Avatar freshness for the signed-in gambler
+WHEN the stored avatar for the signed-in account has been replaced since a client last loaded it, that client SHALL display the current stored photo rather than a superseded cached copy.
+
+#### Scenario: Photo replaced from another device
+- **WHEN** the gambler uploads a new photo on one device, then opens the app on a second device that had already displayed the previous photo
+- **THEN** the second device displays the new photo rather than its cached copy of the previous one
+
+#### Scenario: Unchanged photo is not downloaded again
+- **WHEN** a client re-displays an avatar whose stored object has not changed
+- **THEN** the client reuses its cached image without transferring the image bytes again

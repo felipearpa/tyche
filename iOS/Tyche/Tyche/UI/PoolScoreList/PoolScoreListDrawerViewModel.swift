@@ -5,8 +5,17 @@ class PoolScoreListDrawerViewModel : ObservableObject {
     private let logOutUseCase: LogOutUseCase
     private let accountStorage: AccountStorage
 
+    @Published var accountId: String = ""
     @Published var email: String = ""
     @Published var username: String = ""
+
+    var uiState: PoolScoreListDrawerUiState {
+        PoolScoreListDrawerUiState(
+            accountId: accountId,
+            email: email,
+            username: username
+        )
+    }
 
     init(
         logOutUseCase: LogOutUseCase,
@@ -22,6 +31,7 @@ class PoolScoreListDrawerViewModel : ObservableObject {
     func loadAccount() {
         Task {
             let bundle = try? await accountStorage.retrieve()
+            self.accountId = bundle?.accountId ?? ""
             self.email = bundle?.email ?? ""
             self.username = bundle?.username ?? ""
         }

@@ -81,6 +81,7 @@ fun PoolHomeView(
     onPoolChange: () -> Unit,
     onSignOut: () -> Unit = {},
     onManageGamblers: () -> Unit = {},
+    onProfile: () -> Unit = {},
     onGamblerOpen: ((poolId: String, gamblerId: String, gamblerUsername: String) -> Unit)? = null,
     onMatchOpen: ((PoolGamblerBetModel) -> Unit)? = null,
 ) {
@@ -114,6 +115,7 @@ fun PoolHomeView(
                     isDrawerOpen = false
                 },
                 onPoolDeleted = onPoolChange,
+                onProfile = onProfile,
             )
         },
         isSaving = deleteState.isSaving(),

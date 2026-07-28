@@ -47,7 +47,6 @@ private struct PoolHomeRouterContent: View {
     @Environment(\.diResolver) private var diResolver: DIResolver
     @State private var path = NavigationPath()
     @State private var drawerVisible = false
-    @State private var isEditingAccount = false
     @State private var inviteUrl: ShareablePoolUrl?
     @StateObject private var drawerViewModel: PoolHomeDrawerViewModel
     @StateObject private var usernameEditorViewModel: UsernameEditorViewModel
@@ -83,19 +82,6 @@ private struct PoolHomeRouterContent: View {
             ),
             onDismiss: {}
         )
-        .minimalDialog(isPresented: $isEditingAccount) {
-            UsernameEditor(
-                initialUsername: drawerViewModel.username,
-                viewModel: usernameEditorViewModel,
-                onSaved: { newUsername in
-                    drawerViewModel.applyUsername(newUsername)
-                    isEditingAccount = false
-                },
-                onDismiss: {
-                    isEditingAccount = false
-                }
-            )
-        }
     }
 
     @ViewBuilder
@@ -172,6 +158,28 @@ private struct PoolHomeRouterContent: View {
                     )
                 )
             }
+            .navigationDestination(for: ProfileRoute.self) { _ in
+                ProfileView(
+                    viewModel: ProfileViewModel(
+                        accountStorage: diResolver.resolve(AccountStorage.self)!,
+                        onUploadAvatar: { [diResolver] imageData in
+                            await diResolver.resolve(UploadAvatarUseCase.self)!.execute(imageData: imageData)
+                        }
+                    ),
+                    onEditUsername: { path.append(UsernameEditorRoute()) }
+                )
+            }
+            .navigationDestination(for: UsernameEditorRoute.self) { _ in
+                UsernameEditorScreen(
+                    initialUsername: drawerViewModel.username,
+                    viewModel: usernameEditorViewModel,
+                    onSaved: { newUsername in
+                        drawerViewModel.applyUsername(newUsername)
+                        path.removeLast()
+                    },
+                    onDismiss: { path.removeLast() }
+                )
+            }
         }
         .drawer(isShowing: $drawerVisible) {
             PoolHomeDrawerView(
@@ -196,8 +204,9 @@ private struct PoolHomeRouterContent: View {
                     drawerVisible = false
                     onChangePool()
                 },
-                onEditAccount: {
-                    isEditingAccount = true
+                onProfile: {
+                    drawerVisible = false
+                    path.append(ProfileRoute())
                 }
             )
         }
@@ -237,6 +246,9 @@ private func poolHomeFakeResolver() -> DIResolver {
     }
     container.register(AccountStorage.self) { _ in
         PreviewAccountStorage()
+    }
+    container.register(UploadAvatarUseCase.self) { _ in
+        UploadAvatarUseCase.preview()
     }
     container.register(GetPoolGamblerScoreUseCase.self) { _ in
         GetPoolGamblerScoreUseCase(

@@ -10,7 +10,7 @@ struct PoolHomeDrawerView: View {
     let onManageGamblers: () -> Void
     let onPoolDeleting: () -> Void
     let onPoolDeleted: () -> Void
-    let onEditAccount: () -> Void
+    let onProfile: () -> Void
 
     @State private var isConfirmingDelete = false
 
@@ -21,7 +21,7 @@ struct PoolHomeDrawerView: View {
         onManageGamblers: @escaping () -> Void,
         onPoolDeleting: @escaping () -> Void,
         onPoolDeleted: @escaping () -> Void,
-        onEditAccount: @escaping () -> Void
+        onProfile: @escaping () -> Void
     ) {
         self.viewModel = viewModel
         self.onSignOut = onLogout
@@ -29,18 +29,13 @@ struct PoolHomeDrawerView: View {
         self.onManageGamblers = onManageGamblers
         self.onPoolDeleting = onPoolDeleting
         self.onPoolDeleted = onPoolDeleted
-        self.onEditAccount = onEditAccount
+        self.onProfile = onProfile
     }
 
     var body: some View {
         PoolHomeDrawerStatefulView(
-            email: viewModel.email,
-            username: viewModel.username,
-            poolGamblerScoreState: viewModel.state,
-            isOwner: viewModel.isOwner,
-            gamblerCount: viewModel.gamblerCount,
-            isDeleting: viewModel.deleteState.isLoading(),
-            onEditAccount: onEditAccount,
+            uiState: viewModel.uiState,
+            onProfile: onProfile,
             onSignOut: {
                 viewModel.signOut()
                 onSignOut()
@@ -65,13 +60,8 @@ struct PoolHomeDrawerView: View {
 }
 
 private struct PoolHomeDrawerStatefulView: View {
-    let email: String
-    let username: String
-    let poolGamblerScoreState: LoadState<PoolGamblerScoreModel>
-    let isOwner: Bool
-    let gamblerCount: Int?
-    let isDeleting: Bool
-    let onEditAccount: () -> Void
+    let uiState: PoolHomeDrawerUiState
+    let onProfile: () -> Void
     let onSignOut: () -> Void
     let onInvite: () -> Void
     let onManageGamblers: () -> Void
@@ -82,24 +72,25 @@ private struct PoolHomeDrawerStatefulView: View {
     var body: some View {
         VStack(spacing: boxSpacing.medium) {
             AccountHeaderDrawer(
-                username: username,
-                email: email,
-                onEditAccount: onEditAccount
+                accountId: uiState.accountId,
+                username: uiState.username,
+                email: uiState.email,
+                onProfile: onProfile
             )
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.top, boxSpacing.large)
                 .padding(.horizontal, boxSpacing.medium)
                 .padding(.bottom, boxSpacing.medium)
 
-            PoolLayout(poolGamblerScoreState: poolGamblerScoreState)
+            PoolLayout(poolGamblerScoreState: uiState.poolGamblerScoreState)
                 .frame(maxWidth: .infinity)
 
             PoolMenuSection(
-                isOwner: isOwner,
-                isDeleting: isDeleting,
+                isOwner: uiState.isOwner,
+                isDeleting: uiState.isDeleting,
                 onInvite: onInvite,
                 onDeletePool: onDeletePool,
-                gamblerCount: gamblerCount,
+                gamblerCount: uiState.gamblerCount,
                 onManageGamblers: onManageGamblers
             )
             .padding(.horizontal, boxSpacing.medium)
@@ -301,15 +292,28 @@ private struct SignOutButton: View {
 
 private let CHEVRON_SIZE: CGFloat = 14
 
-#Preview("Light") {
-    PoolHomeDrawerStatefulView(
+private func poolHomeDrawerPreviewUiState(
+    poolGamblerScoreState: LoadState<PoolGamblerScoreModel>,
+    isOwner: Bool
+) -> PoolHomeDrawerUiState {
+    PoolHomeDrawerUiState(
+        accountId: "account-1",
         email: "felipearpa@email.com",
         username: "felipearpa",
-        poolGamblerScoreState: .loaded(poolGamblerScoreDummyModel()),
-        isOwner: true,
+        poolGamblerScoreState: poolGamblerScoreState,
+        isOwner: isOwner,
         gamblerCount: 12,
-        isDeleting: false,
-        onEditAccount: {},
+        isDeleting: false
+    )
+}
+
+#Preview("Light") {
+    PoolHomeDrawerStatefulView(
+        uiState: poolHomeDrawerPreviewUiState(
+            poolGamblerScoreState: .loaded(poolGamblerScoreDummyModel()),
+            isOwner: true
+        ),
+        onProfile: {},
         onSignOut: {},
         onInvite: {},
         onManageGamblers: {},
@@ -320,13 +324,11 @@ private let CHEVRON_SIZE: CGFloat = 14
 
 #Preview("Dark") {
     PoolHomeDrawerStatefulView(
-        email: "felipearpa@email.com",
-        username: "felipearpa",
-        poolGamblerScoreState: .loaded(poolGamblerScoreDummyModel()),
-        isOwner: true,
-        gamblerCount: 12,
-        isDeleting: false,
-        onEditAccount: {},
+        uiState: poolHomeDrawerPreviewUiState(
+            poolGamblerScoreState: .loaded(poolGamblerScoreDummyModel()),
+            isOwner: true
+        ),
+        onProfile: {},
         onSignOut: {},
         onInvite: {},
         onManageGamblers: {},
@@ -337,13 +339,11 @@ private let CHEVRON_SIZE: CGFloat = 14
 
 #Preview("Without position") {
     PoolHomeDrawerStatefulView(
-        email: "felipearpa@email.com",
-        username: "felipearpa",
-        poolGamblerScoreState: .loaded(poolGamblerScoreWithoutPositionDummyModel()),
-        isOwner: true,
-        gamblerCount: 12,
-        isDeleting: false,
-        onEditAccount: {},
+        uiState: poolHomeDrawerPreviewUiState(
+            poolGamblerScoreState: .loaded(poolGamblerScoreWithoutPositionDummyModel()),
+            isOwner: true
+        ),
+        onProfile: {},
         onSignOut: {},
         onInvite: {},
         onManageGamblers: {},
@@ -354,13 +354,11 @@ private let CHEVRON_SIZE: CGFloat = 14
 
 #Preview("Loading") {
     PoolHomeDrawerStatefulView(
-        email: "felipearpa@email.com",
-        username: "felipearpa",
-        poolGamblerScoreState: .loading,
-        isOwner: false,
-        gamblerCount: 12,
-        isDeleting: false,
-        onEditAccount: {},
+        uiState: poolHomeDrawerPreviewUiState(
+            poolGamblerScoreState: .loading,
+            isOwner: false
+        ),
+        onProfile: {},
         onSignOut: {},
         onInvite: {},
         onManageGamblers: {},

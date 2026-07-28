@@ -28,6 +28,7 @@ import com.felipearpa.tyche.poolcreator.poolFromLayoutCreatorNavView
 import com.felipearpa.tyche.poolhome.PoolHomeViewRoute
 import com.felipearpa.tyche.poolhome.poolHomeNavView
 import com.felipearpa.tyche.poolscore.poolScoreListNavView
+import com.felipearpa.tyche.profile.profileNavView
 import com.felipearpa.tyche.session.AccountBundle
 import com.felipearpa.tyche.session.AccountStorage
 import com.felipearpa.tyche.signin.signInWithEmailAndPasswordNavView
@@ -174,6 +175,7 @@ fun Outlet(
         )
 
         poolFromLayoutCreatorNavView(navController = navController)
+        profileNavView(navController = navController)
 
         poolJoinerView(
             navController = navController,

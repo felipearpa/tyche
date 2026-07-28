@@ -77,10 +77,14 @@ struct PoolHomeView: View {
             }
         }
         .navigationTitle(selectedTab.title)
-        .navigationBarItems(
-            leading: navigationBarLeading(),
-            trailing: navigationBarTrailing()
-        )
+        .toolbar {
+            PlainToolbarItem(placement: .topBarLeading) {
+                navigationBarLeading()
+            }
+            ToolbarItem(placement: .topBarTrailing) {
+                navigationBarTrailing()
+            }
+        }
     }
 
     private func navigationBarLeading() -> some View {

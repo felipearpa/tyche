@@ -22,6 +22,18 @@ class PoolHomeDrawerViewModel: ObservableObject {
     @Published var gamblerCount: Int? = nil
     @Published var deleteState: LoadState<Void> = .idle
 
+    var uiState: PoolHomeDrawerUiState {
+        PoolHomeDrawerUiState(
+            accountId: gamblerId,
+            email: email,
+            username: username,
+            poolGamblerScoreState: state,
+            isOwner: isOwner,
+            gamblerCount: gamblerCount,
+            isDeleting: deleteState.isLoading()
+        )
+    }
+
     init(
         poolId: String,
         gamblerId: String,

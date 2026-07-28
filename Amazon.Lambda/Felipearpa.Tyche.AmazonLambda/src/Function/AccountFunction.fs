@@ -5,6 +5,7 @@ namespace Felipearpa.Tyche.AmazonLambda.Function
 open System.Threading.Tasks
 open Amazon.DynamoDBv2
 open Amazon.Lambda.APIGatewayEvents
+open Amazon.S3
 open Amazon.Lambda.Core
 open Felipearpa.Core
 open Felipearpa.Core.Json
@@ -23,18 +24,24 @@ open Microsoft.Extensions.Logging
 
 type AccountFunction(configureServices: IServiceCollection -> unit) =
 
+    [<Literal>]
+    let accountIdParameter = "accountId"
+
     let buildServiceProvider () =
         let services = ServiceCollection()
 
         services
             .AddAWSService<IAmazonDynamoDB>()
+            .AddAWSService<IAmazonS3>()
             .AddLogging(fun builder -> builder.AddLambdaLogger() |> ignore)
             .AddSingleton<ISerializer, JsonSerializer>()
             .AddSingleton<IKeySerializer, DynamoDbKeySerializer>()
             .AddScoped<IAccountRepository, AccountDynamoDbRepository>()
             .AddScoped<IPoolRepository, PoolDynamoDbRepository>()
+            .AddScoped<IAvatarStorage, AvatarS3Storage>()
             .AddScoped<LinkAccount>()
             .AddScoped<UpdateUsername>()
+            .AddScoped<IssueAvatarUploadUrl>()
         |> ignore
 
         configureServices services
@@ -87,6 +94,44 @@ type AccountFunction(configureServices: IServiceCollection -> unit) =
                 | Ok _ ->
                     let! response =
                         updateUsernameAsync updateUsernameRequest (scope.ServiceProvider.GetService<UpdateUsername>())
+
+                    return! response.ToAmazonProxyResponse()
+        }
+        |> Async.StartAsTask
+
+    // POST /accounts/{accountId}/avatar-upload-url
+    member this.IssueAvatarUploadUrlAsync
+        (request: APIGatewayHttpApiV2ProxyRequest, _: ILambdaContext)
+        : APIGatewayHttpApiV2ProxyResponse Task =
+        async {
+            use scope = serviceProvider.CreateScope()
+
+            let accountIdResult =
+                request.PathParameters
+                |> Option.ofObj
+                |> Option.defaultValue Map.empty
+                |> tryGetUlidParamOrError accountIdParameter
+
+            let avatarUploadUrlRequestResult = tryGetOrError<AvatarUploadUrlRequest> request.Body
+
+            match accountIdResult, avatarUploadUrlRequestResult with
+            | Error error, _
+            | _, Error error -> return [ error ] |> BadRequestResponseFactory.create
+            | Ok accountId, Ok avatarUploadUrlRequest ->
+                let! callerResult =
+                    Authorization.resolveCallerGamblerIdAsync
+                        request
+                        (scope.ServiceProvider.GetService<IAccountRepository>())
+
+                match callerResult with
+                | Error failure -> return Authorization.toResponse failure
+                | Ok callerAccountId ->
+                    let! response =
+                        issueAvatarUploadUrlAsync
+                            accountId
+                            callerAccountId
+                            avatarUploadUrlRequest
+                            (scope.ServiceProvider.GetService<IssueAvatarUploadUrl>())
 
                     return! response.ToAmazonProxyResponse()
         }

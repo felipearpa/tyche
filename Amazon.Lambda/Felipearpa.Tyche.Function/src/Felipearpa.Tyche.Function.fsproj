@@ -15,6 +15,7 @@
     <Compile Include="Request\LinkAccountRequest.fs" />
     <Compile Include="Request\LinkAccountRequestTransformer.fs" />
     <Compile Include="Request\UpdateUsernameRequest.fs" />
+    <Compile Include="Request\AvatarUploadUrlRequest.fs" />
     <Compile Include="Response\PoolGamblerScoreResponse.fs" />
     <Compile Include="Response\PoolGamblerScoreTransformer.fs" />
     <Compile Include="Response\PoolMemberResponse.fs" />
@@ -28,6 +29,7 @@
     <Compile Include="Response\PoolLayoutTransformer.fs" />
     <Compile Include="Response\AccountResponse.fs" />
     <Compile Include="Response\AccountTransformer.fs" />
+    <Compile Include="Response\AvatarUploadUrlResponse.fs" />
     <Compile Include="PoolFunction.fs" />
     <Compile Include="GamblerFunction.fs" />
     <Compile Include="BetFunction.fs" />

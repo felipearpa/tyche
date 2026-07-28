@@ -17,8 +17,8 @@ Reference design: `assets/Profile-selection.png` — Profile screen with a large
 
 **Non-Goals:**
 
-- Rendering avatars for other gamblers anywhere (leaderboard, manage gamblers, drawers, toolbars) — follow-up proposal.
-- Cache-invalidation strategy for other-user avatars (`avatarVersion` vs. CDN TTL) — decided in that follow-up.
+- Rendering avatars for **other** gamblers (leaderboard rows, manage-gamblers rows) — follow-up proposal. The signed-in gambler's own avatar in the drawer header and toolbar **is** in scope here.
+- Cache-invalidation strategy for other-user avatars (`avatarVersion` vs. CDN TTL) — decided in that follow-up. Freshness of the signed-in gambler's own avatar is decided here (Decision 10).
 - Settings hub, avatar delete/reset, moderation, animated avatars.
 
 ## Decisions
@@ -30,6 +30,7 @@ The client produces the final 512×512 JPEG (quality ~0.8) before upload; the ba
 - *Why*: avoids an image-processing Lambda entirely (no libvips/ImageSharp layer, no memory tuning, no second copy of the image), avoids pushing image bytes through API Gateway (payload limits), and both platforms have first-class native APIs for crop/downscale (`UIGraphicsImageRenderer` / `Bitmap`).
 - *Alternative considered*: upload original + server-side resize pipeline (S3 trigger → Lambda). Rejected: more moving parts, more cost, no benefit at a 512px target.
 - *Constraint*: the presigned URL must constrain `Content-Type: image/jpeg` and enforce a size cap (1 MB) so the client contract is the only path to valid objects.
+- *Refinement (settled at apply time)*: SigV4 presigned PUTs can only sign an **exact** `Content-Length` (length *ranges* exist only in POST policies), so the client declares its byte count in the presign request body (`{ contentLength }`); the server rejects > 1 MB and signs that exact length — any deviation in size or content type fails with `SignatureDoesNotMatch` (verified against S3).
 
 ### 2. Deterministic S3 key: `avatars/<accountId>.jpg`
 
@@ -37,7 +38,7 @@ One object per account, overwritten on change. No pointer/URL attribute is writt
 
 - *Why*: the URL becomes a pure function of identity. Every screen that has a `gamblerId` (leaderboard rows are keyed `GAMBLER#<id>`, which is the accountId) can derive the avatar URL with no API or schema change — exactly what the follow-up proposal needs.
 - *Alternative considered*: versioned keys (`avatars/<accountId>/<ulid>.jpg`) + `avatarUrl` attribute on the Account item. Rejected for v1: requires a DynamoDB write, a read path, and pushes the denormalization question (how do Pool items learn the URL?) into this change. Versioning is precisely the cache-invalidation question deferred to the follow-up.
-- *Trade-off accepted*: own-profile freshness is handled client-side (the app just uploaded the bytes, so it renders them locally); other-viewer freshness is out of scope by definition of the non-goals.
+- *Trade-off accepted*: other-viewer freshness is out of scope by definition of the non-goals. Rendering the just-uploaded bytes locally covers the uploading client **within that session only** — it does not cover a second device or a later launch, which is what Decision 10 addresses.
 
 ### 3. Existence check, not metadata
 
@@ -70,6 +71,7 @@ A native pan + pinch-zoom crop view with a fixed square window, circular mask pr
 - System typefaces and the app's existing green accent for the confirm action — no new faces or colors on a utility screen inside a native app; restraint is the deliberate choice here.
 - Signature element: a **dual-scale live preview strip** below the crop window — the crop rendered at Profile size (~96pt) and at the 32pt `navigationEmailAvatar` row size beside the user's username, updating live during pan/zoom. It answers "will my face read when it's tiny?" in the app's own vernacular, replacing the generic single small preview circle.
 - Motion: one moment only — on confirm, the circle morphs from the crop window into the Profile screen's avatar position (`matchedGeometryEffect` on iOS, Compose shared-element transition on Android); crossfade when reduced motion is enabled. A haptic tick fires when pan/zoom hits its clamp bounds.
+- *Apply-time note (Android)*: Compose's shared-element transition (BOM 2026.05) left the crop screen's pointer input consumed by its transition overlay on device, so Android ships the crossfade path unconditionally; the full morph runs on iOS only.
 - Copy: verb-first and consistent through the flow — entry "Change Photo" → confirm "Use Photo" (not "Done"), plus "Cancel". No success toast; the avatar visibly updating is the confirmation.
 
 ### 6. Profile is a pushed screen; the modal editor pattern is retired from the drawers
@@ -86,7 +88,7 @@ The drawer "edit username" row becomes "Profile" and pushes the Profile screen; 
 
 ## Risks / Trade-offs
 
-- [Stale avatar after reinstall/second device] The deterministic key + client-side freshness means a user's *own* avatar on a new install is served from S3/CDN possibly cached — acceptable: first load after reinstall has no cache. → No mitigation needed in v1; revisit with CDN strategy in the follow-up.
+- [Stale avatar on a second device or later launch] **Observed on device, not hypothetical**: the S3 object carries no `Cache-Control`, so the URL-keyed image caches (Coil's disk cache on Android, `URLCache` behind `AsyncImage` on iOS) reuse whatever they hold without revalidating. A phone kept showing a photo cached at 16:04 while the stored object had changed hours earlier; deleting Coil's cache directory made the current photo appear immediately. The deterministic key gives no cache-busting signal by design, so this cannot resolve itself. → Mitigated per Decision 10.
 - [Presigned PUT misuse window] A leaked URL allows overwriting that one account's avatar until expiry. → Short expiry (~5 min), content-type + content-length conditions, key is fixed by the server (client never chooses the key).
 - [Non-JPEG or oversized uploads bypassing the client] → S3 policy conditions on the presigned URL are the enforcement point, not client goodwill.
 - [Crop math divergence between platforms] Two implementations of the same gesture/clamp spec can drift. → Specify the clamp rules and output contract in the spec scenarios; keep both implementations parameter-compatible (window size, min/max zoom).
@@ -107,6 +109,24 @@ The SAM template has no S3 resources today and the account's only bucket is the 
 
 - *Alternatives considered*: CloudFront from day one (edge caching + TTL control; deliberately deferred to the follow-up proposal, whose cache-invalidation question is exactly what TTL control answers — migrating is a one-host-constant change per client because the `avatars/<id>.jpg` path survives). Private bucket + presigned GETs (rejected: one backend call per display, presigned URLs defeat URL-keyed caches, and the future leaderboard would pay N calls per screen). API proxy (rejected: Lambda time per image, payload limits).
 - *Privacy model accepted*: anyone holding an accountId (a ULID, visible to pool-mates in API responses) can view that avatar — the GitHub/Gravatar model.
+
+### 9. Self-avatar rendering goes through the existing auto-avatar component
+
+`AutoEmailAvatar` (iOS `Account` package / Android `account` module) already self-resolves the signed-in account from `AccountStorage`, so it becomes the single place that prefers the photo and falls back to `EmailAvatar`. That covers every toolbar call site for free — iOS `PoolHomeView.swift:88` and `PoolScoreListRouter.swift:155`, Android `PoolHomeView.kt:352` and `PoolScoreListView.kt:163` — because all four already go through it.
+
+- `AccountHeaderDrawer` is the one caller that must change shape: it takes a bare `email` today and calls `EmailAvatar(email:)` directly, so it needs the account id (both drawer view models already read the bundle) or should switch to the auto variant.
+- `ManageGamblerItem` (both platforms) is deliberately left on the letter avatar — it renders *other* gamblers from their email, and those surfaces belong to the follow-up.
+- *Why one component*: the alternative — a photo-aware avatar at each call site — is four copies per platform of the same fallback and freshness logic, and guarantees drift.
+
+### 10. Own-avatar freshness: revalidate, at both the object and the request
+
+Two complementary mitigations, because they fix different halves of the problem:
+
+- **Object level**: the presign request signs `Cache-Control: max-age=0, must-revalidate`, so every stored object tells any cache — Coil, `URLCache`, a browser, a future CloudFront — to check before reuse. With the `ETag` already present, the common case is a `304 Not Modified` with no image bytes.
+- **Request level**: the avatar surfaces additionally force revalidation client-side (a `Cache-Control: no-cache` request header on Android's Coil request; `URLSession` with `.reloadRevalidatingCacheData` on iOS, since `AsyncImage` accepts no `URLRequest`). This fixes clients holding objects uploaded before the header existed.
+- *Apply-time note (Android)*: Coil 3 ignores HTTP cache headers entirely by default — both directives above are no-ops until the app's `ImageLoader` installs `CacheControlCacheStrategy` (the separate `coil-network-cache-control` artifact), wired via `SingletonImageLoader.Factory` on `TycheApplication`. Verified on device: without it the drawer kept serving a stale disk entry; with it the replaced photo appeared on next launch.
+- *Cost accepted*: signing the header couples the release — backend and both apps must ship together, or the PUT fails with `SignatureDoesNotMatch`. Objects uploaded before this change keep no header until re-uploaded (a one-off `aws s3 cp --metadata-directive REPLACE` can backfill).
+- *Alternative considered*: a versioned display URL (`?v=<avatarVersion>`). Rejected here — it needs a version signal per account, which is exactly the denormalization question the follow-up owns.
 
 ## Open Questions
 

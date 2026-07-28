@@ -2,6 +2,7 @@ package com.felipearpa.tyche.di
 
 import com.felipearpa.tyche.UsernameEditorViewModel
 import com.felipearpa.tyche.account.bygoogle.WebClientIdProvider
+import com.felipearpa.tyche.profile.ProfileViewModel
 import com.felipearpa.tyche.config.LocalIosBundleIdProvider
 import com.felipearpa.tyche.config.LocalJoinPoolUrlTemplateProvider
 import com.felipearpa.tyche.config.LocalSignInLinkUrlTemplateProvider
@@ -18,4 +19,5 @@ val appModule = module {
     factory<IosBundleIdProvider> { LocalIosBundleIdProvider() }
     factory<WebClientIdProvider> { LocalWebClientIdProvider() }
     viewModel { UsernameEditorViewModel(updateUsername = get()) }
+    viewModel { ProfileViewModel(uploadAvatar = get(), accountStorage = get()) }
 }

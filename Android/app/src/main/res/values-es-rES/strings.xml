@@ -22,4 +22,12 @@
     <string name="edit_user_name_subtitle">Así te verán otros jugadores en las pollas</string>
     <string name="position_small_suffix">%sº</string>
     <string name="gamblers_action">Jugadores</string>
+    <string name="profile_title">Perfil</string>
+    <string name="change_photo_action">Cambiar foto</string>
+    <string name="choose_from_library_action">Elegir de la fototeca</string>
+    <string name="take_photo_action">Hacer foto</string>
+    <string name="use_photo_action">Usar foto</string>
+    <string name="avatar_upload_error_title">No se ha subido la foto</string>
+    <string name="avatar_upload_error_message">Comprueba tu conexión e inténtalo de nuevo.</string>
+    <string name="profile_footer_text">Así te ven los demás jugadores en la clasificación.</string>
 </resources>
