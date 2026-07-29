@@ -5,6 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -18,6 +19,13 @@ import coil3.request.ImageRequest
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+
+data class AccountAvatarFallback(
+    val identity: String,
+    val colorKey: String = identity,
+    val backgroundColor: Color? = null,
+    val foregroundColor: Color? = null,
+)
 
 /**
  * Bumped after the signed-in account's avatar changes, so navigation chrome
@@ -40,24 +48,46 @@ object AvatarVersion {
  */
 @Composable
 fun AccountAvatar(accountId: String, email: String, modifier: Modifier = Modifier) {
+    AccountAvatar(
+        accountId = accountId,
+        fallback = AccountAvatarFallback(
+            identity = email.substringBefore('@'),
+            colorKey = email,
+        ),
+        modifier = modifier,
+    )
+}
+
+@Composable
+fun AccountAvatar(
+    accountId: String,
+    fallback: AccountAvatarFallback,
+    modifier: Modifier = Modifier,
+) {
     if (LocalInspectionMode.current || accountId.isEmpty()) {
-        EmailAvatar(email = email, modifier = modifier)
+        InitialAvatar(
+            identity = fallback.identity,
+            colorKey = fallback.colorKey,
+            backgroundColor = fallback.backgroundColor,
+            foregroundColor = fallback.foregroundColor,
+            modifier = modifier,
+        )
         return
     }
 
     val version by AvatarVersion.value.collectAsStateWithLifecycle()
     val context = LocalPlatformContext.current
     val request = remember(accountId, version) {
-        val url = AvatarUrl.of(accountId)
+        val configuration = avatarPhotoRequestConfiguration(accountId, version)
         ImageRequest.Builder(context)
-            .data(url)
+            .data(configuration.url)
             .httpHeaders(
                 NetworkHeaders.Builder()
-                    .set("Cache-Control", "no-cache")
+                    .set("Cache-Control", configuration.cacheControl)
                     .build(),
             )
-            .memoryCacheKey("avatar#$accountId#$version")
-            .diskCacheKey(url)
+            .memoryCacheKey(configuration.memoryCacheKey)
+            .diskCacheKey(configuration.diskCacheKey)
             .build()
     }
 
@@ -71,7 +101,33 @@ fun AccountAvatar(accountId: String, email: String, modifier: Modifier = Modifie
         if (state is AsyncImagePainter.State.Success) {
             SubcomposeAsyncImageContent()
         } else {
-            EmailAvatar(email = email, modifier = Modifier.fillMaxSize())
+            InitialAvatar(
+                identity = fallback.identity,
+                colorKey = fallback.colorKey,
+                backgroundColor = fallback.backgroundColor,
+                foregroundColor = fallback.foregroundColor,
+                modifier = Modifier.fillMaxSize(),
+            )
         }
     }
+}
+
+internal data class AvatarPhotoRequestConfiguration(
+    val url: String,
+    val cacheControl: String,
+    val memoryCacheKey: String,
+    val diskCacheKey: String,
+)
+
+internal fun avatarPhotoRequestConfiguration(
+    accountId: String,
+    version: Int,
+): AvatarPhotoRequestConfiguration {
+    val url = AvatarUrl.of(accountId)
+    return AvatarPhotoRequestConfiguration(
+        url = url,
+        cacheControl = "no-cache",
+        memoryCacheKey = "avatar#$accountId#$version",
+        diskCacheKey = url,
+    )
 }

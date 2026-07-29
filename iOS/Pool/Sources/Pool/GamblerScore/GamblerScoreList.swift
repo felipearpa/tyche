@@ -37,37 +37,47 @@ struct GamblerScoreList: View {
             },
         ) { index in
             if let poolGamblerScore = lazyPagingItems.peek(at: index) {
-                if let onGamblerOpen {
-                    VStack(spacing: 0) {
-                        GamblerScoreItem(
-                            poolGamblerScore: poolGamblerScore,
-                            isCurrentUser: isCurrentUser != nil ? isCurrentUser == poolGamblerScore.gamblerId : false
-                        )
-                        .padding(boxSpacing.medium)
-                        Divider()
-                    }
-                    .padding(.horizontal, boxSpacing.medium)
-                    .contentShape(Rectangle())
-                    .onTapGesture {
+                let isSignedInGambler =
+                    isCurrentUser != nil
+                    && isCurrentUser == poolGamblerScore.gamblerId
+
+                if let onGamblerOpen, !isSignedInGambler {
+                    Button {
                         onGamblerOpen(
                             poolGamblerScore.poolId,
                             poolGamblerScore.gamblerId,
                             poolGamblerScore.gamblerUsername
                         )
-                    }
-                } else {
-                    VStack(spacing: 0) {
-                        GamblerScoreItem(
-                            poolGamblerScore: poolGamblerScore,
-                            isCurrentUser: isCurrentUser != nil ? isCurrentUser == poolGamblerScore.gamblerId : false
+                    } label: {
+                        scoreRow(
+                            poolGamblerScore,
+                            isCurrentUser: false
                         )
-                        .padding(boxSpacing.medium)
-                        Divider()
                     }
-                    .padding(.horizontal, boxSpacing.medium)
+                    .buttonStyle(InteractiveRowButtonStyle())
+                } else {
+                    scoreRow(
+                        poolGamblerScore,
+                        isCurrentUser: isSignedInGambler
+                    )
                 }
             }
         }
+    }
+
+    private func scoreRow(
+        _ poolGamblerScore: PoolGamblerScoreModel,
+        isCurrentUser: Bool
+    ) -> some View {
+        VStack(spacing: 0) {
+            GamblerScoreItem(
+                poolGamblerScore: poolGamblerScore,
+                isCurrentUser: isCurrentUser
+            )
+            Divider()
+        }
+        .padding(.horizontal, boxSpacing.medium)
+        .frame(maxWidth: .infinity)
     }
 }
 
@@ -96,10 +106,9 @@ struct GamblerScorePlaceholderRow: View {
         VStack(spacing: 0) {
             GamblerScoreItem(
                 poolGamblerScore: poolGamblerScore,
-                isCurrentUser: false
+                isCurrentUser: false,
+                isPlaceholder: true
             )
-            .shimmer()
-            .padding(boxSpacing.medium)
             Divider()
         }
         .padding(.horizontal, boxSpacing.medium)

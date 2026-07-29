@@ -197,6 +197,15 @@
         "revision" : "e80a7b7b3af0c13d11a849483a0f58bc4ef12c01",
         "version" : "0.0.1"
       }
+    },
+    {
+      "identity" : "viewinspector",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/nalexn/ViewInspector",
+      "state" : {
+        "revision" : "a6fcac8485bc8f57b2d2b55bb6d97138e8659e4b",
+        "version" : "0.10.2"
+      }
     }
   ],
   "version" : 2

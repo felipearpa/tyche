@@ -36,6 +36,11 @@ android {
     buildFeatures {
         compose = true
     }
+    testOptions {
+        unitTests.all { test ->
+            test.useJUnitPlatform()
+        }
+    }
     packaging {
         jniLibs {
             excludes.add("META-INF/*")
@@ -61,9 +66,12 @@ dependencies {
     implementation(libs.felipearpa.foundation)
     implementation(libs.felipearpa.viewing.state)
 
-    testImplementation(libs.junit)
+    testImplementation(platform(libs.junit5.bom))
+    testImplementation(libs.junit5.jupiter)
+    testImplementation(libs.kotest.assertions.core)
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.io.mockk)
+    testRuntimeOnly(libs.bundles.junit5.runtime)
 
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.espresso.core)

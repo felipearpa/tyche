@@ -11,6 +11,8 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
@@ -58,11 +60,13 @@ fun GamblerScoreList(
             contentType = lazyPoolGamblerScores.itemContentType { "GamblerScore" },
         ) { index ->
             val item = lazyPoolGamblerScores[index] ?: return@items
+            val isCurrentUser = item.gamblerId == loggedInGamblerId
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .testTag("gamblerScoreRow:${item.gamblerId}")
                     .let { base ->
-                        if (onGamblerOpen != null) {
+                        if (onGamblerOpen != null && !isCurrentUser) {
                             base.clickable {
                                 onGamblerOpen(
                                     item.poolId,
@@ -74,12 +78,13 @@ fun GamblerScoreList(
                             base
                         }
                     }
+                    .semantics(mergeDescendants = true) { }
                     .padding(horizontal = LocalBoxSpacing.current.medium),
             ) {
                 GamblerScoreItem(
                     poolGamblerScore = item,
-                    isCurrentUser = item.gamblerId == loggedInGamblerId,
-                    modifier = Modifier.gamblerScoreItem(),
+                    isCurrentUser = isCurrentUser,
+                    modifier = Modifier.fillMaxWidth(),
                 )
                 HorizontalDivider()
             }
@@ -100,15 +105,11 @@ private fun LazyListScope.gamblerScorePlaceholderItemRow() {
                 .fillMaxWidth()
                 .padding(horizontal = LocalBoxSpacing.current.medium),
         ) {
-            GamblerScorePlaceholderItem(modifier = Modifier.gamblerScoreItem())
+            GamblerScorePlaceholderItem(modifier = Modifier.fillMaxWidth())
             HorizontalDivider()
         }
     }
 }
-
-@Composable
-private fun Modifier.gamblerScoreItem() =
-    fillMaxWidth().padding(all = LocalBoxSpacing.current.medium)
 
 @PreviewLightDark
 @Composable

@@ -33,6 +33,11 @@ android {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
+    testOptions {
+        unitTests.all { test ->
+            test.useJUnitPlatform()
+        }
+    }
     packaging {
         jniLibs {
             excludes.add("META-INF/*")
@@ -63,9 +68,13 @@ dependencies {
     implementation(libs.google.id)
     implementation(libs.lifecycle.process)
 
+    testImplementation(platform(libs.junit5.bom))
+    testImplementation(libs.junit5.jupiter)
     testImplementation(libs.junit)
+    testImplementation(libs.kotest.assertions.core)
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.io.mockk)
+    testRuntimeOnly(libs.bundles.junit5.runtime)
 
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.espresso.core)
