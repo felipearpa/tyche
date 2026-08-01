@@ -103,6 +103,7 @@ private fun LazyListScope.gamblerScorePlaceholderItemRow() {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
+                .testTag("gamblerScorePlaceholderRow")
                 .padding(horizontal = LocalBoxSpacing.current.medium),
         ) {
             GamblerScorePlaceholderItem(modifier = Modifier.fillMaxWidth())

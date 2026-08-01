@@ -24,7 +24,7 @@ fun PositionIndicator(
     position: Int?,
     shouldUsePrimaryColor: Boolean,
     modifier: Modifier = Modifier,
-    shimmerModifier: Modifier = Modifier,
+    placeholderModifier: Modifier = Modifier,
     size: Dp = scoreSize,
     shape: Shape = RoundedCornerShape(8.dp),
     containerColor: Color = Color.Unspecified,
@@ -51,7 +51,7 @@ fun PositionIndicator(
             .size(size)
             .clip(shape)
             .background(resolvedContainerColor)
-            .then(shimmerModifier),
+            .then(placeholderModifier),
         contentAlignment = Alignment.Center,
     ) {
         Text(

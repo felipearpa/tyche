@@ -53,15 +53,12 @@ fun GamblerScoreItem(
     poolGamblerScore: PoolGamblerScoreModel,
     isCurrentUser: Boolean,
     modifier: Modifier = Modifier,
-    isPlaceholder: Boolean = false,
+    placeholderModifier: Modifier? = null,
 ) {
-    if (isPlaceholder) {
-        GamblerScorePlaceholderContent(modifier = modifier)
-        return
-    }
-
+    val isPlaceholder = placeholderModifier != null
+    val placeholderStyle = placeholderModifier ?: Modifier
     val extendedColors = LocalExtendedColorScheme.current
-    val rowBackground = if (isCurrentUser) {
+    val rowBackground = if (isCurrentUser && !isPlaceholder) {
         extendedColors.currentUserContainer
     } else {
         Color.Transparent
@@ -95,7 +92,7 @@ fun GamblerScoreItem(
             .background(rowBackground)
             .padding(horizontal = HORIZONTAL_PADDING, vertical = VERTICAL_PADDING)
             .clearAndSetSemantics {
-                contentDescription = accessibilityDescription
+                if (!isPlaceholder) contentDescription = accessibilityDescription
             },
         horizontalArrangement = Arrangement.spacedBy(IDENTITY_SPACING),
         verticalAlignment = Alignment.CenterVertically,
@@ -107,6 +104,7 @@ fun GamblerScoreItem(
             PositionIndicator(
                 position = poolGamblerScore.position,
                 shouldUsePrimaryColor = false,
+                placeholderModifier = placeholderStyle,
                 size = RANK_TILE_SIZE,
                 shape = RoundedCornerShape(RANK_CORNER_RADIUS),
                 containerColor = rankBackground,
@@ -125,6 +123,7 @@ fun GamblerScoreItem(
             ) {
                 poolGamblerScore.rank()?.let { difference ->
                     TrendIndicator(
+                        placeholderModifier = placeholderStyle,
                         rank = difference,
                         textStyle = MaterialTheme.typography.labelSmall.copy(
                             fontFeatureSettings = "tnum",
@@ -135,7 +134,9 @@ fun GamblerScoreItem(
         }
 
         AccountAvatar(
-            accountId = poolGamblerScore.gamblerId,
+            // An empty account id renders only the fallback, so a placeholder row
+            // never requests the synthetic placeholder identity.
+            accountId = if (isPlaceholder) "" else poolGamblerScore.gamblerId,
             fallback = AccountAvatarFallback(
                 identity = poolGamblerScore.gamblerUsername,
                 colorKey = poolGamblerScore.gamblerUsername,
@@ -144,7 +145,8 @@ fun GamblerScoreItem(
             ),
             modifier = Modifier
                 .size(AVATAR_SIZE)
-                .clip(CircleShape),
+                .clip(CircleShape)
+                .then(placeholderStyle),
         )
 
         Column(
@@ -159,12 +161,14 @@ fun GamblerScoreItem(
                 ),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
+                modifier = placeholderStyle,
             )
             if (isCurrentUser) {
                 Text(
                     text = stringResource(R.string.leaderboard_you),
                     color = rowForeground,
                     style = MaterialTheme.typography.bodySmall,
+                    modifier = placeholderStyle,
                 )
             }
         }
@@ -178,7 +182,9 @@ fun GamblerScoreItem(
             ),
             maxLines = 1,
             textAlign = TextAlign.End,
-            modifier = Modifier.widthIn(min = SCORE_MINIMUM_WIDTH),
+            modifier = Modifier
+                .widthIn(min = SCORE_MINIMUM_WIDTH)
+                .then(placeholderStyle),
         )
     }
 }
@@ -189,65 +195,8 @@ fun GamblerScorePlaceholderItem(modifier: Modifier = Modifier) {
         poolGamblerScore = poolGamblerScorePlaceholderModel(),
         isCurrentUser = false,
         modifier = modifier,
-        isPlaceholder = true,
+        placeholderModifier = Modifier.shimmer(),
     )
-}
-
-@Composable
-private fun GamblerScorePlaceholderContent(modifier: Modifier = Modifier) {
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .heightIn(min = ROW_MINIMUM_HEIGHT)
-            .padding(horizontal = HORIZONTAL_PADDING, vertical = VERTICAL_PADDING)
-            .clearAndSetSemantics { },
-        horizontalArrangement = Arrangement.spacedBy(IDENTITY_SPACING),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Column(
-            modifier = Modifier.width(RANK_TILE_SIZE),
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            Box(
-                modifier = Modifier
-                    .size(RANK_TILE_SIZE)
-                    .clip(RoundedCornerShape(RANK_CORNER_RADIUS))
-                    .shimmer(),
-            )
-            Spacer(modifier = Modifier.height(RANK_SPACING))
-            Box(
-                modifier = Modifier
-                    .size(MOVEMENT_PLACEHOLDER_WIDTH, MOVEMENT_PLACEHOLDER_HEIGHT)
-                    .clip(CircleShape)
-                    .shimmer(),
-            )
-        }
-
-        Box(
-            modifier = Modifier
-                .size(AVATAR_SIZE)
-                .clip(CircleShape)
-                .shimmer(),
-        )
-
-        Box(modifier = Modifier.weight(1f)) {
-            Box(
-                modifier = Modifier
-                    .widthIn(max = USERNAME_PLACEHOLDER_WIDTH)
-                    .fillMaxWidth()
-                    .height(USERNAME_PLACEHOLDER_HEIGHT)
-                    .clip(RoundedCornerShape(PLACEHOLDER_CORNER_RADIUS))
-                    .shimmer(),
-            )
-        }
-
-        Box(
-            modifier = Modifier
-                .size(SCORE_PLACEHOLDER_WIDTH, SCORE_PLACEHOLDER_HEIGHT)
-                .clip(RoundedCornerShape(PLACEHOLDER_CORNER_RADIUS))
-                .shimmer(),
-        )
-    }
 }
 
 @Composable
@@ -267,10 +216,12 @@ private fun gamblerScoreAccessibilityDescription(
                 R.string.leaderboard_movement_up_accessibility,
                 abs(difference),
             )
+
             difference < 0 -> stringResource(
                 R.string.leaderboard_movement_down_accessibility,
                 abs(difference),
             )
+
             else -> stringResource(R.string.leaderboard_movement_unchanged_accessibility)
         }
     }
@@ -296,13 +247,6 @@ private val SCORE_MINIMUM_WIDTH = 52.dp
 private val HORIZONTAL_PADDING = 16.dp
 private val VERTICAL_PADDING = 10.dp
 private const val CURRENT_USER_TILE_OVERLAY_OPACITY = 0.14f
-private val MOVEMENT_PLACEHOLDER_WIDTH = 18.dp
-private val MOVEMENT_PLACEHOLDER_HEIGHT = 6.dp
-private val USERNAME_PLACEHOLDER_WIDTH = 144.dp
-private val USERNAME_PLACEHOLDER_HEIGHT = 16.dp
-private val SCORE_PLACEHOLDER_WIDTH = 48.dp
-private val SCORE_PLACEHOLDER_HEIGHT = 24.dp
-private val PLACEHOLDER_CORNER_RADIUS = 4.dp
 
 @PreviewLightDark
 @Composable

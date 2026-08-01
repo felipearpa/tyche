@@ -56,7 +56,7 @@ fun PoolScoreItem(
                     PositionIndicator(
                         position = it,
                         shouldUsePrimaryColor = false,
-                        shimmerModifier = placeholderModifier,
+                        placeholderModifier = placeholderModifier,
                     )
                 }
                 poolGamblerScore.rank()?.let {

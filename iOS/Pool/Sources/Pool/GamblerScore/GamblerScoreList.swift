@@ -107,7 +107,7 @@ struct GamblerScorePlaceholderRow: View {
             GamblerScoreItem(
                 poolGamblerScore: poolGamblerScore,
                 isCurrentUser: false,
-                isPlaceholder: true
+                placeholderModifier: ShimmerModifier()
             )
             Divider()
         }

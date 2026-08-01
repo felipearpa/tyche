@@ -6,22 +6,26 @@ import UI
 public struct GamblerScoreItem: View {
     let poolGamblerScore: PoolGamblerScoreModel
     let isCurrentUser: Bool
-    var isPlaceholder = false
+    let placeholderModifier: (any ViewModifier)?
 
     public init(
         poolGamblerScore: PoolGamblerScoreModel,
         isCurrentUser: Bool,
-        isPlaceholder: Bool = false
+        placeholderModifier: (any ViewModifier)? = nil
     ) {
         self.poolGamblerScore = poolGamblerScore
         self.isCurrentUser = isCurrentUser
-        self.isPlaceholder = isPlaceholder
+        self.placeholderModifier = placeholderModifier
+    }
+
+    var isPlaceholder: Bool {
+        placeholderModifier != nil
     }
 
     public var body: some View {
         Group {
-            if isPlaceholder {
-                placeholderContent
+            if let placeholderModifier {
+                scoreContent(applying: placeholderModifier)
             } else {
                 scoreContent
             }
@@ -33,22 +37,17 @@ public struct GamblerScoreItem: View {
         .accessibilityHidden(isPlaceholder)
     }
 
+    private func scoreContent(applying modifier: some ViewModifier) -> AnyView {
+        AnyView(scoreContent.modifier(modifier))
+    }
+
     private var scoreContent: some View {
         HStack(spacing: identitySpacing) {
             rankRail
 
             AccountAvatar(
-                accountId: poolGamblerScore.gamblerId,
-                fallback: AccountAvatarFallback(
-                    identity: poolGamblerScore.gamblerUsername,
-                    colorKey: poolGamblerScore.gamblerUsername,
-                    backgroundColor: isCurrentUser
-                        ? Color(sharedResource: .currentUser)
-                        : nil,
-                    foregroundColor: isCurrentUser
-                        ? Color(sharedResource: .onCurrentUser)
-                        : nil
-                )
+                accountId: avatarAccountId,
+                fallback: avatarFallback
             )
             .frame(width: avatarSize, height: avatarSize)
             .clipShape(Circle())
@@ -115,42 +114,35 @@ public struct GamblerScoreItem: View {
         .frame(width: rankTileSize)
     }
 
-    private var placeholderContent: some View {
-        HStack(spacing: identitySpacing) {
-            VStack(spacing: rankSpacing) {
-                RoundedRectangle(cornerRadius: rankCornerRadius)
-                    .fill(Color(sharedResource: .surfaceVariant))
-                    .frame(width: rankTileSize, height: rankTileSize)
-                    .shimmer()
-
-                Capsule()
-                    .fill(Color(sharedResource: .surfaceVariant))
-                    .frame(width: movementPlaceholderWidth, height: movementPlaceholderHeight)
-                    .shimmer()
-            }
-
-            Circle()
-                .fill(Color(sharedResource: .surfaceVariant))
-                .frame(width: avatarSize, height: avatarSize)
-                .shimmer()
-
-            RoundedRectangle(cornerRadius: placeholderCornerRadius)
-                .fill(Color(sharedResource: .surfaceVariant))
-                .frame(maxWidth: usernamePlaceholderWidth, minHeight: usernamePlaceholderHeight)
-                .shimmer()
-
-            Spacer(minLength: 0)
-
-            RoundedRectangle(cornerRadius: placeholderCornerRadius)
-                .fill(Color(sharedResource: .surfaceVariant))
-                .frame(width: scorePlaceholderWidth, height: scorePlaceholderHeight)
-                .shimmer()
-        }
-        .padding(.horizontal, horizontalPadding)
-        .padding(.vertical, verticalPadding)
+    /// An empty account id yields no avatar URL, so a placeholder row can never
+    /// request the synthetic placeholder identity.
+    var avatarAccountId: String {
+        isPlaceholder ? "" : poolGamblerScore.gamblerId
     }
 
-    private var rowBackground: Color {
+    private var avatarFallback: AccountAvatarFallback {
+        if isPlaceholder {
+            return AccountAvatarFallback(
+                identity: poolGamblerScore.gamblerUsername,
+                colorKey: poolGamblerScore.gamblerUsername,
+                backgroundColor: Color(sharedResource: .surfaceVariant),
+                foregroundColor: Color(sharedResource: .onSurfaceVariant)
+            )
+        }
+
+        return AccountAvatarFallback(
+            identity: poolGamblerScore.gamblerUsername,
+            colorKey: poolGamblerScore.gamblerUsername,
+            backgroundColor: isCurrentUser
+                ? Color(sharedResource: .currentUser)
+                : nil,
+            foregroundColor: isCurrentUser
+                ? Color(sharedResource: .onCurrentUser)
+                : nil
+        )
+    }
+
+    var rowBackground: Color {
         isCurrentUser && !isPlaceholder
             ? Color(sharedResource: .currentUserContainer)
             : Color.clear
@@ -245,13 +237,6 @@ private let scoreMinimumWidth: CGFloat = 52
 private let horizontalPadding: CGFloat = 16
 private let verticalPadding: CGFloat = 10
 private let currentUserTileOverlayOpacity = 0.14
-private let movementPlaceholderWidth: CGFloat = 18
-private let movementPlaceholderHeight: CGFloat = 6
-private let usernamePlaceholderWidth: CGFloat = 144
-private let usernamePlaceholderHeight: CGFloat = 16
-private let scorePlaceholderWidth: CGFloat = 48
-private let scorePlaceholderHeight: CGFloat = 24
-private let placeholderCornerRadius: CGFloat = 4
 
 #Preview("Current user") {
     GamblerScoreItem(
@@ -281,7 +266,7 @@ private let placeholderCornerRadius: CGFloat = 4
     GamblerScoreItem(
         poolGamblerScore: poolGamblerScorePlaceholderModel(),
         isCurrentUser: false,
-        isPlaceholder: true
+        placeholderModifier: ShimmerModifier()
     )
     .padding()
 }
