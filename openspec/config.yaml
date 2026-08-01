@@ -12,5 +12,22 @@ context: |
 rules:
   specs:
     - Use Given/When/Then format for scenarios
+    - >-
+      For future mobile UI specifications that introduce or change app-rendered icons,
+      prefer Material Symbols when a semantically accurate representation exists;
+      otherwise allow a custom icon without requiring or recording a justification.
+      Require iOS and Android to use assets derived from the same committed canonical
+      vector source. Do not prescribe SF Symbols on iOS or Compose Material Icons.* on
+      Android. Exclude controls rendered entirely by the operating system, and do not
+      retroactively revise existing specifications solely to apply this rule.
+    - >-
+      For future mobile UI specifications that introduce or change model-backed loading
+      placeholders, require each affected platform to populate the production item or row
+      component with a placeholder model and apply the existing shared platform shimmer
+      treatment. Do not prescribe a separately maintained skeleton-only layout.
+      Placeholder-specific behavior may suppress remote loading, navigation, and
+      accessibility exposure, but must not replace the production layout. Do not expose
+      placeholder values as real user content, and do not retroactively revise existing
+      specifications solely to apply this rule.
   tasks:
     - "Group tasks by platform: backend, iOS, Android"

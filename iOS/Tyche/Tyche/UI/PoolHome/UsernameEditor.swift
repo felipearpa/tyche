@@ -1,194 +1,244 @@
+import Core
+import Pool
 import SwiftUI
 import UI
 import ViewingState
 
-private let USERNAME_MAX_GRAPHEMES = 100
-private let iconSize: CGFloat = 24
+private let spinnerSize: CGFloat = 20
 
 struct UsernameEditor: View {
+    let accountId: String
     let initialUsername: String
     @ObservedObject var viewModel: UsernameEditorViewModel
     let onSaved: (String) -> Void
-    let onDismiss: () -> Void
 
     var body: some View {
         UsernameEditorStatefulView(
+            accountId: accountId,
             initialUsername: initialUsername,
             saveState: viewModel.saveState,
             onSave: { viewModel.save($0) },
             onRetry: { viewModel.retry() },
-            onResetError: { viewModel.resetError() },
-            onDismiss: onDismiss
+            onDraftChanged: { viewModel.resetError() }
         )
         .onAppear {
             viewModel.reset()
         }
         .onChange(of: viewModel.saveState) { newState in
-            if case .loaded(let saved) = newState { onSaved(saved) }
+            newState.onSaved { saved in onSaved(saved) }
         }
     }
 }
 
 private struct UsernameEditorStatefulView: View {
+    let accountId: String
     let initialUsername: String
-    let saveState: LoadState<String>
+    let saveState: SaveState<String>
     let onSave: (String) -> Void
     let onRetry: () -> Void
-    let onResetError: () -> Void
-    let onDismiss: () -> Void
+    let onDraftChanged: () -> Void
 
     @State private var draft: String = ""
-    @State private var showRequiredError: Bool = false
+    @State private var fieldInitialization = UsernameFieldInitialization()
+    @FocusState private var isFieldFocused: Bool
 
     @Environment(\.boxSpacing) private var boxSpacing
 
     private var trimmed: String {
-        draft.trimmingCharacters(in: .whitespacesAndNewlines)
+        UsernameDraftRules.trimmed(draft)
     }
 
     private var isSaving: Bool {
-        saveState.isLoading()
+        saveState.isSaving()
     }
 
-    private var failureError: LocalizedError? {
-        if case .failure(let error) = saveState {
-            return (error as? LocalizedError) ?? UnknownLocalizedError()
-        }
-        return nil
+    private var failureError: Error? {
+        saveState.errorOrNil()
+    }
+
+    private var isEmpty: Bool {
+        UsernameDraftRules.isEmpty(draft)
+    }
+
+    private var canSave: Bool {
+        UsernameDraftRules.canSave(draft: draft, initial: initialUsername, isSaving: isSaving)
     }
 
     var body: some View {
         VStack(alignment: .leading, spacing: boxSpacing.large) {
-            HStack(spacing: boxSpacing.medium) {
-                Text(.editUsernameTitle)
-                    .font(.title)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-
-                if isSaving {
-                    BallSpinner()
-                        .frame(width: iconSize, height: iconSize)
-                } else if failureError != nil {
-                    Image(sharedResource: .error)
-                        .resizable()
-                        .frame(width: iconSize, height: iconSize)
-                }
-            }
-
             Text(.editUsernameSubtitle)
+                .font(.body)
                 .frame(maxWidth: .infinity, alignment: .leading)
 
-            formContent
+            previewSection
 
-            VStack(spacing: boxSpacing.small) {
-                confirmButton
-                dismissButton
-            }
+            fieldSection
+
+            actionSection
         }
         .padding(.horizontal, boxSpacing.large)
         .padding(.vertical, boxSpacing.medium)
         .frame(maxWidth: .infinity)
         .onAppear {
-            draft = initialUsername
+            // One-shot per presentation: populate the field first, then focus it. Focusing the
+            // already-populated field places the collapsed caret after the final character
+            // (position 0 when empty). Later appearances and state updates never re-focus or
+            // move a caret/selection the gambler now owns.
+            if let initialization = fieldInitialization.takeInitialization(
+                initialUsername: initialUsername
+            ) {
+                draft = initialization.draft
+                isFieldFocused = true
+            }
         }
     }
 
-    private var formContent: some View {
-        VStack(alignment: .leading, spacing: 4) {
+    private var previewSection: some View {
+        VStack(alignment: .leading, spacing: boxSpacing.small) {
+            HStack {
+                Text(.usernamePreviewLabel)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                Spacer()
+                Text(.usernamePreviewLive)
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(Color(sharedResource: .currentUser))
+            }
+            .accessibilityElement(children: .combine)
+
+            GamblerScoreItem(
+                poolGamblerScore: UsernamePreview.gamblerScore(
+                    accountId: accountId,
+                    draft: draft,
+                    placeholder: String(localized: .usernamePreviewPlaceholder)
+                ),
+                isCurrentUser: true
+            )
+        }
+    }
+
+    private var fieldSection: some View {
+        VStack(alignment: .leading, spacing: boxSpacing.small) {
+            HStack {
+                Text(.usernameLabel)
+                    .font(.body.weight(.semibold))
+                Spacer()
+                Text("\(UsernameDraftRules.graphemeCount(draft))/\(UsernameDraftRules.maxGraphemes)")
+                    .font(.caption)
+                    .monospacedDigit()
+                    .foregroundStyle(.secondary)
+            }
+
             TextField(String(localized: .usernameLabel), text: $draft)
                 .textFieldStyle(.liquidGlass)
+                .focused($isFieldFocused)
+                .textInputAutocapitalization(.never)
+                .autocorrectionDisabled()
+                .submitLabel(.done)
                 .disabled(isSaving)
+                .onSubmit { attemptSave() }
                 .onChange(of: draft) { newValue in
-                    let clamped = clampToGraphemes(newValue, max: USERNAME_MAX_GRAPHEMES)
+                    let clamped = UsernameDraftRules.clamp(newValue)
                     if clamped != newValue { draft = clamped }
-                    if showRequiredError && !trimmed.isEmpty { showRequiredError = false }
+                    if failureError != nil { onDraftChanged() }
                 }
+
+            guidance
         }
     }
 
     @ViewBuilder
-    private var confirmButton: some View {
+    private var guidance: some View {
+        if let failureError {
+            Text(failureMessage(for: failureError))
+                .font(.caption)
+                .foregroundStyle(Color(sharedResource: .error))
+                .frame(maxWidth: .infinity, alignment: .leading)
+        } else if isEmpty {
+            Text(.usernameEmptyError)
+                .font(.caption)
+                .foregroundStyle(Color(sharedResource: .error))
+                .frame(maxWidth: .infinity, alignment: .leading)
+        } else {
+            Text(.usernameFieldHelper)
+                .font(.caption)
+                .foregroundStyle(.secondary)
+                .frame(maxWidth: .infinity, alignment: .leading)
+        }
+    }
+
+    @ViewBuilder
+    private var actionSection: some View {
         if failureError != nil {
             Button(action: onRetry) {
-                Text(sharedResource: .retryAction)
-                    .frame(maxWidth: .infinity)
+                actionLabel(Text(.usernameRetryAction))
             }
             .buttonStyle(.liquidGlassProminent)
         } else {
-            Button(action: save) {
-                Text(sharedResource: .saveAction)
-                    .frame(maxWidth: .infinity)
+            Button(action: attemptSave) {
+                actionLabel(Text(.saveUsernameAction))
             }
             .buttonStyle(.liquidGlassProminent)
-            .disabled(isSaving)
+            .disabled(!canSave)
+            .accessibilityLabel(
+                isSaving
+                    ? String(localized: .usernameSavingAccessibility)
+                    : String(localized: .saveUsernameAction)
+            )
         }
     }
 
     @ViewBuilder
-    private var dismissButton: some View {
-        if failureError != nil {
-            Button(action: onResetError) {
-                Text(sharedResource: .cancelAction)
-                    .frame(maxWidth: .infinity)
+    private func actionLabel(_ label: Text) -> some View {
+        ZStack {
+            label.opacity(isSaving ? 0 : 1)
+            if isSaving {
+                BallSpinner()
+                    .frame(width: spinnerSize, height: spinnerSize)
             }
-            .buttonStyle(.liquidGlass)
-        } else {
-            Button(action: onDismiss) {
-                Text(sharedResource: .cancelAction)
-                    .frame(maxWidth: .infinity)
-            }
-            .buttonStyle(.liquidGlass)
-            .disabled(isSaving)
         }
+        .frame(maxWidth: .infinity)
     }
 
-    private func save() {
-        if trimmed.isEmpty {
-            showRequiredError = true
-            return
-        }
-        if trimmed == initialUsername.trimmingCharacters(in: .whitespacesAndNewlines) {
-            onDismiss()
-            return
-        }
+    private func attemptSave() {
+        guard canSave else { return }
         onSave(trimmed)
     }
-}
 
-private func clampToGraphemes(_ value: String, max: Int) -> String {
-    let graphemes = Array(value)
-    if graphemes.count <= max { return value }
-    return String(graphemes.prefix(max))
+    private func failureMessage(for error: Error) -> LocalizedStringResource {
+        error is NetworkError ? .usernameSaveNetworkError : .usernameSaveUnknownError
+    }
 }
 
 #Preview("idle") {
     UsernameEditorStatefulView(
+        accountId: "preview-account",
         initialUsername: "felipearpa",
         saveState: .idle,
         onSave: { _ in },
         onRetry: {},
-        onResetError: {},
-        onDismiss: {}
+        onDraftChanged: {}
     )
 }
 
 #Preview("saving") {
     UsernameEditorStatefulView(
+        accountId: "preview-account",
         initialUsername: "felipearpa",
-        saveState: .loading,
+        saveState: .saving("felipe"),
         onSave: { _ in },
         onRetry: {},
-        onResetError: {},
-        onDismiss: {}
+        onDraftChanged: {}
     )
 }
 
 #Preview("failure") {
     UsernameEditorStatefulView(
+        accountId: "preview-account",
         initialUsername: "felipearpa",
-        saveState: .failure(UnknownLocalizedError()),
+        saveState: .failure(value: "felipe", error: UnknownLocalizedError()),
         onSave: { _ in },
         onRetry: {},
-        onResetError: {},
-        onDismiss: {}
+        onDraftChanged: {}
     )
 }

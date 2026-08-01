@@ -10,6 +10,7 @@ Fortuna's pool leaderboard currently presents rank, username, score, and movemen
 - Reuse the existing `AccountAvatar` photo-loading path for each gambler and extract the initial/fallback rendering already owned by `EmailAvatar` into a shared `InitialAvatar` primitive; leaderboard rows derive the fallback from username while existing email-avatar callers keep their current API and appearance.
 - Reuse the existing shared position and trend/rank-movement indicators on both platforms; extend their size or style APIs only when the reference treatment requires it, and do not create leaderboard-specific duplicates.
 - Preserve the existing ordered paging list, pull-to-refresh, retry, and gambler-detail navigation behavior.
+- Render initial and append-loading placeholders through the production leaderboard row populated by the shared placeholder model and styled with the existing platform shimmer treatment; do not maintain a separate skeleton-only row layout or expose placeholder values, navigation, accessibility content, or remote avatar loading.
 - Make the leaderboard list inherit its base background from its container—exactly as the app's other paged lists (the Bets and History tabs) already do—by not painting its own canvas color; this yields the platform's native base background on each client (SwiftUI's system background on iOS, the Material container background on Android), so the leaderboard matches the surrounding screens. Keep surrounding screen and navigation surfaces unchanged.
 - Give actionable leaderboard rows immediate full-row press feedback through each platform's native interaction convention—Material ripple on Android and semantic button pressed/highlight state on iOS—using a reusable treatment that can support later list redesigns; the signed-in gambler row remains non-actionable.
 - Bring loading, missing-rank, missing-score, long-name, accessibility, and dynamic-type behavior into the same responsive visual system.
@@ -18,11 +19,11 @@ Fortuna's pool leaderboard currently presents rank, username, score, and movemen
 
 ### New Capabilities
 
-- `pool-leaderboard`: The cross-platform pool leaderboard list's content, gambler identity treatment, current-user treatment, states, interactions, and accessibility.
+<!-- None. The pool-leaderboard capability was established when the original redesign was archived. -->
 
 ### Modified Capabilities
 
-<!-- None. Existing profile and avatar-upload requirements remain unchanged; this capability consumes their avatar storage contract. -->
+- `pool-leaderboard`: Refine initial and append-loading placeholders so both platforms reuse the production row with a placeholder model and shared shimmer treatment while suppressing live-only side effects.
 
 ## Impact
 

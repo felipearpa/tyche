@@ -3,12 +3,22 @@ import Foundation
 import SwiftUI
 import UI
 
-struct GamblerScoreItem: View {
+public struct GamblerScoreItem: View {
     let poolGamblerScore: PoolGamblerScoreModel
     let isCurrentUser: Bool
     var isPlaceholder = false
 
-    var body: some View {
+    public init(
+        poolGamblerScore: PoolGamblerScoreModel,
+        isCurrentUser: Bool,
+        isPlaceholder: Bool = false
+    ) {
+        self.poolGamblerScore = poolGamblerScore
+        self.isCurrentUser = isCurrentUser
+        self.isPlaceholder = isPlaceholder
+    }
+
+    public var body: some View {
         Group {
             if isPlaceholder {
                 placeholderContent

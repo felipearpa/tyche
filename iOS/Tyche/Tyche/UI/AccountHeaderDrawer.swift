@@ -18,11 +18,10 @@ struct AccountHeaderDrawer: View {
                 email: email
             )
 
-            DrawerButtonRow(icon: {
-                Image(systemName: "person.crop.circle")
-                    .resizable()
-                    .scaledToFit()
-            }, title: String(localized: .profileTitle)) {
+            DrawerButtonRow(
+                icon: { Image(sharedResource: .filledPerson) },
+                title: String(localized: .profileTitle)
+            ) {
                 onProfile()
             }
         }

@@ -20,6 +20,7 @@ public extension SharedImageResource  {
     static let home = SharedImageResource(.home)
     static let trophy = SharedImageResource(.trophy)
     static let deleteForever = SharedImageResource(.deleteForever)
+    static let filledPerson = SharedImageResource(.filledPerson)
     static let personAdd = SharedImageResource(.personAdd)
     static let edit = SharedImageResource(.edit)
     static let group = SharedImageResource(.group)

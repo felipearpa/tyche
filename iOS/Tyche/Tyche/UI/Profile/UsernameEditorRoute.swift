@@ -1,1 +1,3 @@
-struct UsernameEditorRoute: Hashable {}
+struct UsernameEditorRoute: Hashable {
+    let accountId: String
+}

@@ -32,7 +32,9 @@ struct PoolHomeRouter: View {
                 accountStorage: diResolver.resolve(AccountStorage.self)!
             ),
             usernameEditorViewModel: UsernameEditorViewModel(
-                updateUsernameUseCase: diResolver.resolve(UpdateUsernameUseCase.self)!
+                onSave: { [diResolver] username in
+                    await diResolver.resolve(UpdateUsernameUseCase.self)!.execute(username: username)
+                }
             )
         )
     }
@@ -166,18 +168,18 @@ private struct PoolHomeRouterContent: View {
                             await diResolver.resolve(UploadAvatarUseCase.self)!.execute(imageData: imageData)
                         }
                     ),
-                    onEditUsername: { path.append(UsernameEditorRoute()) }
+                    onEditUsername: { path.append(UsernameEditorRoute(accountId: user.accountId)) }
                 )
             }
-            .navigationDestination(for: UsernameEditorRoute.self) { _ in
+            .navigationDestination(for: UsernameEditorRoute.self) { route in
                 UsernameEditorScreen(
+                    accountId: route.accountId,
                     initialUsername: drawerViewModel.username,
                     viewModel: usernameEditorViewModel,
                     onSaved: { newUsername in
                         drawerViewModel.applyUsername(newUsername)
                         path.removeLast()
-                    },
-                    onDismiss: { path.removeLast() }
+                    }
                 )
             }
         }

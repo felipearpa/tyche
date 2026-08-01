@@ -19,7 +19,7 @@
     <string name="edit_username_title">Editar nombre de usuario</string>
     <string name="username_label">Nombre de usuario</string>
     <string name="edit_username_action">Editar nombre de usuario</string>
-    <string name="edit_user_name_subtitle">Así te verán otros jugadores en las pollas</string>
+    <string name="edit_user_name_subtitle">Así te verán otros jugadores en las quinielas</string>
     <string name="position_small_suffix">%sº</string>
     <string name="gamblers_action">Jugadores</string>
     <string name="profile_title">Perfil</string>
@@ -30,4 +30,14 @@
     <string name="avatar_upload_error_title">No se ha subido la foto</string>
     <string name="avatar_upload_error_message">Comprueba tu conexión e inténtalo de nuevo.</string>
     <string name="profile_footer_text">Así te ven los demás jugadores en la clasificación.</string>
+    <string name="username_preview_label">Vista previa de la quiniela</string>
+    <string name="username_preview_live">En directo</string>
+    <string name="username_preview_placeholder">Tu nombre de usuario</string>
+    <string name="username_field_helper">Usa el nombre con el que te reconocen en la quiniela.</string>
+    <string name="username_empty_error">Escribe un nombre de usuario.</string>
+    <string name="save_username_action">Guardar nombre de usuario</string>
+    <string name="username_retry_action">Inténtalo de nuevo</string>
+    <string name="username_save_network_error">No se ha guardado el nombre de usuario. Comprueba tu conexión e inténtalo de nuevo.</string>
+    <string name="username_save_unknown_error">No se ha guardado el nombre de usuario. Inténtalo de nuevo.</string>
+    <string name="username_saving_accessibility">Guardando nombre de usuario</string>
 </resources>

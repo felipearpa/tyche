@@ -157,6 +157,18 @@ Position formatting, tile shape, and position content remain owned by `PostionIn
 - *Why*: one implementation per platform prevents visual and semantic drift between leaderboard and pool-score surfaces while allowing the shared components to support the approved reference.
 - *Alternative considered*: add leaderboard-only rank-tile and movement components tuned to the prototype. Rejected because they would duplicate existing behavior and create a second source of truth for rank and trend semantics.
 
+### 9. Reuse the production row for loading placeholders
+
+Initial and append-loading states render the same `GamblerScoreItem` row structure used for loaded scores. Each placeholder row is populated with `poolGamblerScorePlaceholderModel()` and receives the existing shared platform shimmer treatment, following the pattern already used by other model-backed lists. The leaderboard does not maintain a second skeleton-only composition with independently specified rank, avatar, username, and score geometry.
+
+- iOS constructs the production `GamblerScoreItem` from the placeholder model and applies the shared `.shimmer()` treatment to its placeholder presentation.
+- Android constructs the production `GamblerScoreItem` from the placeholder model and supplies `Modifier.shimmer()` through a focused placeholder-styling input so the production component continues to own the row anatomy.
+
+Placeholder mode suppresses behavior that belongs only to loaded data: it does not request an avatar using the synthetic identifier, expose row navigation or press feedback, or announce placeholder values to VoiceOver or TalkBack. These suppressions may be expressed through focused inputs on the production components, but they do not select or reproduce a separate row layout. Initial and append loading use the same placeholder-row path so their geometry, theme behavior, and future production-row changes remain aligned.
+
+- *Why*: a single row structure prevents loading and loaded states from drifting when spacing, typography, indicators, avatar treatment, or score layout changes.
+- *Alternative considered*: retain dedicated placeholder shapes tuned to the current row. Rejected because that duplicates the production anatomy and requires every future row change to be implemented twice.
+
 ## Risks / Trade-offs
 
 - [Avatar requests multiply on a leaderboard] → Reuse the existing URL-keyed memory/disk cache and conditional revalidation; do not bypass cache or request presigned GETs.

@@ -30,4 +30,14 @@
     <string name="avatar_upload_error_title">Photo Not Uploaded</string>
     <string name="avatar_upload_error_message">Check your connection and try again.</string>
     <string name="profile_footer_text">This is how other gamblers see you on the leaderboard.</string>
+    <string name="username_preview_label">Pool preview</string>
+    <string name="username_preview_live">Live</string>
+    <string name="username_preview_placeholder">Your username</string>
+    <string name="username_field_helper">Use the name your poolmates recognize.</string>
+    <string name="username_empty_error">Enter a username.</string>
+    <string name="save_username_action">Save username</string>
+    <string name="username_retry_action">Try again</string>
+    <string name="username_save_network_error">Username not saved. Check your connection and try again.</string>
+    <string name="username_save_unknown_error">Username not saved. Try again.</string>
+    <string name="username_saving_accessibility">Saving username</string>
 </resources>
