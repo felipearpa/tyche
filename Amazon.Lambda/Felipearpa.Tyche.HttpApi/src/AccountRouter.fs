@@ -37,6 +37,22 @@ module AccountRouter =
             |> ignore
 
             this
+                .MapGet(
+                    "/accounts/me",
+                    Func<_, _, _>(fun (user: ClaimsPrincipal) (accountRepository: IAccountRepository) ->
+                        async {
+                            let! callerResult = CallerResolver.resolveCallerAccountAsync user accountRepository
+
+                            match callerResult with
+                            | Error _ -> return Results.Unauthorized()
+                            | Ok callerAccount -> return! getCurrentAccountAsync callerAccount
+                        }
+                        |> Async.StartAsTask)
+                )
+                .RequireAuthorization()
+            |> ignore
+
+            this
                 .MapPost(
                     "/accounts/{accountId}/avatar-upload-url",
                     Func<_, _, _, _, _, _>

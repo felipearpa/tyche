@@ -5,6 +5,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
+import com.felipearpa.tyche.pool.AvatarImageStoreKoinRule
 import com.felipearpa.tyche.pool.PoolGamblerScoreModel
 import com.felipearpa.tyche.ui.theme.TycheTheme
 import org.junit.Rule
@@ -24,7 +25,10 @@ import org.junit.Test
  * invariant across them; only the draft username varies here.
  */
 class GamblerScoreItemRankPreviewTest {
-    @get:Rule
+    @get:Rule(order = 0)
+    val avatarImageStoreKoinRule = AvatarImageStoreKoinRule()
+
+    @get:Rule(order = 1)
     val composeTestRule = createComposeRule()
 
     @Test

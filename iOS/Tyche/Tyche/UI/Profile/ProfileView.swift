@@ -47,7 +47,7 @@ struct ProfileView: View {
         .navigationTitle(String(localized: .profileTitle))
         .navigationBarTitleDisplayMode(.inline)
         .task {
-            await viewModel.loadAccount()
+            await viewModel.refreshAccount()
         }
     }
 
@@ -241,7 +241,8 @@ private let contentMaxWidth: CGFloat = 560
     NavigationStack {
         ProfileView(
             viewModel: ProfileViewModel(
-                accountStorage: PreviewAccountStorage(),
+                currentAccountModel: .preview(),
+                currentAccountCoordinator: .preview(),
                 onUploadAvatar: { _ in .success(()) }
             ),
             onEditUsername: {}
@@ -253,7 +254,8 @@ private let contentMaxWidth: CGFloat = 560
     NavigationStack {
         ProfileView(
             viewModel: ProfileViewModel(
-                accountStorage: PreviewAccountStorage(),
+                currentAccountModel: .preview(),
+                currentAccountCoordinator: .preview(),
                 onUploadAvatar: { _ in .success(()) }
             ),
             onEditUsername: {}

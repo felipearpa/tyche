@@ -1,6 +1,7 @@
 namespace Felipearpa.Tyche.Function
 
 open Felipearpa.Tyche.Account.Application
+open Felipearpa.Tyche.Account.Domain
 open Felipearpa.Tyche.Function.Request
 open Felipearpa.Tyche.Function.Request.LinkAccountRequestTransformer
 open Felipearpa.Tyche.Function.Response
@@ -20,6 +21,9 @@ module AccountFunction =
                 | Ok account -> Results.Ok(account.ToAccountResponse())
                 | Error _ -> Results.InternalServerError()
         }
+
+    let getCurrentAccountAsync (callerAccount: Account) : IResult Async =
+        async { return Results.Ok(callerAccount.ToAccountResponse()) }
 
     let updateUsernameAsync (request: UpdateUsernameRequest) (updateUsername: UpdateUsername) : IResult Async =
         async {

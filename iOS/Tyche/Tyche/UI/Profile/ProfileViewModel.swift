@@ -1,4 +1,5 @@
 import Account
+import Combine
 import Foundation
 import Session
 import UIKit
@@ -17,18 +18,29 @@ class ProfileViewModel: ObservableObject {
     @Published private(set) var email: String = ""
     @Published private(set) var uploadState: LoadState<Void> = .idle
 
-    private let accountStorage: AccountStorage
+    private let currentAccountModel: CurrentAccountModel
+    private let currentAccountCoordinator: CurrentAccountCoordinator
     private let onUploadAvatar: (Data) async -> Result<Void, Error>
 
-    private var localAvatarImage: UIImage?
     private var pendingUpload: (image: UIImage, data: Data)?
+    private var cancellables = Set<AnyCancellable>()
 
     init(
-        accountStorage: AccountStorage,
+        currentAccountModel: CurrentAccountModel,
+        currentAccountCoordinator: CurrentAccountCoordinator,
         onUploadAvatar: @escaping (Data) async -> Result<Void, Error>
     ) {
-        self.accountStorage = accountStorage
+        self.currentAccountModel = currentAccountModel
+        self.currentAccountCoordinator = currentAccountCoordinator
         self.onUploadAvatar = onUploadAvatar
+
+        currentAccountModel.$account
+            .sink { [weak self] account in
+                self?.accountId = account?.accountId ?? ""
+                self?.username = account?.username ?? ""
+                self?.email = account?.email ?? ""
+            }
+            .store(in: &cancellables)
     }
 
     /// The uploading photo shows optimistically; a failed upload falls back to what was
@@ -38,10 +50,6 @@ class ProfileViewModel: ObservableObject {
             return .local(pendingUpload.image)
         }
 
-        if let localAvatarImage {
-            return .local(localAvatarImage)
-        }
-
         if !accountId.isEmpty, let url = AvatarURL.of(accountId: accountId) {
             return .remote(url)
         }
@@ -49,15 +57,8 @@ class ProfileViewModel: ObservableObject {
         return .letter
     }
 
-    func loadAccount() async {
-        let bundle = try? await accountStorage.retrieve()
-        accountId = bundle?.accountId ?? ""
-        username = bundle?.username ?? ""
-        email = bundle?.email ?? ""
-    }
-
-    func applyUsername(_ newUsername: String) {
-        username = newUsername
+    func refreshAccount() async {
+        await currentAccountCoordinator.refresh(trigger: .profileOpened)
     }
 
     @discardableResult
@@ -89,10 +90,10 @@ class ProfileViewModel: ObservableObject {
 
             switch result {
             case .success:
-                localAvatarImage = pending.image
+                // The upload flow has already seeded the shared avatar store, so every
+                // visible surface shows the new photo before this state lands.
                 pendingUpload = nil
                 uploadState = .loaded(())
-                AvatarVersion.shared.bump()
             case .failure(let error):
                 uploadState = .failure(error)
             }

@@ -1,4 +1,28 @@
+import Session
 import SwiftUI
+
+/// Pushes `UsernameEditorScreen` only once the shared account has replayed, so the
+/// one-shot field seed can never consume an empty username from a not-yet-populated
+/// mirror. A signed-in account's username is never empty (it falls back to the email),
+/// which makes presence of the account the correct readiness signal.
+struct UsernameEditorDestination: View {
+    @ObservedObject var currentAccountModel: CurrentAccountModel
+    @ObservedObject var viewModel: UsernameEditorViewModel
+    let onSaved: (String) -> Void
+
+    var body: some View {
+        if let account = currentAccountModel.account {
+            UsernameEditorScreen(
+                accountId: account.accountId,
+                initialUsername: account.username,
+                viewModel: viewModel,
+                onSaved: onSaved
+            )
+        } else {
+            Color.clear
+        }
+    }
+}
 
 /// Hosts the redesigned `UsernameEditor` as a pushed screen behind the Profile screen.
 ///

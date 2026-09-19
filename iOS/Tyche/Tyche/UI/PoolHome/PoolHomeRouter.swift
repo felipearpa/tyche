@@ -29,7 +29,7 @@ struct PoolHomeRouter: View {
                 getPoolGamblerScoreUseCase: diResolver.resolve(GetPoolGamblerScoreUseCase.self)!,
                 getPoolUseCase: diResolver.resolve(GetPoolUseCase.self)!,
                 deletePoolUseCase: diResolver.resolve(DeletePoolUseCase.self)!,
-                accountStorage: diResolver.resolve(AccountStorage.self)!
+                currentAccountModel: diResolver.resolve(CurrentAccountModel.self)!
             ),
             usernameEditorViewModel: UsernameEditorViewModel(
                 onSave: { [diResolver] username in
@@ -163,7 +163,8 @@ private struct PoolHomeRouterContent: View {
             .navigationDestination(for: ProfileRoute.self) { _ in
                 ProfileView(
                     viewModel: ProfileViewModel(
-                        accountStorage: diResolver.resolve(AccountStorage.self)!,
+                        currentAccountModel: diResolver.resolve(CurrentAccountModel.self)!,
+                        currentAccountCoordinator: diResolver.resolve(CurrentAccountCoordinator.self)!,
                         onUploadAvatar: { [diResolver] imageData in
                             await diResolver.resolve(UploadAvatarUseCase.self)!.execute(imageData: imageData)
                         }
@@ -171,15 +172,11 @@ private struct PoolHomeRouterContent: View {
                     onEditUsername: { path.append(UsernameEditorRoute(accountId: user.accountId)) }
                 )
             }
-            .navigationDestination(for: UsernameEditorRoute.self) { route in
-                UsernameEditorScreen(
-                    accountId: route.accountId,
-                    initialUsername: drawerViewModel.username,
+            .navigationDestination(for: UsernameEditorRoute.self) { _ in
+                UsernameEditorDestination(
+                    currentAccountModel: diResolver.resolve(CurrentAccountModel.self)!,
                     viewModel: usernameEditorViewModel,
-                    onSaved: { newUsername in
-                        drawerViewModel.applyUsername(newUsername)
-                        path.removeLast()
-                    }
+                    onSaved: { _ in path.removeLast() }
                 )
             }
         }
@@ -246,8 +243,11 @@ private func poolHomeFakeResolver() -> DIResolver {
     container.register(UpdateUsernameUseCase.self) { _ in
         UpdateUsernameUseCase.preview()
     }
-    container.register(AccountStorage.self) { _ in
-        PreviewAccountStorage()
+    container.register(CurrentAccountCoordinator.self) { _ in
+        CurrentAccountCoordinator.preview()
+    }
+    container.register(CurrentAccountModel.self) { _ in
+        CurrentAccountModel.preview()
     }
     container.register(UploadAvatarUseCase.self) { _ in
         UploadAvatarUseCase.preview()

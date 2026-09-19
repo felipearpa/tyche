@@ -4,8 +4,8 @@ import android.graphics.Bitmap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.felipearpa.tyche.account.AvatarUrl
-import com.felipearpa.tyche.account.AvatarVersion
-import com.felipearpa.tyche.session.AccountStorage
+import com.felipearpa.tyche.session.CurrentAccountCoordinator
+import com.felipearpa.tyche.session.CurrentAccountRefreshTrigger
 import com.felipearpa.tyche.session.avatar.application.UploadAvatar
 import com.felipearpa.ui.state.LoadState
 import kotlinx.coroutines.Job
@@ -26,55 +26,52 @@ sealed class ProfileAvatarSource {
 
 class ProfileViewModel(
     private val uploadAvatar: UploadAvatar,
-    accountStorage: AccountStorage,
+    private val currentAccountCoordinator: CurrentAccountCoordinator,
 ) : ViewModel() {
-    val accountId: StateFlow<String> = accountStorage.state
+    val accountId: StateFlow<String> = currentAccountCoordinator.state
         .map { bundle -> bundle?.accountId.orEmpty() }
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.Eagerly,
-            initialValue = accountStorage.state.value?.accountId.orEmpty(),
+            initialValue = currentAccountCoordinator.state.value?.accountId.orEmpty(),
         )
 
-    val username: StateFlow<String> = accountStorage.state
+    val username: StateFlow<String> = currentAccountCoordinator.state
         .map { bundle -> bundle?.username.orEmpty() }
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.Eagerly,
-            initialValue = accountStorage.state.value?.username.orEmpty(),
+            initialValue = currentAccountCoordinator.state.value?.username.orEmpty(),
         )
 
-    val email: StateFlow<String> = accountStorage.state
+    val email: StateFlow<String> = currentAccountCoordinator.state
         .map { bundle -> bundle?.email.orEmpty() }
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.Eagerly,
-            initialValue = accountStorage.state.value?.email.orEmpty(),
+            initialValue = currentAccountCoordinator.state.value?.email.orEmpty(),
         )
 
     private val _uploadState = MutableStateFlow<LoadState<Unit>>(LoadState.Idle)
     val uploadState: StateFlow<LoadState<Unit>> = _uploadState.asStateFlow()
 
-    private val _localAvatar = MutableStateFlow<Bitmap?>(null)
-
     private var pendingUpload: Pair<Bitmap, ByteArray>? = null
 
     /**
-     * The uploading photo shows optimistically; a failed upload falls back to what was
-     * there before, and an account without a photo falls back to the letter avatar.
+     * The uploading photo shows optimistically; a failed upload falls back to what was there
+     * before, and an account without a photo falls back to the letter avatar. After a
+     * successful upload the remote branch is already served from the seeded shared store, so
+     * no view-local copy is retained.
      */
     val avatarSource: StateFlow<ProfileAvatarSource> = combine(
-        accountStorage.state,
-        _localAvatar,
+        currentAccountCoordinator.state,
         _uploadState,
-    ) { bundle, localAvatar, uploadState ->
+    ) { bundle, uploadState ->
         val pending = pendingUpload
 
         when {
             uploadState is LoadState.Loading && pending != null ->
                 ProfileAvatarSource.Local(pending.first)
-
-            localAvatar != null -> ProfileAvatarSource.Local(localAvatar)
 
             !bundle?.accountId.isNullOrEmpty() ->
                 ProfileAvatarSource.Remote(AvatarUrl.of(bundle!!.accountId))
@@ -86,6 +83,12 @@ class ProfileViewModel(
         started = SharingStarted.Eagerly,
         initialValue = ProfileAvatarSource.Letter,
     )
+
+    init {
+        viewModelScope.launch {
+            currentAccountCoordinator.refresh(CurrentAccountRefreshTrigger.PROFILE_OPENED)
+        }
+    }
 
     fun beginUpload(bitmap: Bitmap, imageData: ByteArray): Job {
         pendingUpload = bitmap to imageData
@@ -110,10 +113,10 @@ class ProfileViewModel(
 
             uploadAvatar.execute(imageData = pending.second)
                 .onSuccess {
-                    _localAvatar.value = pending.first
+                    // The upload flow already seeded the shared avatar store, so success only
+                    // clears the pending photo and reports loaded.
                     pendingUpload = null
                     _uploadState.value = LoadState.Loaded(Unit)
-                    AvatarVersion.bump()
                 }
                 .onFailure { exception ->
                     _uploadState.value = LoadState.Failure(exception)

@@ -45,5 +45,6 @@
     <Compile Include="Function\PoolLayout\GetOpenPoolLayoutsTest.fs" />
     <Compile Include="Function\Account\LinkAccountTest.fs" />
     <Compile Include="Function\Account\UpdateUsernameTest.fs" />
+    <Compile Include="Function\Account\GetCurrentAccountTest.fs" />
   </ItemGroup>
 </Project>

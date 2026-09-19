@@ -538,6 +538,32 @@ Resources:
             Method: POST
             ApiId: !Ref AuthGatewayHttpApi
 
+  GetCurrentAccount:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: Felipearpa.Tyche.AmazonLambda::Felipearpa.Tyche.AmazonLambda.Function.AccountFunction::GetCurrentAccountAsync
+      Runtime: dotnet10
+      CodeUri: .
+      MemorySize: 1024
+      Timeout: 30
+      Policies:
+        - AWSLambdaBasicExecutionRole
+        - Statement:
+            - Effect: Allow
+              Action:
+                - dynamodb:Query
+              Resource:
+                - arn:aws:dynamodb:us-east-2:567776770335:table/Account
+                - arn:aws:dynamodb:us-east-2:567776770335:table/Account/index/GetByEmail-index
+      Architectures: [ arm64 ]
+      Events:
+        HttpApi:
+          Type: HttpApi
+          Properties:
+            Path: /accounts/me
+            Method: GET
+            ApiId: !Ref AuthGatewayHttpApi
+
   UpdateUsername:
     Type: AWS::Serverless::Function
     Properties:

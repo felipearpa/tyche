@@ -24,10 +24,10 @@ module Authorization =
             | true, value when value <> null && value <> "" -> Some value
             | _ -> None)
 
-    let resolveCallerGamblerIdAsync
+    let resolveCallerAccountAsync
         (request: APIGatewayHttpApiV2ProxyRequest)
         (accountRepository: IAccountRepository)
-        : Async<Result<Ulid, AuthFailure>> =
+        : Async<Result<Account, AuthFailure>> =
         async {
             match tryGetClaim emailClaim request with
             | None -> return Error MissingClaim
@@ -36,9 +36,18 @@ module Authorization =
 
                 return
                     match accountResult with
-                    | Ok(Some account) -> Ok account.AccountId
+                    | Ok(Some account) -> Ok account
                     | Ok None -> Error UnknownAccount
                     | Error _ -> Error UnknownAccount
+        }
+
+    let resolveCallerGamblerIdAsync
+        (request: APIGatewayHttpApiV2ProxyRequest)
+        (accountRepository: IAccountRepository)
+        : Async<Result<Ulid, AuthFailure>> =
+        async {
+            let! callerResult = resolveCallerAccountAsync request accountRepository
+            return callerResult |> Result.map _.AccountId
         }
 
     let toResponse (failure: AuthFailure) : APIGatewayHttpApiV2ProxyResponse =

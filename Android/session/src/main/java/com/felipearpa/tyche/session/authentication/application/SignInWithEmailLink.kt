@@ -2,13 +2,13 @@ package com.felipearpa.tyche.session.authentication.application
 
 import com.felipearpa.tyche.core.type.Email
 import com.felipearpa.tyche.session.AccountBundle
-import com.felipearpa.tyche.session.AccountStorage
+import com.felipearpa.tyche.session.CurrentAccountCoordinator
 import com.felipearpa.tyche.session.authentication.domain.AccountLink
 import com.felipearpa.tyche.session.authentication.domain.AuthenticationRepository
 
 class SignInWithEmailLink(
     private val authenticationRepository: AuthenticationRepository,
-    private val accountStorage: AccountStorage
+    private val currentAccountCoordinator: CurrentAccountCoordinator
 ) {
     suspend fun execute(email: Email, emailLink: String): Result<AccountBundle> {
         val externalAccountId =
@@ -25,7 +25,7 @@ class SignInWithEmailLink(
             .onFailure { exception -> return Result.failure(exception) }
             .getOrNull()!!
 
-        accountStorage.store(accountBundle = accountBundle)
+        currentAccountCoordinator.install(account = accountBundle)
 
         return Result.success(accountBundle)
     }

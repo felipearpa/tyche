@@ -11,6 +11,7 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import androidx.paging.PagingData
 import androidx.paging.compose.collectAsLazyPagingItems
+import com.felipearpa.tyche.pool.AvatarImageStoreKoinRule
 import com.felipearpa.tyche.pool.PoolGamblerScoreModel
 import com.felipearpa.tyche.pool.poolGamblerScoreDummyModels
 import com.felipearpa.tyche.ui.theme.TycheTheme
@@ -21,7 +22,10 @@ import org.junit.Rule
 import org.junit.Test
 
 class GamblerScoreListTest {
-    @get:Rule
+    @get:Rule(order = 0)
+    val avatarImageStoreKoinRule = AvatarImageStoreKoinRule()
+
+    @get:Rule(order = 1)
     val composeTestRule = createComposeRule()
 
     @Test

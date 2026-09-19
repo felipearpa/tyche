@@ -19,5 +19,10 @@ val appModule = module {
     factory<IosBundleIdProvider> { LocalIosBundleIdProvider() }
     factory<WebClientIdProvider> { LocalWebClientIdProvider() }
     viewModel { UsernameEditorViewModel(updateUsername = get()) }
-    viewModel { ProfileViewModel(uploadAvatar = get(), accountStorage = get()) }
+    viewModel {
+        ProfileViewModel(
+            uploadAvatar = get(),
+            currentAccountCoordinator = get(),
+        )
+    }
 }

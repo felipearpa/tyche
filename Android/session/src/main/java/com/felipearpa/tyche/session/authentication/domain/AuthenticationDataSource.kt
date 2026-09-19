@@ -4,4 +4,6 @@ internal interface AuthenticationDataSource {
     suspend fun linkAccount(request: LinkAccountRequest): LinkAccountResponse
 
     suspend fun updateUsername(request: UpdateUsernameRequest)
+
+    suspend fun getCurrentAccount(): CurrentAccountResponse
 }

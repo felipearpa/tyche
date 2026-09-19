@@ -35,6 +35,24 @@ class AuthenticationAlamofireDataSource: AuthenticationRemoteDataSource {
         }
     }
 
+    func getCurrentAccount() async throws -> CurrentAccountResponse {
+        return try await withCheckedThrowingContinuation { continuation in
+            session.request(urlBasePathProvider.prependBasePath("accounts/me")!)
+                .validate()
+                .responseDecodable(
+                    of: CurrentAccountResponse.self,
+                    decoder: JSONDecoder().withISODate()
+                ) { response in
+                    switch response.result {
+                    case .success(let response):
+                        continuation.resume(returning: response)
+                    case .failure(let error):
+                        continuation.resume(throwing: error)
+                    }
+                }
+        }
+    }
+
     func updateUsername(request: UpdateUsernameRequest) async throws {
         return try await withCheckedThrowingContinuation { continuation in
             session.request(

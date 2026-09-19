@@ -18,10 +18,11 @@ public struct AutoEmailAvatar: View {
         )
         .task {
             guard explicitEmail == nil else { return }
-            guard let storage = diResolver.resolve(AccountStorage.self) else { return }
-            let bundle = try? await storage.retrieve()
-            resolvedEmail = bundle?.email ?? ""
-            resolvedAccountId = bundle?.accountId ?? ""
+            guard let coordinator = diResolver.resolve(CurrentAccountCoordinator.self) else { return }
+            for await account in await coordinator.accountUpdates() {
+                resolvedEmail = account?.email ?? ""
+                resolvedAccountId = account?.accountId ?? ""
+            }
         }
     }
 }

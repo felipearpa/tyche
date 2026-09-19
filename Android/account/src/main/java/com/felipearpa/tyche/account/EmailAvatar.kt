@@ -14,7 +14,7 @@ import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.felipearpa.tyche.session.AccountStorage
+import com.felipearpa.tyche.session.CurrentAccountCoordinator
 import com.felipearpa.tyche.ui.theme.TycheTheme
 import org.koin.compose.koinInject
 
@@ -28,8 +28,8 @@ fun AutoEmailAvatar(modifier: Modifier = Modifier) {
         return
     }
 
-    val accountStorage = koinInject<AccountStorage>()
-    val account by accountStorage.state.collectAsStateWithLifecycle()
+    val currentAccountCoordinator = koinInject<CurrentAccountCoordinator>()
+    val account by currentAccountCoordinator.state.collectAsStateWithLifecycle()
     AccountAvatar(
         accountId = account?.accountId.orEmpty(),
         email = account?.email.orEmpty(),

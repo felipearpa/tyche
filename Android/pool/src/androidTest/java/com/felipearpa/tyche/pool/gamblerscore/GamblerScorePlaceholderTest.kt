@@ -29,6 +29,7 @@ import androidx.paging.PagingData
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import androidx.paging.compose.collectAsLazyPagingItems
+import com.felipearpa.tyche.pool.AvatarImageStoreKoinRule
 import com.felipearpa.tyche.pool.PoolGamblerScoreModel
 import com.felipearpa.tyche.pool.poolGamblerScoreDummyModel
 import com.felipearpa.tyche.pool.poolGamblerScoreDummyModels
@@ -48,7 +49,10 @@ import org.junit.Test
  * of its own, so the container's canvas shows through exactly as on loaded rows.
  */
 class GamblerScorePlaceholderTest {
-    @get:Rule
+    @get:Rule(order = 0)
+    val avatarImageStoreKoinRule = AvatarImageStoreKoinRule()
+
+    @get:Rule(order = 1)
     val composeTestRule = createComposeRule()
 
     @Test

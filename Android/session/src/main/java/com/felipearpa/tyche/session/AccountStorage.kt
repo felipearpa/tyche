@@ -1,10 +1,7 @@
 package com.felipearpa.tyche.session
 
-import kotlinx.coroutines.flow.StateFlow
-
 interface AccountStorage {
-    val state: StateFlow<AccountBundle?>
-    suspend fun store(accountBundle: AccountBundle)
+    suspend fun store(snapshot: CurrentAccountSnapshot)
     suspend fun delete()
-    suspend fun retrieve(): AccountBundle?
+    suspend fun retrieve(): CurrentAccountSnapshot?
 }

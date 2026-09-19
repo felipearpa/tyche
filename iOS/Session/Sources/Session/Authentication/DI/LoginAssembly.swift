@@ -55,7 +55,19 @@ public class LoginAssembly : Assembly {
                 networkErrorHandler: resolver.resolve(NetworkErrorHandler.self)!
             )
         }
-        
+
+        container.register(CurrentAccountCoordinator.self) { resolver in
+            CurrentAccountCoordinator(
+                accountStorage: resolver.resolve(AccountStorage.self)!,
+                authenticationRepository: resolver.resolve(AuthenticationRepository.self)!
+            )
+        }.inObjectScope(.container)
+
+        container.register(CurrentAccountModel.self) { resolver in
+            CurrentAccountModel(coordinator: resolver.resolve(CurrentAccountCoordinator.self)!)
+        }.inObjectScope(.container)
+
+
         container.register(SendSignInLinkToEmailUseCase.self) { resolver in
             SendSignInLinkToEmailUseCase(
                 authenticationRepository: resolver.resolve(AuthenticationRepository.self)!
@@ -65,35 +77,34 @@ public class LoginAssembly : Assembly {
         container.register(SignInWithEmailLinkUseCase.self) { resolver in
             SignInWithEmailLinkUseCase(
                 authenticationRepository: resolver.resolve(AuthenticationRepository.self)!,
-                accountStorage: resolver.resolve(AccountStorage.self)!
+                currentAccountCoordinator: resolver.resolve(CurrentAccountCoordinator.self)!
             )
         }
 
         container.register(SignInWithEmailAndPasswordUseCase.self) { resolver in
             SignInWithEmailAndPasswordUseCase(
                 authenticationRepository: resolver.resolve(AuthenticationRepository.self)!,
-                accountStorage: resolver.resolve(AccountStorage.self)!
+                currentAccountCoordinator: resolver.resolve(CurrentAccountCoordinator.self)!
             )
         }
 
         container.register(SignInWithGoogleUseCase.self) { resolver in
             SignInWithGoogleUseCase(
                 authenticationRepository: resolver.resolve(AuthenticationRepository.self)!,
-                accountStorage: resolver.resolve(AccountStorage.self)!
+                currentAccountCoordinator: resolver.resolve(CurrentAccountCoordinator.self)!
             )
         }
 
         container.register(LogOutUseCase.self) { resolver in
             LogOutUseCase(
                 authenticationRepository: resolver.resolve(AuthenticationRepository.self)!,
-                accountStorage: resolver.resolve(AccountStorage.self)!
+                currentAccountCoordinator: resolver.resolve(CurrentAccountCoordinator.self)!
             )
         }
 
         container.register(UpdateUsernameUseCase.self) { resolver in
             UpdateUsernameUseCase(
-                authenticationRepository: resolver.resolve(AuthenticationRepository.self)!,
-                accountStorage: resolver.resolve(AccountStorage.self)!
+                currentAccountCoordinator: resolver.resolve(CurrentAccountCoordinator.self)!
             )
         }
 
@@ -119,7 +130,8 @@ public class LoginAssembly : Assembly {
         container.register(UploadAvatarUseCase.self) { resolver in
             UploadAvatarUseCase(
                 avatarRepository: resolver.resolve(AvatarRepository.self)!,
-                accountStorage: resolver.resolve(AccountStorage.self)!
+                currentAccountCoordinator: resolver.resolve(CurrentAccountCoordinator.self)!,
+                installUploadedAvatar: resolver.resolve(InstallUploadedAvatar.self)!
             )
         }
 

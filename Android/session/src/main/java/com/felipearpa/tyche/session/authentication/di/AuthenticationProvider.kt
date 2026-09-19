@@ -19,11 +19,20 @@ import org.koin.dsl.module
 
 val authenticationModule = module {
     factory { SendSignInLinkToEmail(authenticationRepository = get()) }
-    factory { SignInWithEmailLink(authenticationRepository = get(), accountStorage = get()) }
-    factory { SignInWithEmailAndPassword(authenticationRepository = get(), accountStorage = get()) }
-    factory { SignInWithGoogle(authenticationRepository = get(), accountStorage = get()) }
-    factory { LogOut(authenticationRepository = get(), accountStorage = get()) }
-    factory { UpdateUsername(authenticationRepository = get(), accountStorage = get()) }
+    factory {
+        SignInWithEmailLink(authenticationRepository = get(), currentAccountCoordinator = get())
+    }
+    factory {
+        SignInWithEmailAndPassword(
+            authenticationRepository = get(),
+            currentAccountCoordinator = get(),
+        )
+    }
+    factory {
+        SignInWithGoogle(authenticationRepository = get(), currentAccountCoordinator = get())
+    }
+    factory { LogOut(authenticationRepository = get(), currentAccountCoordinator = get()) }
+    factory { UpdateUsername(currentAccountCoordinator = get()) }
 
     factory<AuthenticationRepository> {
         AuthenticationRemoteRepository(

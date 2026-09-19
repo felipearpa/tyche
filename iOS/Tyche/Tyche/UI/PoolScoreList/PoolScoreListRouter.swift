@@ -35,7 +35,7 @@ struct PoolScoreListRouter: View {
             poolScoreViewModel: poolScoreViewModel,
             drawerViewModel: PoolScoreListDrawerViewModel(
                 logOutUseCase: diResolver.resolve(LogOutUseCase.self)!,
-                accountStorage: diResolver.resolve(AccountStorage.self)!
+                currentAccountModel: diResolver.resolve(CurrentAccountModel.self)!
             ),
             usernameEditorViewModel: UsernameEditorViewModel(
                 onSave: { [diResolver] username in
@@ -119,7 +119,8 @@ private struct PoolScoreListRouterContent: View {
             .navigationDestination(for: ProfileRoute.self) { _ in
                 ProfileView(
                     viewModel: ProfileViewModel(
-                        accountStorage: diResolver.resolve(AccountStorage.self)!,
+                        currentAccountModel: diResolver.resolve(CurrentAccountModel.self)!,
+                        currentAccountCoordinator: diResolver.resolve(CurrentAccountCoordinator.self)!,
                         onUploadAvatar: { [diResolver] imageData in
                             await diResolver.resolve(UploadAvatarUseCase.self)!.execute(imageData: imageData)
                         }
@@ -127,15 +128,11 @@ private struct PoolScoreListRouterContent: View {
                     onEditUsername: { path.append(UsernameEditorRoute(accountId: accountBundle.accountId)) }
                 )
             }
-            .navigationDestination(for: UsernameEditorRoute.self) { route in
-                UsernameEditorScreen(
-                    accountId: route.accountId,
-                    initialUsername: drawerViewModel.username,
+            .navigationDestination(for: UsernameEditorRoute.self) { _ in
+                UsernameEditorDestination(
+                    currentAccountModel: diResolver.resolve(CurrentAccountModel.self)!,
                     viewModel: usernameEditorViewModel,
-                    onSaved: { newUsername in
-                        drawerViewModel.applyUsername(newUsername)
-                        path.removeLast()
-                    }
+                    onSaved: { _ in path.removeLast() }
                 )
             }
         }
@@ -187,8 +184,11 @@ private func poolScoreListFakeResolver() -> DIResolver {
     container.register(UpdateUsernameUseCase.self) { _ in
         UpdateUsernameUseCase.preview()
     }
-    container.register(AccountStorage.self) { _ in
-        PreviewAccountStorage()
+    container.register(CurrentAccountCoordinator.self) { _ in
+        CurrentAccountCoordinator.preview()
+    }
+    container.register(CurrentAccountModel.self) { _ in
+        CurrentAccountModel.preview()
     }
     container.register(UploadAvatarUseCase.self) { _ in
         UploadAvatarUseCase.preview()

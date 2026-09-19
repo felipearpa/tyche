@@ -13,7 +13,13 @@ import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
 val avatarModule = module {
-    factory { UploadAvatar(avatarRepository = get(), accountStorage = get()) }
+    factory {
+        UploadAvatar(
+            avatarRepository = get(),
+            currentAccountCoordinator = get(),
+            installUploadedAvatar = get(),
+        )
+    }
 
     factory<AvatarRepository> {
         AvatarRemoteRepository(

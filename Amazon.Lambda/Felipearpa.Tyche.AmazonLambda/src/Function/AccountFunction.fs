@@ -70,6 +70,27 @@ type AccountFunction(configureServices: IServiceCollection -> unit) =
         }
         |> Async.StartAsTask
 
+    // GET /accounts/me
+    member this.GetCurrentAccountAsync
+        (request: APIGatewayHttpApiV2ProxyRequest, _: ILambdaContext)
+        : APIGatewayHttpApiV2ProxyResponse Task =
+        async {
+            use scope = serviceProvider.CreateScope()
+
+            let! callerResult =
+                Authorization.resolveCallerAccountAsync
+                    request
+                    (scope.ServiceProvider.GetService<IAccountRepository>())
+
+            match callerResult with
+            | Error failure -> return Authorization.toResponse failure
+            | Ok callerAccount ->
+                let! response = getCurrentAccountAsync callerAccount
+
+                return! response.ToAmazonProxyResponse()
+        }
+        |> Async.StartAsTask
+
     // PATCH /accounts
     member this.UpdateUsernameAsync
         (request: APIGatewayHttpApiV2ProxyRequest, _: ILambdaContext)

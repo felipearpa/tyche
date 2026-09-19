@@ -17,11 +17,11 @@ module CallerResolver =
             | Some claim when not (String.IsNullOrWhiteSpace claim.Value) -> Some claim.Value
             | _ -> None)
 
-    /// Resolves the authenticated caller's gambler id (== account id) from the JWT `email` claim.
-    let resolveCallerGamblerIdAsync
+    /// Resolves the authenticated caller's account from the JWT `email` claim.
+    let resolveCallerAccountAsync
         (user: ClaimsPrincipal)
         (accountRepository: IAccountRepository)
-        : Async<Result<Ulid, unit>> =
+        : Async<Result<Account, unit>> =
         async {
             match tryGetEmail user with
             | None -> return Error()
@@ -30,6 +30,16 @@ module CallerResolver =
 
                 return
                     match accountResult with
-                    | Ok(Some account) -> Ok account.AccountId
+                    | Ok(Some account) -> Ok account
                     | _ -> Error()
+        }
+
+    /// Resolves the authenticated caller's gambler id (== account id) from the JWT `email` claim.
+    let resolveCallerGamblerIdAsync
+        (user: ClaimsPrincipal)
+        (accountRepository: IAccountRepository)
+        : Async<Result<Ulid, unit>> =
+        async {
+            let! callerResult = resolveCallerAccountAsync user accountRepository
+            return callerResult |> Result.map _.AccountId
         }

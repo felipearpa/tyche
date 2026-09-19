@@ -7,7 +7,7 @@ import com.felipearpa.tyche.data.pool.application.GetPool
 import com.felipearpa.tyche.data.pool.application.GetPoolGamblerScore
 import com.felipearpa.tyche.pool.PoolGamblerScoreModel
 import com.felipearpa.tyche.pool.toPoolGamblerScoreModel
-import com.felipearpa.tyche.session.AccountStorage
+import com.felipearpa.tyche.session.CurrentAccountCoordinator
 import com.felipearpa.tyche.session.authentication.application.LogOut
 import com.felipearpa.tyche.ui.exception.orDefaultLocalized
 import com.felipearpa.ui.state.LoadState
@@ -29,26 +29,35 @@ class DrawerViewModel(
     private val getPoolGamblerScore: GetPoolGamblerScore,
     private val getPool: GetPool,
     private val deletePool: DeletePool,
-    accountStorage: AccountStorage,
+    currentAccountCoordinator: CurrentAccountCoordinator,
 ) : ViewModel() {
     private val _state =
         MutableStateFlow<LoadState<PoolGamblerScoreModel>>(LoadState.Idle)
     val state = _state.asStateFlow()
 
-    val email: StateFlow<String> = accountStorage.state
+    // The route's gambler id only backs the avatar while the shared account is not published.
+    private val accountId: StateFlow<String> = currentAccountCoordinator.state
+        .map { bundle -> bundle?.accountId ?: gamblerId }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.Eagerly,
+            initialValue = currentAccountCoordinator.state.value?.accountId ?: gamblerId,
+        )
+
+    val email: StateFlow<String> = currentAccountCoordinator.state
         .map { bundle -> bundle?.email.orEmpty() }
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.Eagerly,
-            initialValue = accountStorage.state.value?.email.orEmpty(),
+            initialValue = currentAccountCoordinator.state.value?.email.orEmpty(),
         )
 
-    val username: StateFlow<String> = accountStorage.state
+    val username: StateFlow<String> = currentAccountCoordinator.state
         .map { bundle -> bundle?.username.orEmpty() }
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.Eagerly,
-            initialValue = accountStorage.state.value?.username.orEmpty(),
+            initialValue = currentAccountCoordinator.state.value?.username.orEmpty(),
         )
 
     private val _isOwner = MutableStateFlow(false)
@@ -62,6 +71,7 @@ class DrawerViewModel(
     val deleteState = _deleteState.asStateFlow()
 
     private fun buildUiState(
+        accountId: String,
         email: String,
         username: String,
         scoreState: LoadState<PoolGamblerScoreModel>,
@@ -69,7 +79,7 @@ class DrawerViewModel(
         gamblerCount: Int?,
         deleteState: SaveState<Unit>,
     ) = PoolHomeDrawerUiState(
-        accountId = gamblerId,
+        accountId = accountId,
         email = email,
         username = username,
         poolGamblerScoreState = scoreState,
@@ -79,17 +89,20 @@ class DrawerViewModel(
     )
 
     val uiState: StateFlow<PoolHomeDrawerUiState> = combine(
-        combine(email, username) { email, username -> email to username },
+        combine(accountId, email, username) { accountId, email, username ->
+            Triple(accountId, email, username)
+        },
         state,
         isOwner,
         gamblerCount,
         deleteState,
-    ) { (email, username), scoreState, isOwner, gamblerCount, deleteState ->
-        buildUiState(email, username, scoreState, isOwner, gamblerCount, deleteState)
+    ) { (accountId, email, username), scoreState, isOwner, gamblerCount, deleteState ->
+        buildUiState(accountId, email, username, scoreState, isOwner, gamblerCount, deleteState)
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000),
         initialValue = buildUiState(
+            accountId = accountId.value,
             email = email.value,
             username = username.value,
             scoreState = state.value,

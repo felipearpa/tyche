@@ -12,7 +12,8 @@ public extension UploadAvatarUseCase {
     static func preview() -> UploadAvatarUseCase {
         UploadAvatarUseCase(
             avatarRepository: PreviewAvatarRepository(),
-            accountStorage: PreviewAccountStorage()
+            currentAccountCoordinator: .preview(),
+            installUploadedAvatar: { _, _ in }
         )
     }
 }
