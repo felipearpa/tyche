@@ -16,6 +16,26 @@ public struct PoolGamblerScoreModel: Identifiable, Hashable, Codable, Sendable {
     public var id: PoolGamblerScoreModelId {
         return PoolGamblerScoreModelId(poolId: poolId, gamblerId: gamblerId)
     }
+
+    public init(
+        poolId: String,
+        poolName: String,
+        gamblerId: String,
+        gamblerUsername: String,
+        position: Int?,
+        beforePosition: Int?,
+        score: Int?,
+        gamblerCount: Int?
+    ) {
+        self.poolId = poolId
+        self.poolName = poolName
+        self.gamblerId = gamblerId
+        self.gamblerUsername = gamblerUsername
+        self.position = position
+        self.beforePosition = beforePosition
+        self.score = score
+        self.gamblerCount = gamblerCount
+    }
 }
 
 public extension PoolGamblerScoreModel {

@@ -12,6 +12,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
@@ -28,19 +30,19 @@ import com.felipearpa.tyche.poolcreator.poolFromLayoutCreatorNavView
 import com.felipearpa.tyche.poolhome.PoolHomeViewRoute
 import com.felipearpa.tyche.poolhome.poolHomeNavView
 import com.felipearpa.tyche.poolscore.poolScoreListNavView
+import com.felipearpa.tyche.profile.profileNavView
 import com.felipearpa.tyche.session.AccountBundle
-import com.felipearpa.tyche.session.AccountStorage
+import com.felipearpa.tyche.session.CurrentAccountCoordinator
+import com.felipearpa.tyche.session.CurrentAccountRefreshTrigger
 import com.felipearpa.tyche.signin.signInWithEmailAndPasswordNavView
 import com.felipearpa.tyche.signin.signInWithEmailLinkNavView
 import com.felipearpa.tyche.signin.signInWithEmailNavView
 import com.felipearpa.tyche.ui.theme.TycheTheme
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.koin.android.ext.android.inject
 
 class MainActivity : ComponentActivity() {
-    private val accountStorage: AccountStorage by inject()
+    private val currentAccountCoordinator: CurrentAccountCoordinator by inject()
     private val joinUrlTemplate: JoinPoolUrlTemplateProvider by inject()
 
     private var deepLinkIntent by mutableStateOf<Intent?>(null)
@@ -55,11 +57,24 @@ class MainActivity : ComponentActivity() {
         splashScreen.setKeepOnScreenCondition { !isReady }
 
         lifecycleScope.launch {
-            accountBundle = withContext(Dispatchers.IO) {
-                accountStorage.retrieve()
-            }
+            accountBundle = currentAccountCoordinator.hydrate()
             isReady = true
+
+            // Routing is decided from the hydrated snapshot; reconciliation never blocks it.
+            launch {
+                currentAccountCoordinator.refresh(CurrentAccountRefreshTrigger.COLD_START)
+            }
         }
+
+        lifecycle.addObserver(
+            LifecycleEventObserver { _, event ->
+                if (event == Lifecycle.Event.ON_START) {
+                    lifecycleScope.launch {
+                        currentAccountCoordinator.refresh(CurrentAccountRefreshTrigger.FOREGROUND)
+                    }
+                }
+            },
+        )
 
         val intentData = intent.data?.toString()
 
@@ -174,6 +189,7 @@ fun Outlet(
         )
 
         poolFromLayoutCreatorNavView(navController = navController)
+        profileNavView(navController = navController)
 
         poolJoinerView(
             navController = navController,

@@ -1,4 +1,4 @@
-public struct AccountBundle: Codable {
+public struct AccountBundle: Codable, Equatable, Sendable {
     public let accountId: String
     public let externalAccountId: String
     public let email: String

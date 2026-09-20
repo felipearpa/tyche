@@ -19,4 +19,6 @@ interface AuthenticationRepository {
     suspend fun linkAccount(accountLink: AccountLink): Result<AccountBundle>
 
     suspend fun updateUsername(accountId: String, username: String): Result<Unit>
+
+    suspend fun getCurrentAccount(): Result<AccountBundle>
 }

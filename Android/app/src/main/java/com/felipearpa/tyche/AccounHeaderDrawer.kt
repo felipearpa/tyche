@@ -17,58 +17,75 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
-import com.felipearpa.tyche.account.EmailAvatar
+import com.felipearpa.tyche.account.AccountAvatar
 import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
 import com.felipearpa.tyche.ui.theme.TycheTheme
 import com.felipearpa.tyche.ui.R as SharedR
 
 @Composable
 fun AccountHeaderDrawer(
+    accountId: String,
     username: String,
     email: String,
-    onEditAccount: () -> Unit,
+    onProfile: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Column {
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.medium),
-            verticalAlignment = Alignment.CenterVertically,
+    Column(verticalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.medium)) {
+        AccountIdentityRow(
+            accountId = accountId,
+            username = username,
+            email = email,
             modifier = modifier,
-        ) {
-            EmailAvatar(
-                email = email,
-                modifier = Modifier
-                    .size(AVATAR_SIZE.dp)
-                    .clip(CircleShape),
-            )
-
-            Column(
-                verticalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.small),
-                modifier = Modifier.weight(1f),
-            ) {
-                Text(
-                    text = username.ifEmpty { email },
-                    style = MaterialTheme.typography.titleMedium,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis,
-                )
-
-                Text(
-                    text = email,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                )
-            }
-        }
+        )
 
         DrawerButtonRow(
-            iconResId = SharedR.drawable.edit,
-            title = stringResource(id = R.string.edit_username_action),
-            onClick = onEditAccount,
+            iconResId = SharedR.drawable.filled_person,
+            title = stringResource(id = R.string.profile_title),
+            onClick = onProfile,
             modifier = Modifier.fillMaxWidth(),
         )
+    }
+}
+
+@Composable
+fun AccountIdentityRow(
+    accountId: String,
+    username: String,
+    email: String,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.medium),
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier,
+    ) {
+        AccountAvatar(
+            accountId = accountId,
+            email = email,
+            modifier = Modifier
+                .size(AVATAR_SIZE.dp)
+                .clip(CircleShape),
+        )
+
+        Column(
+            verticalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.small),
+            modifier = Modifier.weight(1f),
+        ) {
+            Text(
+                text = username.ifEmpty { email },
+                style = MaterialTheme.typography.titleMedium,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis,
+            )
+
+            Text(
+                text = email,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+        }
     }
 }
 
@@ -80,9 +97,10 @@ private fun AccountHeaderDrawerPreview() {
     TycheTheme {
         Surface {
             AccountHeaderDrawer(
+                accountId = "account-1",
                 username = "felipearpa",
                 email = "felipearpa@email.com",
-                onEditAccount = {},
+                onProfile = {},
             )
         }
     }

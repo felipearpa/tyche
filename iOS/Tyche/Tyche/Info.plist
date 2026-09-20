@@ -23,5 +23,7 @@
 	</array>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
+	<key>NSCameraUsageDescription</key>
+	<string>Fortuna uses the camera to take your profile photo.</string>
 </dict>
 </plist>

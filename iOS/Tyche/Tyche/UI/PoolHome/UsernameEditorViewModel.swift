@@ -1,49 +1,45 @@
 import Foundation
-import Session
 import UI
 import ViewingState
 
 @MainActor
 class UsernameEditorViewModel: ObservableObject {
-    private let updateUsernameUseCase: UpdateUsernameUseCase
+    private let onSave: (String) async -> Result<String, Error>
 
-    @Published var saveState: LoadState<String> = .idle
-    private var lastAttempt: String?
+    @Published var saveState: SaveState<String> = .idle
 
-    init(updateUsernameUseCase: UpdateUsernameUseCase) {
-        self.updateUsernameUseCase = updateUsernameUseCase
+    init(onSave: @escaping (String) async -> Result<String, Error>) {
+        self.onSave = onSave
     }
 
     func save(_ newUsername: String) {
-        guard !saveState.isLoading() else { return }
+        guard !saveState.isSaving() else { return }
         let trimmed = newUsername.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty else { return }
-        lastAttempt = trimmed
         Task { await performSave(trimmed) }
     }
 
     func retry() {
-        guard let lastAttempt, !saveState.isLoading() else { return }
-        Task { await performSave(lastAttempt) }
+        guard case let .failure(value, _) = saveState else { return }
+        Task { await performSave(value) }
     }
 
     func resetError() {
-        if case .failure = saveState { saveState = .idle }
+        if saveState.isFailure() { saveState = .idle }
     }
 
     func reset() {
         saveState = .idle
-        lastAttempt = nil
     }
 
     private func performSave(_ username: String) async {
-        saveState = .loading
-        let result = await updateUsernameUseCase.execute(username: username)
+        saveState = .saving(username)
+        let result = await onSave(username)
         switch result {
         case .success(let saved):
-            saveState = .loaded(saved)
+            saveState = .saved(saved)
         case .failure(let error):
-            saveState = .failure(error)
+            saveState = .failure(value: username, error: error)
         }
     }
 }

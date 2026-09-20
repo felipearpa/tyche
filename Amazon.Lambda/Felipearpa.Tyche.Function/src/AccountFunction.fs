@@ -1,8 +1,10 @@
 namespace Felipearpa.Tyche.Function
 
 open Felipearpa.Tyche.Account.Application
+open Felipearpa.Tyche.Account.Domain
 open Felipearpa.Tyche.Function.Request
 open Felipearpa.Tyche.Function.Request.LinkAccountRequestTransformer
+open Felipearpa.Tyche.Function.Response
 open Felipearpa.Tyche.Function.Response.AccountTransformer
 open Felipearpa.Tyche.Pool.Application
 open Felipearpa.Type
@@ -20,6 +22,9 @@ module AccountFunction =
                 | Error _ -> Results.InternalServerError()
         }
 
+    let getCurrentAccountAsync (callerAccount: Account) : IResult Async =
+        async { return Results.Ok(callerAccount.ToAccountResponse()) }
+
     let updateUsernameAsync (request: UpdateUsernameRequest) (updateUsername: UpdateUsername) : IResult Async =
         async {
             let! result =
@@ -32,4 +37,26 @@ module AccountFunction =
                 match result with
                 | Ok _ -> Results.NoContent()
                 | Error _ -> Results.InternalServerError()
+        }
+
+    let issueAvatarUploadUrlAsync
+        (accountId: string)
+        (callerAccountId: Ulid)
+        (request: AvatarUploadUrlRequest)
+        (issueAvatarUploadUrl: IssueAvatarUploadUrl)
+        : IResult Async =
+        async {
+            let! result =
+                issueAvatarUploadUrl.ExecuteAsync(
+                    { CallerAccountId = callerAccountId
+                      AccountId = Ulid.newOf accountId
+                      ContentLength = request.ContentLength }
+                )
+
+            return
+                match result with
+                | Ok url -> Results.Ok({ Url = url }: AvatarUploadUrlResponse)
+                | Error NotAccountOwner -> Results.StatusCode(StatusCodes.Status403Forbidden)
+                | Error InvalidContentLength -> Results.BadRequest()
+                | Error UploadUrlIssuanceFailed -> Results.InternalServerError()
         }

@@ -33,6 +33,11 @@ android {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
+    testOptions {
+        unitTests.all { test ->
+            test.useJUnitPlatform()
+        }
+    }
     packaging {
         jniLibs {
             excludes.add("META-INF/*")
@@ -51,19 +56,27 @@ dependencies {
     implementation(libs.paging.compose)
     implementation(libs.navigation.compose)
     implementation(platform(libs.koin.bom))
+    implementation(libs.koin.android)
     implementation(libs.koin.compose.viewmodel)
     implementation(libs.androidx.security.crypto)
     implementation(libs.felipearpa.viewing.state)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.felipearpa.foundation)
+    implementation(libs.coil.compose)
+    implementation(libs.coil.network.okhttp)
     implementation(libs.androidx.credentials)
     implementation(libs.androidx.credentials.play.services.auth)
     implementation(libs.google.id)
     implementation(libs.lifecycle.process)
 
+    testImplementation(platform(libs.junit5.bom))
+    testImplementation(libs.junit5.jupiter)
     testImplementation(libs.junit)
+    testImplementation(libs.kotest.assertions.core)
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.io.mockk)
+    testImplementation(libs.coil.network.cache.control)
+    testRuntimeOnly(libs.bundles.junit5.runtime)
 
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.espresso.core)

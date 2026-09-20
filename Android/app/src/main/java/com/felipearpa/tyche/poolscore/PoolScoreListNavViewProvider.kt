@@ -15,6 +15,7 @@ import com.felipearpa.tyche.pool.poolscore.poolScoreListViewModel
 import com.felipearpa.tyche.poolhome.PoolHomeViewRoute
 import com.felipearpa.tyche.poolscore.drawer.DrawerView
 import com.felipearpa.tyche.poolscore.drawer.drawerViewModel
+import com.felipearpa.tyche.profile.ProfileRoute
 
 fun NavGraphBuilder.poolScoreListNavView(
     navController: NavController,
@@ -40,13 +41,17 @@ fun NavGraphBuilder.poolScoreListNavView(
 
         PoolScoreListView(
             viewModel = poolScoreListViewModel(gamblerId = poolScoreListRoute.gamblerId),
-            drawerView = {
+            drawerView = { onCloseDrawer ->
                 DrawerView(
                     viewModel = drawerViewModel,
                     onSignOut = {
                         navController.navigate(route = HomeRoute) {
                             popUpTo(route = initialRoute) { inclusive = true }
                         }
+                    },
+                    onProfile = {
+                        onCloseDrawer()
+                        navController.navigate(route = ProfileRoute)
                     },
                 )
             },

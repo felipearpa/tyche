@@ -12,3 +12,13 @@ public extension View {
             )
     }
 }
+
+/// The shared shimmer treatment as a passable value, for components that take
+/// a placeholder modifier instead of applying `.shimmer()` themselves.
+public struct ShimmerModifier: ViewModifier {
+    public init() {}
+
+    public func body(content: Content) -> some View {
+        content.shimmer()
+    }
+}

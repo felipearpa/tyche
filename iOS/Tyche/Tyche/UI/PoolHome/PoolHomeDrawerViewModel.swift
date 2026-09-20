@@ -1,3 +1,4 @@
+import Combine
 import Foundation
 import Session
 import DataPool
@@ -13,7 +14,7 @@ class PoolHomeDrawerViewModel: ObservableObject {
     private let getPoolGamblerScoreUseCase: GetPoolGamblerScoreUseCase
     private let getPoolUseCase: GetPoolUseCase
     private let deletePoolUseCase: DeletePoolUseCase
-    private let accountStorage: AccountStorage
+    private let currentAccountModel: CurrentAccountModel
 
     @Published var state: LoadState<PoolGamblerScoreModel> = .idle
     @Published var email: String = ""
@@ -22,6 +23,20 @@ class PoolHomeDrawerViewModel: ObservableObject {
     @Published var gamblerCount: Int? = nil
     @Published var deleteState: LoadState<Void> = .idle
 
+    private var cancellables = Set<AnyCancellable>()
+
+    var uiState: PoolHomeDrawerUiState {
+        PoolHomeDrawerUiState(
+            accountId: gamblerId,
+            email: email,
+            username: username,
+            poolGamblerScoreState: state,
+            isOwner: isOwner,
+            gamblerCount: gamblerCount,
+            isDeleting: deleteState.isLoading()
+        )
+    }
+
     init(
         poolId: String,
         gamblerId: String,
@@ -29,7 +44,7 @@ class PoolHomeDrawerViewModel: ObservableObject {
         getPoolGamblerScoreUseCase: GetPoolGamblerScoreUseCase,
         getPoolUseCase: GetPoolUseCase,
         deletePoolUseCase: DeletePoolUseCase,
-        accountStorage: AccountStorage
+        currentAccountModel: CurrentAccountModel
     ) {
         self.poolId = poolId
         self.gamblerId = gamblerId
@@ -37,21 +52,18 @@ class PoolHomeDrawerViewModel: ObservableObject {
         self.getPoolGamblerScoreUseCase = getPoolGamblerScoreUseCase
         self.getPoolUseCase = getPoolUseCase
         self.deletePoolUseCase = deletePoolUseCase
-        self.accountStorage = accountStorage
+        self.currentAccountModel = currentAccountModel
+
+        currentAccountModel.$account
+            .sink { [weak self] account in
+                self?.email = account?.email ?? ""
+                self?.username = account?.username ?? ""
+            }
+            .store(in: &cancellables)
 
         Task {
-            await self.loadAccount()
             await self.loadPoolGamblerScore()
             await self.loadOwnership()
-        }
-    }
-
-    @MainActor
-    func loadAccount() {
-        Task {
-            let bundle = try? await accountStorage.retrieve()
-            self.email = bundle?.email ?? ""
-            self.username = bundle?.username ?? ""
         }
     }
 
@@ -108,10 +120,5 @@ class PoolHomeDrawerViewModel: ObservableObject {
     @MainActor
     func resetDeleteState() {
         deleteState = .idle
-    }
-
-    @MainActor
-    func applyUsername(_ newUsername: String) {
-        self.username = newUsername
     }
 }

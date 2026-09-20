@@ -29,10 +29,12 @@ struct PoolHomeRouter: View {
                 getPoolGamblerScoreUseCase: diResolver.resolve(GetPoolGamblerScoreUseCase.self)!,
                 getPoolUseCase: diResolver.resolve(GetPoolUseCase.self)!,
                 deletePoolUseCase: diResolver.resolve(DeletePoolUseCase.self)!,
-                accountStorage: diResolver.resolve(AccountStorage.self)!
+                currentAccountModel: diResolver.resolve(CurrentAccountModel.self)!
             ),
             usernameEditorViewModel: UsernameEditorViewModel(
-                updateUsernameUseCase: diResolver.resolve(UpdateUsernameUseCase.self)!
+                onSave: { [diResolver] username in
+                    await diResolver.resolve(UpdateUsernameUseCase.self)!.execute(username: username)
+                }
             )
         )
     }
@@ -47,7 +49,6 @@ private struct PoolHomeRouterContent: View {
     @Environment(\.diResolver) private var diResolver: DIResolver
     @State private var path = NavigationPath()
     @State private var drawerVisible = false
-    @State private var isEditingAccount = false
     @State private var inviteUrl: ShareablePoolUrl?
     @StateObject private var drawerViewModel: PoolHomeDrawerViewModel
     @StateObject private var usernameEditorViewModel: UsernameEditorViewModel
@@ -83,19 +84,6 @@ private struct PoolHomeRouterContent: View {
             ),
             onDismiss: {}
         )
-        .minimalDialog(isPresented: $isEditingAccount) {
-            UsernameEditor(
-                initialUsername: drawerViewModel.username,
-                viewModel: usernameEditorViewModel,
-                onSaved: { newUsername in
-                    drawerViewModel.applyUsername(newUsername)
-                    isEditingAccount = false
-                },
-                onDismiss: {
-                    isEditingAccount = false
-                }
-            )
-        }
     }
 
     @ViewBuilder
@@ -172,6 +160,25 @@ private struct PoolHomeRouterContent: View {
                     )
                 )
             }
+            .navigationDestination(for: ProfileRoute.self) { _ in
+                ProfileView(
+                    viewModel: ProfileViewModel(
+                        currentAccountModel: diResolver.resolve(CurrentAccountModel.self)!,
+                        currentAccountCoordinator: diResolver.resolve(CurrentAccountCoordinator.self)!,
+                        onUploadAvatar: { [diResolver] imageData in
+                            await diResolver.resolve(UploadAvatarUseCase.self)!.execute(imageData: imageData)
+                        }
+                    ),
+                    onEditUsername: { path.append(UsernameEditorRoute(accountId: user.accountId)) }
+                )
+            }
+            .navigationDestination(for: UsernameEditorRoute.self) { _ in
+                UsernameEditorDestination(
+                    currentAccountModel: diResolver.resolve(CurrentAccountModel.self)!,
+                    viewModel: usernameEditorViewModel,
+                    onSaved: { _ in path.removeLast() }
+                )
+            }
         }
         .drawer(isShowing: $drawerVisible) {
             PoolHomeDrawerView(
@@ -196,8 +203,9 @@ private struct PoolHomeRouterContent: View {
                     drawerVisible = false
                     onChangePool()
                 },
-                onEditAccount: {
-                    isEditingAccount = true
+                onProfile: {
+                    drawerVisible = false
+                    path.append(ProfileRoute())
                 }
             )
         }
@@ -235,8 +243,14 @@ private func poolHomeFakeResolver() -> DIResolver {
     container.register(UpdateUsernameUseCase.self) { _ in
         UpdateUsernameUseCase.preview()
     }
-    container.register(AccountStorage.self) { _ in
-        PreviewAccountStorage()
+    container.register(CurrentAccountCoordinator.self) { _ in
+        CurrentAccountCoordinator.preview()
+    }
+    container.register(CurrentAccountModel.self) { _ in
+        CurrentAccountModel.preview()
+    }
+    container.register(UploadAvatarUseCase.self) { _ in
+        UploadAvatarUseCase.preview()
     }
     container.register(GetPoolGamblerScoreUseCase.self) { _ in
         GetPoolGamblerScoreUseCase(

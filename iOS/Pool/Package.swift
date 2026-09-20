@@ -25,6 +25,7 @@ let package = Package(
         .package(url: "https://github.com/Swinject/Swinject.git", exact: "2.9.1"),
         .package(url: "https://github.com/felipearpa/lazy-paging-swift.git", exact: "0.0.3"),
         .package(url: "https://github.com/felipearpa/viewing-state-swift.git", from: "0.0.1"),
+        .package(url: "https://github.com/nalexn/ViewInspector", exact: "0.10.2"),
     ],
     targets: [
         // Targets are the basic building blocks of a package. A target can define a module or a test suite.
@@ -48,6 +49,9 @@ let package = Package(
             ]),
         .testTarget(
             name: "PoolTests",
-            dependencies: ["Pool"]),
+            dependencies: [
+                "Pool",
+                "ViewInspector",
+            ]),
     ]
 )

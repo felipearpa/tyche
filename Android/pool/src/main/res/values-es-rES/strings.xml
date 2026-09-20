@@ -34,4 +34,12 @@
     <string name="invite_gamblers_action">Invitar jugadores</string>
     <string name="points_text">%1s pts.</string>
     <string name="gamblers_text">%1s jugadores</string>
+    <string name="leaderboard_you">Tú</string>
+    <string name="leaderboard_rank_accessibility">Puesto %1$d</string>
+    <string name="leaderboard_rank_missing_accessibility">Puesto no disponible</string>
+    <string name="leaderboard_points_accessibility">%1$d puntos</string>
+    <string name="leaderboard_score_missing_accessibility">Puntuación no disponible</string>
+    <string name="leaderboard_movement_up_accessibility">Subió %1$d puestos</string>
+    <string name="leaderboard_movement_down_accessibility">Bajó %1$d puestos</string>
+    <string name="leaderboard_movement_unchanged_accessibility">Puesto sin cambios</string>
 </resources>

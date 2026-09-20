@@ -1,30 +1,39 @@
+import Combine
 import Foundation
 import Session
 
 class PoolScoreListDrawerViewModel : ObservableObject {
     private let logOutUseCase: LogOutUseCase
-    private let accountStorage: AccountStorage
+    private let currentAccountModel: CurrentAccountModel
 
+    @Published var accountId: String = ""
     @Published var email: String = ""
     @Published var username: String = ""
 
-    init(
-        logOutUseCase: LogOutUseCase,
-        accountStorage: AccountStorage
-    ) {
-        self.logOutUseCase = logOutUseCase
-        self.accountStorage = accountStorage
+    private var cancellables = Set<AnyCancellable>()
 
-        Task { await self.loadAccount() }
+    var uiState: PoolScoreListDrawerUiState {
+        PoolScoreListDrawerUiState(
+            accountId: accountId,
+            email: email,
+            username: username
+        )
     }
 
-    @MainActor
-    func loadAccount() {
-        Task {
-            let bundle = try? await accountStorage.retrieve()
-            self.email = bundle?.email ?? ""
-            self.username = bundle?.username ?? ""
-        }
+    init(
+        logOutUseCase: LogOutUseCase,
+        currentAccountModel: CurrentAccountModel
+    ) {
+        self.logOutUseCase = logOutUseCase
+        self.currentAccountModel = currentAccountModel
+
+        currentAccountModel.$account
+            .sink { [weak self] account in
+                self?.accountId = account?.accountId ?? ""
+                self?.email = account?.email ?? ""
+                self?.username = account?.username ?? ""
+            }
+            .store(in: &cancellables)
     }
 
     @MainActor
@@ -32,10 +41,5 @@ class PoolScoreListDrawerViewModel : ObservableObject {
         Task {
             await logOutUseCase.execute()
         }
-    }
-
-    @MainActor
-    func applyUsername(_ newUsername: String) {
-        self.username = newUsername
     }
 }

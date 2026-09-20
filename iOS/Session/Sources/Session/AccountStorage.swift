@@ -1,5 +1,5 @@
 public protocol AccountStorage {
-    func store(accountBundle: AccountBundle) async throws
+    func store(snapshot: CurrentAccountSnapshot) async throws
     func delete() async throws
-    func retrieve() async throws -> AccountBundle?
+    func retrieve() async throws -> CurrentAccountSnapshot?
 }

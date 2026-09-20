@@ -73,4 +73,18 @@ class AuthenticationRemoteRepository: AuthenticationRepository {
             )
         }
     }
+
+    func getCurrentAccount() async -> Result<AccountBundle, Error> {
+        return await networkErrorHandler.handle {
+            let currentAccountResponse = try await authenticationRemoteDataSource.getCurrentAccount()
+            return AccountBundle(
+                accountId: currentAccountResponse.accountId,
+                externalAccountId: currentAccountResponse.externalAccountId,
+                email: currentAccountResponse.email,
+                username: currentAccountResponse.username?.isEmpty == false
+                    ? currentAccountResponse.username!
+                    : currentAccountResponse.email
+            )
+        }
+    }
 }

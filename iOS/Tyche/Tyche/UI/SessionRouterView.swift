@@ -12,6 +12,7 @@ struct SessionRouterView: View {
     @State private var signedInAccountBundle: AccountBundle?? = nil
     @State var universalLink: URL? = nil
     @Environment(\.diResolver) var diResolver: DIResolver
+    @Environment(\.scenePhase) private var scenePhase
 
     var body: some View {
         ZStack {
@@ -72,8 +73,15 @@ struct SessionRouterView: View {
             }
         }
         .task {
-            let accountStorage = diResolver.resolve(AccountStorage.self)!
-            signedInAccountBundle = try? await accountStorage.retrieve()
+            let coordinator = diResolver.resolve(CurrentAccountCoordinator.self)!
+            let account = await coordinator.hydrate()
+            signedInAccountBundle = .some(account)
+            await coordinator.refresh(trigger: .coldStart)
+        }
+        .onChange(of: scenePhase) { newPhase in
+            guard newPhase == .active else { return }
+            let coordinator = diResolver.resolve(CurrentAccountCoordinator.self)!
+            Task { await coordinator.refresh(trigger: .foreground) }
         }
         .onOpenURL { url in
             if GIDSignIn.sharedInstance.handle(url) { return }

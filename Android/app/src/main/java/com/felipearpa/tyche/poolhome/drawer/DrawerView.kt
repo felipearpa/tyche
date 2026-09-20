@@ -14,16 +14,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.VerticalDivider
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -41,7 +38,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.felipearpa.tyche.AccountHeaderDrawer
 import com.felipearpa.tyche.DrawerButtonRow
 import com.felipearpa.tyche.R
-import com.felipearpa.tyche.UsernameEditor
 import com.felipearpa.tyche.pool.PoolGamblerScoreModel
 import com.felipearpa.tyche.pool.poolGamblerScoreDummyModel
 import com.felipearpa.tyche.pool.poolGamblerScorePlaceholderModel
@@ -51,9 +47,7 @@ import com.felipearpa.tyche.ui.exception.localizedOrDefault
 import com.felipearpa.tyche.ui.shimmer
 import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
 import com.felipearpa.tyche.ui.theme.TycheTheme
-import com.felipearpa.tyche.usernameEditorViewModel
 import com.felipearpa.ui.state.LoadState
-import com.felipearpa.ui.state.isSaving
 import com.felipearpa.tyche.ui.R as SharedR
 
 @Composable
@@ -65,23 +59,13 @@ fun DrawerView(
     onManageGamblers: () -> Unit,
     onPoolDeleting: () -> Unit,
     onPoolDeleted: () -> Unit,
+    onProfile: () -> Unit,
 ) {
-    val email by viewModel.email.collectAsStateWithLifecycle()
-    val username by viewModel.username.collectAsStateWithLifecycle()
-    val poolGamblerScoreState by viewModel.state.collectAsStateWithLifecycle()
-    val isOwner by viewModel.isOwner.collectAsStateWithLifecycle()
-    val gamblerCount by viewModel.gamblerCount.collectAsStateWithLifecycle()
-    val deleteState by viewModel.deleteState.collectAsStateWithLifecycle()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     DrawerView(
-        email = email,
-        username = username,
-        onUsernameSaved = viewModel::applyUsername,
+        uiState = uiState,
         onCloseDrawer = onCloseDrawer,
-        poolGamblerScoreState = poolGamblerScoreState,
-        isOwner = isOwner,
-        gamblerCount = gamblerCount,
-        isDeleting = deleteState.isSaving(),
         logout = {
             viewModel.logout()
             onSignOut()
@@ -92,41 +76,35 @@ fun DrawerView(
             onPoolDeleting()
             viewModel.deletePool(onSuccess = onPoolDeleted)
         },
+        onProfile = onProfile,
         modifier = Modifier.fillMaxSize(),
     )
 }
 
-
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun DrawerView(
-    email: String,
-    username: String,
-    onUsernameSaved: (String) -> Unit,
+    uiState: PoolHomeDrawerUiState,
     onCloseDrawer: () -> Unit,
-    poolGamblerScoreState: LoadState<PoolGamblerScoreModel>,
-    isOwner: Boolean,
-    gamblerCount: Int?,
-    isDeleting: Boolean,
     modifier: Modifier = Modifier,
     logout: () -> Unit = {},
     onInvite: () -> Unit = {},
     onManageGamblers: () -> Unit = {},
     onConfirmDelete: () -> Unit = {},
+    onProfile: () -> Unit = {},
 ) {
     var isConfirmingDelete by remember { mutableStateOf(false) }
-    var isEditingAccount by remember { mutableStateOf(false) }
 
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.medium),
     ) {
         AccountHeaderDrawer(
-            username = username,
-            email = email,
-            onEditAccount = {
+            accountId = uiState.accountId,
+            username = uiState.username,
+            email = uiState.email,
+            onProfile = {
                 onCloseDrawer()
-                isEditingAccount = true
+                onProfile()
             },
             modifier = Modifier
                 .fillMaxWidth()
@@ -136,16 +114,16 @@ private fun DrawerView(
         )
 
         PoolLayout(
-            poolGamblerScoreState = poolGamblerScoreState,
+            poolGamblerScoreState = uiState.poolGamblerScoreState,
             modifier = Modifier.fillMaxWidth(),
         )
 
         PoolMenuSection(
-            isOwner = isOwner,
-            isDeleting = isDeleting,
+            isOwner = uiState.isOwner,
+            isDeleting = uiState.isDeleting,
             onInvite = onInvite,
             onDeletePool = { isConfirmingDelete = true },
-            gamblerCount = gamblerCount,
+            gamblerCount = uiState.gamblerCount,
             onManageGamblers = {
                 onCloseDrawer()
                 onManageGamblers()
@@ -155,7 +133,6 @@ private fun DrawerView(
                 .padding(horizontal = LocalBoxSpacing.current.medium)
                 .padding(top = LocalBoxSpacing.current.medium),
         )
-
 
         Spacer(modifier = Modifier.weight(1f))
 
@@ -175,28 +152,6 @@ private fun DrawerView(
             },
             onDismiss = { isConfirmingDelete = false },
         )
-    }
-
-    if (isEditingAccount) {
-        val editorViewModel = usernameEditorViewModel()
-        val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-
-        ModalBottomSheet(
-            onDismissRequest = { isEditingAccount = false },
-            sheetState = sheetState,
-            modifier = Modifier.fillMaxSize(),
-        ) {
-            UsernameEditor(
-                initialUsername = username,
-                viewModel = editorViewModel,
-                onSaved = { saved ->
-                    onUsernameSaved(saved)
-                    isEditingAccount = false
-                },
-                onDismiss = { isEditingAccount = false },
-                modifier = Modifier.fillMaxSize(),
-            )
-        }
     }
 }
 
@@ -222,7 +177,6 @@ private fun PoolLayout(
         is LoadState.Failure ->
             ExceptionView(localizedException = poolGamblerScoreState.exception.localizedOrDefault())
     }
-
 
 }
 
@@ -313,8 +267,6 @@ private fun PoolMenuSection(
         Text(
             text = stringResource(id = R.string.pool_section_title).uppercase(),
             style = MaterialTheme.typography.bodySmall,
-            // Match iOS, which uses the muted system `Color.secondary` for the section header
-            // rather than the near-solid `onSurfaceVariant`.
             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
         )
 
@@ -418,20 +370,30 @@ private fun SignOutButton(onSignOut: () -> Unit, modifier: Modifier = Modifier) 
     }
 }
 
+private fun drawerPreviewUiState(
+    poolGamblerScoreState: LoadState<PoolGamblerScoreModel>,
+    isOwner: Boolean,
+) = PoolHomeDrawerUiState(
+    accountId = "account-1",
+    email = "felipearpa@email.com",
+    username = "felipearpa",
+    poolGamblerScoreState = poolGamblerScoreState,
+    isOwner = isOwner,
+    gamblerCount = 19,
+    isDeleting = false,
+)
+
 @PreviewLightDark
 @Composable
 private fun DrawerViewPreview() {
     TycheTheme {
         Surface {
             DrawerView(
-                email = "felipearpa@email.com",
-                username = "felipearpa",
-                onUsernameSaved = {},
+                uiState = drawerPreviewUiState(
+                    poolGamblerScoreState = LoadState.Loaded(poolGamblerScoreDummyModel()),
+                    isOwner = true,
+                ),
                 onCloseDrawer = {},
-                poolGamblerScoreState = LoadState.Loaded(poolGamblerScoreDummyModel()),
-                isOwner = true,
-                gamblerCount = 19,
-                isDeleting = false,
                 modifier = Modifier.fillMaxSize(),
             )
         }
@@ -444,14 +406,11 @@ private fun DrawerViewNonOwnerPreview() {
     TycheTheme {
         Surface {
             DrawerView(
-                email = "felipearpa@email.com",
-                username = "felipearpa",
-                onUsernameSaved = {},
+                uiState = drawerPreviewUiState(
+                    poolGamblerScoreState = LoadState.Loaded(poolGamblerScoreDummyModel()),
+                    isOwner = false,
+                ),
                 onCloseDrawer = {},
-                poolGamblerScoreState = LoadState.Loaded(poolGamblerScoreDummyModel()),
-                isOwner = false,
-                gamblerCount = 19,
-                isDeleting = false,
                 modifier = Modifier.fillMaxSize(),
             )
         }
@@ -462,14 +421,11 @@ private fun DrawerViewNonOwnerPreview() {
 @Composable
 private fun DrawerViewWithoutPositionPreview() {
     DrawerView(
-        email = "felipearpa@email.com",
-        username = "felipearpa",
-        onUsernameSaved = {},
+        uiState = drawerPreviewUiState(
+            poolGamblerScoreState = LoadState.Loaded(poolGamblerScoreWithoutPositionDummyModel()),
+            isOwner = true,
+        ),
         onCloseDrawer = {},
-        poolGamblerScoreState = LoadState.Loaded(poolGamblerScoreWithoutPositionDummyModel()),
-        isOwner = true,
-        gamblerCount = 19,
-        isDeleting = false,
         modifier = Modifier.fillMaxSize(),
     )
 }
@@ -480,14 +436,11 @@ private fun LoadingDrawerViewPreview() {
     TycheTheme {
         Surface {
             DrawerView(
-                email = "felipearpa@email.com",
-                username = "felipearpa",
-                onUsernameSaved = {},
+                uiState = drawerPreviewUiState(
+                    poolGamblerScoreState = LoadState.Loading,
+                    isOwner = true,
+                ),
                 onCloseDrawer = {},
-                poolGamblerScoreState = LoadState.Loading,
-                isOwner = true,
-                gamblerCount = 19,
-                isDeleting = false,
                 modifier = Modifier.fillMaxSize(),
             )
         }

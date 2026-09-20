@@ -16,20 +16,16 @@ class UsernameEditorViewModel(
         MutableStateFlow<SaveState<String>>(SaveState.Idle)
     val saveState: StateFlow<SaveState<String>> = _saveState.asStateFlow()
 
-    private var lastAttempt: String? = null
-
     fun save(newUsername: String) {
         if (_saveState.value is SaveState.Saving) return
         val trimmed = newUsername.trim()
         if (trimmed.isEmpty()) return
-        lastAttempt = trimmed
         performSave(trimmed)
     }
 
     fun retry() {
-        val attempt = lastAttempt ?: return
-        if (_saveState.value is SaveState.Saving) return
-        performSave(attempt)
+        val failure = _saveState.value as? SaveState.Failure ?: return
+        performSave(failure.value)
     }
 
     fun resetError() {
@@ -40,7 +36,6 @@ class UsernameEditorViewModel(
 
     fun reset() {
         _saveState.value = SaveState.Idle
-        lastAttempt = null
     }
 
     private fun performSave(username: String) {

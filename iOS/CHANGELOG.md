@@ -2,10 +2,16 @@
 
 ## 2.0.0
 
+- Add a profile picture: pick a photo or take one, crop it to fit, and it appears in the menu button wherever your account shows
+- Redesigned pool leaderboard: every player shows their photo or a colored initial next to a clearer rank, trend, and score, and your own row is highlighted as You
+- New Profile screen, reached from the drawer, where you can change your photo and edit your username in one place
+- A live preview shows how you will appear on the leaderboard while you type a new username, with a character counter, and Save turns on only when the name actually changes
+- A new photo shows up everywhere in the app right away, and a username changed on another device catches up on its own
 - Your pool list now shows your points and how many members each pool has, so you can compare pools at a glance
 - Your ranking trend now appears right under your position in the pool list
 - Brand-new app icon with a Liquid Glass look
 - Refreshed splash screen logo
+- The leaderboard's loading state now mirrors the real rows
 
 ## 1.7.2
 

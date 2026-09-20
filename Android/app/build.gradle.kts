@@ -70,6 +70,11 @@ android {
     buildFeatures {
         buildConfig = true
     }
+    testOptions {
+        unitTests.all { test ->
+            test.useJUnitPlatform()
+        }
+    }
     packaging {
         jniLibs {
             excludes.add("/META-INF/{AL2.0,LGPL2.1}")
@@ -108,10 +113,18 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.felipearpa.foundation)
     implementation(libs.kotlinx.datetime)
+    implementation(libs.coil.compose)
+    implementation(libs.coil.network.okhttp)
+    implementation(libs.coil.network.cache.control)
 
     testImplementation(libs.junit)
+    testImplementation(platform(libs.junit5.bom))
+    testImplementation(libs.junit5.jupiter)
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.io.mockk)
+    testImplementation(libs.kotest.assertions.core)
+
+    testRuntimeOnly(libs.bundles.junit5.runtime)
 
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.espresso.core)

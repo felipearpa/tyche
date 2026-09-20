@@ -52,6 +52,86 @@
                ReferencedContainer = "container:Tyche.xcodeproj">
             </BuildableReference>
          </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "AccountTests"
+               BuildableName = "AccountTests"
+               BlueprintName = "AccountTests"
+               ReferencedContainer = "container:../Account">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "BetTests"
+               BuildableName = "BetTests"
+               BlueprintName = "BetTests"
+               ReferencedContainer = "container:../Bet">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "CoreTests"
+               BuildableName = "CoreTests"
+               BlueprintName = "CoreTests"
+               ReferencedContainer = "container:../Core">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "DataBetTests"
+               BuildableName = "DataBetTests"
+               BlueprintName = "DataBetTests"
+               ReferencedContainer = "container:../DataBet">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "DataPoolTests"
+               BuildableName = "DataPoolTests"
+               BlueprintName = "DataPoolTests"
+               ReferencedContainer = "container:../DataPool">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "PoolTests"
+               BuildableName = "PoolTests"
+               BlueprintName = "PoolTests"
+               ReferencedContainer = "container:../Pool">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "SessionTests"
+               BuildableName = "SessionTests"
+               BlueprintName = "SessionTests"
+               ReferencedContainer = "container:../Session">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "UITests"
+               BuildableName = "UITests"
+               BlueprintName = "UITests"
+               ReferencedContainer = "container:../UI">
+            </BuildableReference>
+         </TestableReference>
       </Testables>
    </TestAction>
    <LaunchAction

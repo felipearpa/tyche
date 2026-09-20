@@ -2,11 +2,14 @@ import Core
 
 public class SignInWithGoogleUseCase {
     let authenticationRepository: AuthenticationRepository
-    let accountStorage: AccountStorage
+    let currentAccountCoordinator: CurrentAccountCoordinator
 
-    init(authenticationRepository: AuthenticationRepository, accountStorage: AccountStorage) {
+    init(
+        authenticationRepository: AuthenticationRepository,
+        currentAccountCoordinator: CurrentAccountCoordinator
+    ) {
         self.authenticationRepository = authenticationRepository
-        self.accountStorage = accountStorage
+        self.currentAccountCoordinator = currentAccountCoordinator
     }
 
     public func execute(idToken: String, accessToken: String) async -> Result<AccountBundle, Error> {
@@ -27,7 +30,7 @@ public class SignInWithGoogleUseCase {
         }
 
         do {
-            try await accountStorage.store(accountBundle: accountBundle)
+            try await currentAccountCoordinator.install(account: accountBundle)
         } catch {
             return Result.failure(error)
         }

@@ -8,6 +8,7 @@ import com.felipearpa.tyche.session.AccountStorage
 import com.felipearpa.tyche.session.AccountStorageInKeyStore
 import com.felipearpa.tyche.session.AuthTokenFirebaseRetriever
 import com.felipearpa.tyche.session.AuthTokenRetriever
+import com.felipearpa.tyche.session.CurrentAccountCoordinator
 import com.google.firebase.auth.FirebaseAuth
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.okhttp.OkHttp
@@ -38,6 +39,13 @@ val sessionModule = module {
                 key = ACCOUNT_KEY,
                 filename = ACCOUNT_FILE_NAME,
             ),
+        )
+    }
+
+    single {
+        CurrentAccountCoordinator(
+            accountStorage = get(),
+            authenticationRepository = get(),
         )
     }
 

@@ -9,6 +9,7 @@ import com.felipearpa.tyche.bet.timeline.BetTimelineListViewRoute
 import com.felipearpa.tyche.home.HomeRoute
 import com.felipearpa.tyche.pool.managegamblers.ManageGamblersRoute
 import com.felipearpa.tyche.pool.poolscore.PoolScoreListRoute
+import com.felipearpa.tyche.profile.ProfileRoute
 
 fun NavGraphBuilder.poolHomeNavView(
     navController: NavController,
@@ -37,6 +38,7 @@ fun NavGraphBuilder.poolHomeNavView(
                     ),
                 )
             },
+            onProfile = { navController.navigate(route = ProfileRoute) },
             onGamblerOpen = { _, tappedGamblerId, tappedGamblerUsername ->
                 if (tappedGamblerId != route.gamblerId) {
                     navController.navigate(

@@ -45,20 +45,9 @@ jobs:
             -workspace "$WORKSPACE" \
             -scheme "$SCHEME"
 
-      - name: Test Swift packages
-        run: |
-          for pkg in Account Bet Core DataBet DataPool Pool Session UI; do
-            echo "▶ Testing package $pkg"
-            (
-              cd "$pkg" && \
-              xcodebuild test \
-                -scheme "$pkg" \
-                -destination "$DESTINATION" \
-                CODE_SIGNING_ALLOWED=NO \
-                CODE_SIGNING_REQUIRED=NO
-            ) || exit 1
-          done
-
+      # The Tyche scheme tests every package bundle alongside TycheTests, so the
+      # shared dependencies (Firebase and friends) compile once instead of once
+      # per package.
       - name: Run unit tests
         run: |
           set -o pipefail
@@ -66,6 +55,7 @@ jobs:
             -workspace "$WORKSPACE" \
             -scheme "$SCHEME" \
             -destination "$DESTINATION" \
+            -disableAutomaticPackageResolution \
             -skip-testing:TycheUITests \
             CODE_SIGNING_ALLOWED=NO \
             CODE_SIGNING_REQUIRED=NO

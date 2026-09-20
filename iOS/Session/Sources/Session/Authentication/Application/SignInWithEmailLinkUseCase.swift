@@ -2,19 +2,22 @@ import Core
 
 public class SignInWithEmailLinkUseCase {
     let authenticationRepository: AuthenticationRepository
-    let accountStorage: AccountStorage
-    
-    init(authenticationRepository: AuthenticationRepository, accountStorage: AccountStorage) {
+    let currentAccountCoordinator: CurrentAccountCoordinator
+
+    init(
+        authenticationRepository: AuthenticationRepository,
+        currentAccountCoordinator: CurrentAccountCoordinator
+    ) {
         self.authenticationRepository = authenticationRepository
-        self.accountStorage = accountStorage
+        self.currentAccountCoordinator = currentAccountCoordinator
     }
-    
+
     public func execute(email: Email, emailLink: String) async -> Result<AccountBundle, Error> {
         let signInResult = await authenticationRepository.signInWithEmailLink(email: email.value, emailLink: emailLink)
         guard case .success(let externalAccountId) = signInResult else {
             return Result.failure(signInResult.errorOrNil()!)
         }
-        
+
         let linkAccountResult = await authenticationRepository.linkAccount(
             accountLink: AccountLink(email: email, externalAccountId: externalAccountId)
         )
@@ -23,11 +26,11 @@ public class SignInWithEmailLinkUseCase {
         }
 
         do {
-            try await accountStorage.store(accountBundle: accountBundle)
+            try await currentAccountCoordinator.install(account: accountBundle)
         } catch {
             return Result.failure(error)
         }
-        
+
         return Result.success(accountBundle)
     }
 }

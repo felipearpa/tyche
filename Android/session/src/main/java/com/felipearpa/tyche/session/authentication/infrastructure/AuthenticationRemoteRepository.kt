@@ -83,4 +83,16 @@ internal class AuthenticationRemoteRepository(
                 request = UpdateUsernameRequest(accountId = accountId, username = username),
             )
         }
+
+    override suspend fun getCurrentAccount(): Result<AccountBundle> =
+        networkExceptionHandler.handle {
+            authenticationDataSource.getCurrentAccount().run {
+                AccountBundle(
+                    accountId = this.accountId,
+                    externalAccountId = this.externalAccountId,
+                    email = this.email,
+                    storedUsername = this.username?.takeIf { it.isNotEmpty() } ?: this.email,
+                )
+            }
+        }
 }

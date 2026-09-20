@@ -10,6 +10,8 @@
         <Compile Include="Domain\Account.fs" />
         <Compile Include="Domain\AccountLink.fs" />
         <Compile Include="Domain\IAccountRepository.fs" />
+        <Compile Include="Domain\Avatar.fs" />
+        <Compile Include="Domain\IAvatarStorage.fs" />
         <Compile Include="Domain\AccountDictionaryTransformer.fs" />
         <Compile Include="Infrastructure\UpdateLinkRequestBuilder.fs" />
         <Compile Include="Infrastructure\UpdateUsernameRequestBuilder.fs" />
@@ -17,12 +19,21 @@
         <Compile Include="Infrastructure\GetByEmailRequestBuilder.fs" />
         <Compile Include="Infrastructure\GetByIdRequestBuilder.fs" />
         <Compile Include="Infrastructure\AccountDynamoDbRepository.fs" />
+        <Compile Include="Infrastructure\AvatarBucket.fs" />
+        <Compile Include="Infrastructure\AvatarUploadUrlRequestBuilder.fs" />
+        <Compile Include="Infrastructure\AvatarS3Storage.fs" />
         <Compile Include="Application\IGetAccountById.fs" />
         <Compile Include="Application\GetAccountById.fs" />
         <Compile Include="Application\LinkAccountInput.fs" />
         <Compile Include="Application\LinkAccountTransformer.fs" />
         <Compile Include="Application\LinkAccount.fs" />
         <Compile Include="Application\UpdateUsernameInput.fs" />
+        <Compile Include="Application\IssueAvatarUploadUrlInput.fs" />
+        <Compile Include="Application\IssueAvatarUploadUrl.fs" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="AWSSDK.S3" Version="4.0.7.5" />
     </ItemGroup>
 
     <ItemGroup>
