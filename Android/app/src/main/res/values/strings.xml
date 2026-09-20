@@ -40,4 +40,5 @@
     <string name="username_save_network_error">Username not saved. Check your connection and try again.</string>
     <string name="username_save_unknown_error">Username not saved. Try again.</string>
     <string name="username_saving_accessibility">Saving username</string>
+    <string name="navigate_back_action">Back</string>
 </resources>

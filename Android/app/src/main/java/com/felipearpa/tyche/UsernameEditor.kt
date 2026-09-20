@@ -79,7 +79,7 @@ fun UsernameEditor(
 }
 
 @Composable
-private fun UsernameEditor(
+internal fun UsernameEditor(
     accountId: String,
     initialUsername: String,
     saveState: SaveState<String>,

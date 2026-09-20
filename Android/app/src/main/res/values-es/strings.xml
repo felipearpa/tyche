@@ -40,4 +40,5 @@
     <string name="username_save_network_error">No se guardó el nombre de usuario. Revisa tu conexión e inténtalo de nuevo.</string>
     <string name="username_save_unknown_error">No se guardó el nombre de usuario. Inténtalo de nuevo.</string>
     <string name="username_saving_accessibility">Guardando nombre de usuario</string>
+    <string name="navigate_back_action">Atrás</string>
 </resources>

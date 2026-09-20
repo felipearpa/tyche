@@ -1,5 +1,9 @@
 ## Context
 
+This change was reopened on 2026-09-19 to implement the visible Android back button already approved in the Profile specification. The original live-preview redesign and shared `SaveState` work are complete; their context and decisions are retained below. Only the new unchecked Android back-navigation tasks remain. The follow-up uses the current account and avatar integrations.
+
+### Original redesign context
+
 Fortuna's Profile screen pushes a dedicated username route, but the reused `UsernameEditor` still has the structure of its former modal: title, explanatory sentence, one text field, and generic Save/Cancel buttons. It validates a trimmed non-empty value, clamps input to 100 graphemes, calls the existing account update use case, supports retry, and dismisses after success. Android models that save lifecycle with the shared ViewingState `SaveState<String>`, while iOS currently uses the load-oriented `LoadState<String>`.
 
 Fortuna already has a distinctive representation of a gambler in pool standings: `GamblerScoreItem` in the Pool module on both platforms. It owns the rank rail, account avatar, username truncation, current-user marker, score, theme behavior, and accessibility description. Android exposes the composable to the app module. On iOS, the view and the memberwise initializer of `PoolGamblerScoreModel` are currently module-internal even though the model type and properties are public.
@@ -15,6 +19,7 @@ The subject is a football-pool identity editor for signed-in gamblers. Its singl
 - Make the 100-grapheme constraint and save eligibility visible.
 - Give validation, saving, failure, retry, and success states clear behavior and accessible copy.
 - Preserve the existing account update API, storage, and propagation behavior.
+- Provide a visible Android back button that discards unsaved edits and follows the existing save lifecycle.
 
 **Non-Goals:**
 
@@ -77,7 +82,15 @@ The content remains a single scrollable column and uses existing spacing tokens.
 
 On each new presentation of the Username screen, both platforms populate the field before requesting focus and place a collapsed insertion caret immediately after the final character of the stored username. An empty username places the caret at position `0`. This initialization is one-shot for that screen presentation: recomposition, preview updates, validation, or `SaveState` transitions do not request focus again or move the caret. After initialization, the gambler owns the selection and may move the caret or select text without the editor resetting it.
 
-There is no second Cancel button: this is a pushed screen, so the platform back action is the cancellation affordance.
+The pushed screen uses back navigation to cancel editing. On Android, the username route's `Scaffold` hosts a top app bar with the existing localized Username title and a leading back icon button. The bar stays visible while the content scrolls and while the keyboard is open. It uses the existing screen insets and spacing so the preview, field, and in-flow save action remain reachable. iOS retains its existing system-rendered navigation back control.
+
+When no save is in progress, the Android button navigates directly back to Profile and discards the local draft. This is available for unchanged, changed, empty, and failed drafts. The action does not call save or retry and does not update account storage; reopening the editor seeds the field from the stored username.
+
+Keeping the bar visible with the keyboard open needs one window-level adjustment. The activity is edge to edge but keeps the platform's default soft-input mode, which a Compose window resolves to panning: on a small viewport or at a large font scale the keyboard slides the whole window up and carries the top app bar off screen. The route therefore asks for `SOFT_INPUT_ADJUST_RESIZE` while it is on screen and restores the previous mode when it leaves, so the editor's existing IME padding and scrolling do the work and no other screen's keyboard behavior changes. The restore writes the window attributes directly, because `Window.setSoftInputMode` ignores a mode of `0` — the platform default this screen has to put back.
+
+The route and editor observe the same `UsernameEditorViewModel` instance and its shared `SaveState<String>`. During saving, the top-app-bar button remains visible but disabled, its navigation callback cannot leave the route, and the existing system-back guard remains active. Failure enables both back paths again; success keeps the existing return-to-Profile behavior.
+
+The app-rendered back icon prefers a semantically accurate Material Symbol and uses a committed canonical vector source. A custom icon is allowed when no semantically accurate Material Symbol exists. Any app-rendered iOS and Android variants derive from that same source; controls rendered entirely by the operating system are excluded. Reuse the existing back-icon asset when it satisfies this contract.
 
 Visual tokens are existing theme values, not new hard-coded component colors:
 
@@ -164,6 +177,8 @@ The production `GamblerScoreItem` keeps its combined accessibility description, 
 
 The text field exposes its label, helper or validation message, and grapheme count. Progress is announced as "Saving username". Dynamic Type/font scaling, TalkBack, VoiceOver, light mode, and dark mode use the existing platform/theme behavior.
 
+The Android top-app-bar back button exposes the existing localized back-navigation label, a button action, and its disabled state to TalkBack. Keyboard visibility and editor scrolling do not hide the control.
+
 ## Risks / Trade-offs
 
 - [Illustrative rank, movement, and score may be mistaken for current data] → Label the section "Pool preview" and "Live", never fetch data, and document the fixed values in tests.
@@ -171,10 +186,13 @@ The text field exposes its label, helper or validation message, and grapheme cou
 - [The production row may change height or content later] → Host it in a scrollable column and deliberately inherit future row changes so the preview remains truthful.
 - [Long localized copy or large accessibility text may push the action below the fold] → Keep normal document flow and scrolling; do not pin or overlay the button.
 - [Preview accessibility could become noisy during typing] → Update semantics without using an assertive/live announcement.
+- [The toolbar and editor could disagree about an in-flight save] → Observe the same view-model instance and derive back-navigation eligibility from its shared save state; verify that neither the toolbar nor system back leaves while saving.
 
 ## Migration Plan
 
 No data or backend migration is required. Ship both native redesigns independently behind their existing Profile navigation. Rollback restores the previous editor layout without changing stored account data or API compatibility.
+
+For the reopened follow-up, deliver the Android navigation correction and its regression checks. Keep the completed original task history, finish the new back-navigation tasks, and validate the change before archiving it again. The Profile delta includes the approved back-button requirements already present in the main specification, along with the existing username-editing and drawer-refresh scenarios so a later sync preserves the complete requirement.
 
 ## Open Questions
 
