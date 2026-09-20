@@ -360,6 +360,7 @@ private final class FetchStub: @unchecked Sendable {
 
     func releaseGate() {
         lock.lock()
+        gated = false
         let continuations = gateContinuations
         gateContinuations = []
         lock.unlock()
@@ -377,8 +378,14 @@ private final class FetchStub: @unchecked Sendable {
         if shouldGate {
             await withCheckedContinuation { continuation in
                 lock.lock()
-                gateContinuations.append(continuation)
+                let isStillGated = gated
+                if isStillGated {
+                    gateContinuations.append(continuation)
+                }
                 lock.unlock()
+                if !isStillGated {
+                    continuation.resume()
+                }
             }
         }
 
