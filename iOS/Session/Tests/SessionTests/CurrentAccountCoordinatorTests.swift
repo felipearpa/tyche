@@ -237,12 +237,16 @@ private func snapshot(username: String, validatedAt: Date?) -> CurrentAccountSna
 
 private func waitUntil(
     timeoutTicks: Int = 2000,
-    _ condition: @escaping () -> Bool
+    _ condition: @escaping () -> Bool,
+    sourceLocation: SourceLocation = #_sourceLocation
 ) async {
     var ticks = 0
     while !condition() && ticks < timeoutTicks {
         await Task.yield()
         ticks += 1
+    }
+    if !condition() {
+        Issue.record("Condition was not met within \(timeoutTicks) ticks.", sourceLocation: sourceLocation)
     }
 }
 
@@ -314,36 +318,80 @@ private final class FakeAccountStorage: AccountStorage, @unchecked Sendable {
 }
 
 private final class ControllableAuthenticationRepository: AuthenticationRepository, @unchecked Sendable {
-    var currentAccountResults: [Result<AccountBundle, Error>] = []
-    var updateUsernameResult: Result<Void, Error> = .success(())
-    var gateCurrentAccount = false
-
-    private(set) var currentAccountCallCount = 0
-    private(set) var updatedUsernames: [Update] = []
+    private let lock = NSLock()
+    private var results: [Result<AccountBundle, Error>] = []
+    private var updateResult: Result<Void, Error> = .success(())
+    private var gated = false
     private var gateContinuations: [CheckedContinuation<Void, Never>] = []
+    private var callCount = 0
+    private var updates: [Update] = []
 
+    var currentAccountResults: [Result<AccountBundle, Error>] {
+        get { locked { results } }
+        set { locked { results = newValue } }
+    }
+
+    var updateUsernameResult: Result<Void, Error> {
+        get { locked { updateResult } }
+        set { locked { updateResult = newValue } }
+    }
+
+    var gateCurrentAccount: Bool {
+        get { locked { gated } }
+        set { locked { gated = newValue } }
+    }
+
+    var currentAccountCallCount: Int { locked { callCount } }
+
+    var updatedUsernames: [Update] { locked { updates } }
+
+    /// Opens the gate for the calls already waiting and for any call that reaches it
+    /// afterwards, so a request that suspends just as the test lets it through is never
+    /// stranded on a continuation nobody resumes.
     func releaseCurrentAccountGate() {
+        lock.lock()
+        gated = false
         let continuations = gateContinuations
         gateContinuations = []
+        lock.unlock()
         for continuation in continuations {
             continuation.resume()
         }
     }
 
     func getCurrentAccount() async -> Result<AccountBundle, Error> {
-        currentAccountCallCount += 1
-        if gateCurrentAccount {
-            await withCheckedContinuation { gateContinuations.append($0) }
+        lock.lock()
+        callCount += 1
+        let shouldGate = gated
+        lock.unlock()
+
+        if shouldGate {
+            await withCheckedContinuation { continuation in
+                lock.lock()
+                let isStillGated = gated
+                if isStillGated {
+                    gateContinuations.append(continuation)
+                }
+                lock.unlock()
+                if !isStillGated {
+                    continuation.resume()
+                }
+            }
         }
-        if currentAccountResults.isEmpty {
-            return .success(bundle(username: "default"))
+
+        return locked {
+            if results.isEmpty {
+                return .success(bundle(username: "default"))
+            }
+            return results.removeFirst()
         }
-        return currentAccountResults.removeFirst()
     }
 
     func updateUsername(accountId: String, username: String) async -> Result<Void, Error> {
-        updatedUsernames.append(Update(accountId: accountId, username: username))
-        return updateUsernameResult
+        locked {
+            updates.append(Update(accountId: accountId, username: username))
+            return updateResult
+        }
     }
 
     func sendSignInLinkToEmail(email: String) async -> Result<Void, Error> { .success(()) }
@@ -355,6 +403,12 @@ private final class ControllableAuthenticationRepository: AuthenticationReposito
     func logOut() async -> Result<Void, Error> { .success(()) }
     func linkAccount(accountLink: AccountLink) async -> Result<AccountBundle, Error> {
         .success(bundle(username: "linked"))
+    }
+
+    private func locked<T>(_ body: () -> T) -> T {
+        lock.lock()
+        defer { lock.unlock() }
+        return body()
     }
 }
 
