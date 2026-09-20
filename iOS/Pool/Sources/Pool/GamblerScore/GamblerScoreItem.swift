@@ -33,7 +33,7 @@ public struct GamblerScoreItem: View {
         .frame(maxWidth: .infinity, minHeight: rowMinimumHeight)
         .background(rowBackground)
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel(isPlaceholder ? "" : accessibilityLabel)
+        .accessibilityLabel(accessibilityLabel)
         .accessibilityHidden(isPlaceholder)
     }
 
@@ -154,7 +154,13 @@ public struct GamblerScoreItem: View {
             : Color(sharedResource: .onSurface)
     }
 
-    private var accessibilityLabel: String {
+    /// The exact string handed to `.accessibilityLabel` in `body`. A placeholder row
+    /// contributes no VoiceOver text, so it resolves to the empty string.
+    var accessibilityLabel: String {
+        isPlaceholder ? "" : loadedAccessibilityLabel
+    }
+
+    private var loadedAccessibilityLabel: String {
         [
             rankAccessibilityText,
             poolGamblerScore.gamblerUsername,
