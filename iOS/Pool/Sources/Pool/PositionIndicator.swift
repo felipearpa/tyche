@@ -35,6 +35,13 @@ public struct PostionIndicator: View {
             Text(position.map(String.init) ?? "—")
                 .font(font)
                 .monospacedDigit()
+                // The box is a fixed size but the font scales with Dynamic Type, so at
+                // accessibility sizes the digit would outgrow it and be cut off by the
+                // `clipShape` below. Shrinking to fit keeps it whole; callers that can
+                // afford to grow the box pass a scaled `size` as well.
+                .lineLimit(1)
+                .minimumScaleFactor(digitMinimumScaleFactor)
+                .padding(.horizontal, digitHorizontalPadding)
         }
         .frame(width: size, height: size)
         .background {
@@ -50,6 +57,9 @@ public struct PostionIndicator: View {
         .foregroundStyle(resolvedForegroundColor)
         .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
     }
+
+    private var digitMinimumScaleFactor: CGFloat { 0.5 }
+    private var digitHorizontalPadding: CGFloat { 2 }
 
     private var resolvedBackgroundColor: Color {
         backgroundColor

@@ -97,21 +97,69 @@
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%lld members"
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld member"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld members"
+                }
+              }
+            }
           }
         },
         "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%lld jugadores"
+          "variations" : {
+            "plural" : {
+              "many" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld jugadores"
+                }
+              },
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld jugador"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld jugadores"
+                }
+              }
+            }
           }
         },
         "es-ES" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%lld jugadores"
+          "variations" : {
+            "plural" : {
+              "many" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld jugadores"
+                }
+              },
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld jugador"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld jugadores"
+                }
+              }
+            }
           }
         }
       }
@@ -231,71 +279,73 @@
         }
       }
     },
-    "leaderboard_missing_rank_accessibility" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Rank unavailable"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Posición no disponible"
-          }
-        },
-        "es-ES" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Posición no disponible"
-          }
-        }
-      }
-    },
-    "leaderboard_missing_score_accessibility" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Score unavailable"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Puntaje no disponible"
-          }
-        },
-        "es-ES" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Puntuación no disponible"
-          }
-        }
-      }
-    },
     "leaderboard_movement_down_accessibility" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "down %lld places"
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Down %lld place"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Down %lld places"
+                }
+              }
+            }
           }
         },
         "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "baja %lld posiciones"
+          "variations" : {
+            "plural" : {
+              "many" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Bajó %lld puestos"
+                }
+              },
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Bajó %lld puesto"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Bajó %lld puestos"
+                }
+              }
+            }
           }
         },
         "es-ES" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "baja %lld posiciones"
+          "variations" : {
+            "plural" : {
+              "many" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Bajó %lld puestos"
+                }
+              },
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Bajó %lld puesto"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Bajó %lld puestos"
+                }
+              }
+            }
           }
         }
       }
@@ -306,19 +356,19 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "unchanged"
+            "value" : "Rank unchanged"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "sin cambios"
+            "value" : "Puesto sin cambios"
           }
         },
         "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "sin cambios"
+            "value" : "Puesto sin cambios"
           }
         }
       }
@@ -327,21 +377,69 @@
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "up %lld places"
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Up %lld place"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Up %lld places"
+                }
+              }
+            }
           }
         },
         "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "sube %lld posiciones"
+          "variations" : {
+            "plural" : {
+              "many" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Subió %lld puestos"
+                }
+              },
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Subió %lld puesto"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Subió %lld puestos"
+                }
+              }
+            }
           }
         },
         "es-ES" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "sube %lld posiciones"
+          "variations" : {
+            "plural" : {
+              "many" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Subió %lld puestos"
+                }
+              },
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Subió %lld puesto"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Subió %lld puestos"
+                }
+              }
+            }
           }
         }
       }
@@ -350,21 +448,69 @@
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%lld points"
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld point"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld points"
+                }
+              }
+            }
           }
         },
         "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%lld puntos"
+          "variations" : {
+            "plural" : {
+              "many" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld puntos"
+                }
+              },
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld punto"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld puntos"
+                }
+              }
+            }
           }
         },
         "es-ES" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%lld puntos"
+          "variations" : {
+            "plural" : {
+              "many" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld puntos"
+                }
+              },
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld punto"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld puntos"
+                }
+              }
+            }
           }
         }
       }
@@ -381,13 +527,59 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Posición %lld"
+            "value" : "Puesto %lld"
           }
         },
         "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Posición %lld"
+            "value" : "Puesto %lld"
+          }
+        }
+      }
+    },
+    "leaderboard_rank_missing_accessibility" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rank unavailable"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Puesto no disponible"
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Puesto no disponible"
+          }
+        }
+      }
+    },
+    "leaderboard_score_missing_accessibility" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Points unavailable"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Puntos no disponibles"
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Puntos no disponibles"
           }
         }
       }
@@ -802,6 +994,52 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Aún no estás en ninguna quiniela"
+          }
+        }
+      }
+    },
+    "pool_score_invite_accessibility_action" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Invite to pool"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Invitar a la polla"
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Invitar a la quiniela"
+          }
+        }
+      }
+    },
+    "pool_score_open_accessibility_action" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Open pool"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abrir polla"
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abrir quiniela"
           }
         }
       }

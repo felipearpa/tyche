@@ -24,6 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.compositeOver
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
@@ -208,17 +209,19 @@ private fun gamblerScoreAccessibilityDescription(
         stringResource(R.string.leaderboard_rank_accessibility, it)
     } ?: stringResource(R.string.leaderboard_rank_missing_accessibility)
     val score = poolGamblerScore.score?.let {
-        stringResource(R.string.leaderboard_points_accessibility, it)
+        pluralStringResource(R.plurals.leaderboard_points_accessibility, it, it)
     } ?: stringResource(R.string.leaderboard_score_missing_accessibility)
     val movement = poolGamblerScore.rank()?.let { difference ->
         when {
-            difference > 0 -> stringResource(
-                R.string.leaderboard_movement_up_accessibility,
+            difference > 0 -> pluralStringResource(
+                R.plurals.leaderboard_movement_up_accessibility,
+                abs(difference),
                 abs(difference),
             )
 
-            difference < 0 -> stringResource(
-                R.string.leaderboard_movement_down_accessibility,
+            difference < 0 -> pluralStringResource(
+                R.plurals.leaderboard_movement_down_accessibility,
+                abs(difference),
                 abs(difference),
             )
 

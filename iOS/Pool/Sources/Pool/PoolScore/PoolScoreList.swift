@@ -40,7 +40,11 @@ struct PoolScoreList: View {
         ) { index in
             if let poolGamblerScore = lazyPagingItems.peek(at: index) {
                 VStack(spacing: 0) {
-                    PoolScoreItem(poolGamblerScore: poolGamblerScore, onJoin: { onPoolJoin(poolGamblerScore.poolId) })
+                    PoolScoreItem(
+                        poolGamblerScore: poolGamblerScore,
+                        onOpen: { onPoolOpen(poolGamblerScore.poolId) },
+                        onJoin: { onPoolJoin(poolGamblerScore.poolId) }
+                    )
                     Divider()
                 }
                 .padding(.horizontal, boxSpacing.medium)
@@ -76,8 +80,12 @@ private struct PoolScorePlaceholderRow: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            PoolScoreItem(poolGamblerScore: poolGamblerScore, onJoin: {})
-                .shimmer()
+            PoolScoreItem(
+                poolGamblerScore: poolGamblerScore,
+                onOpen: {},
+                onJoin: {},
+                placeholderModifier: ShimmerModifier()
+            )
             Divider()
         }
         .padding(.horizontal, boxSpacing.medium)

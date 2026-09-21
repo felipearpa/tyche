@@ -33,13 +33,31 @@
     <string name="no_other_gamblers_message">Cuando alguien se una a esta polla, podrás gestionarlos desde aquí.</string>
     <string name="invite_gamblers_action">Invitar jugadores</string>
     <string name="points_text">%1s pts.</string>
-    <string name="gamblers_text">%1s jugadores</string>
     <string name="leaderboard_you">Tú</string>
     <string name="leaderboard_rank_accessibility">Puesto %1$d</string>
     <string name="leaderboard_rank_missing_accessibility">Puesto no disponible</string>
-    <string name="leaderboard_points_accessibility">%1$d puntos</string>
-    <string name="leaderboard_score_missing_accessibility">Puntuación no disponible</string>
-    <string name="leaderboard_movement_up_accessibility">Subió %1$d puestos</string>
-    <string name="leaderboard_movement_down_accessibility">Bajó %1$d puestos</string>
+    <string name="leaderboard_score_missing_accessibility">Puntos no disponibles</string>
     <string name="leaderboard_movement_unchanged_accessibility">Puesto sin cambios</string>
+    <string name="pool_score_open_accessibility_action">Abrir polla</string>
+    <string name="pool_score_invite_accessibility_action">Invitar a la polla</string>
+    <plurals name="leaderboard_points_accessibility">
+        <item quantity="one">%1$d punto</item>
+        <item quantity="many">%1$d puntos</item>
+        <item quantity="other">%1$d puntos</item>
+    </plurals>
+    <plurals name="leaderboard_movement_up_accessibility">
+        <item quantity="one">Subió %1$d puesto</item>
+        <item quantity="many">Subió %1$d puestos</item>
+        <item quantity="other">Subió %1$d puestos</item>
+    </plurals>
+    <plurals name="leaderboard_movement_down_accessibility">
+        <item quantity="one">Bajó %1$d puesto</item>
+        <item quantity="many">Bajó %1$d puestos</item>
+        <item quantity="other">Bajó %1$d puestos</item>
+    </plurals>
+    <plurals name="gamblers_text">
+        <item quantity="one">%1$d jugador</item>
+        <item quantity="many">%1$d jugadores</item>
+        <item quantity="other">%1$d jugadores</item>
+    </plurals>
 </resources>

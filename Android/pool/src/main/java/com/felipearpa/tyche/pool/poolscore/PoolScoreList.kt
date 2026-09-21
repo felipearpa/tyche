@@ -25,6 +25,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.CustomAccessibilityAction
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.customActions
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
@@ -96,11 +100,28 @@ fun PoolScoreList(
         ) { index ->
             val poolGamblerScore = lazyPoolGamblerScores[index] ?: return@items
 
+            val inviteLabel = stringResource(R.string.pool_score_invite_accessibility_action)
+
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clickable {
+                    .clickable(
+                        // Names the double-tap target and the role TalkBack announces; the
+                        // row's own description comes from `PoolScoreItem`.
+                        onClickLabel = stringResource(R.string.pool_score_open_accessibility_action),
+                        role = Role.Button,
+                    ) {
                         onPoolOpen(poolGamblerScore.poolId, poolGamblerScore.gamblerId)
+                    }
+                    // `PoolScoreItem` clears its subtree, so the invite button has no node of
+                    // its own; it is offered here as an action on the row instead.
+                    .semantics {
+                        customActions = listOf(
+                            CustomAccessibilityAction(label = inviteLabel) {
+                                onPoolJoin(poolGamblerScore.poolId)
+                                true
+                            },
+                        )
                     }
                     .padding(horizontal = LocalBoxSpacing.current.medium),
             ) {

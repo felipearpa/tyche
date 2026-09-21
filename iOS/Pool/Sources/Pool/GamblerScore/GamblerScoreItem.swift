@@ -60,7 +60,7 @@ public struct GamblerScoreItem: View {
                     .truncationMode(.tail)
 
                 if isCurrentUser {
-                    Text(String(localized: "leaderboard_you", bundle: .module))
+                    Text(.leaderboardYou)
                         .font(.caption)
                 }
             }
@@ -165,7 +165,7 @@ public struct GamblerScoreItem: View {
             rankAccessibilityText,
             poolGamblerScore.gamblerUsername,
             isCurrentUser
-                ? String(localized: "leaderboard_you", bundle: .module)
+                ? String(localized: .leaderboardYou)
                 : nil,
             scoreAccessibilityText,
             movementAccessibilityText,
@@ -176,28 +176,16 @@ public struct GamblerScoreItem: View {
 
     private var rankAccessibilityText: String {
         guard let position = poolGamblerScore.position else {
-            return String(
-                localized: "leaderboard_missing_rank_accessibility",
-                bundle: .module
-            )
+            return String(localized: .leaderboardRankMissingAccessibility)
         }
-        return localizedFormat(
-            "leaderboard_rank_accessibility",
-            Int64(position)
-        )
+        return String(localized: .leaderboardRankAccessibility(position))
     }
 
     private var scoreAccessibilityText: String {
         guard let score = poolGamblerScore.score else {
-            return String(
-                localized: "leaderboard_missing_score_accessibility",
-                bundle: .module
-            )
+            return String(localized: .leaderboardScoreMissingAccessibility)
         }
-        return localizedFormat(
-            "leaderboard_points_accessibility",
-            Int64(score)
-        )
+        return String(localized: .leaderboardPointsAccessibility(score))
     }
 
     private var movementAccessibilityText: String? {
@@ -205,30 +193,13 @@ public struct GamblerScoreItem: View {
 
         switch difference {
         case let value where value > 0:
-            return localizedFormat(
-                "leaderboard_movement_up_accessibility",
-                Int64(abs(value))
-            )
+            return String(localized: .leaderboardMovementUpAccessibility(abs(value)))
         case let value where value < 0:
-            return localizedFormat(
-                "leaderboard_movement_down_accessibility",
-                Int64(abs(value))
-            )
+            return String(localized: .leaderboardMovementDownAccessibility(abs(value)))
         default:
-            return String(
-                localized: "leaderboard_movement_unchanged_accessibility",
-                bundle: .module
-            )
+            return String(localized: .leaderboardMovementUnchangedAccessibility)
         }
     }
-}
-
-private func localizedFormat(_ key: String, _ value: CVarArg) -> String {
-    String(
-        format: String(localized: String.LocalizationValue(key), bundle: .module),
-        locale: .current,
-        arguments: [value]
-    )
 }
 
 private let rowMinimumHeight: CGFloat = 82

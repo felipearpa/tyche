@@ -4,9 +4,10 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicText
+import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -17,6 +18,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.felipearpa.tyche.ui.theme.TycheTheme
 
 @Composable
@@ -54,15 +56,24 @@ fun PositionIndicator(
             .then(placeholderModifier),
         contentAlignment = Alignment.Center,
     ) {
-        Text(
+        // The box is a fixed size but the text scales with the system font scale, so at
+        // large scales a two-digit position was clipped to its first digit — rank 13 drew
+        // as "1". Auto-sizing keeps the whole value inside the tile.
+        BasicText(
             text = position?.toString() ?: "—",
-            color = resolvedContentColor,
-            style = textStyle,
+            style = textStyle.copy(color = resolvedContentColor),
+            maxLines = 1,
+            softWrap = false,
+            autoSize = TextAutoSize.StepBased(
+                minFontSize = DIGIT_MIN_FONT_SIZE,
+                maxFontSize = textStyle.fontSize,
+            ),
         )
     }
 }
 
 private val scoreSize = 32.dp
+private val DIGIT_MIN_FONT_SIZE = 8.sp
 
 @PreviewLightDark
 @Composable
