@@ -63,8 +63,9 @@ final class GamblerScoreItemRankPreviewTests: XCTestCase {
         )
         .accessibilityLabel
 
-        XCTAssertTrue(label.contains("Rank 1"), "accessibility label was: \(label)")
-        XCTAssertTrue(label.contains("up 1 places"), "accessibility label was: \(label)")
+        // Exact, not `contains`: "Up 1 place" is a prefix of the ungrammatical "Up 1 places"
+        // this change removed, so a substring probe would match both and guard neither.
+        XCTAssertEqual(label, "Rank 1, neptune-player, You, 18 points, Up 1 place")
     }
 
     private func renderedTexts(username: String) throws -> [String] {

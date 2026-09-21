@@ -33,13 +33,27 @@
     <string name="no_other_gamblers_message">Once people join this pool, you’ll be able to manage them from here.</string>
     <string name="invite_gamblers_action">Invite gamblers</string>
     <string name="points_text">%1s pts.</string>
-    <string name="gamblers_text">%1s members</string>
     <string name="leaderboard_you">You</string>
     <string name="leaderboard_rank_accessibility">Rank %1$d</string>
     <string name="leaderboard_rank_missing_accessibility">Rank unavailable</string>
-    <string name="leaderboard_points_accessibility">%1$d points</string>
     <string name="leaderboard_score_missing_accessibility">Points unavailable</string>
-    <string name="leaderboard_movement_up_accessibility">Up %1$d places</string>
-    <string name="leaderboard_movement_down_accessibility">Down %1$d places</string>
     <string name="leaderboard_movement_unchanged_accessibility">Rank unchanged</string>
+    <string name="pool_score_open_accessibility_action">Open pool</string>
+    <string name="pool_score_invite_accessibility_action">Invite to pool</string>
+    <plurals name="leaderboard_points_accessibility">
+        <item quantity="one">%1$d point</item>
+        <item quantity="other">%1$d points</item>
+    </plurals>
+    <plurals name="leaderboard_movement_up_accessibility">
+        <item quantity="one">Up %1$d place</item>
+        <item quantity="other">Up %1$d places</item>
+    </plurals>
+    <plurals name="leaderboard_movement_down_accessibility">
+        <item quantity="one">Down %1$d place</item>
+        <item quantity="other">Down %1$d places</item>
+    </plurals>
+    <plurals name="gamblers_text">
+        <item quantity="one">%1$d member</item>
+        <item quantity="other">%1$d members</item>
+    </plurals>
 </resources>

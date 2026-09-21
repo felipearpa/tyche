@@ -101,7 +101,7 @@ class GamblerScoreListTest {
 
         composeTestRule
             .onNodeWithContentDescription(
-                "Rank 3, ElGoleador, You, 150 points, Up 1 places",
+                "Rank 3, ElGoleador, You, 150 points, Up 1 place",
             )
             .assertIsDisplayed()
     }

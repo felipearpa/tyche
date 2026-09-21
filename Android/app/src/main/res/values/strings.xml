@@ -8,7 +8,6 @@
     <string name="history_bets_tab">History</string>
     <string name="sign_in_with_email_and_password">Email and password</string>
     <string name="continue_with_text">Continue with:</string>
-    <string name="suffix_point_text">%s points</string>
     <string name="playing_now_text">Playing now</string>
     <string name="pool_section_title">Pool</string>
     <string name="invite_action">Invite</string>
@@ -41,4 +40,8 @@
     <string name="username_save_unknown_error">Username not saved. Try again.</string>
     <string name="username_saving_accessibility">Saving username</string>
     <string name="navigate_back_action">Back</string>
+    <plurals name="suffix_point_text">
+        <item quantity="one">%1$d point</item>
+        <item quantity="other">%1$d points</item>
+    </plurals>
 </resources>

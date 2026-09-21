@@ -9,6 +9,8 @@
 - A new photo shows up everywhere in the app right away, and a username changed on another device catches up on its own
 - Your pool list now shows your points and how many members each pool has, so you can compare pools at a glance
 - Your ranking trend now appears right under your position in the pool list
+- Your pool list now reads as one clear line with TalkBack, giving each pool's name, your rank, points, members, and trend together, and you can open the pool or send an invite without leaving the row
+- Counts now read correctly when there is only one of something, so a pool with a single member says "1 member" and a one-place move says "Up 1 place"
 - Brand-new app icon, including a themed icon that adapts to your wallpaper colors
 - Refreshed splash screen logo
 - The leaderboard's loading state now mirrors the real rows

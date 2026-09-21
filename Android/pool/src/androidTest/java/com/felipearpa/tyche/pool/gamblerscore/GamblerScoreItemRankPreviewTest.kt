@@ -19,10 +19,12 @@ import org.junit.Test
  * movement of one place. These tests render that row the way the editor does and prove the
  * rank and movement stay exposed for every draft — a normal name, an empty-draft placeholder,
  * and a very long username. The row merges its children into a single accessibility description
- * via `clearAndSetSemantics`, so both values are asserted through the localized "Rank 1" and
- * "Up 1 places" content description (the visible pixels are covered by the manual accessibility
- * pass). The editor's save-lifecycle states do not change the preview model, so the rail is
- * invariant across them; only the draft username varies here.
+ * via `clearAndSetSemantics`, so both values are asserted through the row's content description
+ * (the visible pixels are covered by the manual accessibility pass). The assertion is exact
+ * rather than a substring: "Up 1 place" is a prefix of the ungrammatical "Up 1 places" this
+ * change removed, so a substring probe would no longer discriminate between them. The editor's
+ * save-lifecycle states do not change the preview model, so the rail is invariant across them;
+ * only the draft username varies here.
  */
 class GamblerScoreItemRankPreviewTest {
     @get:Rule(order = 0)
@@ -33,38 +35,32 @@ class GamblerScoreItemRankPreviewTest {
 
     @Test
     fun rankAndUpwardMovementAreExposedForANormalDraft() {
-        renderPreviewRow(username = "neptune-player")
+        val username = "neptune-player"
+        renderPreviewRow(username = username)
 
         composeTestRule
-            .onNodeWithContentDescription("Rank 1", substring = true)
-            .assertIsDisplayed()
-        composeTestRule
-            .onNodeWithContentDescription("Up 1 places", substring = true)
+            .onNodeWithContentDescription("Rank 1, $username, You, 18 points, Up 1 place")
             .assertIsDisplayed()
     }
 
     @Test
     fun rankAndUpwardMovementAreExposedForAnEmptyDraftPlaceholder() {
-        renderPreviewRow(username = "Your username")
+        val username = "Your username"
+        renderPreviewRow(username = username)
 
         composeTestRule
-            .onNodeWithContentDescription("Rank 1", substring = true)
-            .assertIsDisplayed()
-        composeTestRule
-            .onNodeWithContentDescription("Up 1 places", substring = true)
+            .onNodeWithContentDescription("Rank 1, $username, You, 18 points, Up 1 place")
             .assertIsDisplayed()
     }
 
     @Test
     fun rankRailSurvivesALongUsername() {
         // A long username must yield/truncate rather than push the rank rail out of the row.
-        renderPreviewRow(username = "very-long-name-".repeat(10))
+        val username = "very-long-name-".repeat(10)
+        renderPreviewRow(username = username)
 
         composeTestRule
-            .onNodeWithContentDescription("Rank 1", substring = true)
-            .assertIsDisplayed()
-        composeTestRule
-            .onNodeWithContentDescription("Up 1 places", substring = true)
+            .onNodeWithContentDescription("Rank 1, $username, You, 18 points, Up 1 place")
             .assertIsDisplayed()
     }
 
