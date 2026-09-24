@@ -1,5 +1,4 @@
 import SwiftUI
-import UIKit
 
 public protocol DrawerStyle {
     associatedtype Body: View
@@ -28,12 +27,14 @@ public struct AnyDrawerStyle: DrawerStyle {
     }
 }
 
+/// An opaque, theme-aware surface behind the drawer content. The container scales and fades
+/// only the content, so this background stays stable throughout the reveal.
 public struct DefaultDrawerStyle: DrawerStyle {
     public init() {}
 
     public func makeBody(configuration: Configuration) -> some View {
         configuration.content
-            .background(Color(uiColor: .systemBackground))
+            .background(Color(sharedResource: .surface))
     }
 }
 

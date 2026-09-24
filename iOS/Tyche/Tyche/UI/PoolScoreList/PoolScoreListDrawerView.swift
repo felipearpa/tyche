@@ -20,10 +20,7 @@ struct PoolScoreListDrawerView : View {
         PoolScoreListDrawerStatefulView(
             uiState: viewModel.uiState,
             onProfile: onProfile,
-            onSignOut: {
-                viewModel.logOut()
-                onSignOut()
-            }
+            onSignOut: onSignOut
         )
     }
 }
@@ -33,54 +30,45 @@ private struct PoolScoreListDrawerStatefulView : View {
     let onProfile: () -> Void
     let onSignOut: () -> Void
 
-    @Environment(\.boxSpacing) private var boxSpacing
-
     var body: some View {
-        VStack(spacing: 0) {
-            AccountHeaderDrawer(
-                accountId: uiState.accountId,
-                username: uiState.username,
-                email: uiState.email,
-                onProfile: onProfile
-            )
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.top, boxSpacing.large)
-                .padding(.horizontal, boxSpacing.medium)
-
-            Spacer()
-
-            SignOutButton(onSignOut: onSignOut)
-                .padding(boxSpacing.medium)
-        }
+        DrawerMenu(
+            accountId: uiState.accountId,
+            username: uiState.username,
+            email: uiState.email,
+            onProfile: onProfile,
+            onSignOut: onSignOut
+        )
     }
 }
 
-private struct SignOutButton: View {
-    let onSignOut: () -> Void
+private let previewUiState = PoolScoreListDrawerUiState(
+    accountId: "account-1",
+    email: "felipearpa@email.com",
+    username: "felipearpa"
+)
 
-    @Environment(\.boxSpacing) private var boxSpacing
-
-    var body: some View {
-        Button(action: onSignOut) {
-            HStack(spacing: boxSpacing.small) {
-                Image(.logOut)
-                    .renderingMode(.template)
-                Text(.signOutAction)
-            }
-            .frame(maxWidth: .infinity, alignment: .center)
-        }
-        .buttonStyle(.liquidGlass)
-    }
+#Preview("Light") {
+    PoolScoreListDrawerStatefulView(uiState: previewUiState, onProfile: {}, onSignOut: {})
+        .preferredColorScheme(.light)
 }
 
-#Preview {
-    PoolScoreListDrawerStatefulView(
-        uiState: PoolScoreListDrawerUiState(
-            accountId: "account-1",
-            email: "felipearpa@email.com",
-            username: "felipearpa"
-        ),
-        onProfile: {},
-        onSignOut: {}
-    )
+#Preview("Dark") {
+    PoolScoreListDrawerStatefulView(uiState: previewUiState, onProfile: {}, onSignOut: {})
+        .preferredColorScheme(.dark)
+}
+
+#Preview("Largest text in drawer") {
+    Color.clear
+        .drawer(isShowing: .constant(true)) {
+            PoolScoreListDrawerStatefulView(uiState: previewUiState, onProfile: {}, onSignOut: {})
+        }
+        .dynamicTypeSize(.accessibility5)
+}
+
+#Preview("Right-to-left in drawer") {
+    Color.clear
+        .drawer(isShowing: .constant(true)) {
+            PoolScoreListDrawerStatefulView(uiState: previewUiState, onProfile: {}, onSignOut: {})
+        }
+        .environment(\.layoutDirection, .rightToLeft)
 }

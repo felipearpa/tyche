@@ -47,8 +47,7 @@ private struct PoolHomeRouterContent: View {
     let onSignOut: () -> Void
 
     @Environment(\.diResolver) private var diResolver: DIResolver
-    @State private var path = NavigationPath()
-    @State private var drawerVisible = false
+    @State private var navigation = DrawerHostNavigation()
     @State private var inviteUrl: ShareablePoolUrl?
     @StateObject private var drawerViewModel: PoolHomeDrawerViewModel
     @StateObject private var usernameEditorViewModel: UsernameEditorViewModel
@@ -88,15 +87,21 @@ private struct PoolHomeRouterContent: View {
 
     @ViewBuilder
     private var mainContent: some View {
-        NavigationStack(path: $path) {
+        NavigationStack(path: $navigation.path) {
             PoolHomeView(
                 gamblerId: user.accountId,
                 poolId: pool.poolId,
-                onChangePool: onChangePool,
-                onMenuTap: { drawerVisible.toggle() },
+                onChangePool: {
+                    // Switching pools replaces pool home rather than pushing a destination, so the
+                    // check that `open` makes is made here.
+                    if navigation.isHostInteractive {
+                        onChangePool()
+                    }
+                },
+                onMenuTap: { navigation.toggleDrawer() },
                 onGamblerOpen: { tappedPoolId, tappedGamblerId, tappedGamblerUsername in
                     if tappedGamblerId != user.accountId {
-                        path.append(
+                        navigation.open(
                             BetTimelineListViewRoute(
                                 poolId: tappedPoolId,
                                 gamblerId: tappedGamblerId,
@@ -106,7 +111,7 @@ private struct PoolHomeRouterContent: View {
                     }
                 },
                 onMatchOpen: { poolId, gamblerId, matchId in
-                    path.append(
+                    navigation.open(
                         MatchBetListViewRoute(
                             poolId: poolId,
                             gamblerId: gamblerId,
@@ -120,9 +125,9 @@ private struct PoolHomeRouterContent: View {
                     poolId: route.poolId,
                     gamblerId: route.gamblerId,
                     gamblerUsername: route.gamblerUsername,
-                    onHome: { path = NavigationPath() },
+                    onHome: { navigation.path = NavigationPath() },
                     onMatchOpen: { poolId, gamblerId, matchId in
-                        path.append(
+                        navigation.path.append(
                             MatchBetListViewRoute(
                                 poolId: poolId,
                                 gamblerId: gamblerId,
@@ -137,10 +142,10 @@ private struct PoolHomeRouterContent: View {
                     poolId: route.poolId,
                     gamblerId: route.gamblerId,
                     matchId: route.matchId,
-                    onHome: { path = NavigationPath() },
+                    onHome: { navigation.path = NavigationPath() },
                     onGamblerOpen: { tappedPoolId, tappedGamblerId, tappedGamblerUsername in
                         if tappedGamblerId != user.accountId {
-                            path.append(
+                            navigation.path.append(
                                 BetTimelineListViewRoute(
                                     poolId: tappedPoolId,
                                     gamblerId: tappedGamblerId,
@@ -169,44 +174,49 @@ private struct PoolHomeRouterContent: View {
                             await diResolver.resolve(UploadAvatarUseCase.self)!.execute(imageData: imageData)
                         }
                     ),
-                    onEditUsername: { path.append(UsernameEditorRoute(accountId: user.accountId)) }
+                    onEditUsername: { navigation.path.append(UsernameEditorRoute(accountId: user.accountId)) }
                 )
             }
             .navigationDestination(for: UsernameEditorRoute.self) { _ in
                 UsernameEditorDestination(
                     currentAccountModel: diResolver.resolve(CurrentAccountModel.self)!,
                     viewModel: usernameEditorViewModel,
-                    onSaved: { _ in path.removeLast() }
+                    onSaved: { _ in navigation.path.removeLast() }
                 )
             }
         }
-        .drawer(isShowing: $drawerVisible) {
+        .environment(\.diResolver, diResolver)
+        // While a destination is shown, the drawer detaches its drags so the destination keeps
+        // its native back button and back-swipe.
+        .drawer(
+            isShowing: $navigation.isDrawerOpen,
+            allowsDragging: navigation.isHostVisible,
+            stabilizesNavigationLayout: true
+        ) {
             PoolHomeDrawerView(
                 viewModel: drawerViewModel,
                 onLogout: {
-                    drawerVisible = false
-                    onSignOut()
+                    if navigation.closeDrawerForChoice() {
+                        drawerViewModel.signOut()
+                        onSignOut()
+                    }
                 },
                 onInvite: {
-                    drawerVisible = false
-                    let template = diResolver.resolve(JoinPoolUrlTemplateProvider.self)!
-                    inviteUrl = ShareablePoolUrl(String(format: template(), pool.poolId))
+                    if navigation.closeDrawerForChoice() {
+                        let template = diResolver.resolve(JoinPoolUrlTemplateProvider.self)!
+                        inviteUrl = ShareablePoolUrl(String(format: template(), pool.poolId))
+                    }
                 },
-                onManageGamblers: {
-                    drawerVisible = false
-                    path.append(ManageGamblersRoute(poolId: pool.poolId))
-                },
+                onManageGamblers: { navigation.openFromDrawer(ManageGamblersRoute(poolId: pool.poolId)) },
                 onPoolDeleting: {
-                    drawerVisible = false
+                    navigation.isDrawerOpen = false
                 },
+                // Not guarded: a completed deletion reaches the pool list whatever is on screen.
                 onPoolDeleted: {
-                    drawerVisible = false
+                    navigation.isDrawerOpen = false
                     onChangePool()
                 },
-                onProfile: {
-                    drawerVisible = false
-                    path.append(ProfileRoute())
-                }
+                onProfile: { navigation.openFromDrawer(ProfileRoute()) }
             )
         }
         .sheet(item: $inviteUrl) { inviteUrl in

@@ -32,6 +32,7 @@ struct PoolHomeView: View {
                 ),
                 onGamblerOpen: onGamblerOpen
             )
+            .drawerTabBarBoundary()
             .tag(PoolHomeTab.gamblerScores)
             .tabItem {
                 Label(
@@ -50,6 +51,7 @@ struct PoolHomeView: View {
                 ),
                 onMatchOpen: onMatchOpen
             )
+            .drawerTabBarBoundary()
             .tag(PoolHomeTab.bets)
             .tabItem {
                 Label(
@@ -68,6 +70,7 @@ struct PoolHomeView: View {
                 ),
                 onMatchOpen: onMatchOpen
             )
+            .drawerTabBarBoundary()
             .tag(PoolHomeTab.historyBet)
             .tabItem {
                 Label(
@@ -76,6 +79,8 @@ struct PoolHomeView: View {
                 )
             }
         }
+        // The tab bar keeps its own drags; each tab's root marks where the bar begins.
+        .excludesTabBarFromDrawerDrags()
         .navigationTitle(selectedTab.title)
         .toolbar {
             PlainToolbarItem(placement: .topBarLeading) {
@@ -93,6 +98,8 @@ struct PoolHomeView: View {
                 .navigationEmailAvatar()
         }
         .buttonStyle(.plain)
+        .accessibilityLabel(Text(sharedResource: .openMenuAction))
+        .drawerOpener()
     }
 
     private func navigationBarTrailing() -> some View {

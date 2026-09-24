@@ -115,7 +115,13 @@ struct PoolContent: View {
         if selectedPool == nil {
             PoolScoreListRouter(
                 accountBundle: accountBundle,
-                onPoolSelect: { newSelectedPool in selectedPool = newSelectedPool },
+                // A second pool row activated before the next update finds a pool already
+                // chosen, so the first choice opens.
+                onPoolSelect: { newSelectedPool in
+                    if selectedPool == nil {
+                        selectedPool = newSelectedPool
+                    }
+                },
                 onSignOut: onSignOut,
                 poolScoreViewModel: PoolScoreListViewModel(
                     getPoolGamblerScoresByGamblerUseCase: GetPoolGamblerScoresByGamblerUseCase(

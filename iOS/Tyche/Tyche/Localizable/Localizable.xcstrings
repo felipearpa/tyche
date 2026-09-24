@@ -454,6 +454,30 @@
         }
       }
     },
+    "pool_rank_accessibility" : {
+      "comment" : "VoiceOver announcement of the gambler's position in the pool summary shown in the navigation drawer.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rank %lld"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Puesto %lld"
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Puesto %lld"
+          }
+        }
+      }
+    },
     "pool_section_title" : {
       "extractionState" : "manual",
       "localizations" : {

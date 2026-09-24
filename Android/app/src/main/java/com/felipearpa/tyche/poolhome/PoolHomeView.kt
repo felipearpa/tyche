@@ -37,6 +37,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
@@ -79,6 +82,7 @@ fun PoolHomeView(
     poolId: String,
     gamblerId: String,
     onPoolChange: () -> Unit,
+    onPoolDeleted: () -> Unit,
     onSignOut: () -> Unit = {},
     onManageGamblers: () -> Unit = {},
     onProfile: () -> Unit = {},
@@ -114,7 +118,7 @@ fun PoolHomeView(
                 onPoolDeleting = {
                     isDrawerOpen = false
                 },
-                onPoolDeleted = onPoolChange,
+                onPoolDeleted = onPoolDeleted,
                 onProfile = onProfile,
             )
         },
@@ -348,8 +352,13 @@ private fun AppTopBar(
             )
         },
         navigationIcon = {
-            IconButton(onClick = onAccountShow) {
-                AutoEmailAvatar(modifier = Modifier.navigationEmailAvatar())
+            val openMenuLabel = stringResource(id = SharedR.string.open_menu_action)
+            IconButton(
+                onClick = onAccountShow,
+                modifier = Modifier.semantics { contentDescription = openMenuLabel },
+            ) {
+                // The button's label names what it does; the avatar's initial would replace it.
+                AutoEmailAvatar(modifier = Modifier.navigationEmailAvatar().clearAndSetSemantics {})
             }
         },
         actions = {
