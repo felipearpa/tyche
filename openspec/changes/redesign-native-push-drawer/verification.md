@@ -28,7 +28,10 @@ Xcode 26.0.1 (`/Applications/Xcode_26.0.1.app`, iPhoneSimulator 26.0 SDK). Captu
 - **Motion.** `simctl io recordVideo` (variable frame rate), frames extracted with
   `ffmpeg -fps_mode passthrough`, timestamps from `ffprobe`, and per-frame tracking of a colored
   marker on the pushed screen (rank tiles or the selected tab). Endpoints are exact: the marker
-  moves by exactly the 340 pt drawer width.
+  moves by exactly the 340 pt drawer width. *(Corrected by
+  [iOS — navigation title position](#ios--navigation-title-position-2026-09-24): these markers
+  move with the pushed screen in portrait, but its large title does not, and in landscape neither
+  do its rows or menu button.)*
 
 ### Automated coverage (2.8)
 
@@ -97,6 +100,14 @@ at the requested one. The binding API (`drawer(isShowing:content:)`) and the sty
 (`drawerStyle(_:)`, `DrawerStyle`, `DrawerStyleConfiguration`) are unchanged.
 
 ### 2.2 — Group reveal and pushed-screen treatment
+
+> **Corrected by [iOS — navigation title position](#ios--navigation-title-position-2026-09-24).**
+> The pushed screen does not keep its layout while it moves. In the strips below, its large title
+> sits at its leading edge in the ≈25 %, ≈50 %, ≈75 %, and open frames instead of 16 pt in. In
+> landscape, not shown here, its rows, menu button, and title also lose the leading safe-area
+> inset. This is accepted as a known iOS limitation. What this section says about the drawer's
+> content group, and about the offset, scrim, corners, and edge moving with the same progress,
+> still holds.
 
 - Strips from recordings at closed, ≈25 %, ≈50 %, ≈75 %, and open:
   [pool list, light](verification/ios/reveal-strip-pool-list-light.jpg),
@@ -2112,3 +2123,147 @@ deleted afterwards. The simulators this pass booted (iPhone 17, iPhone 18 Pro, i
 shut down; the iPhone Air was already running and was left as found. On the iPhone 18 Pro the
 session is intact and the fixed build stays installed. Nothing was shared or deleted, no delete
 confirmation was shown in the app, and sign-out was never touched.
+
+## iOS — navigation title position (2026-09-24)
+
+Felipe reported on the running app that while the drawer opens, and while it is open, the pushed
+screen's navigation title moves a little to the left, as if its leading padding were removed. It
+does, on both hosts, and in landscape more of the pushed screen moves. The cause is how UIKit lays
+out the navigation stack that SwiftUI hosts, not one of the drawer's modifiers. **Felipe accepted
+it as a known iOS limitation on 2026-09-24; no product code changed** (see the decision below).
+
+Same Xcode (26.0.1) as the earlier iOS passes. The app was measured on the signed-in iPhone 18 Pro
+(iOS 27.0); a throwaway harness ran on the iPhone 17 (iOS 27.0) and the iPhone 16 Pro (iOS 18.1).
+Captures, all taken before any decision: [pool list, portrait](verification/ios/nav-title-list-portrait.jpg)
+(closed, drag held at about half, open), [pool list, landscape](verification/ios/nav-title-list-landscape.jpg)
+(closed above, open below), and [pool home, landscape, dark](verification/ios/nav-title-home-landscape-dark.jpg)
+(closed above, open below).
+
+### Cause
+
+The drawer moves the pushed screen with `.offset(x:)` (`DrawerForegroundReveal`). Each host's
+screen is a `NavigationStack`, which SwiftUI hosts as a UIKit navigation controller, and SwiftUI
+applies the offset by moving that hosted view: with the drawer open, the view that contains it
+sits at x = 340 pt in portrait. UIKit derives the navigation controller's layout margins and
+safe-area insets from where its view sits in the window, so moving the view changes its layout:
+
+- **Portrait, iOS 26 and later.** The navigation controller's leading layout margin becomes
+  max(0, 16 − x) for a displacement of x pt. The large title is laid out on that margin, while the
+  toolbar buttons keep a fixed 16 pt inset. The title therefore loses its 16 pt inset during the
+  first 16 pt of travel and stays at the pushed screen's edge until the drawer closes. Nothing else
+  on the two hosts moves in portrait.
+- **Landscape, every version (iOS 18.1 checked in the harness).** UIKit recomputes the safe area
+  from the window: the 62 pt leading inset on the iPhone 18 Pro becomes max(0, 62 − x). The rows
+  and the menu button hold their positions on screen for the first part of the travel (62 pt for
+  the rows, 22 pt for the menu button), then move with the pushed screen, closer to its edge than
+  before. The inline title ends 11 pt nearer the edge.
+- **Portrait, iOS 18.1 (harness).** The large title keeps its place: that navigation bar lays it
+  out with its own margin.
+
+Everything returns to its closed position when the drawer closes: the measurements after closing
+equal the closed ones.
+
+### Measurements in the app
+
+Signed-in iPhone 18 Pro, iOS 27.0. Positions are in points from the pushed screen's leading edge,
+taken as its navigation bar's leading edge. "Frame" values are XCUITest element frames with the
+drawer settled. "Pixels" values come from screenshots and give the first pixel of the glyph or
+tile, so the title's includes its glyph's side bearing; the "held" column is a drag held at about
+half the reveal, with the pushed screen's edge between 124 and 170 pt. Pool list and pool home, in
+light and dark appearance, gave the same frames.
+
+Portrait:
+
+| Element | Closed | Held | Open |
+| --- | --- | --- | --- |
+| Large title (frame) | 16.0 | — | 0.0 |
+| Large title (pixels) | 18.0 list, 17.0 home | 1.3–2.0 | 1.3–2.0 |
+| Menu button (frame; held: pixels) | 22.0 | 21–22 | 22.0 |
+| First row's tile (pixels) | 24.0 list, 42.3 home | 23–24 list, 41.3–42.3 home | 24.0 list, 42.3 home |
+
+Landscape:
+
+| Element | Closed | Held | Open |
+| --- | --- | --- | --- |
+| First row (frame) | 62.0 | — | 0.0 |
+| First row's tile (pixels) | 86.0 list, 104.3 home | 23–24 list, 41.3–42.3 home | 24.0 list, 42.3 home |
+| Menu button (frame; held: pixels) | 44.0 | 21–22 | 22.0 |
+| Inline title (frame) | 401.0 list, 409.3 home | — | 390.0 list, 398.3 home |
+
+A screenshot taken while pool home was closing, with the pushed screen's edge at 16 pt, had the
+first row's tile at 88.3 pt and the menu button at 28.0 pt: both 16 pt less than when closed, so
+still at their closed positions on screen.
+
+### How the cause was isolated
+
+The throwaway harness (not committed) compiled the drawer files, `PlainToolbarItem.swift`, and
+`ParentSizeKey.swift` with two hosts that mirror the pool list and pool home: a `NavigationStack`
+with a large title and plain toolbar items, the second with a `TabView`. It logged the hosted
+navigation controller's position, safe area, and layout margins every 50 ms.
+
+- Reveals held with the pushed screen moved by 6.7, 13.7, and 34 pt gave leading margins of 9.3,
+  2.3, and 0 pt on iOS 27. Animated opening and closing followed the same curve, and the toolbar
+  buttons stayed at 16 pt.
+- Removing the clip, the scrim, the edge line, the hit-testing and accessibility-hiding changes, the
+  dismissal surface, or the container drag, one at a time and all together, still left the margin
+  at 0 pt with the drawer open. Removing only the offset kept it at 16 pt.
+- Landscape, iOS 27: with the drawer open, the navigation controller's leading safe area went from
+  62 to 0 pt and its bar's leading margin from 78 to 0 pt.
+- iOS 18.1: the same in landscape (leading safe area 62 → 0 pt, bar margin 70 → 8 pt, the inline
+  title 31 pt nearer the leading edge, and the content's leading safe area 62 → 0 pt). In portrait
+  the large title stayed at 16 pt.
+
+### SwiftUI-only alternatives tried
+
+None keeps the layout, because UIKit reacts to where the hosted view appears on screen, however
+SwiftUI moves it:
+
+- `transformEffect`, `projectionEffect`, and `visualEffect` with an offset, in place of `.offset`:
+  all three collapse the margin the same way. For the first two, the view tree showed why: SwiftUI
+  turns a pure translation into the same frame move (the containing view at x = 340 pt with an
+  identity transform).
+- Transforms that SwiftUI cannot turn into a frame move (the translation combined with a 10⁻⁶
+  scale, a 10⁻⁶ rad 3D rotation, or a 10⁻⁹ perspective term): the containing view keeps its frame
+  and the move is applied as a transform, but UIKit still reduces the margin.
+- `.ignoresSafeArea()` on the navigation stack itself: no change.
+- `.safeAreaInset(edge: .leading)` on the navigation stack, to give back the lost inset: it never
+  reaches the hosted navigation controller, whose safe area and `additionalSafeAreaInsets` stay
+  unchanged. Even if it did, compensating through the safe area cannot restore the iOS 26 margin
+  without moving the content that respects the safe area.
+
+### UIKit options and the decision
+
+Tried only in the harness, never in the app. On the hosted `UINavigationController`, turning off
+`viewRespectsSystemMinimumLayoutMargins` and pinning `directionalLayoutMargins` to their closed
+values kept the large title at 16 pt through the whole reveal. Adding the dropped inset back
+through `additionalSafeAreaInsets` (62 pt, at the open endpoint in landscape) put the first row's
+tile back at 78 pt and the bar's leading margin back at 78 pt. A fix along these lines needs a
+representable to reach the navigation controller that SwiftUI creates, and while the screen moves,
+an inset update on every frame (min(62, x)).
+
+**Decision (Felipe, 2026-09-24): the UIKit options are declined, to keep design Decision 3 (SwiftUI
+only, no UIKit bridges). The shift is accepted as a known iOS platform limitation: while the
+drawer is open or moving, the pushed screen's large title sits at that screen's leading edge on
+iOS 26 and later, and in landscape the pushed screen's rows, menu button, and title lose the
+notch-side safe-area inset (about 62 pt on the iPhone 18 Pro) on every iOS version. Everything
+returns when the drawer closes. No product code changed, and `DrawerPassUITests` gained no check
+for it.** The notes in [2.2](#22--group-reveal-and-pushed-screen-treatment) and the motion
+instrument note under [Instruments](#instruments-not-committed) are marked as corrected by this
+section.
+
+### Not checked
+
+iPad; right-to-left, where the pushed screen moves toward the left and the same rule would act on
+its trailing side (not observed); a physical device; iOS 16 and 17 runtimes.
+
+### Settings and cleanup
+
+The app was measured through a scratch XCUITest (removed from `TycheUITests`; not committed) and
+`simctl io screenshot` captures taken during the held drags. The test rotated the simulator and
+switched its appearance through `XCUIDevice`, and left the iPhone 18 Pro in portrait and light
+appearance, as it was. Nothing was injected into the signed-in app. The harness was uninstalled
+from the iPhone 17 and the iPhone 16 Pro. The simulators this pass booted (iPhone 18 Pro, iPhone
+17, iPhone 16 Pro) were shut down; the iPhone Air was already running and was left as found. No
+recording or log stream was left running. `Package.resolved` was checked after both `xcodebuild`
+runs and never changed. On the iPhone 18 Pro the session is intact; nothing was shared or deleted,
+and sign-out was never touched.
