@@ -20,7 +20,7 @@ let package = Package(
         .package(url: "https://github.com/felipearpa/lazy-paging-swift.git", exact: "0.0.3"),
         .package(url: "https://github.com/markiv/SwiftUI-Shimmer.git", exact: "1.5.1"),
         .package(path: "../Core"),
-        .package(url: "https://github.com/nalexn/ViewInspector", exact: "0.10.2"),
+        .package(url: "https://github.com/nalexn/ViewInspector", exact: "0.10.3"),
     ],
     targets: [
         // Targets are the basic building blocks of a package. A target can define a module or a test suite.

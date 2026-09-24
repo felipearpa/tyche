@@ -8,8 +8,7 @@ import ViewInspector
 ///
 /// ViewInspector's `tap()` refuses a control with a disabled, hidden, or non-hit-testable
 /// ancestor, so a throwing tap is the rendered equivalent of a touch that cannot reach the
-/// control. These tests need a simulator runtime ViewInspector 0.10.2 supports (iOS 18.1
-/// locally); on newer runtimes it traps before any assertion runs.
+/// control. ViewInspector 0.10.3 or newer is required for these assertions on iOS 26 runtimes.
 @MainActor
 struct DrawerInteractionTests {
     @Test
