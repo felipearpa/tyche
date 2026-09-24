@@ -50,6 +50,13 @@ The current screen SHALL translate horizontally with drawer visibility and SHALL
 - **AND** the drawer remains at its intended brightness
 - **AND** the translation, dimming, and content reveal begin and settle together without a separate delayed effect
 
+#### Scenario: iOS navigation layout remains stable during a push
+- **GIVEN** either iOS drawer host is visible in portrait or landscape
+- **WHEN** its drawer opens, closes, reverses, or is dragged
+- **THEN** the navigation title, toolbar avatar, and content retain their positions relative to the pushed screen
+- **AND** rotation uses the current container's safe area without retaining compensation from the previous orientation
+- **AND** closing restores normal native navigation layout
+
 ### Requirement: Transitions are continuous and interruptible
 
 In this requirement, a drawer host is the pool list or pool home, and a destination is a screen opened from a drawer host that is not itself a drawer host, such as Profile, a bet list, Manage gamblers, the username editor, or the pool creator. The pushed screen remains the drawer host's content displaced by the drawer.

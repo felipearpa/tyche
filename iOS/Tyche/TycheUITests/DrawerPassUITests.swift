@@ -10,8 +10,8 @@ import XCTest
 /// drawer's drag and the rows, scroll views, tab bar, and back gestures it overlaps.
 ///
 /// The pushed screen is checked with `isHittable`, not `exists`: XCUITest's automation tree
-/// still lists the UIKit-hosted navigation stack the drawer hides from VoiceOver, while it does
-/// drop the drawer's own hidden SwiftUI content.
+/// still lists native navigation descendants hidden from VoiceOver by their hosting boundary,
+/// while it drops the drawer's own hidden SwiftUI content.
 final class DrawerPassUITests: XCTestCase {
 
     override func setUpWithError() throws {
@@ -23,6 +23,67 @@ final class DrawerPassUITests: XCTestCase {
             ProcessInfo.processInfo.environment["DRAWER_UI_PASS"] == "1",
             "set DRAWER_UI_PASS=1 to run the drawer pass"
         )
+    }
+
+    @MainActor
+    func testDrawerNavigationLayout() throws {
+        let app = XCUIApplication()
+        XCUIDevice.shared.orientation = .portrait
+        defer { XCUIDevice.shared.orientation = .portrait }
+        app.launch()
+        let opener = app.buttons["Open menu"]
+        XCTAssertTrue(opener.waitForExistence(timeout: 20), app.debugDescription)
+
+        for host in ["list", "home"] {
+            if host == "home" {
+                let row = firstPoolRow(in: app)
+                XCTAssertTrue(row.waitForExistence(timeout: 20))
+                row.tap()
+                XCTAssertTrue(app.tabBars.firstMatch.waitForExistence(timeout: 20))
+            }
+            for orientation in [UIDeviceOrientation.portrait, .landscapeLeft, .landscapeRight] {
+                XCUIDevice.shared.orientation = orientation
+                XCTAssertTrue(waitUntilHittable(opener))
+                // Let the system's rotation and navigation-bar size transition finish first.
+                Thread.sleep(forTimeInterval: 1)
+                let bar = app.navigationBars.firstMatch
+                let title = bar.staticTexts.firstMatch
+                XCTAssertTrue(title.exists)
+                let closedBar = bar.frame
+                let closedTitle = title.frame
+                let closedOpener = opener.frame
+
+                for cycle in 0..<2 {
+                    opener.tap()
+                    XCTAssertTrue(waitUntilHittable(app.buttons["Profile"]))
+                    let openBar = bar.frame
+                    XCTAssertGreaterThan(openBar.minX - closedBar.minX, 250)
+                    XCTAssertEqual(openBar.width, closedBar.width, accuracy: 1)
+                    XCTAssertEqual(
+                        title.frame.minX - openBar.minX,
+                        closedTitle.minX - closedBar.minX,
+                        accuracy: 1,
+                        "\(host): title shifted within the pushed screen"
+                    )
+                    XCTAssertEqual(
+                        opener.frame.minX - openBar.minX,
+                        closedOpener.minX - closedBar.minX,
+                        accuracy: 1,
+                        "\(host): avatar shifted within the pushed screen"
+                    )
+                    XCTAssertFalse(opener.isHittable, "\(host): modal drawer leaves the background interactive")
+                    if cycle == 0 {
+                        attach(app, name: "stable-navigation-\(host)-\(orientation.rawValue)")
+                    }
+                    app.buttons["Close menu"].tap()
+                    XCTAssertTrue(waitUntilHittable(opener))
+                    XCTAssertEqual(title.frame.minX, closedTitle.minX, accuracy: 1)
+                    XCTAssertEqual(opener.frame.minX, closedOpener.minX, accuracy: 1)
+                    XCTAssertEqual(bar.frame.width, closedBar.width, accuracy: 1)
+                }
+            }
+            XCUIDevice.shared.orientation = .portrait
+        }
     }
 
     @MainActor

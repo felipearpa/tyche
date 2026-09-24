@@ -1,5 +1,8 @@
 # Verification record
 
+The later [UIKit navigation-layout follow-up](#ios--uikit-navigation-layout-follow-up-2026-09-24)
+tracks the user's request to test a UIKit alternative to the navigation-title limitation recorded below.
+
 ## iOS — tasks 2.1–2.9 (2026-09-22)
 
 Xcode 26.0.1 (`/Applications/Xcode_26.0.1.app`, iPhoneSimulator 26.0 SDK). Captures live in
@@ -2267,3 +2270,105 @@ from the iPhone 17 and the iPhone 16 Pro. The simulators this pass booted (iPhon
 recording or log stream was left running. `Package.resolved` was checked after both `xcodebuild`
 runs and never changed. On the iPhone 18 Pro the session is intact; nothing was shared or deleted,
 and sign-out was never touched.
+
+## iOS — UIKit navigation-layout follow-up (2026-09-24)
+
+After the SwiftUI-only investigation, Felipe requested testing a UIKit alternative. Task 2.11 and
+the narrow exception in design Decision 3 cover this follow-up. The earlier decision to accept the
+title/landscape shift describes the previous implementation, not the intended behavior of this trial.
+
+### Approach and measurements
+
+The two navigation hosts opt into a foreground hosting boundary. It keeps the native navigation
+surface at the container's full size while the existing SwiftUI reveal moves it, preserves native
+layout margins, and restores the leading safe-area inset lost during translation. The correction
+uses the presented reveal displacement on iOS 26 and later; older UIKit recalculates its inherited
+safe area later, so those runtimes use the observed missing inset. Closing restores the controller's
+original margin flags, margins, and additional insets. Navigation-controller lookup stays inside
+the owned hosting subtree.
+
+An initial bridge placed inside the existing `NavigationStack` corrected settled positions but
+allowed SwiftUI to widen the foreground during the first 62 pt of landscape movement. A separate
+hosting boundary removed that width change. Copying the outer size classes also kept a large title
+in landscape; using the hosting controller's own current size classes preserved the native inline
+bar. These intermediate variants were not accepted as the fix.
+
+The scratch navigation harness compiles the production drawer sources with an iOS 16 deployment
+target and samples native frames, margins, and safe areas every 50 ms. With the contained hosting
+controller, pool-list open/close passes on iPhone 17 / iOS 27 and iPhone 16 Pro / iOS 18.1 kept:
+
+- A 402 × 874 pt portrait surface and an 874 × 402 pt landscape surface at every sampled frame.
+- The portrait large-title leading margin at 16 pt.
+- Both landscape horizontal safe-area insets at 62 pt throughout opening and closing.
+- The landscape inline title at the same position relative to the pushed screen.
+
+The native navigation-bar heights remained appropriate to each runtime: 106 / 54 pt in portrait /
+landscape on iOS 27 and 96 / 44 pt on iOS 18.1. The iOS 27 toolbar item's leading frame stayed at
+16 pt in portrait and 38 pt in landscape. Measurements refer to the native toolbar item container,
+not the smaller circular image inside it.
+
+The final safe-area observer variant also passed pool-home rotation while open and reversals on
+iOS 18.1 (102 changed-frame samples), plus pool-list opening/closing on iOS 27 (53 samples).
+The observer handles an older-UIKit update that otherwise briefly removes the inset before the
+next SwiftUI animation frame. It observes only the owned navigation view with a transparent,
+noninteractive child and uses public safe-area callbacks. The recorded dimensions and insets are
+in [the sample table](verification/ios/uikit-navigation-layout-samples.csv); a corresponding
+[landscape home capture](verification/ios/uikit-navigation-home-ios18-landscape.png) is included.
+The preceding contained-host variant also retained both 62 pt horizontal insets through 107
+right-to-left rotation/reversal samples on iOS 27.
+
+### Hosting-boundary integration
+
+The first variants copied the complete outer SwiftUI environment. They rendered correctly but
+hid the foreground from XCUITest's accessibility tree. Passing only the explicit presentation and
+drawer environment values restored the tree. The routers supply their resolver inside the hosted
+navigation content so environment objects do not depend on crossing the hosting boundary.
+The foreground container sets `accessibilityElementsHidden` while modal and restores it on close.
+As in the earlier app test pass, XCUITest can still return native navigation items while that flag
+is set. Automated app checks therefore retain the existing hittability contract and use those
+frames for endpoint geometry; the native harness supplies measurements during movement. A fresh
+manual VoiceOver traversal is not claimed by these automated checks.
+
+The open-state harness ancestry confirmed `accessibilityElementsHidden == true` on the owned
+UIKit foreground container and disabled interaction on the translated SwiftUI ancestor.
+
+### Production app checks
+
+The signed-in iPhone 18 Pro / iOS 27 app passed these focused XCUITest checks on the final
+production implementation:
+
+- `testDrawerNavigationLayout`: both hosts, portrait and both landscape orientations, two cycles
+  each (12 open/close cycles). Title and avatar offsets relative to the navigation bar stay within
+  1 pt of the closed baseline; bar width stays fixed and closure restores the original positions.
+- `testPoolListDrawer`: closed/open action availability, foreground hit exclusion, strip-tap
+  dismissal without entering the underlying pool, one Profile push and one native Back return.
+- `testPoolListDrawerGestures`: row and drawer-action drags, tap behavior, native destination
+  back-swipes, and largest-text drawer scrolling.
+- `testPoolHomeDrawerGestures`: host-row and drawer-action drags, tab taps/slides, leaderboard
+  scrolling, gambler navigation, and native destination back-swipes.
+
+The two gesture cases passed in 103.7 s; the layout and tap-flow cases passed in 86.9 s. The
+initial trial runs using copied environments failed and are superseded by these passes. Stalled
+Xcode diagnostic collectors also terminated one intermediate run; stopping those collectors and
+using `-collect-test-diagnostics never` allowed the final checks to complete normally.
+
+The final UI package suite passed all 59 tests in eight suites on iOS 18.1. The app's
+`build-for-testing`, the iOS 16-targeted harness compilation, `git diff --check`, and
+`openspec validate redesign-native-push-drawer --strict` also passed.
+
+### Scope and remaining checks
+
+Both production routers create their drawer closed. The opt-in hosting boundary captures that
+unshifted layout as its baseline. Mounting a new host already open is not supported by this
+trial: the initial shifted margin can be recorded as its baseline until a closed layout occurs.
+This precondition is documented on the additive `.drawer` parameter.
+
+The harness compiled at the shared package's iOS 16 deployment target, and runtime geometry was
+checked on iOS 18.1 and 27.0. Physical devices, iOS 16/17 runtimes, iPad, and a fresh manual
+VoiceOver pass remain unverified for this UIKit follow-up. Earlier broader drawer checks remain
+recorded above; they are not presented as newly rerun here.
+
+The signed-in iPhone 18 Pro was left running the updated app in portrait, drawer closed, for
+manual review. Its session remains intact; no sign-out, deletion, or sharing action was invoked.
+The iOS 18.1 harness was uninstalled and that simulator shut down. The iPhone 17 harness simulator
+is also shut down; its scratch app remains installed. The preexisting iPhone Air was left alone.

@@ -13,13 +13,13 @@ The repository has Compose BOM `2026.05.00` and Activity Compose `1.13.0`; the i
 **Goals:**
 - Give every visual property a common notion of reveal progress so direct manipulation, programmatic requests, and interruption remain coherent.
 - Keep animation in the shared platform containers, with consumer views responsible for content and existing actions.
-- Build the drawer's layout, drawing, animation, gestures, and accessibility entirely in Compose and SwiftUI respectively.
+- Build the drawer's layout, drawing, animation, gestures, and accessibility in Compose and SwiftUI respectively, with the iOS navigation-layout exception in Decision 3.
 - Use native typography, control feedback, motion settings, and dismissal conventions while sharing the user-visible navigation contract.
 
 **Non-Goals:**
 - Copying another app's destinations, branding, typography, exact measurements, or undocumented animation implementation.
 - Adding a permanent tablet sidebar, changing routes or authentication, or redesigning pool screens outside their drawer content.
-- Adding Android View/XML drawer widgets, UIKit view/controller or gesture wrappers, WebViews, third-party drawer packages, custom frame loops, or a cross-platform animation engine.
+- Adding Android View/XML drawer widgets, UIKit gesture wrappers or drawer containers, WebViews, third-party drawer packages, custom frame loops, or a cross-platform animation engine. A small iOS navigation-layout bridge is permitted by Decision 3.
 - Scaling or blurring the pushed screen, staggering individual rows, or changing loading semantics elsewhere in the app.
 
 ## Decisions
@@ -89,6 +89,8 @@ Alternative considered: independent `animate*AsState` or per-view transitions ar
 Platform timings, spring response, widths within the bounds below, pressed feedback, and typography remain independent. Reuse existing committed icon assets where possible. For any introduced or replaced icon, prefer an accurate Material Symbol, otherwise allow a custom icon, and derive both platform assets from one committed canonical vector. This asset constraint does not restrict native control behavior or OS-rendered controls.
 
 Alternative considered: recreating Android's cubic timing curve on iOS would reproduce today's coupling and ignore the user's explicit preference for platform-specific behavior. Separate native implementations share endpoints and behavior, not an animation engine.
+
+**iOS navigation-layout exception (2026-09-24):** The user authorized testing a UIKit alternative to the accepted title and landscape safe-area shifts. The two navigation hosts may opt into a `UIViewControllerRepresentable` hosting boundary for the foreground. This boundary keeps the full-size navigation surface stable while preserving its native navigation controller's layout margins and compensating for the lost leading safe-area inset. Drive compensation with the existing presented reveal displacement and the stationary container's safe area, including during reversal and dragging; do not introduce an independent animation clock. Restrict controller lookup to the boundary's own children. Restore the controller's prior settings on closure and teardown, handle rotation and layout direction, and retain SwiftUI gestures, environment values, accessibility, and native destination back navigation. This supersedes the earlier blanket ban on controller bridges only for this layout correction.
 
 ### 4. Treat gestures, dismissal, and interaction as part of the transition
 

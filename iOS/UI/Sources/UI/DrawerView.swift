@@ -12,6 +12,7 @@ import SwiftUI
 struct DrawerContainer<Base: View, DrawerContent: View>: View {
     @Binding var isShowing: Bool
     let allowsDragging: Bool
+    let stabilizesNavigationLayout: Bool
     let base: Base
     let drawerContent: () -> DrawerContent
 
@@ -27,6 +28,7 @@ struct DrawerContainer<Base: View, DrawerContent: View>: View {
     init(
         isShowing: Binding<Bool>,
         allowsDragging: Bool = true,
+        stabilizesNavigationLayout: Bool = false,
         base: Base,
         drawerContent: @escaping () -> DrawerContent,
         reveal: DrawerReveal? = nil,
@@ -34,6 +36,7 @@ struct DrawerContainer<Base: View, DrawerContent: View>: View {
     ) {
         self._isShowing = isShowing
         self.allowsDragging = allowsDragging
+        self.stabilizesNavigationLayout = stabilizesNavigationLayout
         self.base = base
         self.drawerContent = drawerContent
         self._reveal = State(initialValue: reveal ?? DrawerReveal(isOpen: isShowing.wrappedValue))
@@ -46,7 +49,7 @@ struct DrawerContainer<Base: View, DrawerContent: View>: View {
 
             ZStack(alignment: .leading) {
                 drawer(in: layout)
-                foreground(in: layout)
+                foreground(in: layout, safeAreaInsets: geometry.safeAreaInsets)
                 // Above the pushed screen rather than inside it, so blocking the screen can
                 // never block dismissal.
                 DrawerDismissalSurface(
@@ -101,14 +104,15 @@ struct DrawerContainer<Base: View, DrawerContent: View>: View {
         .modifier(DrawerSurfaceInteraction(progress: reveal.progress, reveal: reveal))
     }
 
-    private func foreground(in layout: DrawerLayout) -> some View {
-        base
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .modifier(DrawerForegroundReveal(
-                progress: reveal.progress,
-                reveal: reveal,
-                travel: layout.width
-            ))
+    private func foreground(in layout: DrawerLayout, safeAreaInsets: EdgeInsets) -> some View {
+        DrawerForegroundReveal(
+            content: base.frame(maxWidth: .infinity, maxHeight: .infinity),
+            progress: reveal.progress,
+            reveal: reveal,
+            travel: layout.width,
+            safeAreaInsets: safeAreaInsets,
+            stabilizesNavigationLayout: stabilizesNavigationLayout
+        )
     }
 
     private func dragHandler(width: CGFloat) -> DrawerDragHandler {
@@ -252,10 +256,13 @@ private struct DrawerSurfaceInteraction: ViewModifier, Animatable {
 
 /// Pushes the foreground aside with the reveal, dimming it and rounding its leading corners,
 /// and blocks it whenever the drawer is not closed.
-private struct DrawerForegroundReveal: ViewModifier, Animatable {
+private struct DrawerForegroundReveal<Content: View>: View, Animatable {
+    let content: Content
     var progress: CGFloat
     let reveal: DrawerReveal
     let travel: CGFloat
+    let safeAreaInsets: EdgeInsets
+    let stabilizesNavigationLayout: Bool
 
     @Environment(\.colorScheme) private var colorScheme
 
@@ -264,7 +271,7 @@ private struct DrawerForegroundReveal: ViewModifier, Animatable {
         set { progress = newValue }
     }
 
-    func body(content: Content) -> some View {
+    var body: some View {
         let phase = DrawerPhase(presentedProgress: progress, reveal: reveal)
         let visibility = progress.clampedToUnit
         let shape = UnevenRoundedRectangle(
@@ -272,9 +279,23 @@ private struct DrawerForegroundReveal: ViewModifier, Animatable {
             bottomLeadingRadius: foregroundCornerRadius * visibility
         )
 
-        content
+        Group {
+            if stabilizesNavigationLayout {
+                DrawerNavigationHost(
+                    content: content
+                        .allowsHitTesting(!phase.isModal)
+                        .accessibilityHidden(phase.isModal),
+                    displacement: travel * visibility,
+                    safeAreaInsets: safeAreaInsets,
+                    isModal: phase.isModal
+                )
+            } else {
+                content
+                    .allowsHitTesting(!phase.isModal)
+                    .accessibilityHidden(phase.isModal)
+            }
+        }
             .allowsHitTesting(!phase.isModal)
-            .accessibilityHidden(phase.isModal)
             .overlay {
                 Color.black
                     .opacity(scrimOpacity * visibility)
@@ -572,14 +593,20 @@ public extension View {
     ///   the moment it shows a destination, including while the drawer finishes closing, so the
     ///   destination's back button and back-swipe keep their gestures. A host that keeps a
     ///   `DrawerHostNavigation` passes its `isHostVisible`.
+    /// - Parameter stabilizesNavigationLayout: Hosts a navigation stack within a fixed UIKit
+    ///   boundary, preserving its native margins and safe area while it moves. Start closed so
+    ///   UIKit supplies the unshifted margins. Apply custom environment dependencies to the
+    ///   stack before this modifier so they cross that boundary.
     func drawer<Content: View>(
         isShowing: Binding<Bool>,
         allowsDragging: Bool = true,
+        stabilizesNavigationLayout: Bool = false,
         @ViewBuilder content: @escaping () -> Content,
     ) -> some View {
         DrawerContainer(
             isShowing: isShowing,
             allowsDragging: allowsDragging,
+            stabilizesNavigationLayout: stabilizesNavigationLayout,
             base: self,
             drawerContent: content
         )

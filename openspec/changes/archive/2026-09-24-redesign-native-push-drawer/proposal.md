@@ -9,6 +9,7 @@ Fortuna's drawers already push the current screen aside, but their content appea
 - Coordinate the foreground screen's horizontal push, subtle edge treatment, and animated dimming overlay with the content reveal. Closing restores the screen's original appearance.
 - Support continuous, reversible, finger-tracking transitions for menu activation and dismissal, including cancellation and interrupted animations. A horizontal swipe from anywhere on the pool list or pool home opens the drawer, and a horizontal drag anywhere on the open drawer or the current screen beside it closes it. System navigation gestures keep priority, and screens opened from the pool list or pool home keep their platform back gesture instead of opening the drawer.
 - Implement independently with Jetpack Compose on Android and SwiftUI on iOS, using each platform's components, modifiers, animation, gesture, and accessibility facilities. Timing, easing, typography, feedback, and platform navigation behavior can differ.
+- Stabilize the iOS pushed navigation title and toolbar avatar with a narrow UIKit layout bridge driven by the SwiftUI reveal, preserving their relative positions in portrait and landscape.
 - Keep navigation reachable with screen readers, large text, reduced motion, system Back or accessibility dismissal, and constrained window sizes.
 
 ## Capabilities

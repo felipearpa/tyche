@@ -185,9 +185,14 @@ private struct PoolHomeRouterContent: View {
                 )
             }
         }
+        .environment(\.diResolver, diResolver)
         // While a destination is shown, the drawer detaches its drags so the destination keeps
         // its native back button and back-swipe.
-        .drawer(isShowing: $navigation.isDrawerOpen, allowsDragging: navigation.isHostVisible) {
+        .drawer(
+            isShowing: $navigation.isDrawerOpen,
+            allowsDragging: navigation.isHostVisible,
+            stabilizesNavigationLayout: true
+        ) {
             PoolHomeDrawerView(
                 viewModel: drawerViewModel,
                 onLogout: {
