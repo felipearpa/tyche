@@ -16,6 +16,7 @@ import com.felipearpa.tyche.poolhome.PoolHomeViewRoute
 import com.felipearpa.tyche.poolscore.drawer.DrawerView
 import com.felipearpa.tyche.poolscore.drawer.drawerViewModel
 import com.felipearpa.tyche.profile.ProfileRoute
+import com.felipearpa.tyche.ui.runIfStarted
 
 fun NavGraphBuilder.poolScoreListNavView(
     navController: NavController,
@@ -39,6 +40,9 @@ fun NavGraphBuilder.poolScoreListNavView(
 
         val drawerViewModel = drawerViewModel()
 
+        // The user actions that leave this route run only while it is started, so an action
+        // activated twice before the list recomposes navigates once. Sign-out is guarded in the
+        // drawer, together with the logout it starts.
         PoolScoreListView(
             viewModel = poolScoreListViewModel(gamblerId = poolScoreListRoute.gamblerId),
             drawerView = { onCloseDrawer ->
@@ -50,28 +54,38 @@ fun NavGraphBuilder.poolScoreListNavView(
                         }
                     },
                     onProfile = {
-                        onCloseDrawer()
-                        navController.navigate(route = ProfileRoute)
+                        navBackStackEntry.runIfStarted {
+                            onCloseDrawer()
+                            navController.navigate(route = ProfileRoute)
+                        }
                     },
                 )
             },
             onPoolOpen = { poolId, gamblerId ->
-                navController.navigate(
-                    route = PoolHomeViewRoute(
-                        poolId = poolId,
-                        gamblerId = gamblerId,
-                    ),
-                ) { popUpTo(route = initialRoute) { inclusive = true } }
+                navBackStackEntry.runIfStarted {
+                    navController.navigate(
+                        route = PoolHomeViewRoute(
+                            poolId = poolId,
+                            gamblerId = gamblerId,
+                        ),
+                    ) { popUpTo(route = initialRoute) { inclusive = true } }
+                }
             },
-            onPoolCreate = { navController.navigate(route = PoolFromLayoutCreatorRoute(gamblerId = poolScoreListRoute.gamblerId)) },
+            onPoolCreate = {
+                navBackStackEntry.runIfStarted {
+                    navController.navigate(route = PoolFromLayoutCreatorRoute(gamblerId = poolScoreListRoute.gamblerId))
+                }
+            },
             onPoolLayoutSelect = { poolLayout ->
-                navController.navigate(
-                    route = PoolFromLayoutCreatorRoute(
-                        gamblerId = poolScoreListRoute.gamblerId,
-                        preselectedPoolLayoutId = poolLayout.id,
-                        preselectedPoolName = poolLayout.name,
-                    ),
-                )
+                navBackStackEntry.runIfStarted {
+                    navController.navigate(
+                        route = PoolFromLayoutCreatorRoute(
+                            gamblerId = poolScoreListRoute.gamblerId,
+                            preselectedPoolLayoutId = poolLayout.id,
+                            preselectedPoolName = poolLayout.name,
+                        ),
+                    )
+                }
             },
         )
     }

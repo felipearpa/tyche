@@ -36,10 +36,7 @@ struct PoolHomeDrawerView: View {
         PoolHomeDrawerStatefulView(
             uiState: viewModel.uiState,
             onProfile: onProfile,
-            onSignOut: {
-                viewModel.signOut()
-                onSignOut()
-            },
+            onSignOut: onSignOut,
             onInvite: onInvite,
             onManageGamblers: onManageGamblers,
             onDeletePool: { isConfirmingDelete = true }
@@ -70,20 +67,16 @@ private struct PoolHomeDrawerStatefulView: View {
     @Environment(\.boxSpacing) private var boxSpacing
 
     var body: some View {
-        VStack(spacing: boxSpacing.medium) {
-            AccountHeaderDrawer(
-                accountId: uiState.accountId,
-                username: uiState.username,
-                email: uiState.email,
-                onProfile: onProfile
-            )
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.top, boxSpacing.large)
-                .padding(.horizontal, boxSpacing.medium)
-                .padding(.bottom, boxSpacing.medium)
-
-            PoolLayout(poolGamblerScoreState: uiState.poolGamblerScoreState)
-                .frame(maxWidth: .infinity)
+        DrawerMenu(
+            accountId: uiState.accountId,
+            username: uiState.username,
+            email: uiState.email,
+            onProfile: onProfile,
+            onSignOut: onSignOut
+        ) {
+            PoolSummary(poolGamblerScoreState: uiState.poolGamblerScoreState)
+                .padding(.horizontal, boxSpacing.large)
+                .padding(.top, boxSpacing.extraLarge)
 
             PoolMenuSection(
                 isOwner: uiState.isOwner,
@@ -93,44 +86,48 @@ private struct PoolHomeDrawerStatefulView: View {
                 gamblerCount: uiState.gamblerCount,
                 onManageGamblers: onManageGamblers
             )
-            .padding(.horizontal, boxSpacing.medium)
-            .padding(.top, boxSpacing.medium)
-
-            Spacer()
-
-            SignOutButton(onSignOut: onSignOut)
-                .frame(maxWidth: .infinity)
-                .padding(.all, boxSpacing.medium)
+            .padding(.top, boxSpacing.extraLarge)
         }
-        .frame(maxHeight: .infinity)
     }
 }
 
-private struct PoolLayout: View {
+private struct PoolSummary: View {
     let poolGamblerScoreState: LoadState<PoolGamblerScoreModel>
+
+    @Environment(\.boxSpacing) private var boxSpacing
 
     var body: some View {
         switch poolGamblerScoreState {
         case .idle, .loading:
-            PoolLayoutItem(
+            PoolSummaryItem(
                 poolGamblerScore: poolGamblerScorePlaceholderModel(),
                 isPlaceholder: true
             )
 
         case .loaded(let score):
-            PoolLayoutItem(poolGamblerScore: score, isPlaceholder: false)
+            PoolSummaryItem(poolGamblerScore: score, isPlaceholder: false)
 
         case .failure(let error):
             ErrorView(localizedError: error.localizedErrorOrDefault())
+                .padding(boxSpacing.large)
+                .frame(maxWidth: .infinity)
+                .background(
+                    Color(sharedResource: .surfaceVariant),
+                    in: RoundedRectangle(cornerRadius: SUMMARY_CORNER_RADIUS, style: .continuous)
+                )
         }
     }
 }
 
-private struct PoolLayoutItem: View {
+/// The current pool as a restrained, inset group: a small accent detail, the pool name, and the
+/// gambler's position and points. Loading renders this same component from the placeholder
+/// model under the shared shimmer, hidden from assistive technology.
+private struct PoolSummaryItem: View {
     let poolGamblerScore: PoolGamblerScoreModel
     let isPlaceholder: Bool
 
     @Environment(\.boxSpacing) private var boxSpacing
+    @ScaledMetric(relativeTo: .caption) private var trophySize: CGFloat = 14
 
     var body: some View {
         VStack(alignment: .leading, spacing: boxSpacing.small) {
@@ -138,48 +135,68 @@ private struct PoolLayoutItem: View {
                 Image(sharedResource: .trophy)
                     .resizable()
                     .scaledToFit()
-                    .frame(width: 12, height: 12)
-                    .foregroundStyle(Color(sharedResource: .onPrimary))
-                    .modifier(ConditionalShimmer(isActive: isPlaceholder))
+                    .frame(width: trophySize, height: trophySize)
+                    .foregroundStyle(Color.accentColor)
 
                 Text(.playingNowText)
                     .font(.caption)
-                    .foregroundStyle(Color(sharedResource: .onPrimary))
-                    .modifier(ConditionalShimmer(isActive: isPlaceholder))
+                    .foregroundStyle(.drawerSupportingText)
             }
 
             Text(poolGamblerScore.poolName)
-                .font(.title2)
-                .foregroundStyle(Color(sharedResource: .onPrimary))
-                .lineLimit(2)
-                .truncationMode(.tail)
-                .modifier(ConditionalShimmer(isActive: isPlaceholder))
+                .font(.headline)
+                .foregroundStyle(Color.primary)
+                .lineLimit(3)
 
-            HStack(spacing: boxSpacing.medium) {
-                if let position = poolGamblerScore.position {
-                    Text(.smallSuffixPosition(position))
-                        .font(.subheadline)
-                        .foregroundStyle(Color(sharedResource: .onPrimary))
-                        .modifier(ConditionalShimmer(isActive: isPlaceholder))
-
-                    Rectangle()
-                        .fill(Color(sharedResource: .onPrimary))
-                        .frame(width: 1)
-                        .frame(maxHeight: .infinity)
-                }
-
-                if let score = poolGamblerScore.score {
-                    Text(.suffixPointText(score))
-                        .font(.subheadline)
-                        .foregroundStyle(Color(sharedResource: .onPrimary))
-                        .modifier(ConditionalShimmer(isActive: isPlaceholder))
-                }
-            }
-            .fixedSize(horizontal: false, vertical: true)
+            PoolStandingText(position: poolGamblerScore.position, score: poolGamblerScore.score)
+                .font(.subheadline)
+                .foregroundStyle(.drawerSupportingText)
         }
-        .padding(.all, boxSpacing.large)
+        .modifier(ConditionalShimmer(isActive: isPlaceholder))
+        .padding(boxSpacing.large)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color.accentColor)
+        .background(
+            Color(sharedResource: .surfaceVariant),
+            in: RoundedRectangle(cornerRadius: SUMMARY_CORNER_RADIUS, style: .continuous)
+        )
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(accessibilityLabel)
+        .accessibilityHidden(isPlaceholder)
+    }
+
+    private var accessibilityLabel: String {
+        [
+            String(localized: .playingNowText),
+            poolGamblerScore.poolName,
+            poolGamblerScore.position.map { String(localized: .poolRankAccessibility($0)) },
+            poolGamblerScore.score.map { String(localized: .suffixPointText($0)) },
+        ]
+        .compactMap { $0 }
+        .joined(separator: ", ")
+    }
+}
+
+/// Position and points on one line, separated by a dot; either can be missing.
+private struct PoolStandingText: View {
+    let position: Int?
+    let score: Int?
+
+    @Environment(\.boxSpacing) private var boxSpacing
+
+    var body: some View {
+        HStack(spacing: boxSpacing.small) {
+            if let position {
+                Text(.smallSuffixPosition(position))
+            }
+
+            if position != nil, score != nil {
+                Text(verbatim: "·")
+            }
+
+            if let score {
+                Text(.suffixPointText(score))
+            }
+        }
     }
 }
 
@@ -206,91 +223,59 @@ private struct PoolMenuSection: View {
     @Environment(\.boxSpacing) private var boxSpacing
 
     var body: some View {
-        VStack(alignment: .leading, spacing: boxSpacing.small) {
-            Text(String(localized: .poolSectionTitle).uppercased())
-                .font(.caption)
-                .foregroundStyle(Color.secondary)
+        VStack(alignment: .leading, spacing: 0) {
+            Text(.poolSectionTitle)
+                .font(.footnote.weight(.semibold))
+                .textCase(.uppercase)
+                .foregroundStyle(.drawerSupportingText)
+                .padding(.horizontal, boxSpacing.large)
+                .padding(.bottom, boxSpacing.small)
+                .accessibilityAddTraits(.isHeader)
 
-            VStack(spacing: 0) {
+            DrawerButtonRow(
+                icon: Image(sharedResource: .personAdd),
+                title: String(localized: .inviteAction),
+                action: onInvite
+            )
+
+            if isOwner {
                 DrawerButtonRow(
-                    icon: { Image(sharedResource: .personAdd) },
-                    title: String(localized: .inviteAction),
-                    action: onInvite
+                    icon: Image(sharedResource: .group),
+                    title: String(localized: .gamblersAction),
+                    accessory: { GamblerCountBadge(gamblerCount: gamblerCount) },
+                    action: onManageGamblers
                 )
 
-                if isOwner {
-                    GamblersMenuRow(
-                        gamblerCount: gamblerCount,
-                        onManageGamblers: onManageGamblers
-                    )
-
-                    DrawerButtonRow(
-                        icon: { Image(sharedResource: .deleteForever) },
-                        title: String(localized: .deletePoolAction),
-                        tint: Color(sharedResource: .error),
-                        action: onDeletePool
-                    )
-                    .disabled(isDeleting)
-                }
+                DrawerButtonRow(
+                    icon: Image(sharedResource: .deleteForever),
+                    title: String(localized: .deletePoolAction),
+                    tint: Color(sharedResource: .error),
+                    action: onDeletePool
+                )
+                .disabled(isDeleting)
             }
-            .padding(.horizontal, boxSpacing.medium)
         }
     }
 }
 
-private struct GamblersMenuRow: View {
+private struct GamblerCountBadge: View {
     let gamblerCount: Int?
-    let onManageGamblers: () -> Void
 
     @Environment(\.boxSpacing) private var boxSpacing
 
     var body: some View {
-        Button(action: onManageGamblers) {
-            HStack(spacing: boxSpacing.medium) {
-                Image(sharedResource: .group)
-                    .frame(width: 24, height: 24)
-                    .foregroundStyle(Color.primary)
-
-                Text(String(localized: .gamblersAction))
-                    .foregroundStyle(Color.primary)
-
-                Spacer()
-
-                if let gamblerCount {
-                    Text("\(gamblerCount)")
-                        .font(.footnote)
-                        .foregroundStyle(Color(sharedResource: .onSurfaceVariant))
-                        .padding(.horizontal, boxSpacing.small)
-                        .padding(.vertical, 2)
-                        .background(Color(sharedResource: .surfaceVariant), in: Capsule())
-                }
-            }
-            .padding(.vertical, boxSpacing.medium)
+        if let gamblerCount {
+            Text("\(gamblerCount)")
+                .font(.footnote)
+                .foregroundStyle(Color(sharedResource: .onSurfaceVariant))
+                .padding(.horizontal, boxSpacing.small)
+                .padding(.vertical, 2)
+                .background(Color(sharedResource: .surfaceVariant), in: Capsule())
         }
     }
 }
 
-private struct SignOutButton: View {
-    let onSignOut: () -> Void
-
-    @Environment(\.boxSpacing) private var boxSpacing
-
-    var body: some View {
-        Button(action: onSignOut) {
-            HStack(spacing: boxSpacing.small) {
-                Image(.logOut)
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 18, height: 18)
-                Text(.signOutAction)
-            }
-            .frame(maxWidth: .infinity)
-        }
-        .buttonStyle(.liquidGlass)
-    }
-}
-
-private let CHEVRON_SIZE: CGFloat = 14
+private let SUMMARY_CORNER_RADIUS: CGFloat = 12
 
 private func poolHomeDrawerPreviewUiState(
     poolGamblerScoreState: LoadState<PoolGamblerScoreModel>,
@@ -364,4 +349,72 @@ private func poolHomeDrawerPreviewUiState(
         onManageGamblers: {},
         onDeletePool: {}
     )
+}
+
+#Preview("Failure") {
+    PoolHomeDrawerStatefulView(
+        uiState: poolHomeDrawerPreviewUiState(
+            poolGamblerScoreState: .failure(UnknownLocalizedError()),
+            isOwner: true
+        ),
+        onProfile: {},
+        onSignOut: {},
+        onInvite: {},
+        onManageGamblers: {},
+        onDeletePool: {}
+    )
+}
+
+#Preview("Largest text in drawer") {
+    Color.clear
+        .drawer(isShowing: .constant(true)) {
+            PoolHomeDrawerStatefulView(
+                uiState: poolHomeDrawerPreviewUiState(
+                    poolGamblerScoreState: .loaded(poolGamblerScoreDummyModel()),
+                    isOwner: true
+                ),
+                onProfile: {},
+                onSignOut: {},
+                onInvite: {},
+                onManageGamblers: {},
+                onDeletePool: {}
+            )
+        }
+        .dynamicTypeSize(.accessibility5)
+}
+
+#Preview("Right-to-left in drawer") {
+    Color.clear
+        .drawer(isShowing: .constant(true)) {
+            PoolHomeDrawerStatefulView(
+                uiState: poolHomeDrawerPreviewUiState(
+                    poolGamblerScoreState: .loaded(poolGamblerScoreDummyModel()),
+                    isOwner: true
+                ),
+                onProfile: {},
+                onSignOut: {},
+                onInvite: {},
+                onManageGamblers: {},
+                onDeletePool: {}
+            )
+        }
+        .environment(\.layoutDirection, .rightToLeft)
+}
+
+#Preview("Short window") {
+    Color.clear
+        .drawer(isShowing: .constant(true)) {
+            PoolHomeDrawerStatefulView(
+                uiState: poolHomeDrawerPreviewUiState(
+                    poolGamblerScoreState: .loaded(poolGamblerScoreDummyModel()),
+                    isOwner: true
+                ),
+                onProfile: {},
+                onSignOut: {},
+                onInvite: {},
+                onManageGamblers: {},
+                onDeletePool: {}
+            )
+        }
+        .frame(width: 874, height: 360)
 }

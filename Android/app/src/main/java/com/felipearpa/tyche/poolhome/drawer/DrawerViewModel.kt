@@ -142,9 +142,12 @@ class DrawerViewModel(
     }
 
     fun deletePool(onSuccess: () -> Unit) {
-        viewModelScope.launch {
-            _deleteState.emit(SaveState.Saving(Unit))
+        // A request while one is pending is dropped, such as a confirmation pressed twice before
+        // its dialog leaves the screen.
+        if (_deleteState.value.isSaving()) return
+        _deleteState.value = SaveState.Saving(Unit)
 
+        viewModelScope.launch {
             deletePool.execute(poolId = poolId, gamblerId = gamblerId)
                 .onSuccess {
                     _deleteState.emit(SaveState.Saved(Unit))

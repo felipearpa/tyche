@@ -55,8 +55,7 @@ private struct PoolScoreListRouterContent: View {
     @StateObject private var usernameEditorViewModel: UsernameEditorViewModel
 
     @Environment(\.diResolver) private var diResolver: DIResolver
-    @State private var path = NavigationPath()
-    @State private var drawerVisible = false
+    @State private var navigation = DrawerHostNavigation()
     @State private var wasPoolCreated: Bool = false
 
     init(
@@ -76,13 +75,19 @@ private struct PoolScoreListRouterContent: View {
     }
 
     var body: some View {
-        NavigationStack(path: $path) {
+        NavigationStack(path: $navigation.path) {
             PoolScoreListObservedView(
                 viewModel: poolScoreViewModel,
-                onPoolOpen: { pool in onPoolSelect(pool) },
-                onPoolCreate: { path.append(PoolFromLayoutCreatorRoute()) },
+                onPoolOpen: { pool in
+                    // Opening a pool replaces the list rather than pushing a destination, so the
+                    // check that `open` makes is made here.
+                    if navigation.isHostInteractive {
+                        onPoolSelect(pool)
+                    }
+                },
+                onPoolCreate: { navigation.open(PoolFromLayoutCreatorRoute()) },
                 onPoolLayoutSelect: { layoutId, layoutName in
-                    path.append(PoolFromLayoutCreatorRoute(
+                    navigation.open(PoolFromLayoutCreatorRoute(
                         preselectedPoolLayoutId: layoutId,
                         preselectedPoolName: layoutName,
                     ))
@@ -110,7 +115,7 @@ private struct PoolScoreListRouterContent: View {
                     ),
                     onPoolCreated: { _ in
                         wasPoolCreated = true
-                        path = NavigationPath()
+                        navigation.path = NavigationPath()
                     },
                     preselectedPoolLayoutId: route.preselectedPoolLayoutId,
                     preselectedPoolName: route.preselectedPoolName,
@@ -125,41 +130,47 @@ private struct PoolScoreListRouterContent: View {
                             await diResolver.resolve(UploadAvatarUseCase.self)!.execute(imageData: imageData)
                         }
                     ),
-                    onEditUsername: { path.append(UsernameEditorRoute(accountId: accountBundle.accountId)) }
+                    onEditUsername: { navigation.path.append(UsernameEditorRoute(accountId: accountBundle.accountId)) }
                 )
             }
             .navigationDestination(for: UsernameEditorRoute.self) { _ in
                 UsernameEditorDestination(
                     currentAccountModel: diResolver.resolve(CurrentAccountModel.self)!,
                     viewModel: usernameEditorViewModel,
-                    onSaved: { _ in path.removeLast() }
+                    onSaved: { _ in navigation.path.removeLast() }
                 )
             }
         }
-        .drawer(isShowing: $drawerVisible) {
+        // While a destination is shown, the drawer detaches its drags so the destination keeps
+        // its native back button and back-swipe.
+        .drawer(isShowing: $navigation.isDrawerOpen, allowsDragging: navigation.isHostVisible) {
             PoolScoreListDrawerView(
                 viewModel: drawerViewModel,
-                onSignOut: onSignOut,
-                onProfile: {
-                    drawerVisible = false
-                    path.append(ProfileRoute())
-                }
+                onSignOut: {
+                    if navigation.closeDrawerForChoice() {
+                        drawerViewModel.logOut()
+                        onSignOut()
+                    }
+                },
+                onProfile: { navigation.openFromDrawer(ProfileRoute()) }
             )
         }
         .withParentGeometryProxy()
     }
 
     private func navigationBarLeading() -> some View {
-        Button(action: { drawerVisible.toggle() }) {
+        Button(action: { navigation.toggleDrawer() }) {
             AutoEmailAvatar()
                 .navigationEmailAvatar()
         }
         .buttonStyle(.plain)
+        .accessibilityLabel(Text(sharedResource: .openMenuAction))
+        .drawerOpener()
     }
 
     private func navigationBarTrailing() -> some View {
         Button(action: {
-            path.append(PoolFromLayoutCreatorRoute())
+            navigation.open(PoolFromLayoutCreatorRoute())
         }) {
             Image(sharedResource: .filledAddCircle)
                 .resizable()
