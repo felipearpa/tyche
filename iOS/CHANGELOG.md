@@ -14,6 +14,12 @@
 - Brand-new app icon with a Liquid Glass look
 - Refreshed splash screen logo
 - The leaderboard's loading state now mirrors the real rows
+- Redesigned side menu with a clearer account header, grouped pool details and actions, and a separate Sign out area
+- Swipe horizontally on the pool list or pool home to open the menu; drag it closed or tap the dimmed screen to dismiss it
+- Menu animations follow your finger smoothly, even when you change direction, and respect Reduce Motion
+- The menu adapts to wide windows, landscape, large text, and right-to-left layouts, with scrolling to keep every action reachable
+- VoiceOver focus stays inside the open menu and returns to the menu button when it closes, with an accessibility escape gesture to dismiss it
+- Fix: navigation titles and toolbar buttons stay aligned as the menu moves and the device rotates
 
 ## 1.7.2
 

@@ -15,6 +15,12 @@
 - Refreshed splash screen logo
 - The leaderboard's loading state now mirrors the real rows
 - Long pool names now wrap cleanly instead of crowding the row
+- Redesigned side menu with a clearer account header, grouped pool details and actions, and a separate Sign out area
+- Swipe horizontally on the pool list or pool home to open the menu; drag it closed or tap the dimmed screen to dismiss it
+- Menu animations follow your finger smoothly, even when you change direction, and respect system animation settings
+- The menu adapts to wide windows, landscape, large text, and right-to-left layouts, with scrolling to keep every action reachable
+- TalkBack focus stays inside the open menu and returns to the menu button when it closes; Android Back closes the menu before leaving the screen
+- Fix: confirming pool deletion more than once while it is in progress no longer sends duplicate requests
 
 ## 1.7.2
 
