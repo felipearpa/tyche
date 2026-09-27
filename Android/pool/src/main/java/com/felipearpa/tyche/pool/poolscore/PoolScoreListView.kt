@@ -3,8 +3,10 @@ package com.felipearpa.tyche.pool.poolscore
 import android.content.Intent
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.plus
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -142,10 +144,12 @@ private fun PoolScoreListView(
                 onPoolJoin = onPoolJoin,
                 onPoolLayoutSelect = onPoolLayoutSelect,
                 onSeeAllTemplates = onPoolCreate,
+                // The list scrolls under the top app bar and the navigation bar; its
+                // content padding keeps the first and last rows clear of both.
+                contentPadding = paddingValues + PaddingValues(vertical = LocalBoxSpacing.current.medium),
                 modifier = Modifier
-                    .padding(paddingValues = paddingValues)
                     .fillMaxSize()
-                    .padding(vertical = LocalBoxSpacing.current.medium),
+                    .consumeWindowInsets(paddingValues),
             )
         }
     }

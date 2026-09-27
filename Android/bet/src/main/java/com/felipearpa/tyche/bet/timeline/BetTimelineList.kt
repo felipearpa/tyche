@@ -2,6 +2,7 @@ package com.felipearpa.tyche.bet.timeline
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -13,6 +14,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.PreviewLightDark
+import androidx.compose.ui.unit.dp
 import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
@@ -31,12 +33,14 @@ import kotlinx.datetime.LocalDate
 fun BetTimelineList(
     lazyBets: LazyPagingItems<PoolGamblerBetModel>,
     modifier: Modifier = Modifier,
+    contentPadding: PaddingValues = PaddingValues(0.dp),
     placeholderCount: Int = 0,
     onMatchOpen: ((PoolGamblerBetModel) -> Unit)? = null,
 ) {
     RefreshableLazyPagingColumn(
         modifier = modifier,
         lazyPagingItems = lazyBets,
+        contentPadding = contentPadding,
         loadingContent = { betTimelinePlaceholderList(count = placeholderCount) },
         appendLoadingContent = { item { betTimelinePlaceholderItemRow() } },
     ) {

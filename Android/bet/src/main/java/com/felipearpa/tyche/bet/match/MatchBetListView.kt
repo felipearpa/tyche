@@ -1,11 +1,13 @@
 package com.felipearpa.tyche.bet.match
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.plus
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -42,8 +44,11 @@ import com.felipearpa.tyche.bet.R
 import com.felipearpa.tyche.bet.isPending
 import com.felipearpa.tyche.bet.poolGamblerBetDummyModel
 import com.felipearpa.tyche.bet.poolGamblerBetDummyModels
+import com.felipearpa.tyche.ui.CenteredScrollableColumn
+import com.felipearpa.tyche.ui.excludingBottom
 import com.felipearpa.tyche.ui.exception.localizedOrDefault
 import com.felipearpa.tyche.ui.lazy.Failure
+import com.felipearpa.tyche.ui.onlyBottom
 import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
 import com.felipearpa.tyche.ui.theme.TycheTheme
 import com.felipearpa.ui.state.LoadState
@@ -108,10 +113,10 @@ private fun MatchBetListView(
             pageSize = pageSize,
             onRetry = onRetry,
             onGamblerOpen = onGamblerOpen,
+            contentPadding = innerPadding,
             modifier = Modifier
-                .padding(innerPadding)
                 .fillMaxSize()
-                .padding(all = LocalBoxSpacing.current.medium),
+                .consumeWindowInsets(innerPadding),
         )
     }
 }
@@ -123,13 +128,23 @@ private fun MatchBetListContent(
     pageSize: Int,
     onRetry: () -> Unit,
     onGamblerOpen: ((poolId: String, gamblerId: String, gamblerUsername: String) -> Unit)?,
+    contentPadding: PaddingValues,
     modifier: Modifier = Modifier,
 ) {
+    val spacing = LocalBoxSpacing.current.medium
+    // The match header stays fixed below the top app bar, so it takes the top and side
+    // insets; lists and the open-predictions message take only the bottom inset so the
+    // list scrolls to the window's bottom edge.
+    val headerModifier = modifier
+        .padding(contentPadding.excludingBottom())
+        .padding(start = spacing, top = spacing, end = spacing)
+    val bottomPadding = contentPadding.onlyBottom() + PaddingValues(bottom = spacing)
+
     when (poolGamblerBetState) {
         is LoadState.Idle, LoadState.Loading -> {
             Column(
-                verticalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.medium),
-                modifier = modifier,
+                verticalArrangement = Arrangement.spacedBy(spacing),
+                modifier = headerModifier,
             ) {
                 MatchHeaderPlaceholderItem()
 
@@ -137,15 +152,18 @@ private fun MatchBetListContent(
                     lazyPoolGamblerBets = lazyPoolGamblerBets,
                     placeholderCount = pageSize,
                     onGamblerOpen = onGamblerOpen,
+                    contentPadding = bottomPadding,
                     modifier = Modifier.fillMaxSize(),
                 )
             }
         }
 
         is LoadState.Failure -> {
-            Box(
+            CenteredScrollableColumn(
                 modifier = modifier,
-                contentAlignment = Alignment.Center,
+                contentModifier = Modifier
+                    .padding(contentPadding)
+                    .padding(all = spacing),
             ) {
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
@@ -168,18 +186,22 @@ private fun MatchBetListContent(
 
         is LoadState.Loaded -> {
             Column(
-                verticalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.medium),
-                modifier = modifier,
+                verticalArrangement = Arrangement.spacedBy(spacing),
+                modifier = headerModifier,
             ) {
                 MatchHeader(bet = poolGamblerBetState.value)
 
                 if (poolGamblerBetState.value.isPending) {
-                    PredictionsOpenContent(modifier = Modifier.fillMaxSize())
+                    PredictionsOpenContent(
+                        contentPadding = bottomPadding,
+                        modifier = Modifier.fillMaxSize(),
+                    )
                 } else {
                     MatchBetList(
                         lazyPoolGamblerBets = lazyPoolGamblerBets,
                         placeholderCount = pageSize,
                         onGamblerOpen = onGamblerOpen,
+                        contentPadding = bottomPadding,
                         modifier = Modifier.fillMaxSize(),
                     )
                 }
@@ -189,10 +211,15 @@ private fun MatchBetListContent(
 }
 
 @Composable
-private fun PredictionsOpenContent(modifier: Modifier = Modifier) {
-    Box(
-        modifier = modifier.padding(all = LocalBoxSpacing.current.large),
-        contentAlignment = Alignment.Center,
+private fun PredictionsOpenContent(
+    contentPadding: PaddingValues,
+    modifier: Modifier = Modifier,
+) {
+    CenteredScrollableColumn(
+        modifier = modifier,
+        contentModifier = Modifier
+            .padding(contentPadding)
+            .padding(all = LocalBoxSpacing.current.large),
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,

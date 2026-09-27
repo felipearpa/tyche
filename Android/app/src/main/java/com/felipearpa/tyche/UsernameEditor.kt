@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
@@ -112,7 +111,6 @@ internal fun UsernameEditor(
     Column(
         modifier = modifier
             .verticalScroll(rememberScrollState())
-            .imePadding()
             .padding(
                 horizontal = LocalBoxSpacing.current.large,
                 vertical = LocalBoxSpacing.current.medium,

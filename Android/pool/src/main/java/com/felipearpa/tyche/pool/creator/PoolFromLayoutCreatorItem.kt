@@ -15,9 +15,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import com.felipearpa.foundation.time.toShortDateString
 import com.felipearpa.tyche.pool.R
+import com.felipearpa.tyche.ui.shimmer
 import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
 import com.felipearpa.tyche.ui.theme.TycheTheme
 import com.felipearpa.tyche.ui.R as SharedR
@@ -74,6 +76,17 @@ fun PoolFromLayoutCreatorItem(
             )
         }
     }
+}
+
+/** The production template card populated with filler and shimmer while templates load. */
+@Composable
+internal fun PoolFromLayoutCreatorFakeItem(modifier: Modifier = Modifier) {
+    PoolFromLayoutCreatorItem(
+        poolLayout = poolLayoutFakeModel(),
+        // Placeholder values are filler, not templates: keep them from screen readers.
+        modifier = modifier.clearAndSetSemantics {},
+        shimmerModifier = Modifier.shimmer(),
+    )
 }
 
 @PreviewLightDark

@@ -4,13 +4,17 @@ import android.content.Intent
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -19,6 +23,7 @@ import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -123,13 +128,14 @@ fun PoolHomeView(
             )
         },
         isSaving = deleteState.isSaving(),
-        content = {
+        content = { contentPadding ->
             when (selectedTabIndex) {
                 Tab.GAMBLER_SCORE -> GamblerScoreListView(
                     viewModel = gamblerScoreListViewModel(
                         poolId = poolId,
                         gamblerId = gamblerId,
                     ),
+                    contentPadding = contentPadding,
                     onGamblerOpen = onGamblerOpen,
                 )
 
@@ -138,6 +144,7 @@ fun PoolHomeView(
                         poolId = poolId,
                         gamblerId = gamblerId,
                     ),
+                    contentPadding = contentPadding,
                     onMatchOpen = onMatchOpen,
                 )
 
@@ -146,6 +153,7 @@ fun PoolHomeView(
                         poolId = poolId,
                         gamblerId = gamblerId,
                     ),
+                    contentPadding = contentPadding,
                     onMatchOpen = onMatchOpen,
                 )
             }
@@ -165,9 +173,14 @@ fun PoolHomeView(
     }
 }
 
+/**
+ * Pool home's scaffold owns the system insets. Its padding goes to the selected tab, whose
+ * list takes it as content padding so rows scroll under the top app bar and the tab bar
+ * rather than stopping at an outer margin.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun PoolHomeContent(
+internal fun PoolHomeContent(
     selectedTabIndex: Tab,
     onTabChange: (Tab) -> Unit,
     isDrawerOpen: Boolean,
@@ -176,7 +189,7 @@ private fun PoolHomeContent(
     onPoolChange: () -> Unit,
     drawerContent: @Composable () -> Unit,
     isSaving: Boolean,
-    content: @Composable () -> Unit,
+    content: @Composable (contentPadding: PaddingValues) -> Unit,
 ) {
     PushDrawer(
         isOpen = isDrawerOpen,
@@ -197,34 +210,10 @@ private fun PoolHomeContent(
                     )
                 },
                 bottomBar = {
-                    PrimaryTabRow(
-                        selectedTabIndex = selectedTabIndex.ordinal,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .navigationBarsPadding(),
-                    ) {
-                        GamblerScoreTab(
-                            selected = selectedTabIndex == Tab.GAMBLER_SCORE,
-                            onClick = { onTabChange(Tab.GAMBLER_SCORE) },
-                        )
-                        BetEditorTab(
-                            selected = selectedTabIndex == Tab.BET_EDITOR,
-                            onClick = { onTabChange(Tab.BET_EDITOR) },
-                        )
-                        HistoryBetTab(
-                            selected = selectedTabIndex == Tab.HISTORY_BET,
-                            onClick = { onTabChange(Tab.HISTORY_BET) },
-                        )
-                    }
+                    TabBar(selectedTab = selectedTabIndex, onTabChange = onTabChange)
                 },
             ) { innerPadding ->
-                Box(
-                    modifier = Modifier
-                        .padding(paddingValues = innerPadding)
-                        .fillMaxSize(),
-                ) {
-                    content()
-                }
+                content(innerPadding)
             }
         }
 
@@ -232,6 +221,44 @@ private fun PoolHomeContent(
             LoadingContainerView { scaffoldContent() }
         } else {
             scaffoldContent()
+        }
+    }
+}
+
+/**
+ * The tab bar's surface runs through the navigation-bar area to the window's bottom edge,
+ * and the tabs sit inside it, clear of the navigation bar. The keyboard may cover the bar;
+ * the pending-bet list accounts for that overlap itself.
+ */
+@Composable
+private fun TabBar(selectedTab: Tab, onTabChange: (Tab) -> Unit) {
+    Surface(
+        color = TabRowDefaults.primaryContainerColor,
+        contentColor = TabRowDefaults.primaryContentColor,
+        modifier = Modifier.fillMaxWidth(),
+    ) {
+        PrimaryTabRow(
+            selectedTabIndex = selectedTab.ordinal,
+            modifier = Modifier
+                .fillMaxWidth()
+                .windowInsetsPadding(
+                    WindowInsets.navigationBars.only(
+                        WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom,
+                    ),
+                ),
+        ) {
+            GamblerScoreTab(
+                selected = selectedTab == Tab.GAMBLER_SCORE,
+                onClick = { onTabChange(Tab.GAMBLER_SCORE) },
+            )
+            BetEditorTab(
+                selected = selectedTab == Tab.BET_EDITOR,
+                onClick = { onTabChange(Tab.BET_EDITOR) },
+            )
+            HistoryBetTab(
+                selected = selectedTab == Tab.HISTORY_BET,
+                onClick = { onTabChange(Tab.HISTORY_BET) },
+            )
         }
     }
 }
@@ -376,7 +403,7 @@ private fun AppTopBar(
 
 private val iconSize = 24.dp
 
-private enum class Tab {
+internal enum class Tab {
     GAMBLER_SCORE,
     BET_EDITOR,
     HISTORY_BET
@@ -408,7 +435,7 @@ private fun PoolHomeScoreTabPreview() {
                 onPoolChange = {},
                 drawerContent = { Text("Drawer Content") },
                 isSaving = false,
-                content = { GamblerScoreListViewPreview() },
+                content = { contentPadding -> GamblerScoreListViewPreview(contentPadding = contentPadding) },
             )
         }
     }
@@ -432,7 +459,7 @@ private fun PoolHomeBetsTabPreview() {
                 onPoolChange = {},
                 drawerContent = { Text("Drawer Content") },
                 isSaving = false,
-                content = { PendingBetListViewPreview() },
+                content = { contentPadding -> PendingBetListViewPreview(contentPadding = contentPadding) },
             )
         }
     }
@@ -456,7 +483,7 @@ private fun PoolHomeHistoryTabPreview() {
                 onPoolChange = {},
                 drawerContent = { Text("Drawer Content") },
                 isSaving = false,
-                content = { FinishedBetListViewPreview() },
+                content = { contentPadding -> FinishedBetListViewPreview(contentPadding = contentPadding) },
             )
         }
     }

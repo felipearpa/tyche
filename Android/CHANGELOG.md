@@ -20,6 +20,8 @@
 - Menu animations follow your finger smoothly, even when you change direction, and respect system animation settings
 - The menu adapts to wide windows, landscape, large text, and right-to-left layouts, with scrolling to keep every action reachable
 - TalkBack focus stays inside the open menu and returns to the menu button when it closes; Android Back closes the menu before leaving the screen
+- Screens now fill the whole display, edge to edge, while lists, buttons, and text stay clear of the status bar, navigation bar, and camera cutout
+- The field you are typing in and its Save or Done button stay visible above the keyboard, in portrait, landscape, and with large text
 - Fix: confirming pool deletion more than once while it is in progress no longer sends duplicate requests
 
 ## 1.7.2

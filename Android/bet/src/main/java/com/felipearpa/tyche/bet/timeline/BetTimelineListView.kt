@@ -3,9 +3,11 @@ package com.felipearpa.tyche.bet.timeline
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.plus
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -31,6 +33,8 @@ import com.felipearpa.foundation.emptyString
 import com.felipearpa.tyche.bet.PoolGamblerBetModel
 import com.felipearpa.tyche.bet.R
 import com.felipearpa.tyche.bet.poolGamblerBetDummyModels
+import com.felipearpa.tyche.ui.excludingBottom
+import com.felipearpa.tyche.ui.onlyBottom
 import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
 import kotlinx.coroutines.flow.MutableStateFlow
 import com.felipearpa.tyche.ui.R as SharedR
@@ -68,7 +72,8 @@ fun BetTimelineListView(
                 placeholderCount = 50,
                 gamblerUsername = gamblerUsername,
                 onMatchOpen = {},
-                modifier = Modifier.viewStyle(paddingValues = innerPadding),
+                contentPadding = innerPadding,
+                modifier = Modifier.fillMaxSize(),
             )
             return@Scaffold
         }
@@ -80,7 +85,8 @@ fun BetTimelineListView(
             ),
             gamblerUsername = gamblerUsername,
             onMatchOpen = onMatchOpen,
-            modifier = Modifier.viewStyle(paddingValues = innerPadding),
+            contentPadding = innerPadding,
+            modifier = Modifier.fillMaxSize(),
         )
     }
 }
@@ -121,6 +127,7 @@ private fun AppTopBar(
 private fun BetTimelineListView(
     viewModel: BetTimelineListViewModel,
     gamblerUsername: String,
+    contentPadding: PaddingValues,
     modifier: Modifier = Modifier,
     onMatchOpen: ((PoolGamblerBetModel) -> Unit)? = null,
 ) {
@@ -131,6 +138,7 @@ private fun BetTimelineListView(
         lazyBets = lazyItems,
         placeholderCount = pageSize,
         gamblerUsername = gamblerUsername,
+        contentPadding = contentPadding,
         modifier = modifier,
         onMatchOpen = onMatchOpen,
     )
@@ -141,10 +149,22 @@ private fun BetTimelineListView(
     lazyBets: LazyPagingItems<PoolGamblerBetModel>,
     placeholderCount: Int,
     gamblerUsername: String,
+    contentPadding: PaddingValues,
     modifier: Modifier = Modifier,
     onMatchOpen: ((PoolGamblerBetModel) -> Unit)?,
 ) {
-    Column(modifier = modifier) {
+    // The username header stays fixed below the top app bar, so it takes the top and side
+    // insets; the list takes only the bottom inset so it scrolls to the window's bottom edge.
+    Column(
+        modifier = modifier
+            .padding(contentPadding.excludingBottom())
+            .consumeWindowInsets(contentPadding)
+            .padding(
+                start = LocalBoxSpacing.current.medium,
+                top = LocalBoxSpacing.current.medium,
+                end = LocalBoxSpacing.current.medium,
+            ),
+    ) {
         Text(
             text = gamblerUsername,
             style = MaterialTheme.typography.titleLarge,
@@ -156,6 +176,8 @@ private fun BetTimelineListView(
         BetTimelineList(
             lazyBets = lazyBets,
             placeholderCount = placeholderCount,
+            contentPadding = contentPadding.onlyBottom() +
+                PaddingValues(bottom = LocalBoxSpacing.current.medium),
             modifier = Modifier
                 .fillMaxSize()
                 .padding(horizontal = LocalBoxSpacing.current.medium),
@@ -163,13 +185,6 @@ private fun BetTimelineListView(
         )
     }
 }
-
-@Composable
-private fun Modifier.viewStyle(paddingValues: PaddingValues) =
-    padding(paddingValues = paddingValues)
-        .fillMaxSize()
-        .padding(all = LocalBoxSpacing.current.medium)
-
 
 @Preview(showBackground = true)
 @Composable

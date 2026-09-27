@@ -9,7 +9,9 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -61,6 +63,7 @@ import com.felipearpa.tyche.pool.R
 import com.felipearpa.tyche.ui.exception.localizedOrDefault
 import com.felipearpa.tyche.ui.lazy.Failure
 import com.felipearpa.tyche.ui.lazy.RefreshableLazyPagingColumn
+import com.felipearpa.tyche.ui.lazy.ViewportFillingItem
 import com.felipearpa.tyche.ui.lazy.lazyPagingConcatenateError
 import com.felipearpa.tyche.ui.shimmer
 import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
@@ -124,14 +127,17 @@ fun ManageGamblersView(
     ) { innerPadding ->
         Box(
             modifier = Modifier
-                .padding(innerPadding)
-                .fillMaxSize(),
+                .fillMaxSize()
+                .consumeWindowInsets(innerPadding),
         ) {
+            // The list scrolls under the top app bar and the navigation bar; its content
+            // padding keeps the first and last rows clear of both.
             ManageGamblersList(
                 lazyMembers = lazyMembers,
                 isEditing = isEditing,
                 removalStates = removalStates,
                 onRequestRemove = { gamblerPendingRemoval = it },
+                contentPadding = innerPadding,
                 modifier = Modifier.fillMaxSize(),
             )
 
@@ -141,6 +147,7 @@ fun ManageGamblersView(
                     onRetry = { viewModel.remove(failed) },
                     modifier = Modifier
                         .align(Alignment.BottomCenter)
+                        .padding(innerPadding)
                         .padding(LocalBoxSpacing.current.medium),
                 )
             }
@@ -165,11 +172,13 @@ private fun ManageGamblersList(
     isEditing: Boolean,
     removalStates: Map<String, MutationState<PoolMemberModel>>,
     onRequestRemove: (PoolMemberModel) -> Unit,
+    contentPadding: PaddingValues,
     modifier: Modifier = Modifier,
 ) {
     RefreshableLazyPagingColumn(
         modifier = modifier,
         lazyPagingItems = lazyMembers,
+        contentPadding = contentPadding,
         loadingContent = { managePlaceholderList(count = 8) },
         emptyContent = {},
         errorContent = { error(exception = it) },
@@ -437,12 +446,7 @@ private fun RemoveGamblerConfirmationDialog(
 
 fun LazyListScope.error(exception: Throwable) {
     item {
-        Box(
-            contentAlignment = Alignment.Center,
-            modifier = Modifier
-                .fillParentMaxSize()
-                .padding(all = LocalBoxSpacing.current.medium),
-        ) {
+        ViewportFillingItem(modifier = Modifier.padding(all = LocalBoxSpacing.current.medium)) {
             Failure(
                 localizedException = exception.localizedOrDefault(),
                 modifier = Modifier

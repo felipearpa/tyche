@@ -1,6 +1,5 @@
 package com.felipearpa.tyche
 
-import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.OnBackPressedCallback
 import androidx.compose.runtime.mutableStateOf
@@ -147,26 +146,6 @@ class UsernameEditorNavigationTest {
         assertEquals(1, systemBackCount)
         assertEquals(0, retryCount)
         assertEquals(0, saveCount)
-    }
-
-    @Test
-    fun theEditorAsksForAResizingWindowAndRestoresTheModeWhenItIsLeft() {
-        // The default soft-input mode pans a Compose window, which slides the top app bar off
-        // screen with the keyboard open on a small viewport or at a large font scale. The route
-        // asks for resize only while it is on screen.
-        val originalMode = composeTestRule.activity.window.attributes.softInputMode
-
-        startEditor()
-
-        assertEquals(
-            WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE,
-            composeTestRule.activity.window.attributes.softInputMode and
-                WindowManager.LayoutParams.SOFT_INPUT_MASK_ADJUST,
-        )
-
-        tapToolbarBack()
-
-        assertEquals(originalMode, composeTestRule.activity.window.attributes.softInputMode)
     }
 
     @Test

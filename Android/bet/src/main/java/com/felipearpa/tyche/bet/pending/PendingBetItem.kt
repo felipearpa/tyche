@@ -26,6 +26,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.felipearpa.foundation.time.toShortDateTimeString
@@ -156,7 +157,8 @@ fun PendingBetPlaceholderItem(modifier: Modifier = Modifier) {
     PendingBetItem(
         poolGamblerBet = poolGamblerBetFakeModel(),
         viewState = PendingBetItemViewState.Visualization(partialPoolGamblerBetFakeModel()),
-        modifier = modifier,
+        // Placeholder values are filler, not bets: keep them from screen readers.
+        modifier = modifier.clearAndSetSemantics {},
         shimmerModifier = Modifier.shimmer(),
     )
 }

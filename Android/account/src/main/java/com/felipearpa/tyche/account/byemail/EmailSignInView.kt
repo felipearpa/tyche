@@ -5,12 +5,17 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.fitInside
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -28,6 +33,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.WindowInsetsRulers
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -64,7 +70,7 @@ fun EmailSignInView(
 }
 
 @Composable
-private fun EmailSignInView(
+internal fun EmailSignInView(
     viewState: LoadState<String>,
     onSignInWithEmail: (String) -> Unit,
     onReset: () -> Unit,
@@ -94,10 +100,7 @@ private fun EmailSignInView(
                     email = email,
                     onEdit = edit,
                     onSignIn = signIn,
-                    modifier = Modifier
-                        .padding(paddingValues = innerPadding)
-                        .fillMaxWidth()
-                        .padding(horizontal = LocalBoxSpacing.current.medium),
+                    modifier = Modifier.formStyle(innerPadding = innerPadding),
                 )
 
                 is LoadState.Loaded -> SuccessContent(
@@ -109,10 +112,7 @@ private fun EmailSignInView(
                 )
 
                 is LoadState.Failure -> FailureContent(
-                    modifier = Modifier
-                        .padding(paddingValues = innerPadding)
-                        .fillMaxWidth()
-                        .padding(horizontal = LocalBoxSpacing.current.medium),
+                    modifier = Modifier.formStyle(innerPadding = innerPadding),
                     email = email,
                     viewState = viewState,
                     onReset = onReset,
@@ -297,6 +297,22 @@ private fun FailureContent(
         )
     }
 }
+
+/**
+ * Places the sign-in form in the scaffold's content area and keeps it usable with the keyboard
+ * open. The scaffold's system-bar padding is applied and consumed, then the form fits inside the
+ * IME ruler: with the keyboard closed that changes nothing, and with it open the form ends at the
+ * keyboard's top edge instead of the navigation bar's, so the two heights are not added together.
+ * The form scrolls within what remains, with its side spacing inside the scrolling content.
+ */
+@Composable
+private fun Modifier.formStyle(innerPadding: PaddingValues) =
+    fillMaxSize()
+        .padding(paddingValues = innerPadding)
+        .consumeWindowInsets(innerPadding)
+        .fitInside(WindowInsetsRulers.Ime.current)
+        .verticalScroll(rememberScrollState())
+        .padding(horizontal = LocalBoxSpacing.current.medium)
 
 private val emailIconSize = 64.dp
 private val pillIconSize = 16.dp

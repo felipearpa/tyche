@@ -3,8 +3,8 @@ package com.felipearpa.tyche.bet.finished
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -31,6 +31,7 @@ import com.felipearpa.foundation.time.toShortDateString
 import com.felipearpa.tyche.bet.PoolGamblerBetModel
 import com.felipearpa.tyche.bet.poolGamblerBetDummyModels
 import com.felipearpa.tyche.ui.lazy.RefreshableLazyPagingColumn
+import com.felipearpa.tyche.ui.lazy.ViewportFillingItem
 import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
 import com.felipearpa.tyche.ui.theme.TycheTheme
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -42,12 +43,14 @@ import com.felipearpa.tyche.ui.R as SharedR
 fun FinishedBetList(
     lazyPoolGamblerBets: LazyPagingItems<PoolGamblerBetModel>,
     modifier: Modifier = Modifier,
+    contentPadding: PaddingValues = PaddingValues(0.dp),
     placeholderCount: Int = 0,
     onMatchOpen: ((PoolGamblerBetModel) -> Unit)? = null,
 ) {
     RefreshableLazyPagingColumn(
         modifier = modifier,
         lazyPagingItems = lazyPoolGamblerBets,
+        contentPadding = contentPadding,
         loadingContent = { finishedPoolGamblerBetFakeList(count = placeholderCount) },
         emptyContent = { emptyContent() },
         appendLoadingContent = { item { finishedPoolGamblerBetPlaceholderItemRow() } },
@@ -126,10 +129,7 @@ private fun Modifier.finishedHeaderBetItem(isFirst: Boolean) =
 
 private fun LazyListScope.emptyContent() {
     item {
-        Box(
-            contentAlignment = Alignment.Center,
-            modifier = Modifier.fillParentMaxSize(),
-        ) {
+        ViewportFillingItem {
             Column(
                 modifier = Modifier.fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.medium),

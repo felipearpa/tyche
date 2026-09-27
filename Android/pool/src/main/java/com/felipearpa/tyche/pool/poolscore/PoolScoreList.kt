@@ -5,6 +5,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -40,16 +41,16 @@ import androidx.paging.compose.itemContentType
 import androidx.paging.compose.itemKey
 import com.felipearpa.tyche.pool.PoolGamblerScoreModel
 import com.felipearpa.tyche.pool.R
+import com.felipearpa.tyche.pool.creator.PoolFromLayoutCreatorFakeItem
 import com.felipearpa.tyche.pool.creator.PoolFromLayoutCreatorItem
 import com.felipearpa.tyche.pool.creator.PoolLayoutModel
 import com.felipearpa.tyche.pool.creator.poolLayoutDummyModels
-import com.felipearpa.tyche.pool.creator.poolLayoutFakeModel
 import com.felipearpa.tyche.pool.poolGamblerScoreDummyModels
 import com.felipearpa.tyche.ui.exception.localizedOrDefault
 import com.felipearpa.tyche.ui.lazy.Failure
 import com.felipearpa.tyche.ui.lazy.RefreshableLazyPagingColumn
+import com.felipearpa.tyche.ui.lazy.ViewportFillingItem
 import com.felipearpa.tyche.ui.lazy.lazyPagingConcatenateError
-import com.felipearpa.tyche.ui.shimmer
 import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
 import com.felipearpa.tyche.ui.theme.TycheTheme
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -61,6 +62,7 @@ fun PoolScoreList(
     lazyPoolGamblerScores: LazyPagingItems<PoolGamblerScoreModel>,
     lazyPoolLayouts: LazyPagingItems<PoolLayoutModel>,
     lazyListState: LazyListState = rememberLazyListState(),
+    contentPadding: PaddingValues = PaddingValues(0.dp),
     onPoolOpen: (poolId: String, gamblerId: String) -> Unit,
     onPoolJoin: (poolId: String) -> Unit,
     onPoolLayoutSelect: (PoolLayoutModel) -> Unit,
@@ -71,6 +73,7 @@ fun PoolScoreList(
         modifier = modifier,
         lazyPagingItems = lazyPoolGamblerScores,
         lazyListState = lazyListState,
+        contentPadding = contentPadding,
         loadingContent = { poolScorePlaceholderList(count = fakeItemCount) },
         emptyContent = {
             poolScoreEmptyList(
@@ -262,15 +265,13 @@ private fun LazyListScope.poolScoreEmptyList(
 private fun LazyListScope.poolLayoutPlaceholderList(count: Int) {
     repeat(count) {
         item {
-            PoolFromLayoutCreatorItem(
-                poolLayout = poolLayoutFakeModel(),
+            PoolFromLayoutCreatorFakeItem(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(
                         horizontal = emptyStateHorizontalPadding,
                         vertical = LocalBoxSpacing.current.small,
                     ),
-                shimmerModifier = Modifier.shimmer(),
             )
         }
     }
@@ -278,12 +279,7 @@ private fun LazyListScope.poolLayoutPlaceholderList(count: Int) {
 
 private fun LazyListScope.poolScoreErrorList(exception: Throwable, onRetry: () -> Unit) {
     item {
-        Box(
-            contentAlignment = Alignment.Center,
-            modifier = Modifier
-                .fillParentMaxSize()
-                .padding(all = LocalBoxSpacing.current.medium),
-        ) {
+        ViewportFillingItem(modifier = Modifier.padding(all = LocalBoxSpacing.current.medium)) {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.medium),
