@@ -2,17 +2,14 @@ package com.felipearpa.tyche.account.byemail
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
@@ -34,6 +31,7 @@ import com.felipearpa.foundation.emptyString
 import com.felipearpa.tyche.account.R
 import com.felipearpa.tyche.session.AccountBundle
 import com.felipearpa.tyche.session.emptyAccountBundle
+import com.felipearpa.tyche.ui.MessageWithActions
 import com.felipearpa.tyche.ui.exception.ExceptionView
 import com.felipearpa.tyche.ui.exception.LocalizedException
 import com.felipearpa.tyche.ui.exception.UnknownLocalizedException
@@ -81,8 +79,7 @@ fun EmailLinkSignInView(
                 onRetry = onRetry,
                 modifier = Modifier
                     .fillMaxSize()
-                    .statusBarsPadding()
-                    .navigationBarsPadding()
+                    .safeDrawingPadding()
                     .padding(horizontal = LocalBoxSpacing.current.medium),
             )
         }
@@ -97,8 +94,7 @@ fun EmailLinkSignInView(
                 onStart = { onStart(state.value) },
                 modifier = Modifier
                     .fillMaxSize()
-                    .statusBarsPadding()
-                    .navigationBarsPadding()
+                    .safeDrawingPadding()
                     .padding(horizontal = LocalBoxSpacing.current.medium),
             )
     }
@@ -106,53 +102,45 @@ fun EmailLinkSignInView(
 
 @Composable
 private fun SuccessContent(email: String, onStart: () -> Unit, modifier: Modifier = Modifier) {
-    Column(
+    MessageWithActions(
         modifier = modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
+        actions = {
+            Button(
+                onClick = onStart,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = LocalBoxSpacing.current.medium),
+            ) {
+                Text(text = stringResource(id = R.string.start_action))
+            }
+        },
     ) {
-        Column(
-            modifier = Modifier
-                .weight(1f)
-                .fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center,
-        ) {
-            Icon(
-                painter = painterResource(id = R.drawable.mark_email_read),
-                contentDescription = emptyString(),
-                modifier = Modifier.size(iconSize),
-            )
+        Icon(
+            painter = painterResource(id = R.drawable.mark_email_read),
+            contentDescription = emptyString(),
+            modifier = Modifier.size(iconSize),
+        )
 
-            Spacer(modifier = Modifier.height(LocalBoxSpacing.current.large))
+        Spacer(modifier = Modifier.height(LocalBoxSpacing.current.large))
 
-            Text(
-                text = stringResource(id = R.string.account_verified_title),
-                textAlign = TextAlign.Center,
-                style = MaterialTheme.typography.headlineSmall,
-                modifier = Modifier.fillMaxWidth(),
-            )
+        Text(
+            text = stringResource(id = R.string.account_verified_title),
+            textAlign = TextAlign.Center,
+            style = MaterialTheme.typography.headlineSmall,
+            modifier = Modifier.fillMaxWidth(),
+        )
 
-            Spacer(modifier = Modifier.height(LocalBoxSpacing.current.medium))
+        Spacer(modifier = Modifier.height(LocalBoxSpacing.current.medium))
 
-            Text(
-                text = stringResource(id = R.string.account_verified_description),
-                textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth(),
-            )
+        Text(
+            text = stringResource(id = R.string.account_verified_description),
+            textAlign = TextAlign.Center,
+            modifier = Modifier.fillMaxWidth(),
+        )
 
-            Spacer(modifier = Modifier.height(LocalBoxSpacing.current.large))
+        Spacer(modifier = Modifier.height(LocalBoxSpacing.current.large))
 
-            VerifiedEmailPill(email = email)
-        }
-
-        Button(
-            onClick = onStart,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = LocalBoxSpacing.current.medium),
-        ) {
-            Text(text = stringResource(id = R.string.start_action))
-        }
+        VerifiedEmailPill(email = email)
     }
 }
 
@@ -192,27 +180,20 @@ private fun FailureContent(
     onRetry: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Column(
+    MessageWithActions(
         modifier = modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
+        actions = {
+            Button(
+                onClick = onRetry,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = LocalBoxSpacing.current.medium),
+            ) {
+                Text(text = stringResource(id = SharedR.string.retry_action))
+            }
+        },
     ) {
-        Box(
-            modifier = Modifier
-                .weight(1f)
-                .fillMaxWidth(),
-            contentAlignment = Alignment.Center,
-        ) {
-            ExceptionView(localizedException = localizedException)
-        }
-
-        Button(
-            onClick = onRetry,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = LocalBoxSpacing.current.medium),
-        ) {
-            Text(text = stringResource(id = SharedR.string.retry_action))
-        }
+        ExceptionView(localizedException = localizedException)
     }
 }
 

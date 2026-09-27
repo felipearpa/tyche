@@ -2,6 +2,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 val projectCompileSdk: String by project
 val projectMinSdk: String by project
+val projectTargetSdk: String by project
 val urlBasePath: String by project
 val urlBasePathLocal: String by project
 val signInLinkUrlTemplate: String by project
@@ -29,6 +30,7 @@ android {
     defaultConfig {
         applicationId = "com.felipearpa.fortuna"
         minSdk = projectMinSdk.toInt()
+        targetSdk = projectTargetSdk.toInt()
         versionCode = 12
         versionName = "2.0.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"

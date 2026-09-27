@@ -2,8 +2,10 @@ package com.felipearpa.tyche.pool.creator
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -20,6 +22,8 @@ import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.felipearpa.tyche.pool.R
+import com.felipearpa.tyche.ui.excludingBottom
+import com.felipearpa.tyche.ui.onlyBottom
 import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
 import com.felipearpa.tyche.ui.theme.TycheTheme
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -29,6 +33,7 @@ internal fun StepOneView(
     viewModel: StepOneViewModel,
     createPoolModel: CreatePoolModel,
     onNextClick: (createPoolModel: CreatePoolModel) -> Unit,
+    contentPadding: PaddingValues,
     modifier: Modifier = Modifier,
 ) {
     val lazyPoolLayouts = viewModel.poolLayouts.collectAsLazyPagingItems()
@@ -37,6 +42,7 @@ internal fun StepOneView(
         pageSize = 3,
         createPoolModel = createPoolModel,
         onNextClick = onNextClick,
+        contentPadding = contentPadding,
         modifier = modifier,
     )
 }
@@ -47,12 +53,15 @@ internal fun StepOneView(
     pageSize: Int,
     createPoolModel: CreatePoolModel,
     onNextClick: (createPoolModel: CreatePoolModel) -> Unit,
+    contentPadding: PaddingValues,
     modifier: Modifier = Modifier,
 ) {
     var selectedPoolLayout by remember { mutableStateOf<PoolLayoutModel?>(null) }
 
+    // The instruction stays fixed below the top app bar, so it takes the top and side
+    // padding; the list takes only the bottom padding so it scrolls to the window's edge.
     Column(
-        modifier = modifier,
+        modifier = modifier.padding(contentPadding.excludingBottom()),
         verticalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.medium),
     ) {
 
@@ -64,6 +73,7 @@ internal fun StepOneView(
         PoolFromLayoutCreatorList(
             poolLayouts = lazyItems,
             fakeItemCount = pageSize,
+            contentPadding = contentPadding.onlyBottom(),
             modifier = Modifier.fillMaxWidth(),
             selectedPoolLayout = selectedPoolLayout,
             onPoolLayoutChange = { newPoolLayout -> selectedPoolLayout = newPoolLayout },
@@ -90,6 +100,7 @@ private fun StepOnePreview() {
                 pageSize = 5,
                 createPoolModel = emptyCreatePoolModel(),
                 onNextClick = {},
+                contentPadding = PaddingValues(LocalBoxSpacing.current.medium),
                 modifier = Modifier.fillMaxSize(),
             )
         }

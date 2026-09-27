@@ -1,9 +1,8 @@
 package com.felipearpa.tyche
 
-import android.view.Window
-import android.view.WindowManager
-import androidx.activity.compose.LocalActivity
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fitInside
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -12,9 +11,9 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.WindowInsetsRulers
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -86,9 +85,16 @@ internal fun UsernameEditorScreen(
 }
 
 /**
- * Hosts the top app bar above the editor content. The bar is pinned: only the editor's column
- * scrolls, and the editor applies its own IME padding, so the back button stays visible while
- * the content scrolls and while the software keyboard is open.
+ * Hosts the top app bar above the editor content and owns the screen's insets. The bar is
+ * pinned: only the editor's column scrolls, so the back button stays visible while the content
+ * scrolls and while the software keyboard is open.
+ *
+ * The activity resizes for the keyboard (`adjustResize`) and draws edge to edge, so the window
+ * never pans the bar away; the keyboard is handled here instead. The content consumes the
+ * scaffold's system-bar padding, then fits inside the IME ruler: with the keyboard closed the
+ * ruler lies beyond the navigation-bar padding and changes nothing, and with it open the
+ * content ends at the keyboard's top edge. The keyboard and navigation bar overlap, so neither
+ * is added to the other, and the editor scrolls within the space that remains.
  *
  * While a save is in flight the button stays visible but disabled — TalkBack still reaches it
  * and announces the disabled state — matching the editor's system-back guard.
@@ -101,8 +107,6 @@ private fun UsernameEditorScaffold(
     modifier: Modifier = Modifier,
     content: @Composable (Modifier) -> Unit,
 ) {
-    ResizeWindowForKeyboard()
-
     Scaffold(
         modifier = modifier,
         topBar = {
@@ -125,42 +129,9 @@ private fun UsernameEditorScaffold(
         content(
             Modifier
                 .fillMaxSize()
-                .padding(innerPadding),
+                .padding(innerPadding)
+                .consumeWindowInsets(innerPadding)
+                .fitInside(WindowInsetsRulers.Ime.current),
         )
     }
-}
-
-/**
- * Keeps the top app bar on screen while the software keyboard is open.
- *
- * The activity is edge to edge but keeps the platform's default soft-input mode, which a
- * Compose window resolves to panning: on a small viewport or at a large font scale the whole
- * window slides up when the keyboard opens and takes the top app bar with it. The editor
- * already pads for the IME and scrolls, so this route asks for resize while it is on screen
- * and restores the previous mode when it leaves — every other screen keeps the mode it has.
- */
-@Composable
-private fun ResizeWindowForKeyboard() {
-    val window = LocalActivity.current?.window ?: return
-
-    DisposableEffect(window) {
-        val previousMode = window.attributes.softInputMode
-        window.applySoftInputAdjustment(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
-        onDispose { window.applySoftInputMode(previousMode) }
-    }
-}
-
-/** Replaces only the adjustment bits, leaving the window's soft-input state bits alone. */
-private fun Window.applySoftInputAdjustment(adjustment: Int) {
-    val mode = attributes.softInputMode and
-        WindowManager.LayoutParams.SOFT_INPUT_MASK_ADJUST.inv()
-    applySoftInputMode(mode or adjustment)
-}
-
-/**
- * Writes the mode through the window attributes rather than `Window.setSoftInputMode`, which
- * silently ignores a mode of `0` — the platform default this screen has to restore.
- */
-private fun Window.applySoftInputMode(mode: Int) {
-    attributes = attributes.apply { softInputMode = mode }
 }

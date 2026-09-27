@@ -11,8 +11,10 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.plus
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -68,25 +70,28 @@ fun PoolFromLayoutCreatorView(
         reset = viewModel::reset,
         preselectedPoolLayoutId = preselectedPoolLayoutId,
         preselectedPoolName = preselectedPoolName,
-        stepOneView = { model, onNext ->
+        stepOneView = { model, contentPadding, onNext ->
             StepOneView(
                 viewModel = stepOneViewModel(),
                 createPoolModel = model,
                 onNextClick = onNext,
-            )
-        },
-        stepTwoView = { model, onSave ->
-            StepTwoView(
-                createPoolModel = model,
-                onSaveClick = onSave,
+                contentPadding = contentPadding,
+                modifier = Modifier.fillMaxSize(),
             )
         },
     )
 }
 
+/**
+ * The two creation steps under one top app bar.
+ *
+ * The bar collapses with the template list on step one. On the name step it is pinned and the
+ * step's scrolling does not reach it, so the back control stays visible while the keyboard is
+ * open and the form scrolls.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun PoolFromLayoutCreatorView(
+internal fun PoolFromLayoutCreatorView(
     state: MutationState<CreatePoolModel>,
     onSaveClick: (createPoolModel: CreatePoolModel) -> Unit,
     onPoolCreated: (poolId: String) -> Unit,
@@ -94,8 +99,7 @@ private fun PoolFromLayoutCreatorView(
     reset: () -> Unit,
     preselectedPoolLayoutId: String? = null,
     preselectedPoolName: String? = null,
-    stepOneView: @Composable (CreatePoolModel, (CreatePoolModel) -> Unit) -> Unit,
-    stepTwoView: @Composable (CreatePoolModel, (CreatePoolModel) -> Unit) -> Unit,
+    stepOneView: @Composable (CreatePoolModel, PaddingValues, (CreatePoolModel) -> Unit) -> Unit,
 ) {
     val hasPreselection = preselectedPoolLayoutId != null
     var step by remember {
@@ -121,11 +125,17 @@ private fun PoolFromLayoutCreatorView(
         Scaffold(
             modifier = Modifier
                 .fillMaxSize()
-                .nestedScroll(scrollBehavior.nestedScrollConnection),
+                .then(
+                    if (step == Step.One) {
+                        Modifier.nestedScroll(scrollBehavior.nestedScrollConnection)
+                    } else {
+                        Modifier
+                    },
+                ),
             topBar = {
                 TopBar(
                     title = { Text(text = stringResource(id = R.string.pool_from_layout_creator_title)) },
-                    scrollBehavior = scrollBehavior,
+                    scrollBehavior = scrollBehavior.takeIf { step == Step.One },
                     onBackClick = {
                         if (!isOverlayVisible) {
                             when (step) {
@@ -148,11 +158,10 @@ private fun PoolFromLayoutCreatorView(
                             createPoolModel = newCreatePoolModel
                         },
                         stepOneView = stepOneView,
-                        stepTwoView = stepTwoView,
+                        contentPadding = paddingValues,
                         modifier = Modifier
-                            .padding(paddingValues = paddingValues)
                             .fillMaxSize()
-                            .padding(all = LocalBoxSpacing.current.medium),
+                            .consumeWindowInsets(paddingValues),
                     )
 
                 is MutationState.Mutating,
@@ -165,11 +174,10 @@ private fun PoolFromLayoutCreatorView(
                         createPoolModel = createPoolModel,
                         onCreatePoolModelChange = {},
                         stepOneView = stepOneView,
-                        stepTwoView = stepTwoView,
+                        contentPadding = paddingValues,
                         modifier = Modifier
-                            .padding(paddingValues = paddingValues)
                             .fillMaxSize()
-                            .padding(all = LocalBoxSpacing.current.medium),
+                            .consumeWindowInsets(paddingValues),
                     )
 
                 is MutationState.Failure -> {
@@ -180,11 +188,10 @@ private fun PoolFromLayoutCreatorView(
                         createPoolModel = createPoolModel,
                         onCreatePoolModelChange = {},
                         stepOneView = stepOneView,
-                        stepTwoView = stepTwoView,
+                        contentPadding = paddingValues,
                         modifier = Modifier
-                            .padding(paddingValues = paddingValues)
                             .fillMaxSize()
-                            .padding(all = LocalBoxSpacing.current.medium),
+                            .consumeWindowInsets(paddingValues),
                     )
                     ExceptionAlertDialog(
                         exception = state.exception.localizedOrDefault(),
@@ -215,25 +222,35 @@ private fun Stepper(
     onSaveClick: () -> Unit,
     createPoolModel: CreatePoolModel,
     onCreatePoolModelChange: (CreatePoolModel) -> Unit,
-    stepOneView: @Composable (CreatePoolModel, (CreatePoolModel) -> Unit) -> Unit,
-    stepTwoView: @Composable (CreatePoolModel, (CreatePoolModel) -> Unit) -> Unit,
+    stepOneView: @Composable (CreatePoolModel, PaddingValues, (CreatePoolModel) -> Unit) -> Unit,
+    contentPadding: PaddingValues,
     modifier: Modifier = Modifier,
 ) {
+    // Each step applies the scaffold padding itself, so the template list can scroll to the
+    // window's bottom edge while the name form keeps its padded bounds above the keyboard.
     NavigationStep(currentScreen = step, modifier = modifier) {
         AnimatedContent(
             targetState = step,
             transitionSpec = { transform() },
         ) { currentStep ->
             when (currentStep) {
-                Step.One -> stepOneView(createPoolModel) { newCreatePoolModel ->
+                Step.One -> stepOneView(
+                    createPoolModel,
+                    contentPadding + PaddingValues(LocalBoxSpacing.current.medium),
+                ) { newCreatePoolModel ->
                     onCreatePoolModelChange(newCreatePoolModel)
                     onStepChange(Step.Two)
                 }
 
-                Step.Two -> stepTwoView(createPoolModel) { newCreatePoolModel ->
-                    onCreatePoolModelChange(newCreatePoolModel)
-                    onSaveClick()
-                }
+                Step.Two -> StepTwoView(
+                    createPoolModel = createPoolModel,
+                    onSaveClick = { newCreatePoolModel ->
+                        onCreatePoolModelChange(newCreatePoolModel)
+                        onSaveClick()
+                    },
+                    contentPadding = contentPadding,
+                    modifier = Modifier.fillMaxSize(),
+                )
             }
         }
     }
@@ -298,7 +315,7 @@ private fun <T : Any> NavigationStep(
 @Composable
 private fun TopBar(
     title: @Composable () -> Unit,
-    scrollBehavior: TopAppBarScrollBehavior,
+    scrollBehavior: TopAppBarScrollBehavior?,
     onBackClick: () -> Unit,
 ) {
     TopAppBar(
@@ -334,18 +351,14 @@ private fun PoolFromLayoutCreatorViewPreview() {
                 onPoolCreated = {},
                 onBackClick = {},
                 reset = {},
-                stepOneView = { model, onNext ->
+                stepOneView = { model, contentPadding, onNext ->
                     StepOneView(
                         lazyItems = items,
                         pageSize = 5,
                         createPoolModel = model,
                         onNextClick = onNext,
-                    )
-                },
-                stepTwoView = { model, onSave ->
-                    StepTwoView(
-                        createPoolModel = model,
-                        onSaveClick = onSave,
+                        contentPadding = contentPadding,
+                        modifier = Modifier.fillMaxSize(),
                     )
                 },
             )

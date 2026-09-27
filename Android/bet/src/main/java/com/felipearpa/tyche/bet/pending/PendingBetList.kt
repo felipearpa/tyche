@@ -3,11 +3,16 @@ package com.felipearpa.tyche.bet.pending
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.fitInside
+import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.plus
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
@@ -19,6 +24,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.WindowInsetsRulers
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -32,9 +39,11 @@ import com.felipearpa.foundation.time.toShortDateString
 import com.felipearpa.tyche.bet.PoolGamblerBetModel
 import com.felipearpa.tyche.bet.isPending
 import com.felipearpa.tyche.bet.poolGamblerBetDummyModels
+import com.felipearpa.tyche.ui.bottomUncoveredBy
 import com.felipearpa.tyche.ui.exception.localizedOrDefault
 import com.felipearpa.tyche.ui.lazy.Failure
 import com.felipearpa.tyche.ui.lazy.RefreshableLazyPagingColumn
+import com.felipearpa.tyche.ui.lazy.ViewportFillingItem
 import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
 import com.felipearpa.tyche.ui.theme.TycheTheme
 import com.felipearpa.ui.state.MutationState
@@ -42,16 +51,32 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.datetime.LocalDate
 import com.felipearpa.tyche.ui.R as SharedR
 
+/**
+ * Pending bets with editable scores.
+ *
+ * [contentPadding] is the screen's inset padding, which may include a bottom bar that stays at
+ * the window edge while the keyboard covers it. The list's viewport ends at the keyboard top,
+ * and its bottom padding keeps only the part of that bar the keyboard leaves uncovered, so the
+ * bar, navigation-bar, and keyboard heights are not stacked. Ending the viewport at the keyboard
+ * rather than padding its content matters: a scrollable brings a focused score back into view
+ * only when its viewport shrinks past it. [modifier] must give the list a fixed size, such as
+ * `fillMaxSize()`, for the keyboard fitting to apply.
+ */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun PendingBetList(
     lazyPoolGamblerBets: LazyPagingItems<PoolGamblerBetModel>,
     modifier: Modifier = Modifier,
+    contentPadding: PaddingValues = PaddingValues(0.dp),
     fakeItemCount: Int = 0,
     onMatchOpen: ((PoolGamblerBetModel) -> Unit)? = null,
 ) {
+    val listPadding = contentPadding.bottomUncoveredBy(WindowInsets.ime, LocalDensity.current)
     RefreshableLazyPagingColumn(
-        modifier = modifier,
+        modifier = modifier
+            .consumeWindowInsets(contentPadding)
+            .fitInside(WindowInsetsRulers.Ime.current),
+        contentPadding = listPadding + PaddingValues(vertical = LocalBoxSpacing.current.medium),
         lazyPagingItems = lazyPoolGamblerBets,
         loadingContent = { pendingBetPlaceholderList(count = fakeItemCount) },
         emptyContent = { emptyContent() },
@@ -125,10 +150,7 @@ private fun LazyListScope.pendingBetPlaceholderList(count: Int) {
 
 private fun LazyListScope.emptyContent() {
     item {
-        Box(
-            contentAlignment = Alignment.Center,
-            modifier = Modifier.fillParentMaxSize(),
-        ) {
+        ViewportFillingItem {
             Column(
                 modifier = Modifier.fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.medium),
@@ -159,15 +181,12 @@ private fun LazyListScope.pendingBetPlaceholderItemRow() {
 
 private fun LazyListScope.error(exception: Throwable) {
     item {
-        Box(
-            contentAlignment = Alignment.Center,
-            modifier = Modifier
-                .fillParentMaxSize()
-                .padding(all = LocalBoxSpacing.current.medium),
-        ) {
+        ViewportFillingItem {
             Failure(
                 localizedException = exception.localizedOrDefault(),
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(all = LocalBoxSpacing.current.medium),
             )
         }
     }

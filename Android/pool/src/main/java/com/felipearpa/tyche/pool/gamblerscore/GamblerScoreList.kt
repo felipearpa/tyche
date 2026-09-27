@@ -2,6 +2,7 @@ package com.felipearpa.tyche.pool.gamblerscore
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -14,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.PreviewLightDark
+import androidx.compose.ui.unit.dp
 import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
@@ -32,12 +34,14 @@ fun GamblerScoreList(
     lazyPoolGamblerScores: LazyPagingItems<PoolGamblerScoreModel>,
     loggedInGamblerId: String,
     modifier: Modifier = Modifier,
+    contentPadding: PaddingValues = PaddingValues(0.dp),
     placeholderCount: Int = 0,
     onGamblerOpen: ((poolId: String, gamblerId: String, gamblerUsername: String) -> Unit)? = null,
 ) {
     RefreshableLazyPagingColumn(
         modifier = modifier,
         lazyPagingItems = lazyPoolGamblerScores,
+        contentPadding = contentPadding,
         loadingContent = { gamblerScorePlaceholderList(count = placeholderCount) },
         appendLoadingContent = { gamblerScorePlaceholderItemRow() },
         appendErrorContent = { exception ->

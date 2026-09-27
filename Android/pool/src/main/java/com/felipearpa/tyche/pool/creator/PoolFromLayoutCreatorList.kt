@@ -2,6 +2,7 @@ package com.felipearpa.tyche.pool.creator
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -13,13 +14,13 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.PreviewLightDark
+import androidx.compose.ui.unit.dp
 import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemContentType
 import androidx.paging.compose.itemKey
 import com.felipearpa.tyche.ui.lazy.RefreshableLazyPagingColumn
-import com.felipearpa.tyche.ui.shimmer
 import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
 import com.felipearpa.tyche.ui.theme.TycheTheme
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -31,12 +32,14 @@ fun PoolFromLayoutCreatorList(
     selectedPoolLayout: PoolLayoutModel?,
     onPoolLayoutChange: (PoolLayoutModel) -> Unit,
     modifier: Modifier = Modifier,
+    contentPadding: PaddingValues = PaddingValues(0.dp),
     lazyListState: LazyListState = rememberLazyListState(),
 ) {
     RefreshableLazyPagingColumn(
         modifier = modifier,
         lazyPagingItems = poolLayouts,
         lazyListState = lazyListState,
+        contentPadding = contentPadding,
         loadingContent = { poolFromLayoutCreatorPlaceholderList(count = fakeItemCount) },
         appendLoadingContent = {
             item { PoolFromLayoutCreatorFakeItem(modifier = Modifier.poolFromLayoutCreatorItem()) }
@@ -66,15 +69,6 @@ private fun LazyListScope.poolFromLayoutCreatorPlaceholderList(count: Int) {
             PoolFromLayoutCreatorFakeItem(modifier = Modifier.poolFromLayoutCreatorItem())
         }
     }
-}
-
-@Composable
-private fun PoolFromLayoutCreatorFakeItem(modifier: Modifier = Modifier) {
-    PoolFromLayoutCreatorItem(
-        poolLayout = poolLayoutFakeModel(),
-        modifier = modifier,
-        shimmerModifier = Modifier.shimmer(),
-    )
 }
 
 @Composable

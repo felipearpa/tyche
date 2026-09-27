@@ -2,6 +2,7 @@ package com.felipearpa.tyche.profile
 
 import android.graphics.Bitmap
 import android.view.HapticFeedbackConstants
+import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTransformGestures
@@ -12,10 +13,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredSize
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
@@ -23,6 +24,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -48,6 +50,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import androidx.core.view.WindowCompat
 import com.felipearpa.tyche.R
 import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
 import androidx.compose.foundation.Canvas as ComposeCanvas
@@ -76,13 +79,16 @@ fun AvatarCropView(
     var steadyOffset by remember(bitmap) { mutableStateOf(Offset.Zero) }
     var isAtBoundary by remember { mutableStateOf(false) }
 
+    LightSystemBarIcons()
+
     Column(
         modifier = modifier
             .fillMaxSize()
             .background(SURFACE_COLOR)
-            // The screen is edge-to-edge; without this the action bar lands inside the system
-            // gesture-navigation zone, which swallows taps.
-            .navigationBarsPadding(),
+            // The surface reaches the window edges while the crop area, preview, and actions stay
+            // clear of the system bars, a display cutout, and caption controls; an action bar in
+            // the gesture-navigation zone would have its taps swallowed.
+            .safeDrawingPadding(),
     ) {
         BoxWithConstraints(
             modifier = Modifier
@@ -202,6 +208,27 @@ fun AvatarCropView(
                     }
                 }
             }
+        }
+    }
+}
+
+/**
+ * Light status and navigation bar icons while the crop screen shows, since its surface is dark in
+ * both themes; the activity's theme-based icons return when it leaves.
+ */
+@Composable
+private fun LightSystemBarIcons() {
+    val window = LocalActivity.current?.window ?: return
+    val view = LocalView.current
+    DisposableEffect(window, view) {
+        val controller = WindowCompat.getInsetsController(window, view)
+        val hadLightStatusBars = controller.isAppearanceLightStatusBars
+        val hadLightNavigationBars = controller.isAppearanceLightNavigationBars
+        controller.isAppearanceLightStatusBars = false
+        controller.isAppearanceLightNavigationBars = false
+        onDispose {
+            controller.isAppearanceLightStatusBars = hadLightStatusBars
+            controller.isAppearanceLightNavigationBars = hadLightNavigationBars
         }
     }
 }

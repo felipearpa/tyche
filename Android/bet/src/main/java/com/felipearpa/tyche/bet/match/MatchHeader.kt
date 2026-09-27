@@ -22,6 +22,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -171,7 +172,8 @@ private fun LiveIndicator(
 fun MatchHeaderPlaceholderItem(modifier: Modifier = Modifier) {
     MatchHeader(
         bet = poolGamblerBetFakeModel().copy(isLocked = false, isComputed = false),
-        modifier = modifier,
+        // Placeholder values are filler, not a match: keep them from screen readers.
+        modifier = modifier.clearAndSetSemantics {},
         shimmerModifier = Modifier.shimmer(),
     )
 }

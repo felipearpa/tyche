@@ -2,17 +2,15 @@ package com.felipearpa.tyche.pool.joiner
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
@@ -32,6 +30,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.felipearpa.tyche.pool.R
+import com.felipearpa.tyche.ui.MessageWithActions
 import com.felipearpa.tyche.ui.exception.ExceptionView
 import com.felipearpa.tyche.ui.exception.LocalizedException
 import com.felipearpa.tyche.ui.exception.UnknownLocalizedException
@@ -73,7 +72,7 @@ fun PoolJoinerView(
 }
 
 @Composable
-private fun PoolJoinerContainer(
+internal fun PoolJoinerContainer(
     joinPoolState: SaveState<Unit>,
     poolState: LoadState<PoolModel>,
     onJoinPool: () -> Unit,
@@ -101,8 +100,7 @@ private fun PoolJoinerContainer(
             onAbort = onAbort,
             modifier = Modifier
                 .fillMaxSize()
-                .statusBarsPadding()
-                .navigationBarsPadding()
+                .safeDrawingPadding()
                 .padding(horizontal = LocalBoxSpacing.current.medium),
         )
     }
@@ -116,8 +114,7 @@ private fun PoolLoadContainer(
 ) {
     val viewStyle = Modifier
         .fillMaxSize()
-        .statusBarsPadding()
-        .navigationBarsPadding()
+        .safeDrawingPadding()
         .padding(horizontal = LocalBoxSpacing.current.medium)
 
     when (poolState) {
@@ -145,65 +142,57 @@ private fun SuccessContent(
     onAbort: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Column(
+    MessageWithActions(
         modifier = modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
+        actions = {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = LocalBoxSpacing.current.medium),
+                verticalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.small),
+            ) {
+                Button(
+                    onClick = onJoinPool,
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
+                    Text(text = stringResource(id = R.string.join_pool_action))
+                }
+
+                OutlinedButton(
+                    onClick = onAbort,
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
+                    Text(text = stringResource(id = R.string.go_to_my_pools_action))
+                }
+            }
+        },
     ) {
-        Column(
-            modifier = Modifier
-                .weight(1f)
-                .fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center,
-        ) {
-            Icon(
-                painter = painterResource(id = R.drawable.emoji_people),
-                contentDescription = null,
-                modifier = Modifier.size(iconSize),
-            )
+        Icon(
+            painter = painterResource(id = R.drawable.emoji_people),
+            contentDescription = null,
+            modifier = Modifier.size(iconSize),
+        )
 
-            Spacer(modifier = Modifier.height(LocalBoxSpacing.current.large))
+        Spacer(modifier = Modifier.height(LocalBoxSpacing.current.large))
 
-            Text(
-                text = stringResource(id = R.string.ready_to_join_title),
-                textAlign = TextAlign.Center,
-                style = MaterialTheme.typography.headlineSmall,
-                modifier = Modifier.fillMaxWidth(),
-            )
+        Text(
+            text = stringResource(id = R.string.ready_to_join_title),
+            textAlign = TextAlign.Center,
+            style = MaterialTheme.typography.headlineSmall,
+            modifier = Modifier.fillMaxWidth(),
+        )
 
-            Spacer(modifier = Modifier.height(LocalBoxSpacing.current.medium))
+        Spacer(modifier = Modifier.height(LocalBoxSpacing.current.medium))
 
-            Text(
-                text = stringResource(id = R.string.ready_to_join_subtitle),
-                textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth(),
-            )
+        Text(
+            text = stringResource(id = R.string.ready_to_join_subtitle),
+            textAlign = TextAlign.Center,
+            modifier = Modifier.fillMaxWidth(),
+        )
 
-            Spacer(modifier = Modifier.height(LocalBoxSpacing.current.large))
+        Spacer(modifier = Modifier.height(LocalBoxSpacing.current.large))
 
-            PoolPill(pool = pool)
-        }
-
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = LocalBoxSpacing.current.medium),
-            verticalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.small),
-        ) {
-            Button(
-                onClick = onJoinPool,
-                modifier = Modifier.fillMaxWidth(),
-            ) {
-                Text(text = stringResource(id = R.string.join_pool_action))
-            }
-
-            OutlinedButton(
-                onClick = onAbort,
-                modifier = Modifier.fillMaxWidth(),
-            ) {
-                Text(text = stringResource(id = R.string.go_to_my_pools_action))
-            }
-        }
+        PoolPill(pool = pool)
     }
 }
 
@@ -241,41 +230,34 @@ private fun JoinFailureContent(
     onAbort: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Column(
+    MessageWithActions(
         modifier = modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        Box(
-            modifier = Modifier
-                .weight(1f)
-                .fillMaxWidth(),
-            contentAlignment = Alignment.Center,
-        ) {
-            ExceptionView(localizedException = localizedException)
-        }
+        actions = {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = LocalBoxSpacing.current.medium),
+                verticalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.small),
+            ) {
+                if (localizedException !is JoinPoolLocalizedException) {
+                    Button(
+                        onClick = onRetry,
+                        modifier = Modifier.fillMaxWidth(),
+                    ) {
+                        Text(text = stringResource(id = SharedR.string.retry_action))
+                    }
+                }
 
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = LocalBoxSpacing.current.medium),
-            verticalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.small),
-        ) {
-            if (localizedException !is JoinPoolLocalizedException) {
-                Button(
-                    onClick = onRetry,
+                OutlinedButton(
+                    onClick = onAbort,
                     modifier = Modifier.fillMaxWidth(),
                 ) {
-                    Text(text = stringResource(id = SharedR.string.retry_action))
+                    Text(text = stringResource(id = R.string.go_to_my_pools_action))
                 }
             }
-
-            OutlinedButton(
-                onClick = onAbort,
-                modifier = Modifier.fillMaxWidth(),
-            ) {
-                Text(text = stringResource(id = R.string.go_to_my_pools_action))
-            }
-        }
+        },
+    ) {
+        ExceptionView(localizedException = localizedException)
     }
 }
 
@@ -285,27 +267,20 @@ private fun LoadFailureContent(
     onAbort: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Column(
+    MessageWithActions(
         modifier = modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
+        actions = {
+            Button(
+                onClick = onAbort,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = LocalBoxSpacing.current.medium),
+            ) {
+                Text(text = stringResource(id = R.string.go_to_my_pools_action))
+            }
+        },
     ) {
-        Box(
-            modifier = Modifier
-                .weight(1f)
-                .fillMaxWidth(),
-            contentAlignment = Alignment.Center,
-        ) {
-            ExceptionView(localizedException = localizedException)
-        }
-
-        Button(
-            onClick = onAbort,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = LocalBoxSpacing.current.medium),
-        ) {
-            Text(text = stringResource(id = R.string.go_to_my_pools_action))
-        }
+        ExceptionView(localizedException = localizedException)
     }
 }
 

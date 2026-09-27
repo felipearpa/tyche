@@ -5,9 +5,13 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.fitInside
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -25,6 +29,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.WindowInsetsRulers
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -62,7 +67,7 @@ fun EmailAndPasswordSignInView(
 }
 
 @Composable
-private fun EmailAndPasswordSignInView(
+internal fun EmailAndPasswordSignInView(
     viewState: LoadState<AccountBundle>,
     onSignIn: (String, String) -> Unit,
     onBack: () -> Unit,
@@ -233,10 +238,20 @@ private fun TopBar(onBack: (() -> Unit)?) {
     )
 }
 
+/**
+ * Places the sign-in form in the scaffold's content area and keeps it usable with the keyboard
+ * open. The scaffold's system-bar padding is applied and consumed, then the form fits inside the
+ * IME ruler: with the keyboard closed that changes nothing, and with it open the form ends at the
+ * keyboard's top edge instead of the navigation bar's, so the two heights are not added together.
+ * The form scrolls within what remains, with the design spacing inside the scrolling content.
+ */
 @Composable
 private fun Modifier.viewStyle(paddingValues: PaddingValues) =
-    padding(paddingValues = paddingValues)
-        .fillMaxWidth()
+    fillMaxSize()
+        .padding(paddingValues = paddingValues)
+        .consumeWindowInsets(paddingValues)
+        .fitInside(WindowInsetsRulers.Ime.current)
+        .verticalScroll(rememberScrollState())
         .padding(all = LocalBoxSpacing.current.medium)
 
 @Preview(showBackground = true, name = "Initial")
