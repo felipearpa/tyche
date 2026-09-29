@@ -1,7 +1,6 @@
 package com.felipearpa.tyche.ui.theme
 
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.luminance
 import io.kotest.matchers.doubles.shouldBeGreaterThanOrEqual
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
@@ -29,12 +28,4 @@ class CurrentUserColorTest {
                 .shouldBeGreaterThanOrEqual(4.5)
         }
     }
-}
-
-private fun contrastRatio(first: Color, second: Color): Double {
-    val firstLuminance = first.luminance().toDouble()
-    val secondLuminance = second.luminance().toDouble()
-    val brighter = maxOf(firstLuminance, secondLuminance)
-    val darker = minOf(firstLuminance, secondLuminance)
-    return (brighter + 0.05) / (darker + 0.05)
 }

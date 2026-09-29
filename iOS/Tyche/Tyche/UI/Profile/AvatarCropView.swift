@@ -147,7 +147,7 @@ struct AvatarCropView: View {
                 Text(.usePhotoAction)
                     .fontWeight(.semibold)
             }
-            .buttonStyle(.borderedProminent)
+            .buttonStyle(.standardProminent)
         }
         .padding(.horizontal, boxSpacing.large)
         .padding(.bottom, boxSpacing.large)

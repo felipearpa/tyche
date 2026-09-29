@@ -117,6 +117,13 @@ struct DrawerContainer<Base: View, DrawerContent: View>: View {
 
     private func dragHandler(width: CGFloat) -> DrawerDragHandler {
         DrawerDragHandler(
+            takesTouch: { value, presentedProgress in
+                reveal.takesDrag(
+                    translation: logical(value.translation),
+                    presentedProgress: presentedProgress,
+                    startsInExcludedRegion: startsInExcludedRegion(value)
+                )
+            },
             onChange: { value, presentedProgress, startsTouch in
                 var next = reveal
                 // An earlier touch's drag is normally finished once a render observes that the
@@ -131,7 +138,7 @@ struct DrawerContainer<Base: View, DrawerContent: View>: View {
                     translation: logical(value.translation),
                     presentedProgress: presentedProgress,
                     width: width,
-                    startsInExcludedRegion: excludedBand?.contains(value.startLocation.y) ?? false
+                    startsInExcludedRegion: startsInExcludedRegion(value)
                 )
                 // Writing the presented value without animation replaces any in-flight
                 // transition, so the drag continues from what is on screen.
@@ -160,6 +167,10 @@ struct DrawerContainer<Base: View, DrawerContent: View>: View {
                 }
             }
         )
+    }
+
+    private func startsInExcludedRegion(_ value: DrawerDragValue) -> Bool {
+        excludedBand?.contains(value.startLocation.y) ?? false
     }
 
     /// A cancelled drag returns to where the drawer last rested, and the binding follows, even
@@ -353,12 +364,33 @@ private struct DismissalSurfaceButtonStyle: ButtonStyle {
     }
 }
 
+/// A drag in the window's coordinates, from whichever recognizer follows it.
+struct DrawerDragValue {
+    let translation: CGSize
+    /// Where the drag would come to rest if the finger lifted now, from its velocity.
+    let predictedEndTranslation: CGSize
+    let startLocation: CGPoint
+}
+
+extension DrawerDragValue {
+    init(_ value: DragGesture.Value) {
+        self.init(
+            translation: value.translation,
+            predictedEndTranslation: value.predictedEndTranslation,
+            startLocation: value.startLocation
+        )
+    }
+}
+
 struct DrawerDragHandler {
-    /// Returns `false` when the drawer declines the drag. `startsTouch` is `true` while the
-    /// gesture state shows no active touch: on a touch's first update, and on any further
-    /// updates SwiftUI delivers before its next render, which also start from that state.
-    let onChange: (DragGesture.Value, _ presentedProgress: CGFloat, _ startsTouch: Bool) -> Bool
-    let onEnd: (DragGesture.Value) -> Void
+    /// Whether the drawer's gesture takes the touch of a drag that has travelled this far, away
+    /// from the views beneath, without changing any state.
+    let takesTouch: (DrawerDragValue, _ presentedProgress: CGFloat) -> Bool
+    /// Returns `false` when the drawer declines the drag. `startsTouch` is `true` on the first
+    /// update of a touch, and on the SwiftUI drag also on any further updates SwiftUI delivers
+    /// before its next render, which start from the same gesture state.
+    let onChange: (DrawerDragValue, _ presentedProgress: CGFloat, _ startsTouch: Bool) -> Bool
+    let onEnd: (DrawerDragValue) -> Void
     /// Runs whenever the gesture stops: after `onEnd` on release, alone on cancellation.
     let onFinish: () -> Void
 }
@@ -366,15 +398,15 @@ struct DrawerDragHandler {
 /// Feeds a horizontal drag to the reveal with the progress on screen at the time, measured in
 /// the window's coordinates so moving the dragged surface never feeds back into the drag.
 ///
-/// The drag has high priority over everything in the container, so once it is recognized the
-/// control where it started — a drawer row, a screen row, the menu opener — cannot also
-/// activate; a tap, which never travels far enough to start the drag, still activates it.
-/// Scroll views keep vertical drags because they recognize them within a shorter distance.
-/// When the drawer declines a drag, the gesture detaches until that touch ends, which hands the
-/// touch back to the views beneath, such as a tab bar sliding between tabs.
+/// From iOS 18 a UIKit pan recognizer follows the drag (`DrawerPanGesture`): scroll views wait
+/// for it to decline a drag that is not clearly horizontal, so they keep every other drag, and
+/// once it recognizes it cancels the touch for the control where it started. Earlier versions
+/// use a SwiftUI drag with high priority over everything in the container, which blocks that
+/// control the same way; when the drawer declines, it detaches until that touch ends and hands
+/// the touch back to the views beneath, such as a tab bar sliding between tabs.
 struct DrawerDragGesture: ViewModifier, Animatable {
     var progress: CGFloat
-    /// While `false`, the gesture is detached rather than ignored, so it cannot compete with
+    /// While `false`, the drag is detached rather than ignored, so it cannot compete with
     /// a destination's back button and back-swipe.
     let isEnabled: Bool
     /// Whether the reveal model is holding a drag, claimed or declined.
@@ -390,18 +422,27 @@ struct DrawerDragGesture: ViewModifier, Animatable {
         set { progress = newValue }
     }
 
+    @ViewBuilder
     func body(content: Content) -> some View {
+        if #available(iOS 18, *) {
+            content.gesture(DrawerPanGesture(progress: progress, isEnabled: isEnabled, handler: handler))
+        } else {
+            swiftUIDrag(content: content)
+        }
+    }
+
+    private func swiftUIDrag(content: Content) -> some View {
         let gesture = DragGesture(minimumDistance: dragMinimumDistance, coordinateSpace: .global)
             .updating($touch) { value, touch, _ in
                 let startsTouch = !touch.isActive
                 touch.isActive = true
-                if !touch.isDeclined, !handler.onChange(value, progress, startsTouch) {
+                if !touch.isDeclined, !handler.onChange(DrawerDragValue(value), progress, startsTouch) {
                     touch.isDeclined = true
                 }
             }
-            .onEnded { handler.onEnd($0) }
+            .onEnded { handler.onEnd(DrawerDragValue($0)) }
 
-        content
+        return content
             .highPriorityGesture(gesture, including: isEnabled && !touch.isDeclined ? .all : .subviews)
             .onChange(of: touch.isActive) { isActive in
                 if !isActive {
@@ -643,10 +684,8 @@ private let foregroundCornerRadius: CGFloat = 24
 private let lightScrimOpacity: CGFloat = 0.18
 private let darkScrimOpacity: CGFloat = 0.24
 private let edgeLineWidth: CGFloat = 1
-/// Longer than the distance within which a scroll view recognizes its own drag (measured between
-/// 10 and 15 points on iOS 27), so a vertical drag starts scrolling before the drawer's
-/// high-priority drag is recognized. Recognized first, the drawer's drag would hold the scroll
-/// view back.
+/// Before iOS 18: longer than the distance within which a scroll view recognizes its own drag,
+/// so a vertical drag can start scrolling before the drawer's high-priority drag is recognized.
 private let dragMinimumDistance: CGFloat = 20
 /// Critically damped, so the reveal settles without overshooting either endpoint.
 private let revealAnimation = Animation.spring(response: 0.35, dampingFraction: 1)

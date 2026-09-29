@@ -102,7 +102,7 @@ private struct SignInContent: View {
                 Text(.signInAction)
                     .frame(maxWidth: .infinity)
             }
-            .buttonStyle(.liquidGlassProminent)
+            .buttonStyle(.standardProminent)
             .disabled(onSignIn == nil)
 
             Text(.noRecoveryPasswordWarning)
@@ -119,7 +119,7 @@ private struct SignInContent: View {
             Spacer()
         }
         .padding(boxSpacing.medium)
-        .textFieldStyle(.liquidGlass)
+        .textFieldStyle(.standard)
     }
 }
 

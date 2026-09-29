@@ -2,10 +2,10 @@ package com.felipearpa.tyche.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-internal val lightPrimaryColor = Color(0xFF4CAF50)
+internal val lightPrimaryColor = Color(0xFF2E7D32)
 internal val lightOnPrimaryColor = Color(0xFFFFFFFF)
 
-internal val lightPrimaryContainer = Color(0xFF3D8F44)
+internal val lightPrimaryContainer = Color(0xFF1B5E20)
 internal val lightOnPrimaryContainer = Color(0xFFFFFFFF)
 
 internal val lightSecondaryColor = Color(0xFFFFC107)
@@ -33,9 +33,9 @@ internal val lightErrorContainer = Color(0xFFFFCDD2)
 internal val lightOnErrorContainer = Color(0xFFB71C1C)
 
 internal val darkPrimaryColor = Color(0xFF4CAF50)
-internal val darkOnPrimaryColor = Color(0xFFFFFFFF)
+internal val darkOnPrimaryColor = Color(0xFF000000)
 
-internal val darkPrimaryContainer = Color(0xFF3D8F44)
+internal val darkPrimaryContainer = Color(0xFF1B5E20)
 internal val darkOnPrimaryContainer = Color(0xFFFFFFFF)
 
 internal val darkSecondaryColor = Color(0xFFFFC107)

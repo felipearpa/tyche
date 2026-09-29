@@ -20,6 +20,10 @@ struct FinishedBetList: View {
     var body: some View {
         RefreshableLazyPagingVStack(
             lazyPagingItems: lazyPagingItems,
+            // The bottom spacing goes inside the scroll view: an outer padding would keep it off
+            // the tab bar's safe-area edge, so rows would stop above the bar instead of
+            // scrolling beneath it.
+            contentInsets: EdgeInsets(top: 0, leading: 0, bottom: boxSpacing.medium, trailing: 0),
             pinnedViews: [.sectionHeaders],
             loadingContent: { FinishedPoolGamblerBetFakeList(count: 50) },
             appendLoadingContent: { FinishedPoolGamblerBetFakeItem() },

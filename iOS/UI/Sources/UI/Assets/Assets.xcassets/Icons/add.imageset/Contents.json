@@ -1,7 +1,7 @@
 {
   "images" : [
     {
-      "filename" : "add_circle_24dp_E3E3E3_FILL1_wght400_GRAD0_opsz24.svg",
+      "filename" : "add.svg",
       "idiom" : "universal"
     }
   ],
@@ -10,6 +10,7 @@
     "version" : 1
   },
   "properties" : {
+    "preserves-vector-representation" : true,
     "template-rendering-intent" : "template"
   }
 }

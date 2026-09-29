@@ -178,6 +178,30 @@
         }
       }
     },
+    "create_pool_action" : {
+      "comment" : "Accessible name of the My pools toolbar button that starts creating a pool.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Create pool"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Crear polla"
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Crear quiniela"
+          }
+        }
+      }
+    },
     "delete_action" : {
       "extractionState" : "manual",
       "localizations" : {

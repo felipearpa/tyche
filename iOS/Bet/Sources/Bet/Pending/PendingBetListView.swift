@@ -27,7 +27,9 @@ public struct PendingBetListView: View {
             lazyPagingItems: viewModel.lazyPager,
             onMatchOpen: onMatchOpen
         )
-        .padding(.vertical, boxSpacing.medium)
+        // The top spacing stays outside the scroll view, keeping rows out from under the
+        // navigation bar: its large title does not collapse on every pool-home tab.
+        .padding(.top, boxSpacing.medium)
     }
 }
 

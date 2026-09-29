@@ -125,18 +125,20 @@ private struct SuccessContent: View {
 
             Spacer()
 
-            VStack(spacing: boxSpacing.small) {
-                Button(action: onJoinPool) {
-                    Text(.joinPoolAction)
-                        .frame(maxWidth: .infinity)
-                }
-                .buttonStyle(.liquidGlassProminent)
+            LiquidGlassContainer {
+                VStack(spacing: boxSpacing.small) {
+                    Button(action: onJoinPool) {
+                        Text(.joinPoolAction)
+                            .frame(maxWidth: .infinity)
+                    }
+                    .buttonStyle(.liquidGlassProminent)
 
-                Button(action: onAbort) {
-                    Text(.goToMyPoolsAction)
-                        .frame(maxWidth: .infinity)
+                    Button(action: onAbort) {
+                        Text(.goToMyPoolsAction)
+                            .frame(maxWidth: .infinity)
+                    }
+                    .buttonStyle(.liquidGlass)
                 }
-                .buttonStyle(.liquidGlass)
             }
             .padding(.vertical, boxSpacing.medium)
         }
@@ -181,20 +183,22 @@ private struct JoinFailureContent: View {
 
             Spacer()
 
-            VStack(spacing: boxSpacing.small) {
-                if !(localizedError is JoinPoolLocalizedError) {
-                    Button(action: onRetry) {
-                        Text(sharedResource: .retryAction)
+            LiquidGlassContainer {
+                VStack(spacing: boxSpacing.small) {
+                    if !(localizedError is JoinPoolLocalizedError) {
+                        Button(action: onRetry) {
+                            Text(sharedResource: .retryAction)
+                                .frame(maxWidth: .infinity)
+                        }
+                        .buttonStyle(.liquidGlassProminent)
+                    }
+
+                    Button(action: onAbort) {
+                        Text(.goToMyPoolsAction)
                             .frame(maxWidth: .infinity)
                     }
-                    .buttonStyle(.liquidGlassProminent)
+                    .buttonStyle(.liquidGlass)
                 }
-
-                Button(action: onAbort) {
-                    Text(.goToMyPoolsAction)
-                        .frame(maxWidth: .infinity)
-                }
-                .buttonStyle(.liquidGlass)
             }
             .padding(.vertical, boxSpacing.medium)
         }

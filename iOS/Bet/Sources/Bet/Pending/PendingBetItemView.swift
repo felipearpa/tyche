@@ -181,12 +181,16 @@ private struct EditableDefaultActionBar: View {
 
         Button(action: reset) {
             Text(sharedResource: .cancelAction)
-        }.buttonStyle(.liquidGlass)
+        }
+        .buttonStyle(.bordered)
+        // Accent text lacks contrast on the bordered fill; the secondary action uses the primary
+        // color, as it did on the glass control.
+        .tint(.primary)
 
         Button(action: bet) {
             Text(sharedResource: .saveAction)
         }
-        .buttonStyle(.liquidGlassProminent)
+        .buttonStyle(.standardProminent)
         .disabled(!(isChanged && viewState.value.isValid))
     }
 }
@@ -234,13 +238,13 @@ private struct FailureActionBar: View {
             Button(action: { reset() }) {
                 Text(sharedResource: .cancelAction)
             }
-            .buttonStyle(.liquidGlass)
+            .buttonStyle(.bordered)
             .tint(Color(sharedResource: .error))
 
             Button(action: { retryBet() }) {
                 Text(sharedResource: .retryAction)
             }
-            .buttonStyle(.liquidGlassProminent)
+            .buttonStyle(.borderedProminent)
             .tint(Color(sharedResource: .error))
         }
     }

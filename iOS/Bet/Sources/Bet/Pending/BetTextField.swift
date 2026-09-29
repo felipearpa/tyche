@@ -11,7 +11,7 @@ struct BetTextField: View {
 
         TextField("".excludeLocalize, text: $value)
             .multilineTextAlignment(.center)
-            .textFieldStyle(.liquidGlass)
+            .textFieldStyle(.standard)
             .keyboardType(.numberPad)
             .focused($isFocused)
             .onChange(of: value) { newValue in

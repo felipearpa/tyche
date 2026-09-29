@@ -40,6 +40,9 @@ struct HomeView<SocialSlot: View>: View {
             }
             .padding(boxSpacing.large)
         }
+        // The gradient starts at the dark primary container in both appearances, so the status
+        // bar uses light content over it.
+        .toolbarColorScheme(.dark, for: .navigationBar)
     }
 
     private func headerSection() -> some View {
@@ -53,6 +56,9 @@ struct HomeView<SocialSlot: View>: View {
                 .scaledToFit()
                 .frame(height: titleIconSize / 2)
         }
+        // White over the dark top of the gradient in both appearances (at least 5:1 against the
+        // gradient behind the logo).
+        .foregroundStyle(.white)
         .frame(maxWidth: .infinity, alignment: .center)
     }
 
@@ -69,19 +75,24 @@ struct HomeView<SocialSlot: View>: View {
 
             Spacer().frame(height: boxSpacing.small)
 
+            // The provider-supplied sign-in button stays outside the glass container.
             socialSignInSlot
 
-            Button(action: onSignInWithEmail) {
-                Text(.signInWithEmailAction)
-                    .frame(maxWidth: .infinity)
-            }
-            .buttonStyle(.liquidGlassProminent)
+            LiquidGlassContainer {
+                VStack(spacing: boxSpacing.medium) {
+                    Button(action: onSignInWithEmail) {
+                        Text(.signInWithEmailAction)
+                            .frame(maxWidth: .infinity)
+                    }
+                    .buttonStyle(.liquidGlassProminent)
 
-            Button(action: onSignInWithEmailAndPassword) {
-                Text(.signInWithEmailAndPasswordAction)
-                    .frame(maxWidth: .infinity)
+                    Button(action: onSignInWithEmailAndPassword) {
+                        Text(.signInWithEmailAndPasswordAction)
+                            .frame(maxWidth: .infinity)
+                    }
+                    .buttonStyle(.liquidGlass)
+                }
             }
-            .buttonStyle(.liquidGlass)
         }
     }
 }
