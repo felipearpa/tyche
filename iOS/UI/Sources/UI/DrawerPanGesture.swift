@@ -88,7 +88,11 @@ struct DrawerPanGesture: UIGestureRecognizerRepresentable {
         }
 
         func gestureRecognizer(_ recognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
-            touchDown = touch.location(in: nil)
+            // Only the drag's first finger sets where it started: a second finger landing
+            // mid-drag must not move the point the reveal measures from.
+            if DrawerPanStart.isFirstTouch(state: recognizer.state, trackedTouches: recognizer.numberOfTouches) {
+                touchDown = touch.location(in: nil)
+            }
             return true
         }
 
@@ -101,6 +105,15 @@ struct DrawerPanGesture: UIGestureRecognizerRepresentable {
             guard let scrollView = other.view as? UIScrollView else { return false }
             return other === scrollView.panGestureRecognizer
         }
+    }
+}
+
+/// Which touch sets the start point `DrawerPanGesture` measures a drag from.
+enum DrawerPanStart {
+    /// Whether a touch offered to the recognizer begins a new drag: the recognizer is waiting to
+    /// recognize and follows no other finger yet.
+    static func isFirstTouch(state: UIGestureRecognizer.State, trackedTouches: Int) -> Bool {
+        state == .possible && trackedTouches == 0
     }
 }
 

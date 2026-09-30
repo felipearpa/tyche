@@ -1,5 +1,6 @@
 import CoreGraphics
 import SwiftUI
+import UIKit
 import Testing
 @testable import UI
 
@@ -351,6 +352,25 @@ struct DrawerDragDirectionTests {
         let reveal = DrawerReveal(isOpen: false)
 
         #expect(reveal.takesDrag(translation: drag(degrees: 0), presentedProgress: 0, startsInExcludedRegion: true) == false)
+    }
+}
+
+/// Which touch sets the start point the drawer's pan measures from: only the first finger of a
+/// drag, so a second finger cannot move the reveal.
+struct DrawerPanStartTests {
+    @Test
+    func theFirstFingerOfADragSetsItsStart() {
+        #expect(DrawerPanStart.isFirstTouch(state: .possible, trackedTouches: 0))
+    }
+
+    @Test(arguments: [UIGestureRecognizer.State.began, .changed])
+    func aSecondFingerDuringADragDoesNotMoveTheStart(state: UIGestureRecognizer.State) {
+        #expect(DrawerPanStart.isFirstTouch(state: state, trackedTouches: 1) == false)
+    }
+
+    @Test
+    func aSecondFingerBeforeTheDragIsRecognizedDoesNotMoveTheStart() {
+        #expect(DrawerPanStart.isFirstTouch(state: .possible, trackedTouches: 1) == false)
     }
 }
 

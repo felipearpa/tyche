@@ -1329,7 +1329,7 @@ Fixed during this review (comments and documentation only): `iOS/UI/README.md` s
 | *OS support*: opening on an older version | 1.2, 3.1, 3.8 follow-up, 2.5 on iOS 18.1; 5.1 build at 16.0 | iOS 16 runtime accepted as not verified for the whole change (1.x) |
 | *Native navigation*: creating a pool from the toolbar | 2.5 (contrast in light, dark, and IC on three devices; hit-area scan; one route per tap; names in three locales); 5.2 hit scans on iPhone 26.5 and iPad 18.1, edge taps in portrait, landscape, and resized windows on all four devices | 4 pt left offset on iOS 26 iPhones accepted (2.5); VoiceOver speech accepted (2.2, 2.5) |
 | *Native navigation*: opening the drawer through the avatar | 2.2, 2.4, 2.5; 5.1 `DrawerPassUITests` | — |
-| *Native navigation*: scrolling beneath native navigation | 2.3 (tab-bar frame before and after scrolling); 5.2 long lists on iPad and iPhone | iPad top tabs follow the collapsing large title (system behaviour, 5.2) |
+| *Native navigation*: scrolling beneath native navigation | 2.3 (tab-bar frame before and after scrolling); 2.6 (tab lists run beneath the floating tab bar with the native scroll-edge effect, last row reachable, on four devices); 2.8 (each tab collapses its own title, rows pass beneath the navigation bar, on four devices, light and dark on iPhone 26.5 and iPad 18.1) | iPad regular-width tabs now sit in the navigation bar row, accepted (2.8); Bets rows beneath the bars not shown, no pool has enough pending predictions (accepted, 2.6, 2.8) |
 | *Native navigation*: only the create circle draws bar glass | 5.3 grep | — |
 | *Content-layer controls*: editing a prediction | 1.3, 3.3; `PendingBetItemViewModelTests`; 5.2 keyboard checks | Paging while editing accepted (3.x) |
 | *Content-layer controls*: retrying a failed prediction | 3.3 (view-model tests and rendered states) | Live failure and retry accepted (3.x) |
@@ -1337,12 +1337,13 @@ Fixed during this review (comments and documentation only): `iOS/UI/README.md` s
 | *Content-layer controls*: inviting from a pool row | 3.4; 2.3; 5.2 | — |
 | *Standalone groups*: choosing a sign-in method | 3.1, 3.8 follow-up; 5.2 signed-out iPad | Join and email-link loading states accepted (3.x) |
 | *Standalone groups*: confirming or cancelling a join | 3.1; 5.2 join pair on three devices | Join itself not tapped (Prod read-only) |
-| *Sheets and structure*: presenting an invitation sheet | 2.3; 2.x iPad; 5.2 at every iPad window size | — |
-| *Sheets and structure*: operating the drawer and tabs | 2.4, 2.x iPad; 5.1 drawer suites | iPad floating-window edge back-swipe and intermediate portrait widths accepted (2.3, 2.4) |
+| *Sheets and structure*: presenting an invitation sheet | 2.3; 2.x iPad; 5.2 at every iPad window size; 2.6–2.8 runs of `testPoolHomeDrawer` (drawer Invite sheet) after the restructure | — |
+| *Sheets and structure*: requirement text (destinations, tab count, labels, order, tab-bar visibility, opaque drawer, no minimization) | 5.3 refresh below (code review of the per-tab stacks); 2.8 results | iPad tab placement in the navigation bar row accepted (2.8) |
+| *Sheets and structure*: operating the drawer and tabs | 2.4, 2.x iPad; 5.1 drawer suites; 2.7 (angle sweeps on four devices: 0–55° from vertical scrolls, 62–90° toward the trailing edge opens, leading drags over a closed drawer do nothing and open no row; `DrawerDragDirectionTests`, `DrawerInteractionTests`); 2.8 (destinations and Back on four devices; `DrawerPassUITests` after the erase: iPhone 26.5 5 of 5, iPhone 18.1 known failures only; iPad top-tab drags keep their tab selection and don't open the drawer) | iPad floating-window edge back-swipe and intermediate portrait widths accepted (2.3, 2.4, 2.8); 2.7 gaps accepted (iOS 16/17 fallback, downward drags, horizontally scrolling controls) |
 | *Accessibility*: transparency and contrast preferences | 3.5, 3.7, 2.5 | — |
 | *Accessibility*: VoiceOver | Accessibility tree in 2.2, 3.1, 3.4, 3.5, 2.5, 5.2 | Speech accepted as not verified (2.2, 3.x, 2.5) |
 | *Accessibility*: large text or resized window | 1.3, 3.2–3.4 (AX Large); 2.x and 5.2 (iPad 27 375 pt to full width, landscape 668 and 747 pt); 5.2 keyboard reachability on four devices | iPad 18.1 resizing not possible on that runtime (Not verified) |
-| *Accessibility*: reducing motion | 3.3, 3.5; 5.1 drawer suites with Reduce Motion | — |
+| *Accessibility*: reducing motion | 3.3, 3.5; 5.1 and 2.7 drawer suites with Reduce Motion | — |
 | *Accessibility*: retrying a failed page load | 3.6 | Reload after Retry blocked by the pre-existing `lazy-paging-swift` issue, accepted (3.6) |
 | *Accent labels*: primary action in light | 3.7, 2.5; Android 4.3, 4.4; `AccentFilledLabelTests`, `PrimaryColorTest` | — |
 | *Accent labels*: dark with and without IC | 3.7, 2.5; 4.3, 4.4 | System IC fill adjustment accepted and requirement reworded (3.7) |
@@ -1394,6 +1395,64 @@ A new iPad Air 11-inch (M2) simulator on iOS 18.1 ("iPad Air 11-inch (M2) iOS 18
 - Capture: `verification/5.2-ipad18.1-signed-out-welcome-forms-keyboard.png`.
 
 The user then signed in; the signed-in results are in the iPad iOS 18.1 part of 5.2 above.
+
+### 5.3 refresh (2026-09-29)
+
+Tasks 2.6, 2.7, and 2.8 changed pool home and the drawer after 5.1–5.3 were first recorded. This refresh reviews them against both delta specs and the navigation-drawer contract (`openspec/specs/navigation-drawer/spec.md`), and updates the evidence map above. The pool-home results in 5.2 (long lists, tabs, pool-home drawer) were taken before these tasks; 2.6–2.8 supersede them for pool home.
+
+**Tests rerun on the current tree.** 2.8's follow-up reran only the UI package and `TycheTests`, so the full unit suite was rerun here: `xcodebuild build-for-testing -workspace Tyche.xcworkspace -scheme Tyche -destination 'generic/platform=iOS Simulator'` (Xcode 26.5, scratch DerivedData), then `xcodebuild test-without-building … -destination 'platform=iOS Simulator,id=<iPhone 16 Pro iOS 18.1>' -parallel-testing-enabled NO -skip-testing:TycheUITests`: passed, 236 of 238, 0 failed, 2 skips (the opt-in avatar wire probes). The run covered AccountTests, BetTests, CoreTests, DataBetTests, PoolTests, SessionTests, TycheTests, and UITests. `Package.resolved` files were unchanged. No other simulator work was done.
+
+**Navigation structure (2.8) against "Existing sheets and navigation structure remain native".**
+
+- **Destinations:** the same five routes (bet timeline, match bets, manage gamblers, Profile, username editor), now registered by `PoolHomeDestinations` on each tab's stack, with the same closures. The pre-change router also had five. (2.8's record says "six" but lists five; the code has five.)
+- **Tabs:** three, in the same order, with the same tags, labels, icons, and titles (Scores, Bets, History), and the same toolbar on each tab (avatar in `PlainToolbarItem`, native change-pool `ToolbarItem`).
+- **Tab-bar visibility:** each destination sets `.toolbar(.hidden, for: .tabBar)`, so destinations still cover the tabs; 2.8's tables show the tabs hidden on every destination on four devices. Only the selected tab's stack is bound to `DrawerHostNavigation.path`, and tabs can't change while a destination is shown.
+- **Drawer:** `.drawer(… allowsDragging: navigation.isHostVisible, stabilizesNavigationLayout: true)` wraps the tab view unchanged; `DrawerNavigationLayout` now stabilises the selected tab's navigation controller. `drawerTabBarBoundary()` moved from each list to each tab's stack; `excludesTabBarFromDrawerDrags()` is unchanged.
+- **iPad:** regular-width tabs now sit in the navigation bar row instead of below the large title. This is the iPadOS placement for a root `TabView`; the user accepted it in 2.8.
+- **Sheets:** the invitation `.sheet` with `[.medium, .large]` detents and no background override is unchanged.
+
+**Bar and glass re-audit** (diff against `753c448e`, and all non-test Swift sources):
+
+- The only added bar-related modifiers are `.toolbar(.hidden, for: .tabBar)` on the five destinations (visibility, as above) and the welcome screen's `.toolbarColorScheme(.dark, for: .navigationBar)` (status-bar content).
+- `glassEffect` still appears only in `ToolbarProminentButtonStyle` (the create-circle exception). `sharedBackgroundVisibility` is only in `PlainToolbarItem`.
+- No `toolbarBackground`, `presentationBackground`, appearance proxies, `tabViewStyle`, `tabBarMinimizeBehavior`, `scrollEdgeEffect…`, or `backgroundExtensionEffect` in app code. The 2.6 and 2.8 list changes only move padding into `contentInsets`.
+
+**Drawer gesture (2.7) against the navigation-drawer contract.**
+
+| Contract point | Code | Evidence |
+| --- | --- | --- |
+| A predominantly horizontal drag from anywhere, including a row, opens or moves the drawer | `DrawerReveal.takesDrag`: within 30° of horizontal; `DrawerPanGesture` is attached over the whole container; translation is converted to logical direction for RTL | 2.7 sweeps (62–90° R opened on four devices, from rows); `DrawerDragDirectionTests`; `DrawerPassUITests` swipe tests |
+| Vertical scrolling keeps its behaviour | Scroll views' pans are required to wait for `DrawerPanGesture`, which fails at once for any drag it doesn't take | 2.7 sweeps: 0–55° from vertical scrolled on four devices and on My pools at AX XXXL |
+| Once a drawer drag is recognized, the start control doesn't activate | `UIPanGestureRecognizer` cancels touches in the view once it begins; a leading drag over a closed drawer is taken (`takesDrag`) but not followed (`claimsDrag`) | 2.7: 65–90° L did nothing and opened no row; `DrawerPassUITests` (row not opened by a swipe) |
+| System-rendered bars keep their drags | `takesDrag` leaves a drag starting in the host's reserved tab-bar band while the drawer rests closed | `testPoolHomeDrawerGestures` (tab tap and slide) after 2.7 and after 2.8 on iPhone 26.5 and 18.1; 2.8 iPad top-tab drags kept their selection |
+| System Back owns its edge; no drawer drags once a destination is open, including while the drawer is closing | `isEnabled` follows `allowsDragging` = `isHostVisible` (`path.isEmpty`); `open` / `openFromDrawer` append to the path synchronously, so dragging is disabled as soon as a destination is chosen | 2.8 destination tables (edge back-swipes return with the drawer closed on four devices); `testPoolListDrawerGestures` (Profile back-swipes) |
+| Existing horizontal controls that handle their own drags keep them | Not handled: every scroll view's pan, including a horizontally scrolling one, waits for the drawer's recognizer, which takes clearly horizontal drags | No drawer host contains such a control today; accepted in 2.7 (see Findings) |
+
+**Findings** (no product code changed):
+
+1. **Horizontal scroll views inside a drawer host (latent).** `DrawerPanGesture.gestureRecognizer(_:shouldBeRequiredToFailBy:)` makes every `UIScrollView` pan wait, so a horizontally scrolling list added to a host later would lose horizontal drags to the drawer, contrary to the contract's "existing horizontal controls that handle their own drags". None exists now, and 2.7 recorded this. Proposed fix when one is added: in `gestureRecognizerShouldBegin`, decline when the touch starts in a scroll view that can scroll horizontally (content wider than its bounds), or let such a scroll view's pan win instead of waiting.
+2. **Second finger during a drawer drag (low risk, not observed).** `gestureRecognizer(_:shouldReceive:)` records `touchDown` for every touch it is offered. If UIKit offers a second finger's touch mid-drag, the translation would be measured from that finger and the reveal could jump. Proposed fix: record `touchDown` only while the recognizer is `.possible` and has no touches. Not reproduced; multi-touch wasn't exercised.
+3. **Record wording.** 2.8's Code section says "six `navigationDestination`s" and lists five; the code and the pre-change router have five. Earlier sections were left as recorded.
+
+**Remaining runtime-validation limitations, added by 2.6–2.8** (in addition to the list above):
+
+- **Simulator storage incident and erase (2.8).** On 2026-09-29 at about 18:27 the device folders of all four simulators disappeared from `~/Library/Developer/CoreSimulator/Devices/` during 2.8's iPad 18.1 checks; the cause wasn't identified. At the user's direction, `xcrun simctl erase` was run on all four (none deleted or recreated), the debug build was reinstalled, and the user signed in again. Signed-in results recorded in this section before that date (5.2, including the iPad 18.1 signed-in checks) came from the pre-erase sessions and weren't repeated; 2.8's follow-ups reran the pool-home, destination, and drawer checks after the erase.
+- **2.6:** dark appearance on iPhone 18.1 and the iPads, loading placeholders on the iPads, Increase Contrast, Reduce Transparency, and large text over the tab bar (accepted).
+- **2.7:** the iOS 16/17 SwiftUI-drag fallback, a physical device and real finger paths, downward drags, horizontally scrolling controls, and a single unreproduced missed 90° drag on iPad 27 (accepted).
+- **2.8:** Bets rows beneath the bars (no pool has enough pending predictions) and the edge back-swipe inside the iPad floating 375 pt window (accepted).
+- **First-run `testPoolHomeDrawer` failure on iPhone 18.1** ("share sheet did not dismiss") recurs in 2.6, 2.7, 2.8, and 5.1 and passes when rerun alone; test flakiness, not a product failure.
+
+**Not verified, final** (this change as a whole):
+
+- iOS 16 and 17 runtimes: not installed; iOS 18.1 stands in, and the pre-18 drawer drag was not measured (accepted).
+- VoiceOver and TalkBack speech: accessibility trees only (accepted).
+- Live Prod writes (saving predictions and usernames, joining, pool creation), injected failures, paging while editing, and live My pools placeholders: covered by unit and render tests (accepted).
+- Paging Retry reload in short lists: blocked by the pre-existing `lazy-paging-swift` issue (accepted).
+- Android dark-mode splash branding: tracked outside this change.
+- iPad `DrawerPassUITests` and the iPhone 18.1 `testDrawerNavigationLayout`: pre-existing failures reproduced on `HEAD` (2.4).
+- iPad: window resizing on iOS 18.1 (no resizable windows), intermediate portrait widths on iOS 27, the floating-window edge back-swipe, the iPad 18.1 in accessibility settings, and the iPad 27 software keyboard while signed in.
+- 2.6–2.8 gaps listed just above, including Bets rows beneath the bars, horizontally scrolling controls in a drawer host, downward and real-finger drags, and multi-touch during a drawer drag.
+- Signed-in checks from before the 2026-09-29 erase were not repeated beyond 2.8's follow-ups.
 
 ## iOS — task 2.6 (2026-09-29)
 
@@ -1624,3 +1683,362 @@ The drawer tests cover these contract points: horizontal drags open and close fr
 - **Downward drags:** only upward finger drags were measured.
 - **iPad in a compact floating window, and iPad `DrawerPassUITests`:** both have the known iPad failures recorded in 2.4.
 - **Horizontal controls that handle their own drags:** no drawer host contains one. The recognizer doesn't yet leave a horizontally scrolling scroll view to itself.
+
+The user confirmed on 2026-09-29 that scrolling now feels right. Accepted without the iOS 16/17 fallback, downward drags, iPad DrawerPassUITests and the compact floating window, horizontally scrolling controls, and the single iPad 27 missed horizontal drag for task 2.7 by the user on 2026-09-29.
+
+## iOS — task 2.8 (2026-09-29)
+
+Toolchain: Xcode 26.5 (17F42), selected with `xcode-select`. The simulators were all signed in to Prod until the storage incident described at the end of this section. Prod was used read-only: destinations were opened and left with Back, and the drawer was only opened and closed.
+
+The runtime checks used throwaway XCUITests, which were not committed. On both iPads they used fixed pauses instead of XCUITest's idle wait.
+
+### Hypothesis check
+
+I built a variant of the pre-change tree that starts on History (`selectedTab` initialised to `.historyBet`, then reverted), on iPhone 26.5.
+
+- History's large title collapsed: bar 54 pt, title at y 67.7.
+- Scores' bar then stayed at whatever History had left it.
+- In the unchanged build, only Scores collapses: History and Bets stay at 106 pt (2.6).
+
+The shared navigation bar follows the scroll view of the tab it showed first, not the selected one. Pool home's `TabView` sat inside the drawer host's single `NavigationStack`. That is a tab bar controller inside a navigation controller, a combination UIKit doesn't re-target when the selected tab changes.
+
+### Choice
+
+**Chosen: one `NavigationStack` per tab, with the `TabView` at pool home's root.** That is the platform's standard structure, and each tab's bar then follows its own list.
+
+**Rejected:**
+- **iOS 26 scroll-edge APIs** (`scrollEdgeEffectStyle` and related): they style the edge effect but don't change which scroll view the navigation bar observes.
+- **A UIKit bridge that calls `setContentScrollView(_:for:)` on tab changes:** it would have to reach into SwiftUI's hosting controllers.
+- **Nested stacks inside the shared stack:** SwiftUI doesn't support them.
+
+### Code
+
+**`PoolHomeView`**
+- Now generic over a `Destinations` view modifier, and takes the host's `path` binding.
+- Each tab is a `NavigationStack` carrying:
+  - its own title (Scores / Bets / History, unchanged);
+  - the same toolbar: the avatar in a `PlainToolbarItem` with `drawerOpener()`, and the change-pool button;
+  - the destinations;
+  - `drawerTabBarBoundary()`.
+- The selected tab's stack is bound to `DrawerHostNavigation.path`; the others get a constant empty path. The tab bar is hidden while a destination is shown, so tabs only change at the root, and the path is empty then.
+- Tab count, order, labels, icons, and `excludesTabBarFromDrawerDrags()` are unchanged.
+
+**`PoolHomeRouter`**
+- The router no longer wraps pool home in a `NavigationStack`.
+- The five `navigationDestination`s (timeline, match bets, manage gamblers, profile, username editor) moved into a `PoolHomeDestinations` modifier. Each destination hides the tab bar (`.toolbar(.hidden, for: .tabBar)`), so it covers the tabs as before.
+- Routing still goes through `DrawerHostNavigation` (`open`, `openFromDrawer`, the path, `isHostVisible` → `allowsDragging`), so no drawer drag starts once a destination is open.
+
+**`DrawerNavigationLayout`** (UI package)
+- The stabilisation searches the host's controller hierarchy for the first navigation controller. Inside a `UITabBarController` it now searches only the selected tab. Nothing else changed.
+- Stabilisation is still needed and still applies, now to the selected tab's stack.
+
+**Tab lists** (`GamblerScoreList`, `PendingBetList`, `FinishedBetList` and their views)
+- The top spacing moved inside the scroll view (`contentInsets.top`), next to the bottom spacing from 2.6. The outer `.padding(.top, …)` and its comment are gone.
+
+### Results
+
+**iPhone 26.5, light and dark.** After three drags of the list, each tab's bar collapses to 54 pt with an inline centred title at y 73.7: "Scores" 55 pt wide, "Bets" 36 pt, "History" 58 pt. Before, History and Bets stayed at 106 pt.
+
+- Rows pass beneath the navigation bar's scroll-edge effect, as they do beneath the floating tab bar, and don't overlap the title.
+- History's pinned date header pins just below the bar.
+- The tab lists' scroll views span the whole screen (0–874 pt), so 2.6's rows beneath the tab bar still hold.
+- Bets in "Copa Mundial de la FIFA 2026" shows the empty state, and its bar now collapses too. The one pool with a pending prediction ("Copa Mundial de la FIFA prur") has a single row, which doesn't scroll even at AX XXXL, so no Bets rows could be shown beneath the bar.
+- **Collapsed Scores title (reported at y 67 but not shown inline): fixed as a side effect.** The title is now the inline title.
+
+**iPhone 18.1, light.** All three tabs collapse to the standard 44 pt bar with inline titles, and rows pass beneath the translucent bar.
+
+**iPad 27.0 and iPad 18.1, full screen.**
+- Visible change: with the `TabView` at the root, iPadOS shows the regular-width tabs in the navigation bar row, beside the avatar and change-pool button (y 36 on iPad 27, y 33 on iPad 18.1). Before, they sat below the large title (y 142 / 135).
+- Each tab's large title collapses with its own list. The bar is 54 pt on iPad 27 and 64 pt on iPad 18.1. No inline title is shown, because the tabs occupy the centre of the bar.
+- Tab count, order, and labels are unchanged.
+
+**Destinations, Back, drawer.** Throwaway probe on iPhone 26.5, iPhone 18.1, and iPad 27.0:
+
+| Check | iPhone 26.5 | iPhone 18.1 | iPad 27.0 |
+| --- | --- | --- | --- |
+| Drawer opened on History; avatar keeps its place within the pushed bar (offset closed / open) | 22 / 22 pt | 16 / −324 pt; the capture shows the avatar moving with the screen. This is the known iOS 18.1 XCUITest frame quirk, the same as `testDrawerNavigationLayout` there | 16 / 16 pt |
+| Profile from the drawer on History: tabs hidden; the edge back-swipe returns to History with the drawer closed | Pass | Pass | Pass |
+| A match from History: tabs hidden, title "Score"; the back button returns to History | Pass | Pass | Pass |
+| A gambler from Scores: Timeline, tabs hidden; the edge back-swipe returns to Scores with the drawer closed | Pass | Pass | Pass (tabs hidden in the capture) |
+| The drawer reopens on the root afterwards | Pass | Pass | Pass |
+
+The iPad 18.1 destination check didn't run; see the storage incident below.
+
+### Tests
+
+| Check | Result |
+| --- | --- |
+| Build (`build-for-testing`, workspace, scheme Tyche, generic iOS Simulator) | Succeeded |
+| `DrawerPassUITests`, iPhone 26.5 (`TEST_RUNNER_DRAWER_UI_PASS=1`) | 5 of 5 passed, including `testDrawerNavigationLayout` for the pool-home host in three orientations |
+| `DrawerPassUITests`, iPhone 18.1 | 3 of 5 passed in the first run. `testDrawerNavigationLayout` failed with the known pre-existing −324 vs 16. `testPoolHomeDrawer` failed with "share sheet did not dismiss" and passed when rerun alone, the same first-run failure as in 2.6 and 2.7 |
+| 2.7 angle sweep, iPhone 26.5, pool home | 0°, 30° L/R, and 55° L/R scrolled. 65° R and 90° R opened the drawer. 65° L and 90° L: nothing, with no row opened |
+| UI package and app unit tests after this change | Not run (storage incident) |
+| `Package.resolved` | Unchanged |
+
+### Captures
+
+- `verification/2.8-top-bar-before-after-ios26.5-light.png`, left to right:
+  - Before: Scores, Bets (empty), History, captured by 2.6's final run on the same tree without 2.8.
+  - After: Scores, Bets, History.
+- `verification/2.8-top-bar-before-after-ios26.5-dark.png`, left to right:
+  - Before: Scores, History.
+  - After: Scores, Bets, History.
+  - Bets had no dark capture before. It shows the same empty state there.
+
+### Simulator storage incident
+
+At about 18:27, while the iPad 18.1 checks were running, the device folders under `~/Library/Developer/CoreSimulator/Devices/` disappeared for all four simulators. This task didn't do it: its commands only booted, shut down, and ran tests on simulators, and it deletes no files outside its scratch folder.
+
+What followed:
+- The next two installs of the test runner on the iPad 18.1 failed ("Unable to Install TycheUITests-Runner", `createTemporaryDirectoryInDirectoryURL`).
+- A reboot and retry stalled.
+- Booting the iPhone 26.5 then failed: "cannot be located on disk".
+- `simctl` still lists all four devices. My later boot attempts left new, near-empty folders for the iPhone 26.5 and the iPad 18.1.
+
+The signed-in state and the installed builds on those simulators are gone. I stopped using simulators there and did not erase, recreate, or repair any of them.
+
+### Simulator settings
+
+- iPhone 26.5 appearance was switched to dark for one run and restored to light, before the incident.
+- No other settings changed.
+- The scratch DerivedData was deleted, and the throwaway tests were removed.
+
+### Not verified
+
+- **UI package and app unit tests after this change** (including the `DrawerNavigationLayout` edit): stopped by the storage incident.
+- **iPad 18.1:** destinations and Back.
+- **iPad 27 in a 375 pt window** (bottom tabs).
+- **iPad 18.1 in dark.**
+- **Bets rows beneath the bars:** no pool has enough pending predictions to scroll.
+- **The tab-bar drag band on iPad in regular width:** the tabs now sit in the navigation bar row, so where the band is measured changed. Tab taps worked, but horizontal drags starting on the top tabs weren't checked.
+
+### Follow-up: simulators erased and unit tests (2026-09-29)
+
+**User decisions**
+
+- The user accepted the iPad regular-width tabs in the navigation bar row (the iPadOS standard) for this task.
+- At the user's direction, `xcrun simctl erase` was run on all four simulators, and each erase succeeded:
+  - iPhone 26.5: `FC9C4A7E…`
+  - iPhone 18.1: `A2F5EF6F…`
+  - iPad 27.0: `838A5F55…`
+  - iPad 18.1: `F45A74E8…`
+- None of the four was deleted or recreated.
+
+**Reinstalled build**
+
+- A fresh `build-for-testing` (Xcode 26.5, scratch DerivedData) succeeded.
+- The resulting debug `Tyche.app` was installed on all four simulators.
+- The iPhone 26.5, iPad 18.1, and iPad 27.0 were booted with the app on its welcome screen, signed out, for the user to sign in.
+- The first launch on the iPad 18.1 timed out while the erased simulator finished its first boot. A later launch succeeded.
+
+**Unit tests** (iPhone 18.1, no sign-in needed)
+
+| Check | Command | Result |
+| --- | --- | --- |
+| UI package and app unit tests | `xcodebuild test-without-building -workspace Tyche.xcworkspace -scheme Tyche -destination 'platform=iOS Simulator,id=<iPhone 16 Pro iOS 18.1>' -parallel-testing-enabled NO -only-testing:UITests -only-testing:TycheTests` | `** TEST EXECUTE SUCCEEDED **`. UITests: 77 tests in 13 suites passed, including the drawer suites. TycheTests: 46 Swift Testing tests in 8 suites and the XCTest cases all passed, with 0 failures |
+
+This covers the `DrawerNavigationLayout` change.
+
+**Not run yet**
+
+`DrawerPassUITests` need a signed-in session with pools, so they were not rerun after the erase. Their results from before the storage incident are in the 2.8 table above.
+
+### Follow-up: signed-in checks after the erase (2026-09-29)
+
+Toolchain: Xcode 26.5 (17F42), using the same scratch build as the previous follow-up, rebuilt for the probes. The runtime checks used throwaway XCUITests, which were not committed. They ran one simulator at a time, with fixed pauses instead of XCUITest's idle wait on the iPads. Prod was read-only: destinations were opened and left with Back or back-swipes, and nothing was saved or joined.
+
+**iPad 18.1: destinations and Back** (signed in, full screen, light)
+
+| Check | Result |
+| --- | --- |
+| Drawer opened on History | Opens. The avatar moves with the pushed screen in the capture. XCUITest reports −320 pt, the known iOS 18.1 untransformed-frame quirk |
+| Profile from the drawer on History | Tabs hidden. The Back button reads "History". The edge back-swipe returns with the drawer closed |
+| A match from History | Tabs hidden, title "Score". Back returns |
+| A gambler from Scores | Timeline opens with tabs hidden and a "Scores" Back button. The edge back-swipe returns with the drawer closed |
+| The drawer reopens on the root | Pass |
+
+After the Profile Back, History's rows were on screen (the probe found and opened a History match row). The regular-width top tabs don't report `isSelected` to XCUITest on this runtime, so the probe's "selected" readings are false here. Capture: `verification/2.8-ipad18.1-destinations-light.png`.
+
+**iPad 18.1: dark**
+
+- Scores and History each collapse their own title to a 64 pt bar, with rows passing beneath it.
+- The tab lists span the full 1180 pt height.
+- Appearance was set to dark for the run and restored to light (confirmed light before and after).
+- Capture: `verification/2.8-ipad18.1-tabs-dark.png`.
+
+**Horizontal drags starting on the iPad top tabs** (iPad 18.1, full screen)
+
+Synthesized 200 pt drags started on the Bets tab:
+
+| Drag | Drawer | Selected tab after the drag |
+| --- | --- | --- |
+| 90° R (toward the trailing edge) | Did not open | History |
+| 80° R | Did not open | History |
+| 90° L | Did not open | Scores |
+| 80° L | Did not open | Scores |
+
+The top tab control keeps its own sliding selection. Capture: `verification/2.8-ipad18.1-top-tab-drags.png`.
+
+**Blocked: sign-in missing**
+
+- **iPad 27.0:** the run stopped at "Open menu" not found. A screenshot then showed the welcome screen: signed out.
+- **iPhone 26.5:** `DrawerPassUITests` failed all 5 at their first step ("pool list did not appear" / "no pools to open"): signed out. The simulator's home screen shows Fortuna installed.
+- **iPhone 18.1:** the app couldn't be launched by `simctl` ("denied by service delegate"). Its home-screen icon shows the placeholder of a never-launched app.
+
+Before these runs, I shut down the iPhone 26.5 and the iPad 27.0 with `simctl shutdown`, one simulator at a time, while the iPad 18.1 checks ran. The iPad 18.1 was never shut down between the sign-in and its checks, and it stayed signed in through several test installs. I can't tell whether that shutdown lost the other two sessions or whether they were not signed in; this was not investigated further. No sign-in or sign-out was attempted.
+
+**Package.resolved:** unchanged against the hashes recorded before this follow-up's build.
+
+**Not verified yet** (blocked on sign-in)
+
+- `DrawerPassUITests` on iPhone 26.5 and iPhone 18.1 after the erase. The runs before the storage incident are in the 2.8 table.
+- iPad 27.0 in the 375 pt window.
+- Top-tab drags on iPad 27.0. They were exercised on iPad 18.1 only.
+
+### Follow-up: remaining checks after the user signed in again (2026-09-29)
+
+Toolchain: Xcode 26.5 (17F42), same scratch build as the previous follow-up. Before each device's run I checked its sign-in state from a screenshot. No simulator was shut down, rebooted, or erased, and no sign-in or sign-out was attempted.
+
+**Sign-in state**
+
+- iPhone 26.5: signed in (My pools shown).
+- iPad 27.0: signed in (My pools shown).
+- iPhone 18.1: signed out. Its home screen showed the never-opened app icon. Launching the app opened the welcome screen, so its checks were not run.
+
+**`DrawerPassUITests`, iPhone 26.5** (`TEST_RUNNER_DRAWER_UI_PASS=1`, after the erase): 5 of 5 passed.
+
+- `testDrawerNavigationLayout`
+- `testPoolHomeDrawer`
+- `testPoolHomeDrawerGestures`
+- `testPoolListDrawer`
+- `testPoolListDrawerGestures`
+
+**iPad 27.0 in a 375 pt window** (portrait, light)
+
+The window corner was dragged to 375 pt; the window then sat at x 223. In the window:
+
+- Pool home shows the bottom tab bar (375 × 77 pt at y 1103).
+- The tab lists span the full 1180 pt height.
+- Scores and History each collapse their own title to an inline title (54 pt bar), and rows pass beneath both bars.
+- Capture: `verification/2.8-ipad27-375-window-light.png`.
+
+The destinations probe in the window got as far as Profile, which opened with the tabs hidden. Two of its readings are artifacts of the floating window's coordinates, not of this change. The same two readings are recorded in 2.4 against the pre-change build:
+
+- The avatar offset read 84 → 16 pt.
+- The probe's edge back-swipe, aimed at screen-normalized x 0.005, lands outside the window, so it didn't go back.
+
+The window was then restored to full screen (820 × 1180 pt at the origin). Orientation stayed portrait throughout, and appearance stayed light.
+
+**Top-tab drags, iPad 27.0, full screen**
+
+Synthesized 200 pt drags started on the Bets tab:
+
+| Drag | Drawer | Selected tab after the drag |
+| --- | --- | --- |
+| 90° R | Did not open | Bets |
+| 90° L | Did not open | Scores |
+| 80° R | Did not open | History |
+| 80° L | Did not open | Scores |
+
+As on the iPad 18.1, the tab control keeps its drags.
+
+**Cleanup**
+
+- `Package.resolved`: unchanged.
+- The scratch DerivedData was deleted.
+- The throwaway tests are not in the repo.
+- iPhone 26.5, iPhone 18.1, and iPad 27.0 were left booted. The iPad 18.1 is shut down, still signed in, since the previous follow-up.
+
+**Not verified**
+
+- `DrawerPassUITests` on iPhone 18.1 after the erase: the app there is signed out. Before the storage incident, the 2.8 run on iPhone 18.1 had only the known failures.
+- Edge back-swipe inside the iPad floating 375 pt window: probe coordinates. The same result was recorded as pre-existing in 2.4.
+
+### Follow-up: `DrawerPassUITests` on iPhone 18.1 after the erase (2026-09-29)
+
+**Sign-in**
+
+A screenshot confirmed the iPhone 16 Pro (iOS 18.1) was signed in, showing My pools with its three pools. No simulator was shut down, rebooted, or erased, and all three stay booted.
+
+**Build**
+
+A fresh `build-for-testing` on Xcode 26.5 (17F42), using scratch DerivedData, succeeded.
+
+**Results**
+
+`TEST_RUNNER_DRAWER_UI_PASS=1 xcodebuild test-without-building … -only-testing:TycheUITests/DrawerPassUITests`:
+
+| Test | Result |
+| --- | --- |
+| `testPoolHomeDrawerGestures` | Passed |
+| `testPoolListDrawer` | Passed |
+| `testPoolListDrawerGestures` | Passed |
+| `testDrawerNavigationLayout` | Failed with the known pre-existing "avatar shifted within the pushed screen" (−324 vs 16) |
+| `testPoolHomeDrawer` | Failed with "share sheet did not dismiss", then passed when rerun alone. This is the same first-run failure seen in 2.6, 2.7, and 2.8 |
+
+The run reported "Executed 5 tests, with 2 failures" and then hung while finishing. The bounded timeout ended it after all five results were in.
+
+**Cleanup**
+
+- The scratch DerivedData was deleted.
+- `Package.resolved` is unchanged.
+- No throwaway tests are in the repo.
+
+The user accepted the iPad tab placement in the navigation bar row for task 2.8. Accepted without Bets rows scrolling beneath the bars (no pool has enough pending predictions) and the edge back-swipe inside the iPad floating 375 pt window for task 2.8 by the user on 2026-09-29.
+
+## iOS — task 2.9 (2026-09-29)
+
+Toolchain: Xcode 26.5 (17F42), scratch DerivedData (deleted afterwards). Simulators: iPhone 17 on iOS 26.5 and iPhone 16 Pro on iOS 18.1, both signed in. Sign-in was confirmed from the pool list before each device's runs: a screenshot, or `DrawerPassUITests` reaching the pools. No simulator was shut down, rebooted, or erased, and all three stay booted. Prod was read-only.
+
+The runtime checks used a throwaway XCUITest (not committed).
+
+### Code
+
+`iOS/UI/Sources/UI/DrawerPanGesture.swift`:
+
+- `gestureRecognizer(_:shouldReceive:)` records the drag's start point only for a touch that begins a drag, which is the 5.3 refresh finding 2.
+- The rule is the new `DrawerPanStart.isFirstTouch(state:trackedTouches:)`: the recognizer is `.possible` and follows no touch yet.
+- It is a plain enum outside the iOS 18-only recognizer, so it can be unit-tested on every runtime.
+- The delegate still accepts every touch. Nothing else changed.
+
+### Tests
+
+**New unit test.** `DrawerPanStartTests` (Swift Testing, in `DrawerRevealTests.swift`) checks three cases:
+
+- A touch while the recognizer is `.possible` with no touches sets the start.
+- A second touch during `.began` or `.changed` doesn't.
+- A second touch before recognition (`.possible`, one touch) doesn't.
+
+**Runs**
+
+| Check | Result |
+| --- | --- |
+| Build (`build-for-testing`, workspace, scheme Tyche, generic iOS Simulator) | Succeeded |
+| UI package tests, iPhone 26.5 (`-only-testing:UITests`) | 80 tests in 14 suites passed, including `DrawerPanStartTests`; `** TEST EXECUTE SUCCEEDED **` |
+| UI package tests, iPhone 18.1 | 80 tests in 14 suites passed. xcodebuild then hung while finishing, as in 2.8's 18.1 run, and the bounded timeout ended it |
+| `DrawerPassUITests`, iPhone 26.5 (`TEST_RUNNER_DRAWER_UI_PASS=1`) | 5 of 5 passed |
+| `DrawerPassUITests`, iPhone 18.1 | 4 of 5 passed. `testDrawerNavigationLayout` failed with the known pre-existing −324 vs 16. The share-sheet failure didn't occur this time |
+| Angle sweep, pool home, iPhone 26.5 (synthesized 180 pt drags at 500 pt/s, as in 2.7) | 0°, 30° L/R, and 55° L/R scrolled. 65° R and 90° R opened the drawer. 65° L and 90° L did nothing and opened no row. Same as 2.7 and 2.8 |
+| `Package.resolved` | Unchanged |
+
+### Second finger
+
+The probe synthesized a two-finger event on My pools (iPhone 26.5):
+
+- Finger 1 drags right across the middle of the screen, from 25% to 75% of the width.
+- Finger 2 touches down at 95% of the width halfway through, and holds until finger 1 lifts.
+
+With the fix, the drawer opened on both two-finger drags, as it did on single-finger drags before and after them.
+
+I also ran an A/B with the guard temporarily removed and rebuilt, then restored. The same sequence also opened the drawer. So this probe doesn't reproduce a jump: either UIKit doesn't offer the second touch to the one-touch pan in this case, or it doesn't move the reveal. The guard stays as a defensive fix for the reviewed code path, and the jump itself is recorded as not reproduced.
+
+### Record correction
+
+The 2.8 Code section's "six `navigationDestination`s" now reads "five", matching the five routes it lists and the code (5.3 refresh finding 3).
+
+### Not verified
+
+- A second finger actually reaching the drawer's pan mid-drag, and the reveal jumping without the guard: not reproduced with synthesized touches, even with the guard removed.
+- iOS 16 and 17: the guard is in the iOS 18+ UIKit recognizer only. Below iOS 18 the SwiftUI drag is unchanged.
+
+Accepted without reproducing a second-finger jump (the guard is kept as a precaution) for task 2.9 by the user on 2026-09-29.

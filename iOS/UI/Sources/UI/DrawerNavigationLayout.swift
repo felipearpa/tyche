@@ -113,7 +113,8 @@ final class DrawerNavigationHostingController: UIViewController {
         isUpdating = true
         defer { isUpdating = false }
         // Search only the controller hierarchy owned by this foreground host, never the window
-        // or a presented sheet. No private UIKit/SwiftUI class names are involved.
+        // or a presented sheet, and only the selected tab of a tab bar controller. No private
+        // UIKit/SwiftUI class names are involved.
         guard let current = firstNavigationController(in: self), current.isViewLoaded else { return }
         if navigation !== current {
             restoreNavigationLayout()
@@ -208,6 +209,10 @@ final class DrawerNavigationHostingController: UIViewController {
 
     private func firstNavigationController(in controller: UIViewController) -> UINavigationController? {
         if let navigation = controller as? UINavigationController { return navigation }
+        // A host whose tabs each keep a navigation stack moves the selected tab's stack.
+        if let tabs = controller as? UITabBarController, let selected = tabs.selectedViewController {
+            return firstNavigationController(in: selected)
+        }
         for child in controller.children {
             if let navigation = firstNavigationController(in: child) { return navigation }
         }
