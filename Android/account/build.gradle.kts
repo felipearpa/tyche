@@ -34,6 +34,9 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
     testOptions {
+        // Credential Manager and Google ID option and credential types build Bundles in their
+        // constructors; JVM tests need the stubbed android.jar to return defaults for them.
+        unitTests.isReturnDefaultValues = true
         unitTests.all { test ->
             test.useJUnitPlatform()
         }
@@ -67,7 +70,6 @@ dependencies {
     implementation(libs.androidx.credentials)
     implementation(libs.androidx.credentials.play.services.auth)
     implementation(libs.google.id)
-    implementation(libs.lifecycle.process)
 
     testImplementation(platform(libs.junit5.bom))
     testImplementation(libs.junit5.jupiter)

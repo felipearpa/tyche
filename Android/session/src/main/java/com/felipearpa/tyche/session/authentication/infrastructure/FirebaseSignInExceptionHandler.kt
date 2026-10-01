@@ -9,6 +9,7 @@ import com.google.firebase.FirebaseTooManyRequestsException
 import com.google.firebase.auth.FirebaseAuthActionCodeException
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
+import kotlin.coroutines.cancellation.CancellationException
 
 suspend fun <Value> handleFirebaseSendSignInLinkToEmail(block: suspend () -> Value): Result<Value> {
     return try {
@@ -42,9 +43,15 @@ suspend fun <Value> handleFirebaseSignInWithEmailAndPassword(block: suspend () -
     }
 }
 
+/**
+ * Coroutine cancellation is rethrown rather than returned, so a sign-in abandoned by its owner
+ * never surfaces as a Google sign-in failure. The email helpers above keep their behavior.
+ */
 suspend fun <Value> handleFirebaseSignInWithGoogle(block: suspend () -> Value): Result<Value> {
     return try {
         Result.success(block())
+    } catch (exception: CancellationException) {
+        throw exception
     } catch (_: FirebaseAuthInvalidCredentialsException) {
         Result.failure(GoogleSignInException.InvalidCredential)
     } catch (_: FirebaseAuthUserCollisionException) {

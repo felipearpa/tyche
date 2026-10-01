@@ -17,17 +17,13 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.felipearpa.tyche.account.R
+import com.felipearpa.tyche.account.bygoogle.GoogleSignInState
 import com.felipearpa.tyche.account.bygoogle.googleSignInViewModel
 import com.felipearpa.tyche.session.AccountBundle
 import com.felipearpa.tyche.ui.exception.ExceptionAlertDialog
 import com.felipearpa.tyche.ui.exception.UnknownLocalizedException
-import com.felipearpa.tyche.ui.exception.localizedOrDefault
 import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
 import com.felipearpa.tyche.ui.theme.TycheTheme
-import com.felipearpa.ui.state.LoadState
-import com.felipearpa.ui.state.isLoading
-import com.felipearpa.ui.state.onFailure
-import com.felipearpa.ui.state.onLoaded
 
 @Composable
 fun SocialSignInRow(
@@ -35,28 +31,33 @@ fun SocialSignInRow(
     modifier: Modifier = Modifier,
 ) {
     val googleViewModel = googleSignInViewModel()
-    val googleState by googleViewModel.state.collectAsState(initial = LoadState.Idle)
+    val googleState by googleViewModel.state.collectAsState()
     val context = LocalContext.current
 
     SocialSignInRow(
         googleState = googleState,
-        onSignInWithGoogle = { googleViewModel.signInWithGoogle(context = context) },
-        onResetGoogleState = { googleViewModel.reset() },
+        onSignInWithGoogle = { googleViewModel.signInWithGoogle(activityContext = context) },
+        onDismissGoogleFailure = googleViewModel::dismissFailure,
         onAuthenticate = onAuthenticate,
+        onAuthenticationHandled = googleViewModel::authenticationHandled,
         modifier = modifier,
     )
 }
 
+/**
+ * Google sign-in actions for [googleState]. The Google button is disabled while an attempt is
+ * busy. An [GoogleSignInState.Authenticated] account is passed to [onAuthenticate] once, then
+ * reported through [onAuthenticationHandled] so the state moves on and is not delivered again.
+ */
 @Composable
 fun SocialSignInRow(
-    googleState: LoadState<AccountBundle>,
+    googleState: GoogleSignInState,
     onSignInWithGoogle: () -> Unit,
-    onResetGoogleState: () -> Unit,
+    onDismissGoogleFailure: () -> Unit,
     onAuthenticate: (AccountBundle) -> Unit,
+    onAuthenticationHandled: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val isOverlayVisible = googleState.isLoading() || googleState is LoadState.Loaded
-
     Row(
         modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(
@@ -66,7 +67,7 @@ fun SocialSignInRow(
     ) {
         IconButton(
             onClick = onSignInWithGoogle,
-            enabled = !isOverlayVisible,
+            enabled = !googleState.isBusy,
         ) {
             Image(
                 painter = painterResource(id = R.drawable.google_logo),
@@ -76,16 +77,17 @@ fun SocialSignInRow(
         }
     }
 
-    googleState.onFailure { exception ->
+    if (googleState is GoogleSignInState.Failed) {
         ExceptionAlertDialog(
-            exception = exception.localizedOrDefault(),
-            onDismiss = onResetGoogleState,
+            exception = googleState.exception,
+            onDismiss = onDismissGoogleFailure,
         )
     }
 
-    LaunchedEffect(googleState) {
-        googleState.onLoaded { accountBundle ->
-            onAuthenticate(accountBundle)
+    if (googleState is GoogleSignInState.Authenticated) {
+        LaunchedEffect(googleState) {
+            onAuthenticate(googleState.accountBundle)
+            onAuthenticationHandled()
         }
     }
 }
@@ -97,10 +99,11 @@ private val iconSize = 32.dp
 private fun InitialSocialSignInRowPreview() {
     TycheTheme {
         SocialSignInRow(
-            googleState = LoadState.Idle,
+            googleState = GoogleSignInState.Idle,
             onSignInWithGoogle = {},
-            onResetGoogleState = {},
+            onDismissGoogleFailure = {},
             onAuthenticate = {},
+            onAuthenticationHandled = {},
         )
     }
 }
@@ -110,10 +113,11 @@ private fun InitialSocialSignInRowPreview() {
 private fun LoadingSocialSignInRowPreview() {
     TycheTheme {
         SocialSignInRow(
-            googleState = LoadState.Loading,
+            googleState = GoogleSignInState.InProgress,
             onSignInWithGoogle = {},
-            onResetGoogleState = {},
+            onDismissGoogleFailure = {},
             onAuthenticate = {},
+            onAuthenticationHandled = {},
         )
     }
 }
@@ -123,10 +127,11 @@ private fun LoadingSocialSignInRowPreview() {
 private fun FailureSocialSignInRowPreview() {
     TycheTheme {
         SocialSignInRow(
-            googleState = LoadState.Failure(UnknownLocalizedException()),
+            googleState = GoogleSignInState.Failed(UnknownLocalizedException()),
             onSignInWithGoogle = {},
-            onResetGoogleState = {},
+            onDismissGoogleFailure = {},
             onAuthenticate = {},
+            onAuthenticationHandled = {},
         )
     }
 }

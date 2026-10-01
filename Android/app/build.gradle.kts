@@ -134,6 +134,7 @@ dependencies {
     androidTestImplementation(platform(libs.compose.bom))
     androidTestImplementation(libs.ui.test.junit4)
     androidTestImplementation(libs.io.mockk.android)
+    androidTestImplementation(libs.lifecycle.process)
 
     debugImplementation(libs.bundles.compose.debug.test)
 }

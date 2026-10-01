@@ -39,16 +39,16 @@ import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
 import com.felipearpa.foundation.emptyString
 import com.felipearpa.tyche.R
+import com.felipearpa.tyche.account.bygoogle.GoogleSignInState
 import com.felipearpa.tyche.account.social.SocialSignInRow
 import com.felipearpa.tyche.ui.exception.UnknownLocalizedException
 import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
 import com.felipearpa.tyche.ui.theme.TycheTheme
-import com.felipearpa.ui.state.LoadState
 
 @Composable
 fun HomeView(
-    onSignInWithEmail: () -> Unit,
-    onSignInWithEmailAndPassword: () -> Unit,
+    onSignInWithEmail: (() -> Unit)?,
+    onSignInWithEmailAndPassword: (() -> Unit)?,
     socialSignInSlot: @Composable () -> Unit,
 ) {
     HomeView(
@@ -63,8 +63,8 @@ fun HomeView(
 
 @Composable
 private fun HomeView(
-    onSignInWithEmail: () -> Unit,
-    onSignInWithEmailAndPassword: () -> Unit,
+    onSignInWithEmail: (() -> Unit)?,
+    onSignInWithEmailAndPassword: (() -> Unit)?,
     socialSignInSlot: @Composable () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -154,8 +154,8 @@ private fun InformationSection() {
 
 @Composable
 private fun SignInSection(
-    onSignInWithEmail: () -> Unit,
-    onSignInWithEmailAndPassword: () -> Unit,
+    onSignInWithEmail: (() -> Unit)?,
+    onSignInWithEmailAndPassword: (() -> Unit)?,
     socialSignInSlot: @Composable () -> Unit,
 ) {
     Column(
@@ -174,14 +174,16 @@ private fun SignInSection(
         socialSignInSlot()
 
         Button(
-            onClick = onSignInWithEmail,
+            onClick = onSignInWithEmail ?: {},
+            enabled = onSignInWithEmail != null,
             modifier = Modifier.fillMaxWidth(),
         ) {
             Text(text = stringResource(id = R.string.sign_in_with_email_action))
         }
 
         OutlinedButton(
-            onClick = onSignInWithEmailAndPassword,
+            onClick = onSignInWithEmailAndPassword ?: {},
+            enabled = onSignInWithEmailAndPassword != null,
             modifier = Modifier.fillMaxWidth(),
         ) {
             Text(text = stringResource(id = R.string.sign_in_with_email_and_password))
@@ -223,10 +225,11 @@ fun HomeViewWithSocialInitialPreview() {
                 onSignInWithEmailAndPassword = {},
                 socialSignInSlot = {
                     SocialSignInRow(
-                        googleState = LoadState.Idle,
+                        googleState = GoogleSignInState.Idle,
                         onSignInWithGoogle = {},
-                        onResetGoogleState = {},
+                        onDismissGoogleFailure = {},
                         onAuthenticate = {},
+                        onAuthenticationHandled = {},
                     )
                 },
             )
@@ -247,10 +250,11 @@ fun HomeViewWithSocialLoadingPreview() {
                 onSignInWithEmailAndPassword = {},
                 socialSignInSlot = {
                     SocialSignInRow(
-                        googleState = LoadState.Loading,
+                        googleState = GoogleSignInState.InProgress,
                         onSignInWithGoogle = {},
-                        onResetGoogleState = {},
+                        onDismissGoogleFailure = {},
                         onAuthenticate = {},
+                        onAuthenticationHandled = {},
                     )
                 },
             )
@@ -271,10 +275,11 @@ fun HomeViewWithSocialFailurePreview() {
                 onSignInWithEmailAndPassword = {},
                 socialSignInSlot = {
                     SocialSignInRow(
-                        googleState = LoadState.Failure(UnknownLocalizedException()),
+                        googleState = GoogleSignInState.Failed(UnknownLocalizedException()),
                         onSignInWithGoogle = {},
-                        onResetGoogleState = {},
+                        onDismissGoogleFailure = {},
                         onAuthenticate = {},
+                        onAuthenticationHandled = {},
                     )
                 },
             )

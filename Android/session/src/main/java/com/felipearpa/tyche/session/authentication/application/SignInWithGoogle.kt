@@ -6,7 +6,19 @@ import com.felipearpa.tyche.session.CurrentAccountCoordinator
 import com.felipearpa.tyche.session.authentication.domain.AccountLink
 import com.felipearpa.tyche.session.authentication.domain.AuthenticationRepository
 import com.felipearpa.tyche.session.authentication.domain.GoogleSignInException
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.ensureActive
+import kotlin.coroutines.cancellation.CancellationException
 
+/**
+ * Signs in with a Google ID token: Firebase authentication, then the existing account link, then
+ * installation of the current account.
+ *
+ * Firebase, link, and validation failures are returned. A failure to install the account is
+ * thrown by [CurrentAccountCoordinator.install], so callers must handle both. Cancellation of the
+ * calling coroutine is never returned as a failure: the shared network handler behind the account
+ * link reports it as one, so it is rethrown here when the caller was actually canceled.
+ */
 class SignInWithGoogle(
     private val authenticationRepository: AuthenticationRepository,
     private val currentAccountCoordinator: CurrentAccountCoordinator,
@@ -27,8 +39,10 @@ class SignInWithGoogle(
                 email = email,
                 externalAccountId = googleResult.externalAccountId,
             ),
-        ).onFailure { exception -> return Result.failure(exception) }
-            .getOrNull()!!
+        ).onFailure { exception ->
+            if (exception is CancellationException) currentCoroutineContext().ensureActive()
+            return Result.failure(exception)
+        }.getOrNull()!!
 
         currentAccountCoordinator.install(account = accountBundle)
 
