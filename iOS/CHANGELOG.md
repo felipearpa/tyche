@@ -11,6 +11,10 @@
 - Your ranking trend now appears right under your position in the pool list
 - Your pool list now reads as one clear line with VoiceOver, giving each pool's name, your rank, points, members, and trend together, and you can open the pool or send an invite without leaving the row
 - Counts now read correctly when there is only one of something, so a pool with a single member says "1 member" and a one-place move says "Up 1 place"
+- A refreshed look for Liquid Glass on iOS 26 and later: navigation bars, tabs, and sheets use the system glass, while text fields and the buttons inside forms and lists stay solid and easy to read
+- Text on green buttons and highlights is easier to read, with a darker brand green in light mode and dark labels in dark mode
+- Creating a pool is easier to find: a larger green button with a plus sign, announced by VoiceOver as Create pool
+- Scores, Bets, and History each shrink their own title as you scroll, and their rows pass beneath the navigation and tab bars
 - Brand-new app icon with a Liquid Glass look
 - Refreshed splash screen logo
 - The leaderboard's loading state now mirrors the real rows
