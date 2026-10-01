@@ -41,6 +41,7 @@ android {
     flavorDimensions += "environment"
     productFlavors {
         create("prod") {
+            isDefault = true
             dimension = "environment"
             buildConfigField(type = "String", name = "URL_BASE_PATH", value = """"$urlBasePath"""")
         }
