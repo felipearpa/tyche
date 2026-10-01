@@ -10,7 +10,6 @@ public typealias MatchOpenHandler = (
 public struct PendingBetListView: View {
     @StateObject private var viewModel: PendingBetListViewModel
     private let onMatchOpen: MatchOpenHandler?
-    @Environment(\.boxSpacing) private var boxSpacing
 
     public init(
         viewModel: @autoclosure @escaping () -> PendingBetListViewModel,
@@ -27,7 +26,6 @@ public struct PendingBetListView: View {
             lazyPagingItems: viewModel.lazyPager,
             onMatchOpen: onMatchOpen
         )
-        .padding(.vertical, boxSpacing.medium)
     }
 }
 

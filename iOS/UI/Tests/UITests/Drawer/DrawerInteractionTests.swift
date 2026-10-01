@@ -89,13 +89,13 @@ struct DrawerInteractionTests {
 }
 
 extension DrawerInteractionTests {
-    /// The drawer's drag as the container attaches it: its mask, and the decision each drag
-    /// update makes through the container's handler and the reveal model.
+    /// The drawer's drag as the container attaches it: whether it is attached, and the
+    /// decisions each drag makes through the container's handler and the reveal model.
     ///
-    /// `callUpdating` feeds the gesture a synthesized value, so these tests cover wiring and
-    /// decisions, not arbitration with other gestures; `DrawerPassUITests` covers that with real
-    /// drags. The container's state is not hosted here, so each call starts from the reveal the
-    /// container was created with. Nested in `DrawerInteractionTests`, which has the same
+    /// The handler is fed synthesized drags, so these tests cover wiring and decisions, not
+    /// arbitration with other gestures; `DrawerPassUITests` covers that with real drags. The
+    /// container's state is not hosted here, so each call starts from the reveal the container
+    /// was created with. Nested in `DrawerInteractionTests`, which has the same
     /// simulator-runtime constraint, so skipping that suite skips this one too.
     @MainActor
     struct DragWiring {
@@ -103,11 +103,11 @@ extension DrawerInteractionTests {
         func aDestinationDetachesTheDragInEveryDrawerState(state: DrawerStateAtDestination) throws {
             let recorder = Recorder(isShowing: state.isShowing)
 
-            let host = containerDrag(recorder: recorder, reveal: state.reveal, allowsDragging: true)
-            let destination = containerDrag(recorder: recorder, reveal: state.reveal, allowsDragging: false)
+            let host = try dragGesture(recorder: recorder, reveal: state.reveal, allowsDragging: true)
+            let destination = try dragGesture(recorder: recorder, reveal: state.reveal, allowsDragging: false)
 
-            #expect(try host().gestureMask() == .all)
-            #expect(try destination().gestureMask() == .subviews)
+            #expect(host.isEnabled)
+            #expect(destination.isEnabled == false)
         }
 
         @Test
@@ -146,50 +146,69 @@ extension DrawerInteractionTests {
             var leftover = DrawerReveal(isOpen: false)
             leftover.updateDrag(translation: CGSize(width: 2, height: 24), presentedProgress: 0, width: 340)
             let recorder = Recorder(isShowing: false)
-            let drag = containerDrag(recorder: recorder, reveal: leftover)
+            let handler = try dragHandler(recorder: recorder, reveal: leftover)
 
             // A leading swipe is declined, so the row under it keeps its touch…
-            let leading = try update(drag(), from: CGPoint(x: 300, y: 300), by: CGSize(width: -24, height: 1))
-            #expect(leading.isDeclined)
+            #expect(handler.onChange(drag(from: CGPoint(x: 300, y: 300), by: CGSize(width: -24, height: 1)), 0, true) == false)
 
             // …and a trailing swipe is claimed and opens the drawer.
-            let trailing = try update(drag(), from: CGPoint(x: 60, y: 300), by: CGSize(width: 24, height: 1))
-            #expect(trailing.isDeclined == false)
+            #expect(handler.onChange(drag(from: CGPoint(x: 60, y: 300), by: CGSize(width: 24, height: 1)), 0, true))
             #expect(recorder.isShowing == false)
         }
 
         @Test
         func closedDrawerClaimsATrailingDragAndDeclinesALeadingOne() throws {
             let recorder = Recorder(isShowing: false)
-            let drag = containerDrag(recorder: recorder)
+            let handler = try dragHandler(recorder: recorder)
 
-            let trailing = try update(drag(), from: CGPoint(x: 60, y: 300), by: CGSize(width: 24, height: 1))
-            #expect(trailing.isActive)
-            #expect(trailing.isDeclined == false)
+            let trailing = drag(from: CGPoint(x: 60, y: 300), by: CGSize(width: 24, height: 1))
+            #expect(handler.takesTouch(trailing, 0))
+            #expect(handler.onChange(trailing, 0, true))
 
-            let leading = try update(drag(), from: CGPoint(x: 300, y: 300), by: CGSize(width: -24, height: 1))
-            #expect(leading.isDeclined)
+            // The drawer still takes a leading swipe's touch, so the row it crosses does not
+            // activate, but it does not follow it.
+            let leading = drag(from: CGPoint(x: 300, y: 300), by: CGSize(width: -24, height: 1))
+            #expect(handler.takesTouch(leading, 0))
+            #expect(handler.onChange(leading, 0, true) == false)
+        }
+
+        @Test
+        func drawerLeavesDragsThatAreNotClearlyHorizontalToTheViewsBeneath() throws {
+            let recorder = Recorder(isShowing: false)
+            let handler = try dragHandler(recorder: recorder)
+
+            // 35 degrees from horizontal: a scroll that drifts sideways.
+            let diagonal = drag(from: CGPoint(x: 60, y: 500), by: CGSize(width: 20, height: -14))
+            #expect(handler.takesTouch(diagonal, 0) == false)
+            #expect(handler.onChange(diagonal, 0, true) == false)
+
+            // 25 degrees from horizontal opens the drawer.
+            let shallow = drag(from: CGPoint(x: 60, y: 500), by: CGSize(width: 20, height: -9))
+            #expect(handler.takesTouch(shallow, 0))
         }
 
         @Test
         func closedDrawerDeclinesDragsThatStartOnTheReportedTabBar() throws {
             let recorder = Recorder(isShowing: false)
-            let drag = containerDrag(recorder: recorder, excludedBand: 780...CGFloat.greatestFiniteMagnitude)
+            let handler = try dragHandler(recorder: recorder, excludedBand: 780...CGFloat.greatestFiniteMagnitude)
 
-            let onBar = try update(drag(), from: CGPoint(x: 60, y: 800), by: CGSize(width: 24, height: 0))
-            #expect(onBar.isDeclined)
+            let onBar = drag(from: CGPoint(x: 60, y: 800), by: CGSize(width: 24, height: 0))
+            #expect(handler.takesTouch(onBar, 0) == false)
+            #expect(handler.onChange(onBar, 0, true) == false)
 
-            let aboveBar = try update(drag(), from: CGPoint(x: 60, y: 760), by: CGSize(width: 24, height: 0))
-            #expect(aboveBar.isDeclined == false)
+            let aboveBar = drag(from: CGPoint(x: 60, y: 760), by: CGSize(width: 24, height: 0))
+            #expect(handler.takesTouch(aboveBar, 0))
+            #expect(handler.onChange(aboveBar, 0, true))
         }
 
         @Test
         func openDrawerClaimsDragsThatStartWhereTheTabBarWas() throws {
             let recorder = Recorder(isShowing: true)
-            let drag = containerDrag(recorder: recorder, excludedBand: 780...CGFloat.greatestFiniteMagnitude)
+            let handler = try dragHandler(recorder: recorder, excludedBand: 780...CGFloat.greatestFiniteMagnitude)
 
-            let onStrip = try update(drag(), from: CGPoint(x: 380, y: 800), by: CGSize(width: -24, height: 0))
-            #expect(onStrip.isDeclined == false)
+            let onStrip = drag(from: CGPoint(x: 380, y: 800), by: CGSize(width: -24, height: 0))
+            #expect(handler.takesTouch(onStrip, 1))
+            #expect(handler.onChange(onStrip, 1, true))
         }
 
         /// The tab-bar modifiers report the band in the global coordinates the drag's start
@@ -237,53 +256,32 @@ extension DrawerInteractionTests {
             )
         }
 
-        private func containerDrag(
+        /// The drag modifier the container attaches.
+        private func dragGesture(
             recorder: Recorder,
             reveal: DrawerReveal? = nil,
             allowsDragging: Bool = true,
             excludedBand: ClosedRange<CGFloat>? = nil
-        ) -> () throws -> InspectableView<ViewType.Gesture<DragGesture>> {
-            let view = container(
-                recorder: recorder,
-                reveal: reveal,
-                allowsDragging: allowsDragging,
-                excludedBand: excludedBand
-            )
-            return {
-                try view.inspect()
-                    .find(ViewType.ZStack.self)
-                    .modifier(DrawerDragGesture.self)
-                    .viewModifierContent()
-                    .highPriorityGesture(DragGesture.self)
-            }
-        }
-
-        /// The handler the container gives its drag, as the gesture's end-of-touch paths call it.
-        private func dragHandler(recorder: Recorder, reveal: DrawerReveal) throws -> DrawerDragHandler {
-            try container(recorder: recorder, reveal: reveal, allowsDragging: true, excludedBand: nil)
+        ) throws -> DrawerDragGesture {
+            try container(recorder: recorder, reveal: reveal, allowsDragging: allowsDragging, excludedBand: excludedBand)
                 .inspect()
                 .find(ViewType.ZStack.self)
                 .modifier(DrawerDragGesture.self)
                 .actualView()
-                .handler
         }
 
-        /// Feeds one drag update to the gesture and returns the touch state it leaves.
-        private func update(
-            _ gesture: InspectableView<ViewType.Gesture<DragGesture>>,
-            from start: CGPoint,
-            by translation: CGSize
-        ) throws -> DrawerTouch {
-            var touch = DrawerTouch()
-            var transaction = Transaction()
-            let value = DragGesture.Value(
-                time: Date(),
-                location: CGPoint(x: start.x + translation.width, y: start.y + translation.height),
-                startLocation: start,
-                velocity: .zero
-            )
-            try gesture.callUpdating(value: value, state: &touch, transaction: &transaction)
-            return touch
+        /// The handler the container gives its drag, which both of its recognizers call.
+        private func dragHandler(
+            recorder: Recorder,
+            reveal: DrawerReveal? = nil,
+            excludedBand: ClosedRange<CGFloat>? = nil
+        ) throws -> DrawerDragHandler {
+            try dragGesture(recorder: recorder, reveal: reveal, excludedBand: excludedBand).handler
+        }
+
+        /// A drag in window coordinates that has travelled `translation` from `start`.
+        private func drag(from start: CGPoint, by translation: CGSize) -> DrawerDragValue {
+            DrawerDragValue(translation: translation, predictedEndTranslation: translation, startLocation: start)
         }
     }
 }

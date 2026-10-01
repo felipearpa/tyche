@@ -9,8 +9,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.plus
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -176,11 +178,19 @@ private fun TopAppBar(
             }
         },
         actions = {
-            IconButton(onClick = onPoolCreate) {
+            // Larger than an ordinary 40 dp icon button: the accent-filled create action is the
+            // screen's primary action.
+            FilledIconButton(
+                onClick = onPoolCreate,
+                colors = IconButtonDefaults.filledIconButtonColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary,
+                ),
+                modifier = Modifier.size(createButtonSize),
+            ) {
                 Icon(
-                    painter = painterResource(id = SharedR.drawable.filled_add),
-                    tint = MaterialTheme.colorScheme.primary,
-                    contentDescription = "Localized description",
+                    painter = painterResource(id = SharedR.drawable.add),
+                    contentDescription = stringResource(id = R.string.create_pool_action),
                     modifier = Modifier.size(createIconSize),
                 )
             }
@@ -189,7 +199,8 @@ private fun TopAppBar(
     )
 }
 
-private val createIconSize = 48.dp
+private val createButtonSize = 48.dp
+private val createIconSize = 28.dp
 
 @PreviewLightDark
 @Preview(locale = "es-rCO")

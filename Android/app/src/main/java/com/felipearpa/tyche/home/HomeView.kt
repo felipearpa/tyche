@@ -1,5 +1,6 @@
 package com.felipearpa.tyche.home
 
+import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -24,15 +25,18 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
+import androidx.core.view.WindowCompat
 import com.felipearpa.foundation.emptyString
 import com.felipearpa.tyche.R
 import com.felipearpa.tyche.account.social.SocialSignInRow
@@ -70,6 +74,8 @@ private fun HomeView(
             MaterialTheme.colorScheme.surface,
         ),
     )
+
+    LightStatusBarIcons()
 
     Box(
         modifier = Modifier
@@ -120,6 +126,7 @@ private fun HeaderSection() {
         Icon(
             painter = painterResource(id = R.drawable.ic_tyche_logo),
             contentDescription = emptyString(),
+            tint = headerColor,
             modifier = Modifier.size(titleIconSize),
         )
 
@@ -127,6 +134,7 @@ private fun HeaderSection() {
             Icon(
                 painter = painterResource(id = R.drawable.tyche_title),
                 contentDescription = emptyString(),
+                tint = headerColor,
                 modifier = Modifier.height(titleIconSize / 2),
             )
         }
@@ -180,6 +188,25 @@ private fun SignInSection(
         }
     }
 }
+
+/**
+ * Light status bar icons while the welcome screen shows, since its gradient starts from the dark
+ * primary container in both themes; the activity's theme-based icons return when it leaves.
+ */
+@Composable
+private fun LightStatusBarIcons() {
+    val window = LocalActivity.current?.window ?: return
+    val view = LocalView.current
+    DisposableEffect(window, view) {
+        val controller = WindowCompat.getInsetsController(window, view)
+        val hadLightStatusBars = controller.isAppearanceLightStatusBars
+        controller.isAppearanceLightStatusBars = false
+        onDispose { controller.isAppearanceLightStatusBars = hadLightStatusBars }
+    }
+}
+
+// The header sits on the top of the gradient, the dark primary container in both themes.
+private val headerColor = Color.White
 
 private val titleIconSize = 64.dp
 

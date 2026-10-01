@@ -177,17 +177,19 @@ private struct PoolScoreListRouterContent: View {
         Button(action: {
             navigation.open(PoolFromLayoutCreatorRoute())
         }) {
-            Image(sharedResource: .filledAddCircle)
+            Image(sharedResource: .add)
                 .resizable()
-                .frame(width: createIconSize, height: createIconSize)
-                .foregroundStyle(Color.accentColor)
+                .frame(
+                    width: ToolbarProminentButtonStyle.glyphSize,
+                    height: ToolbarProminentButtonStyle.glyphSize
+                )
         }
-        .buttonStyle(.plain)
+        .buttonStyle(.toolbarProminent)
+        .accessibilityLabel(Text(.createPoolAction))
     }
 }
 
 private let navigationAvatarSize: CGFloat = 32
-private let createIconSize: CGFloat = 48
 
 private func poolScoreListFakeResolver() -> DIResolver {
     let container = Container()

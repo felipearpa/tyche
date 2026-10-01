@@ -56,4 +56,5 @@
         <item quantity="one">%1$d member</item>
         <item quantity="other">%1$d members</item>
     </plurals>
+    <string name="create_pool_action">Create pool</string>
 </resources>

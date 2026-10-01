@@ -1,5 +1,6 @@
 import CoreGraphics
 import SwiftUI
+import UIKit
 import Testing
 @testable import UI
 
@@ -298,6 +299,78 @@ struct DrawerRevealTests {
             DrawerReveal.logicalTranslation(screenTranslation, layoutDirection: .rightToLeft)
                 == CGSize(width: -40, height: 5)
         )
+    }
+}
+
+/// Which drags the drawer's gesture takes from the views beneath, by angle: a scroll that
+/// drifts sideways must stay a scroll, and only a clearly horizontal drag moves the drawer.
+struct DrawerDragDirectionTests {
+    /// A 40-point drag at `degrees` from horizontal, toward the trailing edge and up.
+    private func drag(degrees: Double, towardTrailing: Bool = true) -> CGSize {
+        let radians = degrees * .pi / 180
+        return CGSize(width: (towardTrailing ? 1 : -1) * 40 * cos(radians), height: -40 * sin(radians))
+    }
+
+    @Test(arguments: [0.0, 10, 20, 29])
+    func closedDrawerOpensForADragWithin30DegreesOfHorizontal(degrees: Double) {
+        let reveal = DrawerReveal(isOpen: false)
+
+        #expect(reveal.takesDrag(translation: drag(degrees: degrees), presentedProgress: 0))
+        #expect(reveal.claimsDrag(translation: drag(degrees: degrees), presentedProgress: 0))
+    }
+
+    @Test(arguments: [31.0, 40, 50, 60, 70, 80, 90])
+    func steeperDragsStayWithTheScrollView(degrees: Double) {
+        for isOpen in [false, true] {
+            let reveal = DrawerReveal(isOpen: isOpen)
+            for towardTrailing in [true, false] {
+                let translation = drag(degrees: degrees, towardTrailing: towardTrailing)
+                #expect(reveal.takesDrag(translation: translation, presentedProgress: isOpen ? 1 : 0) == false)
+            }
+        }
+    }
+
+    @Test
+    func closedDrawerTakesButDoesNotFollowADragTowardTheLeadingEdge() {
+        let reveal = DrawerReveal(isOpen: false)
+        let translation = drag(degrees: 10, towardTrailing: false)
+
+        #expect(reveal.takesDrag(translation: translation, presentedProgress: 0))
+        #expect(reveal.claimsDrag(translation: translation, presentedProgress: 0) == false)
+    }
+
+    @Test
+    func openDrawerFollowsHorizontalDragsInEitherDirection() {
+        let reveal = DrawerReveal(isOpen: true)
+
+        #expect(reveal.claimsDrag(translation: drag(degrees: 20, towardTrailing: false), presentedProgress: 1))
+        #expect(reveal.claimsDrag(translation: drag(degrees: 20), presentedProgress: 1))
+    }
+
+    @Test
+    func closedDrawerLeavesTheReservedBarItsDrags() {
+        let reveal = DrawerReveal(isOpen: false)
+
+        #expect(reveal.takesDrag(translation: drag(degrees: 0), presentedProgress: 0, startsInExcludedRegion: true) == false)
+    }
+}
+
+/// Which touch sets the start point the drawer's pan measures from: only the first finger of a
+/// drag, so a second finger cannot move the reveal.
+struct DrawerPanStartTests {
+    @Test
+    func theFirstFingerOfADragSetsItsStart() {
+        #expect(DrawerPanStart.isFirstTouch(state: .possible, trackedTouches: 0))
+    }
+
+    @Test(arguments: [UIGestureRecognizer.State.began, .changed])
+    func aSecondFingerDuringADragDoesNotMoveTheStart(state: UIGestureRecognizer.State) {
+        #expect(DrawerPanStart.isFirstTouch(state: state, trackedTouches: 1) == false)
+    }
+
+    @Test
+    func aSecondFingerBeforeTheDragIsRecognizedDoesNotMoveTheStart() {
+        #expect(DrawerPanStart.isFirstTouch(state: .possible, trackedTouches: 1) == false)
     }
 }
 

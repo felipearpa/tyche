@@ -16,7 +16,7 @@ public struct LazyPagingVStackConcatenateError: View {
             Button(action: retry, label: {
                 Text(.retryAction)
             })
-            .buttonStyle(.liquidGlassProminent)
+            .buttonStyle(.standardProminent)
         }
     }
 }

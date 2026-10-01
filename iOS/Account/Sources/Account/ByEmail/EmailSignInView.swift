@@ -71,13 +71,13 @@ private struct EmailSignInContent: View {
     var body: some View {
         VStack(spacing: boxSpacing.medium) {
             EmailTextField(value: $email, validation: nil)
-                .textFieldStyle(.liquidGlass)
+                .textFieldStyle(.standard)
 
             Button(action: signIn ?? {}) {
                 Text(.signInAction)
                     .frame(maxWidth: .infinity)
             }
-            .buttonStyle(.liquidGlassProminent)
+            .buttonStyle(.standardProminent)
             .disabled(signIn == nil)
 
             Spacer()

@@ -9,31 +9,40 @@ import Bet
 import Session
 import Account
 
-struct PoolHomeView: View {
+/// Pool home's tabs. Each tab has its own navigation stack, so its title and bars follow its own
+/// list: a tab view inside one shared stack would leave the navigation bar following only the
+/// first tab it showed. Destinations push onto the selected tab's stack and hide the tab bar,
+/// as they covered the whole tab view before.
+struct PoolHomeView<Destinations: ViewModifier>: View {
     let gamblerId: String
     let poolId: String
+    /// The destinations above the selected tab. The other tabs stay at their roots, since the
+    /// tab bar is hidden while a destination is shown.
+    @Binding var path: NavigationPath
     let onChangePool: () -> Void
     let onMenuTap: () -> Void
     let onGamblerOpen: ((_ poolId: String, _ gamblerId: String, _ gamblerUsername: String) -> Void)?
     let onMatchOpen: MatchOpenHandler?
+    /// Registers the destinations on each tab's stack.
+    let destinations: Destinations
 
     @Environment(\.diResolver) private var diResolver: DIResolver
     @State private var selectedTab = PoolHomeTab.gamblerScores
 
     var body: some View {
         TabView(selection: $selectedTab) {
-            GamblerScoreListView(
-                viewModel: GamblerScoreListViewModel(
-                    getPoolGamblerScoresByPoolUseCase: GetPoolGamblerScoresByPoolUseCase(
-                        poolGamblerScoreRepository: diResolver.resolve(PoolGamblerScoreRepository.self)!
+            tabStack(.gamblerScores) {
+                GamblerScoreListView(
+                    viewModel: GamblerScoreListViewModel(
+                        getPoolGamblerScoresByPoolUseCase: GetPoolGamblerScoresByPoolUseCase(
+                            poolGamblerScoreRepository: diResolver.resolve(PoolGamblerScoreRepository.self)!
+                        ),
+                        gamblerId: gamblerId,
+                        poolId: poolId
                     ),
-                    gamblerId: gamblerId,
-                    poolId: poolId
-                ),
-                onGamblerOpen: onGamblerOpen
-            )
-            .drawerTabBarBoundary()
-            .tag(PoolHomeTab.gamblerScores)
+                    onGamblerOpen: onGamblerOpen
+                )
+            }
             .tabItem {
                 Label(
                     title: { Text(.scoreTab) },
@@ -41,18 +50,18 @@ struct PoolHomeView: View {
                 )
             }
 
-            PendingBetListView(
-                viewModel: PendingBetListViewModel(
-                    getPoolGamblerBetsUseCase: GetPendingPoolGamblerBetsUseCase(
-                        poolGamblerBetRepository: diResolver.resolve(PoolGamblerBetRepository.self)!
+            tabStack(.bets) {
+                PendingBetListView(
+                    viewModel: PendingBetListViewModel(
+                        getPoolGamblerBetsUseCase: GetPendingPoolGamblerBetsUseCase(
+                            poolGamblerBetRepository: diResolver.resolve(PoolGamblerBetRepository.self)!
+                        ),
+                        gamblerId: gamblerId,
+                        poolId: poolId
                     ),
-                    gamblerId: gamblerId,
-                    poolId: poolId
-                ),
-                onMatchOpen: onMatchOpen
-            )
-            .drawerTabBarBoundary()
-            .tag(PoolHomeTab.bets)
+                    onMatchOpen: onMatchOpen
+                )
+            }
             .tabItem {
                 Label(
                     title: { Text(.betTab) },
@@ -60,18 +69,18 @@ struct PoolHomeView: View {
                 )
             }
 
-            FinishedBetListView(
-                viewModel: FinishedBetListViewModel(
-                    getFinishedPoolGamblerBetsUseCase: GetFinishedPoolGamblerBetsUseCase(
-                        poolGamblerBetRepository: diResolver.resolve(PoolGamblerBetRepository.self)!
+            tabStack(.historyBet) {
+                FinishedBetListView(
+                    viewModel: FinishedBetListViewModel(
+                        getFinishedPoolGamblerBetsUseCase: GetFinishedPoolGamblerBetsUseCase(
+                            poolGamblerBetRepository: diResolver.resolve(PoolGamblerBetRepository.self)!
+                        ),
+                        gamblerId: gamblerId,
+                        poolId: poolId,
                     ),
-                    gamblerId: gamblerId,
-                    poolId: poolId,
-                ),
-                onMatchOpen: onMatchOpen
-            )
-            .drawerTabBarBoundary()
-            .tag(PoolHomeTab.historyBet)
+                    onMatchOpen: onMatchOpen
+                )
+            }
             .tabItem {
                 Label(
                     title: { Text(.historyBetsTab) },
@@ -81,15 +90,24 @@ struct PoolHomeView: View {
         }
         // The tab bar keeps its own drags; each tab's root marks where the bar begins.
         .excludesTabBarFromDrawerDrags()
-        .navigationTitle(selectedTab.title)
-        .toolbar {
-            PlainToolbarItem(placement: .topBarLeading) {
-                navigationBarLeading()
-            }
-            ToolbarItem(placement: .topBarTrailing) {
-                navigationBarTrailing()
-            }
+    }
+
+    private func tabStack(_ tab: PoolHomeTab, @ViewBuilder list: () -> some View) -> some View {
+        NavigationStack(path: tab == selectedTab ? $path : .constant(NavigationPath())) {
+            list()
+                .navigationTitle(tab.title)
+                .toolbar {
+                    PlainToolbarItem(placement: .topBarLeading) {
+                        navigationBarLeading()
+                    }
+                    ToolbarItem(placement: .topBarTrailing) {
+                        navigationBarTrailing()
+                    }
+                }
+                .modifier(destinations)
         }
+        .drawerTabBarBoundary()
+        .tag(tab)
     }
 
     private func navigationBarLeading() -> some View {
@@ -143,10 +161,12 @@ private let ICON_SIZE: CGFloat = 24
     PoolHomeView(
         gamblerId: "gambler-id",
         poolId: "pool-id",
+        path: .constant(NavigationPath()),
         onChangePool: {},
         onMenuTap: {},
         onGamblerOpen: nil,
-        onMatchOpen: nil
+        onMatchOpen: nil,
+        destinations: EmptyModifier()
     )
     .environment(\.diResolver, diResolver)
 }

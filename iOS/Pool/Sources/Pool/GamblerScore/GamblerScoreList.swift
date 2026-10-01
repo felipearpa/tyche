@@ -25,6 +25,9 @@ struct GamblerScoreList: View {
 
         RefreshableLazyPagingVStack(
             lazyPagingItems: lazyPagingItems,
+            // The spacing goes inside the scroll view: an outer padding would keep it off the
+            // bars' safe-area edges, so rows would stop short of them instead of scrolling beneath.
+            contentInsets: EdgeInsets(top: boxSpacing.medium, leading: 0, bottom: boxSpacing.medium, trailing: 0),
             loadingContent: { GamblerScorePlaceholderList() },
             prependLoadingContent: { EmptyView() },
             appendLoadingContent: { GamblerScorePlaceholderRow() },

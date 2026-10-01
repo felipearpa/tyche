@@ -129,8 +129,12 @@ struct PoolScoreItem: View {
                 .scaledToFit()
                 .frame(width: inviteIconSize, height: inviteIconSize)
         }
-        .buttonStyle(.liquidGlass)
+        .buttonStyle(.bordered)
         .buttonBorderShape(.capsule)
+        // The accent glyph measures 2.3:1 on the bordered fill in light appearance, below the 3:1
+        // needed to identify the control; the primary color keeps the glyph as legible as it was
+        // on the glass control.
+        .tint(.primary)
         .accessibilityLabel(Text(.poolScoreInviteAccessibilityAction))
     }
 

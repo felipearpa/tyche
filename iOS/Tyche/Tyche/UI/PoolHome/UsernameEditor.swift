@@ -130,7 +130,7 @@ private struct UsernameEditorStatefulView: View {
             }
 
             TextField(String(localized: .usernameLabel), text: $draft)
-                .textFieldStyle(.liquidGlass)
+                .textFieldStyle(.standard)
                 .focused($isFieldFocused)
                 .textInputAutocapitalization(.never)
                 .autocorrectionDisabled()
@@ -173,12 +173,12 @@ private struct UsernameEditorStatefulView: View {
             Button(action: onRetry) {
                 actionLabel(Text(.usernameRetryAction))
             }
-            .buttonStyle(.liquidGlassProminent)
+            .buttonStyle(.standardProminent)
         } else {
             Button(action: attemptSave) {
                 actionLabel(Text(.saveUsernameAction))
             }
-            .buttonStyle(.liquidGlassProminent)
+            .buttonStyle(.standardProminent)
             .disabled(!canSave)
             .accessibilityLabel(
                 isSaving

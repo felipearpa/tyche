@@ -60,4 +60,5 @@
         <item quantity="many">%1$d jugadores</item>
         <item quantity="other">%1$d jugadores</item>
     </plurals>
+    <string name="create_pool_action">Crear polla</string>
 </resources>

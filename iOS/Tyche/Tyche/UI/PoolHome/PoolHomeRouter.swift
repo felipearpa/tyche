@@ -87,104 +87,44 @@ private struct PoolHomeRouterContent: View {
 
     @ViewBuilder
     private var mainContent: some View {
-        NavigationStack(path: $navigation.path) {
-            PoolHomeView(
-                gamblerId: user.accountId,
-                poolId: pool.poolId,
-                onChangePool: {
-                    // Switching pools replaces pool home rather than pushing a destination, so the
-                    // check that `open` makes is made here.
-                    if navigation.isHostInteractive {
-                        onChangePool()
-                    }
-                },
-                onMenuTap: { navigation.toggleDrawer() },
-                onGamblerOpen: { tappedPoolId, tappedGamblerId, tappedGamblerUsername in
-                    if tappedGamblerId != user.accountId {
-                        navigation.open(
-                            BetTimelineListViewRoute(
-                                poolId: tappedPoolId,
-                                gamblerId: tappedGamblerId,
-                                gamblerUsername: tappedGamblerUsername
-                            )
-                        )
-                    }
-                },
-                onMatchOpen: { poolId, gamblerId, matchId in
+        PoolHomeView(
+            gamblerId: user.accountId,
+            poolId: pool.poolId,
+            path: $navigation.path,
+            onChangePool: {
+                // Switching pools replaces pool home rather than pushing a destination, so the
+                // check that `open` makes is made here.
+                if navigation.isHostInteractive {
+                    onChangePool()
+                }
+            },
+            onMenuTap: { navigation.toggleDrawer() },
+            onGamblerOpen: { tappedPoolId, tappedGamblerId, tappedGamblerUsername in
+                if tappedGamblerId != user.accountId {
                     navigation.open(
-                        MatchBetListViewRoute(
-                            poolId: poolId,
-                            gamblerId: gamblerId,
-                            matchId: matchId
+                        BetTimelineListViewRoute(
+                            poolId: tappedPoolId,
+                            gamblerId: tappedGamblerId,
+                            gamblerUsername: tappedGamblerUsername
                         )
                     )
                 }
-            )
-            .navigationDestination(for: BetTimelineListViewRoute.self) { route in
-                BetTimelineListView(
-                    poolId: route.poolId,
-                    gamblerId: route.gamblerId,
-                    gamblerUsername: route.gamblerUsername,
-                    onHome: { navigation.path = NavigationPath() },
-                    onMatchOpen: { poolId, gamblerId, matchId in
-                        navigation.path.append(
-                            MatchBetListViewRoute(
-                                poolId: poolId,
-                                gamblerId: gamblerId,
-                                matchId: matchId
-                            )
-                        )
-                    }
-                )
-            }
-            .navigationDestination(for: MatchBetListViewRoute.self) { route in
-                MatchBetListView(
-                    poolId: route.poolId,
-                    gamblerId: route.gamblerId,
-                    matchId: route.matchId,
-                    onHome: { navigation.path = NavigationPath() },
-                    onGamblerOpen: { tappedPoolId, tappedGamblerId, tappedGamblerUsername in
-                        if tappedGamblerId != user.accountId {
-                            navigation.path.append(
-                                BetTimelineListViewRoute(
-                                    poolId: tappedPoolId,
-                                    gamblerId: tappedGamblerId,
-                                    gamblerUsername: tappedGamblerUsername
-                                )
-                            )
-                        }
-                    }
-                )
-            }
-            .navigationDestination(for: ManageGamblersRoute.self) { route in
-                ManageGamblersListView(
-                    viewModel: ManageGamblersListViewModel(
-                        getPoolMembersUseCase: diResolver.resolve(GetPoolMembersUseCase.self)!,
-                        removeGamblerUseCase: diResolver.resolve(RemoveGamblerUseCase.self)!,
-                        poolId: route.poolId
+            },
+            onMatchOpen: { poolId, gamblerId, matchId in
+                navigation.open(
+                    MatchBetListViewRoute(
+                        poolId: poolId,
+                        gamblerId: gamblerId,
+                        matchId: matchId
                     )
                 )
-            }
-            .navigationDestination(for: ProfileRoute.self) { _ in
-                ProfileView(
-                    viewModel: ProfileViewModel(
-                        currentAccountModel: diResolver.resolve(CurrentAccountModel.self)!,
-                        currentAccountCoordinator: diResolver.resolve(CurrentAccountCoordinator.self)!,
-                        onUploadAvatar: { [diResolver] imageData in
-                            await diResolver.resolve(UploadAvatarUseCase.self)!.execute(imageData: imageData)
-                        }
-                    ),
-                    onEditUsername: { navigation.path.append(UsernameEditorRoute(accountId: user.accountId)) }
-                )
-            }
-            .navigationDestination(for: UsernameEditorRoute.self) { _ in
-                UsernameEditorDestination(
-                    currentAccountModel: diResolver.resolve(CurrentAccountModel.self)!,
-                    viewModel: usernameEditorViewModel,
-                    onSaved: { _ in navigation.path.removeLast() }
-                )
-            }
-        }
+            },
+            destinations: PoolHomeDestinations(
+                accountId: user.accountId,
+                path: $navigation.path,
+                usernameEditorViewModel: usernameEditorViewModel
+            )
+        )
         .environment(\.diResolver, diResolver)
         // While a destination is shown, the drawer detaches its drags so the destination keeps
         // its native back button and back-swipe.
@@ -224,6 +164,89 @@ private struct PoolHomeRouterContent: View {
                 .presentationDetents([.medium, .large])
         }
         .withParentGeometryProxy()
+    }
+}
+
+/// Pool home's destinations, registered on each tab's navigation stack. Each hides the tab bar,
+/// so a destination covers the tabs as it did when the tabs shared one stack.
+private struct PoolHomeDestinations: ViewModifier {
+    let accountId: String
+    @Binding var path: NavigationPath
+    @ObservedObject var usernameEditorViewModel: UsernameEditorViewModel
+
+    @Environment(\.diResolver) private var diResolver: DIResolver
+
+    func body(content: Content) -> some View {
+        content
+            .navigationDestination(for: BetTimelineListViewRoute.self) { route in
+                BetTimelineListView(
+                    poolId: route.poolId,
+                    gamblerId: route.gamblerId,
+                    gamblerUsername: route.gamblerUsername,
+                    onHome: { path = NavigationPath() },
+                    onMatchOpen: { poolId, gamblerId, matchId in
+                        path.append(
+                            MatchBetListViewRoute(
+                                poolId: poolId,
+                                gamblerId: gamblerId,
+                                matchId: matchId
+                            )
+                        )
+                    }
+                )
+                .toolbar(.hidden, for: .tabBar)
+            }
+            .navigationDestination(for: MatchBetListViewRoute.self) { route in
+                MatchBetListView(
+                    poolId: route.poolId,
+                    gamblerId: route.gamblerId,
+                    matchId: route.matchId,
+                    onHome: { path = NavigationPath() },
+                    onGamblerOpen: { tappedPoolId, tappedGamblerId, tappedGamblerUsername in
+                        if tappedGamblerId != accountId {
+                            path.append(
+                                BetTimelineListViewRoute(
+                                    poolId: tappedPoolId,
+                                    gamblerId: tappedGamblerId,
+                                    gamblerUsername: tappedGamblerUsername
+                                )
+                            )
+                        }
+                    }
+                )
+                .toolbar(.hidden, for: .tabBar)
+            }
+            .navigationDestination(for: ManageGamblersRoute.self) { route in
+                ManageGamblersListView(
+                    viewModel: ManageGamblersListViewModel(
+                        getPoolMembersUseCase: diResolver.resolve(GetPoolMembersUseCase.self)!,
+                        removeGamblerUseCase: diResolver.resolve(RemoveGamblerUseCase.self)!,
+                        poolId: route.poolId
+                    )
+                )
+                .toolbar(.hidden, for: .tabBar)
+            }
+            .navigationDestination(for: ProfileRoute.self) { _ in
+                ProfileView(
+                    viewModel: ProfileViewModel(
+                        currentAccountModel: diResolver.resolve(CurrentAccountModel.self)!,
+                        currentAccountCoordinator: diResolver.resolve(CurrentAccountCoordinator.self)!,
+                        onUploadAvatar: { [diResolver] imageData in
+                            await diResolver.resolve(UploadAvatarUseCase.self)!.execute(imageData: imageData)
+                        }
+                    ),
+                    onEditUsername: { path.append(UsernameEditorRoute(accountId: accountId)) }
+                )
+                .toolbar(.hidden, for: .tabBar)
+            }
+            .navigationDestination(for: UsernameEditorRoute.self) { _ in
+                UsernameEditorDestination(
+                    currentAccountModel: diResolver.resolve(CurrentAccountModel.self)!,
+                    viewModel: usernameEditorViewModel,
+                    onSaved: { _ in path.removeLast() }
+                )
+                .toolbar(.hidden, for: .tabBar)
+            }
     }
 }
 

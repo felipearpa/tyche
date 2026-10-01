@@ -59,12 +59,54 @@ struct DrawerReveal: Equatable {
         }
     }
 
+    /// Whether the drawer's gesture takes a drag that has travelled `translation` so far, with
+    /// the reveal on screen at `presentedProgress`. `translation` is logical — positive toward
+    /// the trailing edge.
+    ///
+    /// The gesture takes only a clearly horizontal drag, within `maximumDragAngle` of the
+    /// horizontal axis, so a vertical drag that drifts sideways stays a scroll. While the drawer
+    /// rests closed, it leaves a drag that `startsInExcludedRegion`, the area a host reserves
+    /// for a bar with its own drags, to that bar. A drag it takes no longer reaches the controls
+    /// beneath, even one `claimsDrag` then declines to follow.
+    func takesDrag(
+        translation: CGSize,
+        presentedProgress: CGFloat,
+        startsInExcludedRegion: Bool = false
+    ) -> Bool {
+        Self.isClearlyHorizontal(translation) && !(restsClosed(presentedProgress) && startsInExcludedRegion)
+    }
+
+    /// Whether the drawer follows a drag it takes: while it rests closed it only opens, so it
+    /// declines a drag toward the leading edge.
+    func claimsDrag(
+        translation: CGSize,
+        presentedProgress: CGFloat,
+        startsInExcludedRegion: Bool = false
+    ) -> Bool {
+        takesDrag(
+            translation: translation,
+            presentedProgress: presentedProgress,
+            startsInExcludedRegion: startsInExcludedRegion
+        ) && !(restsClosed(presentedProgress) && translation.width < 0)
+    }
+
+    private func restsClosed(_ presentedProgress: CGFloat) -> Bool {
+        progress < 1 && presentedProgress.clampedToUnit <= 0
+    }
+
+    /// Whether `translation` lies within `maximumDragAngle` of the horizontal axis.
+    static func isClearlyHorizontal(_ translation: CGSize) -> Bool {
+        abs(translation.width) > 0
+            && abs(translation.height) <= abs(translation.width) * tan(maximumDragAngle * .pi / 180)
+    }
+
+    /// The steepest drag, in degrees from horizontal, that the drawer takes.
+    static let maximumDragAngle: CGFloat = 30
+
     /// Applies a drag update. `translation` is logical — positive toward the trailing edge —
     /// and `presentedProgress` is the reveal on screen when the update arrives.
     ///
-    /// The first update decides whether the drawer claims the drag. It declines a drag that
-    /// starts vertically and, while the drawer rests closed, one toward the leading edge or one
-    /// that `startsInExcludedRegion`, the area a host reserves for a bar with its own drags.
+    /// The first update decides, through `claimsDrag`, whether the drawer claims the drag.
     /// Returns `false` when this update declines the drag, so the container can hand the touch
     /// back to the views beneath it. Which drags the drawer claims does not depend on its width;
     /// before it has one, it keeps a drag it claims without moving.
@@ -78,11 +120,11 @@ struct DrawerReveal: Equatable {
         switch drag {
         case nil:
             let presented = presentedProgress.clampedToUnit
-            let isHorizontal = abs(translation.width) > abs(translation.height)
-            // Closed, the drawer only opens, and it leaves the host's reserved bar alone.
-            let restsClosed = progress < 1 && presented <= 0
-            let isDeclinedWhileClosed = restsClosed && (translation.width < 0 || startsInExcludedRegion)
-            guard isHorizontal, !isDeclinedWhileClosed else {
+            guard claimsDrag(
+                translation: translation,
+                presentedProgress: presented,
+                startsInExcludedRegion: startsInExcludedRegion
+            ) else {
                 drag = .ignored
                 return false
             }

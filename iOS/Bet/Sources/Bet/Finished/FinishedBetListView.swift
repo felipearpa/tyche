@@ -4,7 +4,6 @@ import DataBet
 public struct FinishedBetListView : View {
     @StateObject private var viewModel: FinishedBetListViewModel
     private let onMatchOpen: MatchOpenHandler?
-    @Environment(\.boxSpacing) private var boxSpacing
 
     public init(
         viewModel: @autoclosure @escaping () -> FinishedBetListViewModel,
@@ -23,7 +22,6 @@ public struct FinishedBetListView : View {
         )
         .refreshable { viewModel.refresh() }
         .onAppearOnce { viewModel.refresh() }
-        .padding(.vertical, boxSpacing.medium)
     }
 }
 
