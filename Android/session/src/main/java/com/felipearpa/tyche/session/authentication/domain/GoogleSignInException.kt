@@ -9,6 +9,11 @@ sealed class GoogleSignInException : Throwable() {
         private fun readResolve(): Any = AccountExistsWithDifferentCredential
     }
 
+    /** Google ended the request without returning an account to sign in with. */
+    data object NoCredential : GoogleSignInException() {
+        private fun readResolve(): Any = NoCredential
+    }
+
     data object NetworkError : GoogleSignInException() {
         private fun readResolve(): Any = NetworkError
     }

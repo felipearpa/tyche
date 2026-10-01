@@ -29,6 +29,9 @@
     <string name="google_sign_in_account_exists_failure_description">La cuenta ya existe</string>
     <string name="google_sign_in_account_exists_failure_reason">Ya existe una cuenta con este correo usando otro método de inicio de sesión</string>
     <string name="google_sign_in_account_exists_failure_recovery_suggestion">Inicia sesión con el método original para vincular tu cuenta de Google</string>
+    <string name="google_sign_in_no_credential_failure_description">No encontramos una cuenta de Google</string>
+    <string name="google_sign_in_no_credential_failure_reason">Google no devolvió una cuenta para iniciar sesión</string>
+    <string name="google_sign_in_no_credential_failure_recovery_suggestion">Agrega una cuenta de Google a este dispositivo e inténtalo de nuevo, o inicia sesión con tu correo</string>
     <string name="google_sign_in_network_failure_description">Error de red</string>
     <string name="google_sign_in_network_failure_reason">No pudimos conectar con el servicio de inicio de sesión</string>
     <string name="google_sign_in_network_failure_recovery_suggestion">Revisa tu conexión e inténtalo de nuevo</string>

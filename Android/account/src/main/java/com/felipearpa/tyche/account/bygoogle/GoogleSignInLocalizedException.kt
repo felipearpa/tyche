@@ -33,6 +33,19 @@ sealed class GoogleSignInLocalizedException : LocalizedException() {
             @Composable get() = stringResource(id = R.string.google_sign_in_account_exists_failure_recovery_suggestion)
     }
 
+    data object NoCredential : GoogleSignInLocalizedException() {
+        private fun readResolve(): Any = NoCredential
+
+        override val errorDescription: String
+            @Composable get() = stringResource(id = R.string.google_sign_in_no_credential_failure_description)
+
+        override val failureReason: String
+            @Composable get() = stringResource(id = R.string.google_sign_in_no_credential_failure_reason)
+
+        override val recoverySuggestion: String
+            @Composable get() = stringResource(id = R.string.google_sign_in_no_credential_failure_recovery_suggestion)
+    }
+
     data object NetworkError : GoogleSignInLocalizedException() {
         private fun readResolve(): Any = NetworkError
 
@@ -51,6 +64,7 @@ fun Throwable.asGoogleSignInLocalized() =
     when (this) {
         GoogleSignInException.InvalidCredential -> GoogleSignInLocalizedException.InvalidCredential
         GoogleSignInException.AccountExistsWithDifferentCredential -> GoogleSignInLocalizedException.AccountExistsWithDifferentCredential
+        GoogleSignInException.NoCredential -> GoogleSignInLocalizedException.NoCredential
         GoogleSignInException.NetworkError -> GoogleSignInLocalizedException.NetworkError
         else -> this
     }
