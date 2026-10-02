@@ -13,7 +13,7 @@ compose-bom = "2026.05.00"
 koin = "4.2.1"
 paging-compose = "3.5.0"
 ktor = "3.4.3"
-google-accompanist-placeholder = "0.36.0"
+revenuecat-placeholder = "1.0.2"
 navigation-compose = "2.9.8"
 constraint-layout-compose = "1.1.1"
 io-mockk = "1.14.9"
@@ -63,7 +63,7 @@ ktor-serialization-kotlinx-json = { group = "io.ktor", name = "ktor-serializatio
 ktor-client-logging = { group = "io.ktor", name = "ktor-client-logging", version.ref = "ktor" }
 ktor-client-auth = { group = "io.ktor", name = "ktor-client-auth", version.ref = "ktor" }
 ktor-client-mock = { group = "io.ktor", name = "ktor-client-mock", version.ref = "ktor" }
-google-accompanist-placeholder = { group = "com.google.accompanist", name = "accompanist-placeholder-material", version.ref = "google-accompanist-placeholder" }
+revenuecat-placeholder = { group = "com.revenuecat.purchases", name = "placeholder", version.ref = "revenuecat-placeholder" }
 navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigation-compose" }
 constraint-layout-compose = { group = "androidx.constraintlayout", name = "constraintlayout-compose", version.ref = "constraint-layout-compose" }
 io-mockk = { group = "io.mockk", name = "mockk", version.ref = "io-mockk" }

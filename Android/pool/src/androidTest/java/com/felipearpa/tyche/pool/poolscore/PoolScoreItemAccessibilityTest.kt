@@ -9,6 +9,7 @@ import androidx.compose.ui.test.onAllNodesWithContentDescription
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithContentDescription
 import com.felipearpa.tyche.pool.PoolGamblerScoreModel
+import com.felipearpa.tyche.pool.poolGamblerScorePlaceholderModel
 import com.felipearpa.tyche.ui.theme.TycheTheme
 import org.junit.Rule
 import org.junit.Test
@@ -121,7 +122,12 @@ class PoolScoreItemAccessibilityTest {
     fun placeholderRowExposesNoPoolContent() {
         composeTestRule.setContent {
             TycheTheme {
-                PoolScorePlaceholderItem(modifier = Modifier.fillMaxWidth())
+                PoolScoreItem(
+                    poolGamblerScore = poolGamblerScorePlaceholderModel(),
+                    onJoin = {},
+                    modifier = Modifier.fillMaxWidth(),
+                    isPlaceholder = true,
+                )
             }
         }
 

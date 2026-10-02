@@ -1,5 +1,6 @@
 package com.felipearpa.tyche.account
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
@@ -58,12 +59,23 @@ fun AccountAvatar(accountId: String, email: String, modifier: Modifier = Modifie
     )
 }
 
+/**
+ * With [isPlaceholder] the avatar draws nothing and never requests a photo, whatever
+ * [accountId] holds: the enclosing placeholder row masks this area, and a filler identity must
+ * neither reach the avatar store nor show a letter.
+ */
 @Composable
 fun AccountAvatar(
     accountId: String,
     fallback: AccountAvatarFallback,
     modifier: Modifier = Modifier,
+    isPlaceholder: Boolean = false,
 ) {
+    if (isPlaceholder) {
+        Box(modifier = modifier)
+        return
+    }
+
     if (LocalInspectionMode.current || accountId.isEmpty()) {
         InitialAvatar(
             identity = fallback.identity,

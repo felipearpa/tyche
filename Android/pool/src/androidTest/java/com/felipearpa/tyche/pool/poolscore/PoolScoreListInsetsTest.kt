@@ -28,8 +28,9 @@ import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.felipearpa.tyche.pool.PoolGamblerScoreModel
-import com.felipearpa.tyche.pool.creator.PoolFromLayoutCreatorFakeItem
+import com.felipearpa.tyche.pool.creator.PoolFromLayoutCreatorItem
 import com.felipearpa.tyche.pool.creator.PoolLayoutModel
+import com.felipearpa.tyche.pool.creator.poolLayoutFakeModel
 import com.felipearpa.tyche.ui.theme.TycheTheme
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -100,10 +101,12 @@ class PoolScoreListInsetsTest {
     fun templatePlaceholderExposesNoValuesOrActions() {
         composeTestRule.setContent {
             TycheTheme {
-                PoolFromLayoutCreatorFakeItem(
+                PoolFromLayoutCreatorItem(
+                    poolLayout = poolLayoutFakeModel(),
                     modifier = Modifier
                         .fillMaxWidth()
                         .testTag(PLACEHOLDER_TAG),
+                    isPlaceholder = true,
                 )
             }
         }

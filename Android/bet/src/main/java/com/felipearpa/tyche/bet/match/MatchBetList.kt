@@ -20,6 +20,7 @@ import androidx.paging.compose.itemContentType
 import androidx.paging.compose.itemKey
 import com.felipearpa.tyche.bet.PoolGamblerBetModel
 import com.felipearpa.tyche.bet.poolGamblerBetDummyModels
+import com.felipearpa.tyche.bet.poolGamblerBetFakeModel
 import com.felipearpa.tyche.ui.lazy.RefreshableLazyPagingColumn
 import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
 import com.felipearpa.tyche.ui.theme.TycheTheme
@@ -83,7 +84,11 @@ private fun matchGamblerBetPlaceholderItemRow() {
             .fillMaxWidth()
             .padding(horizontal = LocalBoxSpacing.current.medium),
     ) {
-        MatchGamblerBetPlaceholderItem(modifier = Modifier.matchGamblerBetItem())
+        MatchGamblerBetItem(
+            poolGamblerBet = poolGamblerBetFakeModel(),
+            modifier = Modifier.matchGamblerBetItem(),
+            isPlaceholder = true,
+        )
         HorizontalDivider()
     }
 }

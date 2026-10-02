@@ -19,18 +19,36 @@ import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import com.felipearpa.foundation.time.toShortDateString
 import com.felipearpa.tyche.pool.R
-import com.felipearpa.tyche.ui.shimmer
 import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
+import com.felipearpa.tyche.ui.theme.LocalLoadingPlaceholderPulse
 import com.felipearpa.tyche.ui.theme.TycheTheme
+import com.revenuecat.placeholder.placeholder
 import com.felipearpa.tyche.ui.R as SharedR
 
+/**
+ * A pool template card. Loading cards render this same component from `poolLayoutFakeModel()`
+ * with [isPlaceholder] set; the card then masks the name, start date, and arrow with the shared
+ * [LocalLoadingPlaceholderPulse] and exposes nothing to TalkBack, while the card keeps its
+ * container color. Callers pass no effect and attach no click action to placeholders.
+ */
 @Composable
 fun PoolFromLayoutCreatorItem(
     poolLayout: PoolLayoutModel,
     modifier: Modifier = Modifier,
-    shimmerModifier: Modifier = Modifier,
     isSelected: Boolean = false,
+    isPlaceholder: Boolean = false,
 ) {
+    // Applied to each text and glyph leaf separately; the card keeps its container color.
+    val leafMask = if (isPlaceholder) {
+        val pulse = LocalLoadingPlaceholderPulse.current
+        Modifier.placeholder(
+            color = pulse.color,
+            shape = pulse.shape,
+            highlight = pulse.highlight,
+        )
+    } else {
+        Modifier
+    }
     val (backgroundColor, onBackgroundColor) =
         if (isSelected) Pair(
             MaterialTheme.colorScheme.primaryContainer,
@@ -41,7 +59,8 @@ fun PoolFromLayoutCreatorItem(
         )
 
     Card(
-        modifier = modifier,
+        // Placeholder values are filler, not templates: keep them from screen readers.
+        modifier = if (isPlaceholder) modifier.clearAndSetSemantics {} else modifier,
         colors = CardDefaults.cardColors(
             containerColor = backgroundColor,
             contentColor = onBackgroundColor,
@@ -57,7 +76,7 @@ fun PoolFromLayoutCreatorItem(
             Column {
                 Text(
                     text = poolLayout.name,
-                    modifier = shimmerModifier,
+                    modifier = leafMask,
                     style = MaterialTheme.typography.titleSmall,
                 )
                 Text(
@@ -65,7 +84,7 @@ fun PoolFromLayoutCreatorItem(
                         id = R.string.starting_from_date_text,
                         poolLayout.startDateTime.toShortDateString(),
                     ),
-                    modifier = shimmerModifier,
+                    modifier = leafMask,
                     style = MaterialTheme.typography.bodySmall,
                 )
             }
@@ -73,20 +92,10 @@ fun PoolFromLayoutCreatorItem(
             Icon(
                 painter = painterResource(SharedR.drawable.arrow_forward),
                 contentDescription = null,
+                modifier = leafMask,
             )
         }
     }
-}
-
-/** The production template card populated with filler and shimmer while templates load. */
-@Composable
-internal fun PoolFromLayoutCreatorFakeItem(modifier: Modifier = Modifier) {
-    PoolFromLayoutCreatorItem(
-        poolLayout = poolLayoutFakeModel(),
-        // Placeholder values are filler, not templates: keep them from screen readers.
-        modifier = modifier.clearAndSetSemantics {},
-        shimmerModifier = Modifier.shimmer(),
-    )
 }
 
 @PreviewLightDark

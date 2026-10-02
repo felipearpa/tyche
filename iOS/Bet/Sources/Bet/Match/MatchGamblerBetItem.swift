@@ -1,12 +1,34 @@
 import SwiftUI
 import UI
 
+/// One gambler's bet and points for a match. Loading slots render this same component from a
+/// placeholder model with `isPlaceholder: true`: native redaction under the shared
+/// `LoadingPlaceholderPulse` conceals its content, and it ignores touches and stays out of the
+/// accessibility tree.
 struct MatchGamblerBetItem: View {
     let poolGamblerBet: PoolGamblerBetModel
+    let isPlaceholder: Bool
 
     @Environment(\.boxSpacing) private var boxSpacing
 
+    init(poolGamblerBet: PoolGamblerBetModel, isPlaceholder: Bool = false) {
+        self.poolGamblerBet = poolGamblerBet
+        self.isPlaceholder = isPlaceholder
+    }
+
     var body: some View {
+        Group {
+            if isPlaceholder {
+                PulsingPlaceholderContent { content }
+            } else {
+                content
+            }
+        }
+        .allowsHitTesting(!isPlaceholder)
+        .accessibilityHidden(isPlaceholder)
+    }
+
+    private var content: some View {
         HStack(spacing: boxSpacing.medium) {
             Text(poolGamblerBet.gamblerUsername)
                 .font(.body)
@@ -29,19 +51,10 @@ struct MatchGamblerBetItem: View {
     }
 }
 
-struct MatchHeaderPlaceholderItem: View {
-    var body: some View {
-        MatchHeader(
-            bet: poolGamblerBetPlaceholderModel(isLocked: false, isComputed: false)
-        )
-        .shimmer()
-    }
-}
-
 #Preview {
     MatchGamblerBetItem(poolGamblerBet: poolGamblerBetDummyModel())
 }
 
-#Preview {
-    MatchHeaderPlaceholderItem()
+#Preview("Placeholder") {
+    MatchGamblerBetItem(poolGamblerBet: poolGamblerBetPlaceholderModel(), isPlaceholder: true)
 }

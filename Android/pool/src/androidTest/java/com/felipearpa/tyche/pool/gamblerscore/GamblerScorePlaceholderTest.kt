@@ -5,6 +5,9 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
@@ -19,6 +22,7 @@ import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithContentDescription
 import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onAllNodesWithText
+import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
@@ -31,8 +35,10 @@ import androidx.paging.PagingState
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.felipearpa.tyche.pool.AvatarImageStoreKoinRule
 import com.felipearpa.tyche.pool.PoolGamblerScoreModel
+import com.felipearpa.tyche.pool.RecordingImageLoaderRule
 import com.felipearpa.tyche.pool.poolGamblerScoreDummyModel
 import com.felipearpa.tyche.pool.poolGamblerScoreDummyModels
+import com.felipearpa.tyche.pool.poolGamblerScorePlaceholderModel
 import com.felipearpa.tyche.ui.theme.TycheTheme
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -47,12 +53,19 @@ import org.junit.Test
  * Initial and append loading both render the shared tagged placeholder row, which is
  * inert: it exposes no values, text, or actions to TalkBack and paints no background
  * of its own, so the container's canvas shows through exactly as on loaded rows.
+ *
+ * The `isPlaceholder` flag, not the filler identity, makes a row inert: a real-looking model
+ * rendered as a placeholder still requests no avatar and exposes nothing, and the same row
+ * switched to loaded restores its announcement and its avatar request.
  */
 class GamblerScorePlaceholderTest {
     @get:Rule(order = 0)
     val avatarImageStoreKoinRule = AvatarImageStoreKoinRule()
 
     @get:Rule(order = 1)
+    val recordingImageLoaderRule = RecordingImageLoaderRule()
+
+    @get:Rule(order = 2)
     val composeTestRule = createComposeRule()
 
     @Test
@@ -147,7 +160,12 @@ class GamblerScorePlaceholderTest {
                             )
                         }
                         Box(modifier = Modifier.testTag(PLACEHOLDER_ITEM_TAG)) {
-                            GamblerScorePlaceholderItem(modifier = Modifier.fillMaxWidth())
+                            GamblerScoreItem(
+                                poolGamblerScore = poolGamblerScorePlaceholderModel(),
+                                isCurrentUser = false,
+                                modifier = Modifier.fillMaxWidth(),
+                                isPlaceholder = true,
+                            )
                         }
                     }
                 }
@@ -182,7 +200,12 @@ class GamblerScorePlaceholderTest {
         composeTestRule.setContent {
             TycheTheme {
                 Box(modifier = Modifier.testTag(PLACEHOLDER_ITEM_TAG)) {
-                    GamblerScorePlaceholderItem(modifier = Modifier.fillMaxWidth())
+                    GamblerScoreItem(
+                        poolGamblerScore = poolGamblerScorePlaceholderModel(),
+                        isCurrentUser = false,
+                        modifier = Modifier.fillMaxWidth(),
+                        isPlaceholder = true,
+                    )
                 }
             }
         }
@@ -198,7 +221,91 @@ class GamblerScorePlaceholderTest {
             .onNodeWithTag(PLACEHOLDER_ITEM_TAG)
             .assertHasNoClickAction()
     }
+
+    @Test
+    fun placeholderFlagSuppressesTheAvatarRequestAndAnnouncementForARealLookingGambler() {
+        composeTestRule.setContent {
+            TycheTheme {
+                Box(modifier = Modifier.testTag(PLACEHOLDER_ITEM_TAG)) {
+                    GamblerScoreItem(
+                        poolGamblerScore = realLookingScore(),
+                        isCurrentUser = false,
+                        modifier = Modifier.fillMaxWidth(),
+                        isPlaceholder = true,
+                    )
+                }
+            }
+        }
+
+        // Give a request every chance to start: the loaded control below records one well
+        // within this window.
+        composeTestRule.mainClock.advanceTimeBy(AVATAR_REQUEST_WINDOW_MILLIS)
+        composeTestRule.waitForIdle()
+
+        assertEquals(
+            emptyList<Any>(),
+            recordingImageLoaderRule.requestedData.filter { REAL_GAMBLER_ID in it.toString() },
+        )
+        composeTestRule
+            .onAllNodesWithText(REAL_GAMBLER_USERNAME, substring = true)
+            .assertCountEquals(0)
+        composeTestRule
+            .onAllNodesWithContentDescription(REAL_GAMBLER_USERNAME, substring = true)
+            .assertCountEquals(0)
+        composeTestRule
+            .onNodeWithTag(PLACEHOLDER_ITEM_TAG)
+            .assertHasNoClickAction()
+    }
+
+    @Test
+    fun placeholderRowSwitchedToLoadedRestoresItsAnnouncementAndAvatarRequest() {
+        var isPlaceholder by mutableStateOf(true)
+        composeTestRule.setContent {
+            TycheTheme {
+                GamblerScoreItem(
+                    poolGamblerScore = realLookingScore(),
+                    isCurrentUser = false,
+                    modifier = Modifier.fillMaxWidth(),
+                    isPlaceholder = isPlaceholder,
+                )
+            }
+        }
+        composeTestRule.mainClock.advanceTimeBy(AVATAR_REQUEST_WINDOW_MILLIS)
+        composeTestRule.waitForIdle()
+        assertEquals(
+            emptyList<Any>(),
+            recordingImageLoaderRule.requestedData.filter { REAL_GAMBLER_ID in it.toString() },
+        )
+
+        isPlaceholder = false
+
+        composeTestRule.waitUntil(timeoutMillis = 5_000) {
+            recordingImageLoaderRule.requestedData.any {
+                it.toString().endsWith("avatars/$REAL_GAMBLER_ID.jpg")
+            }
+        }
+        composeTestRule
+            .onNodeWithContentDescription(
+                "Rank 2, $REAL_GAMBLER_USERNAME, 150 points, Up 1 place",
+            )
+            .assertIsDisplayed()
+    }
+
+    private fun realLookingScore() = PoolGamblerScoreModel(
+        poolId = "pool-1",
+        poolName = "Liga",
+        gamblerId = REAL_GAMBLER_ID,
+        gamblerUsername = REAL_GAMBLER_USERNAME,
+        position = 2,
+        beforePosition = 3,
+        score = 150,
+        gamblerCount = 10,
+    )
 }
+
+private const val REAL_GAMBLER_ID = "real-gambler-1"
+private const val REAL_GAMBLER_USERNAME = "ElGoleador"
+private const val AVATAR_REQUEST_WINDOW_MILLIS = 2_000L
 
 private const val PLACEHOLDER_ROW_TAG = "gamblerScorePlaceholderRow"
 private const val PLACEHOLDER_ITEM_TAG = "gamblerScorePlaceholderItem"

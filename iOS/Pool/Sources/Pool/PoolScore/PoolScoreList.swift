@@ -84,7 +84,7 @@ private struct PoolScorePlaceholderRow: View {
                 poolGamblerScore: poolGamblerScore,
                 onOpen: {},
                 onJoin: {},
-                placeholderModifier: ShimmerModifier()
+                isPlaceholder: true
             )
             Divider()
         }
@@ -153,11 +153,16 @@ private struct TemplatesContent: View {
     @Environment(\.boxSpacing) private var boxSpacing
 
     var body: some View {
-        if lazyPoolLayouts.loadState.refresh.isLoading {
+        // Placeholders stand in only while there is nothing to show: a refresh that starts
+        // when this section reappears keeps the templates already loaded.
+        if lazyPoolLayouts.loadState.refresh.isLoading && lazyPoolLayouts.loadedItems.isEmpty {
             VStack(spacing: boxSpacing.medium) {
                 ForEach(0..<popularTemplatesCount, id: \.self) { _ in
-                    PoolFromLayoutCreatorItem(poolLayout: poolLayoutFakeModel(), isSelected: false)
-                        .shimmer()
+                    PoolFromLayoutCreatorItem(
+                        poolLayout: poolLayoutFakeModel(),
+                        isSelected: false,
+                        isPlaceholder: true
+                    )
                 }
             }
             .padding(.horizontal, emptyStateHorizontalPadding)

@@ -132,14 +132,13 @@ struct PoolScoreItemAccessibilityTests {
 
     @Test
     func placeholderRowContributesNoAnnouncement() {
-        // `.accessibilityHidden(isPlaceholder)` takes the same flag one line below
-        // `.accessibilityLabel` in `body`, so an empty label and a true flag together
-        // mean the filler model is never spoken.
+        // A placeholder row is hidden from assistive technology in `body`, and its label
+        // resolves to the empty string, so the filler model is never spoken.
         let item = PoolScoreItem(
             poolGamblerScore: poolGamblerScorePlaceholderModel(),
             onOpen: {},
             onJoin: {},
-            placeholderModifier: ShimmerModifier()
+            isPlaceholder: true
         )
 
         #expect(item.isPlaceholder)

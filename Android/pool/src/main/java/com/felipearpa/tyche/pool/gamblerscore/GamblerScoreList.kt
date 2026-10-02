@@ -23,6 +23,7 @@ import androidx.paging.compose.itemContentType
 import androidx.paging.compose.itemKey
 import com.felipearpa.tyche.pool.PoolGamblerScoreModel
 import com.felipearpa.tyche.pool.poolGamblerScoreDummyModels
+import com.felipearpa.tyche.pool.poolGamblerScorePlaceholderModel
 import com.felipearpa.tyche.ui.lazy.RefreshableLazyPagingColumn
 import com.felipearpa.tyche.ui.lazy.lazyPagingConcatenateError
 import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
@@ -110,7 +111,12 @@ private fun LazyListScope.gamblerScorePlaceholderItemRow() {
                 .testTag("gamblerScorePlaceholderRow")
                 .padding(horizontal = LocalBoxSpacing.current.medium),
         ) {
-            GamblerScorePlaceholderItem(modifier = Modifier.fillMaxWidth())
+            GamblerScoreItem(
+                poolGamblerScore = poolGamblerScorePlaceholderModel(),
+                isCurrentUser = false,
+                modifier = Modifier.fillMaxWidth(),
+                isPlaceholder = true,
+            )
             HorizontalDivider()
         }
     }

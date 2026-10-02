@@ -28,21 +28,38 @@ import com.felipearpa.tyche.pool.poolGamblerScorePlaceholderModel
 import com.felipearpa.tyche.pool.poolGamblerScoreWithoutPositionDummyModel
 import com.felipearpa.tyche.pool.rank
 import com.felipearpa.tyche.ui.TrendIndicator
-import com.felipearpa.tyche.ui.shimmer
 import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
+import com.felipearpa.tyche.ui.theme.LocalLoadingPlaceholderPulse
 import com.felipearpa.tyche.ui.theme.TycheTheme
+import com.revenuecat.placeholder.placeholder
 import kotlin.math.abs
 import com.felipearpa.tyche.ui.R as SharedR
 
+/**
+ * One My pools row. Loading rows render this same component from
+ * `poolGamblerScorePlaceholderModel()` with [isPlaceholder] set; the row then masks each content
+ * leaf (rank digits, trend, pool name, points, member count, invite glyph) with the shared
+ * [LocalLoadingPlaceholderPulse], disables the invite button, and exposes nothing to TalkBack.
+ * The rank tile keeps its container color. Callers pass no effect.
+ */
 @Composable
 fun PoolScoreItem(
     poolGamblerScore: PoolGamblerScoreModel,
     onJoin: () -> Unit,
     modifier: Modifier = Modifier,
-    placeholderModifier: Modifier? = null,
+    isPlaceholder: Boolean = false,
 ) {
-    val isPlaceholder = placeholderModifier != null
-    val placeholderStyle = placeholderModifier ?: Modifier
+    // Applied to each text and glyph leaf separately, never to the whole row.
+    val leafMask = if (isPlaceholder) {
+        val pulse = LocalLoadingPlaceholderPulse.current
+        Modifier.placeholder(
+            color = pulse.color,
+            shape = pulse.shape,
+            highlight = pulse.highlight,
+        )
+    } else {
+        Modifier
+    }
     val accessibilityDescription = poolScoreAccessibilityDescription(poolGamblerScore)
 
     Column(
@@ -71,14 +88,14 @@ fun PoolScoreItem(
                     PositionIndicator(
                         position = it,
                         shouldUsePrimaryColor = false,
-                        placeholderModifier = placeholderStyle,
+                        isPlaceholder = isPlaceholder,
                     )
                 }
                 poolGamblerScore.rank()?.let {
                     TrendIndicator(
-                        placeholderModifier = placeholderStyle,
                         rank = it,
                         textStyle = MaterialTheme.typography.labelSmall,
+                        isPlaceholder = isPlaceholder,
                     )
                 }
             }
@@ -86,7 +103,7 @@ fun PoolScoreItem(
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = poolGamblerScore.poolName,
-                    modifier = placeholderStyle,
+                    modifier = leafMask,
                 )
 
                 Row(
@@ -98,7 +115,7 @@ fun PoolScoreItem(
                             text = stringResource(id = R.string.points_text, it),
                             style = MaterialTheme.typography.labelSmall,
                             fontWeight = FontWeight.Bold,
-                            modifier = placeholderStyle,
+                            modifier = leafMask,
                         )
                     }
 
@@ -106,33 +123,25 @@ fun PoolScoreItem(
                         Text(
                             text = pluralStringResource(R.plurals.gamblers_text, it, it),
                             style = MaterialTheme.typography.labelSmall,
-                            modifier = placeholderStyle,
+                            modifier = leafMask,
                         )
                     }
                 }
             }
 
+            // A placeholder keeps the button's footprint but cannot start an invitation.
             IconButton(
                 onClick = onJoin,
-                modifier = placeholderStyle,
+                enabled = !isPlaceholder,
             ) {
                 Icon(
                     painter = painterResource(SharedR.drawable.person_add),
                     contentDescription = null,
+                    modifier = leafMask,
                 )
             }
         }
     }
-}
-
-@Composable
-fun PoolScorePlaceholderItem(modifier: Modifier = Modifier) {
-    PoolScoreItem(
-        poolGamblerScore = poolGamblerScorePlaceholderModel(),
-        onJoin = {},
-        modifier = modifier,
-        placeholderModifier = Modifier.shimmer(),
-    )
 }
 
 /**
@@ -229,10 +238,22 @@ private fun PoolScoreItemLongPoolNamePreview() {
 
 @PreviewLightDark
 @Composable
-private fun PoolScoreFakeItemPreview() {
+private fun PoolScorePlaceholderItemPreview() {
     TycheTheme {
         Surface {
-            PoolScorePlaceholderItem(modifier = Modifier.fillMaxWidth())
+            Column {
+                PoolScoreItem(
+                    poolGamblerScore = poolGamblerScoreDummyModel(),
+                    onJoin = {},
+                    modifier = Modifier.fillMaxWidth(),
+                )
+                PoolScoreItem(
+                    poolGamblerScore = poolGamblerScorePlaceholderModel(),
+                    onJoin = {},
+                    modifier = Modifier.fillMaxWidth(),
+                    isPlaceholder = true,
+                )
+            }
         }
     }
 }

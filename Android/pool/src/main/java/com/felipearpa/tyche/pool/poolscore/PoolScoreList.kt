@@ -41,11 +41,12 @@ import androidx.paging.compose.itemContentType
 import androidx.paging.compose.itemKey
 import com.felipearpa.tyche.pool.PoolGamblerScoreModel
 import com.felipearpa.tyche.pool.R
-import com.felipearpa.tyche.pool.creator.PoolFromLayoutCreatorFakeItem
 import com.felipearpa.tyche.pool.creator.PoolFromLayoutCreatorItem
 import com.felipearpa.tyche.pool.creator.PoolLayoutModel
 import com.felipearpa.tyche.pool.creator.poolLayoutDummyModels
+import com.felipearpa.tyche.pool.creator.poolLayoutFakeModel
 import com.felipearpa.tyche.pool.poolGamblerScoreDummyModels
+import com.felipearpa.tyche.pool.poolGamblerScorePlaceholderModel
 import com.felipearpa.tyche.ui.exception.localizedOrDefault
 import com.felipearpa.tyche.ui.lazy.Failure
 import com.felipearpa.tyche.ui.lazy.RefreshableLazyPagingColumn
@@ -198,10 +199,13 @@ private fun LazyListScope.poolScoreEmptyList(
         )
     }
 
-    when (val refreshState = lazyPoolLayouts.loadState.refresh) {
-        is LoadState.Loading -> poolLayoutPlaceholderList(count = popularTemplatesCount)
+    val refreshState = lazyPoolLayouts.loadState.refresh
+    when {
+        // A refresh keeps templates already shown; placeholders stand in only for none.
+        refreshState is LoadState.Loading && lazyPoolLayouts.itemCount == 0 ->
+            poolLayoutPlaceholderList(count = popularTemplatesCount)
 
-        is LoadState.Error -> item {
+        refreshState is LoadState.Error -> item {
             Box(
                 contentAlignment = Alignment.Center,
                 modifier = Modifier
@@ -265,7 +269,9 @@ private fun LazyListScope.poolScoreEmptyList(
 private fun LazyListScope.poolLayoutPlaceholderList(count: Int) {
     repeat(count) {
         item {
-            PoolFromLayoutCreatorFakeItem(
+            PoolFromLayoutCreatorItem(
+                poolLayout = poolLayoutFakeModel(),
+                isPlaceholder = true,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(
@@ -310,7 +316,12 @@ private fun LazyListScope.poolScorePlaceholderItemRow() {
                 .fillMaxWidth()
                 .padding(horizontal = LocalBoxSpacing.current.medium),
         ) {
-            PoolScorePlaceholderItem(modifier = Modifier.fillMaxWidth())
+            PoolScoreItem(
+                poolGamblerScore = poolGamblerScorePlaceholderModel(),
+                onJoin = {},
+                modifier = Modifier.fillMaxWidth(),
+                isPlaceholder = true,
+            )
             HorizontalDivider()
         }
     }

@@ -44,20 +44,27 @@ import com.felipearpa.tyche.pool.poolGamblerScoreDummyModelWithoutPosition
 import com.felipearpa.tyche.pool.poolGamblerScorePlaceholderModel
 import com.felipearpa.tyche.pool.rank
 import com.felipearpa.tyche.ui.TrendIndicator
-import com.felipearpa.tyche.ui.shimmer
 import com.felipearpa.tyche.ui.theme.LocalExtendedColorScheme
+import com.felipearpa.tyche.ui.theme.LocalLoadingPlaceholderPulse
 import com.felipearpa.tyche.ui.theme.TycheTheme
+import com.revenuecat.placeholder.placeholder
 import kotlin.math.abs
 
+/**
+ * One leaderboard row. Loading rows render this same component from
+ * `poolGamblerScorePlaceholderModel()` with [isPlaceholder] set; the row then masks each content
+ * leaf (rank digits, trend, avatar, username, score) with the shared
+ * [LocalLoadingPlaceholderPulse], requests no avatar, and exposes nothing to TalkBack. The rank
+ * tile keeps its container color. Callers pass no effect.
+ */
 @Composable
 fun GamblerScoreItem(
     poolGamblerScore: PoolGamblerScoreModel,
     isCurrentUser: Boolean,
     modifier: Modifier = Modifier,
-    placeholderModifier: Modifier? = null,
+    isPlaceholder: Boolean = false,
 ) {
-    val isPlaceholder = placeholderModifier != null
-    val placeholderStyle = placeholderModifier ?: Modifier
+    val pulse = LocalLoadingPlaceholderPulse.current
     val extendedColors = LocalExtendedColorScheme.current
     val rowBackground = if (isCurrentUser && !isPlaceholder) {
         extendedColors.currentUserContainer
@@ -105,7 +112,6 @@ fun GamblerScoreItem(
             PositionIndicator(
                 position = poolGamblerScore.position,
                 shouldUsePrimaryColor = false,
-                placeholderModifier = placeholderStyle,
                 size = RANK_TILE_SIZE,
                 shape = RoundedCornerShape(RANK_CORNER_RADIUS),
                 containerColor = rankBackground,
@@ -114,6 +120,7 @@ fun GamblerScoreItem(
                     fontWeight = FontWeight.SemiBold,
                     fontFeatureSettings = "tnum",
                 ),
+                isPlaceholder = isPlaceholder,
             )
 
             Spacer(modifier = Modifier.height(RANK_SPACING))
@@ -124,20 +131,18 @@ fun GamblerScoreItem(
             ) {
                 poolGamblerScore.rank()?.let { difference ->
                     TrendIndicator(
-                        placeholderModifier = placeholderStyle,
                         rank = difference,
                         textStyle = MaterialTheme.typography.labelSmall.copy(
                             fontFeatureSettings = "tnum",
                         ),
+                        isPlaceholder = isPlaceholder,
                     )
                 }
             }
         }
 
         AccountAvatar(
-            // An empty account id renders only the fallback, so a placeholder row
-            // never requests the synthetic placeholder identity.
-            accountId = if (isPlaceholder) "" else poolGamblerScore.gamblerId,
+            accountId = poolGamblerScore.gamblerId,
             fallback = AccountAvatarFallback(
                 identity = poolGamblerScore.gamblerUsername,
                 colorKey = poolGamblerScore.gamblerUsername,
@@ -147,7 +152,18 @@ fun GamblerScoreItem(
             modifier = Modifier
                 .size(AVATAR_SIZE)
                 .clip(CircleShape)
-                .then(placeholderStyle),
+                .then(
+                    if (isPlaceholder) {
+                        Modifier.placeholder(
+                            color = pulse.color,
+                            shape = CircleShape,
+                            highlight = pulse.highlight,
+                        )
+                    } else {
+                        Modifier
+                    },
+                ),
+            isPlaceholder = isPlaceholder,
         )
 
         Column(
@@ -162,14 +178,30 @@ fun GamblerScoreItem(
                 ),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
-                modifier = placeholderStyle,
+                modifier = if (isPlaceholder) {
+                    Modifier.placeholder(
+                        color = pulse.color,
+                        shape = pulse.shape,
+                        highlight = pulse.highlight,
+                    )
+                } else {
+                    Modifier
+                },
             )
             if (isCurrentUser) {
                 Text(
                     text = stringResource(R.string.leaderboard_you),
                     color = rowForeground,
                     style = MaterialTheme.typography.bodySmall,
-                    modifier = placeholderStyle,
+                    modifier = if (isPlaceholder) {
+                        Modifier.placeholder(
+                            color = pulse.color,
+                            shape = pulse.shape,
+                            highlight = pulse.highlight,
+                        )
+                    } else {
+                        Modifier
+                    },
                 )
             }
         }
@@ -185,19 +217,19 @@ fun GamblerScoreItem(
             textAlign = TextAlign.End,
             modifier = Modifier
                 .widthIn(min = SCORE_MINIMUM_WIDTH)
-                .then(placeholderStyle),
+                .then(
+                    if (isPlaceholder) {
+                        Modifier.placeholder(
+                            color = pulse.color,
+                            shape = pulse.shape,
+                            highlight = pulse.highlight,
+                        )
+                    } else {
+                        Modifier
+                    },
+                ),
         )
     }
-}
-
-@Composable
-fun GamblerScorePlaceholderItem(modifier: Modifier = Modifier) {
-    GamblerScoreItem(
-        poolGamblerScore = poolGamblerScorePlaceholderModel(),
-        isCurrentUser = false,
-        modifier = modifier,
-        placeholderModifier = Modifier.shimmer(),
-    )
 }
 
 @Composable
@@ -288,10 +320,22 @@ private fun GamblerScoreItemWithoutPositionPreview() {
     }
 }
 
-@Preview(showBackground = true)
+@PreviewLightDark
 @Composable
-private fun GamblerScorePlaceholderItemPreview() {
+private fun GamblerScoreItemGeometryPreview() {
     TycheTheme {
-        GamblerScorePlaceholderItem()
+        Surface {
+            Column {
+                GamblerScoreItem(
+                    poolGamblerScore = poolGamblerScoreDummyModel(),
+                    isCurrentUser = false,
+                )
+                GamblerScoreItem(
+                    poolGamblerScore = poolGamblerScorePlaceholderModel(),
+                    isCurrentUser = false,
+                    isPlaceholder = true,
+                )
+            }
+        }
     }
 }

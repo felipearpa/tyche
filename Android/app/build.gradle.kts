@@ -119,6 +119,7 @@ dependencies {
     implementation(libs.coil.compose)
     implementation(libs.coil.network.okhttp)
     implementation(libs.coil.network.cache.control)
+    implementation(libs.revenuecat.placeholder)
 
     testImplementation(libs.junit)
     testImplementation(platform(libs.junit5.bom))

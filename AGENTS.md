@@ -14,7 +14,7 @@ When authoring future OpenSpec specifications that introduce or change app-rende
 When authoring future mobile UI specifications that introduce or change model-backed loading placeholders:
 
 - Require each affected platform to populate the production item or row component with a placeholder model.
-- Apply the existing shared platform shimmer treatment.
+- Apply the shared loading-placeholder treatment defined by the `loading-placeholders` capability, selected through the component's `isPlaceholder` parameter rather than a caller-supplied effect modifier.
 - Do not prescribe a separately maintained skeleton-only layout.
 - Allow placeholder-specific behavior to suppress remote loading, navigation, and accessibility exposure, but not to replace the production layout.
 - Do not expose placeholder values as real user content.

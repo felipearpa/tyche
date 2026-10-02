@@ -17,7 +17,8 @@
 - Scores, Bets, and History each shrink their own title as you scroll, and their rows pass beneath the navigation and tab bars
 - Brand-new app icon with a Liquid Glass look
 - Refreshed splash screen logo
-- The leaderboard's loading state now mirrors the real rows
+- Loading looks the same everywhere: pools, leaderboards, bets, history, match details, and the menu show the real rows with a gentle pulse while they load, which stays still when Reduce Motion is on
+- Pulling to refresh or returning to a match keeps what you were reading on screen instead of flashing back to a loading state
 - Redesigned side menu with a clearer account header, grouped pool details and actions, and a separate Sign out area
 - Swipe horizontally on the pool list or pool home to open the menu; drag it closed or tap the dimmed screen to dismiss it
 - Menu animations follow your finger smoothly, even when you change direction, and respect Reduce Motion

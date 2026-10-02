@@ -4,19 +4,42 @@ import UIKit
 public struct TrendIndicator: View {
     let difference: Int
     let textStyle: Font.TextStyle
+    let isPlaceholder: Bool
 
-    public init(difference: Int, textStyle: Font.TextStyle = .footnote) {
+    /// - Parameter isPlaceholder: When `true`, the indicator drops its semantic colors and
+    ///   inherits the enclosing placeholder's neutral foreground, so a redacting parent's
+    ///   pulse is not tinted green, red, or gray. The parent owns redaction and the pulse.
+    public init(
+        difference: Int,
+        textStyle: Font.TextStyle = .footnote,
+        isPlaceholder: Bool = false
+    ) {
         self.difference = difference
         self.textStyle = textStyle
+        self.isPlaceholder = isPlaceholder
     }
 
     public var body: some View {
         if difference > 0 {
             UpTrendIndicator(progress: difference, textStyle: textStyle)
+                .trendForeground(Color(.positive), isPlaceholder: isPlaceholder)
         } else if difference < 0 {
             DownTrendIndicator(progress: difference, textStyle: textStyle)
+                .trendForeground(Color(.negative), isPlaceholder: isPlaceholder)
         } else {
             StableTrendIndicator(textStyle: textStyle)
+                .trendForeground(Color(.neutral), isPlaceholder: isPlaceholder)
+        }
+    }
+}
+
+private extension View {
+    @ViewBuilder
+    func trendForeground(_ semanticColor: Color, isPlaceholder: Bool) -> some View {
+        if isPlaceholder {
+            self
+        } else {
+            foregroundStyle(semanticColor)
         }
     }
 }
@@ -40,7 +63,6 @@ private struct UpTrendIndicator: View {
             Text(String(abs(progress)))
                 .font(.system(textStyle))
         }
-        .foregroundStyle(Color(.positive))
     }
 }
 
@@ -63,7 +85,6 @@ private struct DownTrendIndicator: View {
             Text(String(abs(progress)))
                 .font(.system(textStyle))
         }
-        .foregroundStyle(Color(.negative))
     }
 }
 
@@ -78,7 +99,6 @@ private struct StableTrendIndicator: View {
         Image(.horizontalRule)
             .resizable()
             .frame(width: iconSize, height: iconSize)
-            .foregroundStyle(Color(.neutral))
     }
 }
 

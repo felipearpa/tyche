@@ -53,7 +53,11 @@ public class MatchBetListViewModel: ObservableObject {
 
     @MainActor
     func loadPoolGamblerBet() async {
-        poolGamblerBetState = .loading
+        // A reload (pull to refresh, or returning to this screen) keeps the loaded match on
+        // screen; only a first load or a retry after a failure shows the loading placeholder.
+        if !poolGamblerBetState.isLoaded() {
+            poolGamblerBetState = .loading
+        }
         let result = await getPoolGamblerBetUseCase.execute(
             poolId: poolId,
             gamblerId: gamblerId,

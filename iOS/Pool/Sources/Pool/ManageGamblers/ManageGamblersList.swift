@@ -109,41 +109,35 @@ struct ManageGamblerSwipeBackground: View {
 
 struct ManageGamblerPlaceholderList: View {
     var body: some View {
-        ForEach(0..<8, id: \.self) { index in
+        ForEach(0..<placeholderRowCount, id: \.self) { _ in
             ManageGamblerPlaceholderRow()
-                .opacity(1.0 - Double(index) * 0.04)
         }
     }
 }
 
+/// Initial and append loading row: the production `ManageGamblerItem` with a placeholder model,
+/// laid out with the loaded row's padding and divider. It has no swipe or remove action.
 struct ManageGamblerPlaceholderRow: View {
+    let member: PoolMemberModel
+
     @Environment(\.boxSpacing) private var boxSpacing
+
+    init(member: PoolMemberModel = poolMemberPlaceholderModel()) {
+        self.member = member
+    }
 
     var body: some View {
         VStack(spacing: 0) {
-            HStack(spacing: boxSpacing.medium) {
-                Circle()
-                    .fill(Color(sharedResource: .surfaceVariant))
-                    .frame(width: 40, height: 40)
-
-                VStack(alignment: .leading, spacing: boxSpacing.small) {
-                    RoundedRectangle(cornerRadius: 4)
-                        .fill(Color(sharedResource: .surfaceVariant))
-                        .frame(width: 160, height: 14)
-                    RoundedRectangle(cornerRadius: 4)
-                        .fill(Color(sharedResource: .surfaceVariant))
-                        .frame(width: 110, height: 12)
-                }
-
-                Spacer(minLength: 0)
-            }
-            .padding(boxSpacing.medium)
-            .shimmer()
+            ManageGamblerItem(state: .idle(member), isPlaceholder: true)
+                .padding(boxSpacing.medium)
+                .frame(maxWidth: .infinity, alignment: .leading)
 
             Divider()
         }
     }
 }
+
+private let placeholderRowCount = 8
 
 struct ManageGamblerErrorBanner: View {
     let username: String

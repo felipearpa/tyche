@@ -1,50 +1,59 @@
 import SwiftUI
 import UI
 
+/// A pool template card. Loading slots render this same component from
+/// `poolLayoutFakeModel()` with `isPlaceholder: true`: the card keeps its production surface,
+/// its content is concealed by native redaction under the shared `LoadingPlaceholderPulse`,
+/// and it ignores touches and stays out of the accessibility tree.
 struct PoolFromLayoutCreatorItem: View {
     let poolLayout: PoolLayoutModel
     let isSelected: Bool
+    let isPlaceholder: Bool
 
     @Environment(\.boxSpacing) private var boxSpacing
+
+    init(poolLayout: PoolLayoutModel, isSelected: Bool, isPlaceholder: Bool = false) {
+        self.poolLayout = poolLayout
+        self.isSelected = isSelected
+        self.isPlaceholder = isPlaceholder
+    }
 
     var body: some View {
         let backgroundColor = isSelected ? Color(sharedResource: .primaryContainer) : Color(sharedResource: .surfaceVariant)
         let foregroundColor = isSelected ? Color(sharedResource: .onPrimaryContainter) : Color(sharedResource: .onSurfaceVariant)
 
-        CardView(backgroundColor: backgroundColor, foregroundColor: foregroundColor) {
-            HStack(spacing: boxSpacing.medium) {
-                VStack(alignment: .leading, spacing: boxSpacing.small) {
-                    Text(poolLayout.name)
-                        .font(.title3)
-                        .foregroundColor(foregroundColor)
-
-                    Text(.startingFromDateText(poolLayout.startDateTime.toShortDateString()))
-                    .font(.footnote)
-                    .foregroundColor(foregroundColor)
-                }
-
-                Spacer()
-
-                Image(sharedResource: .arrowForwardIos)
-                    .foregroundColor(foregroundColor)
+        Group {
+            if isPlaceholder {
+                PulsingPlaceholderContent { cardContent }
+            } else {
+                cardContent.foregroundColor(foregroundColor)
             }
-            .padding(boxSpacing.medium)
         }
+        .background(backgroundColor)
+        .cornerRadius(cardCornerRadius)
+        .allowsHitTesting(!isPlaceholder)
+        .accessibilityHidden(isPlaceholder)
+    }
+
+    private var cardContent: some View {
+        HStack(spacing: boxSpacing.medium) {
+            VStack(alignment: .leading, spacing: boxSpacing.small) {
+                Text(poolLayout.name)
+                    .font(.title3)
+
+                Text(.startingFromDateText(poolLayout.startDateTime.toShortDateString()))
+                    .font(.footnote)
+            }
+
+            Spacer()
+
+            Image(sharedResource: .arrowForwardIos)
+        }
+        .padding(boxSpacing.medium)
     }
 }
 
-private struct CardView<Content: View>: View {
-    let backgroundColor: Color
-    let foregroundColor: Color
-    let content: () -> Content
-
-    var body: some View {
-        content()
-            .background(backgroundColor)
-            .foregroundColor(foregroundColor)
-            .cornerRadius(12)
-    }
-}
+private let cardCornerRadius: CGFloat = 12
 
 #Preview("Light not selected") {
     PoolFromLayoutCreatorItem(
@@ -74,4 +83,12 @@ private struct CardView<Content: View>: View {
         isSelected: true,
     )
     .preferredColorScheme(.dark)
+}
+
+#Preview("Placeholder") {
+    PoolFromLayoutCreatorItem(
+        poolLayout: poolLayoutFakeModel(),
+        isSelected: false,
+        isPlaceholder: true
+    )
 }

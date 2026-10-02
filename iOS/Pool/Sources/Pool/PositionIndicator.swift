@@ -9,7 +9,11 @@ public struct PostionIndicator: View {
     private let backgroundOverlayColor: Color?
     private let foregroundColor: Color?
     private let font: Font?
+    private let isPlaceholder: Bool
 
+    /// - Parameter isPlaceholder: When `true`, the digit drops its own foreground color and
+    ///   inherits the enclosing placeholder's neutral foreground, so a redacting parent's pulse
+    ///   conceals it without a tint. The tile background is structural and stays as configured.
     public init(
         position: Int?,
         shouldUsePrimeryColor: Bool,
@@ -18,7 +22,8 @@ public struct PostionIndicator: View {
         backgroundColor: Color? = nil,
         backgroundOverlayColor: Color? = nil,
         foregroundColor: Color? = nil,
-        font: Font? = nil
+        font: Font? = nil,
+        isPlaceholder: Bool = false
     ) {
         self.position = position
         self.shouldUsePrimeryColor = shouldUsePrimeryColor
@@ -28,6 +33,7 @@ public struct PostionIndicator: View {
         self.backgroundOverlayColor = backgroundOverlayColor
         self.foregroundColor = foregroundColor
         self.font = font
+        self.isPlaceholder = isPlaceholder
     }
 
     public var body: some View {
@@ -42,6 +48,7 @@ public struct PostionIndicator: View {
                 .lineLimit(1)
                 .minimumScaleFactor(digitMinimumScaleFactor)
                 .padding(.horizontal, digitHorizontalPadding)
+                .loadedForeground(resolvedForegroundColor, isPlaceholder: isPlaceholder)
         }
         .frame(width: size, height: size)
         .background {
@@ -54,7 +61,6 @@ public struct PostionIndicator: View {
                     }
                 }
         }
-        .foregroundStyle(resolvedForegroundColor)
         .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
     }
 

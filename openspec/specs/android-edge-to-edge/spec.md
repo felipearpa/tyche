@@ -40,7 +40,7 @@ Android lists SHALL have a viewport extending into available system-bar regions,
 
 ### Requirement: All list states respect the same safe bounds
 
-Loaded, loading, empty, and error states SHALL respect the screen's inset policy. Model-backed loading placeholders affected by this migration SHALL populate the production item or row component with a placeholder model and apply Android's existing shared shimmer treatment. Placeholder behavior MAY suppress remote loading, navigation, and accessibility exposure but SHALL NOT replace the production layout with a separate skeleton-only layout or expose placeholder values as real content.
+Loaded, loading, empty, and error states SHALL respect the screen's inset policy. Model-backed loading placeholders affected by this migration SHALL populate the production item or row component with a placeholder model and apply the shared pulse loading-placeholder treatment defined by `loading-placeholders`. Placeholder behavior MAY suppress remote loading, navigation, and accessibility exposure but SHALL NOT replace the production layout with a separate skeleton-only layout or expose placeholder values as real content.
 
 #### Scenario: Loading completes
 - **GIVEN** an Android list displays loading placeholders

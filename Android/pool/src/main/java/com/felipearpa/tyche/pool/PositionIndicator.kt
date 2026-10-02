@@ -19,19 +19,26 @@ import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.felipearpa.tyche.ui.theme.LocalLoadingPlaceholderPulse
 import com.felipearpa.tyche.ui.theme.TycheTheme
+import com.revenuecat.placeholder.placeholder
 
+/**
+ * A rank tile. With [isPlaceholder] only the digits are masked with the shared
+ * [LocalLoadingPlaceholderPulse]; the tile keeps its container color so the structural fill
+ * does not pulse.
+ */
 @Composable
 fun PositionIndicator(
     position: Int?,
     shouldUsePrimaryColor: Boolean,
     modifier: Modifier = Modifier,
-    placeholderModifier: Modifier = Modifier,
     size: Dp = scoreSize,
     shape: Shape = RoundedCornerShape(8.dp),
     containerColor: Color = Color.Unspecified,
     contentColor: Color = Color.Unspecified,
     textStyle: TextStyle = MaterialTheme.typography.bodyLarge,
+    isPlaceholder: Boolean = false,
 ) {
     val resolvedContainerColor = if (containerColor != Color.Unspecified) {
         containerColor
@@ -52,8 +59,7 @@ fun PositionIndicator(
         modifier = modifier
             .size(size)
             .clip(shape)
-            .background(resolvedContainerColor)
-            .then(placeholderModifier),
+            .background(resolvedContainerColor),
         contentAlignment = Alignment.Center,
     ) {
         // The box is a fixed size but the text scales with the system font scale, so at
@@ -61,6 +67,16 @@ fun PositionIndicator(
         // as "1". Auto-sizing keeps the whole value inside the tile.
         BasicText(
             text = position?.toString() ?: "—",
+            modifier = if (isPlaceholder) {
+                val pulse = LocalLoadingPlaceholderPulse.current
+                Modifier.placeholder(
+                    color = pulse.color,
+                    shape = pulse.shape,
+                    highlight = pulse.highlight,
+                )
+            } else {
+                Modifier
+            },
             style = textStyle.copy(color = resolvedContentColor),
             maxLines = 1,
             softWrap = false,

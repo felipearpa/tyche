@@ -25,7 +25,6 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import com.felipearpa.foundation.time.toShortDateTimeString
@@ -35,25 +34,46 @@ import com.felipearpa.tyche.bet.isLive
 import com.felipearpa.tyche.bet.poolGamblerBetDummyModel
 import com.felipearpa.tyche.bet.poolGamblerBetFakeModel
 import com.felipearpa.tyche.ui.FlagImage
-import com.felipearpa.tyche.ui.shimmer
 import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
+import com.felipearpa.tyche.ui.theme.LocalLoadingPlaceholderPulse
 import com.felipearpa.tyche.ui.theme.TycheTheme
+import com.revenuecat.placeholder.placeholder
 
+/**
+ * The match being viewed: flags, team names, the result once computed, and the kickoff time.
+ * While the match loads, the screen renders this same component from
+ * `poolGamblerBetFakeModel()` with [isPlaceholder] set; each content leaf is then masked with
+ * the shared [LocalLoadingPlaceholderPulse] and nothing reaches TalkBack.
+ */
 @Composable
 fun MatchHeader(
     bet: PoolGamblerBetModel,
     modifier: Modifier = Modifier,
-    shimmerModifier: Modifier = Modifier,
+    isPlaceholder: Boolean = false,
 ) {
+    // Applied to each content leaf separately, never to the whole row.
+    val leafMask = if (isPlaceholder) {
+        val pulse = LocalLoadingPlaceholderPulse.current
+        Modifier.placeholder(
+            color = pulse.color,
+            shape = pulse.shape,
+            highlight = pulse.highlight,
+        )
+    } else {
+        Modifier
+    }
+
     Column(
         modifier = modifier
+            // Placeholder values are filler, not a match: keep them from screen readers.
+            .then(if (isPlaceholder) Modifier.clearAndSetSemantics {} else Modifier)
             .fillMaxWidth()
             .padding(horizontal = LocalBoxSpacing.current.medium),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.medium),
     ) {
         if (bet.isLive) {
-            LiveIndicator(shimmerModifier = shimmerModifier)
+            LiveIndicator(contentModifier = leafMask)
         }
 
         Row(
@@ -70,7 +90,7 @@ fun MatchHeader(
                     teamId = bet.homeTeamId,
                     modifier = Modifier
                         .size(flagSize)
-                        .then(shimmerModifier),
+                        .then(leafMask),
                 )
                 Text(
                     text = bet.homeTeamName,
@@ -79,7 +99,7 @@ fun MatchHeader(
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier
                         .weight(1f)
-                        .then(shimmerModifier),
+                        .then(leafMask),
                 )
             }
 
@@ -87,7 +107,7 @@ fun MatchHeader(
                 Text(
                     text = bet.matchScore?.homeTeamValue?.toString().orEmpty(),
                     style = MaterialTheme.typography.titleLarge,
-                    modifier = shimmerModifier,
+                    modifier = leafMask,
                 )
 
                 Text(text = "-")
@@ -95,7 +115,7 @@ fun MatchHeader(
                 Text(
                     text = bet.matchScore?.awayTeamValue?.toString().orEmpty(),
                     style = MaterialTheme.typography.titleLarge,
-                    modifier = shimmerModifier,
+                    modifier = leafMask,
                 )
             }
 
@@ -112,13 +132,13 @@ fun MatchHeader(
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier
                         .weight(1f)
-                        .then(shimmerModifier),
+                        .then(leafMask),
                 )
                 FlagImage(
                     teamId = bet.awayTeamId,
                     modifier = Modifier
                         .size(flagSize)
-                        .then(shimmerModifier),
+                        .then(leafMask),
                 )
             }
         }
@@ -126,7 +146,7 @@ fun MatchHeader(
         Text(
             text = bet.matchDateTime.toShortDateTimeString(),
             style = MaterialTheme.typography.bodySmall,
-            modifier = shimmerModifier,
+            modifier = leafMask,
         )
     }
 }
@@ -134,7 +154,7 @@ fun MatchHeader(
 @Composable
 private fun LiveIndicator(
     modifier: Modifier = Modifier,
-    shimmerModifier: Modifier = Modifier,
+    contentModifier: Modifier = Modifier,
 ) {
     val infiniteTransition = rememberInfiniteTransition(label = "live")
     val alpha by infiniteTransition.animateFloat(
@@ -157,25 +177,15 @@ private fun LiveIndicator(
                 .size(8.dp)
                 .alpha(alpha)
                 .background(color = MaterialTheme.colorScheme.primary, shape = CircleShape)
-                .then(shimmerModifier),
+                .then(contentModifier),
         )
         Text(
             text = androidx.compose.ui.res.stringResource(id = R.string.live_label),
             style = MaterialTheme.typography.labelSmall,
             color = MaterialTheme.colorScheme.primary,
-            modifier = shimmerModifier,
+            modifier = contentModifier,
         )
     }
-}
-
-@Composable
-fun MatchHeaderPlaceholderItem(modifier: Modifier = Modifier) {
-    MatchHeader(
-        bet = poolGamblerBetFakeModel().copy(isLocked = false, isComputed = false),
-        // Placeholder values are filler, not a match: keep them from screen readers.
-        modifier = modifier.clearAndSetSemantics {},
-        shimmerModifier = Modifier.shimmer(),
-    )
 }
 
 private val flagSize = 48.dp
@@ -193,8 +203,16 @@ private fun MatchHeaderPreview() {
     }
 }
 
-@Preview(showBackground = true)
+@PreviewLightDark
 @Composable
-private fun MatchHeaderPlaceholderItemPreview() {
-    MatchHeaderPlaceholderItem(modifier = Modifier.fillMaxWidth())
+private fun MatchHeaderPlaceholderPreview() {
+    TycheTheme {
+        Surface {
+            MatchHeader(
+                bet = poolGamblerBetFakeModel().copy(isLocked = false, isComputed = false),
+                modifier = Modifier.fillMaxWidth(),
+                isPlaceholder = true,
+            )
+        }
+    }
 }

@@ -138,8 +138,9 @@ private struct PendingBetPlaceholderItem: View {
     var body: some View {
         PendingBetItem(
             poolGamblerBet: poolGamblerBetPlaceholderModel(),
-            viewState: .constant(.visualization(partialPoolGamblerBetFakeModel()))
-        ).shimmer()
+            viewState: .constant(.visualization(partialPoolGamblerBetFakeModel())),
+            isPlaceholder: true
+        )
     }
 }
 

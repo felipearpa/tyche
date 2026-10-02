@@ -2,12 +2,34 @@ import SwiftUI
 import Core
 import UI
 
+/// A locked match that is not scored yet, with the gambler's bet. Loading slots render this
+/// same component from a placeholder model with `isPlaceholder: true`: native redaction under
+/// the shared `LoadingPlaceholderPulse` conceals its content, and it ignores touches and stays
+/// out of the accessibility tree.
 struct LiveBetItem: View {
     let poolGamblerBet: PoolGamblerBetModel
+    let isPlaceholder: Bool
 
     @Environment(\.boxSpacing) private var boxSpacing
 
+    init(poolGamblerBet: PoolGamblerBetModel, isPlaceholder: Bool = false) {
+        self.poolGamblerBet = poolGamblerBet
+        self.isPlaceholder = isPlaceholder
+    }
+
     var body: some View {
+        Group {
+            if isPlaceholder {
+                PulsingPlaceholderContent { content }
+            } else {
+                content
+            }
+        }
+        .allowsHitTesting(!isPlaceholder)
+        .accessibilityHidden(isPlaceholder)
+    }
+
+    private var content: some View {
         VStack(spacing: boxSpacing.medium) {
             Text(poolGamblerBet.matchDateTime.toShortTimeString())
                 .font(.caption)
@@ -50,6 +72,8 @@ private let flagSize: CGFloat = 32
 }
 
 #Preview("Placeholder") {
-    LiveBetItem(poolGamblerBet: poolGamblerBetPlaceholderModel(isLocked: true, isComputed: false))
-        .shimmer()
+    LiveBetItem(
+        poolGamblerBet: poolGamblerBetPlaceholderModel(isLocked: true, isComputed: false),
+        isPlaceholder: true
+    )
 }

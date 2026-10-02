@@ -84,10 +84,10 @@ The invite control on each pool row SHALL carry a localized accessibility label 
 - **THEN** it speaks the localized invite label rather than an image file name, a raw resource identifier, or a bare "button"
 
 ### Requirement: Loading placeholder rows are not announced
-Loading placeholder rows in the "My pools" list SHALL be hidden from the accessibility tree. Their filler pool name, filler rank, filler score, and filler member count SHALL NOT be spoken, and their placeholder invite control SHALL NOT be offered as an action.
+Loading placeholder rows in the "My pools" list SHALL be hidden from the accessibility tree. Their filler pool name, filler rank, filler score, and filler member count SHALL NOT be spoken, and their placeholder invite control SHALL NOT be offered as an action. They SHALL render the production pool row populated with a placeholder model and the shared pulse loading-placeholder treatment defined by `loading-placeholders`, retaining the same row geometry as loaded content.
 
 #### Scenario: List is loading its first page
-- **GIVEN** the list shows shimmering placeholder rows while the first page loads
+- **GIVEN** the list shows placeholder rows using the shared pulse treatment while the first page loads
 - **WHEN** a screen-reader user swipes through the list
 - **THEN** no placeholder row receives focus and no filler text is spoken
 
@@ -99,7 +99,7 @@ Loading placeholder rows in the "My pools" list SHALL be hidden from the accessi
 #### Scenario: Placeholder keeps its production layout
 - **GIVEN** placeholder rows suppress their accessibility exposure
 - **WHEN** they are rendered
-- **THEN** they still use the production pool row layout with the shared shimmer treatment and the same row geometry as a loaded row
+- **THEN** they still use the production pool row populated with a placeholder model, the shared pulse loading-placeholder treatment, and the same row geometry as a loaded row
 
 ### Requirement: Rank movement is not conveyed by color alone
 Rank movement in the "My pools" list SHALL be conveyed by a directional symbol and a spoken direction in addition to its semantic trend color, so that the direction is available without color perception and without sight.
@@ -148,9 +148,11 @@ The My pools list SHALL preserve its layout, spacing, typography, content colors
 
 The ios-liquid-glass capability permits a bounded presentation exception: on iOS, the row invitation control SHALL use a standard non-glass appearance, and the create-pool toolbar control SHALL use the accent-filled circular control and unframed add glyph specified by ios-liquid-glass. Control-surface colors and glyph sizing can adapt to the native control, but row data placement, row layout and spacing, and the localized open and invite semantics SHALL remain unchanged. The corresponding Android create-pool action SHALL use the same canonical glyph in the accent-filled 48 dp Material filled icon button specified by ios-liquid-glass, while retaining its placement and interaction. On both platforms, accent-colored elements MAY adopt the shared accent values defined by ios-liquid-glass. The toolbar avatar, screen title, navigation copy, and bottom tab arrangement SHALL otherwise retain their existing presentation and behavior.
 
+The loading-placeholders capability permits a further bounded exception on both platforms: loading placeholder fills, contrast, and animation SHALL adopt its shared pulse treatment, including its static presentation when motion is reduced or disabled. This exception SHALL NOT change production row layout, spacing, geometry, loaded-content colors, list canvas, invitation-control behavior, or accessibility and navigation semantics.
+
 #### Scenario: Sighted user sees no difference
-- **GIVEN** the My pools list before and after Liquid Glass adoption
-- **WHEN** a sighted user compares loaded rows, loading placeholders, the empty state, and the error state outside the explicitly permitted control-material, create-glyph, and shared-accent treatments
+- **GIVEN** the My pools list before and after Liquid Glass adoption or adoption of the shared pulse loading-placeholder treatment
+- **WHEN** a sighted user compares loaded rows, loading placeholders, the empty state, and the error state outside the explicitly permitted control-material, create-glyph, shared-accent, and loading-placeholder treatments
 - **THEN** those areas remain visually unchanged
 - **AND** pool content, row geometry, and visible strings are unchanged, including correct singular member counts
 - **AND** tapping a row still opens the pool and tapping the invite control still starts the invite flow
@@ -168,5 +170,5 @@ The ios-liquid-glass capability permits a bounded presentation exception: on iOS
 
 #### Scenario: Android pool rows retain their appearance
 - **GIVEN** the My pools list is displayed on Android
-- **WHEN** the shared create-pool glyph is adopted
-- **THEN** its rows, invitation controls, placeholders, and Material surfaces retain their existing appearance and behavior apart from the shared accent values
+- **WHEN** the shared create-pool glyph or shared pulse loading-placeholder treatment is adopted
+- **THEN** its rows, invitation controls, placeholders, and Material surfaces retain their existing appearance and behavior apart from the shared accent values and the explicitly permitted loading-placeholder fills, contrast, and animation
