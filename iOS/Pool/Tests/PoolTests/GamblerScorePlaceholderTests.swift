@@ -47,7 +47,7 @@ struct GamblerScorePlaceholderTests {
         let item = GamblerScoreItem(
             poolGamblerScore: poolGamblerScorePlaceholderModel(),
             isCurrentUser: false,
-            placeholderModifier: ShimmerModifier()
+            isPlaceholder: true
         )
 
         // The placeholder identity must never reach the avatar endpoint: the row
@@ -68,7 +68,7 @@ struct GamblerScorePlaceholderTests {
         let placeholder = GamblerScoreItem(
             poolGamblerScore: poolGamblerScorePlaceholderModel(),
             isCurrentUser: false,
-            placeholderModifier: ShimmerModifier()
+            isPlaceholder: true
         )
         let loaded = GamblerScoreItem(
             poolGamblerScore: poolGamblerScoreDummyModel(),

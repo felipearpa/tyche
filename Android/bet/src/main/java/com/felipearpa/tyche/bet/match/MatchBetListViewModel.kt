@@ -41,8 +41,15 @@ class MatchBetListViewModel(
             initialValue = PagingData.empty(),
         )
 
+    /**
+     * Loads the match. A reload, such as the one that runs when the screen returns from a
+     * gambler's timeline, keeps a loaded match on screen until the new answer arrives; only a
+     * first load or a retry after a failure shows the loading presentation.
+     */
     fun loadPoolGamblerBet() {
-        _poolGamblerBetState.value = LoadState.Loading
+        if (_poolGamblerBetState.value !is LoadState.Loaded) {
+            _poolGamblerBetState.value = LoadState.Loading
+        }
         viewModelScope.launch {
             getPoolGamblerBet.execute(
                 poolId = poolId,

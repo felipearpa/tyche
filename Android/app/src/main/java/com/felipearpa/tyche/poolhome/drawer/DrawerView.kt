@@ -53,9 +53,10 @@ import com.felipearpa.tyche.ui.exception.ExceptionView
 import com.felipearpa.tyche.ui.exception.UnknownLocalizedException
 import com.felipearpa.tyche.ui.exception.localizedOrDefault
 import com.felipearpa.tyche.ui.runIfStarted
-import com.felipearpa.tyche.ui.shimmer
 import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
+import com.felipearpa.tyche.ui.theme.LocalLoadingPlaceholderPulse
 import com.felipearpa.ui.state.LoadState
+import com.revenuecat.placeholder.placeholder
 import com.felipearpa.tyche.pool.R as PoolR
 import com.felipearpa.tyche.ui.R as SharedR
 
@@ -162,7 +163,7 @@ private fun PoolSummary(
             PoolSummaryItem(
                 poolGamblerScore = poolGamblerScorePlaceholderModel(),
                 modifier = modifier,
-                placeholderModifier = Modifier.shimmer(),
+                isPlaceholder = true,
             )
 
         is LoadState.Loaded ->
@@ -183,17 +184,27 @@ private fun PoolSummary(
 /**
  * The current pool as a restrained, inset group: a small accent detail, the pool name, and the
  * gambler's position and points, announced together. Loading renders this same component from the
- * placeholder model with [placeholderModifier] (the shared shimmer) on each value, and keeps those
- * filler values away from assistive technology.
+ * placeholder model with [isPlaceholder] set: each value is masked with the shared
+ * [LocalLoadingPlaceholderPulse] while the inset group keeps its fill, and the filler values stay
+ * away from assistive technology.
  */
 @Composable
 private fun PoolSummaryItem(
     poolGamblerScore: PoolGamblerScoreModel,
     modifier: Modifier = Modifier,
-    placeholderModifier: Modifier? = null,
+    isPlaceholder: Boolean = false,
 ) {
-    val isPlaceholder = placeholderModifier != null
-    val placeholderStyle = placeholderModifier ?: Modifier
+    // Applied to each value leaf separately; the inset group's fill stays outside the mask.
+    val placeholderStyle = if (isPlaceholder) {
+        val pulse = LocalLoadingPlaceholderPulse.current
+        Modifier.placeholder(
+            color = pulse.color,
+            shape = pulse.shape,
+            highlight = pulse.highlight,
+        )
+    } else {
+        Modifier
+    }
     val accessibilityDescription = poolSummaryAccessibilityDescription(poolGamblerScore)
     // Grows with the font scale, like the caption beside it.
     val trophySize = with(LocalDensity.current) { TrophySize.toDp() }

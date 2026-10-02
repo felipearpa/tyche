@@ -43,8 +43,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -65,7 +63,6 @@ import com.felipearpa.tyche.ui.lazy.Failure
 import com.felipearpa.tyche.ui.lazy.RefreshableLazyPagingColumn
 import com.felipearpa.tyche.ui.lazy.ViewportFillingItem
 import com.felipearpa.tyche.ui.lazy.lazyPagingConcatenateError
-import com.felipearpa.tyche.ui.shimmer
 import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
 import com.felipearpa.tyche.ui.theme.TycheTheme
 import com.felipearpa.ui.state.MutationState
@@ -211,26 +208,55 @@ private fun ManageGamblersList(
     }
 }
 
+/**
+ * One member row. Loading rows pass [isPlaceholder] with `poolMemberPlaceholderModel()`: the row
+ * keeps its production padding, background, and divider but offers no swipe, remove control, or
+ * accessibility action, and its [ManageGamblerItem] renders the shared loading placeholder.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ManageGamblerRow(
     isEditing: Boolean,
     state: MutationState<PoolMemberModel>,
     onRequestRemove: () -> Unit,
+    isPlaceholder: Boolean = false,
 ) {
     val isDeleting = state is MutationState.Mutating
     val isOwner = state.activeValue().isOwner
-    val isRemovable = !isOwner
+    val isRemovable = !isOwner && !isPlaceholder
     val removeLabel = stringResource(id = R.string.remove_gambler_action)
 
-    val dismissState = rememberSwipeToDismissBoxState(
-        confirmValueChange = { value ->
-            if (value == SwipeToDismissBoxValue.EndToStart && !isDeleting && isRemovable) {
-                onRequestRemove()
+    val rowContent: @Composable () -> Unit = {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(
+                    if (isOwner) {
+                        MaterialTheme.colorScheme.primaryContainer
+                    } else {
+                        MaterialTheme.colorScheme.surface
+                    },
+                )
+                .padding(all = LocalBoxSpacing.current.medium),
+            horizontalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.medium),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            AnimatedVisibility(visible = isEditing && !isDeleting && isRemovable) {
+                Icon(
+                    painter = painterResource(id = SharedR.drawable.remove_circle),
+                    contentDescription = removeLabel,
+                    tint = MaterialTheme.colorScheme.error,
+                    modifier = Modifier.clickable { onRequestRemove() },
+                )
             }
-            false
-        },
-    )
+
+            ManageGamblerItem(
+                state = state,
+                modifier = Modifier.weight(1f),
+                isPlaceholder = isPlaceholder,
+            )
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -248,44 +274,29 @@ private fun ManageGamblerRow(
                 },
             ),
     ) {
-        SwipeToDismissBox(
-            state = dismissState,
-            enableDismissFromStartToEnd = false,
-            enableDismissFromEndToStart = !isDeleting && isRemovable,
-            backgroundContent = {
-                ManageGamblerSwipeBackground(
-                    isPastThreshold = dismissState.targetValue == SwipeToDismissBoxValue.EndToStart,
-                )
-            },
-        ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(
-                        if (isOwner) {
-                            MaterialTheme.colorScheme.primaryContainer
-                        } else {
-                            MaterialTheme.colorScheme.surface
-                        },
-                    )
-                    .padding(all = LocalBoxSpacing.current.medium),
-                horizontalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.medium),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                AnimatedVisibility(visible = isEditing && !isDeleting && isRemovable) {
-                    Icon(
-                        painter = painterResource(id = SharedR.drawable.remove_circle),
-                        contentDescription = removeLabel,
-                        tint = MaterialTheme.colorScheme.error,
-                        modifier = Modifier.clickable { onRequestRemove() },
-                    )
-                }
+        if (isPlaceholder) {
+            rowContent()
+        } else {
+            val dismissState = rememberSwipeToDismissBoxState(
+                confirmValueChange = { value ->
+                    if (value == SwipeToDismissBoxValue.EndToStart && !isDeleting && isRemovable) {
+                        onRequestRemove()
+                    }
+                    false
+                },
+            )
 
-                ManageGamblerItem(
-                    state = state,
-                    modifier = Modifier.weight(1f),
-                )
-            }
+            SwipeToDismissBox(
+                state = dismissState,
+                enableDismissFromStartToEnd = false,
+                enableDismissFromEndToStart = !isDeleting && isRemovable,
+                backgroundContent = {
+                    ManageGamblerSwipeBackground(
+                        isPastThreshold = dismissState.targetValue == SwipeToDismissBoxValue.EndToStart,
+                    )
+                },
+                content = { rowContent() },
+            )
         }
 
         HorizontalDivider()
@@ -312,55 +323,17 @@ private fun ManageGamblerSwipeBackground(isPastThreshold: Boolean) {
 }
 
 private fun LazyListScope.managePlaceholderList(count: Int) {
-    repeat(count) { index ->
-        item {
-            ManageGamblerPlaceholderRow(modifier = Modifier.alpha(1f - index * 0.04f))
-        }
-    }
+    repeat(count) { managePlaceholderItemRow() }
 }
 
 private fun LazyListScope.managePlaceholderItemRow() {
-    item { ManageGamblerPlaceholderRow() }
-}
-
-@Composable
-private fun ManageGamblerPlaceholderRow(modifier: Modifier = Modifier) {
-    Column(
-        modifier = modifier
-            .fillMaxWidth(),
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(all = LocalBoxSpacing.current.medium),
-            horizontalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.medium),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Box(
-                modifier = Modifier
-                    .size(40.dp)
-                    .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.surfaceVariant)
-                    .shimmer(),
-            )
-            Column(verticalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.small)) {
-                Box(
-                    modifier = Modifier
-                        .size(width = 160.dp, height = 14.dp)
-                        .clip(RoundedCornerShape(4.dp))
-                        .background(MaterialTheme.colorScheme.surfaceVariant)
-                        .shimmer(),
-                )
-                Box(
-                    modifier = Modifier
-                        .size(width = 110.dp, height = 12.dp)
-                        .clip(RoundedCornerShape(4.dp))
-                        .background(MaterialTheme.colorScheme.surfaceVariant)
-                        .shimmer(),
-                )
-            }
-        }
-        HorizontalDivider()
+    item {
+        ManageGamblerRow(
+            isEditing = false,
+            state = MutationState.Idle(poolMemberPlaceholderModel()),
+            onRequestRemove = {},
+            isPlaceholder = true,
+        )
     }
 }
 
@@ -545,7 +518,12 @@ private fun RemoveGamblerConfirmationDialogPreview() {
 private fun ManageGamblerPlaceholderRowPreview() {
     TycheTheme {
         Surface {
-            ManageGamblerPlaceholderRow()
+            ManageGamblerRow(
+                isEditing = false,
+                state = MutationState.Idle(poolMemberPlaceholderModel()),
+                onRequestRemove = {},
+                isPlaceholder = true,
+            )
         }
     }
 }

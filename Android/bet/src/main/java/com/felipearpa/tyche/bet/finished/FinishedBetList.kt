@@ -30,6 +30,7 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import com.felipearpa.foundation.time.toShortDateString
 import com.felipearpa.tyche.bet.PoolGamblerBetModel
 import com.felipearpa.tyche.bet.poolGamblerBetDummyModels
+import com.felipearpa.tyche.bet.poolGamblerBetFakeModel
 import com.felipearpa.tyche.ui.lazy.RefreshableLazyPagingColumn
 import com.felipearpa.tyche.ui.lazy.ViewportFillingItem
 import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
@@ -108,7 +109,11 @@ private fun LazyListScope.finishedPoolGamblerBetFakeList(count: Int) {
 
 @Composable
 private fun finishedPoolGamblerBetPlaceholderItemRow() {
-    FinishedBetPlaceholderItem(modifier = Modifier.finishedBetItem())
+    FinishedBetItem(
+        poolGamblerBet = poolGamblerBetFakeModel(),
+        modifier = Modifier.finishedBetItem(),
+        isPlaceholder = true,
+    )
     HorizontalDivider(modifier = Modifier.padding(horizontal = LocalBoxSpacing.current.large))
 }
 

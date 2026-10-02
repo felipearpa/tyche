@@ -19,9 +19,9 @@ struct PoolFromLayoutCreatorList: View {
             appendLoadingContent: {
                 PoolFromLayoutCreatorItem(
                     poolLayout: poolLayoutFakeModel(),
-                    isSelected: false
+                    isSelected: false,
+                    isPlaceholder: true
                 )
-                .shimmer()
             },
         ) { index in
             if let poolLayout = lazyPagingItems.peek(at: index) {
@@ -35,9 +35,9 @@ struct PoolFromLayoutCreatorList: View {
             } else {
                 PoolFromLayoutCreatorItem(
                     poolLayout: poolLayoutFakeModel(),
-                    isSelected: false
+                    isSelected: false,
+                    isPlaceholder: true
                 )
-                .shimmer()
             }
         }
     }
@@ -52,9 +52,9 @@ private struct PoolFromLayoutCreatorPlaceholderList: View {
         ForEach(0..<count, id: \.self) { _ in
             PoolFromLayoutCreatorItem(
                 poolLayout: poolLayoutFakeModel(),
-                isSelected: false
+                isSelected: false,
+                isPlaceholder: true
             )
-            .shimmer()
         }
     }
 }

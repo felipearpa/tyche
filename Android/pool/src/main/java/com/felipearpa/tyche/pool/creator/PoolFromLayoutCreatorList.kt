@@ -42,7 +42,13 @@ fun PoolFromLayoutCreatorList(
         contentPadding = contentPadding,
         loadingContent = { poolFromLayoutCreatorPlaceholderList(count = fakeItemCount) },
         appendLoadingContent = {
-            item { PoolFromLayoutCreatorFakeItem(modifier = Modifier.poolFromLayoutCreatorItem()) }
+            item {
+                PoolFromLayoutCreatorItem(
+                    poolLayout = poolLayoutFakeModel(),
+                    modifier = Modifier.poolFromLayoutCreatorItem(),
+                    isPlaceholder = true,
+                )
+            }
         },
         verticalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.small),
     ) {
@@ -66,7 +72,11 @@ fun PoolFromLayoutCreatorList(
 private fun LazyListScope.poolFromLayoutCreatorPlaceholderList(count: Int) {
     repeat(count) {
         item {
-            PoolFromLayoutCreatorFakeItem(modifier = Modifier.poolFromLayoutCreatorItem())
+            PoolFromLayoutCreatorItem(
+                poolLayout = poolLayoutFakeModel(),
+                modifier = Modifier.poolFromLayoutCreatorItem(),
+                isPlaceholder = true,
+            )
         }
     }
 }
@@ -111,12 +121,3 @@ private fun PoolFromLayoutCreatorListFakePreview() {
     }
 }
 
-@PreviewLightDark
-@Composable
-private fun PoolFromLayoutCreatorFakeItemPreview() {
-    TycheTheme {
-        Surface {
-            PoolFromLayoutCreatorFakeItem(modifier = Modifier.fillMaxWidth())
-        }
-    }
-}

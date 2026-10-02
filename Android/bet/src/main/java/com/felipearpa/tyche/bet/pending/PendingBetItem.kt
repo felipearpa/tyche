@@ -35,18 +35,36 @@ import com.felipearpa.tyche.bet.poolGamblerBetDummyModel
 import com.felipearpa.tyche.bet.poolGamblerBetFakeModel
 import com.felipearpa.tyche.bet.scoreWidth
 import com.felipearpa.tyche.ui.FlagImage
-import com.felipearpa.tyche.ui.shimmer
 import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
+import com.felipearpa.tyche.ui.theme.LocalLoadingPlaceholderPulse
 import com.felipearpa.tyche.ui.theme.TycheTheme
+import com.revenuecat.placeholder.placeholder
 
+/**
+ * A bet on a match that has not started. Loading rows render this same component from
+ * `poolGamblerBetFakeModel()` and `partialPoolGamblerBetFakeModel()` with [isPlaceholder] set;
+ * each content leaf is then masked with the shared [LocalLoadingPlaceholderPulse] and nothing
+ * reaches TalkBack. Placeholders are never editable.
+ */
 @Composable
 fun PendingBetItem(
     modifier: Modifier = Modifier,
-    shimmerModifier: Modifier = Modifier,
     poolGamblerBet: PoolGamblerBetModel,
     viewState: PendingBetItemViewState,
     onBetChanged: (PartialPoolGamblerBetModel) -> Unit = {},
+    isPlaceholder: Boolean = false,
 ) {
+    // Applied to each content leaf separately, never to the whole row.
+    val leafMask = if (isPlaceholder) {
+        val pulse = LocalLoadingPlaceholderPulse.current
+        Modifier.placeholder(
+            color = pulse.color,
+            shape = pulse.shape,
+            highlight = pulse.highlight,
+        )
+    } else {
+        Modifier
+    }
     val isEdition = viewState is PendingBetItemViewState.Edition
     val rowSpacing by animateDpAsState(
         targetValue = if (isEdition) LocalBoxSpacing.current.small else LocalBoxSpacing.current.medium,
@@ -54,12 +72,15 @@ fun PendingBetItem(
     )
 
     Column(
-        modifier = modifier.animateContentSize(
-            animationSpec = spring(
-                stiffness = Spring.StiffnessMediumLow,
-                dampingRatio = Spring.DampingRatioNoBouncy,
+        modifier = modifier
+            // Placeholder values are filler, not bets: keep them from screen readers.
+            .then(if (isPlaceholder) Modifier.clearAndSetSemantics {} else Modifier)
+            .animateContentSize(
+                animationSpec = spring(
+                    stiffness = Spring.StiffnessMediumLow,
+                    dampingRatio = Spring.DampingRatioNoBouncy,
+                ),
             ),
-        ),
         verticalArrangement = Arrangement.spacedBy(rowSpacing),
     ) {
         TeamRow(
@@ -70,7 +91,7 @@ fun PendingBetItem(
             onBetChange = { newHomeTeamBet ->
                 onBetChanged(viewState.value.copy(homeTeamBet = newHomeTeamBet))
             },
-            shimmerModifier = shimmerModifier,
+            leafMask = leafMask,
         )
 
         TeamRow(
@@ -81,7 +102,7 @@ fun PendingBetItem(
             onBetChange = { newAwayTeamBet ->
                 onBetChanged(viewState.value.copy(awayTeamBet = newAwayTeamBet))
             },
-            shimmerModifier = shimmerModifier,
+            leafMask = leafMask,
         )
 
         AnimatedVisibility(
@@ -94,7 +115,7 @@ fun PendingBetItem(
                 style = MaterialTheme.typography.bodySmall,
                 modifier = Modifier
                     .padding(start = LocalBoxSpacing.current.large)
-                    .then(shimmerModifier),
+                    .then(leafMask),
             )
         }
     }
@@ -107,7 +128,7 @@ private fun TeamRow(
     bet: String,
     isEdition: Boolean,
     onBetChange: (String) -> Unit,
-    shimmerModifier: Modifier,
+    leafMask: Modifier,
 ) {
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -123,9 +144,9 @@ private fun TeamRow(
                 teamId = teamId,
                 modifier = Modifier
                     .size(flagSize)
-                    .then(shimmerModifier),
+                    .then(leafMask),
             )
-            Text(text = teamName, modifier = shimmerModifier)
+            Text(text = teamName, modifier = leafMask)
         }
 
         AnimatedContent(
@@ -143,24 +164,13 @@ private fun TeamRow(
                     onValueChange = onBetChange,
                     modifier = Modifier
                         .scoreWidth()
-                        .then(shimmerModifier),
+                        .then(leafMask),
                 )
             } else {
-                Text(text = bet, modifier = shimmerModifier)
+                Text(text = bet, modifier = leafMask)
             }
         }
     }
-}
-
-@Composable
-fun PendingBetPlaceholderItem(modifier: Modifier = Modifier) {
-    PendingBetItem(
-        poolGamblerBet = poolGamblerBetFakeModel(),
-        viewState = PendingBetItemViewState.Visualization(partialPoolGamblerBetFakeModel()),
-        // Placeholder values are filler, not bets: keep them from screen readers.
-        modifier = modifier.clearAndSetSemantics {},
-        shimmerModifier = Modifier.shimmer(),
-    )
 }
 
 private val flagSize = 32.dp
@@ -202,7 +212,12 @@ private fun EditablePendingBetItemPreview() {
 private fun PendingBetPlaceholderItemPreview() {
     TycheTheme {
         Surface {
-            PendingBetPlaceholderItem(modifier = Modifier.fillMaxWidth())
+            PendingBetItem(
+                poolGamblerBet = poolGamblerBetFakeModel(),
+                viewState = PendingBetItemViewState.Visualization(partialPoolGamblerBetFakeModel()),
+                modifier = Modifier.fillMaxWidth(),
+                isPlaceholder = true,
+            )
         }
     }
 }

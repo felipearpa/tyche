@@ -84,6 +84,10 @@ fun TycheTheme(
     }
 
     val extendedColors = if (darkTheme) darkExtendedColorScheme else lightExtendedColorScheme
+    val loadingPlaceholderPulse = LoadingPlaceholderPulse.of(
+        darkTheme = darkTheme,
+        animationsEnabled = systemAnimationsEnabled(),
+    )
 
     MaterialTheme(
         colorScheme = colorScheme,
@@ -92,6 +96,7 @@ fun TycheTheme(
         CompositionLocalProvider(
             LocalExtendedColorScheme provides extendedColors,
             LocalBoxSpacing provides BoxSpacing(),
+            LocalLoadingPlaceholderPulse provides loadingPlaceholderPulse,
         ) {
             content()
         }

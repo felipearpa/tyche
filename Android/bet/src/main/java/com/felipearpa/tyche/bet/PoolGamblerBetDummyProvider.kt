@@ -1,6 +1,7 @@
 package com.felipearpa.tyche.bet
 
 import com.felipearpa.tyche.core.type.TeamScore
+import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import kotlin.time.Clock
@@ -57,7 +58,10 @@ private val countries = listOf(
     "za" to "South Africa",
 )
 
-@OptIn(ExperimentalTime::class)
+/**
+ * Presentation-only filler for loading rows. Its kickoff time is fixed so the masked date and
+ * time keep the same length on every redraw.
+ */
 fun poolGamblerBetFakeModel() =
     PoolGamblerBetModel(
         poolId = "X".repeat(15),
@@ -71,7 +75,7 @@ fun poolGamblerBetFakeModel() =
         matchScore = TeamScore(100, 100),
         betScore = TeamScore(100, 100),
         score = 10,
-        matchDateTime = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
+        matchDateTime = LocalDateTime(year = 2026, month = 1, day = 1, hour = 12, minute = 0),
         isLocked = true,
         isComputed = false,
     )

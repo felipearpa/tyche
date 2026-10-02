@@ -86,7 +86,7 @@ struct GamblerScoreItemAccessibilityTests {
         let item = GamblerScoreItem(
             poolGamblerScore: poolGamblerScorePlaceholderModel(),
             isCurrentUser: false,
-            placeholderModifier: ShimmerModifier()
+            isPlaceholder: true
         )
 
         #expect(item.isPlaceholder)

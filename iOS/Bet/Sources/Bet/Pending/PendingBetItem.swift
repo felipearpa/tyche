@@ -2,22 +2,41 @@ import SwiftUI
 import UI
 import Core
 
+/// A pending match with the gambler's editable bet. Loading slots render this same component
+/// from a placeholder model in visualization state with `isPlaceholder: true`: native redaction
+/// under the shared `LoadingPlaceholderPulse` conceals its content, and it ignores touches and
+/// stays out of the accessibility tree, so no bet field can be focused or edited.
 struct PendingBetItem: View {
     let poolGamblerBet: PoolGamblerBetModel
     @Binding var viewState: PendingBetItemViewState
+    let isPlaceholder: Bool
     @Namespace private var scoreNamespace
 
     @Environment(\.boxSpacing) private var boxSpacing
 
     init(
         poolGamblerBet: PoolGamblerBetModel,
-        viewState: Binding<PendingBetItemViewState>
+        viewState: Binding<PendingBetItemViewState>,
+        isPlaceholder: Bool = false
     ) {
         self.poolGamblerBet = poolGamblerBet
         self._viewState = viewState
+        self.isPlaceholder = isPlaceholder
     }
 
     var body: some View {
+        Group {
+            if isPlaceholder {
+                PulsingPlaceholderContent { content }
+            } else {
+                content
+            }
+        }
+        .allowsHitTesting(!isPlaceholder)
+        .accessibilityHidden(isPlaceholder)
+    }
+
+    private var content: some View {
         VStack(spacing: boxSpacing.medium) {
             teamRow(
                 teamId: poolGamblerBet.homeTeamId,
@@ -99,7 +118,7 @@ private let flagSize: CGFloat = 32
 #Preview("Placeholder") {
     PendingBetItem(
         poolGamblerBet: poolGamblerBetPlaceholderModel(isLocked: false, isComputed: false),
-        viewState: .constant(.visualization(PartialPoolGamblerBetModel(homeTeamBet: "", awayTeamBet: "")))
+        viewState: .constant(.visualization(partialPoolGamblerBetFakeModel())),
+        isPlaceholder: true
     )
-    .shimmer()
 }

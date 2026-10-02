@@ -51,12 +51,7 @@ struct MatchBetList: View {
                     .padding(.horizontal, boxSpacing.medium)
                 }
             } else {
-                VStack(spacing: 0) {
-                    MatchBetPlaceholderItem()
-                        .padding(boxSpacing.medium)
-                    Divider()
-                }
-                .padding(.horizontal, boxSpacing.medium)
+                MatchBetPlaceholderRow()
             }
         }
     }
@@ -70,22 +65,18 @@ private struct MatchBetPlaceholderList: View {
     }
 }
 
+/// Initial and append loading row: the production `MatchGamblerBetItem` with a placeholder
+/// model. It is never given the gambler-open tap that loaded rows get.
 private struct MatchBetPlaceholderRow: View {
     @Environment(\.boxSpacing) private var boxSpacing
 
     var body: some View {
         VStack(spacing: 0) {
-            MatchBetPlaceholderItem()
+            MatchGamblerBetItem(poolGamblerBet: poolGamblerBetPlaceholderModel(), isPlaceholder: true)
                 .padding(boxSpacing.medium)
             Divider()
         }
         .padding(.horizontal, boxSpacing.medium)
-    }
-}
-
-private struct MatchBetPlaceholderItem: View {
-    var body: some View {
-        MatchGamblerBetItem(poolGamblerBet: poolGamblerBetPlaceholderModel()).shimmer()
     }
 }
 

@@ -1,7 +1,6 @@
 package com.felipearpa.tyche.pool.managegamblers
 
 import com.felipearpa.tyche.data.pool.domain.PoolMember
-import java.util.UUID
 
 data class PoolMemberModel(
     val gamblerId: String,
@@ -18,9 +17,10 @@ fun PoolMember.toPoolMemberModel() =
         isOwner = this.isOwner,
     )
 
+/** Presentation-only filler for loading rows; its fixed values keep redraws stable. */
 fun poolMemberPlaceholderModel() =
     PoolMemberModel(
-        gamblerId = UUID.randomUUID().toString(),
+        gamblerId = "placeholder",
         gamblerUsername = "placeholder",
         gamblerEmail = "placeholder@example.com",
     )

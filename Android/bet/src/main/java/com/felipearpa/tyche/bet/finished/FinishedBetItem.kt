@@ -12,6 +12,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewLightDark
@@ -26,25 +27,44 @@ import com.felipearpa.tyche.bet.poolGamblerBetDummyModel
 import com.felipearpa.tyche.bet.poolGamblerBetFakeModel
 import com.felipearpa.tyche.bet.scoreWidth
 import com.felipearpa.tyche.ui.FlagImage
-import com.felipearpa.tyche.ui.shimmer
 import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
+import com.felipearpa.tyche.ui.theme.LocalLoadingPlaceholderPulse
 import com.felipearpa.tyche.ui.theme.TycheTheme
+import com.revenuecat.placeholder.placeholder
 
+/**
+ * A computed bet with the match result and the points earned. Loading rows render this same
+ * component from `poolGamblerBetFakeModel()` with [isPlaceholder] set; each content leaf is then
+ * masked with the shared [LocalLoadingPlaceholderPulse] and nothing reaches TalkBack.
+ */
 @Composable
 fun FinishedBetItem(
     modifier: Modifier = Modifier,
-    shimmerModifier: Modifier = Modifier,
     poolGamblerBet: PoolGamblerBetModel,
+    isPlaceholder: Boolean = false,
 ) {
+    // Applied to each content leaf separately, never to the whole row.
+    val leafMask = if (isPlaceholder) {
+        val pulse = LocalLoadingPlaceholderPulse.current
+        Modifier.placeholder(
+            color = pulse.color,
+            shape = pulse.shape,
+            highlight = pulse.highlight,
+        )
+    } else {
+        Modifier
+    }
+
     Column(
         verticalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.medium),
-        modifier = modifier,
+        // Placeholder values are filler, not bets: keep them from screen readers.
+        modifier = if (isPlaceholder) modifier.clearAndSetSemantics {} else modifier,
     ) {
         Text(
             text = poolGamblerBet.matchDateTime.toShortTimeString(),
             textAlign = TextAlign.Center,
             style = MaterialTheme.typography.bodySmall,
-            modifier = shimmerModifier,
+            modifier = leafMask,
         )
 
         Row(
@@ -55,9 +75,9 @@ fun FinishedBetItem(
                 teamId = poolGamblerBet.homeTeamId,
                 modifier = Modifier
                     .size(flagSize)
-                    .then(shimmerModifier),
+                    .then(leafMask),
             )
-            Text(text = poolGamblerBet.homeTeamName, modifier = shimmerModifier)
+            Text(text = poolGamblerBet.homeTeamName, modifier = leafMask)
             Spacer(modifier = Modifier.weight(1f))
             Text(
                 text = poolGamblerBet.homeTeamMatchRawValue(),
@@ -65,7 +85,7 @@ fun FinishedBetItem(
                 style = MaterialTheme.typography.titleMedium,
                 modifier = Modifier
                     .scoreWidth()
-                    .then(shimmerModifier),
+                    .then(leafMask),
             )
             Text(
                 text = poolGamblerBet.homeTeamBetRawValue(),
@@ -73,7 +93,7 @@ fun FinishedBetItem(
                 style = MaterialTheme.typography.bodySmall,
                 modifier = Modifier
                     .scoreWidth()
-                    .then(shimmerModifier),
+                    .then(leafMask),
             )
         }
 
@@ -85,9 +105,9 @@ fun FinishedBetItem(
                 teamId = poolGamblerBet.awayTeamId,
                 modifier = Modifier
                     .size(flagSize)
-                    .then(shimmerModifier),
+                    .then(leafMask),
             )
-            Text(text = poolGamblerBet.awayTeamName, modifier = shimmerModifier)
+            Text(text = poolGamblerBet.awayTeamName, modifier = leafMask)
             Spacer(modifier = Modifier.weight(1f))
             Text(
                 text = poolGamblerBet.awayTeamMatchRawValue(),
@@ -95,7 +115,7 @@ fun FinishedBetItem(
                 style = MaterialTheme.typography.titleMedium,
                 modifier = Modifier
                     .scoreWidth()
-                    .then(shimmerModifier),
+                    .then(leafMask),
             )
             Text(
                 text = poolGamblerBet.awayTeamBetRawValue(),
@@ -103,7 +123,7 @@ fun FinishedBetItem(
                 style = MaterialTheme.typography.bodySmall,
                 modifier = Modifier
                     .scoreWidth()
-                    .then(shimmerModifier),
+                    .then(leafMask),
             )
         }
 
@@ -115,19 +135,10 @@ fun FinishedBetItem(
                 text = "+${poolGamblerBet.score?.toString().orEmpty()}",
                 style = MaterialTheme.typography.titleLarge,
                 textAlign = TextAlign.End,
-                modifier = shimmerModifier,
+                modifier = leafMask,
             )
         }
     }
-}
-
-@Composable
-fun FinishedBetPlaceholderItem(modifier: Modifier = Modifier) {
-    FinishedBetItem(
-        poolGamblerBet = poolGamblerBetFakeModel(),
-        modifier = modifier,
-        shimmerModifier = Modifier.shimmer(),
-    )
 }
 
 @PreviewLightDark
@@ -148,7 +159,11 @@ private fun FinishedBetItemPreview() {
 private fun FinishedBetPlaceholderItemPreview() {
     TycheTheme {
         Surface {
-            FinishedBetPlaceholderItem(modifier = Modifier.fillMaxWidth())
+            FinishedBetItem(
+                poolGamblerBet = poolGamblerBetFakeModel(),
+                modifier = Modifier.fillMaxWidth(),
+                isPlaceholder = true,
+            )
         }
     }
 }

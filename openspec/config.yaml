@@ -23,8 +23,10 @@ rules:
     - >-
       For future mobile UI specifications that introduce or change model-backed loading
       placeholders, require each affected platform to populate the production item or row
-      component with a placeholder model and apply the existing shared platform shimmer
-      treatment. Do not prescribe a separately maintained skeleton-only layout.
+      component with a placeholder model and apply the shared loading-placeholder
+      treatment defined by the loading-placeholders capability, selected through the
+      component's isPlaceholder parameter rather than a caller-supplied effect modifier.
+      Do not prescribe a separately maintained skeleton-only layout.
       Placeholder-specific behavior may suppress remote loading, navigation, and
       accessibility exposure, but must not replace the production layout. Do not expose
       placeholder values as real user content, and do not retroactively revise existing

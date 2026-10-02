@@ -366,7 +366,6 @@ private fun AppTopBar(
     onAccountShow: () -> Unit,
     onPoolChange: () -> Unit,
     modifier: Modifier = Modifier,
-    shimmerModifier: Modifier = Modifier,
     scrollBehavior: TopAppBarScrollBehavior,
 ) {
     TopAppBar(
@@ -374,7 +373,6 @@ private fun AppTopBar(
             Text(
                 text = title,
                 maxLines = 1,
-                modifier = shimmerModifier,
                 overflow = TextOverflow.Ellipsis,
             )
         },

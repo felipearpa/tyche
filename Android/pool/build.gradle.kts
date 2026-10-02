@@ -65,6 +65,7 @@ dependencies {
     implementation(libs.kotlinx.datetime)
     implementation(libs.felipearpa.foundation)
     implementation(libs.felipearpa.viewing.state)
+    implementation(libs.revenuecat.placeholder)
 
     testImplementation(platform(libs.junit5.bom))
     testImplementation(libs.junit5.jupiter)
@@ -80,6 +81,7 @@ dependencies {
     androidTestImplementation(libs.io.mockk.android)
     androidTestImplementation(platform(libs.koin.bom))
     androidTestImplementation(libs.koin.android)
+    androidTestImplementation(libs.coil.compose)
 
     debugImplementation(libs.bundles.compose.debug.test)
 

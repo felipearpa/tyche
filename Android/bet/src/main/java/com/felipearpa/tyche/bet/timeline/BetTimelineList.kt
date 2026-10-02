@@ -20,8 +20,8 @@ import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.felipearpa.foundation.time.toShortDateString
 import com.felipearpa.tyche.bet.PoolGamblerBetModel
-import com.felipearpa.tyche.bet.pending.PendingBetPlaceholderItem
 import com.felipearpa.tyche.bet.poolGamblerBetDummyModels
+import com.felipearpa.tyche.bet.poolGamblerBetFakeModel
 import com.felipearpa.tyche.ui.lazy.RefreshableLazyPagingColumn
 import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
 import com.felipearpa.tyche.ui.theme.TycheTheme
@@ -98,7 +98,11 @@ private fun LazyListScope.betTimelinePlaceholderList(count: Int) {
 
 @Composable
 private fun betTimelinePlaceholderItemRow() {
-    PendingBetPlaceholderItem(modifier = Modifier.betTimelineItem())
+    BetTimeLineItem(
+        bet = poolGamblerBetFakeModel(),
+        modifier = Modifier.betTimelineItem(),
+        isPlaceholder = true,
+    )
     HorizontalDivider(modifier = Modifier.padding(horizontal = LocalBoxSpacing.current.large))
 }
 

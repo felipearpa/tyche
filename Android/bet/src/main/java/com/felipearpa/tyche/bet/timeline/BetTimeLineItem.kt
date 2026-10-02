@@ -9,20 +9,24 @@ import com.felipearpa.tyche.bet.finished.FinishedBetItem
 import com.felipearpa.tyche.bet.live.LiveBetItem
 import com.felipearpa.tyche.bet.poolGamblerBetDummyModel
 
+/** A timeline bet; [isPlaceholder] passes through to the leaf item, which owns the pulse. */
 @Composable
 fun BetTimeLineItem(
     bet: PoolGamblerBetModel,
     modifier: Modifier = Modifier,
+    isPlaceholder: Boolean = false,
 ) {
     if (bet.isComputed) {
         FinishedBetItem(
             poolGamblerBet = bet,
             modifier = modifier,
+            isPlaceholder = isPlaceholder,
         )
     } else {
         LiveBetItem(
             poolGamblerBet = bet,
             modifier = modifier,
+            isPlaceholder = isPlaceholder,
         )
     }
 }

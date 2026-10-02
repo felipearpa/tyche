@@ -44,6 +44,7 @@ import com.felipearpa.tyche.bet.R
 import com.felipearpa.tyche.bet.isPending
 import com.felipearpa.tyche.bet.poolGamblerBetDummyModel
 import com.felipearpa.tyche.bet.poolGamblerBetDummyModels
+import com.felipearpa.tyche.bet.poolGamblerBetFakeModel
 import com.felipearpa.tyche.ui.CenteredScrollableColumn
 import com.felipearpa.tyche.ui.excludingBottom
 import com.felipearpa.tyche.ui.exception.localizedOrDefault
@@ -146,7 +147,10 @@ private fun MatchBetListContent(
                 verticalArrangement = Arrangement.spacedBy(spacing),
                 modifier = headerModifier,
             ) {
-                MatchHeaderPlaceholderItem()
+                MatchHeader(
+                    bet = poolGamblerBetFakeModel().copy(isLocked = false, isComputed = false),
+                    isPlaceholder = true,
+                )
 
                 MatchBetList(
                     lazyPoolGamblerBets = lazyPoolGamblerBets,

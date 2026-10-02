@@ -87,8 +87,11 @@ private struct MatchBetListContent: View {
             switch viewModel.poolGamblerBetState {
             case .idle, .loading:
                 VStack(spacing: boxSpacing.medium) {
-                    MatchHeaderPlaceholderItem()
-                        .padding(.horizontal, boxSpacing.medium)
+                    MatchHeader(
+                        bet: poolGamblerBetPlaceholderModel(isLocked: false, isComputed: false),
+                        isPlaceholder: true
+                    )
+                    .padding(.horizontal, boxSpacing.medium)
 
                     MatchBetList(lazyPagingItems: viewModel.lazyPager, onGamblerOpen: onGamblerOpen)
                 }

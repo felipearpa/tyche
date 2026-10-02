@@ -1,12 +1,34 @@
 import SwiftUI
 import UI
 
+/// The match header: teams, flags, the result once scored, and the kickoff time. Loading
+/// renders this same component from a placeholder model with `isPlaceholder: true`: native
+/// redaction under the shared `LoadingPlaceholderPulse` conceals its content, and it ignores
+/// touches and stays out of the accessibility tree.
 struct MatchHeader: View {
     let bet: PoolGamblerBetModel
+    let isPlaceholder: Bool
 
     @Environment(\.boxSpacing) private var boxSpacing
 
+    init(bet: PoolGamblerBetModel, isPlaceholder: Bool = false) {
+        self.bet = bet
+        self.isPlaceholder = isPlaceholder
+    }
+
     var body: some View {
+        Group {
+            if isPlaceholder {
+                PulsingPlaceholderContent { content }
+            } else {
+                content
+            }
+        }
+        .allowsHitTesting(!isPlaceholder)
+        .accessibilityHidden(isPlaceholder)
+    }
+
+    private var content: some View {
         VStack(alignment: .center, spacing: boxSpacing.medium) {
             if bet.isLive {
                 LiveIndicator()
@@ -86,6 +108,8 @@ private struct LiveIndicator: View {
 }
 
 #Preview("Placeholder") {
-    MatchHeader(bet: poolGamblerBetPlaceholderModel(isLocked: false, isComputed: false))
-        .shimmer()
+    MatchHeader(
+        bet: poolGamblerBetPlaceholderModel(isLocked: false, isComputed: false),
+        isPlaceholder: true
+    )
 }

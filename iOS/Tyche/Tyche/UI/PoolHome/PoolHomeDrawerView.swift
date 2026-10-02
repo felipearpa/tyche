@@ -121,38 +121,24 @@ private struct PoolSummary: View {
 
 /// The current pool as a restrained, inset group: a small accent detail, the pool name, and the
 /// gambler's position and points. Loading renders this same component from the placeholder
-/// model under the shared shimmer, hidden from assistive technology.
+/// model with `isPlaceholder: true`: native redaction under the shared `LoadingPlaceholderPulse`
+/// conceals the content while the inset group keeps its surface, and the summary is hidden from
+/// assistive technology.
 private struct PoolSummaryItem: View {
     let poolGamblerScore: PoolGamblerScoreModel
-    let isPlaceholder: Bool
+    var isPlaceholder: Bool = false
 
     @Environment(\.boxSpacing) private var boxSpacing
     @ScaledMetric(relativeTo: .caption) private var trophySize: CGFloat = 14
 
     var body: some View {
-        VStack(alignment: .leading, spacing: boxSpacing.small) {
-            HStack(spacing: boxSpacing.small) {
-                Image(sharedResource: .trophy)
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: trophySize, height: trophySize)
-                    .foregroundStyle(Color.accentColor)
-
-                Text(.playingNowText)
-                    .font(.caption)
-                    .foregroundStyle(.drawerSupportingText)
+        Group {
+            if isPlaceholder {
+                PulsingSummaryContent { content }
+            } else {
+                content
             }
-
-            Text(poolGamblerScore.poolName)
-                .font(.headline)
-                .foregroundStyle(Color.primary)
-                .lineLimit(3)
-
-            PoolStandingText(position: poolGamblerScore.position, score: poolGamblerScore.score)
-                .font(.subheadline)
-                .foregroundStyle(.drawerSupportingText)
         }
-        .modifier(ConditionalShimmer(isActive: isPlaceholder))
         .padding(boxSpacing.large)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(
@@ -164,8 +150,33 @@ private struct PoolSummaryItem: View {
         .accessibilityHidden(isPlaceholder)
     }
 
+    private var content: some View {
+        VStack(alignment: .leading, spacing: boxSpacing.small) {
+            HStack(spacing: boxSpacing.small) {
+                Image(sharedResource: .trophy)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: trophySize, height: trophySize)
+                    .loadedForeground(Color.accentColor, isPlaceholder: isPlaceholder)
+
+                Text(.playingNowText)
+                    .font(.caption)
+                    .loadedForeground(Color.drawerSupportingText, isPlaceholder: isPlaceholder)
+            }
+
+            Text(poolGamblerScore.poolName)
+                .font(.headline)
+                .loadedForeground(Color.primary, isPlaceholder: isPlaceholder)
+                .lineLimit(3)
+
+            PoolStandingText(position: poolGamblerScore.position, score: poolGamblerScore.score)
+                .font(.subheadline)
+                .loadedForeground(Color.drawerSupportingText, isPlaceholder: isPlaceholder)
+        }
+    }
+
     private var accessibilityLabel: String {
-        [
+        isPlaceholder ? "" : [
             String(localized: .playingNowText),
             poolGamblerScore.poolName,
             poolGamblerScore.position.map { String(localized: .poolRankAccessibility($0)) },
@@ -200,14 +211,46 @@ private struct PoolStandingText: View {
     }
 }
 
-private struct ConditionalShimmer: ViewModifier {
-    let isActive: Bool
+/// The summary's placeholder rendering: native redaction conceals the content, and its neutral
+/// foreground follows the shared `LoadingPlaceholderPulse` (static midpoint under Reduce Motion).
+/// The inset group's surface is structural and stays outside the pulse.
+private struct PulsingSummaryContent<Content: View>: View {
+    @ViewBuilder let content: Content
 
-    func body(content: Content) -> some View {
-        if isActive {
-            content.shimmer()
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.colorScheme) private var colorScheme
+    @State private var pulseStart = Date()
+
+    var body: some View {
+        let pulse = LoadingPlaceholderPulse.forColorScheme(colorScheme)
+
+        if reduceMotion {
+            redacted(opacity: pulse.staticOpacity, pulse: pulse)
         } else {
-            content
+            TimelineView(.animation) { timeline in
+                redacted(
+                    opacity: pulse.opacity(elapsed: timeline.date.timeIntervalSince(pulseStart)),
+                    pulse: pulse
+                )
+            }
+        }
+    }
+
+    private func redacted(opacity: Double, pulse: LoadingPlaceholderPulse) -> some View {
+        content
+            .redacted(reason: .placeholder)
+            .foregroundStyle(pulse.fillColor.opacity(opacity))
+    }
+}
+
+private extension View {
+    /// Loaded content uses its own colors; placeholders keep the pulse's neutral fill.
+    @ViewBuilder
+    func loadedForeground<S: ShapeStyle>(_ style: S, isPlaceholder: Bool) -> some View {
+        if isPlaceholder {
+            self
+        } else {
+            foregroundStyle(style)
         }
     }
 }

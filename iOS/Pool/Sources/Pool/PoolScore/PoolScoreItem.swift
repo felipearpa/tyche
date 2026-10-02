@@ -1,11 +1,15 @@
 import SwiftUI
 import UI
 
+/// One "My pools" row. Loading rows render this same component from
+/// `poolGamblerScorePlaceholderModel()` with `isPlaceholder: true`; the row then conceals its
+/// content with native redaction and the shared `LoadingPlaceholderPulse`, ignores touches,
+/// offers no open or invite action, and is hidden from assistive technology.
 struct PoolScoreItem: View {
     let poolGamblerScore: PoolGamblerScoreModel
     let onOpen: () -> Void
     let onJoin: () -> Void
-    let placeholderModifier: (any ViewModifier)?
+    let isPlaceholder: Bool
 
     @Environment(\.boxSpacing) private var boxSpacing
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
@@ -19,41 +23,34 @@ struct PoolScoreItem: View {
         poolGamblerScore: PoolGamblerScoreModel,
         onOpen: @escaping () -> Void,
         onJoin: @escaping () -> Void,
-        placeholderModifier: (any ViewModifier)? = nil
+        isPlaceholder: Bool = false
     ) {
         self.poolGamblerScore = poolGamblerScore
         self.onOpen = onOpen
         self.onJoin = onJoin
-        self.placeholderModifier = placeholderModifier
-    }
-
-    var isPlaceholder: Bool {
-        placeholderModifier != nil
+        self.isPlaceholder = isPlaceholder
     }
 
     var body: some View {
         Group {
-            if let placeholderModifier {
-                scoreContent(applying: placeholderModifier)
+            if isPlaceholder {
+                PulsingPlaceholderContent { scoreContent }
             } else {
                 scoreContent
+                    .accessibilityElement(children: .ignore)
+                    .accessibilityLabel(accessibilityLabel)
+                    .accessibilityAddTraits(.isButton)
+                    .accessibilityHint(Text(.poolScoreOpenAccessibilityAction))
+                    .accessibilityAction {
+                        onOpen()
+                    }
+                    .accessibilityAction(named: Text(.poolScoreInviteAccessibilityAction)) {
+                        onJoin()
+                    }
             }
         }
-        .accessibilityElement(children: .ignore)
-        .accessibilityLabel(accessibilityLabel)
-        .accessibilityAddTraits(.isButton)
-        .accessibilityHint(Text(.poolScoreOpenAccessibilityAction))
-        .accessibilityAction {
-            onOpen()
-        }
-        .accessibilityAction(named: Text(.poolScoreInviteAccessibilityAction)) {
-            onJoin()
-        }
+        .allowsHitTesting(!isPlaceholder)
         .accessibilityHidden(isPlaceholder)
-    }
-
-    private func scoreContent(applying modifier: some ViewModifier) -> AnyView {
-        AnyView(scoreContent.modifier(modifier))
     }
 
     private var scoreContent: some View {
@@ -112,12 +109,17 @@ struct PoolScoreItem: View {
                 PostionIndicator(
                     position: position,
                     shouldUsePrimeryColor: false,
-                    size: rankTileSize
+                    size: rankTileSize,
+                    isPlaceholder: isPlaceholder
                 )
             }
 
             if let rank = poolGamblerScore.rank() {
-                TrendIndicator(difference: rank, textStyle: Font.TextStyle.footnote)
+                TrendIndicator(
+                    difference: rank,
+                    textStyle: Font.TextStyle.footnote,
+                    isPlaceholder: isPlaceholder
+                )
             }
         }
     }
@@ -260,6 +262,6 @@ private let countMinimumScaleFactor: CGFloat = 0.7
         poolGamblerScore: poolGamblerScorePlaceholderModel(),
         onOpen: {},
         onJoin: {},
-        placeholderModifier: ShimmerModifier()
+        isPlaceholder: true
     )
 }

@@ -12,6 +12,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewLightDark
@@ -24,19 +25,38 @@ import com.felipearpa.tyche.bet.poolGamblerBetDummyModel
 import com.felipearpa.tyche.bet.poolGamblerBetFakeModel
 import com.felipearpa.tyche.bet.scoreWidth
 import com.felipearpa.tyche.ui.FlagImage
-import com.felipearpa.tyche.ui.shimmer
 import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
+import com.felipearpa.tyche.ui.theme.LocalLoadingPlaceholderPulse
 import com.felipearpa.tyche.ui.theme.TycheTheme
+import com.revenuecat.placeholder.placeholder
 
+/**
+ * A bet on a match that has started but is not computed yet. Loading rows render this same
+ * component from `poolGamblerBetFakeModel()` with [isPlaceholder] set; each content leaf is then
+ * masked with the shared [LocalLoadingPlaceholderPulse] and nothing reaches TalkBack.
+ */
 @Composable
 fun LiveBetItem(
     modifier: Modifier = Modifier,
-    shimmerModifier: Modifier = Modifier,
     poolGamblerBet: PoolGamblerBetModel,
+    isPlaceholder: Boolean = false,
 ) {
+    // Applied to each content leaf separately, never to the whole row.
+    val leafMask = if (isPlaceholder) {
+        val pulse = LocalLoadingPlaceholderPulse.current
+        Modifier.placeholder(
+            color = pulse.color,
+            shape = pulse.shape,
+            highlight = pulse.highlight,
+        )
+    } else {
+        Modifier
+    }
+
     Column(
         verticalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.medium),
-        modifier = modifier,
+        // Placeholder values are filler, not bets: keep them from screen readers.
+        modifier = if (isPlaceholder) modifier.clearAndSetSemantics {} else modifier,
     ) {
         Row(
             horizontalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.small),
@@ -46,7 +66,7 @@ fun LiveBetItem(
                 text = poolGamblerBet.matchDateTime.toShortTimeString(),
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.bodySmall,
-                modifier = shimmerModifier,
+                modifier = leafMask,
             )
         }
 
@@ -58,9 +78,9 @@ fun LiveBetItem(
                 teamId = poolGamblerBet.homeTeamId,
                 modifier = Modifier
                     .size(flagSize)
-                    .then(shimmerModifier),
+                    .then(leafMask),
             )
-            Text(text = poolGamblerBet.homeTeamName, modifier = shimmerModifier)
+            Text(text = poolGamblerBet.homeTeamName, modifier = leafMask)
             Spacer(modifier = Modifier.weight(1f))
             Text(
                 text = poolGamblerBet.homeTeamBetRawValue(),
@@ -68,7 +88,7 @@ fun LiveBetItem(
                 style = MaterialTheme.typography.bodySmall,
                 modifier = Modifier
                     .scoreWidth()
-                    .then(shimmerModifier),
+                    .then(leafMask),
             )
         }
 
@@ -80,9 +100,9 @@ fun LiveBetItem(
                 teamId = poolGamblerBet.awayTeamId,
                 modifier = Modifier
                     .size(flagSize)
-                    .then(shimmerModifier),
+                    .then(leafMask),
             )
-            Text(text = poolGamblerBet.awayTeamName, modifier = shimmerModifier)
+            Text(text = poolGamblerBet.awayTeamName, modifier = leafMask)
             Spacer(modifier = Modifier.weight(1f))
             Text(
                 text = poolGamblerBet.awayTeamBetRawValue(),
@@ -90,19 +110,10 @@ fun LiveBetItem(
                 style = MaterialTheme.typography.bodySmall,
                 modifier = Modifier
                     .scoreWidth()
-                    .then(shimmerModifier),
+                    .then(leafMask),
             )
         }
     }
-}
-
-@Composable
-fun LiveBetPlaceholderItem(modifier: Modifier = Modifier) {
-    LiveBetItem(
-        poolGamblerBet = poolGamblerBetFakeModel(),
-        modifier = modifier,
-        shimmerModifier = Modifier.shimmer(),
-    )
 }
 
 private val flagSize = 32.dp
@@ -125,7 +136,11 @@ private fun LiveBetItemPreview() {
 private fun LiveBetPlaceholderItemPreview() {
     TycheTheme {
         Surface {
-            LiveBetPlaceholderItem(modifier = Modifier.fillMaxWidth())
+            LiveBetItem(
+                poolGamblerBet = poolGamblerBetFakeModel(),
+                modifier = Modifier.fillMaxWidth(),
+                isPlaceholder = true,
+            )
         }
     }
 }

@@ -14,19 +14,16 @@ import com.felipearpa.tyche.pool.poolGamblerScoreDummyModel
 @Composable
 fun PoolSpotlightItem(
     modifier: Modifier = Modifier,
-    shimmerModifier: Modifier = Modifier,
     poolGamblerScore: PoolGamblerScoreModel
 ) {
     Column(modifier = modifier) {
         Text(
             text = poolGamblerScore.poolName,
             style = MaterialTheme.typography.titleLarge,
-            modifier = shimmerModifier
         )
         Text(
             text = poolGamblerScore.gamblerUsername,
             style = MaterialTheme.typography.titleSmall,
-            modifier = shimmerModifier
         )
     }
 }

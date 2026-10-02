@@ -35,7 +35,7 @@ extension PoolMember {
 
 func poolMemberPlaceholderModel() -> PoolMemberModel {
     PoolMemberModel(
-        gamblerId: UUID().uuidString,
+        gamblerId: "placeholder",
         gamblerUsername: "placeholder",
         gamblerEmail: "placeholder@example.com"
     )

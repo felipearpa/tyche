@@ -15,7 +15,8 @@
 - Creating a pool is easier to find: a larger green button with a plus sign, announced by TalkBack as Create pool
 - Brand-new app icon, including a themed icon that adapts to your wallpaper colors
 - Refreshed splash screen logo
-- The leaderboard's loading state now mirrors the real rows
+- Loading looks the same everywhere: pools, leaderboards, bets, history, match details, and the menu show the real rows with a gentle pulse while they load, which stays still when system animations are turned off
+- Pulling to refresh or returning to a match keeps what you were reading on screen instead of flashing back to a loading state
 - Long pool names now wrap cleanly instead of crowding the row
 - Redesigned side menu with a clearer account header, grouped pool details and actions, and a separate Sign out area
 - Swipe horizontally on the pool list or pool home to open the menu; drag it closed or tap the dimmed screen to dismiss it

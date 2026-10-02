@@ -18,34 +18,52 @@ import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.Dp
 import com.felipearpa.foundation.emptyString
 import com.felipearpa.tyche.ui.theme.LocalExtendedColorScheme
+import com.felipearpa.tyche.ui.theme.LocalLoadingPlaceholderPulse
 import com.felipearpa.tyche.ui.theme.TycheTheme
+import com.revenuecat.placeholder.placeholder
 import kotlin.math.abs
 
+/**
+ * Rank movement since the previous update. With [isPlaceholder] the arrow and digits are each
+ * masked with the shared [LocalLoadingPlaceholderPulse]; the caller passes no effect.
+ */
 @Composable
 fun TrendIndicator(
     modifier: Modifier = Modifier,
-    placeholderModifier: Modifier = Modifier,
     textStyle: TextStyle = MaterialTheme.typography.labelSmall,
     rank: Int,
+    isPlaceholder: Boolean = false,
 ) {
+    // The arrow and the digits each apply this modifier, so RevenueCat creates a separate mask
+    // node, with its own pulse animation, for each of them.
+    val leafModifier = if (isPlaceholder) {
+        val pulse = LocalLoadingPlaceholderPulse.current
+        Modifier.placeholder(
+            color = pulse.color,
+            shape = pulse.shape,
+            highlight = pulse.highlight,
+        )
+    } else {
+        Modifier
+    }
     when {
         rank > 0 -> UpTrendIndicator(
             modifier = modifier,
-            placeholderModifier = placeholderModifier,
+            contentModifier = leafModifier,
             textStyle = textStyle,
             rank = rank,
         )
 
         rank < 0 -> DownTrendIndicator(
             modifier = modifier,
-            placeholderModifier = placeholderModifier,
+            contentModifier = leafModifier,
             textStyle = textStyle,
             rank = rank,
         )
 
         else -> StableTrendIndicator(
             modifier = modifier,
-            placeholderModifier = placeholderModifier,
+            contentModifier = leafModifier,
             textStyle = textStyle,
         )
     }
@@ -58,12 +76,12 @@ private fun iconSizeFor(textStyle: TextStyle): Dp =
 @Composable
 private fun StableTrendIndicator(
     modifier: Modifier = Modifier,
-    placeholderModifier: Modifier = Modifier,
+    contentModifier: Modifier = Modifier,
     textStyle: TextStyle = MaterialTheme.typography.labelSmall,
 ) {
     Box(modifier = modifier) {
         Icon(
-            modifier = placeholderModifier
+            modifier = contentModifier
                 .size(iconSizeFor(textStyle))
                 .testTag("stableProgressIndicator"),
             painter = painterResource(id = R.drawable.ic_horizontal_rule),
@@ -76,7 +94,7 @@ private fun StableTrendIndicator(
 @Composable
 private fun UpTrendIndicator(
     modifier: Modifier = Modifier,
-    placeholderModifier: Modifier = Modifier,
+    contentModifier: Modifier = Modifier,
     textStyle: TextStyle = MaterialTheme.typography.labelSmall,
     rank: Int,
 ) {
@@ -85,7 +103,7 @@ private fun UpTrendIndicator(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Icon(
-            modifier = placeholderModifier.size(iconSizeFor(textStyle)),
+            modifier = contentModifier.size(iconSizeFor(textStyle)),
             painter = painterResource(id = R.drawable.ic_arrow_upward),
             contentDescription = emptyString(),
             tint = LocalExtendedColorScheme.current.gain,
@@ -94,7 +112,7 @@ private fun UpTrendIndicator(
             text = abs(rank).toString(),
             style = textStyle,
             color = LocalExtendedColorScheme.current.gain,
-            modifier = placeholderModifier,
+            modifier = contentModifier,
         )
     }
 }
@@ -102,7 +120,7 @@ private fun UpTrendIndicator(
 @Composable
 private fun DownTrendIndicator(
     modifier: Modifier = Modifier,
-    placeholderModifier: Modifier = Modifier,
+    contentModifier: Modifier = Modifier,
     textStyle: TextStyle = MaterialTheme.typography.labelSmall,
     rank: Int,
 ) {
@@ -111,7 +129,7 @@ private fun DownTrendIndicator(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Icon(
-            modifier = placeholderModifier.size(iconSizeFor(textStyle)),
+            modifier = contentModifier.size(iconSizeFor(textStyle)),
             painter = painterResource(id = R.drawable.ic_arrow_downward),
             contentDescription = emptyString(),
             tint = LocalExtendedColorScheme.current.drop,
@@ -120,7 +138,7 @@ private fun DownTrendIndicator(
             text = abs(rank).toString(),
             style = textStyle,
             color = LocalExtendedColorScheme.current.drop,
-            modifier = placeholderModifier,
+            modifier = contentModifier,
         )
     }
 }

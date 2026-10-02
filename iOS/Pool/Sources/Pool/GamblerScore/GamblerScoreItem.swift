@@ -3,42 +3,39 @@ import Foundation
 import SwiftUI
 import UI
 
+/// One leaderboard row. Loading rows render this same component from
+/// `poolGamblerScorePlaceholderModel()` with `isPlaceholder: true`; the row then conceals its
+/// content with native redaction and the shared `LoadingPlaceholderPulse`, ignores touches,
+/// requests no avatar, and is hidden from assistive technology. Callers pass no effect.
 public struct GamblerScoreItem: View {
     let poolGamblerScore: PoolGamblerScoreModel
     let isCurrentUser: Bool
-    let placeholderModifier: (any ViewModifier)?
+    let isPlaceholder: Bool
 
     public init(
         poolGamblerScore: PoolGamblerScoreModel,
         isCurrentUser: Bool,
-        placeholderModifier: (any ViewModifier)? = nil
+        isPlaceholder: Bool = false
     ) {
         self.poolGamblerScore = poolGamblerScore
         self.isCurrentUser = isCurrentUser
-        self.placeholderModifier = placeholderModifier
-    }
-
-    var isPlaceholder: Bool {
-        placeholderModifier != nil
+        self.isPlaceholder = isPlaceholder
     }
 
     public var body: some View {
         Group {
-            if let placeholderModifier {
-                scoreContent(applying: placeholderModifier)
+            if isPlaceholder {
+                PulsingPlaceholderContent { scoreContent }
             } else {
                 scoreContent
             }
         }
         .frame(maxWidth: .infinity, minHeight: rowMinimumHeight)
         .background(rowBackground)
+        .allowsHitTesting(!isPlaceholder)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(accessibilityLabel)
         .accessibilityHidden(isPlaceholder)
-    }
-
-    private func scoreContent(applying modifier: some ViewModifier) -> AnyView {
-        AnyView(scoreContent.modifier(modifier))
     }
 
     private var scoreContent: some View {
@@ -47,7 +44,8 @@ public struct GamblerScoreItem: View {
 
             AccountAvatar(
                 accountId: avatarAccountId,
-                fallback: avatarFallback
+                fallback: avatarFallback,
+                isPlaceholder: isPlaceholder
             )
             .frame(width: avatarSize, height: avatarSize)
             .clipShape(Circle())
@@ -64,7 +62,7 @@ public struct GamblerScoreItem: View {
                         .font(.caption)
                 }
             }
-            .foregroundStyle(rowForeground)
+            .loadedForeground(rowForeground, isPlaceholder: isPlaceholder)
             .frame(maxWidth: .infinity, alignment: .leading)
             .layoutPriority(1)
 
@@ -73,7 +71,7 @@ public struct GamblerScoreItem: View {
                 .monospacedDigit()
                 .lineLimit(1)
                 .minimumScaleFactor(0.75)
-                .foregroundStyle(rowForeground)
+                .loadedForeground(rowForeground, isPlaceholder: isPlaceholder)
                 .frame(minWidth: scoreMinimumWidth, alignment: .trailing)
         }
         .padding(.horizontal, horizontalPadding)
@@ -96,14 +94,16 @@ public struct GamblerScoreItem: View {
                 foregroundColor: isCurrentUser
                     ? Color(sharedResource: .onCurrentUserContainer)
                     : Color(sharedResource: .onSurfaceVariant),
-                font: .title3.weight(.semibold)
+                font: .title3.weight(.semibold),
+                isPlaceholder: isPlaceholder
             )
 
             Group {
                 if let difference = poolGamblerScore.rank() {
                     TrendIndicator(
                         difference: difference,
-                        textStyle: .caption2
+                        textStyle: .caption2,
+                        isPlaceholder: isPlaceholder
                     )
                 } else {
                     Color.clear
@@ -114,23 +114,14 @@ public struct GamblerScoreItem: View {
         .frame(width: rankTileSize)
     }
 
-    /// An empty account id yields no avatar URL, so a placeholder row can never
-    /// request the synthetic placeholder identity.
+    /// `AccountAvatar(isPlaceholder:)` already skips the request; the empty id additionally keeps
+    /// the synthetic placeholder identity from ever reaching the avatar URL builder.
     var avatarAccountId: String {
         isPlaceholder ? "" : poolGamblerScore.gamblerId
     }
 
     private var avatarFallback: AccountAvatarFallback {
-        if isPlaceholder {
-            return AccountAvatarFallback(
-                identity: poolGamblerScore.gamblerUsername,
-                colorKey: poolGamblerScore.gamblerUsername,
-                backgroundColor: Color(sharedResource: .surfaceVariant),
-                foregroundColor: Color(sharedResource: .onSurfaceVariant)
-            )
-        }
-
-        return AccountAvatarFallback(
+        AccountAvatarFallback(
             identity: poolGamblerScore.gamblerUsername,
             colorKey: poolGamblerScore.gamblerUsername,
             backgroundColor: isCurrentUser
@@ -243,7 +234,35 @@ private let currentUserTileOverlayOpacity = 0.14
     GamblerScoreItem(
         poolGamblerScore: poolGamblerScorePlaceholderModel(),
         isCurrentUser: false,
-        placeholderModifier: ShimmerModifier()
+        isPlaceholder: true
     )
     .padding()
+}
+
+#Preview("Loaded and placeholder, light") {
+    GamblerScoreItemGeometryPreview()
+        .preferredColorScheme(.light)
+}
+
+#Preview("Loaded and placeholder, dark") {
+    GamblerScoreItemGeometryPreview()
+        .preferredColorScheme(.dark)
+}
+
+/// Loaded and placeholder rows stacked for geometry comparison.
+private struct GamblerScoreItemGeometryPreview: View {
+    var body: some View {
+        VStack(spacing: 0) {
+            GamblerScoreItem(poolGamblerScore: poolGamblerScoreDummyModel(), isCurrentUser: false)
+            Divider()
+            GamblerScoreItem(
+                poolGamblerScore: poolGamblerScorePlaceholderModel(),
+                isCurrentUser: false,
+                isPlaceholder: true
+            )
+            Divider()
+        }
+        .padding(.horizontal)
+        .background(Color(.systemBackground))
+    }
 }

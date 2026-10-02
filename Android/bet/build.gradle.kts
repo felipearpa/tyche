@@ -31,6 +31,11 @@ android {
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
     }
+    testOptions {
+        unitTests.all { test ->
+            test.useJUnitPlatform()
+        }
+    }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
@@ -59,10 +64,14 @@ dependencies {
     implementation(libs.kotlinx.datetime)
     implementation(libs.felipearpa.foundation)
     implementation(libs.kotlinx.serialization.json)
+    implementation(libs.revenuecat.placeholder)
 
-    testImplementation(libs.junit)
+    testImplementation(platform(libs.junit5.bom))
+    testImplementation(libs.junit5.jupiter)
+    testImplementation(libs.kotest.assertions.core)
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.io.mockk)
+    testRuntimeOnly(libs.bundles.junit5.runtime)
 
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.espresso.core)

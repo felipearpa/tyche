@@ -29,6 +29,7 @@ public struct AccountAvatarFallback {
 public struct AccountAvatar: View {
     private let accountId: String
     private let fallback: AccountAvatarFallback
+    let isPlaceholder: Bool
 
     @State private var photo: UIImage?
     @State private var photoAccountId: String = ""
@@ -42,17 +43,38 @@ public struct AccountAvatar: View {
             identity: email.emailAvatarIdentity,
             colorKey: email
         )
+        self.isPlaceholder = false
     }
 
+    /// - Parameter isPlaceholder: When `true`, the avatar stands in for a loading row: it never
+    ///   requests a photo and never draws the fallback identity. It renders a neutral glyph that
+    ///   fills its frame, so the redacting parent conceals it as one solid shape for the parent's
+    ///   clip (a circle on every current surface) and pulse.
     public init(
         accountId: String,
-        fallback: AccountAvatarFallback
+        fallback: AccountAvatarFallback,
+        isPlaceholder: Bool = false
     ) {
         self.accountId = accountId
         self.fallback = fallback
+        self.isPlaceholder = isPlaceholder
+    }
+
+    /// Whether this avatar may request a photo. Placeholders and accounts without an id never do.
+    var loadsPhoto: Bool {
+        !isPlaceholder && !accountId.isEmpty
     }
 
     public var body: some View {
+        if isPlaceholder {
+            Image(.filledPerson)
+                .resizable()
+        } else {
+            accountAvatar
+        }
+    }
+
+    private var accountAvatar: some View {
         ZStack {
             if let photo {
                 Image(uiImage: photo)
@@ -82,7 +104,7 @@ public struct AccountAvatar: View {
                 photo = nil
                 photoAccountId = accountId
             }
-            guard !accountId.isEmpty, measuredPixelSize > 0 else {
+            guard loadsPhoto, measuredPixelSize > 0 else {
                 photo = nil
                 return
             }

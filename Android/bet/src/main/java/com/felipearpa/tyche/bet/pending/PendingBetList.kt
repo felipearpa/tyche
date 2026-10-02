@@ -39,6 +39,7 @@ import com.felipearpa.foundation.time.toShortDateString
 import com.felipearpa.tyche.bet.PoolGamblerBetModel
 import com.felipearpa.tyche.bet.isPending
 import com.felipearpa.tyche.bet.poolGamblerBetDummyModels
+import com.felipearpa.tyche.bet.poolGamblerBetFakeModel
 import com.felipearpa.tyche.ui.bottomUncoveredBy
 import com.felipearpa.tyche.ui.exception.localizedOrDefault
 import com.felipearpa.tyche.ui.lazy.Failure
@@ -174,7 +175,12 @@ private fun LazyListScope.emptyContent() {
 
 private fun LazyListScope.pendingBetPlaceholderItemRow() {
     item {
-        PendingBetPlaceholderItem(modifier = Modifier.pendingBetItem())
+        PendingBetItem(
+            poolGamblerBet = poolGamblerBetFakeModel(),
+            viewState = PendingBetItemViewState.Visualization(partialPoolGamblerBetFakeModel()),
+            modifier = Modifier.pendingBetItem(),
+            isPlaceholder = true,
+        )
         HorizontalDivider(modifier = Modifier.padding(horizontal = LocalBoxSpacing.current.large))
     }
 }

@@ -89,8 +89,7 @@ private struct BetTimelinePlaceholderItem: View {
     @Environment(\.boxSpacing) private var boxSpacing
 
     var body: some View {
-        BetTimelineItem(poolGamblerBet: poolGamblerBetPlaceholderModel())
-            .shimmer()
+        BetTimelineItem(poolGamblerBet: poolGamblerBetPlaceholderModel(), isPlaceholder: true)
             .frame(maxWidth: .infinity)
             .padding(.horizontal, boxSpacing.large)
             .padding(.vertical, boxSpacing.medium)

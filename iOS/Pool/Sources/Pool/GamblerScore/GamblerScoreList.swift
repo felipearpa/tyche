@@ -96,6 +96,9 @@ struct GamblerScorePlaceholderList: View {
     }
 }
 
+/// Initial and append loading row. It is never wrapped in the gambler-detail `Button` that
+/// loaded rows use, so the placeholder has no parent activation target, and the row itself
+/// ignores touches and stays out of the accessibility tree.
 struct GamblerScorePlaceholderRow: View {
     let poolGamblerScore: PoolGamblerScoreModel
 
@@ -110,7 +113,7 @@ struct GamblerScorePlaceholderRow: View {
             GamblerScoreItem(
                 poolGamblerScore: poolGamblerScore,
                 isCurrentUser: false,
-                placeholderModifier: ShimmerModifier()
+                isPlaceholder: true
             )
             Divider()
         }

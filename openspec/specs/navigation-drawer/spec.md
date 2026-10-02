@@ -188,7 +188,7 @@ Drawer sizing SHALL use the available application window, maintain a bounded rea
 
 ### Requirement: Existing data and action states survive the redesign
 
-Drawer presentation SHALL continue using the shared current-account and avatar sources. Opening, closing, or animating SHALL NOT reset loaded data or introduce drawer-specific account or avatar fetches. Pool ownership visibility, deletion confirmation and pending state, invitation, sign-out, and pool-summary error handling SHALL retain their current behavior. During model-backed summary loading, each platform SHALL populate the production summary component with a placeholder model and apply its existing shared shimmer treatment; placeholder values SHALL NOT be exposed as real user content. Placeholder behavior can suppress remote loading, navigation, and accessibility exposure, but SHALL NOT replace the production layout with a separate skeleton layout.
+Drawer presentation SHALL continue using the shared current-account and avatar sources. Opening, closing, or animating SHALL NOT reset loaded data or introduce drawer-specific account or avatar fetches. Pool ownership visibility, deletion confirmation and pending state, invitation, sign-out, and pool-summary error handling SHALL retain their current behavior. During model-backed summary loading, each platform SHALL populate the production summary component with a placeholder model and apply the shared pulse loading-placeholder treatment defined by `loading-placeholders`; placeholder values SHALL NOT be exposed as real user content. Placeholder behavior can suppress remote loading, navigation, and accessibility exposure, but SHALL NOT replace the production layout with a separate skeleton layout.
 
 #### Scenario: Reopening with cached account information
 - **GIVEN** the account and avatar are already available from their shared sources
@@ -199,7 +199,7 @@ Drawer presentation SHALL continue using the shared current-account and avatar s
 #### Scenario: Pool summary is loading or fails
 - **GIVEN** pool-summary data is loading or its request fails
 - **WHEN** the pool drawer is displayed
-- **THEN** loading uses the production summary component populated with a placeholder model and the shared platform shimmer
+- **THEN** loading uses the production summary component populated with a placeholder model and the shared pulse loading-placeholder treatment
 - **AND** placeholder values are excluded from meaningful accessibility content and cannot trigger actions
 - **AND** a failure presents the existing error behavior without disabling unrelated account or navigation actions
 
