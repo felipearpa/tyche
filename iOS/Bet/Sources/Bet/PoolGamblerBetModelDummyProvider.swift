@@ -94,3 +94,65 @@ func poolGamblerBetDummyModels() -> [PoolGamblerBetModel] {
         )
     ]
 }
+
+/// History preview rows covering a positive award, a zero award, a missing bet, unavailable
+/// result and points, a long team name, and a match from an earlier year.
+func historyBetPreviewModels() -> [PoolGamblerBetModel] {
+    let base = poolGamblerBetDummyModel()
+    let lastYear = Calendar.current.date(byAdding: .year, value: -1, to: Date()) ?? Date()
+    return [
+        base.copy {
+            $0.matchId = "history-positive"
+            $0.homeTeamId = "gb_eng"
+            $0.homeTeamName = "Inglaterra"
+            $0.awayTeamId = "ar"
+            $0.awayTeamName = "Argentina"
+            $0.matchScore = TeamScore(homeTeamValue: 1, awayTeamValue: 2)
+            $0.betScore = TeamScore(homeTeamValue: 2, awayTeamValue: 1)
+            $0.score = 2
+        },
+        base.copy {
+            $0.matchId = "history-zero"
+            $0.homeTeamId = "es"
+            $0.homeTeamName = "España"
+            $0.awayTeamId = "ar"
+            $0.awayTeamName = "Argentina"
+            $0.matchScore = TeamScore(homeTeamValue: 0, awayTeamValue: 0)
+            $0.betScore = TeamScore(homeTeamValue: 3, awayTeamValue: 2)
+            $0.score = 0
+        },
+        base.copy {
+            $0.matchId = "history-long-name"
+            $0.homeTeamId = "pt"
+            $0.homeTeamName = "Portugal"
+            $0.awayTeamId = "cd"
+            $0.awayTeamName = "República Democrática del Congo"
+            $0.matchScore = TeamScore(homeTeamValue: 1, awayTeamValue: 1)
+            $0.betScore = nil
+            $0.score = 1
+        },
+        base.copy {
+            $0.matchId = "history-unavailable"
+            $0.homeTeamId = "us"
+            $0.homeTeamName = "Estados Unidos"
+            $0.awayTeamId = "py"
+            $0.awayTeamName = "Paraguay"
+            $0.matchScore = nil
+            $0.betScore = nil
+            $0.score = nil
+            $0.matchDateTime = lastYear
+        },
+    ]
+}
+
+/// Stable filler for History's row placeholders, sized like a typical finished match so loading
+/// rows keep the loaded rows' height. Never shown as real content.
+func historyBetPlaceholderModel() -> PoolGamblerBetModel {
+    poolGamblerBetPlaceholderModel(isLocked: true, isComputed: true).copy {
+        $0.homeTeamName = String(repeating: "X", count: 8)
+        $0.awayTeamName = String(repeating: "X", count: 8)
+        $0.matchScore = TeamScore(homeTeamValue: 0, awayTeamValue: 0)
+        $0.betScore = TeamScore(homeTeamValue: 0, awayTeamValue: 0)
+        $0.score = 0
+    }
+}

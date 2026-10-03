@@ -9,4 +9,34 @@
     <string name="bet_timeline_view_title">Timeline</string>
     <string name="predictions_open_title">Predictions are still open</string>
     <string name="predictions_open_message">To keep things fair, other gamblers\' bets will be revealed once predictions close for this match.</string>
+    <string name="history_your_bet_label">Your bet</string>
+    <string name="history_no_bet_label">No bet</string>
+    <string name="history_earned_label">earned</string>
+    <string name="history_total_unavailable_label">Total unavailable</string>
+    <plurals name="history_points_short">
+        <item quantity="one">%d pt</item>
+        <item quantity="other">%d pts</item>
+    </plurals>
+    <plurals name="history_positive_points_short">
+        <item quantity="one">+%d pt</item>
+        <item quantity="other">+%d pts</item>
+    </plurals>
+    <string name="history_points_unavailable_short">— pts</string>
+    <string name="history_summary_load_failure">Couldn\'t load your points.</string>
+    <string name="history_summary_refresh_failure">Couldn\'t update your points. Showing the last total.</string>
+    <string name="history_summary_refreshing">Updating points…</string>
+    <plurals name="history_summary_points_accessibility">
+        <item quantity="one">%d point earned in this pool</item>
+        <item quantity="other">%d points earned in this pool</item>
+    </plurals>
+    <string name="history_summary_unavailable_accessibility">Points earned in this pool unavailable</string>
+    <string name="history_result_accessibility">Final score: %1$s %2$d, %3$s %4$d</string>
+    <string name="history_result_unavailable_accessibility">%1$s versus %2$s, final score unavailable</string>
+    <string name="history_bet_accessibility">Your bet: %1$d to %2$d</string>
+    <string name="history_no_bet_accessibility">No bet placed</string>
+    <plurals name="history_points_accessibility">
+        <item quantity="one">%d point</item>
+        <item quantity="other">%d points</item>
+    </plurals>
+    <string name="history_points_unavailable_accessibility">Points unavailable</string>
 </resources>

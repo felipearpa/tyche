@@ -28,6 +28,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
+import androidx.compose.material3.TopAppBarState
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -210,7 +211,16 @@ internal fun PoolHomeContent(
                     )
                 },
                 bottomBar = {
-                    TabBar(selectedTab = selectedTabIndex, onTabChange = onTabChange)
+                    TabBar(
+                        selectedTab = selectedTabIndex,
+                        onTabChange = { tab ->
+                            // All tabs share one bar state, and another tab's list opens at its top,
+                            // so the bar starts shown and untinted instead of keeping the last
+                            // tab's scroll.
+                            if (tab != selectedTabIndex) scrollBehavior.state.resetScroll()
+                            onTabChange(tab)
+                        },
+                    )
                 },
             ) { innerPadding ->
                 content(innerPadding)
@@ -397,6 +407,12 @@ private fun AppTopBar(
         modifier = modifier,
         scrollBehavior = scrollBehavior,
     )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+private fun TopAppBarState.resetScroll() {
+    heightOffset = 0f
+    contentOffset = 0f
 }
 
 private val iconSize = 24.dp

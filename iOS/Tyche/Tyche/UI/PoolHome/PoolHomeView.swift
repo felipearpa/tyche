@@ -75,11 +75,15 @@ struct PoolHomeView<Destinations: ViewModifier>: View {
                         getFinishedPoolGamblerBetsUseCase: GetFinishedPoolGamblerBetsUseCase(
                             poolGamblerBetRepository: diResolver.resolve(PoolGamblerBetRepository.self)!
                         ),
+                        getPoolGamblerScoreUseCase: diResolver.resolve(GetPoolGamblerScoreUseCase.self)!,
                         gamblerId: gamblerId,
                         poolId: poolId,
                     ),
                     onMatchOpen: onMatchOpen
                 )
+                // History's view model, and with it the earned-points total, belongs to one pool
+                // and gambler; another context starts a new one.
+                .id(HistoryContext(poolId: poolId, gamblerId: gamblerId))
             }
             .tabItem {
                 Label(
@@ -150,6 +154,11 @@ private extension PoolHomeTab {
     }
 }
 
+private struct HistoryContext: Hashable {
+    let poolId: String
+    let gamblerId: String
+}
+
 private let ICON_SIZE: CGFloat = 24
 
 #Preview {
@@ -179,6 +188,10 @@ private class PoolHomeAssembler: Assembly {
 
         container.register(PoolGamblerBetRepository.self) { _ in
             PoolGamblerBetFakeRepository()
+        }
+
+        container.register(GetPoolGamblerScoreUseCase.self) { _ in
+            GetPoolGamblerScoreUseCase(poolGamblerScoreRepository: PoolGamblerScoreFakeRepository())
         }
     }
 }

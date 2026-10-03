@@ -78,6 +78,7 @@ dependencies {
     androidTestImplementation(platform(libs.compose.bom))
     androidTestImplementation(libs.ui.test.junit4)
     androidTestImplementation(libs.io.mockk.android)
+    androidTestImplementation(libs.kotest.assertions.core)
 
     debugImplementation(libs.bundles.compose.debug.test)
 
@@ -87,4 +88,5 @@ dependencies {
     implementation(project(":core"))
     implementation(project(":ui"))
     implementation(project(":data:bet"))
+    implementation(project(":data:pool"))
 }

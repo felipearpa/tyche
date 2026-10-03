@@ -8,4 +8,6 @@ import org.koin.core.parameter.parametersOf
 fun finishedBetListViewModel(
     poolId: String,
     gamblerId: String,
-): FinishedBetListViewModel = koinViewModel { parametersOf(poolId, gamblerId) }
+): FinishedBetListViewModel =
+    // Keyed by context, so another pool or gambler never reuses this pool's total.
+    koinViewModel(key = "$poolId:$gamblerId") { parametersOf(poolId, gamblerId) }

@@ -191,3 +191,70 @@ fun poolGamblerBetPendingDummyModels(): List<PoolGamblerBetModel> =
             isComputed = false,
         )
     }
+
+/**
+ * History preview rows covering a positive award, a zero award, a missing bet, a long team name,
+ * unavailable result and points, and a match from an earlier year.
+ */
+fun historyBetPreviewModels(): List<PoolGamblerBetModel> {
+    val base = poolGamblerBetFinishedDummyModels().first().copy(
+        matchDateTime = LocalDateTime(year = 2026, month = 7, day = 19, hour = 14, minute = 0),
+    )
+    return listOf(
+        base.copy(
+            matchId = "history-positive",
+            homeTeamId = "gb_eng",
+            homeTeamName = "Inglaterra",
+            awayTeamId = "ar",
+            awayTeamName = "Argentina",
+            matchScore = TeamScore(1, 2),
+            betScore = TeamScore(2, 1),
+            score = 2,
+        ),
+        base.copy(
+            matchId = "history-zero",
+            homeTeamId = "es",
+            homeTeamName = "España",
+            awayTeamId = "ar",
+            awayTeamName = "Argentina",
+            matchScore = TeamScore(0, 0),
+            betScore = TeamScore(3, 2),
+            score = 0,
+        ),
+        base.copy(
+            matchId = "history-long-name",
+            homeTeamId = "pt",
+            homeTeamName = "Portugal",
+            awayTeamId = "cd",
+            awayTeamName = "República Democrática del Congo",
+            matchScore = TeamScore(1, 1),
+            betScore = null,
+            score = 1,
+        ),
+        base.copy(
+            matchId = "history-unavailable",
+            homeTeamId = "us",
+            homeTeamName = "Estados Unidos",
+            awayTeamId = "py",
+            awayTeamName = "Paraguay",
+            matchScore = null,
+            betScore = null,
+            score = null,
+            matchDateTime = LocalDateTime(year = 2025, month = 6, day = 11, hour = 20, minute = 0),
+        ),
+    )
+}
+
+/**
+ * Stable filler for History's row placeholders, sized like a typical finished match so loading
+ * rows keep the loaded rows' height. Never shown as real content.
+ */
+fun historyBetPlaceholderModel() =
+    poolGamblerBetFakeModel().copy(
+        homeTeamName = "X".repeat(8),
+        awayTeamName = "X".repeat(8),
+        matchScore = TeamScore(0, 0),
+        betScore = TeamScore(0, 0),
+        score = 0,
+        isComputed = true,
+    )
