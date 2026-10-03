@@ -1,9 +1,14 @@
 import SwiftUI
 import DataBet
+import DataPool
 
 public struct FinishedBetListView : View {
     @StateObject private var viewModel: FinishedBetListViewModel
     private let onMatchOpen: MatchOpenHandler?
+
+    /// True while a pull to refresh is in progress; its own indicator then covers the total, so
+    /// the summary shows no second progress indicator.
+    @State private var isPullRefreshing = false
 
     public init(
         viewModel: @autoclosure @escaping () -> FinishedBetListViewModel,
@@ -18,10 +23,20 @@ public struct FinishedBetListView : View {
 
         FinishedBetList(
             lazyPagingItems: viewModel.lazyPager,
+            pointsSummary: viewModel.pointsSummary,
+            showsSummaryRefreshProgress: !isPullRefreshing,
+            onPointsSummaryRetry: { Task { await viewModel.loadPointsSummary() } },
             onMatchOpen: onMatchOpen
         )
-        .refreshable { viewModel.refresh() }
-        .onAppearOnce { viewModel.refresh() }
+        .refreshable {
+            isPullRefreshing = true
+            await viewModel.refreshListAndPointsSummary()
+            isPullRefreshing = false
+        }
+        .onAppearOnce {
+            viewModel.refresh()
+            Task { await viewModel.loadPointsSummary() }
+        }
     }
 }
 
@@ -32,9 +47,13 @@ public struct FinishedBetListView : View {
                 getFinishedPoolGamblerBetsUseCase: GetFinishedPoolGamblerBetsUseCase(
                     poolGamblerBetRepository: PoolGamblerBetFakeRepository()
                 ),
+                getPoolGamblerScoreUseCase: GetPoolGamblerScoreUseCase(
+                    poolGamblerScoreRepository: PoolGamblerScoreFakeRepository()
+                ),
                 gamblerId: "gambler-id",
                 poolId: "pool-id"
             )
         )
+        .navigationTitle("History")
     }
 }

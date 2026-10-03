@@ -9,4 +9,38 @@
     <string name="bet_timeline_view_title">Línea de tiempo</string>
     <string name="predictions_open_title">Las predicciones siguen abiertas</string>
     <string name="predictions_open_message">Para que el juego sea limpio, las apuestas del resto se mostrarán cuando se cierren las predicciones de este partido.</string>
+    <string name="history_your_bet_label">Tu apuesta</string>
+    <string name="history_no_bet_label">Sin apuesta</string>
+    <string name="history_earned_label">ganados</string>
+    <string name="history_total_unavailable_label">Total no disponible</string>
+    <plurals name="history_points_short">
+        <item quantity="one">%d pt</item>
+        <item quantity="many">%d pts</item>
+        <item quantity="other">%d pts</item>
+    </plurals>
+    <plurals name="history_positive_points_short">
+        <item quantity="one">+%d pt</item>
+        <item quantity="many">+%d pts</item>
+        <item quantity="other">+%d pts</item>
+    </plurals>
+    <string name="history_points_unavailable_short">— pts</string>
+    <string name="history_summary_load_failure">No se pudieron cargar tus puntos.</string>
+    <string name="history_summary_refresh_failure">No se pudieron actualizar tus puntos. Se muestra el último total.</string>
+    <string name="history_summary_refreshing">Actualizando puntos…</string>
+    <plurals name="history_summary_points_accessibility">
+        <item quantity="one">%d punto ganado en esta quiniela</item>
+        <item quantity="many">%d puntos ganados en esta quiniela</item>
+        <item quantity="other">%d puntos ganados en esta quiniela</item>
+    </plurals>
+    <string name="history_summary_unavailable_accessibility">Puntos ganados en esta quiniela no disponibles</string>
+    <string name="history_result_accessibility">Resultado final: %1$s %2$d, %3$s %4$d</string>
+    <string name="history_result_unavailable_accessibility">%1$s contra %2$s, resultado final no disponible</string>
+    <string name="history_bet_accessibility">Tu apuesta: %1$d a %2$d</string>
+    <string name="history_no_bet_accessibility">No hiciste apuesta</string>
+    <plurals name="history_points_accessibility">
+        <item quantity="one">%d punto</item>
+        <item quantity="many">%d puntos</item>
+        <item quantity="other">%d puntos</item>
+    </plurals>
+    <string name="history_points_unavailable_accessibility">Puntos no disponibles</string>
 </resources>

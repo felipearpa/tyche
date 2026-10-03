@@ -22,6 +22,7 @@ val betViewModelModule = module {
             poolId = params.get(),
             gamblerId = params.get(),
             getFinishedPoolGamblerBets = get(),
+            getPoolGamblerScore = get(),
         )
     }
 

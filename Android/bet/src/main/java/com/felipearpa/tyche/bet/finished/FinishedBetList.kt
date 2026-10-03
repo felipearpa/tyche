@@ -1,171 +1,131 @@
 package com.felipearpa.tyche.bet.finished
 
-import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
+import androidx.paging.LoadState
+import androidx.paging.LoadStates
 import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
-import com.felipearpa.foundation.time.toShortDateString
 import com.felipearpa.tyche.bet.PoolGamblerBetModel
-import com.felipearpa.tyche.bet.poolGamblerBetDummyModels
-import com.felipearpa.tyche.bet.poolGamblerBetFakeModel
+import com.felipearpa.tyche.bet.historyBetPlaceholderModel
+import com.felipearpa.tyche.bet.historyBetPreviewModels
+import com.felipearpa.tyche.ui.exception.UnknownLocalizedException
 import com.felipearpa.tyche.ui.lazy.RefreshableLazyPagingColumn
-import com.felipearpa.tyche.ui.lazy.ViewportFillingItem
-import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
+import com.felipearpa.tyche.ui.lazy.lazyPagingColumnEmpty
+import com.felipearpa.tyche.ui.lazy.lazyPagingColumnError
 import com.felipearpa.tyche.ui.theme.TycheTheme
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.datetime.LocalDate
-import com.felipearpa.tyche.ui.R as SharedR
 
-@OptIn(ExperimentalFoundationApi::class)
+/**
+ * The signed-in gambler's History: the earned-points summary followed by one row per finished
+ * match, newest first. Every list state (initial loading, loaded, empty, failed) starts with the
+ * same summary header, so a known total survives list changes. Rows carry their own date, so
+ * there are no sticky date headers.
+ *
+ * One pull refreshes the rows and calls [onRefresh] for the total; the pull indicator stays
+ * while the total's pull request is pending.
+ */
 @Composable
 fun FinishedBetList(
     lazyPoolGamblerBets: LazyPagingItems<PoolGamblerBetModel>,
+    pointsSummary: HistoryPointsSummaryState,
+    onPointsSummaryRetry: () -> Unit,
+    onRefresh: () -> Unit,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(0.dp),
     placeholderCount: Int = 0,
     onMatchOpen: ((PoolGamblerBetModel) -> Unit)? = null,
 ) {
+    val dateFormat = rememberHistoryMatchDateFormat()
+    val header: LazyListScope.() -> Unit = {
+        item(key = POINTS_SUMMARY_KEY, contentType = POINTS_SUMMARY_KEY) {
+            HistoryPointsHeader(state = pointsSummary, onRetry = onPointsSummaryRetry)
+        }
+    }
+
     RefreshableLazyPagingColumn(
         modifier = modifier,
         lazyPagingItems = lazyPoolGamblerBets,
         contentPadding = contentPadding,
-        loadingContent = { finishedPoolGamblerBetFakeList(count = placeholderCount) },
-        emptyContent = { emptyContent() },
-        appendLoadingContent = { item { finishedPoolGamblerBetPlaceholderItemRow() } },
+        onRefresh = onRefresh,
+        isCompanionRefreshing = pointsSummary.isPullRefreshing,
+        loadingContent = {
+            header()
+            historyBetPlaceholderList(count = placeholderCount, dateFormat = dateFormat)
+        },
+        emptyContent = {
+            header()
+            lazyPagingColumnEmpty()
+        },
+        errorContent = { exception ->
+            header()
+            lazyPagingColumnError(exception)
+        },
+        appendLoadingContent = { item { HistoryBetPlaceholderRow(dateFormat = dateFormat) } },
     ) {
-        val poolGamblerBetsCount = lazyPoolGamblerBets.itemCount
-        var lastMatchDate: LocalDate? = null
-
-        repeat(poolGamblerBetsCount) { index ->
-            val poolGamblerBet = lazyPoolGamblerBets[index] ?: return@repeat
-            if (lastMatchDate != poolGamblerBet.matchDateTime.date) {
-                val localDateString = poolGamblerBet.matchDateTime.toShortDateString()
-                val isFirstHeader = lastMatchDate == null
-                stickyHeader(
-                    key = localDateString,
-                    contentType = "Header",
-                ) {
-                    Text(
-                        text = localDateString,
-                        style = MaterialTheme.typography.titleMedium,
-                        modifier = Modifier.finishedHeaderBetItem(isFirst = isFirstHeader),
-                    )
-                }
-                lastMatchDate = poolGamblerBet.matchDateTime.date
-            }
-
-            item(
-                key = Triple(
-                    poolGamblerBet.poolId,
-                    poolGamblerBet.gamblerId,
-                    poolGamblerBet.matchId,
-                ),
-                contentType = "PoolGamblerBet",
-            ) {
-                val itemModifier = Modifier
-                    .let { base ->
-                        if (onMatchOpen != null) base.clickable { onMatchOpen(poolGamblerBet) } else base
-                    }
-                    .finishedBetItem()
-
-                FinishedBetItem(
-                    poolGamblerBet = poolGamblerBet,
-                    modifier = itemModifier,
-                )
-                HorizontalDivider(modifier = Modifier.padding(horizontal = LocalBoxSpacing.current.large))
-            }
+        header()
+        items(
+            count = lazyPoolGamblerBets.itemCount,
+            key = { index ->
+                val poolGamblerBet = lazyPoolGamblerBets.peek(index)
+                if (poolGamblerBet == null) index else historyRowKey(poolGamblerBet)
+            },
+            contentType = { HISTORY_ROW_CONTENT_TYPE },
+        ) { index ->
+            val poolGamblerBet = lazyPoolGamblerBets[index] ?: return@items
+            HistoryBetItem(
+                poolGamblerBet = poolGamblerBet,
+                dateFormat = dateFormat,
+                modifier = Modifier.fillMaxWidth(),
+                onClick = onMatchOpen?.let { open -> { open(poolGamblerBet) } },
+            )
+            HistoryRowDivider()
         }
     }
 }
 
-private fun LazyListScope.finishedPoolGamblerBetFakeList(count: Int) {
-    repeat(count) {
-        item { finishedPoolGamblerBetPlaceholderItemRow() }
+private fun historyRowKey(poolGamblerBet: PoolGamblerBetModel) =
+    Triple(poolGamblerBet.poolId, poolGamblerBet.gamblerId, poolGamblerBet.matchId)
+
+private fun LazyListScope.historyBetPlaceholderList(count: Int, dateFormat: HistoryMatchDateFormat) {
+    items(count = count, contentType = { HISTORY_ROW_CONTENT_TYPE }) {
+        HistoryBetPlaceholderRow(dateFormat = dateFormat)
     }
 }
 
 @Composable
-private fun finishedPoolGamblerBetPlaceholderItemRow() {
-    FinishedBetItem(
-        poolGamblerBet = poolGamblerBetFakeModel(),
-        modifier = Modifier.finishedBetItem(),
+private fun HistoryBetPlaceholderRow(dateFormat: HistoryMatchDateFormat) {
+    HistoryBetItem(
+        poolGamblerBet = historyBetPlaceholderModel(),
+        dateFormat = dateFormat,
+        modifier = Modifier.fillMaxWidth(),
         isPlaceholder = true,
     )
-    HorizontalDivider(modifier = Modifier.padding(horizontal = LocalBoxSpacing.current.large))
+    HistoryRowDivider()
 }
 
-@Composable
-private fun Modifier.finishedBetItem() =
-    fillMaxWidth()
-        .padding(horizontal = LocalBoxSpacing.current.large)
-        .padding(vertical = LocalBoxSpacing.current.medium)
-
-@Composable
-private fun Modifier.finishedHeaderBetItem(isFirst: Boolean) =
-    fillMaxWidth()
-        .padding(horizontal = LocalBoxSpacing.current.medium)
-        .padding(
-            top = if (isFirst) LocalBoxSpacing.current.medium
-            else LocalBoxSpacing.current.medium + LocalBoxSpacing.current.medium,
-        )
-
-private fun LazyListScope.emptyContent() {
-    item {
-        ViewportFillingItem {
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.medium),
-                horizontalAlignment = Alignment.CenterHorizontally,
-            ) {
-                Icon(
-                    painter = painterResource(id = SharedR.drawable.ic_sentiment_sad),
-                    contentDescription = null,
-                    modifier = Modifier.size(iconSize),
-                )
-
-                Text(
-                    text = stringResource(id = SharedR.string.empty_list_message),
-                    textAlign = TextAlign.Center,
-                    style = MaterialTheme.typography.titleMedium,
-                )
-            }
-        }
-    }
-}
-
-private val iconSize = 64.dp
+private const val POINTS_SUMMARY_KEY = "historyPointsSummary"
+private const val HISTORY_ROW_CONTENT_TYPE = "HistoryBet"
 
 @PreviewLightDark
 @Composable
 private fun FinishedBetListPreview() {
-    val items = MutableStateFlow(PagingData.from(poolGamblerBetDummyModels())).collectAsLazyPagingItems()
+    val items = MutableStateFlow(PagingData.from(historyBetPreviewModels())).collectAsLazyPagingItems()
     TycheTheme {
         Surface {
             FinishedBetList(
                 lazyPoolGamblerBets = items,
+                pointsSummary = HistoryPointsSummaryState.initial.loaded(HistoryPoints.Earned(120)),
+                onPointsSummaryRetry = {},
+                onRefresh = {},
                 modifier = Modifier.fillMaxSize(),
             )
         }
@@ -174,16 +134,41 @@ private fun FinishedBetListPreview() {
 
 @PreviewLightDark
 @Composable
-private fun FinishedBetFakeListPreview() {
+private fun FinishedBetListSummaryFailedPreview() {
+    val items = MutableStateFlow(PagingData.from(historyBetPreviewModels())).collectAsLazyPagingItems()
     TycheTheme {
         Surface {
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(all = LocalBoxSpacing.current.medium),
-            ) {
-                finishedPoolGamblerBetFakeList(count = 50)
-            }
+            FinishedBetList(
+                lazyPoolGamblerBets = items,
+                pointsSummary = HistoryPointsSummaryState.initial.failed(),
+                onPointsSummaryRetry = {},
+                onRefresh = {},
+                modifier = Modifier.fillMaxSize(),
+            )
+        }
+    }
+}
+
+@PreviewLightDark
+@Composable
+private fun FinishedBetListRowsFailedPreview() {
+    val failed = LoadStates(
+        refresh = LoadState.Error(UnknownLocalizedException()),
+        prepend = LoadState.NotLoading(endOfPaginationReached = false),
+        append = LoadState.NotLoading(endOfPaginationReached = false),
+    )
+    val items = MutableStateFlow(
+        PagingData.empty<PoolGamblerBetModel>(sourceLoadStates = failed),
+    ).collectAsLazyPagingItems()
+    TycheTheme {
+        Surface {
+            FinishedBetList(
+                lazyPoolGamblerBets = items,
+                pointsSummary = HistoryPointsSummaryState.initial.loaded(HistoryPoints.Earned(4)),
+                onPointsSummaryRetry = {},
+                onRefresh = {},
+                modifier = Modifier.fillMaxSize(),
+            )
         }
     }
 }
