@@ -4,6 +4,7 @@
 
 - Add a profile picture: pick a photo or take one, crop it to fit, and it appears in the menu button wherever your account shows
 - Redesigned pool leaderboard: every player shows their photo or a colored initial next to a clearer rank, trend, and score, and your own row is highlighted as You
+- Redesigned History: your total points in the pool sit at the top, and each match shows its final score up front, with your bet, the points it earned, and the match date right in the row
 - New Profile screen, reached from the drawer, where you can change your photo and edit your username in one place
 - A live preview shows how you will appear on the leaderboard while you type a new username, with a character counter, and Save turns on only when the name actually changes
 - A new photo shows up everywhere in the app right away, and a username changed on another device catches up on its own

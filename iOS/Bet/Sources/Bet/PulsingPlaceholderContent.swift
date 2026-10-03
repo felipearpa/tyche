@@ -38,3 +38,16 @@ struct PulsingPlaceholderContent<Content: View>: View {
     }
 }
 
+
+extension View {
+    /// Applies a component's own foreground only to loaded content. Placeholders keep the
+    /// enclosing pulse's neutral fill, so semantic or container colors never tint their masks.
+    @ViewBuilder
+    func loadedForeground<S: ShapeStyle>(_ style: S, isPlaceholder: Bool) -> some View {
+        if isPlaceholder {
+            self
+        } else {
+            foregroundStyle(style)
+        }
+    }
+}

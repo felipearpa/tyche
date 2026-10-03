@@ -38,6 +38,10 @@ import com.felipearpa.ui.lazy.rememberLazyPagingColumnState
  * clear of a top app bar that the list scrolls beneath. The lazy-paging library's own
  * refreshable column pins its pull indicator to the viewport top, so this composes its
  * plain paging column with a Material pull-to-refresh box instead.
+ *
+ * A screen whose pull also reloads another source passes that reload as [onRefresh] and keeps
+ * [isCompanionRefreshing] true while it runs; the pull indicator then stays until both the list
+ * and that source finish. Both default to a list-only refresh.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -47,6 +51,8 @@ fun <Item : Any> RefreshableLazyPagingColumn(
     lazyListState: LazyListState = rememberLazyListState(),
     lazyPagingColumnState: LazyPagingColumnState = rememberLazyPagingColumnState(lazyPagingItems),
     contentPadding: PaddingValues = PaddingValues(0.dp),
+    onRefresh: () -> Unit = {},
+    isCompanionRefreshing: Boolean = false,
     reverseLayout: Boolean = false,
     verticalArrangement: Arrangement.Vertical = if (!reverseLayout) Arrangement.Top else Arrangement.Bottom,
     loadingContent: LazyListScope.() -> Unit = {},
@@ -80,17 +86,18 @@ fun <Item : Any> RefreshableLazyPagingColumn(
     }
 
     PullToRefreshBox(
-        isRefreshing = isRefreshing,
+        isRefreshing = isRefreshing || isCompanionRefreshing,
         onRefresh = {
             isRefreshing = true
             lazyPagingItems.refresh()
+            onRefresh()
         },
         modifier = modifier,
         state = pullToRefreshState,
         indicator = {
             PullToRefreshDefaults.Indicator(
                 state = pullToRefreshState,
-                isRefreshing = isRefreshing,
+                isRefreshing = isRefreshing || isCompanionRefreshing,
                 modifier = Modifier
                     .align(Alignment.TopCenter)
                     .padding(top = contentPadding.calculateTopPadding()),
