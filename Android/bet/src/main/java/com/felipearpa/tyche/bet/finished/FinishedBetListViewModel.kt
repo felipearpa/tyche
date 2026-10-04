@@ -11,15 +11,11 @@ import com.felipearpa.tyche.bet.pending.PendingBetPagingSource
 import com.felipearpa.tyche.data.bet.application.GetFinishedPoolGamblerBets
 import com.felipearpa.tyche.data.pool.application.GetPoolGamblerScore
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 
 class FinishedBetListViewModel(
     private val poolId: String,
@@ -62,20 +58,15 @@ class FinishedBetListViewModel(
             },
         )
 
-    private val _pointsSummary = MutableStateFlow(HistoryPointsSummaryState.initial)
+    private val pointsSummaryLoader = HistoryPointsSummaryLoader(
+        scope = viewModelScope,
+        poolId = poolId,
+        gamblerId = gamblerId,
+        getPoolGamblerScore = getPoolGamblerScore,
+    )
 
-    /**
-     * The authoritative total for this view model's pool and gambler. It is requested on entry,
-     * on pull to refresh, and on summary retry; paging never requests or derives it. A view model
-     * serves one pool and gambler, so another context gets a new view model and never sees this
-     * total.
-     */
-    val pointsSummary: StateFlow<HistoryPointsSummaryState> = _pointsSummary.asStateFlow()
-
-    private var pointsSummaryJob: Job? = null
-
-    /** Identifies the latest summary request; a response from an older request is discarded. */
-    private var pointsSummaryGeneration = 0
+    /** The authoritative total for this view model's pool and gambler; see [HistoryPointsSummaryLoader]. */
+    val pointsSummary: StateFlow<HistoryPointsSummaryState> = pointsSummaryLoader.state
 
     init {
         loadPointsSummary()
@@ -85,38 +76,14 @@ class FinishedBetListViewModel(
         _searchText.value = searchText.trim()
     }
 
-    /**
-     * Requests the earned-points total on its own, as a summary retry does, so it never reloads
-     * the rows. Confirmed points stay visible while it runs.
-     */
+    /** Requests only the total, as a summary retry does; the rows are not reloaded. */
     fun loadPointsSummary() {
-        requestPointsSummary(HistoryPointsSummaryState.Request.LOADING)
+        pointsSummaryLoader.load()
     }
 
-    /**
-     * Requests the total for a pull to refresh, which also refreshes the rows. The pull indicator
-     * stays while this request is pending.
-     */
+    /** Requests the total for a pull to refresh, which also refreshes the rows. */
     fun refreshPointsSummary() {
-        requestPointsSummary(HistoryPointsSummaryState.Request.PULL_REFRESHING)
-    }
-
-    private fun requestPointsSummary(request: HistoryPointsSummaryState.Request) {
-        pointsSummaryJob?.cancel()
-        val generation = ++pointsSummaryGeneration
-        _pointsSummary.update { state -> state.requesting(request) }
-
-        pointsSummaryJob = viewModelScope.launch {
-            val result = getPoolGamblerScore.execute(poolId = poolId, gamblerId = gamblerId)
-            // A superseded request can still answer when its call ignores cancellation.
-            if (generation != pointsSummaryGeneration) return@launch
-            _pointsSummary.update { state ->
-                result.fold(
-                    onSuccess = { score -> state.loaded(HistoryPoints.of(score.score)) },
-                    onFailure = { state.failed() },
-                )
-            }
-        }
+        pointsSummaryLoader.refresh()
     }
 }
 

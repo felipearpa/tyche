@@ -9,8 +9,6 @@ import androidx.compose.ui.test.assertHasNoClickAction
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithTag
-import com.felipearpa.tyche.bet.finished.FinishedBetItem
-import com.felipearpa.tyche.bet.live.LiveBetItem
 import com.felipearpa.tyche.bet.match.MatchGamblerBetItem
 import com.felipearpa.tyche.bet.match.MatchHeader
 import com.felipearpa.tyche.bet.pending.PendingBetItem
@@ -35,28 +33,6 @@ class BetPlaceholderAccessibilityTest {
             PendingBetItem(
                 poolGamblerBet = poolGamblerBetFakeModel(),
                 viewState = PendingBetItemViewState.Visualization(partialPoolGamblerBetFakeModel()),
-                modifier = modifier,
-                isPlaceholder = true,
-            )
-        }
-    }
-
-    @Test
-    fun liveBetPlaceholderExposesNoValuesOrActions() {
-        assertInert { modifier ->
-            LiveBetItem(
-                poolGamblerBet = poolGamblerBetFakeModel(),
-                modifier = modifier,
-                isPlaceholder = true,
-            )
-        }
-    }
-
-    @Test
-    fun finishedBetPlaceholderExposesNoValuesOrActions() {
-        assertInert { modifier ->
-            FinishedBetItem(
-                poolGamblerBet = poolGamblerBetFakeModel(),
                 modifier = modifier,
                 isPlaceholder = true,
             )

@@ -16,6 +16,7 @@ public struct MessageView: View {
                 .frame(width: 40, height: 40)
             
             Text(message)
+                .multilineTextAlignment(.center)
         }
     }
 }

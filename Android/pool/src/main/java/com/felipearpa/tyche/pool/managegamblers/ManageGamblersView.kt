@@ -58,10 +58,7 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemContentType
 import androidx.paging.compose.itemKey
 import com.felipearpa.tyche.pool.R
-import com.felipearpa.tyche.ui.exception.localizedOrDefault
-import com.felipearpa.tyche.ui.lazy.Failure
 import com.felipearpa.tyche.ui.lazy.RefreshableLazyPagingColumn
-import com.felipearpa.tyche.ui.lazy.ViewportFillingItem
 import com.felipearpa.tyche.ui.lazy.lazyPagingConcatenateError
 import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
 import com.felipearpa.tyche.ui.theme.TycheTheme
@@ -178,7 +175,6 @@ private fun ManageGamblersList(
         contentPadding = contentPadding,
         loadingContent = { managePlaceholderList(count = 8) },
         emptyContent = {},
-        errorContent = { error(exception = it) },
         appendLoadingContent = { managePlaceholderItemRow() },
         appendErrorContent = { exception ->
             lazyPagingConcatenateError(
@@ -415,19 +411,6 @@ private fun RemoveGamblerConfirmationDialog(
             }
         },
     )
-}
-
-fun LazyListScope.error(exception: Throwable) {
-    item {
-        ViewportFillingItem(modifier = Modifier.padding(all = LocalBoxSpacing.current.medium)) {
-            Failure(
-                localizedException = exception.localizedOrDefault(),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(all = LocalBoxSpacing.current.medium),
-            )
-        }
-    }
 }
 
 @PreviewLightDark

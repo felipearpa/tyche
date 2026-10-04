@@ -9,10 +9,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 
 fun LazyListScope.lazyPagingColumnEmpty() {
-    item {
-        ViewportFillingItem {
-            Empty(modifier = Modifier.fillMaxWidth())
-        }
+    viewportFillingItem {
+        Empty(modifier = Modifier.fillMaxWidth())
     }
 }
 

@@ -93,6 +93,30 @@
         }
       }
     },
+    "history_bet_label" : {
+      "comment" : "Label before another gambler's predicted score in a Timeline row.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bet"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apuesta"
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apuesta"
+          }
+        }
+      }
+    },
     "history_earned_label" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -112,6 +136,276 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "ganados"
+          }
+        }
+      }
+    },
+    "history_gambler_bet_accessibility" : {
+      "comment" : "Spoken prediction of another gambler in a Timeline row. Arguments: home goals, away goals.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bet: %1$lld to %2$lld"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apuesta: %1$lld a %2$lld"
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apuesta: %1$lld a %2$lld"
+          }
+        }
+      }
+    },
+    "history_gambler_no_bet_accessibility" : {
+      "comment" : "Spoken text when another gambler has no prediction for a Timeline match.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No bet placed"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No hay apuesta registrada"
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No hay apuesta registrada"
+          }
+        }
+      }
+    },
+    "history_gambler_summary_load_failure" : {
+      "comment" : "Shown when another gambler's pool total could not be loaded.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Couldn't load points."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se pudieron cargar los puntos."
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se pudieron cargar los puntos."
+          }
+        }
+      }
+    },
+    "history_gambler_summary_points_accessibility" : {
+      "comment" : "Spoken total points another gambler has earned in the pool. Arguments: gambler name, points.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ earned %#@points@ in this pool"
+          },
+          "substitutions" : {
+            "points" : {
+              "argNum" : 2,
+              "formatSpecifier" : "lld",
+              "variations" : {
+                "plural" : {
+                  "one" : {
+                    "stringUnit" : {
+                      "state" : "translated",
+                      "value" : "%arg point"
+                    }
+                  },
+                  "other" : {
+                    "stringUnit" : {
+                      "state" : "translated",
+                      "value" : "%arg points"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ ganó %#@points@ en esta polla"
+          },
+          "substitutions" : {
+            "points" : {
+              "argNum" : 2,
+              "formatSpecifier" : "lld",
+              "variations" : {
+                "plural" : {
+                  "one" : {
+                    "stringUnit" : {
+                      "state" : "translated",
+                      "value" : "%arg punto"
+                    }
+                  },
+                  "many" : {
+                    "stringUnit" : {
+                      "state" : "translated",
+                      "value" : "%arg puntos"
+                    }
+                  },
+                  "other" : {
+                    "stringUnit" : {
+                      "state" : "translated",
+                      "value" : "%arg puntos"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ ganó %#@points@ en esta quiniela"
+          },
+          "substitutions" : {
+            "points" : {
+              "argNum" : 2,
+              "formatSpecifier" : "lld",
+              "variations" : {
+                "plural" : {
+                  "one" : {
+                    "stringUnit" : {
+                      "state" : "translated",
+                      "value" : "%arg punto"
+                    }
+                  },
+                  "many" : {
+                    "stringUnit" : {
+                      "state" : "translated",
+                      "value" : "%arg puntos"
+                    }
+                  },
+                  "other" : {
+                    "stringUnit" : {
+                      "state" : "translated",
+                      "value" : "%arg puntos"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "history_gambler_summary_refresh_failure" : {
+      "comment" : "Shown when another gambler's pool total could not be updated; the last total stays visible.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Couldn't update points. Showing the last total."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se pudieron actualizar los puntos. Se muestra el último total."
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se pudieron actualizar los puntos. Se muestra el último total."
+          }
+        }
+      }
+    },
+    "history_gambler_summary_unavailable_accessibility" : {
+      "comment" : "Spoken text when another gambler's pool total is unavailable. Argument: gambler name.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Points earned by %@ in this pool unavailable"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Puntos ganados por %@ en esta polla no disponibles"
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Puntos ganados por %@ en esta quiniela no disponibles"
+          }
+        }
+      }
+    },
+    "history_match_score_accessibility" : {
+      "comment" : "Spoken match score of an entry whose points are not computed yet; the score is not final. Arguments: home team, home goals, away team, away goals.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Match score: %1$@ %2$lld, %3$@ %4$lld"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Marcador: %1$@ %2$lld, %3$@ %4$lld"
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Marcador: %1$@ %2$lld, %3$@ %4$lld"
+          }
+        }
+      }
+    },
+    "history_match_score_unavailable_accessibility" : {
+      "comment" : "Spoken text when an entry whose points are not computed yet has no match score. Arguments: home team, away team.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ versus %2$@, match score unavailable"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ contra %2$@, marcador no disponible"
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ contra %2$@, marcador no disponible"
           }
         }
       }
@@ -229,6 +523,30 @@
                 }
               }
             }
+          }
+        }
+      }
+    },
+    "history_points_pending_label" : {
+      "comment" : "Points pill and spoken text for a match whose points are not computed yet.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Points pending"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Puntos pendientes"
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Puntos pendientes"
           }
         }
       }

@@ -145,6 +145,36 @@ func historyBetPreviewModels() -> [PoolGamblerBetModel] {
     ]
 }
 
+/// Timeline preview rows: an uncomputed entry before kickoff (no score), an uncomputed entry with
+/// a match score, then the settled History rows.
+func timelineBetPreviewModels() -> [PoolGamblerBetModel] {
+    let base = poolGamblerBetDummyModel()
+    return [
+        base.copy {
+            $0.matchId = "timeline-pending-no-score"
+            $0.homeTeamId = "co"
+            $0.homeTeamName = "Colombia"
+            $0.awayTeamId = "br"
+            $0.awayTeamName = "Brasil"
+            $0.matchScore = nil
+            $0.betScore = TeamScore(homeTeamValue: 2, awayTeamValue: 1)
+            $0.score = nil
+            $0.isComputed = false
+        },
+        base.copy {
+            $0.matchId = "timeline-pending-score"
+            $0.homeTeamId = "fr"
+            $0.homeTeamName = "Francia"
+            $0.awayTeamId = "es"
+            $0.awayTeamName = "España"
+            $0.matchScore = TeamScore(homeTeamValue: 1, awayTeamValue: 0)
+            $0.betScore = nil
+            $0.score = nil
+            $0.isComputed = false
+        },
+    ] + historyBetPreviewModels()
+}
+
 /// Stable filler for History's row placeholders, sized like a typical finished match so loading
 /// rows keep the loaded rows' height. Never shown as real content.
 func historyBetPlaceholderModel() -> PoolGamblerBetModel {

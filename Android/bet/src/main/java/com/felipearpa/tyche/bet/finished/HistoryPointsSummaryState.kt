@@ -1,7 +1,7 @@
 package com.felipearpa.tyche.bet.finished
 
 /**
- * The points the signed-in gambler has earned in the current pool, as the server reports them.
+ * The points a gambler has earned in the current pool, as the server reports them.
  * [Unavailable] is a successful response without a total; it is never treated as zero.
  */
 sealed interface HistoryPoints {

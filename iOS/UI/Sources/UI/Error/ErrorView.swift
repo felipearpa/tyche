@@ -21,10 +21,10 @@ public struct ErrorView: View {
                     .font(.title)
 
                 Text(localizedError.failureReason ?? "")
-                    .multilineTextAlignment(.leading)
+                    .multilineTextAlignment(.center)
 
                 Text(localizedError.recoverySuggestion ?? "")
-                    .multilineTextAlignment(.leading)
+                    .multilineTextAlignment(.center)
             }
         }
     }

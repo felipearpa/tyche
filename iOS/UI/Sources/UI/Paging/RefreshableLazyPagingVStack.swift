@@ -1,7 +1,7 @@
 import SwiftUI
 import LazyPaging
 
-public extension LazyPaging.RefreshableLazyPagingVStack where EmptyContent == LazyPagingVStackEmpty, ErrorContent == LazyPagingVStackError {
+public extension LazyPaging.RefreshableLazyPagingVStack where EmptyContent == LazyPagingVStackEmpty<EmptyView>, ErrorContent == LazyPagingVStackError<EmptyView> {
     init(
         lazyPagingItems: LazyPaging.LazyPagingItems<Key, Item>,
         spacing: CGFloat = 0,
@@ -21,7 +21,12 @@ public extension LazyPaging.RefreshableLazyPagingVStack where EmptyContent == La
             pinnedViews: pinnedViews,
             loadingContent: loadingContent,
             emptyContent: { LazyPagingVStackEmpty() },
-            errorContent: { error in LazyPagingVStackError(localizedError: error.orDefaultLocalized()) },
+            errorContent: { error in
+                LazyPagingVStackError(
+                    localizedError: error.orDefaultLocalized(),
+                    retry: { Task { await lazyPagingItems.refresh() } }
+                )
+            },
             prependLoadingContent: prependLoadingContent,
             appendLoadingContent: appendLoadingContent,
             prependErrorContent: prependErrorContent,
@@ -33,8 +38,8 @@ public extension LazyPaging.RefreshableLazyPagingVStack where EmptyContent == La
 
 public extension LazyPaging.RefreshableLazyPagingVStack
 where
-    EmptyContent == LazyPagingVStackEmpty,
-    ErrorContent == LazyPagingVStackError,
+    EmptyContent == LazyPagingVStackEmpty<EmptyView>,
+    ErrorContent == LazyPagingVStackError<EmptyView>,
     PrependLoadingContent == EmptyView,
     PrependErrorContent == EmptyView,
     AppendErrorContent == EmptyView
@@ -55,7 +60,12 @@ where
             pinnedViews: pinnedViews,
             loadingContent: loadingContent,
             emptyContent: { LazyPagingVStackEmpty() },
-            errorContent: { error in LazyPagingVStackError(localizedError: error.orDefaultLocalized()) },
+            errorContent: { error in
+                LazyPagingVStackError(
+                    localizedError: error.orDefaultLocalized(),
+                    retry: { Task { await lazyPagingItems.refresh() } }
+                )
+            },
             prependLoadingContent: { EmptyView() },
             appendLoadingContent: appendLoadingContent,
             prependErrorContent: { _ in EmptyView() },
@@ -65,7 +75,7 @@ where
     }
 }
 
-public extension LazyPaging.RefreshableLazyPagingVStack where EmptyContent == LazyPagingVStackEmpty, ErrorContent == LazyPagingVStackError {
+public extension LazyPaging.RefreshableLazyPagingVStack where EmptyContent == LazyPagingVStackEmpty<EmptyView>, ErrorContent == LazyPagingVStackError<EmptyView> {
     init(
         lazyPagingItems: LazyPaging.LazyPagingItems<Key, Item>,
         spacing: CGFloat = 0,
@@ -86,7 +96,12 @@ public extension LazyPaging.RefreshableLazyPagingVStack where EmptyContent == La
             pinnedViews: pinnedViews,
             loadingContent: loadingContent,
             emptyContent: { LazyPagingVStackEmpty() },
-            errorContent: { error in LazyPagingVStackError(localizedError: error.orDefaultLocalized()) },
+            errorContent: { error in
+                LazyPagingVStackError(
+                    localizedError: error.orDefaultLocalized(),
+                    retry: { Task { await lazyPagingItems.refresh() } }
+                )
+            },
             rowContent: rowContent
         )
     }

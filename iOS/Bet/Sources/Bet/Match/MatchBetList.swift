@@ -54,6 +54,7 @@ struct MatchBetList: View {
                 MatchBetPlaceholderRow()
             }
         }
+        .fullListStateViewport()
     }
 }
 

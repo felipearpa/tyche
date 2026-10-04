@@ -31,24 +31,28 @@ struct FinishedBetList: View {
     }
 
     var body: some View {
+        let contentInsets = EdgeInsets(top: boxSpacing.medium, leading: 0, bottom: boxSpacing.medium, trailing: 0)
         // The plain paging stack: History supplies its own pull to refresh, which reloads the rows
         // and the total together (see `FinishedBetListView`).
         LazyPagingVStack(
             lazyPagingItems: lazyPagingItems,
             // The spacing goes inside the scroll view: an outer padding would keep it off the
             // bars' safe-area edges, so rows would stop short of them instead of scrolling beneath.
-            contentInsets: EdgeInsets(top: boxSpacing.medium, leading: 0, bottom: boxSpacing.medium, trailing: 0),
+            contentInsets: contentInsets,
             loadingContent: {
                 header
                 HistoryBetPlaceholderList(count: 50)
             },
             emptyContent: {
-                header
-                LazyPagingVStackEmpty()
+                LazyPagingVStackEmpty(header: { header })
             },
             errorContent: { error in
-                header
-                LazyPagingVStackError(localizedError: error.orDefaultLocalized())
+                // Retry reloads only the rows; the total keeps its own retry in the header.
+                LazyPagingVStackError(
+                    localizedError: error.orDefaultLocalized(),
+                    retry: { Task { await lazyPagingItems.refresh() } },
+                    header: { header }
+                )
             },
             prependLoadingContent: { EmptyView() },
             appendLoadingContent: { HistoryBetPlaceholderRow() },
@@ -81,6 +85,7 @@ struct FinishedBetList: View {
                 }
             }
         }
+        .fullListStateViewport(contentInsets: contentInsets)
     }
 
     private var header: some View {
@@ -94,14 +99,16 @@ struct FinishedBetList: View {
     }
 }
 
-private struct HistoryRowDivider: View {
+/// The thin separator below each History or Timeline row.
+struct HistoryRowDivider: View {
     var body: some View {
         Divider()
             .historyHorizontalGutter()
     }
 }
 
-private struct HistoryBetPlaceholderList: View {
+/// The initial-load rows of History and Timeline: production rows from placeholder models.
+struct HistoryBetPlaceholderList: View {
     let count: Int
 
     var body: some View {
@@ -111,7 +118,8 @@ private struct HistoryBetPlaceholderList: View {
     }
 }
 
-private struct HistoryBetPlaceholderRow: View {
+/// One loading row: the production row from a placeholder model, with its separator.
+struct HistoryBetPlaceholderRow: View {
     var body: some View {
         VStack(spacing: 0) {
             HistoryBetItem(poolGamblerBet: historyBetPlaceholderModel(), isPlaceholder: true)

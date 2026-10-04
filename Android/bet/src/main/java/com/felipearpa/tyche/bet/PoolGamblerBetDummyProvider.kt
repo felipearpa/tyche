@@ -246,6 +246,21 @@ fun historyBetPreviewModels(): List<PoolGamblerBetModel> {
 }
 
 /**
+ * Timeline preview rows: a pending entry without a match score, a pending entry with a score and
+ * no bet, then settled entries with a positive and a zero award.
+ */
+fun timelineBetPreviewModels(): List<PoolGamblerBetModel> {
+    val settled = historyBetPreviewModels()
+    val pending = settled.first().copy(isComputed = false, score = null)
+    return listOf(
+        pending.copy(matchId = "timeline-pending-no-score", matchScore = null),
+        pending.copy(matchId = "timeline-pending-score", matchScore = TeamScore(1, 0), betScore = null),
+        settled[0],
+        settled[1],
+    )
+}
+
+/**
  * Stable filler for History's row placeholders, sized like a typical finished match so loading
  * rows keep the loaded rows' height. Never shown as real content.
  */

@@ -39,4 +39,17 @@
         <item quantity="other">%d points</item>
     </plurals>
     <string name="history_points_unavailable_accessibility">Points unavailable</string>
+    <string name="history_bet_label">Bet</string>
+    <string name="history_points_pending_label">Points pending</string>
+    <string name="history_match_score_accessibility">Match score: %1$s %2$d, %3$s %4$d</string>
+    <string name="history_match_score_unavailable_accessibility">%1$s versus %2$s, match score unavailable</string>
+    <string name="history_gambler_bet_accessibility">Bet: %1$d to %2$d</string>
+    <string name="history_gambler_no_bet_accessibility">No bet placed</string>
+    <plurals name="history_gambler_summary_points_accessibility">
+        <item quantity="one">%1$s earned %2$d point in this pool</item>
+        <item quantity="other">%1$s earned %2$d points in this pool</item>
+    </plurals>
+    <string name="history_gambler_summary_unavailable_accessibility">Points earned by %1$s in this pool unavailable</string>
+    <string name="history_gambler_summary_load_failure">Couldn\'t load points.</string>
+    <string name="history_gambler_summary_refresh_failure">Couldn\'t update points. Showing the last total.</string>
 </resources>

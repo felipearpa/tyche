@@ -85,16 +85,18 @@ struct PendingBetItemViewModelTests {
         #expect(repository.submissionCount == 1)
     }
 
+    /// Budgets polls, not wall time: a busy CI main actor can stall this task far past any deadline.
     private func waitUntil(
-        timeout: Duration = .seconds(5),
+        polls: Int = 500,
         _ condition: @MainActor () -> Bool
     ) async throws {
-        let deadline = ContinuousClock.now.advanced(by: timeout)
+        var remaining = polls
         while !condition() {
-            guard ContinuousClock.now < deadline else {
-                Issue.record("condition not met within \(timeout)")
+            guard remaining > 0 else {
+                Issue.record("condition not met within \(polls) polls")
                 return
             }
+            remaining -= 1
             try await Task.sleep(for: .milliseconds(10))
         }
     }
@@ -131,10 +133,12 @@ private final class ScriptedBetRepository: PoolGamblerBetRepository {
     var submissionCount: Int { submissions.count }
 
     /// Waits for the next submission that has not been returned yet and is awaiting a result.
-    func nextSubmission(timeout: Duration = .seconds(5)) async throws -> Bet {
-        let deadline = ContinuousClock.now.advanced(by: timeout)
+    /// Budgets polls, not wall time: a busy CI main actor can stall this task far past any deadline.
+    func nextSubmission(polls: Int = 500) async throws -> Bet {
+        var remaining = polls
         while pending == nil || submissions.count <= consumed {
-            guard ContinuousClock.now < deadline else { throw SubmissionTimeout() }
+            guard remaining > 0 else { throw SubmissionTimeout() }
+            remaining -= 1
             try await Task.sleep(for: .milliseconds(10))
         }
         consumed += 1

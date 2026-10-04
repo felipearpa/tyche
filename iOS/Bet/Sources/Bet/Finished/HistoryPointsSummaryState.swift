@@ -1,6 +1,6 @@
 import Foundation
 
-/// The points the signed-in gambler has earned in the current pool, as the server reports them.
+/// The points a gambler has earned in the current pool, as the server reports them.
 /// `unavailable` is a successful response without a total; it is never treated as zero.
 enum HistoryPoints: Equatable, Sendable {
     case earned(Int)
@@ -11,9 +11,9 @@ enum HistoryPoints: Equatable, Sendable {
     }
 }
 
-/// History's earned-points summary: the last points the server confirmed and the state of the
-/// latest request. The two are independent, so a refresh or a failed refresh keeps the confirmed
-/// points on screen.
+/// The earned-points summary of History and Timeline: the last points the server confirmed and
+/// the state of the latest request. The two are independent, so a refresh or a failed refresh
+/// keeps the confirmed points on screen.
 struct HistoryPointsSummaryState: Equatable, Sendable {
     enum Request: Equatable, Sendable {
         case idle

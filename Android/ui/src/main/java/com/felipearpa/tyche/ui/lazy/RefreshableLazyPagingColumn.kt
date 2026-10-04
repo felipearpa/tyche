@@ -15,6 +15,7 @@ import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -42,6 +43,9 @@ import com.felipearpa.ui.lazy.rememberLazyPagingColumnState
  * A screen whose pull also reloads another source passes that reload as [onRefresh] and keeps
  * [isCompanionRefreshing] true while it runs; the pull indicator then stays until both the list
  * and that source finish. Both default to a list-only refresh.
+ *
+ * The default [errorContent] is the shared full-list error, whose Retry refreshes the list; the
+ * default page errors retry the failed page.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -56,7 +60,9 @@ fun <Item : Any> RefreshableLazyPagingColumn(
     reverseLayout: Boolean = false,
     verticalArrangement: Arrangement.Vertical = if (!reverseLayout) Arrangement.Top else Arrangement.Bottom,
     loadingContent: LazyListScope.() -> Unit = {},
-    errorContent: LazyListScope.(Throwable) -> Unit = { exception -> lazyPagingColumnError(exception) },
+    errorContent: LazyListScope.(Throwable) -> Unit = { exception ->
+        lazyPagingColumnError(exception = exception, onRetry = lazyPagingItems::refresh)
+    },
     emptyContent: LazyListScope.() -> Unit = { lazyPagingColumnEmpty() },
     prependLoadingContent: LazyListScope.() -> Unit = {},
     appendLoadingContent: LazyListScope.() -> Unit = {},
@@ -104,34 +110,38 @@ fun <Item : Any> RefreshableLazyPagingColumn(
             )
         },
     ) {
-        LazyPagingColumn(
-            modifier = Modifier.fillMaxSize(),
-            lazyPagingItems = lazyPagingItems,
-            lazyListState = lazyListState,
-            lazyPagingColumnState = lazyPagingColumnState,
-            contentPadding = contentPadding,
-            reverseLayout = reverseLayout,
-            verticalArrangement = verticalArrangement,
-            loadingContent = loadingContent,
-            refreshLoadingContent = {
-                if (!isRefreshing) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = contentPadding.calculateTopPadding()),
-                        contentAlignment = Alignment.Center,
-                    ) {
-                        CircularProgressIndicator(modifier = Modifier.padding(all = 16.dp))
+        // Lets full-list states measure the items above them (see viewportFillingItem); that
+        // measurement assumes the first item is at the top.
+        CompositionLocalProvider(LocalViewportFillingListState provides lazyListState.takeUnless { reverseLayout }) {
+            LazyPagingColumn(
+                modifier = Modifier.fillMaxSize(),
+                lazyPagingItems = lazyPagingItems,
+                lazyListState = lazyListState,
+                lazyPagingColumnState = lazyPagingColumnState,
+                contentPadding = contentPadding,
+                reverseLayout = reverseLayout,
+                verticalArrangement = verticalArrangement,
+                loadingContent = loadingContent,
+                refreshLoadingContent = {
+                    if (!isRefreshing) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = contentPadding.calculateTopPadding()),
+                            contentAlignment = Alignment.Center,
+                        ) {
+                            CircularProgressIndicator(modifier = Modifier.padding(all = 16.dp))
+                        }
                     }
-                }
-            },
-            errorContent = errorContent,
-            emptyContent = emptyContent,
-            prependLoadingContent = prependLoadingContent,
-            appendLoadingContent = appendLoadingContent,
-            prependErrorContent = prependErrorContent,
-            appendErrorContent = appendErrorContent,
-            itemContent = itemContent,
-        )
+                },
+                errorContent = errorContent,
+                emptyContent = emptyContent,
+                prependLoadingContent = prependLoadingContent,
+                appendLoadingContent = appendLoadingContent,
+                prependErrorContent = prependErrorContent,
+                appendErrorContent = appendErrorContent,
+                itemContent = itemContent,
+            )
+        }
     }
 }

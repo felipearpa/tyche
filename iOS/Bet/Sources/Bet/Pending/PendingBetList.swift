@@ -22,11 +22,12 @@ struct PendingBetList: View {
     var body: some View {
         let _ = Self._printChangesIfDebug()
 
+        let contentInsets = EdgeInsets(top: boxSpacing.medium, leading: 0, bottom: boxSpacing.medium, trailing: 0)
         RefreshableLazyPagingVStack(
             lazyPagingItems: lazyPagingItems,
             // The spacing goes inside the scroll view: an outer padding would keep it off the
             // bars' safe-area edges, so rows would stop short of them instead of scrolling beneath.
-            contentInsets: EdgeInsets(top: boxSpacing.medium, leading: 0, bottom: boxSpacing.medium, trailing: 0),
+            contentInsets: contentInsets,
             pinnedViews: [.sectionHeaders],
             loadingContent: { PendingBetPlaceholderList() },
             appendLoadingContent: { PendingBetPlaceholderRow() },
@@ -84,6 +85,7 @@ struct PendingBetList: View {
                 }
             }
         }
+        .fullListStateViewport(contentInsets: contentInsets)
     }
 }
 
