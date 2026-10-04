@@ -237,10 +237,12 @@ struct BetTimelineListViewModelTests {
         await load.value
     }
 
-    private func waitUntil(timeout: Duration = .seconds(5), _ condition: () -> Bool) async throws {
-        let deadline = ContinuousClock.now.advanced(by: timeout)
+    /// Budgets polls, not wall time: a busy CI main actor can stall this task far past any deadline.
+    private func waitUntil(polls: Int = 500, _ condition: () -> Bool) async throws {
+        var remaining = polls
         while !condition() {
-            guard ContinuousClock.now < deadline else { throw TimelineConditionTimeout() }
+            guard remaining > 0 else { throw TimelineConditionTimeout() }
+            remaining -= 1
             try await Task.sleep(for: .milliseconds(10))
         }
     }
@@ -328,10 +330,12 @@ private final class TimelineGatedScoreRepository: PoolGamblerScoreRepository {
     private(set) var requests: [TimelineScoreRequest] = []
     private var pending: [Int: CheckedContinuation<Result<PoolGamblerScore, Error>, Never>] = [:]
 
-    func waitForRequest(_ number: Int, timeout: Duration = .seconds(5)) async throws {
-        let deadline = ContinuousClock.now.advanced(by: timeout)
+    /// Budgets polls, not wall time: a busy CI main actor can stall this task far past any deadline.
+    func waitForRequest(_ number: Int, polls: Int = 500) async throws {
+        var remaining = polls
         while pending[number] == nil {
-            guard ContinuousClock.now < deadline else { throw TimelineConditionTimeout() }
+            guard remaining > 0 else { throw TimelineConditionTimeout() }
+            remaining -= 1
             try await Task.sleep(for: .milliseconds(10))
         }
     }

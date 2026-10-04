@@ -99,10 +99,12 @@ private final class GatedMatchRepository: PoolGamblerBetRepository {
     private var requestCount = 0
     private var pending: CheckedContinuation<Result<PoolGamblerBet, Error>, Never>?
 
-    func waitForRequest(_ count: Int, timeout: Duration = .seconds(5)) async throws {
-        let deadline = ContinuousClock.now.advanced(by: timeout)
+    /// Budgets polls, not wall time: a busy CI main actor can stall this task far past any deadline.
+    func waitForRequest(_ count: Int, polls: Int = 500) async throws {
+        var remaining = polls
         while requestCount < count || pending == nil {
-            guard ContinuousClock.now < deadline else { throw RequestTimeout() }
+            guard remaining > 0 else { throw RequestTimeout() }
+            remaining -= 1
             try await Task.sleep(for: .milliseconds(10))
         }
     }
