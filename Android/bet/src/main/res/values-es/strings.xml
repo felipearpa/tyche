@@ -43,4 +43,18 @@
         <item quantity="other">%d puntos</item>
     </plurals>
     <string name="history_points_unavailable_accessibility">Puntos no disponibles</string>
+    <string name="history_bet_label">Apuesta</string>
+    <string name="history_points_pending_label">Puntos pendientes</string>
+    <string name="history_match_score_accessibility">Marcador: %1$s %2$d, %3$s %4$d</string>
+    <string name="history_match_score_unavailable_accessibility">%1$s contra %2$s, marcador no disponible</string>
+    <string name="history_gambler_bet_accessibility">Apuesta: %1$d a %2$d</string>
+    <string name="history_gambler_no_bet_accessibility">No hay apuesta registrada</string>
+    <plurals name="history_gambler_summary_points_accessibility">
+        <item quantity="one">%1$s ganó %2$d punto en esta polla</item>
+        <item quantity="many">%1$s ganó %2$d puntos en esta polla</item>
+        <item quantity="other">%1$s ganó %2$d puntos en esta polla</item>
+    </plurals>
+    <string name="history_gambler_summary_unavailable_accessibility">Puntos ganados por %1$s en esta polla no disponibles</string>
+    <string name="history_gambler_summary_load_failure">No se pudieron cargar los puntos.</string>
+    <string name="history_gambler_summary_refresh_failure">No se pudieron actualizar los puntos. Se muestra el último total.</string>
 </resources>

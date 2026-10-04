@@ -31,7 +31,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
  * there are no sticky date headers.
  *
  * One pull refreshes the rows and calls [onRefresh] for the total; the pull indicator stays
- * while the total's pull request is pending.
+ * while the total's pull request is pending. The list error's Retry reloads only the rows.
  */
 @Composable
 fun FinishedBetList(
@@ -67,7 +67,8 @@ fun FinishedBetList(
         },
         errorContent = { exception ->
             header()
-            lazyPagingColumnError(exception)
+            // Reloads only the rows; the total keeps its own retry.
+            lazyPagingColumnError(exception = exception, onRetry = lazyPoolGamblerBets::refresh)
         },
         appendLoadingContent = { item { HistoryBetPlaceholderRow(dateFormat = dateFormat) } },
     ) {
@@ -92,28 +93,39 @@ fun FinishedBetList(
     }
 }
 
-private fun historyRowKey(poolGamblerBet: PoolGamblerBetModel) =
+/** The lazy key of a History or Timeline row. */
+internal fun historyRowKey(poolGamblerBet: PoolGamblerBetModel) =
     Triple(poolGamblerBet.poolId, poolGamblerBet.gamblerId, poolGamblerBet.matchId)
 
-private fun LazyListScope.historyBetPlaceholderList(count: Int, dateFormat: HistoryMatchDateFormat) {
+/** [count] production placeholder rows for an initial load. */
+internal fun LazyListScope.historyBetPlaceholderList(
+    count: Int,
+    dateFormat: HistoryMatchDateFormat,
+    owner: HistoryOwner = HistoryOwner.SignedInGambler,
+) {
     items(count = count, contentType = { HISTORY_ROW_CONTENT_TYPE }) {
-        HistoryBetPlaceholderRow(dateFormat = dateFormat)
+        HistoryBetPlaceholderRow(dateFormat = dateFormat, owner = owner)
     }
 }
 
+/** One production row filled with placeholder data, with its divider. */
 @Composable
-private fun HistoryBetPlaceholderRow(dateFormat: HistoryMatchDateFormat) {
+internal fun HistoryBetPlaceholderRow(
+    dateFormat: HistoryMatchDateFormat,
+    owner: HistoryOwner = HistoryOwner.SignedInGambler,
+) {
     HistoryBetItem(
         poolGamblerBet = historyBetPlaceholderModel(),
         dateFormat = dateFormat,
         modifier = Modifier.fillMaxWidth(),
+        owner = owner,
         isPlaceholder = true,
     )
     HistoryRowDivider()
 }
 
 private const val POINTS_SUMMARY_KEY = "historyPointsSummary"
-private const val HISTORY_ROW_CONTENT_TYPE = "HistoryBet"
+internal const val HISTORY_ROW_CONTENT_TYPE = "HistoryBet"
 
 @PreviewLightDark
 @Composable

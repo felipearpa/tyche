@@ -48,6 +48,7 @@ fun ExceptionView(localizedException: LocalizedException) {
                     localizedException.recoverySuggestion,
                 ).joinToString(separator = ". "),
                 style = MaterialTheme.typography.failureReason,
+                textAlign = TextAlign.Center,
             )
         }
     }

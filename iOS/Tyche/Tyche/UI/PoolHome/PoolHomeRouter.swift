@@ -194,6 +194,9 @@ private struct PoolHomeDestinations: ViewModifier {
                         )
                     }
                 )
+                // Timeline's view model, with its rows and total, belongs to one signed-in
+                // account, pool, and gambler; another context starts a new one.
+                .id(TimelineContext(accountId: accountId, route: route))
                 .toolbar(.hidden, for: .tabBar)
             }
             .navigationDestination(for: MatchBetListViewRoute.self) { route in
@@ -248,6 +251,11 @@ private struct PoolHomeDestinations: ViewModifier {
                 .toolbar(.hidden, for: .tabBar)
             }
     }
+}
+
+private struct TimelineContext: Hashable {
+    let accountId: String
+    let route: BetTimelineListViewRoute
 }
 
 private struct ShareablePoolUrl: Identifiable {

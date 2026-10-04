@@ -1,18 +1,20 @@
 import SwiftUI
 import UI
 
-/// The points the signed-in gambler has earned in the current pool: a large value and a smaller
-/// label. The initial load renders this same component from `historyPointsPlaceholderModel` with
+/// The points the owner has earned in the current pool: a large value and a smaller label. The
+/// initial load renders this same component from `historyPointsPlaceholderModel` with
 /// `isPlaceholder: true`; it then conceals its content with the shared pulse and stays out of the
-/// accessibility tree.
+/// accessibility tree. Another gambler's total is announced with that gambler's name.
 struct HistoryPointsSummary: View {
     let points: HistoryPoints
+    let owner: HistoryOwner
     let isPlaceholder: Bool
 
     @ScaledMetric(relativeTo: .largeTitle) private var valueSize: CGFloat = 52
 
-    init(points: HistoryPoints, isPlaceholder: Bool = false) {
+    init(points: HistoryPoints, owner: HistoryOwner = .signedInGambler, isPlaceholder: Bool = false) {
         self.points = points
+        self.owner = owner
         self.isPlaceholder = isPlaceholder
     }
 
@@ -66,11 +68,15 @@ struct HistoryPointsSummary: View {
     /// The exact string handed to `.accessibilityLabel`; a placeholder contributes none.
     var accessibilityLabel: String {
         guard !isPlaceholder else { return "" }
-        switch points {
-        case .earned(let value):
+        switch (owner, points) {
+        case (.signedInGambler, .earned(let value)):
             return String(localized: .historySummaryPointsAccessibility(value))
-        case .unavailable:
+        case (.signedInGambler, .unavailable):
             return String(localized: .historySummaryUnavailableAccessibility)
+        case (.selectedGambler(let name), .earned(let value)):
+            return String(localized: .historyGamblerSummaryPointsAccessibility(name, points: value))
+        case (.selectedGambler(let name), .unavailable):
+            return String(localized: .historyGamblerSummaryUnavailableAccessibility(name))
         }
     }
 }
@@ -80,15 +86,29 @@ let historyPointsPlaceholderModel = HistoryPoints.earned(100)
 
 private let labelSpacing: CGFloat = 8
 
-/// History's summary for every state of the total: the placeholder while the first request runs,
-/// the confirmed points (with refresh progress or a refresh failure beneath them), or a compact
-/// error with a retry that requests only the total.
+/// The points summary for every state of the total: the placeholder while the first request
+/// runs, the confirmed points (with refresh progress or a refresh failure beneath them), or a
+/// compact error with a retry that requests only the total. Shared by History and Timeline;
+/// `owner` selects the ownership wording.
 struct HistoryPointsHeader: View {
     let state: HistoryPointsSummaryState
+    let owner: HistoryOwner
     /// Pull to refresh shows its own indicator, so the inline progress appears only for a summary
     /// retry.
     let showsRefreshProgress: Bool
     let onRetry: () -> Void
+
+    init(
+        state: HistoryPointsSummaryState,
+        owner: HistoryOwner = .signedInGambler,
+        showsRefreshProgress: Bool,
+        onRetry: @escaping () -> Void
+    ) {
+        self.state = state
+        self.owner = owner
+        self.showsRefreshProgress = showsRefreshProgress
+        self.onRetry = onRetry
+    }
 
     @Environment(\.boxSpacing) private var boxSpacing
 
@@ -96,11 +116,11 @@ struct HistoryPointsHeader: View {
         VStack(alignment: .leading, spacing: boxSpacing.medium) {
             switch state.presentation {
             case .placeholder:
-                HistoryPointsSummary(points: historyPointsPlaceholderModel, isPlaceholder: true)
+                HistoryPointsSummary(points: historyPointsPlaceholderModel, owner: owner, isPlaceholder: true)
             case .failed:
-                failure(.historySummaryLoadFailure)
+                failure(loadFailureMessage)
             case .points(let points, let refreshStatus):
-                HistoryPointsSummary(points: points)
+                HistoryPointsSummary(points: points, owner: owner)
                 refreshStatusView(refreshStatus)
             }
         }
@@ -123,24 +143,58 @@ struct HistoryPointsHeader: View {
         case .refreshing:
             EmptyView()
         case .failed:
-            failure(.historySummaryRefreshFailure)
+            failure(refreshFailureMessage)
+        }
+    }
+
+    private var loadFailureMessage: LocalizedStringResource {
+        switch owner {
+        case .signedInGambler: .historySummaryLoadFailure
+        case .selectedGambler: .historyGamblerSummaryLoadFailure
+        }
+    }
+
+    private var refreshFailureMessage: LocalizedStringResource {
+        switch owner {
+        case .signedInGambler: .historySummaryRefreshFailure
+        case .selectedGambler: .historyGamblerSummaryRefreshFailure
         }
     }
 
     private func failure(_ message: LocalizedStringResource) -> some View {
-        VStack(alignment: .leading, spacing: boxSpacing.medium) {
+        HStack(spacing: boxSpacing.small) {
             Text(message)
                 .font(.subheadline)
                 .foregroundStyle(HistoryStyle.secondaryText)
                 .fixedSize(horizontal: false, vertical: true)
 
-            Button(action: onRetry) {
-                Text(sharedResource: .retryAction)
-            }
-            .buttonStyle(.standardProminent)
+            HistoryPointsRetryButton(action: onRetry)
         }
     }
 }
+
+/// The summary's retry: a secondary, icon-only action beside the failure text, so it does not
+/// compete with the list's own Retry. It requests only the total. The glyph scales with Dynamic
+/// Type and the whole 44-point minimum area takes taps.
+struct HistoryPointsRetryButton: View {
+    let action: () -> Void
+
+    @ScaledMetric(relativeTo: .subheadline) private var glyphSize: CGFloat = 22
+
+    var body: some View {
+        Button(action: action) {
+            Image(sharedResource: .refresh)
+                .resizable()
+                .frame(width: glyphSize, height: glyphSize)
+                .frame(minWidth: minimumHitTarget, minHeight: minimumHitTarget)
+                .contentShape(Rectangle())
+        }
+        .buttonStyle(.borderless)
+        .accessibilityLabel(Text(sharedResource: .retryAction))
+    }
+}
+
+private let minimumHitTarget: CGFloat = 44
 
 #Preview("Positive, zero, unavailable") {
     VStack(alignment: .leading, spacing: 24) {
@@ -163,6 +217,12 @@ struct HistoryPointsHeader: View {
             onRetry: {}
         )
         HistoryPointsHeader(state: .initial.loaded(.earned(4)).failed(), showsRefreshProgress: false, onRetry: {})
+        HistoryPointsHeader(
+            state: .initial.failed(),
+            owner: .selectedGambler(name: "El mono"),
+            showsRefreshProgress: false,
+            onRetry: {}
+        )
     }
     .padding()
 }

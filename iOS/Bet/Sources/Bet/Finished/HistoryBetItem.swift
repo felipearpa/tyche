@@ -2,17 +2,20 @@ import SwiftUI
 import Core
 import UI
 
-/// One History match: the date and time, both teams around the final score, and the
-/// signed-in gambler's bet with the awarded points. Loading slots render this same component from
-/// a placeholder model with `isPlaceholder: true`: native redaction under the shared
+/// One match in History or another gambler's Timeline: the date and time, both teams around the
+/// score, and the owner's bet with its points. Loading slots render this same component from a
+/// placeholder model with `isPlaceholder: true`: native redaction under the shared
 /// `LoadingPlaceholderPulse` conceals its content, and it ignores touches and stays out of the
 /// accessibility tree.
 ///
-/// Another gambler's timeline keeps `FinishedBetItem`; this row's "Your bet" wording belongs to
-/// the signed-in gambler's History only.
+/// `owner` selects the ownership wording; it defaults to the signed-in gambler's "Your bet". A
+/// computed entry shows the final score and the awarded points. An entry whose points are not
+/// computed yet shows the match score available so far (or dashes) and "Points pending", and
+/// never describes that score as final or the match as live.
 struct HistoryBetItem: View {
     let poolGamblerBet: PoolGamblerBetModel
     let isPlaceholder: Bool
+    let owner: HistoryOwner
     let dateFormat: HistoryMatchDateFormat
 
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
@@ -22,10 +25,12 @@ struct HistoryBetItem: View {
     init(
         poolGamblerBet: PoolGamblerBetModel,
         isPlaceholder: Bool = false,
+        owner: HistoryOwner = .signedInGambler,
         dateFormat: HistoryMatchDateFormat = HistoryMatchDateFormat()
     ) {
         self.poolGamblerBet = poolGamblerBet
         self.isPlaceholder = isPlaceholder
+        self.owner = owner
         self.dateFormat = dateFormat
     }
 
@@ -173,7 +178,7 @@ struct HistoryBetItem: View {
     private var betLine: some View {
         if let betScore = poolGamblerBet.betScore {
             HStack(alignment: .firstTextBaseline, spacing: betLabelSpacing) {
-                Text(.historyYourBetLabel)
+                Text(betLabel)
                     .loadedForeground(HistoryStyle.secondaryText, isPlaceholder: isPlaceholder)
                 Text(verbatim: "\(betScore.homeTeamValue) – \(betScore.awayTeamValue)")
                     .fontWeight(.semibold)
@@ -188,28 +193,51 @@ struct HistoryBetItem: View {
         }
     }
 
-    private var awardedPoints: HistoryPoints {
-        HistoryPoints(score: poolGamblerBet.score)
+    private var betLabel: LocalizedStringResource {
+        switch owner {
+        case .signedInGambler: .historyYourBetLabel
+        case .selectedGambler: .historyBetLabel
+        }
+    }
+
+    private var rowPoints: HistoryRowPoints {
+        HistoryRowPoints(poolGamblerBet)
+    }
+
+    private var awardedPoints: HistoryPoints? {
+        if case .awarded(let points) = rowPoints { return points }
+        return nil
+    }
+
+    private var isPositiveAward: Bool {
+        awardedPoints?.isPositive == true
     }
 
     private var pointsPill: some View {
-        Text(historyPointsShortText(awardedPoints))
+        Text(pointsPillText)
             .font(.body.weight(.semibold))
             .monospacedDigit()
             .lineLimit(1)
             .fixedSize()
             .loadedForeground(
-                awardedPoints.isPositive ? HistoryStyle.positiveText : HistoryStyle.secondaryText,
+                isPositiveAward ? HistoryStyle.positiveText : HistoryStyle.secondaryText,
                 isPlaceholder: isPlaceholder
             )
             .padding(.horizontal, pillHorizontalPadding)
             .padding(.vertical, pillVerticalPadding)
             .background(
-                Capsule().fill(awardedPoints.isPositive ? HistoryStyle.positiveFill : HistoryStyle.neutralFill)
+                Capsule().fill(isPositiveAward ? HistoryStyle.positiveFill : HistoryStyle.neutralFill)
             )
     }
 
     // MARK: Text
+
+    private var pointsPillText: String {
+        switch rowPoints {
+        case .awarded(let points): historyPointsShortText(points)
+        case .pending: String(localized: .historyPointsPendingLabel)
+        }
+    }
 
     private var dateText: String {
         dateFormat.date(poolGamblerBet.matchDateTime)
@@ -236,36 +264,57 @@ struct HistoryBetItem: View {
         .joined(separator: ". ")
     }
 
+    /// A computed entry's score is the final result; any other score is only the match score
+    /// reported so far.
     private var resultAccessibilityText: String {
         let home = poolGamblerBet.homeTeamName
         let away = poolGamblerBet.awayTeamName
+        let isFinal = poolGamblerBet.isComputed
         guard let matchScore = poolGamblerBet.matchScore else {
-            return String(localized: .historyResultUnavailableAccessibility(home, away))
+            return isFinal
+                ? String(localized: .historyResultUnavailableAccessibility(home, away))
+                : String(localized: .historyMatchScoreUnavailableAccessibility(home, away))
         }
-        return String(
-            localized: .historyResultAccessibility(
-                home,
-                matchScore.homeTeamValue,
-                away,
-                matchScore.awayTeamValue
-            )
-        )
+        let homeValue = matchScore.homeTeamValue
+        let awayValue = matchScore.awayTeamValue
+        return isFinal
+            ? String(localized: .historyResultAccessibility(home, homeValue, away, awayValue))
+            : String(localized: .historyMatchScoreAccessibility(home, homeValue, away, awayValue))
     }
 
     private var betAccessibilityText: String {
-        guard let betScore = poolGamblerBet.betScore else {
-            return String(localized: .historyNoBetAccessibility)
+        switch (owner, poolGamblerBet.betScore) {
+        case (.signedInGambler, nil):
+            String(localized: .historyNoBetAccessibility)
+        case (.selectedGambler, nil):
+            String(localized: .historyGamblerNoBetAccessibility)
+        case (.signedInGambler, let betScore?):
+            String(localized: .historyBetAccessibility(betScore.homeTeamValue, betScore.awayTeamValue))
+        case (.selectedGambler, let betScore?):
+            String(localized: .historyGamblerBetAccessibility(betScore.homeTeamValue, betScore.awayTeamValue))
         }
-        return String(localized: .historyBetAccessibility(betScore.homeTeamValue, betScore.awayTeamValue))
     }
 
     private var pointsAccessibilityText: String {
-        switch awardedPoints {
-        case .earned(let value):
-            return String(localized: .historyPointsAccessibility(value))
-        case .unavailable:
-            return String(localized: .historyPointsUnavailableAccessibility)
+        switch rowPoints {
+        case .awarded(.earned(let value)):
+            String(localized: .historyPointsAccessibility(value))
+        case .awarded(.unavailable):
+            String(localized: .historyPointsUnavailableAccessibility)
+        case .pending:
+            String(localized: .historyPointsPendingLabel)
         }
+    }
+}
+
+/// A row's points: the authoritative award once the entry is computed, otherwise pending. A
+/// pending entry never shows a score value as an award.
+enum HistoryRowPoints: Equatable {
+    case awarded(HistoryPoints)
+    case pending
+
+    init(_ poolGamblerBet: PoolGamblerBetModel) {
+        self = poolGamblerBet.isComputed ? .awarded(HistoryPoints(score: poolGamblerBet.score)) : .pending
     }
 }
 
@@ -288,6 +337,18 @@ private let pillVerticalPadding: CGFloat = 6
                 Divider()
             }
             HistoryBetItem(poolGamblerBet: poolGamblerBetPlaceholderModel(isComputed: true), isPlaceholder: true)
+        }
+        .historyHorizontalGutter()
+    }
+}
+
+#Preview("Selected gambler, pending and settled") {
+    ScrollView {
+        VStack(spacing: 0) {
+            ForEach(timelineBetPreviewModels()) { bet in
+                HistoryBetItem(poolGamblerBet: bet, owner: .selectedGambler(name: "El mono"))
+                Divider()
+            }
         }
         .historyHorizontalGutter()
     }

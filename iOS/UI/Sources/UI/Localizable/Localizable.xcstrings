@@ -121,6 +121,30 @@
         }
       }
     },
+    "go_home_action" : {
+      "comment" : "Accessibility label for the toolbar control that returns to the pool's home screen.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Home"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Inicio"
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Inicio"
+          }
+        }
+      }
+    },
     "open_menu_action" : {
       "comment" : "Accessibility label for the control that opens the navigation drawer.",
       "extractionState" : "manual",

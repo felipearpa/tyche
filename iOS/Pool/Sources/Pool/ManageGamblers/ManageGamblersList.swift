@@ -18,7 +18,10 @@ struct ManageGamblersList: View {
             loadingContent: { ManageGamblerPlaceholderList() },
             emptyContent: { EmptyView() },
             errorContent: { error in
-                LazyPagingVStackError(localizedError: error.orDefaultLocalized())
+                LazyPagingVStackError(
+                    localizedError: error.orDefaultLocalized(),
+                    retry: { Task { await lazyPagingItems.refresh() } }
+                )
             },
             prependLoadingContent: { EmptyView() },
             appendLoadingContent: { ManageGamblerPlaceholderRow() },
@@ -41,6 +44,7 @@ struct ManageGamblersList: View {
                 .animation(.default, value: state.isMutated())
             }
         }
+        .fullListStateViewport()
     }
 
     @ViewBuilder

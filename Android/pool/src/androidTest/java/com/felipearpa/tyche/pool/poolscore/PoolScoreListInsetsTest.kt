@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertHasNoClickAction
 import androidx.compose.ui.test.assertIsDisplayed
@@ -18,7 +19,7 @@ import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
-import androidx.compose.ui.test.performScrollTo
+import androidx.compose.ui.test.performSemanticsAction
 import androidx.compose.ui.test.performScrollToIndex
 import androidx.compose.ui.unit.dp
 import androidx.paging.Pager
@@ -71,12 +72,16 @@ class PoolScoreListInsetsTest {
     @Test
     fun aFailedFirstLoadScrollsToItsRetryActionAndRetryingRecoversTheList() {
         val source = FailingOnceSource(pools = listOf(model(index = 0)))
-        render(pools = Pager(PagingConfig(pageSize = 10)) { source }.flow)
+        render(pools = Pager(PagingConfig(pageSize = 10)) { source.create() }.flow)
 
         composeTestRule.waitUntil(timeoutMillis = 5_000) {
             composeTestRule.onAllNodesWithText("Retry").fetchSemanticsNodes().isNotEmpty()
         }
-        val retry = composeTestRule.onNodeWithText("Retry").performScrollTo().assertIsDisplayed()
+        // Scrolls the list to its end, as a swipe or a screen reader's scroll forward does.
+        composeTestRule.onNode(hasScrollToIndexAction()).performSemanticsAction(SemanticsActions.ScrollBy) { scrollBy ->
+            scrollBy(0f, 100_000f)
+        }
+        val retry = composeTestRule.onNodeWithText("Retry").assertIsDisplayed()
         val retryBottom = retry.getUnclippedBoundsInRoot().bottom
         assertTrue(
             "Retry ends at $retryBottom, inside the bottom padding",
@@ -138,22 +143,23 @@ class PoolScoreListInsetsTest {
         }
     }
 
-    private class FailingOnceSource(
-        private val pools: List<PoolGamblerScoreModel>,
-    ) : PagingSource<Int, PoolGamblerScoreModel>() {
+    /** Creates the list's sources; only the first load of all fails. [loads] counts every load. */
+    private class FailingOnceSource(private val pools: List<PoolGamblerScoreModel>) {
         var loads = 0
             private set
 
-        override suspend fun load(params: LoadParams<Int>): LoadResult<Int, PoolGamblerScoreModel> {
-            loads += 1
-            return if (loads == 1) {
-                LoadResult.Error(IOException("offline"))
-            } else {
-                LoadResult.Page(data = pools, prevKey = null, nextKey = null)
+        fun create(): PagingSource<Int, PoolGamblerScoreModel> = object : PagingSource<Int, PoolGamblerScoreModel>() {
+            override suspend fun load(params: LoadParams<Int>): LoadResult<Int, PoolGamblerScoreModel> {
+                loads += 1
+                return if (loads == 1) {
+                    LoadResult.Error(IOException("offline"))
+                } else {
+                    LoadResult.Page(data = pools, prevKey = null, nextKey = null)
+                }
             }
-        }
 
-        override fun getRefreshKey(state: PagingState<Int, PoolGamblerScoreModel>): Int? = null
+            override fun getRefreshKey(state: PagingState<Int, PoolGamblerScoreModel>): Int? = null
+        }
     }
 
     private fun model(index: Int) = PoolGamblerScoreModel(

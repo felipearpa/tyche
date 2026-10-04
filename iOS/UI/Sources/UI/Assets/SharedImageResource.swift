@@ -17,6 +17,7 @@ public extension SharedImageResource  {
     static let menu = SharedImageResource(.menu)
     static let arrowForwardIos = SharedImageResource(.arrowForwardIos)
     static let add = SharedImageResource(.add)
+    static let refresh = SharedImageResource(.refresh)
     static let home = SharedImageResource(.home)
     static let trophy = SharedImageResource(.trophy)
     static let deleteForever = SharedImageResource(.deleteForever)

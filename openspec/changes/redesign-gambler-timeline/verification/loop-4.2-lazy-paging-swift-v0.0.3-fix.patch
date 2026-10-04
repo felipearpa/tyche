@@ -1,0 +1,113 @@
+diff --git a/Sources/LazyPaging/Items/LazyPagingItems.swift b/Sources/LazyPaging/Items/LazyPagingItems.swift
+index 586171d..51f072f 100644
+--- a/Sources/LazyPaging/Items/LazyPagingItems.swift
++++ b/Sources/LazyPaging/Items/LazyPagingItems.swift
+@@ -135,6 +135,19 @@ public final class LazyPagingItems<Key: Hashable & Sendable, Item: Identifiable
+         apply(result: result, kind: .refresh)
+     }
+ 
++    /// The load a column starts when it appears. Returns without loading when the appearance
++    /// task is already cancelled.
++    ///
++    /// SwiftUI can start and cancel a view's `task` within one update: on iOS 18 it does so
++    /// for a column in a non-selected tab each time that column updates. Refreshing there
++    /// would publish a loading state, update the column again, and start the next cancelled
++    /// task, so a single update would reload the list on every frame. Explicit refreshes
++    /// (pull to refresh, Retry) call ``refresh()`` and are not affected.
++    func refreshOnAppear() async {
++        guard !Task.isCancelled else { return }
++        await refresh()
++    }
++
+     public func refreshWithoutNotification() async {
+         _ = await pageFetcher.refresh(
+             anchorPosition: anchorPosition,
+diff --git a/Sources/LazyPaging/Views/LazyPagingVStack.swift b/Sources/LazyPaging/Views/LazyPagingVStack.swift
+index 97c0594..7d7dfe6 100644
+--- a/Sources/LazyPaging/Views/LazyPagingVStack.swift
++++ b/Sources/LazyPaging/Views/LazyPagingVStack.swift
+@@ -164,7 +164,7 @@ public struct LazyPagingVStack<
+             // new instance stays stuck on the loading state.
+             .task(id: ObjectIdentifier(lazyPagingItems)) {
+                 initialScrollTarget = nil
+-                await lazyPagingItems.refresh()
++                await lazyPagingItems.refreshOnAppear()
+                 // When the initial key sits in the middle of the dataset the
+                 // source reports leading placeholders and the content starts
+                 // far below the default scroll offset. Jumping the viewport
+diff --git a/Tests/LazyPagingTests/Items/LazyPagingItemsLoadTests.swift b/Tests/LazyPagingTests/Items/LazyPagingItemsLoadTests.swift
+index 1c32e95..1c75d6b 100644
+--- a/Tests/LazyPagingTests/Items/LazyPagingItemsLoadTests.swift
++++ b/Tests/LazyPagingTests/Items/LazyPagingItemsLoadTests.swift
+@@ -210,4 +210,71 @@ struct LazyPagingItemsLoadTests {
+         try? await Task.sleep(nanoseconds: 50_000_000)
+         #expect(items.loadedItems.count == 2)
+     }
++
++    private func makeCountedItems() -> (LazyPagingItems<Int, TestItem>, FailingOnPagePagingSource) {
++        let source = FailingOnPagePagingSource(
++            totalPages: 5, pageSize: 2, failingPage: -1, error: TestError(tag: "unused")
++        )
++        let pager = Pager<Int, TestItem>(
++            config: PagingConfig(pageSize: 2),
++            pagingSourceFactory: { source },
++            initialKey: 0
++        )
++        return (LazyPagingItems(pager: pager), source)
++    }
++
++    /// Runs `body` in a task that is already cancelled when `body` starts, as SwiftUI does for a
++    /// view's `task` when it starts and cancels it in the same update.
++    private func inCancelledTask(_ body: @escaping @MainActor () async -> Void) async {
++        let task = Task { @MainActor in
++            withUnsafeCurrentTask { $0?.cancel() }
++            await body()
++        }
++        await task.value
++    }
++
++    @Test("given a cancelled appearance when refreshOnAppear called then nothing loads and the load state is unchanged")
++    func given_cancelledAppearance_when_refreshOnAppear_then_nothingLoadsAndLoadStateUnchanged() async {
++        let (items, source) = makeCountedItems()
++        let loadStateBefore = items.loadState
++
++        await inCancelledTask { await items.refreshOnAppear() }
++
++        #expect(source.loadCount(forPage: 0) == 0)
++        #expect(items.loadState == loadStateBefore)
++        #expect(items.loadedItems.isEmpty)
++    }
++
++    @Test("given repeated cancelled appearances when refreshOnAppear called then nothing loads")
++    func given_repeatedCancelledAppearances_when_refreshOnAppear_then_nothingLoads() async {
++        let (items, source) = makeCountedItems()
++
++        for _ in 0..<60 {
++            await inCancelledTask { await items.refreshOnAppear() }
++        }
++
++        #expect(source.loadCount(forPage: 0) == 0)
++    }
++
++    @Test("given a live appearance when refreshOnAppear called then the first page loads once")
++    func given_liveAppearance_when_refreshOnAppear_then_firstPageLoadsOnce() async {
++        let (items, source) = makeCountedItems()
++
++        await items.refreshOnAppear()
++
++        #expect(source.loadCount(forPage: 0) == 1)
++        #expect(items.loadedItems.map(\.id) == [0, 1])
++    }
++
++    @Test("given a cancelled task when refresh called then the first page still loads")
++    func given_cancelledTask_when_refresh_then_firstPageStillLoads() async {
++        // Pull to refresh and Retry call refresh() directly, and SwiftUI may already have
++        // cancelled a refreshable action's task when it reaches the list; those still reload.
++        let (items, source) = makeCountedItems()
++
++        await inCancelledTask { await items.refresh() }
++
++        #expect(source.loadCount(forPage: 0) == 1)
++        #expect(items.loadedItems.map(\.id) == [0, 1])
++    }
+ }

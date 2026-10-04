@@ -16,6 +16,7 @@ public extension SharedStringResource {
     static let editAction = SharedStringResource(.editAction)
     static let doneAction = SharedStringResource(.doneAction)
     static let openMenuAction = SharedStringResource(.openMenuAction)
+    static let goHomeAction = SharedStringResource(.goHomeAction)
 }
 
 public extension String {

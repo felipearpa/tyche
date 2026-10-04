@@ -1,6 +1,8 @@
 import SwiftUI
 import Core
+import UI
 import DataBet
+import DataPool
 
 public struct BetTimelineListView: View {
     let poolId: String
@@ -33,9 +35,11 @@ public struct BetTimelineListView: View {
                 getGamblerBetsTimelineUseCase: GetGamblerBetsTimelineUseCase(
                     poolGamblerBetRepository: diResolver.resolve(PoolGamblerBetRepository.self)!
                 ),
+                getPoolGamblerScoreUseCase: diResolver.resolve(GetPoolGamblerScoreUseCase.self)!,
                 poolId: poolId,
                 gamblerId: gamblerId
             ),
+            gamblerId: gamblerId,
             gamblerUsername: gamblerUsername,
             onMatchOpen: onMatchOpen
         )
@@ -54,6 +58,7 @@ public struct BetTimelineListView: View {
                     .frame(width: HOME_ICON_SIZE, height: HOME_ICON_SIZE)
                     .tint(.primary)
             }
+            .accessibilityLabel(Text(sharedResource: .goHomeAction))
         }
     }
 }
@@ -62,16 +67,22 @@ private let HOME_ICON_SIZE: CGFloat = 24
 
 private struct BetTimelineListContent: View {
     @StateObject private var viewModel: BetTimelineListViewModel
-    private let onMatchOpen: MatchOpenHandler?
+    private let gamblerId: String
     private let gamblerUsername: String
-    @Environment(\.boxSpacing) private var boxSpacing
+    private let onMatchOpen: MatchOpenHandler?
+
+    /// True while a pull to refresh is in progress; its own indicator then covers the total, so
+    /// the summary shows no second progress indicator.
+    @State private var isPullRefreshing = false
 
     init(
         viewModel: @autoclosure @escaping () -> BetTimelineListViewModel,
+        gamblerId: String,
         gamblerUsername: String,
         onMatchOpen: MatchOpenHandler? = nil
     ) {
         self._viewModel = .init(wrappedValue: viewModel())
+        self.gamblerId = gamblerId
         self.gamblerUsername = gamblerUsername
         self.onMatchOpen = onMatchOpen
     }
@@ -79,21 +90,24 @@ private struct BetTimelineListContent: View {
     var body: some View {
         let _ = Self._printChangesIfDebug()
 
-        VStack(spacing: boxSpacing.medium) {
-            Text(gamblerUsername)
-                .font(.title2)
-                .fontWeight(.black)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.bottom, boxSpacing.medium)
-
-            BetTimelineList(
-                lazyPagingItems: viewModel.lazyPager,
-                onMatchOpen: onMatchOpen
-            )
+        BetTimelineList(
+            lazyPagingItems: viewModel.lazyPager,
+            gamblerId: gamblerId,
+            gamblerUsername: gamblerUsername,
+            pointsSummary: viewModel.pointsSummary,
+            showsSummaryRefreshProgress: !isPullRefreshing,
+            onPointsSummaryRetry: { Task { await viewModel.loadPointsSummary() } },
+            onMatchOpen: onMatchOpen
+        )
+        .refreshable {
+            isPullRefreshing = true
+            await viewModel.refreshListAndPointsSummary()
+            isPullRefreshing = false
         }
-        .refreshable { viewModel.refresh() }
-        .onAppearOnce { viewModel.refresh() }
-        .padding(boxSpacing.medium)
+        .onAppearOnce {
+            viewModel.refresh()
+            Task { await viewModel.loadPointsSummary() }
+        }
     }
 }
 
@@ -102,7 +116,7 @@ private struct BetTimelineListContent: View {
         BetTimelineListView(
             poolId: "pool-id",
             gamblerId: "gambler-id",
-            gamblerUsername: "felipearcila@gmail.com"
+            gamblerUsername: "El mono"
         )
         .environment(\.diResolver, diFakeResolver())
     }

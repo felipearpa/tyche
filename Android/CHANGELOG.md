@@ -5,6 +5,7 @@
 - Add a profile picture: pick a photo or take one, crop it to fit, and it appears in the menu button wherever your account shows
 - Redesigned pool leaderboard: every player shows their photo or a colored initial next to a clearer rank, trend, and score, and your own row is highlighted as You
 - Redesigned History: your total points in the pool sit at the top, and each match shows its final score up front, with your bet, the points it earned, and the match date right in the row
+- Redesigned Timeline: another player's photo and name sit at the top with their total points in the pool, and each match shows its score, their bet, the points it earned, and the date right in the row, with Points pending until a match is scored
 - New Profile screen, reached from the drawer, where you can change your photo and edit your username in one place
 - A live preview shows how you will appear on the leaderboard while you type a new username, with a character counter, and Save turns on only when the name actually changes
 - A new photo shows up everywhere in the app right away, and a username changed on another device catches up on its own
@@ -18,6 +19,7 @@
 - Refreshed splash screen logo
 - Loading looks the same everywhere: pools, leaderboards, bets, history, match details, and the menu show the real rows with a gentle pulse while they load, which stays still when system animations are turned off
 - Pulling to refresh or returning to a match keeps what you were reading on screen instead of flashing back to a loading state
+- When a list can't load, a Retry button sits next to the message, alongside pull to refresh, and if a points total can't load, a small retry button beside it reloads just the total
 - Long pool names now wrap cleanly instead of crowding the row
 - Redesigned side menu with a clearer account header, grouped pool details and actions, and a separate Sign out area
 - Swipe horizontally on the pool list or pool home to open the menu; drag it closed or tap the dimmed screen to dismiss it

@@ -41,6 +41,7 @@ let package = Package(
                 "UI",
                 "Core",
                 "ViewInspector",
+                .product(name: "LazyPaging", package: "lazy-paging-swift"),
             ]),
     ]
 )

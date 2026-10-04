@@ -5,6 +5,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
 import com.felipearpa.tyche.bet.match.MatchBetListViewRoute
+import com.felipearpa.tyche.ui.runIfStarted
 
 fun NavGraphBuilder.betTimelineListView(
     navController: NavController,
@@ -12,20 +13,23 @@ fun NavGraphBuilder.betTimelineListView(
 ) {
     composable<BetTimelineListViewRoute> { navBackStackEntry ->
         val route: BetTimelineListViewRoute = navBackStackEntry.toRoute()
+        // Each action leaves this route at most once, even when activated twice in one frame.
         BetTimelineListView(
             poolId = route.poolId,
             gamblerId = route.gamblerId,
             gamblerUsername = route.gamblerUsername,
-            onBack = { navController.navigateUp() },
-            onHome = onHome,
+            onBack = { navBackStackEntry.runIfStarted { navController.navigateUp() } },
+            onHome = { navBackStackEntry.runIfStarted(onHome) },
             onMatchOpen = { poolGamblerBet ->
-                navController.navigate(
-                    route = MatchBetListViewRoute(
-                        poolId = poolGamblerBet.poolId,
-                        gamblerId = poolGamblerBet.gamblerId,
-                        matchId = poolGamblerBet.matchId,
-                    ),
-                )
+                navBackStackEntry.runIfStarted {
+                    navController.navigate(
+                        route = MatchBetListViewRoute(
+                            poolId = poolGamblerBet.poolId,
+                            gamblerId = poolGamblerBet.gamblerId,
+                            matchId = poolGamblerBet.matchId,
+                        ),
+                    )
+                }
             },
         )
     }

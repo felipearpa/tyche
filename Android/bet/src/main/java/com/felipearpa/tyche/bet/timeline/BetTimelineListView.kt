@@ -1,17 +1,11 @@
 package com.felipearpa.tyche.bet.timeline
 
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.plus
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -19,23 +13,21 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.paging.PagingData
-import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
-import com.felipearpa.foundation.emptyString
 import com.felipearpa.tyche.bet.PoolGamblerBetModel
 import com.felipearpa.tyche.bet.R
-import com.felipearpa.tyche.bet.poolGamblerBetDummyModels
-import com.felipearpa.tyche.ui.excludingBottom
-import com.felipearpa.tyche.ui.onlyBottom
-import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
+import com.felipearpa.tyche.bet.finished.HistoryPoints
+import com.felipearpa.tyche.bet.finished.HistoryPointsSummaryState
+import com.felipearpa.tyche.bet.timelineBetPreviewModels
 import kotlinx.coroutines.flow.MutableStateFlow
 import com.felipearpa.tyche.ui.R as SharedR
 
@@ -66,12 +58,14 @@ fun BetTimelineListView(
     ) { innerPadding ->
         if (LocalInspectionMode.current) {
             val lazyItems =
-                MutableStateFlow(PagingData.from(poolGamblerBetDummyModels())).collectAsLazyPagingItems()
-            BetTimelineListView(
-                lazyBets = lazyItems,
-                placeholderCount = 50,
+                MutableStateFlow(PagingData.from(timelineBetPreviewModels())).collectAsLazyPagingItems()
+            BetTimelineList(
+                gamblerId = gamblerId,
                 gamblerUsername = gamblerUsername,
-                onMatchOpen = {},
+                lazyBets = lazyItems,
+                pointsSummary = HistoryPointsSummaryState.initial.loaded(HistoryPoints.Earned(676)),
+                onPointsSummaryRetry = {},
+                onRefresh = {},
                 contentPadding = innerPadding,
                 modifier = Modifier.fillMaxSize(),
             )
@@ -86,7 +80,6 @@ fun BetTimelineListView(
             gamblerUsername = gamblerUsername,
             onMatchOpen = onMatchOpen,
             contentPadding = innerPadding,
-            modifier = Modifier.fillMaxSize(),
         )
     }
 }
@@ -106,7 +99,7 @@ private fun AppTopBar(
             IconButton(onClick = onBack) {
                 Icon(
                     painter = painterResource(id = SharedR.drawable.arrow_back),
-                    contentDescription = emptyString(),
+                    contentDescription = stringResource(id = SharedR.string.back_action),
                 )
             }
         },
@@ -114,7 +107,7 @@ private fun AppTopBar(
             IconButton(onClick = onHome) {
                 Icon(
                     painter = painterResource(id = SharedR.drawable.home),
-                    contentDescription = emptyString(),
+                    contentDescription = stringResource(id = SharedR.string.go_home_action),
                 )
             }
         },
@@ -128,62 +121,27 @@ private fun BetTimelineListView(
     viewModel: BetTimelineListViewModel,
     gamblerUsername: String,
     contentPadding: PaddingValues,
-    modifier: Modifier = Modifier,
-    onMatchOpen: ((PoolGamblerBetModel) -> Unit)? = null,
-) {
-    val lazyItems = viewModel.poolGamblerBets.collectAsLazyPagingItems()
-    val pageSize = viewModel.pageSize
-
-    BetTimelineListView(
-        lazyBets = lazyItems,
-        placeholderCount = pageSize,
-        gamblerUsername = gamblerUsername,
-        contentPadding = contentPadding,
-        modifier = modifier,
-        onMatchOpen = onMatchOpen,
-    )
-}
-
-@Composable
-private fun BetTimelineListView(
-    lazyBets: LazyPagingItems<PoolGamblerBetModel>,
-    placeholderCount: Int,
-    gamblerUsername: String,
-    contentPadding: PaddingValues,
-    modifier: Modifier = Modifier,
     onMatchOpen: ((PoolGamblerBetModel) -> Unit)?,
 ) {
-    // The username header stays fixed below the top app bar, so it takes the top and side
-    // insets; the list takes only the bottom inset so it scrolls to the window's bottom edge.
-    Column(
-        modifier = modifier
-            .padding(contentPadding.excludingBottom())
-            .consumeWindowInsets(contentPadding)
-            .padding(
-                start = LocalBoxSpacing.current.medium,
-                top = LocalBoxSpacing.current.medium,
-                end = LocalBoxSpacing.current.medium,
-            ),
-    ) {
-        Text(
-            text = gamblerUsername,
-            style = MaterialTheme.typography.titleLarge,
-            fontWeight = FontWeight.Black,
-        )
+    val lazyItems = viewModel.poolGamblerBets.collectAsLazyPagingItems()
+    val pointsSummary by viewModel.pointsSummary.collectAsState()
 
-        Spacer(modifier = Modifier.height(LocalBoxSpacing.current.medium))
-
-        BetTimelineList(
-            lazyBets = lazyBets,
-            placeholderCount = placeholderCount,
-            contentPadding = contentPadding.onlyBottom() +
-                PaddingValues(bottom = LocalBoxSpacing.current.medium),
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = LocalBoxSpacing.current.medium),
-            onMatchOpen = onMatchOpen,
-        )
-    }
+    // The list scrolls under the top app bar and the system bars; its content padding keeps the
+    // first and last content clear of them.
+    BetTimelineList(
+        gamblerId = viewModel.gamblerId,
+        gamblerUsername = gamblerUsername,
+        lazyBets = lazyItems,
+        pointsSummary = pointsSummary,
+        onPointsSummaryRetry = viewModel::loadPointsSummary,
+        onRefresh = viewModel::refreshPointsSummary,
+        placeholderCount = viewModel.pageSize,
+        contentPadding = contentPadding,
+        modifier = Modifier
+            .fillMaxSize()
+            .consumeWindowInsets(contentPadding),
+        onMatchOpen = onMatchOpen,
+    )
 }
 
 @Preview(showBackground = true)
@@ -191,7 +149,7 @@ private fun BetTimelineListView(
 private fun BetTimelineListViewPreview() {
     BetTimelineListView(
         poolId = "poolId",
-        gamblerId = "gamblerId",
+        gamblerId = "",
         gamblerUsername = "felipearcila@gmail.com",
         onBack = {},
         onHome = {},

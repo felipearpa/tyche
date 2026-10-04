@@ -41,10 +41,8 @@ import com.felipearpa.tyche.bet.isPending
 import com.felipearpa.tyche.bet.poolGamblerBetDummyModels
 import com.felipearpa.tyche.bet.poolGamblerBetFakeModel
 import com.felipearpa.tyche.ui.bottomUncoveredBy
-import com.felipearpa.tyche.ui.exception.localizedOrDefault
-import com.felipearpa.tyche.ui.lazy.Failure
 import com.felipearpa.tyche.ui.lazy.RefreshableLazyPagingColumn
-import com.felipearpa.tyche.ui.lazy.ViewportFillingItem
+import com.felipearpa.tyche.ui.lazy.viewportFillingItem
 import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
 import com.felipearpa.tyche.ui.theme.TycheTheme
 import com.felipearpa.ui.state.MutationState
@@ -81,7 +79,6 @@ fun PendingBetList(
         lazyPagingItems = lazyPoolGamblerBets,
         loadingContent = { pendingBetPlaceholderList(count = fakeItemCount) },
         emptyContent = { emptyContent() },
-        errorContent = { error(it) },
         appendLoadingContent = { pendingBetPlaceholderItemRow() },
     ) {
         val poolGamblerBetsCount = lazyPoolGamblerBets.itemCount
@@ -150,25 +147,23 @@ private fun LazyListScope.pendingBetPlaceholderList(count: Int) {
 }
 
 private fun LazyListScope.emptyContent() {
-    item {
-        ViewportFillingItem {
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.medium),
-                horizontalAlignment = Alignment.CenterHorizontally,
-            ) {
-                Icon(
-                    painter = painterResource(id = SharedR.drawable.ic_sentiment_sad),
-                    contentDescription = "",
-                    modifier = Modifier.size(iconSize),
-                )
+    viewportFillingItem {
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.medium),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Icon(
+                painter = painterResource(id = SharedR.drawable.ic_sentiment_sad),
+                contentDescription = "",
+                modifier = Modifier.size(iconSize),
+            )
 
-                Text(
-                    text = stringResource(id = SharedR.string.empty_list_message),
-                    textAlign = TextAlign.Center,
-                    style = MaterialTheme.typography.titleMedium,
-                )
-            }
+            Text(
+                text = stringResource(id = SharedR.string.empty_list_message),
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.titleMedium,
+            )
         }
     }
 }
@@ -182,19 +177,6 @@ private fun LazyListScope.pendingBetPlaceholderItemRow() {
             isPlaceholder = true,
         )
         HorizontalDivider(modifier = Modifier.padding(horizontal = LocalBoxSpacing.current.large))
-    }
-}
-
-private fun LazyListScope.error(exception: Throwable) {
-    item {
-        ViewportFillingItem {
-            Failure(
-                localizedException = exception.localizedOrDefault(),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(all = LocalBoxSpacing.current.medium),
-            )
-        }
     }
 }
 

@@ -27,7 +27,9 @@ struct PoolScoreList: View {
                     onSeeAllTemplates: onSeeAllTemplates,
                 )
             },
-            errorContent: { error in PoolScoreErrorList(error: error) },
+            errorContent: { error in
+                PoolScoreErrorList(error: error, retry: { Task { await lazyPagingItems.refresh() } })
+            },
             prependLoadingContent: { EmptyView() },
             appendLoadingContent: { PoolScorePlaceholderRow() },
             prependErrorContent: { _ in EmptyView() },
@@ -54,6 +56,7 @@ struct PoolScoreList: View {
                 }
             }
         }
+        .fullListStateViewport()
     }
 }
 
@@ -167,9 +170,12 @@ private struct TemplatesContent: View {
             }
             .padding(.horizontal, emptyStateHorizontalPadding)
         } else if case .failure(let error) = lazyPoolLayouts.loadState.refresh {
-            LazyPagingVStackError(localizedError: error.localizedErrorOrDefault())
-                .padding(.horizontal, emptyStateHorizontalPadding)
-                .padding(.vertical, boxSpacing.medium)
+            LazyPagingVStackError(
+                localizedError: error.localizedErrorOrDefault(),
+                retry: { Task { await lazyPoolLayouts.refresh() } }
+            )
+            .padding(.horizontal, emptyStateHorizontalPadding)
+            .padding(.vertical, boxSpacing.medium)
         } else {
             let visibleLayouts = Array(lazyPoolLayouts.loadedItems.prefix(popularTemplatesCount))
 
@@ -201,12 +207,13 @@ private struct TemplatesContent: View {
 
 private struct PoolScoreErrorList: View {
     let error: Error
+    let retry: () -> Void
 
     @Environment(\.boxSpacing) private var boxSpacing
 
     var body: some View {
-        LazyPagingVStackError(localizedError: error.localizedErrorOrDefault())
-            .padding(boxSpacing.medium)
+        LazyPagingVStackError(localizedError: error.localizedErrorOrDefault(), retry: retry)
+            .padding(.horizontal, boxSpacing.medium)
     }
 }
 

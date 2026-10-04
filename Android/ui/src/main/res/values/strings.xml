@@ -14,4 +14,6 @@
     <string name="remote_communication_failure_recovery_suggestion">Please check your internet connection and give it another shot later. If the problem continues, please contact our support team for assistance</string>
     <string name="open_menu_action">Open menu</string>
     <string name="close_menu_action">Close menu</string>
+    <string name="back_action">Back</string>
+    <string name="go_home_action">Home</string>
 </resources>

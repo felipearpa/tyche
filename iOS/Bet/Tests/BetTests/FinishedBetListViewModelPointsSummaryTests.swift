@@ -3,6 +3,8 @@ import DataBet
 import DataPool
 import Foundation
 import Testing
+import UI
+import ViewInspector
 @testable import Bet
 
 /// History's earned-points total, as explored on the iOS 18.1 simulator and the Android phone: it
@@ -204,6 +206,40 @@ struct FinishedBetListViewModelPointsSummaryTests {
         #expect(viewModel.pointsSummary.presentation == .failed)
     }
 
+    @Test
+    func listRetryRequestsOnlyTheRowsOnceAndPullToRefreshStillReloadsBoth() async throws {
+        let scores = GatedScoreRepository()
+        let bets = PagedBetRepository(pages: [historyPage(count: 2, next: nil)], failsWith: URLError(.timedOut))
+        let viewModel = makeViewModel(scores: scores, bets: bets)
+        try await load(viewModel, scores, request: 1, with: .success(try score(9)))
+        await viewModel.lazyPager.refresh()
+        #expect(viewModel.lazyPager.loadState.refresh.isFailure)
+
+        bets.failure = nil
+        var summaryRetries = 0
+        let list = FinishedBetList(
+            lazyPagingItems: viewModel.lazyPager,
+            pointsSummary: viewModel.pointsSummary,
+            onPointsSummaryRetry: { summaryRetries += 1 }
+        )
+        try list.inspect().find(ViewType.Button.self, where: { try $0.labelView().text().string() == "Retry" }).tap()
+        try await waitUntil { viewModel.lazyPager.itemCount == 2 }
+
+        #expect(bets.requestCount == 2)
+        #expect(scores.requests.count == 1)
+        #expect(summaryRetries == 0)
+        #expect(viewModel.pointsSummary.presentation == .points(.earned(9), .current))
+
+        let refresh = Task { await viewModel.refreshListAndPointsSummary() }
+        try await scores.waitForRequest(2)
+        scores.complete(2, with: .success(try score(11)))
+        await refresh.value
+
+        #expect(bets.requestCount == 3)
+        #expect(viewModel.lazyPager.itemCount == 2)
+        #expect(viewModel.pointsSummary.presentation == .points(.earned(11), .current))
+    }
+
     // MARK: Helpers
 
     private func load(
@@ -336,23 +372,27 @@ private final class GatedScoreRepository: PoolGamblerScoreRepository {
 @MainActor
 private final class PagedBetRepository: PoolGamblerBetRepository {
     private let pages: [CursorPage<PoolGamblerBet>]
+    /// While set, every request fails with it.
+    var failure: Error?
     private(set) var requestCount = 0
 
-    init(pages: [CursorPage<PoolGamblerBet>]) {
+    init(pages: [CursorPage<PoolGamblerBet>], failsWith failure: Error? = nil) {
         self.pages = pages
+        self.failure = failure
     }
 
-    private func page(after next: String?) -> CursorPage<PoolGamblerBet> {
+    private func page(after next: String?) -> Result<CursorPage<PoolGamblerBet>, Error> {
         requestCount += 1
-        guard let next else { return pages.first ?? CursorPage(items: [], next: nil) }
+        if let failure { return .failure(failure) }
+        guard let next else { return .success(pages.first ?? CursorPage(items: [], next: nil)) }
         let index = pages.firstIndex { $0.next == next }.map { $0 + 1 } ?? pages.count
-        return index < pages.count ? pages[index] : CursorPage(items: [], next: nil)
+        return .success(index < pages.count ? pages[index] : CursorPage(items: [], next: nil))
     }
 
     nonisolated func getFinishedPoolGamblerBets(
         poolId: String, gamblerId: String, next: String?, searchText: String?
     ) async -> Result<CursorPage<PoolGamblerBet>, Error> {
-        await .success(page(after: next))
+        await page(after: next)
     }
 
     nonisolated func getPoolGamblerBet(

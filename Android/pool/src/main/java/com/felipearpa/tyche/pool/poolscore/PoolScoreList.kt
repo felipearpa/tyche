@@ -50,7 +50,7 @@ import com.felipearpa.tyche.pool.poolGamblerScorePlaceholderModel
 import com.felipearpa.tyche.ui.exception.localizedOrDefault
 import com.felipearpa.tyche.ui.lazy.Failure
 import com.felipearpa.tyche.ui.lazy.RefreshableLazyPagingColumn
-import com.felipearpa.tyche.ui.lazy.ViewportFillingItem
+import com.felipearpa.tyche.ui.lazy.viewportFillingItem
 import com.felipearpa.tyche.ui.lazy.lazyPagingConcatenateError
 import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
 import com.felipearpa.tyche.ui.theme.TycheTheme
@@ -83,7 +83,7 @@ fun PoolScoreList(
                 onSeeAllTemplates = onSeeAllTemplates,
             )
         },
-        errorContent = { exception -> poolScoreErrorList(exception) { lazyPoolGamblerScores.retry() } },
+        errorContent = { exception -> poolScoreErrorList(exception, onRetry = lazyPoolGamblerScores::refresh) },
         appendLoadingContent = { poolScorePlaceholderItemRow() },
         prependErrorContent = { exception ->
             lazyPagingConcatenateError(
@@ -205,9 +205,12 @@ private fun LazyListScope.poolScoreEmptyList(
         refreshState is LoadState.Loading && lazyPoolLayouts.itemCount == 0 ->
             poolLayoutPlaceholderList(count = popularTemplatesCount)
 
+        // The shared full-list error fills the viewport, so this section keeps an inline error
+        // with the same Retry; it reloads only the templates.
         refreshState is LoadState.Error -> item {
-            Box(
-                contentAlignment = Alignment.Center,
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.medium),
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(
@@ -219,6 +222,10 @@ private fun LazyListScope.poolScoreEmptyList(
                     localizedException = refreshState.error.localizedOrDefault(),
                     modifier = Modifier.fillMaxWidth(),
                 )
+
+                Button(onClick = lazyPoolLayouts::refresh) {
+                    Text(text = stringResource(id = SharedR.string.retry_action))
+                }
             }
         }
 
@@ -284,20 +291,19 @@ private fun LazyListScope.poolLayoutPlaceholderList(count: Int) {
 }
 
 private fun LazyListScope.poolScoreErrorList(exception: Throwable, onRetry: () -> Unit) {
-    item {
-        ViewportFillingItem(modifier = Modifier.padding(all = LocalBoxSpacing.current.medium)) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.medium),
-            ) {
-                Failure(
-                    localizedException = exception.localizedOrDefault(),
-                    modifier = Modifier.fillMaxWidth(),
-                )
+    viewportFillingItem {
+        Column(
+            modifier = Modifier.padding(all = LocalBoxSpacing.current.medium),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.medium),
+        ) {
+            Failure(
+                localizedException = exception.localizedOrDefault(),
+                modifier = Modifier.fillMaxWidth(),
+            )
 
-                Button(onClick = onRetry) {
-                    Text(text = stringResource(id = SharedR.string.retry_action))
-                }
+            Button(onClick = onRetry) {
+                Text(text = stringResource(id = SharedR.string.retry_action))
             }
         }
     }
