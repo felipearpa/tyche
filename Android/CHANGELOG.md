@@ -6,6 +6,12 @@
 - Redesigned pool leaderboard: every player shows their photo or a colored initial next to a clearer rank, trend, and score, and your own row is highlighted as You
 - Redesigned History: your total points in the pool sit at the top, and each match shows its final score up front, with your bet, the points it earned, and the match date right in the row
 - Redesigned Timeline: another player's photo and name sit at the top with their total points in the pool, and each match shows its score, their bet, the points it earned, and the date right in the row, with Points pending until a match is scored
+- Redesigned match screen: the teams sit at the top with the kickoff time, a Bets closed note, or the final score, and every player below shows their photo or a colored initial, their name, their bet, and the points it earned once the match is scored, with your own row marked You
+- Players on a match are now listed by their total points in the pool, so the pool leader comes first no matter how they did on that match, and the order holds as you scroll and when you refresh
+- Before betting closes, the match screen shows the start time, the two teams, and a lock explaining that everyone's bets are revealed when betting closes, with your own bet underneath so you can check what you predicted
+- Once betting closes, the match screen says Bets closed and shows any score available so far instead of claiming the match is live
+- A player who skipped a match keeps their place in the list with No bet, and a bet that earned nothing shows 0 pts so it is never mistaken for a missing result
+- Tap another player on the match screen to open their Timeline, and TalkBack reads each row as one line with the player's name, You when it is yours, their bet with the team names, and the points it earned
 - New Profile screen, reached from the drawer, where you can change your photo and edit your username in one place
 - A live preview shows how you will appear on the leaderboard while you type a new username, with a character counter, and Save turns on only when the name actually changes
 - A new photo shows up everywhere in the app right away, and a username changed on another device catches up on its own

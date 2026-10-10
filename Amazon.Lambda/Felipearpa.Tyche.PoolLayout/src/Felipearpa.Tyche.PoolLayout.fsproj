@@ -17,10 +17,12 @@
         <Compile Include="Infrastructure\GetPoolLayoutByIdRequestBuilder.fs" />
         <Compile Include="Infrastructure\GetPendingPoolLayoutMatchesRequestBuilder.fs" />
         <Compile Include="Infrastructure\SetMatchFinalScoreRequestBuilder.fs" />
+        <Compile Include="Infrastructure\CorrectMatchResultRequestBuilder.fs" />
         <Compile Include="Infrastructure\PoolLayoutDynamoDbRepository.fs" />
         <Compile Include="Application\GetOpenPoolLayouts.fs" />
         <Compile Include="Application\GetPendingPoolLayoutMatches.fs" />
         <Compile Include="Application\PoolLayoutVersionResolver.fs" />
+        <Compile Include="Application\PoolLayoutMatchReader.fs" />
     </ItemGroup>
 
     <ItemGroup>

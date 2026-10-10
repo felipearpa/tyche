@@ -118,6 +118,7 @@ erDiagram
 | Pool root | `Pool` | `POOL#<poolId>` | `POOL#<poolId>` |
 | Pool gambler / score | `Pool` | `POOL#<poolId>` | `GAMBLER#<gamblerId>` |
 | Pool gambler bet | `Pool` | `GAMBLER#<gamblerId>#POOL#<poolId>` | `MATCH#<matchId>` |
+| Settlement receipt | `Pool` | `POOL#<poolId>` | `SETTLEMENT#<operationId>` |
 | Pool layout root | `PoolLayout` | `POOLLAYOUT#<layoutId>` | `POOLLAYOUT#<layoutId>` |
 | Pool layout match | `PoolLayout` | `POOLLAYOUT#<layoutId>` | `MATCH#<matchId>` |
 | Match score ingestion | `MatchScoreIngestion` | `MATCH#<matchId>` | — |
@@ -173,6 +174,7 @@ erDiagram
 | Pool | `GetPoolGamblerScoresByMatch-index` | `getPoolGamblerScoresByMatchPk` (`MATCH#…`) | `getPoolGamblerScoresByMatchSk` (`POOL#…#GAMBLER#…`) | Fan-out: every bet on a match across all pools when score is published |
 | Pool | `GetGamblersByPoolLayout-index` | `getGamblersByPoolLayoutPk` (`POOLLAYOUT#…`) | `getGamblersByPoolLayoutSk` | Backfill new matches into every gambler's bet sheet when a layout adds matches |
 | Pool | `GetPoolGamblersByUsername-index` | `pk` (`POOL#…`) | `gamblerUsername` | Pool members listed alphabetically by username (member management) |
+| Pool | `GetPoolMatchBetsByTotal-index` | `getPoolMatchBetsByTotalPk` (`POOL#…#MATCH#…`) | `getPoolMatchBetsByTotalSk` (ranking key) | Ranked match bets: complete participant rows ordered by pool total (INCLUDE projection, 20 attributes) |
 | PoolLayout | `GetOpenedPoolLayout-index` | `status` | `startDateTime` | List currently open layouts users can join |
 
 ## How the Model Is Built
@@ -183,4 +185,81 @@ erDiagram
 - **Denormalized GSI keys.** `getPoolGamblerScoresByMatchPk/Sk` and `getGamblersByPoolLayoutPk/Sk` are extra attributes written alongside the item so a single record can be queried from multiple angles without scans. They are written by `*RequestBuilder.fs` / `*Transformer.fs` modules.
 - **Sentinel attributes act as filters.** Whether a bet is *pending* vs *finished* is decided by whether `computedRequestId` exists — pending queries use `attribute_not_exists(computedRequestId)`, finished queries hit a GSI keyed on `computedDateTime`.
 - **Uniqueness via lock items.** A second `EMAIL#…` row in `Account` enforces email uniqueness through a conditional `Put` (`attribute_not_exists(pk)`), since DynamoDB has no unique-secondary-index concept.
-- **Score writes use `TransactWriteItems`**, then SQS FIFO publishes a position-update message keyed by pool so leaderboard recompute is serialized per pool (see [Score Computation Architecture](/Users/felipe/.claude/projects/-Users-felipe-Documents-Codes-tyche/memory/project_score_computation.md)).
+- **Scoring is an ordered pool operation.** A result is dispatched as one versioned command per pool on the `UpdatePositionsQueue.fifo` queue (message group = pool) before anything is scored; the consumer settles every membership's detail and then finalizes positions as one resumable operation. See [Settlement, positions, and ranking](pool-settlement.md).
+
+## Settlement, identity, and projection records
+
+These attributes were added by the `redesign-match-bets` change. All are additive; existing attributes keep their meaning.
+
+### Pool root (`POOL#<poolId>` / `POOL#<poolId>`)
+
+| Attribute | Type | Meaning |
+|---|---|---|
+| `membershipRevision` | N | Advanced in the same transaction as every join and removal (`gamblerCount` update). Position calculations capture it and restart if it changes. Absent means 0. |
+| `operationRevision` | N | Revision assigned to the last admitted operation. Absent means 0. |
+| `activeOperation` | M | The fixed-size checkpoint of the one active operation: `operationId`, `revision`, target (`MATCH` with `matchId`, `homeTeamScore`, `awayTeamScore`, `resultVersion`, or `STANDINGS`), `stage` (`SCORING`/`POSITIONS`), `cursor`, `calculationRevision`, `membershipRevision`, `ownerToken`, `leaseExpiresAt`, `attemptsWithoutProgress`, `blocked`, `unresolvedDetails`, `admittedAt`, `lastProgressAt`. Absent when no operation is active. |
+| `lastCompletedOperationRevision` | N | Revision of the last completed operation. |
+| `rankingReadiness` | M | `state` (`READY`/`NOT_READY`), `schemaVersion`, `checkedMembers`, `checkedDetails`, `unresolved`, `checkedAt`. Ranked reads require `READY`. |
+
+### Settlement receipt (`POOL#<poolId>` / `SETTLEMENT#<operationId>`)
+
+One small item per logical operation, kept for the pool's lifetime and deleted with the pool. It carries no `score`, `gamblerUsername`, `matchDateTime`, or `computedDateTime`, so it never appears in the leaderboard, member, pending, or finished indexes, and membership queries stay restricted to `begins_with(sk, "GAMBLER#")`.
+
+| Attribute | Meaning |
+|---|---|
+| `operationId` | Stable logical identity: `RESULT#<matchId>#<resultVersion>`, `MATCH#<matchId>#<source>`, or `STANDINGS#<source>`. |
+| `operationRevision` | Revision assigned at admission. |
+| `operationFingerprint` | Identifies the immutable payload; reusing the ID with another payload is an error. |
+| `operationState` | `ADMITTED`, `COMPLETED`, or `DEFERRED` (held while the pool is blocked). |
+| `operationCommand` | The versioned command JSON, so deferred commands can be enqueued again. |
+| `admittedDateTime`, `completedDateTime`, `deferredDateTime`, `unresolvedDetails` | Audit and repair data. |
+
+### Membership (`POOL#<poolId>` / `GAMBLER#<gamblerId>`)
+
+| Attribute | Meaning |
+|---|---|
+| `membershipGeneration` | Unique per membership lifetime (a ULID written at join). A rejoin gets a new one. |
+| `scoreVersion` | Starts at 1 and advances in the same transaction as every change of `score`. |
+| `positionOperationRevision`, `positionCalculationRevision` | The operation and calculation that last wrote `position`; `beforePosition` is recorded only on the first write of a match settlement or correction, and a standings reconciliation leaves it unchanged. |
+
+`score` stays the authoritative pool total and `beforeScore` keeps its meaning (the total before the latest settled match).
+
+### Match detail (`GAMBLER#<gamblerId>#POOL#<poolId>` / `MATCH#<matchId>`)
+
+| Attribute | Meaning |
+|---|---|
+| `poolMembershipGeneration` | The membership lifetime the detail belongs to. Settlement, positions, and projection writes require it to equal the membership's generation. |
+| `resultVersion` | Result version the detail reflects. A computed detail without it reflects version 1 (scored before versioning). |
+| `settlementOperationId`, `settlementOperationRevision` | The operation that last applied a result. |
+| `positionOperationRevision`, `positionCalculationRevision` | As on the membership; the membership and detail positions are written in one transaction. |
+| `totalPoolPoints`, `totalPoolPointsState` | Copy of the membership total (`KNOWN`), or `UNAVAILABLE` without a number. Never the match award. |
+| `poolScoreVersion` | The membership `scoreVersion` the copy reflects; copies only move forward. |
+| `rankingActive` | `true` while the detail belongs to a current membership; `false` is a retained tombstone after removal. |
+| `getPoolMatchBetsByTotalPk`, `getPoolMatchBetsByTotalSk` | Ranking index keys; removed when the projection is retired. |
+
+`score` on the detail stays this match's award; `computedRequestId` and `computedDateTime` keep their meaning, and `computedDateTime` is preserved by corrections.
+
+### Ranking key
+
+`getPoolMatchBetsByTotalSk` sorts ascending as known totals descending, then gambler ID ascending, then unavailable totals by gambler ID:
+
+```
+1#K#<2147483647 − total, 10 digits>#<gamblerId>     known total (any Int32, including 0 and negatives)
+1#U#<gamblerId>                                     unavailable total
+```
+
+The leading `1` is the key schema version that ranked cursors carry.
+
+### PoolLayout match
+
+`resultVersion` (N) is 1 for the first published result (`SetMatchFinalScoreRequestBuilder` writes it with the score) and increases with each supported correction (`CorrectMatchResultRequestBuilder`). A result written before versioning has no attribute and counts as version 1.
+
+### Access patterns added
+
+| Access | Read |
+|---|---|
+| Discover pools with a match (dispatch) | `GetPoolGamblerScoresByMatch-index`, every page, including computed details. Eventually consistent: discovery only, never a completion barrier. |
+| Authoritative memberships (settlement, positions, migration) | Base table `pk = POOL#<poolId>`, `begins_with(sk, GAMBLER#)`, `ConsistentRead`. |
+| Existing details of a match (settlement, positions) | `BatchGetItem` with `ConsistentRead`, unprocessed keys retried. |
+| A member's details (propagation, removal, backfill) | Base table `pk = GAMBLER#<gamblerId>#POOL#<poolId>`, `ConsistentRead`. |
+| Ranked participant page | `GetPoolMatchBetsByTotal-index` only, no enrichment. |

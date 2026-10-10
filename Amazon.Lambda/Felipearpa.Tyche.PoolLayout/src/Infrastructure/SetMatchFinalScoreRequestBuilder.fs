@@ -16,15 +16,17 @@ module SetMatchFinalScoreRequestBuilder =
         let attributeNames =
             ExpressionAttribute.names
                 [ PoolLayoutTable.Attribute.homeTeamScore
-                  PoolLayoutTable.Attribute.awayTeamScore ]
+                  PoolLayoutTable.Attribute.awayTeamScore
+                  PoolLayoutTable.Attribute.resultVersion ]
 
         let attributeValues =
             dict
                 [ $":{PoolLayoutTable.Attribute.homeTeamScore}", AttributeValue(N = homeTeamScore.ToString())
-                  $":{PoolLayoutTable.Attribute.awayTeamScore}", AttributeValue(N = awayTeamScore.ToString()) ]
+                  $":{PoolLayoutTable.Attribute.awayTeamScore}", AttributeValue(N = awayTeamScore.ToString())
+                  $":{PoolLayoutTable.Attribute.resultVersion}", AttributeValue(N = "1") ]
 
         let updateExpression =
-            $"SET {ExpressionAttribute.name PoolLayoutTable.Attribute.homeTeamScore} = :{PoolLayoutTable.Attribute.homeTeamScore}, {ExpressionAttribute.name PoolLayoutTable.Attribute.awayTeamScore} = :{PoolLayoutTable.Attribute.awayTeamScore}"
+            $"SET {ExpressionAttribute.name PoolLayoutTable.Attribute.homeTeamScore} = :{PoolLayoutTable.Attribute.homeTeamScore}, {ExpressionAttribute.name PoolLayoutTable.Attribute.awayTeamScore} = :{PoolLayoutTable.Attribute.awayTeamScore}, {ExpressionAttribute.name PoolLayoutTable.Attribute.resultVersion} = :{PoolLayoutTable.Attribute.resultVersion}"
 
         // Idempotent: only the first write wins, so re-runs after the score is set are no-ops.
         let conditionExpression =

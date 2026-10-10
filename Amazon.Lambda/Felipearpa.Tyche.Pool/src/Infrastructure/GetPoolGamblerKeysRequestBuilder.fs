@@ -7,7 +7,8 @@ open Felipearpa.Type
 
 module GetPoolGamblerKeysRequestBuilder =
 
-    let build (poolId: Ulid) (maybeNext: IDictionary<string, AttributeValue> option) =
+    /// Keys of the pool partition's items whose sort key starts with the prefix.
+    let buildForPrefix (prefix: string) (poolId: Ulid) (maybeNext: IDictionary<string, AttributeValue> option) =
         let keyConditionExpression =
             $"{ExpressionAttribute.name Key.pk} = :pk AND \
              begins_with({ExpressionAttribute.name Key.sk}, :skPrefix)"
@@ -15,7 +16,7 @@ module GetPoolGamblerKeysRequestBuilder =
         let attributeValues =
             dict
                 [ ":pk", AttributeValue(S = KeyPrefix.build PoolTable.Prefix.pool poolId.Value)
-                  ":skPrefix", AttributeValue(S = $"{PoolTable.Prefix.gambler}#") ]
+                  ":skPrefix", AttributeValue(S = $"{prefix}#") ]
 
         let attributeNames = ExpressionAttribute.names [ Key.pk; Key.sk ]
 
@@ -33,3 +34,6 @@ module GetPoolGamblerKeysRequestBuilder =
                 | None -> null
                 | Some next -> Dictionary next
         )
+
+    let build (poolId: Ulid) (maybeNext: IDictionary<string, AttributeValue> option) =
+        buildForPrefix PoolTable.Prefix.gambler poolId maybeNext

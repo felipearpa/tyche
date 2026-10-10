@@ -23,10 +23,21 @@
 
     <ItemGroup>
       <ProjectReference Include="..\src\Felipearpa.Tyche.Pool.fsproj" />
+      <ProjectReference Include="..\..\Felipearpa.Tyche.PoolLayout\src\Felipearpa.Tyche.PoolLayout.fsproj" />
     </ItemGroup>
 
     <ItemGroup>
+      <Compile Include="Fakes\FakeExpression.fs" />
+      <Compile Include="Fakes\FakeDynamoDb.fs" />
+      <Compile Include="Fakes\FakeTables.fs" />
+      <Compile Include="Fakes\FakeFifoQueue.fs" />
+      <Compile Include="Fakes\FakeDynamoDbTest.fs" />
       <Compile Include="Domain\BetEvaluatorTest.fs" />
+      <Compile Include="Domain\RankingKeyTest.fs" />
+      <Compile Include="Domain\SettlementPolicyTest.fs" />
+      <Compile Include="Domain\PositionPolicyTest.fs" />
+      <Compile Include="Infrastructure\PoolMessageJsonTest.fs" />
+      <Compile Include="Infrastructure\RankedMatchBetsCursorTest.fs" />
       <Compile Include="Domain\PoolGamblerBetDictionaryTransformer.fs" />
       <Compile Include="Domain\InitialPoolGamblerBetTransformerTest.fs" />
       <Compile Include="Infrastructure\CreatePoolRequestBuilderTest.fs" />
@@ -38,9 +49,20 @@
       <Compile Include="Infrastructure\UpdateGamblerScoreUsernameRequestBuilderTest.fs" />
       <Compile Include="Infrastructure\UpdateGamblerBetUsernameRequestBuilderTest.fs" />
       <Compile Include="Infrastructure\PoolDynamoDbRepositoryPropagateUsernameTest.fs" />
-      <Compile Include="Application\FanOutMatchToGamblersTest.fs" />
       <Compile Include="Application\GetPoolMembersTest.fs" />
       <Compile Include="Application\RemovePoolGamblerTest.fs" />
+      <Compile Include="Settlement\PoolScenario.fs" />
+      <Compile Include="Settlement\SettlementHarness.fs" />
+      <Compile Include="Settlement\VersionedSettlementHarness.fs" />
+      <Compile Include="Settlement\SettlementScenarios.fs" />
+      <Compile Include="Settlement\SettlementFailurePathTest.fs" />
+      <Compile Include="Application\FanOutMatchToGamblersTest.fs" />
+      <Compile Include="Settlement\PoolOperationTest.fs" />
+      <Compile Include="Settlement\DispatchAndStandingsTest.fs" />
+      <Compile Include="Settlement\CorrectionAndMaterializationTest.fs" />
+      <Compile Include="Settlement\ProjectionTest.fs" />
+      <Compile Include="Settlement\MigrationAndReconciliationTest.fs" />
+      <Compile Include="Settlement\RankedMatchBetsTest.fs" />
     </ItemGroup>
 
 </Project>

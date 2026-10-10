@@ -25,6 +25,7 @@ module GetPendingPoolLayoutMatchesRequestBuilder =
 
         QueryRequest(
             TableName = PoolLayoutTable.name,
+            ConsistentRead = true,
             KeyConditionExpression = keyConditionExpression,
             FilterExpression = filterExpression,
             ExpressionAttributeNames = Dictionary attributeNames,

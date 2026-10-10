@@ -1,6 +1,9 @@
 namespace Felipearpa.Tyche.HttpApi
 
 open System
+open System.Security.Claims
+open Felipearpa.Tyche.Account.Domain
+open Microsoft.AspNetCore.Http
 open Felipearpa.Tyche.Function.PoolFunction
 open Felipearpa.Tyche.Function.Request
 open Felipearpa.Tyche.Pool.Application
@@ -166,19 +169,33 @@ module PoolRouter =
             this
                 .MapGet(
                     "/pools/{poolId}/matches/{matchId}/bets",
-                    Func<_, _, _, _, _>
+                    Func<_, _, _, _, _, _, _, _, _>
                         (fun
                             (poolId: string)
                             (matchId: string)
                             (next: string)
-                            (getPoolMatchGamblerBets: GetPoolMatchGamblerBets) ->
+                            (sort: string)
+                            (user: ClaimsPrincipal)
+                            (accountRepository: IAccountRepository)
+                            (getPoolMatchGamblerBets: GetPoolMatchGamblerBets)
+                            (getRankedPoolMatchBets: GetRankedPoolMatchBets) ->
                             async {
-                                return!
-                                    getMatchBetsAsync
-                                        poolId
-                                        matchId
-                                        (next |> Option.ofObj)
-                                        getPoolMatchGamblerBets
+                                match sort |> Option.ofObj with
+                                | None ->
+                                    return!
+                                        getMatchBetsAsync poolId matchId (next |> Option.ofObj) getPoolMatchGamblerBets
+                                | Some value when value = poolScoreDescendingSort ->
+                                    match! CallerResolver.resolveCallerGamblerIdAsync user accountRepository with
+                                    | Error() -> return Results.Unauthorized()
+                                    | Ok callerId ->
+                                        return!
+                                            getRankedMatchBetsAsync
+                                                callerId
+                                                poolId
+                                                matchId
+                                                (next |> Option.ofObj)
+                                                getRankedPoolMatchBets
+                                | Some value -> return Results.BadRequest({| errors = [ $"Unsupported sort '{value}'" ] |})
                             }
                             |> Async.StartAsTask)
                 )

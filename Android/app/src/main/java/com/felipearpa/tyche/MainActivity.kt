@@ -86,6 +86,7 @@ class MainActivity : ComponentActivity() {
                     Surface {
                         Content(
                             accountBundle = accountBundle,
+                            signedInAccountId = { currentAccountCoordinator.state.value?.accountId },
                             intentData = intentData,
                             joinPoolUrlTemplate = joinUrlTemplate,
                             deepLinkIntent = deepLinkIntent,
@@ -122,6 +123,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun Content(
     accountBundle: AccountBundle?,
+    signedInAccountId: () -> String?,
     intentData: String?,
     joinPoolUrlTemplate: JoinPoolUrlTemplateProvider,
     deepLinkIntent: Intent?,
@@ -129,6 +131,7 @@ fun Content(
 ) {
     Outlet(
         accountBundle = accountBundle,
+        signedInAccountId = signedInAccountId,
         intentData = intentData,
         joinPoolUrlTemplate = joinPoolUrlTemplate,
         deepLinkIntent = deepLinkIntent,
@@ -136,9 +139,14 @@ fun Content(
     )
 }
 
+/**
+ * [signedInAccountId] reads the account signed in now; [accountBundle] is the account at launch,
+ * which decides the start route.
+ */
 @Composable
 fun Outlet(
     accountBundle: AccountBundle?,
+    signedInAccountId: () -> String?,
     intentData: String?,
     joinPoolUrlTemplate: JoinPoolUrlTemplateProvider,
     deepLinkIntent: Intent?,
@@ -194,7 +202,7 @@ fun Outlet(
 
         matchBetListNavView(
             navController = navController,
-            signedInGamblerId = maybeGamblerId,
+            signedInAccountId = signedInAccountId,
             onHome = popToPoolHome,
         )
 

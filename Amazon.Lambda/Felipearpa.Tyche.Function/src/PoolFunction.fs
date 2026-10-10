@@ -115,6 +115,55 @@ module PoolFunction =
             return Results.Ok(page |> CursorPage.map PoolGamblerBetTransformer.toResponse)
         }
 
+    /// The match-bets ordering mode that ranks participants by their pool totals.
+    [<Literal>]
+    let poolScoreDescendingSort = "pool-score-desc"
+
+    let private rankedError (statusCode: int) (code: string) (message: string) =
+        Results.Json({| error = code; message = message |}, statusCode = statusCode)
+
+    let private rankedResponse (result: Result<PoolGamblerBet CursorPage, RankedMatchBetsFailure>) =
+        match result with
+        | Ok page -> Results.Ok(page |> CursorPage.map PoolGamblerBetTransformer.toResponse)
+        | Error RankedMatchBetsFailure.PoolNotFound -> rankedError 404 "POOL_NOT_FOUND" "Pool not found"
+        | Error RankedMatchBetsFailure.NotPoolMember ->
+            rankedError 403 "NOT_POOL_MEMBER" "The requester is not a member of this pool"
+        | Error RankedMatchBetsFailure.MatchNotFound -> rankedError 404 "MATCH_NOT_FOUND" "Match not found"
+        | Error RankedMatchBetsFailure.PredictionsHidden ->
+            rankedError 409 "PREDICTIONS_HIDDEN" "Predictions stay hidden until betting closes for this match"
+        | Error RankedMatchBetsFailure.RankingNotReady ->
+            rankedError 503 "RANKING_NOT_READY" "Ranked match bets are not available yet; try again later"
+        | Error(RankedMatchBetsFailure.InvalidCursor CursorContextMismatch) ->
+            rankedError
+                400
+                "CURSOR_CONTEXT_MISMATCH"
+                "The continuation belongs to another pool, match, or order; restart from the first page"
+        | Error(RankedMatchBetsFailure.InvalidCursor MalformedCursor) ->
+            rankedError 400 "INVALID_CURSOR" "The continuation is not valid; restart from the first page"
+
+    /// GET /pools/{poolId}/matches/{matchId}/bets?sort=pool-score-desc. Failures are explicit
+    /// and recoverable; this mode never falls back to the legacy order.
+    let getRankedMatchBetsAsync
+        (requesterId: Ulid)
+        (poolId: string)
+        (matchId: string)
+        (next: string option)
+        (getRankedPoolMatchBets: GetRankedPoolMatchBets)
+        : IResult Async =
+        async {
+            let! attempt =
+                getRankedPoolMatchBets.ExecuteAsync(requesterId, Ulid.newOf poolId, Ulid.newOf matchId, next)
+                |> Async.Catch
+
+            match attempt with
+            | Choice1Of2 result -> return rankedResponse result
+            // An unreadable ranking index is a recoverable outage, never a reason to fall back
+            // to another order.
+            | Choice2Of2 error when (error.GetBaseException() :? Amazon.Runtime.AmazonServiceException) ->
+                return rankedError 503 "RANKING_UNAVAILABLE" "Ranked match bets could not be read; try again later"
+            | Choice2Of2 error -> return raise error
+        }
+
     let getPoolGamblerBetByIdAsync
         (poolId: string)
         (gamblerId: string)

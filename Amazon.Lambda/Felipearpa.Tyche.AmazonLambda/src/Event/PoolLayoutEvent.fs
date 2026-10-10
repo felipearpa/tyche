@@ -2,69 +2,42 @@ namespace Felipearpa.Tyche.AmazonLambda.Event
 
 #nowarn "3536"
 
-open System
 open System.Threading.Tasks
-open Amazon.DynamoDBv2
 open Amazon.Lambda.Core
 open Amazon.Lambda.DynamoDBEvents
-open Amazon.SQS
-open Felipearpa.Core
-open Felipearpa.Core.Json
-open Felipearpa.Data.DynamoDb
 open Felipearpa.Tyche.Pool.Application
-open Felipearpa.Tyche.Pool.Domain
-open Felipearpa.Tyche.Pool.Infrastructure
 open Microsoft.Extensions.DependencyInjection
 open Microsoft.Extensions.Logging
 
+/// PoolLayout stream handler. Records are handled in source order: an added match is
+/// materialized (and its settlement requested if it already has a result), and an accepted
+/// result or correction is dispatched as durable per-pool commands before any settlement.
 type PoolLayoutEvent(configureServices: IServiceCollection -> unit) =
 
-    let buildServiceProvider () =
-        let services = ServiceCollection()
-
-        let queueUrl = Environment.GetEnvironmentVariable("UPDATE_POSITIONS_QUEUE_URL")
-
-        services
-            .AddAWSService<IAmazonDynamoDB>()
-            .AddAWSService<IAmazonSQS>()
-            .AddLogging(fun builder -> builder.AddLambdaLogger() |> ignore)
-            .AddSingleton<ISerializer, JsonSerializer>()
-            .AddSingleton<IKeySerializer, DynamoDbKeySerializer>()
-            .AddSingleton<IUpdatePositionsPublisher>(
-                System.Func<System.IServiceProvider, IUpdatePositionsPublisher>(fun sp ->
-                    UpdatePositionsSqsPublisher(sp.GetRequiredService<IAmazonSQS>(), queueUrl))
-            )
-            .AddSingleton<IPoolGamblerScoreRepository, PoolGamblerScoreDynamoDbRepository>()
-            .AddSingleton<IPoolGamblerBetRepository, PoolGamblerBetDynamoDbRepository>()
-            .AddSingleton<IPoolRepository, PoolDynamoDbRepository>()
-            .AddSingleton<ComputeBets>()
-            .AddSingleton<FanOutMatchToGamblers>()
-        |> ignore
-
-        configureServices services
-
-        services.BuildServiceProvider()
-
-    let serviceProvider = buildServiceProvider ()
+    let serviceProvider = PoolServices.build configureServices
 
     new() = PoolLayoutEvent(fun _ -> ())
 
-    member this.OnPoolLayoutChangeAsync(event: DynamoDBEvent, _: ILambdaContext) : Task =
-        (async {
-            use scope = serviceProvider.CreateScope()
+    member this.OnPoolLayoutChangeAsync(event: DynamoDBEvent, _: ILambdaContext) : Task<StreamsEventResponse> =
+        let dispatch = serviceProvider.GetRequiredService<DispatchMatchResult>()
+        let fanOut = serviceProvider.GetRequiredService<FanOutMatchToGamblers>()
+        let logger = serviceProvider.GetRequiredService<ILogger<PoolLayoutEvent>>()
 
-            let computeBets = scope.ServiceProvider.GetRequiredService<ComputeBets>()
-            let fanOutMatchToGamblers = scope.ServiceProvider.GetRequiredService<FanOutMatchToGamblers>()
+        let handle (record: DynamoDBEvent.DynamodbStreamRecord) =
+            async {
+                match PoolLayoutEventFilter.tryResultChange record with
+                | Some(matchId, result) ->
+                    let! pools = dispatch.ExecuteAsync(matchId, result)
 
-            do!
-                PoolLayoutEventFilter.extractUpdatedPoolLayouts event
-                |> Seq.iterAsync computeBets.ExecuteAsync
+                    OperationMetrics.emit
+                        "PoolLayoutEvent"
+                        [ OperationMetrics.count "ResultCommandsDispatched" pools ]
+                        [ "matchId", matchId.Value; "resultVersion", string result.Version ]
+                | None -> ()
 
-            do!
-                PoolLayoutEventFilter.extractInsertedMatches event
-                |> Seq.iterAsync fanOutMatchToGamblers.ExecuteAsync
+                match PoolLayoutEventFilter.tryInsertedMatch record with
+                | Some input -> do! fanOut.ExecuteAsync(input, record.EventID)
+                | None -> ()
+            }
 
-            return ()
-         }
-         |> Async.StartAsTask
-        :> Task)
+        StreamBatch.processInOrder "PoolLayoutEvent" logger handle event |> Async.StartAsTask

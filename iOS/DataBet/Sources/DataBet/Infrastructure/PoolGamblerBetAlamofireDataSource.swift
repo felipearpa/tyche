@@ -80,11 +80,11 @@ class PoolGamblerBetAlamofireDataSource: PoolGamblerBetRemoteDataSource {
         }
     }
 
-    func getPoolMatchGamblerBets(poolId: String, matchId: String, next: String?) async throws -> CursorPage<PoolGamblerBetResponse> {
+    func getRankedPoolMatchGamblerBets(poolId: String, matchId: String, next: String?) async throws -> CursorPage<PoolGamblerBetResponse> {
         return try await withUnsafeThrowingContinuation { continuation in
             session.request(
                 urlBasePathProvider.prependBasePath("pools/\(poolId)/matches/\(matchId)/bets")!,
-                parameters: ["next": next]
+                parameters: rankedMatchBetsParameters(next: next)
             )
             .validate()
             .responseDecodable(
@@ -95,7 +95,10 @@ class PoolGamblerBetAlamofireDataSource: PoolGamblerBetRemoteDataSource {
                 case .success(let page):
                     continuation.resume(returning: page)
                 case .failure(let error):
-                    continuation.resume(throwing: error)
+                    continuation.resume(
+                        throwing: rankedMatchBetsError(statusCode: response.response?.statusCode, body: response.data)
+                            ?? error
+                    )
                 }
             }
         }
@@ -165,3 +168,23 @@ class PoolGamblerBetAlamofireDataSource: PoolGamblerBetRemoteDataSource {
         }
     }
 }
+
+/// The ranked mode's query: the explicit sort, plus the continuation only when there is one, so
+/// a first-page request never carries an empty or placeholder cursor.
+func rankedMatchBetsParameters(next: String?) -> [String: String] {
+    var parameters = ["sort": rankedMatchBetsSort]
+    if let next {
+        parameters["next"] = next
+    }
+    return parameters
+}
+
+/// The ranked error a failed response describes, or `nil` to keep the transport error.
+func rankedMatchBetsError(statusCode: Int?, body: Data?) -> RankedMatchBetsError? {
+    guard let statusCode, let body,
+          let response = try? JSONDecoder().decode(RankedMatchBetsErrorResponse.self, from: body)
+    else { return nil }
+    return RankedMatchBetsError.from(statusCode: statusCode, errorCode: response.error)
+}
+
+let rankedMatchBetsSort = "pool-score-desc"

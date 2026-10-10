@@ -33,6 +33,9 @@ module JoinPoolGamblerRequestBuilder =
                   AttributeValue(S = $"{createPoolInput.PoolName} {createPoolInput.OwnerGamblerUsername}")
                   PoolTable.Attribute.poolLayoutId, AttributeValue(S = poolLayoutId)
                   PoolTable.Attribute.score, AttributeValue(N = "0")
+                  // Each membership lifetime gets its own generation; totals start at version 1.
+                  PoolTable.Attribute.membershipGeneration, AttributeValue(S = Ulid.random().Value)
+                  PoolTable.Attribute.scoreVersion, AttributeValue(N = "1")
                   PoolTable.Attribute.poolLayoutVersion,
                   AttributeValue(N = createPoolInput.PoolLayoutVersion.ToString())
                   PoolTable.Attribute.getGamblersByPoolLayoutPk, AttributeValue(S = gamblersByPoolLayoutPk)

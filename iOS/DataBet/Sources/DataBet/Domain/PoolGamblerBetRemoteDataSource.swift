@@ -22,7 +22,7 @@ protocol PoolGamblerBetRemoteDataSource {
         searchText: String?
     ) async throws -> CursorPage<PoolGamblerBetResponse>
 
-    func getPoolMatchGamblerBets(
+    func getRankedPoolMatchGamblerBets(
         poolId: String,
         matchId: String,
         next: String?

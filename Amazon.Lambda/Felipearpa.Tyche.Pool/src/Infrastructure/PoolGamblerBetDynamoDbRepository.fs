@@ -12,6 +12,7 @@ open Felipearpa.Core.Paging
 open Felipearpa.Data.DynamoDb
 open Felipearpa.Tyche.Pool.Domain
 open Felipearpa.Tyche.Pool.Domain.InitialPoolGamblerBetTransformer
+open Felipearpa.Tyche.Pool.Infrastructure
 open Felipearpa.Tyche.Pool.Domain.PoolGamblerBetDictionaryTransformer
 
 type PoolGamblerBetDynamoDbRepository(keySerializer: IKeySerializer, client: IAmazonDynamoDB) =
@@ -127,81 +128,45 @@ type PoolGamblerBetDynamoDbRepository(keySerializer: IKeySerializer, client: IAm
                     return Error BetFailure.MatchLocked
             }
 
-        member this.AddPoolGamblerMatchAsync(poolGamblerBet) =
+        member this.MaterializeBetAsync(initialBet, binding) =
             async {
-                let item = poolGamblerBet |> toAmazonItem
-                let request = AddPoolGamblerMatchRequestBuilder.build item
+                let item = Dictionary(initialBet |> toAmazonItem)
 
-                try
-                    let! _ = client.PutItemAsync(request) |> Async.AwaitTask
-                    return item |> toPoolGamblerBet |> Ok
-                with :? AggregateException as error when (error.InnerException :? ConditionalCheckFailedException) ->
-                    return Error AddMatchFailure.AlreadyExist
+                binding
+                |> Option.iter (fun binding ->
+                    for attribute, value in
+                        PoolProjectionRequestBuilder.projectionAttributes
+                            initialBet.PoolId
+                            initialBet.GamblerId
+                            initialBet.MatchId
+                            binding do
+                        item[attribute] <- value)
+
+                let request =
+                    PoolProjectionRequestBuilder.materialize item initialBet.PoolId initialBet.GamblerId binding
+
+                let! outcome = client.TransactWriteItemsAsync(request) |> Async.AwaitTask |> Async.Catch
+
+                match outcome with
+                | Choice1Of2 _ -> return Materialized
+                | Choice2Of2 error ->
+                    match GuardedWrite.baseException error with
+                    | :? TransactionCanceledException as cancelled when
+                        not (isNull cancelled.CancellationReasons)
+                        && cancelled.CancellationReasons.Count = 2
+                        ->
+                        match cancelled.CancellationReasons[0].Code, cancelled.CancellationReasons[1].Code with
+                        | "ConditionalCheckFailed", _ -> return AlreadyMaterialized
+                        | _, "ConditionalCheckFailed" -> return BindingChanged
+                        // Contention on the membership: re-read the binding and try again.
+                        | ("TransactionConflict" | "None"), ("TransactionConflict" | "None") -> return BindingChanged
+                        | _ -> return raise (GuardedWrite.baseException error)
+                    | baseError -> return raise baseError
             }
 
-        member this.AddPoolGamblerMatchesAsync(poolGamblerBets) =
-            poolGamblerBets
-            |> Seq.mapAsync (this :> IPoolGamblerBetRepository).AddPoolGamblerMatchAsync
-
-        member this.MaterializeMatchForGamblerAsync(initialBet, newPoolLayoutVersion) =
+        member this.RaisePoolLayoutVersionAsync(poolId, gamblerId, poolLayoutVersion) =
             async {
-                let item = initialBet |> toAmazonItem
-                let putRequest = AddPoolGamblerMatchRequestBuilder.build item
-
-                try
-                    let! _ = client.PutItemAsync(putRequest) |> Async.AwaitTask
-                    ()
-                with :? AggregateException as error when (error.InnerException :? ConditionalCheckFailedException) ->
-                    ()
-
-                let updateRequest =
-                    UpdatePoolLayoutVersionRequestBuilder.build initialBet.PoolId initialBet.GamblerId newPoolLayoutVersion
-
-                try
-                    let! _ = client.UpdateItemAsync(updateRequest) |> Async.AwaitTask
-                    ()
-                with :? AggregateException as error when (error.InnerException :? ConditionalCheckFailedException) ->
-                    ()
-            }
-
-        member this.DeleteUncomputedBetsAsync(poolId, gamblerId) =
-            let queryAllKeysAsync () =
-                let rec loop (acc: IDictionary<string, AttributeValue> list) maybeNext =
-                    async {
-                        let request = GetPoolGamblerBetKeysRequestBuilder.build poolId gamblerId maybeNext
-                        let! response = client.QueryAsync(request) |> Async.AwaitTask
-
-                        let acc =
-                            (response.Items |> Seq.cast<IDictionary<string, AttributeValue>> |> List.ofSeq)
-                            @ acc
-
-                        match response.LastEvaluatedKey |> Option.ofObj with
-                        | Some lek when lek.Count > 0 -> return! loop acc (Some(lek :> IDictionary<_, _>))
-                        | _ -> return acc
-                    }
-
-                loop [] None
-
-            let deleteIfUncomputedAsync (key: IDictionary<string, AttributeValue>) =
-                async {
-                    let request =
-                        DeleteItemRequest(
-                            TableName = PoolTable.name,
-                            Key = Dictionary key,
-                            ConditionExpression = $"attribute_not_exists({PoolTable.Attribute.computedRequestId})"
-                        )
-
-                    try
-                        let! _ = client.DeleteItemAsync(request) |> Async.AwaitTask
-                        return ()
-                    with
-                    | :? ConditionalCheckFailedException -> return ()
-                    | :? AggregateException as error when (error.InnerException :? ConditionalCheckFailedException) ->
-                        return ()
-                }
-
-            async {
-                let! keys = queryAllKeysAsync ()
-                do! keys |> List.map deleteIfUncomputedAsync |> Async.Parallel |> Async.Ignore
+                let request = UpdatePoolLayoutVersionRequestBuilder.build poolId gamblerId poolLayoutVersion
+                let! _ = GuardedWrite.run (client.UpdateItemAsync(request) |> Async.AwaitTask |> Async.Ignore)
                 return ()
             }

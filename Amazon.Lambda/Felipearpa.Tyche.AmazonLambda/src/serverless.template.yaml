@@ -1,6 +1,34 @@
 AWSTemplateFormatVersion: 2010-09-09
 Transform: AWS::Serverless-2016-10-31
 Description: Tyche API v1.3.0
+Parameters:
+  PoolStreamArn:
+    Type: String
+    Default: arn:aws:dynamodb:us-east-2:567776770335:table/Pool/stream/2025-08-18T16:45:55.692
+    Description: Stream of the externally managed Pool table (see operations/pool-table.sh).
+  PoolLayoutStreamArn:
+    Type: String
+    Default: arn:aws:dynamodb:us-east-2:567776770335:table/PoolLayout/stream/2025-09-27T02:24:29.497
+  MatchScoreIngestionStreamArn:
+    Type: String
+    Default: arn:aws:dynamodb:us-east-2:567776770335:table/MatchScoreIngestion/stream/2026-06-17T16:26:29.662
+  SettlementProcessingEnabled:
+    Type: String
+    AllowedValues: [ "true", "false" ]
+    Default: "true"
+    Description: >-
+      Enables the layout stream mapping and the pool command consumer. Set to false to quiesce
+      settlement during a cutover; stream records and queued commands are retained meanwhile.
+  PoolMaintenanceMaximumConcurrency:
+    Type: Number
+    MinValue: 2
+    MaxValue: 1000
+    Default: 16
+    Description: >-
+      Maximum concurrent OnPoolMaintenanceJob invocations, which bounds backfill and propagation
+      write rate. 16 propagates a 5,000-member pool in about 210 s within the 1,000 account quota.
+Conditions:
+  SettlementProcessingIsEnabled: !Equals [ !Ref SettlementProcessingEnabled, "true" ]
 Resources:
   AuthGatewayHttpApi:
     Type: AWS::Serverless::HttpApi
@@ -272,6 +300,8 @@ Resources:
               Resource:
                 - arn:aws:dynamodb:us-east-2:567776770335:table/Pool
                 - arn:aws:dynamodb:us-east-2:567776770335:table/Pool/index/GetPoolGamblerScoresByMatch-index
+                - arn:aws:dynamodb:us-east-2:567776770335:table/Pool/index/GetPoolMatchBetsByTotal-index
+                - arn:aws:dynamodb:us-east-2:567776770335:table/PoolLayout
                 - arn:aws:dynamodb:us-east-2:567776770335:table/Account
                 - arn:aws:dynamodb:us-east-2:567776770335:table/Account/index/GetByEmail-index
       Architectures: [ arm64 ]
@@ -648,6 +678,29 @@ Resources:
             Resource:
               - arn:aws:s3:::tyche-avatars/avatars/*
 
+  # Complete stream batches that exhaust their retries are written here with their records,
+  # so they can be replayed after the stream's 24-hour retention (operations/README.md).
+  StreamFailureBucket:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Properties:
+      BucketName: tyche-stream-failures-567776770335
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      LifecycleConfiguration:
+        Rules:
+          - Id: ExpireRetainedFailures
+            Status: Enabled
+            ExpirationInDays: 90
+
   OnPoolChange:
     Type: AWS::Serverless::Function
     Properties:
@@ -655,7 +708,11 @@ Resources:
       Runtime: dotnet10
       CodeUri: .
       MemorySize: 1024
-      Timeout: 60
+      Timeout: 120
+      Environment:
+        Variables:
+          POOL_COMMAND_QUEUE_URL: !Ref UpdatePositionsQueue
+          POOL_MAINTENANCE_QUEUE_URL: !Ref PoolMaintenanceQueue
       Policies:
         - AWSLambdaBasicExecutionRole
         - Statement:
@@ -665,31 +722,146 @@ Resources:
                 - dynamodb:DescribeStream
                 - dynamodb:GetRecords
                 - dynamodb:GetShardIterator
+              Resource: !Ref PoolStreamArn
+            - Effect: Allow
+              Action:
                 - dynamodb:Query
+                - dynamodb:GetItem
                 - dynamodb:PutItem
+                - dynamodb:UpdateItem
                 - dynamodb:DeleteItem
+                - dynamodb:ConditionCheckItem
+                - dynamodb:TransactWriteItems
               Resource:
-                - arn:aws:dynamodb:us-east-2:567776770335:table/Pool/stream/2025-08-18T16:45:55.692
                 - arn:aws:dynamodb:us-east-2:567776770335:table/PoolLayout
                 - arn:aws:dynamodb:us-east-2:567776770335:table/Pool
+            - Effect: Allow
+              Action:
+                - sqs:SendMessage
+              Resource:
+                - !GetAtt UpdatePositionsQueue.Arn
+                - !GetAtt PoolMaintenanceQueue.Arn
+            - Effect: Allow
+              Action:
+                - s3:PutObject
+                - s3:ListBucket
+              Resource:
+                - !GetAtt StreamFailureBucket.Arn
+                - !Sub "${StreamFailureBucket.Arn}/*"
       Architectures: [ arm64 ]
       Events:
         PoolStream:
           Type: DynamoDB
           Properties:
-            Stream: arn:aws:dynamodb:us-east-2:567776770335:table/Pool/stream/2025-08-18T16:45:55.692
+            Stream: !Ref PoolStreamArn
             StartingPosition: LATEST
             BatchSize: 100
             MaximumBatchingWindowInSeconds: 1
+            MaximumRetryAttempts: 10
+            MaximumRecordAgeInSeconds: 21600
+            BisectBatchOnFunctionError: true
+            FunctionResponseTypes:
+              - ReportBatchItemFailures
+            DestinationConfig:
+              OnFailure:
+                Destination: !GetAtt StreamFailureBucket.Arn
             Enabled: true
-            
+
+  OnMembershipChange:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: Felipearpa.Tyche.AmazonLambda::Felipearpa.Tyche.AmazonLambda.Event.MembershipEvent::OnMembershipChangeAsync
+      Runtime: dotnet10
+      CodeUri: .
+      MemorySize: 512
+      Timeout: 60
+      Environment:
+        Variables:
+          POOL_COMMAND_QUEUE_URL: !Ref UpdatePositionsQueue
+          POOL_MAINTENANCE_QUEUE_URL: !Ref PoolMaintenanceQueue
+      Policies:
+        - AWSLambdaBasicExecutionRole
+        - Statement:
+            - Effect: Allow
+              Action:
+                - dynamodb:ListStreams
+                - dynamodb:DescribeStream
+                - dynamodb:GetRecords
+                - dynamodb:GetShardIterator
+              Resource: !Ref PoolStreamArn
+            - Effect: Allow
+              Action:
+                - sqs:SendMessage
+              Resource:
+                - !GetAtt UpdatePositionsQueue.Arn
+                - !GetAtt PoolMaintenanceQueue.Arn
+            - Effect: Allow
+              Action:
+                - s3:PutObject
+                - s3:ListBucket
+              Resource:
+                - !GetAtt StreamFailureBucket.Arn
+                - !Sub "${StreamFailureBucket.Arn}/*"
+      Architectures: [ arm64 ]
+      Events:
+        MembershipStream:
+          Type: DynamoDB
+          Properties:
+            Stream: !Ref PoolStreamArn
+            StartingPosition: LATEST
+            BatchSize: 100
+            MaximumBatchingWindowInSeconds: 1
+            MaximumRetryAttempts: 10
+            MaximumRecordAgeInSeconds: 21600
+            BisectBatchOnFunctionError: true
+            FunctionResponseTypes:
+              - ReportBatchItemFailures
+            DestinationConfig:
+              OnFailure:
+                Destination: !GetAtt StreamFailureBucket.Arn
+            # Only membership records: details, receipts, and the pool root never reach the
+            # handler, so projection and position writes on details cannot trigger it.
+            FilterCriteria:
+              Filters:
+                - Pattern: '{"dynamodb":{"Keys":{"pk":{"S":[{"prefix":"POOL#"}]},"sk":{"S":[{"prefix":"GAMBLER#"}]}}}}'
+            Enabled: true
+
+  UpdatePositionsDeadLetterQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: UpdatePositionsQueue-dlq.fifo
+      FifoQueue: true
+      MessageRetentionPeriod: 1209600
+
+  # Ordered per-pool command queue (the name predates the settlement commands it now carries).
+  # Visibility outlasts six worker timeouts; deadline yields make the message visible at once.
   UpdatePositionsQueue:
     Type: AWS::SQS::Queue
     Properties:
       QueueName: UpdatePositionsQueue.fifo
       FifoQueue: true
       ContentBasedDeduplication: false
-      VisibilityTimeout: 120
+      VisibilityTimeout: 1800
+      MessageRetentionPeriod: 1209600
+      RedrivePolicy:
+        deadLetterTargetArn: !GetAtt UpdatePositionsDeadLetterQueue.Arn
+        maxReceiveCount: 30
+
+  PoolMaintenanceDeadLetterQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: PoolMaintenanceQueue-dlq
+      MessageRetentionPeriod: 1209600
+
+  PoolMaintenanceQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: PoolMaintenanceQueue
+      VisibilityTimeout: 720
+      MessageRetentionPeriod: 1209600
+      RedrivePolicy:
+        deadLetterTargetArn: !GetAtt PoolMaintenanceDeadLetterQueue.Arn
+        maxReceiveCount: 5
 
   OnPoolLayoutChange:
     Type: AWS::Serverless::Function
@@ -698,10 +870,11 @@ Resources:
       Runtime: dotnet10
       CodeUri: .
       MemorySize: 1769
-      Timeout: 60
+      Timeout: 120
       Environment:
         Variables:
-          UPDATE_POSITIONS_QUEUE_URL: !Ref UpdatePositionsQueue
+          POOL_COMMAND_QUEUE_URL: !Ref UpdatePositionsQueue
+          POOL_MAINTENANCE_QUEUE_URL: !Ref PoolMaintenanceQueue
       Policies:
         - AWSLambdaBasicExecutionRole
         - Statement:
@@ -711,12 +884,16 @@ Resources:
                 - dynamodb:DescribeStream
                 - dynamodb:GetRecords
                 - dynamodb:GetShardIterator
+              Resource: !Ref PoolLayoutStreamArn
+            - Effect: Allow
+              Action:
                 - dynamodb:Query
+                - dynamodb:GetItem
                 - dynamodb:PutItem
                 - dynamodb:UpdateItem
+                - dynamodb:ConditionCheckItem
                 - dynamodb:TransactWriteItems
               Resource:
-                - arn:aws:dynamodb:us-east-2:567776770335:table/PoolLayout/stream/2025-09-27T02:24:29.497
                 - arn:aws:dynamodb:us-east-2:567776770335:table/PoolLayout
                 - arn:aws:dynamodb:us-east-2:567776770335:table/Pool
                 - arn:aws:dynamodb:us-east-2:567776770335:table/Pool/index/GetPoolGamblerScoresByMatch-index
@@ -724,26 +901,47 @@ Resources:
             - Effect: Allow
               Action:
                 - sqs:SendMessage
-              Resource: !GetAtt UpdatePositionsQueue.Arn
+              Resource:
+                - !GetAtt UpdatePositionsQueue.Arn
+                - !GetAtt PoolMaintenanceQueue.Arn
+            - Effect: Allow
+              Action:
+                - s3:PutObject
+                - s3:ListBucket
+              Resource:
+                - !GetAtt StreamFailureBucket.Arn
+                - !Sub "${StreamFailureBucket.Arn}/*"
       Architectures: [ arm64 ]
       Events:
         PoolStream:
           Type: DynamoDB
           Properties:
-            Stream: arn:aws:dynamodb:us-east-2:567776770335:table/PoolLayout/stream/2025-09-27T02:24:29.497
+            Stream: !Ref PoolLayoutStreamArn
             StartingPosition: LATEST
             BatchSize: 100
             MaximumBatchingWindowInSeconds: 1
-            Enabled: true
+            MaximumRetryAttempts: 10
+            MaximumRecordAgeInSeconds: 21600
+            BisectBatchOnFunctionError: true
+            FunctionResponseTypes:
+              - ReportBatchItemFailures
+            DestinationConfig:
+              OnFailure:
+                Destination: !GetAtt StreamFailureBucket.Arn
+            Enabled: !If [ SettlementProcessingIsEnabled, true, false ]
 
   OnUpdatePositions:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: Felipearpa.Tyche.AmazonLambda::Felipearpa.Tyche.AmazonLambda.Event.UpdatePositionsEvent::OnUpdatePositionsAsync
+      Handler: Felipearpa.Tyche.AmazonLambda::Felipearpa.Tyche.AmazonLambda.Event.PoolOperationEvent::OnPoolCommandAsync
       Runtime: dotnet10
       CodeUri: .
       MemorySize: 1024
-      Timeout: 60
+      Timeout: 300
+      Environment:
+        Variables:
+          POOL_COMMAND_QUEUE_URL: !Ref UpdatePositionsQueue
+          POOL_MAINTENANCE_QUEUE_URL: !Ref PoolMaintenanceQueue
       Policies:
         - AWSLambdaBasicExecutionRole
         - Statement:
@@ -752,14 +950,21 @@ Resources:
                 - sqs:ReceiveMessage
                 - sqs:DeleteMessage
                 - sqs:GetQueueAttributes
+                - sqs:ChangeMessageVisibility
+                - sqs:SendMessage
               Resource: !GetAtt UpdatePositionsQueue.Arn
             - Effect: Allow
               Action:
                 - dynamodb:Query
+                - dynamodb:GetItem
+                - dynamodb:BatchGetItem
+                - dynamodb:PutItem
                 - dynamodb:UpdateItem
+                - dynamodb:ConditionCheckItem
+                - dynamodb:TransactWriteItems
               Resource:
                 - arn:aws:dynamodb:us-east-2:567776770335:table/Pool
-                - arn:aws:dynamodb:us-east-2:567776770335:table/Pool/index/GetPoolGamblerScoresByPool-index
+                - arn:aws:dynamodb:us-east-2:567776770335:table/PoolLayout
       Architectures: [ arm64 ]
       Events:
         SqsEvent:
@@ -767,7 +972,219 @@ Resources:
           Properties:
             Queue: !GetAtt UpdatePositionsQueue.Arn
             BatchSize: 1
+            FunctionResponseTypes:
+              - ReportBatchItemFailures
+            Enabled: !If [ SettlementProcessingIsEnabled, true, false ]
+
+  OnPoolMaintenanceJob:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: Felipearpa.Tyche.AmazonLambda::Felipearpa.Tyche.AmazonLambda.Event.PoolMaintenanceEvent::OnPoolMaintenanceJobAsync
+      Runtime: dotnet10
+      CodeUri: .
+      MemorySize: 1024
+      Timeout: 120
+      Environment:
+        Variables:
+          POOL_COMMAND_QUEUE_URL: !Ref UpdatePositionsQueue
+          POOL_MAINTENANCE_QUEUE_URL: !Ref PoolMaintenanceQueue
+      Policies:
+        - AWSLambdaBasicExecutionRole
+        - Statement:
+            - Effect: Allow
+              Action:
+                - sqs:ReceiveMessage
+                - sqs:DeleteMessage
+                - sqs:GetQueueAttributes
+                - sqs:SendMessage
+              Resource: !GetAtt PoolMaintenanceQueue.Arn
+            - Effect: Allow
+              Action:
+                - sqs:SendMessage
+              Resource: !GetAtt UpdatePositionsQueue.Arn
+            - Effect: Allow
+              Action:
+                - dynamodb:Query
+                - dynamodb:GetItem
+                - dynamodb:PutItem
+                - dynamodb:UpdateItem
+                - dynamodb:DeleteItem
+                - dynamodb:ConditionCheckItem
+                - dynamodb:TransactWriteItems
+              Resource:
+                - arn:aws:dynamodb:us-east-2:567776770335:table/Pool
+                - arn:aws:dynamodb:us-east-2:567776770335:table/PoolLayout
+      Architectures: [ arm64 ]
+      Events:
+        SqsEvent:
+          Type: SQS
+          Properties:
+            Queue: !GetAtt PoolMaintenanceQueue.Arn
+            BatchSize: 5
+            FunctionResponseTypes:
+              - ReportBatchItemFailures
+            # The rate limit for backfill and propagation writes.
+            ScalingConfig:
+              MaximumConcurrency: !Ref PoolMaintenanceMaximumConcurrency
             Enabled: true
+
+  OperationsAlarmTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      TopicName: tyche-pool-operations-alarms
+
+  PoolCommandDeadLettersAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmDescription: A pool command reached the dead-letter queue; its pool keeps its active fence (operations/README.md).
+      Namespace: AWS/SQS
+      MetricName: ApproximateNumberOfMessagesVisible
+      Dimensions:
+        - Name: QueueName
+          Value: !GetAtt UpdatePositionsDeadLetterQueue.QueueName
+      Statistic: Maximum
+      Period: 300
+      EvaluationPeriods: 1
+      Threshold: 0
+      ComparisonOperator: GreaterThanThreshold
+      TreatMissingData: notBreaching
+      AlarmActions: [ !Ref OperationsAlarmTopic ]
+
+  PoolMaintenanceDeadLettersAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmDescription: A maintenance job (propagation, backfill, reconciliation) exhausted its retries.
+      Namespace: AWS/SQS
+      MetricName: ApproximateNumberOfMessagesVisible
+      Dimensions:
+        - Name: QueueName
+          Value: !GetAtt PoolMaintenanceDeadLetterQueue.QueueName
+      Statistic: Maximum
+      Period: 300
+      EvaluationPeriods: 1
+      Threshold: 0
+      ComparisonOperator: GreaterThanThreshold
+      TreatMissingData: notBreaching
+      AlarmActions: [ !Ref OperationsAlarmTopic ]
+
+  PoolCommandBacklogAgeAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmDescription: The oldest pool command has waited more than 15 minutes.
+      Namespace: AWS/SQS
+      MetricName: ApproximateAgeOfOldestMessage
+      Dimensions:
+        - Name: QueueName
+          Value: !GetAtt UpdatePositionsQueue.QueueName
+      Statistic: Maximum
+      Period: 300
+      EvaluationPeriods: 1
+      Threshold: 900
+      ComparisonOperator: GreaterThanThreshold
+      TreatMissingData: notBreaching
+      AlarmActions: [ !Ref OperationsAlarmTopic ]
+
+  ProjectionBacklogAgeAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmDescription: Total propagation or maintenance work has waited more than 15 minutes (projection lag).
+      Namespace: AWS/SQS
+      MetricName: ApproximateAgeOfOldestMessage
+      Dimensions:
+        - Name: QueueName
+          Value: !GetAtt PoolMaintenanceQueue.QueueName
+      Statistic: Maximum
+      Period: 300
+      EvaluationPeriods: 1
+      Threshold: 900
+      ComparisonOperator: GreaterThanThreshold
+      TreatMissingData: notBreaching
+      AlarmActions: [ !Ref OperationsAlarmTopic ]
+
+  PoolBlockedAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmDescription: A pool operation is blocked after repeated attempts without progress.
+      Namespace: Tyche/PoolOperations
+      MetricName: OperationBlocked
+      Dimensions:
+        - Name: Handler
+          Value: PoolOperationEvent
+      Statistic: Sum
+      Period: 300
+      EvaluationPeriods: 1
+      Threshold: 0
+      ComparisonOperator: GreaterThanThreshold
+      TreatMissingData: notBreaching
+      AlarmActions: [ !Ref OperationsAlarmTopic ]
+
+  ActiveOperationAgeAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmDescription: A pool operation has been active for more than 30 minutes.
+      Namespace: Tyche/PoolOperations
+      MetricName: ActiveOperationAge
+      Dimensions:
+        - Name: Handler
+          Value: PoolOperationEvent
+      Statistic: Maximum
+      Period: 300
+      EvaluationPeriods: 1
+      Threshold: 1800
+      ComparisonOperator: GreaterThanThreshold
+      TreatMissingData: notBreaching
+      AlarmActions: [ !Ref OperationsAlarmTopic ]
+
+  StreamRecordFailuresAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmDescription: Pool stream records keep failing; exhausted batches go to the stream failure bucket.
+      Namespace: Tyche/PoolOperations
+      MetricName: StreamRecordFailures
+      Dimensions:
+        - Name: Handler
+          Value: PoolLayoutEvent
+      Statistic: Sum
+      Period: 300
+      EvaluationPeriods: 2
+      Threshold: 3
+      ComparisonOperator: GreaterThanThreshold
+      TreatMissingData: notBreaching
+      AlarmActions: [ !Ref OperationsAlarmTopic ]
+
+  PoolLayoutStreamIteratorAgeAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmDescription: Result dispatch is more than 10 minutes behind the PoolLayout stream.
+      Namespace: AWS/Lambda
+      MetricName: IteratorAge
+      Dimensions:
+        - Name: FunctionName
+          Value: !Ref OnPoolLayoutChange
+      Statistic: Maximum
+      Period: 300
+      EvaluationPeriods: 1
+      Threshold: 600000
+      ComparisonOperator: GreaterThanThreshold
+      TreatMissingData: notBreaching
+      AlarmActions: [ !Ref OperationsAlarmTopic ]
+
+  PoolStreamIteratorAgeAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmDescription: Membership handling is more than 10 minutes behind the Pool stream.
+      Namespace: AWS/Lambda
+      MetricName: IteratorAge
+      Dimensions:
+        - Name: FunctionName
+          Value: !Ref OnMembershipChange
+      Statistic: Maximum
+      Period: 300
+      EvaluationPeriods: 1
+      Threshold: 600000
+      ComparisonOperator: GreaterThanThreshold
+      TreatMissingData: notBreaching
+      AlarmActions: [ !Ref OperationsAlarmTopic ]
 
   MatchScoreSchedulerRole:
     Type: AWS::IAM::Role
@@ -836,8 +1253,14 @@ Resources:
                 - dynamodb:DescribeStream
                 - dynamodb:GetRecords
                 - dynamodb:GetShardIterator
+              Resource: !Ref MatchScoreIngestionStreamArn
+            - Effect: Allow
+              Action:
+                - s3:PutObject
+                - s3:ListBucket
               Resource:
-                - arn:aws:dynamodb:us-east-2:567776770335:table/MatchScoreIngestion/stream/2026-06-17T16:26:29.662
+                - !GetAtt StreamFailureBucket.Arn
+                - !Sub "${StreamFailureBucket.Arn}/*"
             - Effect: Allow
               Action:
                 - scheduler:CreateSchedule
@@ -854,13 +1277,27 @@ Resources:
         MatchScoreIngestionStream:
           Type: DynamoDB
           Properties:
-            Stream: arn:aws:dynamodb:us-east-2:567776770335:table/MatchScoreIngestion/stream/2026-06-17T16:26:29.662
+            Stream: !Ref MatchScoreIngestionStreamArn
             StartingPosition: LATEST
             BatchSize: 10
             MaximumBatchingWindowInSeconds: 1
+            MaximumRetryAttempts: 10
+            MaximumRecordAgeInSeconds: 21600
+            BisectBatchOnFunctionError: true
+            DestinationConfig:
+              OnFailure:
+                Destination: !GetAtt StreamFailureBucket.Arn
             Enabled: true
 
 Outputs:
+  PoolCommandQueueUrl:
+    Value: !Ref UpdatePositionsQueue
+  PoolMaintenanceQueueUrl:
+    Value: !Ref PoolMaintenanceQueue
+  PoolCommandDeadLetterQueueUrl:
+    Value: !Ref UpdatePositionsDeadLetterQueue
+  StreamFailureBucketName:
+    Value: !Ref StreamFailureBucket
   ApiURL:
     Description: API endpoint URL for Prod environment
     Value:

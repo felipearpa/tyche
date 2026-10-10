@@ -2,6 +2,7 @@ namespace Felipearpa.Tyche.AmazonLambda.Function
 
 #nowarn "3536"
 
+open System
 open System.Threading.Tasks
 open Amazon.DynamoDBv2
 open Amazon.Lambda.APIGatewayEvents
@@ -42,6 +43,11 @@ type PoolFunction(configureServices: IServiceCollection -> unit) =
     [<Literal>]
     let searchTextParameter = "searchText"
 
+    [<Literal>]
+    let sortParameter = "sort"
+
+    let clock: unit -> DateTime = fun () -> DateTime.UtcNow
+
     let buildServiceProvider () =
         let services = ServiceCollection()
 
@@ -71,6 +77,23 @@ type PoolFunction(configureServices: IServiceCollection -> unit) =
             .AddScoped<DeletePool>()
             .AddScoped<IAccountRepository, AccountDynamoDbRepository>()
             .AddScoped<IGetAccountById, GetAccountById>()
+            .AddScoped<PoolSettlementDynamoDbRepository>(
+                Func<IServiceProvider, PoolSettlementDynamoDbRepository>(fun sp ->
+                    PoolSettlementDynamoDbRepository(sp.GetRequiredService<IAmazonDynamoDB>()))
+            )
+            .AddScoped<IPoolSettlementRepository>(
+                Func<IServiceProvider, IPoolSettlementRepository>(fun sp ->
+                    sp.GetRequiredService<PoolSettlementDynamoDbRepository>() :> IPoolSettlementRepository)
+            )
+            .AddScoped<IPoolProjectionRepository>(
+                Func<IServiceProvider, IPoolProjectionRepository>(fun sp ->
+                    sp.GetRequiredService<PoolSettlementDynamoDbRepository>() :> IPoolProjectionRepository)
+            )
+            .AddScoped<IPoolLayoutMatchReader, PoolLayoutMatchReader>()
+            .AddScoped<IRankedMatchBetsRepository, RankedMatchBetsDynamoDbRepository>()
+            .AddSingleton<RankedMatchBetsSettings>(RankedMatchBetsSettings.Default)
+            .AddSingleton<unit -> DateTime>(clock)
+            .AddScoped<GetRankedPoolMatchBets>()
         |> ignore
 
         configureServices services
@@ -385,25 +408,44 @@ type PoolFunction(configureServices: IServiceCollection -> unit) =
                 |> Option.defaultValue Map.empty
                 |> tryGetUlidParamOrError matchIdParameter
 
-            let maybeNext =
-                request.QueryStringParameters
-                |> Option.ofObj
-                |> Option.defaultValue Map.empty
-                |> tryGetStringParamOrNone nextParameter
+            let queryParameters =
+                request.QueryStringParameters |> Option.ofObj |> Option.defaultValue Map.empty
 
-            match poolIdResult, matchIdResult, maybeNext with
-            | Ok poolId, Ok matchId, next ->
+            let maybeNext = queryParameters |> tryGetStringParamOrNone nextParameter
+            let maybeSort = queryParameters |> tryGetStringParamOrNone sortParameter
+
+            match poolIdResult, matchIdResult, maybeSort with
+            | Ok poolId, Ok matchId, None ->
                 let! response =
-                    getMatchBetsAsync
-                        poolId
-                        matchId
-                        next
-                        (scope.ServiceProvider.GetService<GetPoolMatchGamblerBets>())
+                    getMatchBetsAsync poolId matchId maybeNext (scope.ServiceProvider.GetService<GetPoolMatchGamblerBets>())
 
                 return! response.ToAmazonProxyResponse()
+            | Ok poolId, Ok matchId, Some sort when sort = poolScoreDescendingSort ->
+                let! callerResult =
+                    Authorization.resolveCallerGamblerIdAsync
+                        request
+                        (scope.ServiceProvider.GetRequiredService<IAccountRepository>())
+
+                match callerResult with
+                | Error failure -> return Authorization.toResponse failure
+                | Ok callerId ->
+                    let! response =
+                        getRankedMatchBetsAsync
+                            callerId
+                            poolId
+                            matchId
+                            maybeNext
+                            (scope.ServiceProvider.GetRequiredService<GetRankedPoolMatchBets>())
+
+                    return! response.ToAmazonProxyResponse()
             | _ ->
+                let sortError =
+                    match maybeSort with
+                    | Some sort when sort <> poolScoreDescendingSort -> Some $"Unsupported sort '{sort}'"
+                    | _ -> None
+
                 let errors =
-                    [ toErrorOption poolIdResult; toErrorOption matchIdResult ] |> List.choose id
+                    [ toErrorOption poolIdResult; toErrorOption matchIdResult; sortError ] |> List.choose id
 
                 return errors |> BadRequestResponseFactory.create
         }

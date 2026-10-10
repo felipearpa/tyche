@@ -1,0 +1,30 @@
+[
+  {
+    "Name": "single viewer, sequential first pages",
+    "Value": "requests=200 failures=0 p50=8ms p95=12ms max=49ms"
+  },
+  {
+    "Name": "10 concurrent viewers",
+    "Value": "requests=50 failures=0 p50=10ms p95=32ms max=35ms"
+  },
+  {
+    "Name": "50 concurrent viewers",
+    "Value": "requests=250 failures=0 p50=39ms p95=76ms max=114ms"
+  },
+  {
+    "Name": "200 concurrent viewers",
+    "Value": "requests=1000 failures=0 p50=274ms p95=445ms max=604ms"
+  },
+  {
+    "Name": "position pass membership reads",
+    "Value": "5000 memberships in 50 strongly consistent pages, 0.38s"
+  },
+  {
+    "Name": "position pass sort",
+    "Value": "5000 ranked in 9.4ms"
+  },
+  {
+    "Name": "match detail strong batch reads",
+    "Value": "5000 details in 1.42s"
+  }
+]

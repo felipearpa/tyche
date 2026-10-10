@@ -273,3 +273,58 @@ fun historyBetPlaceholderModel() =
         score = 0,
         isComputed = true,
     )
+
+/** Stable filler for the match heading while the gate is unknown; never shown as real content. */
+fun matchHeaderPlaceholderModel() =
+    poolGamblerBetFakeModel().copy(
+        homeTeamName = "X".repeat(9),
+        awayTeamName = "X".repeat(9),
+        matchScore = null,
+        betScore = null,
+        score = null,
+        isLocked = false,
+        isComputed = false,
+    )
+
+/**
+ * Stable filler for loading participant rows, sized like a typical row; never shown as real
+ * content. Its gambler ID is empty, so it can never name a real avatar.
+ */
+fun matchGamblerBetPlaceholderModel(isComputed: Boolean = false) =
+    poolGamblerBetFakeModel().copy(
+        gamblerId = "",
+        gamblerUsername = "X".repeat(14),
+        betScore = TeamScore(0, 0),
+        score = 0,
+        isLocked = true,
+        isComputed = isComputed,
+    )
+
+/** Stable filler for the viewer's own prediction while it loads; never shown as real content. */
+val matchOwnBetPlaceholderScore = TeamScore(0, 0)
+
+/** The signed-in gambler of the match previews. */
+const val MATCH_PREVIEW_VIEWER_ID = "preview-viewer"
+
+/**
+ * Match preview participants in pool-total order: a leader without a bet, a zero award, positive
+ * awards, the signed-in gambler in rank position, a long email name, and an unavailable award.
+ */
+fun matchParticipantPreviewModels(isComputed: Boolean): List<PoolGamblerBetModel> {
+    val base = historyBetPreviewModels()[1].copy(
+        isLocked = true,
+        isComputed = isComputed,
+        matchScore = if (isComputed) TeamScore(0, 0) else null,
+    )
+    fun row(id: String, name: String, bet: TeamScore<Int>?, score: Int?) =
+        base.copy(gamblerId = id, gamblerUsername = name, betScore = bet, score = if (isComputed) score else null)
+    return listOf(
+        row("preview-1", "El mono", null, 0),
+        row("preview-2", "Val Cardo", TeamScore(3, 1), 0),
+        row("preview-3", "Juano", TeamScore(1, 0), 4),
+        row("preview-4", "Santiago Arcila", TeamScore(5, 0), 4),
+        row(MATCH_PREVIEW_VIEWER_ID, "felipearpa", TeamScore(3, 2), 0),
+        row("preview-6", "giraldocano517@gmail.com", TeamScore(0, 0), 10),
+        row("preview-7", "Juan Pablo Rojas", null, null),
+    )
+}

@@ -45,7 +45,7 @@ public class PoolGamblerBetFakeRepository: PoolGamblerBetRepository {
         )
     }
 
-    public func getPoolMatchGamblerBets(
+    public func getRankedPoolMatchGamblerBets(
         poolId: String,
         matchId: String,
         next: String?

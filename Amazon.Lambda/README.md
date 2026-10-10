@@ -36,6 +36,10 @@ From this directory (`Amazon.Lambda/`):
 
 The script runs the test suite and then deploys via `dotnet lambda deploy-serverless`.
 
+## Operations
+
+Settlement, projection, migration, and recovery procedures are in [`operations/README.md`](operations/README.md); how the flow works is in [`docs/pool-settlement.md`](../docs/pool-settlement.md).
+
 ## Release notes
 
 See [`CHANGELOG.md`](CHANGELOG.md).

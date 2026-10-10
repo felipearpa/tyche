@@ -1,0 +1,125 @@
+{
+    "keys": [
+        {
+            "AttributeName": "pk",
+            "KeyType": "HASH"
+        },
+        {
+            "AttributeName": "sk",
+            "KeyType": "RANGE"
+        }
+    ],
+    "stream": {
+        "StreamEnabled": true,
+        "StreamViewType": "NEW_AND_OLD_IMAGES"
+    },
+    "streamArn": "arn:aws:dynamodb:us-east-2:567776770335:table/Pool/stream/2025-08-18T16:45:55.692",
+    "billing": "PAY_PER_REQUEST",
+    "indexes": [
+        {
+            "name": "GetFinishedPoolGamblerBets-index",
+            "keys": [
+                {
+                    "AttributeName": "pk",
+                    "KeyType": "HASH"
+                },
+                {
+                    "AttributeName": "computedDateTime",
+                    "KeyType": "RANGE"
+                }
+            ],
+            "projection": "ALL",
+            "status": "ACTIVE"
+        },
+        {
+            "name": "GetPoolGamblersByUsername-index",
+            "keys": [
+                {
+                    "AttributeName": "pk",
+                    "KeyType": "HASH"
+                },
+                {
+                    "AttributeName": "gamblerUsername",
+                    "KeyType": "RANGE"
+                }
+            ],
+            "projection": "ALL",
+            "status": "ACTIVE"
+        },
+        {
+            "name": "GetPoolGamblerScoresByMatch-index",
+            "keys": [
+                {
+                    "AttributeName": "getPoolGamblerScoresByMatchPk",
+                    "KeyType": "HASH"
+                },
+                {
+                    "AttributeName": "getPoolGamblerScoresByMatchSk",
+                    "KeyType": "RANGE"
+                }
+            ],
+            "projection": "ALL",
+            "status": "ACTIVE"
+        },
+        {
+            "name": "GetPoolGamblerScoresByGambler-index",
+            "keys": [
+                {
+                    "AttributeName": "sk",
+                    "KeyType": "HASH"
+                },
+                {
+                    "AttributeName": "score",
+                    "KeyType": "RANGE"
+                }
+            ],
+            "projection": "ALL",
+            "status": "ACTIVE"
+        },
+        {
+            "name": "GetGamblersByPoolLayout-index",
+            "keys": [
+                {
+                    "AttributeName": "getGamblersByPoolLayoutPk",
+                    "KeyType": "HASH"
+                },
+                {
+                    "AttributeName": "getGamblersByPoolLayoutSk",
+                    "KeyType": "RANGE"
+                }
+            ],
+            "projection": "ALL",
+            "status": "ACTIVE"
+        },
+        {
+            "name": "GetPoolGamblerScoresByPool-index",
+            "keys": [
+                {
+                    "AttributeName": "pk",
+                    "KeyType": "HASH"
+                },
+                {
+                    "AttributeName": "score",
+                    "KeyType": "RANGE"
+                }
+            ],
+            "projection": "ALL",
+            "status": "ACTIVE"
+        },
+        {
+            "name": "GetPendingPoolGamblerBets-index",
+            "keys": [
+                {
+                    "AttributeName": "pk",
+                    "KeyType": "HASH"
+                },
+                {
+                    "AttributeName": "matchDateTime",
+                    "KeyType": "RANGE"
+                }
+            ],
+            "projection": "ALL",
+            "status": "ACTIVE"
+        }
+    ]
+}

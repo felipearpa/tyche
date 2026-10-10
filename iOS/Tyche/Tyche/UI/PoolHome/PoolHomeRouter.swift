@@ -204,6 +204,7 @@ private struct PoolHomeDestinations: ViewModifier {
                     poolId: route.poolId,
                     gamblerId: route.gamblerId,
                     matchId: route.matchId,
+                    viewerAccountId: accountId,
                     onHome: { path = NavigationPath() },
                     onGamblerOpen: { tappedPoolId, tappedGamblerId, tappedGamblerUsername in
                         if tappedGamblerId != accountId {
@@ -217,6 +218,9 @@ private struct PoolHomeDestinations: ViewModifier {
                         }
                     }
                 )
+                // The match screen's view model, with its heading, own bet, and rows, belongs to
+                // one signed-in account, pool, and match; another context starts a new one.
+                .id(MatchContext(accountId: accountId, route: route))
                 .toolbar(.hidden, for: .tabBar)
             }
             .navigationDestination(for: ManageGamblersRoute.self) { route in
@@ -256,6 +260,11 @@ private struct PoolHomeDestinations: ViewModifier {
 private struct TimelineContext: Hashable {
     let accountId: String
     let route: BetTimelineListViewRoute
+}
+
+private struct MatchContext: Hashable {
+    let accountId: String
+    let route: MatchBetListViewRoute
 }
 
 private struct ShareablePoolUrl: Identifiable {

@@ -68,4 +68,8 @@ module InitialPoolGamblerBetTransformer =
         | Some computedRequestId -> item[PoolTable.Attribute.computedRequestId] <- AttributeValue(S = computedRequestId)
         | None -> ()
 
+        match poolGamblerBet.ResultVersion with
+        | Some resultVersion -> item[PoolTable.Attribute.resultVersion] <- AttributeValue(N = resultVersion.ToString())
+        | None -> ()
+
         item :> IDictionary<string, AttributeValue>

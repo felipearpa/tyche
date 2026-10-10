@@ -121,7 +121,7 @@ private final class UnusedDataSource: PoolGamblerBetRemoteDataSource {
         fatalError("not used")
     }
 
-    func getPoolMatchGamblerBets(poolId: String, matchId: String, next: String?) async throws -> CursorPage<PoolGamblerBetResponse> {
+    func getRankedPoolMatchGamblerBets(poolId: String, matchId: String, next: String?) async throws -> CursorPage<PoolGamblerBetResponse> {
         fatalError("not used")
     }
 

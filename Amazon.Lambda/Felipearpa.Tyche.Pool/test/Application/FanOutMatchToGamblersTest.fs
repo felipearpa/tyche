@@ -1,150 +1,105 @@
 namespace Felipearpa.Tyche.Pool.Test.Application
 
 open System
-open Felipearpa.Core.Paging
+open Amazon.DynamoDBv2.Model
 open Felipearpa.Tyche.Pool.Application
 open Felipearpa.Tyche.Pool.Domain
+open Felipearpa.Tyche.Pool.Test.Settlement
+open Felipearpa.Tyche.Pool.Test.Settlement.PoolScenario
 open Felipearpa.Type
 open FsUnitTyped
 open Xunit
 
+/// Added-match materialization through the guarded initializer, against the fake table.
 module FanOutMatchToGamblersTest =
 
-    let private poolLayoutId = Ulid.newOf "01K1PX1TX2NM1HG851S1V0QG6K"
-    let private newVersion = 5
+    let private addedMatch result =
+        { MatchId = match3
+          MatchDateTime = pastKickoff.AddDays(1.0)
+          Result = result }
 
-    let private input () : FanOutMatchInput =
-        { MatchId = Ulid.newOf "01K1PX1TX2NM1HG851S1V0QG6M"
-          PoolLayoutId = poolLayoutId
-          PoolLayoutVersion = newVersion
-          HomeTeamId = "01K1PX1TX2NM1HG851S1V0QG6N"
-          HomeTeamName = NonEmptyString100.newOf "Tigre"
-          AwayTeamId = "01K1PX1TX2NM1HG851S1V0QG6P"
-          AwayTeamName = NonEmptyString100.newOf "América"
-          MatchDateTime = DateTime(2026, 5, 1, 0, 0, 0, DateTimeKind.Utc)
-          Round = "Fase de grupos"
-          GroupName = None }
+    let private migrated () =
+        async {
+            let harness = VersionedSettlementHarness()
+            do! harness.SeedAndMigrateAsync(defaultMembers, defaultMatches)
+            return harness
+        }
 
-    let private gambler (id: string) (poolId: string) (version: int) : PoolLayoutGambler =
-        { PoolId = Ulid.newOf poolId
-          PoolLayoutId = poolLayoutId
-          PoolLayoutVersion = version
-          GamblerId = Ulid.newOf id
-          GamblerUsername = NonEmptyString100.newOf $"gambler-{id}@tyche.com"
-          GamblerEmail = NonEmptyString100.newOf $"gambler-{id}@tyche.com" }
-
-    let private fakePoolRepo (pages: PoolLayoutGambler list list) =
-        let mutable index = 0
-        let queryCalls = ResizeArray<Ulid * string option>()
-
-        let repo =
-            { new IPoolRepository with
-                member _.GetPoolByIdAsync(_) = failwith "not used"
-                member _.CreatePoolAsync(_) = failwith "not used"
-                member _.JoinPoolAsync(_) = failwith "not used"
-                member _.IsPoolMemberAsync(_, _) = failwith "not used"
-                member _.GetPoolMembersAsync(_, _) = failwith "not used"
-                member _.DeletePoolAsync(_) = failwith "not used"
-                member _.RemoveGamblerAsync(_, _) = failwith "not used"
-                member _.PropagateGamblerUsernameAsync(_, _) = failwith "not used"
-
-                member _.GetGamblersByPoolLayoutAsync(layoutId, next) =
-                    queryCalls.Add(layoutId, next)
-                    let current = pages[index]
-                    let isLast = index = pages.Length - 1
-                    index <- index + 1
-
-                    async {
-                        return
-                            { CursorPage.Items = current
-                              Next = if isLast then None else Some $"cursor-{index}" }
-                    } }
-
-        repo, queryCalls
-
-    let private fakeBetRepo () =
-        let captured = ResizeArray<InitialPoolGamblerBet * int>()
-
-        let repo =
-            { new IPoolGamblerBetRepository with
-                member _.GetPendingPoolGamblerBetsAsync(_, _, _, _) = failwith "not used"
-                member _.GetFinishedPoolGamblerBetsAsync(_, _, _, _) = failwith "not used"
-                member _.GetLivePoolGamblerBetsAsync(_, _, _, _) = failwith "not used"
-                member _.GetPoolMatchGamblerBetsAsync(_, _, _) = failwith "not used"
-                member _.GetPoolGamblerBetByIdAsync(_, _, _) = failwith "not used"
-                member _.BetAsync(_, _, _, _) = failwith "not used"
-                member _.AddPoolGamblerMatchAsync(_) = failwith "not used"
-                member _.AddPoolGamblerMatchesAsync(_) = failwith "not used"
-                member _.DeleteUncomputedBetsAsync(_, _) = failwith "not used"
-
-                member _.MaterializeMatchForGamblerAsync(bet, version) =
-                    captured.Add(bet, version)
-                    async { return () } }
-
-        repo, captured
+    let private receiptState (harness: VersionedSettlementHarness) operationId =
+        harness.Fake.TryGet(
+            "Pool",
+            dict [ "pk", AttributeValue(S = $"POOL#{poolId}"); "sk", AttributeValue(S = $"SETTLEMENT#{operationId}") ]
+        )
+        |> text "operationState"
 
     [<Fact>]
-    let ``given gamblers with version less than new when execute then materializes for each`` () =
+    let ``given an added match when fanned out then every member gets a bound uncomputed detail with the current total`` () =
         async {
-            let g1 = gambler "01K1PX1TX2NM1HG851S1V0QG6Q" "01K1PX1TX2NM1HG851S1V0QG6T" 1
-            let g2 = gambler "01K1PX1TX2NM1HG851S1V0QG6R" "01K1PX1TX2NM1HG851S1V0QG6W" 2
+            let! harness = migrated ()
 
-            let poolRepo, _ = fakePoolRepo [ [ g1; g2 ] ]
-            let betRepo, captured = fakeBetRepo ()
+            do! harness.HandleLayoutRecordsAsync [ MatchInserted(addedMatch None) ]
 
-            let service = FanOutMatchToGamblers(poolRepo, betRepo)
+            for gamblerId, total in [ gamblerA, 4; gamblerB, 10; gamblerC, 6 ] do
+                let created = detail harness.Fake gamblerId match3
+                created |> has "computedRequestId" |> shouldEqual false
+                created |> number "totalPoolPoints" |> shouldEqual (Some total)
+                created |> text "totalPoolPointsState" |> shouldEqual (Some "KNOWN")
 
-            do! service.ExecuteAsync(input ())
+                created |> text "poolMembershipGeneration"
+                |> shouldEqual (membership harness.Fake gamblerId |> text "membershipGeneration")
 
-            captured.Count |> shouldEqual 2
+                created |> text "getPoolMatchBetsByTotalPk" |> shouldEqual (Some $"POOL#{poolId}#MATCH#{match3}")
 
-            let bet1, version1 = captured[0]
-            bet1.GamblerId |> shouldEqual g1.GamblerId
-            bet1.PoolId |> shouldEqual g1.PoolId
-            bet1.PoolLayoutVersion |> shouldEqual newVersion
-            bet1.BetScore |> shouldEqual None
-            bet1.ComputedRequestId |> shouldEqual None
-            version1 |> shouldEqual newVersion
-
-            let bet2, _ = captured[1]
-            bet2.GamblerId |> shouldEqual g2.GamblerId
+            harness.Commands.Pending |> shouldEqual []
         }
 
     [<Fact>]
-    let ``given gamblers at any version when execute then materializes for each`` () =
+    let ``given an added match that already has a result when fanned out then a reconciliation named after the insert is requested`` () =
         async {
-            let alreadyAtVersion =
-                gambler "01K1PX1TX2NM1HG851S1V0QG6Q" "01K1PX1TX2NM1HG851S1V0QG6T" newVersion
+            let! harness = migrated ()
 
-            let aheadOfVersion =
-                gambler "01K1PX1TX2NM1HG851S1V0QG6R" "01K1PX1TX2NM1HG851S1V0QG6W" (newVersion + 1)
+            do! harness.HandleLayoutRecordsAsync [ MatchInserted(addedMatch (Some(1, 1))) ]
 
-            let needsUpdate =
-                gambler "01K1PX1TX2NM1HG851S1V0QG6S" "01K1PX1TX2NM1HG851S1V0QG6V" 1
-
-            let poolRepo, _ = fakePoolRepo [ [ alreadyAtVersion; aheadOfVersion; needsUpdate ] ]
-            let betRepo, captured = fakeBetRepo ()
-
-            let service = FanOutMatchToGamblers(poolRepo, betRepo)
-
-            do! service.ExecuteAsync(input ())
-
-            captured.Count |> shouldEqual 3
+            harness.Commands.Pending
+            |> List.map _.DeduplicationId
+            |> shouldEqual [ $"{poolId}#MATCH#{match3}#INSERT#{match3}" ]
         }
 
     [<Fact>]
-    let ``given paginated results when execute then materializes across all pages`` () =
+    let ``given a result already settled for the pool when its match is fanned out late then the new details are still settled`` () =
         async {
-            let g1 = gambler "01K1PX1TX2NM1HG851S1V0QG6Q" "01K1PX1TX2NM1HG851S1V0QG6T" 1
-            let g2 = gambler "01K1PX1TX2NM1HG851S1V0QG6R" "01K1PX1TX2NM1HG851S1V0QG6W" 2
+            let! harness = migrated ()
+            let pool = Ulid.newOf poolId
 
-            let poolRepo, queryCalls = fakePoolRepo [ [ g1 ]; [ g2 ] ]
-            let betRepo, captured = fakeBetRepo ()
+            // The result was processed before the match rows existed, so its own operation
+            // completed with every detail pending materialization.
+            do!
+                harness.CommandPublisher.PublishAsync
+                    [ PoolCommand.settleResult pool (Ulid.newOf match3) { HomeTeamScore = 1; AwayTeamScore = 1; Version = 1 } ]
 
-            let service = FanOutMatchToGamblers(poolRepo, betRepo)
+            do! harness.RunUntilQuiescentAsync()
+            receiptState harness $"RESULT#{match3}#1" |> shouldEqual (Some "COMPLETED")
+            detail harness.Fake gamblerA match3 |> shouldEqual None
 
-            do! service.ExecuteAsync(input ())
+            do! harness.HandleLayoutRecordsAsync [ MatchInserted(addedMatch (Some(1, 1))) ]
+            do! harness.RunUntilQuiescentAsync()
 
-            queryCalls.Count |> shouldEqual 2
-            captured.Count |> shouldEqual 2
+            receiptState harness $"MATCH#{match3}#INSERT#{match3}" |> shouldEqual (Some "COMPLETED")
+
+            for gamblerId in [ gamblerA; gamblerB; gamblerC ] do
+                isComputed harness.Fake gamblerId match3 |> shouldEqual true
+                award harness.Fake gamblerId match3 |> shouldEqual (Some 0)
+        }
+
+    [<Fact>]
+    let ``given a member removed before fan-out when fanned out then no detail is recreated for them`` () =
+        async {
+            let! harness = migrated ()
+            do! harness.RemoveAsync gamblerC
+            do! harness.RunUntilQuiescentAsync()
+
+            do! harness.HandleLayoutRecordsAsync [ MatchInserted(addedMatch None) ]
+
+            detail harness.Fake gamblerC match3 |> shouldEqual None
+            detail harness.Fake gamblerA match3 |> Option.isSome |> shouldEqual true
         }

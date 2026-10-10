@@ -4,6 +4,8 @@ open System
 open Amazon.Lambda.DynamoDBEvents
 open Felipearpa.Tyche.AmazonLambda
 open Felipearpa.Tyche.Pool.Application
+open Felipearpa.Tyche.Pool.Domain
+open System.Collections.Generic
 open Felipearpa.Tyche.Pool.Type
 open Felipearpa.Type
 
@@ -55,35 +57,46 @@ module PoolLayoutEventFilter =
     [<Literal>]
     let private defaultRound = "Fase de grupos"
 
-    let extractUpdatedPoolLayouts (event: DynamoDBEvent) =
-        event.Records
-        |> Seq.filter (fun record -> record.EventName = modifyEventName)
-        |> Seq.choose (fun record ->
-            let oldImage = record.Dynamodb.OldImage
-            let newImage = record.Dynamodb.NewImage
+    [<Literal>]
+    let private resultVersionAttributeKey = "resultVersion"
 
-            let maybeMatchId = tryGetStringFieldOrNone matchIdAttributeKey newImage
+    /// The versioned result in an image. A result written before versioning is version 1.
+    let private tryResult (image: IDictionary<string, DynamoDBEvent.AttributeValue>) =
+        match
+            tryGetIntFieldOrNone homeTeamScoreAttributeKey image,
+            tryGetIntFieldOrNone awayTeamScoreAttributeKey image
+        with
+        | Some home, Some away ->
+            Some
+                { MatchResult.HomeTeamScore = home
+                  AwayTeamScore = away
+                  Version = tryGetIntFieldOrNone resultVersionAttributeKey image |> Option.defaultValue 1 }
+        | _ -> None
 
-            match maybeMatchId with
-            | Some matchId ->
-                let maybeOldHomeScore = tryGetIntFieldOrNone homeTeamScoreAttributeKey oldImage
-                let maybeOldAwayScore = tryGetIntFieldOrNone awayTeamScoreAttributeKey oldImage
-                let maybeNewHomeScore = tryGetIntFieldOrNone homeTeamScoreAttributeKey newImage
-                let maybeNewAwayScore = tryGetIntFieldOrNone awayTeamScoreAttributeKey newImage
+    let private orEmpty (image: Dictionary<string, DynamoDBEvent.AttributeValue>) =
+        image |> Option.ofObj |> Option.defaultWith Dictionary :> IDictionary<_, _>
 
-                match maybeOldHomeScore, maybeOldAwayScore, maybeNewHomeScore, maybeNewAwayScore with
-                | None, None, Some newHomeScore, Some newAwayScore ->
-                    Some
-                    <| (Ulid.newOf matchId,
-                        { TeamScore.HomeTeamValue = newHomeScore
-                          AwayTeamValue = newAwayScore })
-                | _ -> None
-            | None -> None)
+    /// The newly accepted result of a modified match: a first result, or a correction with a
+    /// higher result version. Score edits that keep the version are not results to settle.
+    let tryResultChange (record: DynamoDBEvent.DynamodbStreamRecord) : (Ulid * MatchResult) option =
+        if record.EventName <> modifyEventName then
+            None
+        else
+            let oldImage = orEmpty record.Dynamodb.OldImage
+            let newImage = orEmpty record.Dynamodb.NewImage
 
-    let extractInsertedMatches (event: DynamoDBEvent) : FanOutMatchInput seq =
-        event.Records
-        |> Seq.filter (fun record -> record.EventName = insertEventName)
-        |> Seq.choose (fun record ->
+            match tryGetStringFieldOrNone matchIdAttributeKey newImage, tryResult oldImage, tryResult newImage with
+            | Some matchId, None, Some result -> Some(Ulid.newOf matchId, result)
+            | Some matchId, Some previous, Some result when result.Version > previous.Version ->
+                Some(Ulid.newOf matchId, result)
+            | _ -> None
+
+    let extractUpdatedPoolLayouts (event: DynamoDBEvent) = event.Records |> Seq.choose tryResultChange
+
+    let tryInsertedMatch (record: DynamoDBEvent.DynamodbStreamRecord) : FanOutMatchInput option =
+        if record.EventName <> insertEventName then
+            None
+        else
             let image = record.Dynamodb.NewImage
 
             let maybeMatchId = tryGetStringFieldOrNone matchIdAttributeKey image
@@ -130,4 +143,7 @@ module PoolLayoutEventFilter =
                       MatchDateTime = DateTime.Parse(matchDateTime)
                       Round = round
                       GroupName = groupName }
-            | _ -> None)
+            | _ -> None
+
+    let extractInsertedMatches (event: DynamoDBEvent) : FanOutMatchInput seq =
+        event.Records |> Seq.choose tryInsertedMatch

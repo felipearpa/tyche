@@ -1,0 +1,64 @@
+[
+  {
+    "start": "2026-10-10T17:23:40.878265+00:00",
+    "end": "2026-10-10T17:23:47.678083+00:00",
+    "invocations": 1000,
+    "status200": 1000,
+    "nonSuccess": 0,
+    "httpCodes": {
+      "200": 1000
+    },
+    "errorsSample": [],
+    "distinctOrders": 1,
+    "itemsPerResponse": [
+      13
+    ],
+    "clientMs": {
+      "p50": 4758.458957999999,
+      "p95": 5944.429833,
+      "max": 6580.944458999999
+    },
+    "lambdaDurationMs": {
+      "p50": 850.66,
+      "p95": 894.51,
+      "max": 964.95
+    },
+    "coldStarts": 864,
+    "initMs": {
+      "p50": 275.23,
+      "p95": 300.26,
+      "max": 610.86
+    }
+  },
+  {
+    "start": "2026-10-10T17:23:56.886152+00:00",
+    "end": "2026-10-10T17:24:05.515428+00:00",
+    "invocations": 1000,
+    "status200": 1000,
+    "nonSuccess": 0,
+    "httpCodes": {
+      "200": 1000
+    },
+    "errorsSample": [],
+    "distinctOrders": 1,
+    "itemsPerResponse": [
+      13
+    ],
+    "clientMs": {
+      "p50": 4224.725333,
+      "p95": 5028.905624999999,
+      "max": 7912.355209000001
+    },
+    "lambdaDurationMs": {
+      "p50": 25.71,
+      "p95": 50.38,
+      "max": 85.64
+    },
+    "coldStarts": 0,
+    "initMs": {
+      "p50": null,
+      "p95": null,
+      "max": null
+    }
+  }
+]

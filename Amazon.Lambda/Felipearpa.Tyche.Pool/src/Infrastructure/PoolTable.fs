@@ -1,9 +1,16 @@
 namespace Felipearpa.Tyche.Pool.Infrastructure
 
+open System
+
 module PoolTable =
 
-    [<Literal>]
-    let name = "Pool"
+    /// The deployed table is "Pool". POOL_TABLE_NAME points the code at an isolated copy,
+    /// such as the temporary tables used by integration and load checks.
+    let name =
+        Environment.GetEnvironmentVariable "POOL_TABLE_NAME"
+        |> Option.ofObj
+        |> Option.filter (String.IsNullOrWhiteSpace >> not)
+        |> Option.defaultValue "Pool"
 
     module Prefix =
 
@@ -18,6 +25,9 @@ module PoolTable =
 
         [<Literal>]
         let poolLayout = "POOLLAYOUT"
+
+        [<Literal>]
+        let settlement = "SETTLEMENT"
 
     module Attribute =
 
@@ -120,6 +130,102 @@ module PoolTable =
         [<Literal>]
         let getGamblersByPoolLayoutSk = "getGamblersByPoolLayoutSk"
 
+        // Pool root: membership and operation ordering.
+
+        [<Literal>]
+        let membershipRevision = "membershipRevision"
+
+        [<Literal>]
+        let operationRevision = "operationRevision"
+
+        [<Literal>]
+        let activeOperation = "activeOperation"
+
+        [<Literal>]
+        let lastCompletedOperationRevision = "lastCompletedOperationRevision"
+
+        [<Literal>]
+        let rankingReadiness = "rankingReadiness"
+
+        // Membership identity and versioned total.
+
+        [<Literal>]
+        let membershipGeneration = "membershipGeneration"
+
+        [<Literal>]
+        let scoreVersion = "scoreVersion"
+
+        // Position markers on memberships and match details.
+
+        [<Literal>]
+        let positionOperationRevision = "positionOperationRevision"
+
+        [<Literal>]
+        let positionCalculationRevision = "positionCalculationRevision"
+
+        // Match detail settlement identity.
+
+        [<Literal>]
+        let poolMembershipGeneration = "poolMembershipGeneration"
+
+        [<Literal>]
+        let resultVersion = "resultVersion"
+
+        [<Literal>]
+        let settlementOperationId = "settlementOperationId"
+
+        [<Literal>]
+        let settlementOperationRevision = "settlementOperationRevision"
+
+        // Match detail pool-total projection.
+
+        [<Literal>]
+        let totalPoolPoints = "totalPoolPoints"
+
+        [<Literal>]
+        let totalPoolPointsState = "totalPoolPointsState"
+
+        [<Literal>]
+        let poolScoreVersion = "poolScoreVersion"
+
+        [<Literal>]
+        let rankingActive = "rankingActive"
+
+        [<Literal>]
+        let getPoolMatchBetsByTotalPk = "getPoolMatchBetsByTotalPk"
+
+        [<Literal>]
+        let getPoolMatchBetsByTotalSk = "getPoolMatchBetsByTotalSk"
+
+        // Settlement receipt.
+
+        [<Literal>]
+        let operationId = "operationId"
+
+        [<Literal>]
+        let operationState = "operationState"
+
+        [<Literal>]
+        let operationFingerprint = "operationFingerprint"
+
+        [<Literal>]
+        let operationCommand = "operationCommand"
+
+        [<Literal>]
+        let operationTarget = "operationTarget"
+
+        [<Literal>]
+        let admittedDateTime = "admittedDateTime"
+
+        [<Literal>]
+        let completedDateTime = "completedDateTime"
+
+        [<Literal>]
+        let deferredDateTime = "deferredDateTime"
+
+        [<Literal>]
+        let unresolvedDetails = "unresolvedDetails"
+
     module Index =
 
         [<Literal>]
@@ -142,3 +248,6 @@ module PoolTable =
 
         [<Literal>]
         let gamblersByUsername = "GetPoolGamblersByUsername-index"
+
+        [<Literal>]
+        let poolMatchBetsByTotal = "GetPoolMatchBetsByTotal-index"

@@ -28,7 +28,8 @@ module InitialPoolGamblerBetTransformerTest =
           AwayTeamScore = None
           BetScore = None
           ComputedDateTime = None
-          ComputedRequestId = None }
+          ComputedRequestId = None
+          ResultVersion = None }
 
     [<Fact>]
     let ``given a pending bet when transformed then optional fields are absent`` () =
