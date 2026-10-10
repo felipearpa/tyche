@@ -5,6 +5,9 @@
 - Profile picture uploads: a new authenticated Account endpoint issues a short-lived presigned S3 upload URL for the caller's own avatar — locked to the caller's account, JPEG only, 1 MB max, 5-minute expiry
 - Avatar photos live at a fixed per-account address and are overwritten on each change, with cache revalidation so clients never keep showing a superseded photo
 - The gambler pool listing now returns each pool's member count, so clients can show how many gamblers each pool has
+- A removed gambler who rejoins a pool now gets their history back: retained scored bets move to the new membership, their earned points count toward the new total exactly once, and they reappear in the ranked player lists of matches they played
+- Rejoin restoration leaves predictions, match awards, and each gambler's previous position unchanged, recalculates current standings, and lets later score corrections adjust the restored total correctly; bets deleted at removal are not recreated, and matches scored while the gambler was away still earn zero
+- Internal: restoration runs as an ordered, idempotent per-pool operation on the existing FIFO queue, safe under retries, duplicate delivery, concurrent settlement, and a repeat removal, with an operator runbook script for inspecting and replaying held restores
 - Internal: pool root items are batch-fetched via `BatchGetItem` (chunked with unprocessed-key retries) to enrich score pages with gambler counts
 
 ## 1.7.1

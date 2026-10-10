@@ -199,14 +199,18 @@ module MigrationAndReconciliationTest =
                     return harness
                 }
 
-            let stale = detail harness.Fake gamblerA match0 |> Option.get
+            // An uncomputed detail: a computed one of an earlier generation is retained history,
+            // which reconciliation hands to the rejoin restoration instead.
+            let stale = detail harness.Fake gamblerA match1 |> Option.get
             stale["poolMembershipGeneration"] <- AttributeValue(S = "OLD-GENERATION")
             harness.Fake.Put("Pool", stale)
 
             do! harness.RunJobsAsync [ ReconcilePool(pool, None) ]
 
-            detail harness.Fake gamblerA match0 |> has "getPoolMatchBetsByTotalSk" |> shouldEqual false
-            detail harness.Fake gamblerA match0 |> number "score" |> shouldEqual (Some 4)
+            detail harness.Fake gamblerA match1 |> has "getPoolMatchBetsByTotalSk" |> shouldEqual false
+            detail harness.Fake gamblerA match1 |> text "poolMembershipGeneration" |> shouldEqual (Some "OLD-GENERATION")
+            detail harness.Fake gamblerA match1 |> number "homeTeamBet" |> shouldEqual (Some 1)
+            total harness.Fake gamblerA |> shouldEqual (Some 4)
         }
 
     [<Fact>]

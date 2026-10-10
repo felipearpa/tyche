@@ -24,6 +24,9 @@ type PoolCommandKind =
     | ReconcileMatch of matchId: Ulid
     /// Recalculate current membership positions without a target match.
     | ReconcileStandings
+    /// Rebind the gambler's computed details retained from earlier memberships in the pool to
+    /// the membership with this generation, then recalculate current positions.
+    | RestoreRejoinHistory of gamblerId: Ulid * generation: string
 
 /// A durable, versioned request for one ordered pool operation. Every delivery attempt of the
 /// same logical request carries the same OperationId.
@@ -52,6 +55,13 @@ module PoolCommand =
           PoolId = poolId
           Kind = ReconcileStandings }
 
+    /// The restore requested for a membership. Its identity is the membership generation, so
+    /// every request for the same membership lifetime reuses it.
+    let restoreRejoinHistory (poolId: Ulid) (gamblerId: Ulid) (generation: string) =
+        { OperationId = $"RESTORE#{gamblerId.Value}#{generation}"
+          PoolId = poolId
+          Kind = RestoreRejoinHistory(gamblerId, generation) }
+
     /// Identifies the immutable payload; reusing an operation ID with another payload is an error.
     let fingerprint (command: PoolCommand) =
         match command.Kind with
@@ -59,6 +69,8 @@ module PoolCommand =
             $"SETTLE_RESULT|{command.PoolId.Value}|{matchId.Value}|{result.Version}|{result.HomeTeamScore}|{result.AwayTeamScore}"
         | ReconcileMatch matchId -> $"RECONCILE_MATCH|{command.PoolId.Value}|{matchId.Value}"
         | ReconcileStandings -> $"RECONCILE_STANDINGS|{command.PoolId.Value}"
+        | RestoreRejoinHistory(gamblerId, generation) ->
+            $"RESTORE_REJOIN_HISTORY|{command.PoolId.Value}|{gamblerId.Value}|{generation}"
 
 /// Background work that may run in any order because its writes are version guarded.
 type PoolMaintenanceJob =
@@ -81,6 +93,9 @@ type PoolMaintenanceJob =
 type OperationTarget =
     | MatchSettlement of matchId: Ulid * result: MatchResult
     | CurrentStandings
+    /// Rebinds the gambler's retained details to the membership generation, then recalculates
+    /// current standings.
+    | RejoinRestoration of gamblerId: Ulid * generation: string
 
 type OperationStage =
     | Scoring
@@ -92,7 +107,8 @@ type ActiveOperation =
       Revision: int64
       Target: OperationTarget
       Stage: OperationStage
-      /// Last membership gambler ID whose settlement finished in the current pass.
+      /// Last membership gambler ID whose settlement finished in the current pass, or, for a
+      /// restoration, the last match ID of the gambler's details that was handled.
       Cursor: string option
       CalculationRevision: int
       /// Membership revision captured when the current pass started.
@@ -102,8 +118,12 @@ type ActiveOperation =
       AttemptsWithoutProgress: int
       Blocked: bool
       /// Details of the current settlement pass that could not be settled yet: missing
-      /// (pending materialization), unbound, or malformed.
+      /// (pending materialization), unbound, or malformed; for a restoration, retained details
+      /// held for repair.
       UnresolvedDetails: int
+      /// Retained details a restoration rebound so far; its positions stage runs only when
+      /// this is above zero. Always zero for other targets.
+      RestoredDetails: int
       AdmittedAt: DateTime
       LastProgressAt: DateTime }
 
@@ -161,6 +181,14 @@ type BetSettlementState =
       IsComputed: bool
       PositionOperationRevision: int64 option }
 
+/// A match detail read for restoration: its settlement state and the membership generation
+/// it is held for repair against, if any.
+type RetainedBetState =
+    { Settlement: BetSettlementState
+      RestoreExcludedGeneration: string option
+      /// The operation that last applied a result to the detail or rebound it.
+      SettlementOperationId: string option }
+
 /// The pool-total copy carried by a match detail.
 type TotalProjection =
     | KnownTotal of int
@@ -176,7 +204,9 @@ type BetProjectionState =
       Total: TotalProjection option
       Award: int option
       IsComputed: bool
-      HasRankingKey: bool }
+      HasRankingKey: bool
+      /// The membership generation whose restoration holds this detail for repair.
+      RestoreExcludedGeneration: string option }
 
 /// The membership a detail is bound to, captured for a guarded write.
 type MembershipBinding =

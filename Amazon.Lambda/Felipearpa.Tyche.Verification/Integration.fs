@@ -333,7 +333,7 @@ type Integration(dynamo: IAmazonDynamoDB, sqs: IAmazonSQS, pipeline: Pipeline) =
                 let! removedConverged, _ = awaitOrder a poolId m1.MatchId (ordered (Map.toList withoutC))
                 check "removed membership leaves the ranked feed" removedConverged.IsSome (show removedConverged)
 
-                // Rejoin: a new generation with a fresh zero total.
+                // Rejoin: a new generation that gets the retained history back.
                 let! _ =
                     pools.JoinPoolAsync
                         { PoolId = pool
@@ -346,17 +346,17 @@ type Integration(dynamo: IAmazonDynamoDB, sqs: IAmazonSQS, pipeline: Pipeline) =
 
                 let! _ = settle ()
                 let! rejoinedMembership = membership poolId c
-                let! retained = settlement.GetBetSettlementStateAsync(pool, Ulid.newOf c, Ulid.newOf m1.MatchId)
-                let! afterRejoin = rankedOrder a poolId m1.MatchId
+                let! restored = settlement.GetBetSettlementStateAsync(pool, Ulid.newOf c, Ulid.newOf m1.MatchId)
+                let! afterRejoin, _ = awaitOrder a poolId m1.MatchId (ordered (Map.toList totals))
 
-                // The rejoined membership starts a new generation at zero and takes a current
-                // position; its retained computed detail stays with the earlier generation and
-                // out of that match's ranked feed.
+                // The rejoined membership has a new generation; its retained computed details are
+                // restored to it with their awards, so it returns to its earlier total and to the
+                // match's ranked feed once propagation converges.
                 check
-                    "rejoined membership gets a new generation; retained details are not rebound"
-                    (rejoinedMembership |> Option.exists (fun m -> m.Total = Some 0 && m.Position = Some 4 && m.Generation <> (retained |> Option.bind _.Generation))
-                     && afterRejoin |> Result.map (List.map fst) = Ok(ordered (Map.toList withoutC)))
-                    (show (rejoinedMembership |> Option.map (fun m -> m.Generation, m.Total, m.Position), retained |> Option.map _.Generation, afterRejoin))
+                    "rejoined membership gets a new generation and its retained history back"
+                    (rejoinedMembership |> Option.exists (fun m -> m.Total = Some totals[c] && m.Generation = (restored |> Option.bind _.Generation))
+                     && afterRejoin.IsSome)
+                    (show (rejoinedMembership |> Option.map (fun m -> m.Generation, m.Total, m.Position), restored |> Option.map _.Generation, afterRejoin))
 
                 // A match inserted with its final result already set.
                 do! writeAll dynamo (VerificationEnvironment.poolLayoutTable ()) [ (let item = layoutMatchItem layoutId m3 in item["resultVersion"] <- n 1; item) ] 1

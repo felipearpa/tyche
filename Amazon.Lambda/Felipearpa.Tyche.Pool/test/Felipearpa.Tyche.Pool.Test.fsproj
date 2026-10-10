@@ -35,6 +35,7 @@
       <Compile Include="Domain\BetEvaluatorTest.fs" />
       <Compile Include="Domain\RankingKeyTest.fs" />
       <Compile Include="Domain\SettlementPolicyTest.fs" />
+      <Compile Include="Domain\RestorePolicyTest.fs" />
       <Compile Include="Domain\PositionPolicyTest.fs" />
       <Compile Include="Infrastructure\PoolMessageJsonTest.fs" />
       <Compile Include="Infrastructure\RankedMatchBetsCursorTest.fs" />
@@ -63,6 +64,7 @@
       <Compile Include="Settlement\ProjectionTest.fs" />
       <Compile Include="Settlement\MigrationAndReconciliationTest.fs" />
       <Compile Include="Settlement\RankedMatchBetsTest.fs" />
+      <Compile Include="Settlement\RejoinRestorationTest.fs" />
     </ItemGroup>
 
 </Project>

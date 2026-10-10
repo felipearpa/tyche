@@ -6,14 +6,18 @@ open Felipearpa.Type
 
 /// A committed membership change observed on the Pool stream.
 type MembershipChange =
-    | MembershipCreated of poolId: Ulid * gamblerId: Ulid
+    /// A join; the generation is the new membership's, absent only on records written before
+    /// generations existed.
+    | MembershipCreated of poolId: Ulid * gamblerId: Ulid * generation: string option
     | MembershipRemoved of poolId: Ulid * gamblerId: Ulid
     /// The authoritative total or its identity changed (a new score version or generation).
     | MembershipTotalChanged of poolId: Ulid * gamblerId: Ulid
 
 /// Turns committed membership changes into durable work: current-standings reconciliation
-/// for joins and removals, and total propagation for new score versions. Position and
-/// projection writes never produce a total change, so they cannot trigger themselves.
+/// for joins and removals, a rejoin restoration for every join, and total propagation for new
+/// score versions. A join that turns out to have no retained details completes its restoration
+/// without changes. Position and projection writes never produce a total change, so they
+/// cannot trigger themselves.
 type ReactToMembershipChanges(commandPublisher: IPoolCommandPublisher, maintenancePublisher: IPoolMaintenancePublisher) =
 
     member this.ExecuteAsync(changes: (MembershipChange * string) list) : Async<unit> =
@@ -21,12 +25,21 @@ type ReactToMembershipChanges(commandPublisher: IPoolCommandPublisher, maintenan
             changes
             |> List.choose (fun (change, source) ->
                 match change with
-                | MembershipCreated(poolId, _)
+                | MembershipCreated(poolId, _, _)
                 | MembershipRemoved(poolId, _) -> Some(poolId, source)
                 | MembershipTotalChanged _ -> None)
             // One reconciliation per pool and delivery, named after the pool's last event.
             |> List.groupBy fst
             |> List.map (fun (poolId, events) -> PoolCommand.reconcileStandings poolId (events |> List.last |> snd))
+
+        let restorations =
+            changes
+            |> List.choose (fun (change, _) ->
+                match change with
+                | MembershipCreated(poolId, gamblerId, Some generation) ->
+                    Some(PoolCommand.restoreRejoinHistory poolId gamblerId generation)
+                | _ -> None)
+            |> List.distinct
 
         let propagation =
             changes
@@ -37,8 +50,10 @@ type ReactToMembershipChanges(commandPublisher: IPoolCommandPublisher, maintenan
             |> List.distinct
 
         async {
-            if not standings.IsEmpty then
-                do! commandPublisher.PublishAsync standings
+            let commands = standings @ restorations
+
+            if not commands.IsEmpty then
+                do! commandPublisher.PublishAsync commands
 
             if not propagation.IsEmpty then
                 do! maintenancePublisher.PublishAsync propagation

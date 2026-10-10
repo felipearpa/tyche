@@ -207,6 +207,151 @@ module PoolProjectionRequestBuilder =
                 )
         )
 
+    let private readGenerationCondition (readGeneration: string option) =
+        match readGeneration with
+        | Some generation ->
+            $"{name PoolTable.Attribute.poolMembershipGeneration} = :readGeneration", [ ":readGeneration", s generation ]
+        | None -> $"attribute_not_exists({name PoolTable.Attribute.poolMembershipGeneration})", []
+
+    /// Moves a retained computed detail to the rejoined membership and adds its award to the
+    /// membership total. The detail must still have the generation, award, and result version
+    /// it was read with; it receives the full projection for the new binding (both ranking
+    /// keys, the post-transaction total and score version), because a tombstone has no
+    /// ranking keys and may carry a copy version that propagation would never replace. A
+    /// re-evaluated award also writes the current result. Predictions and positions are not
+    /// touched. The membership must have the generation, the expected score version, and the
+    /// previous total; its score version advances only when the total changes.
+    let rebind (write: RebindWrite) =
+        let change = write.Change
+
+        let binding =
+            { Generation = change.Generation
+              ScoreVersion = change.ScoreVersion
+              Total = KnownTotal change.Total }
+
+        let attributes =
+            projectionAttributes write.PoolId write.GamblerId write.MatchId binding
+            @ [ PoolTable.Attribute.resultVersion, ni change.ResultVersion
+                PoolTable.Attribute.settlementOperationId, s write.OperationId
+                PoolTable.Attribute.settlementOperationRevision, n write.OperationRevision ]
+            @ (match change.Reevaluated with
+               | Some result ->
+                   [ PoolTable.Attribute.homeTeamScore, ni result.HomeTeamScore
+                     PoolTable.Attribute.awayTeamScore, ni result.AwayTeamScore
+                     PoolTable.Attribute.score, ni change.Award ]
+               | None -> [])
+
+        let generationCondition, generationValues = readGenerationCondition change.ReadGeneration
+
+        let resultVersionCondition, resultVersionValues =
+            match change.ReadResultVersion with
+            | Some version -> $"{name PoolTable.Attribute.resultVersion} = :readResultVersion", [ ":readResultVersion", ni version ]
+            | None -> $"attribute_not_exists({name PoolTable.Attribute.resultVersion})", []
+
+        let removed =
+            [ PoolTable.Attribute.restoreExcludedGeneration
+              PoolTable.Attribute.restoreExclusionReason ]
+
+        let removal = removed |> List.map name |> String.concat ", "
+
+        let detail =
+            Update(
+                TableName = PoolTable.name,
+                Key = detailKey write.PoolId write.GamblerId write.MatchId,
+                UpdateExpression =
+                    $"SET {assignments attributes} REMOVE {removal}",
+                ConditionExpression =
+                    $"attribute_exists({name Key.pk}) AND attribute_exists({name PoolTable.Attribute.computedRequestId}) AND \
+                     {generationCondition} AND {name PoolTable.Attribute.score} = :readAward AND {resultVersionCondition}",
+                ExpressionAttributeNames =
+                    names (
+                        (attributes |> List.map fst)
+                        @ removed
+                        @ [ Key.pk
+                            PoolTable.Attribute.computedRequestId
+                            PoolTable.Attribute.poolMembershipGeneration
+                            PoolTable.Attribute.score
+                            PoolTable.Attribute.resultVersion ]
+                        |> List.distinct
+                    ),
+                ExpressionAttributeValues =
+                    values (
+                        attributeValues attributes
+                        @ [ ":readAward", ni change.ReadAward ]
+                        @ generationValues
+                        @ resultVersionValues
+                    )
+            )
+
+        let membershipCondition =
+            $"{name PoolTable.Attribute.membershipGeneration} = :generation AND \
+             {name PoolTable.Attribute.scoreVersion} = :expectedScoreVersion AND \
+             {name PoolTable.Attribute.score} = :previousTotal"
+
+        let membershipNames =
+            [ PoolTable.Attribute.membershipGeneration
+              PoolTable.Attribute.scoreVersion
+              PoolTable.Attribute.score ]
+
+        let membershipValues =
+            [ ":generation", s change.Generation
+              ":expectedScoreVersion", n change.ExpectedScoreVersion
+              ":previousTotal", ni change.PreviousTotal ]
+
+        let membership =
+            if change.TotalChanged then
+                TransactWriteItem(
+                    Update =
+                        Update(
+                            TableName = PoolTable.name,
+                            Key = membershipKey write.PoolId write.GamblerId,
+                            UpdateExpression =
+                                $"SET {name PoolTable.Attribute.score} = :total, {name PoolTable.Attribute.scoreVersion} = :nextScoreVersion",
+                            ConditionExpression = membershipCondition,
+                            ExpressionAttributeNames = names membershipNames,
+                            ExpressionAttributeValues =
+                                values (
+                                    membershipValues
+                                    @ [ ":total", ni change.Total; ":nextScoreVersion", n change.ScoreVersion ]
+                                )
+                        )
+                )
+            else
+                TransactWriteItem(
+                    ConditionCheck =
+                        ConditionCheck(
+                            TableName = PoolTable.name,
+                            Key = membershipKey write.PoolId write.GamblerId,
+                            ConditionExpression = membershipCondition,
+                            ExpressionAttributeNames = names membershipNames,
+                            ExpressionAttributeValues = values membershipValues
+                        )
+                )
+
+        TransactWriteItemsRequest(TransactItems = List([ TransactWriteItem(Update = detail); membership ]))
+
+    /// Holds a retained detail for repair against the membership generation, provided it still
+    /// has the generation it was read with. Its data and generation are not changed.
+    let holdForRestore (hold: RestoreHold) =
+        let generationCondition, generationValues = readGenerationCondition hold.ReadGeneration
+
+        UpdateItemRequest(
+            TableName = PoolTable.name,
+            Key = detailKey hold.PoolId hold.GamblerId hold.MatchId,
+            UpdateExpression =
+                $"SET {name PoolTable.Attribute.restoreExcludedGeneration} = :excludedGeneration, \
+                 {name PoolTable.Attribute.restoreExclusionReason} = :reason",
+            ConditionExpression = $"attribute_exists({name Key.pk}) AND {generationCondition}",
+            ExpressionAttributeNames =
+                names
+                    [ Key.pk
+                      PoolTable.Attribute.restoreExcludedGeneration
+                      PoolTable.Attribute.restoreExclusionReason
+                      PoolTable.Attribute.poolMembershipGeneration ],
+            ExpressionAttributeValues =
+                values ([ ":excludedGeneration", s hold.Generation; ":reason", s hold.Reason ] @ generationValues)
+        )
+
     let deactivateRanking (poolId: Ulid) (gamblerId: Ulid) (matchId: Ulid) (generation: string) =
         UpdateItemRequest(
             TableName = PoolTable.name,

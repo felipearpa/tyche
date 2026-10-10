@@ -55,6 +55,7 @@ module PoolOperationEventTest =
                   AttemptsWithoutProgress = 0
                   Blocked = false
                   UnresolvedDetails = 0
+                  RestoredDetails = 0
                   AdmittedAt = DateTime.UtcNow
                   LastProgressAt = DateTime.UtcNow } }
 
@@ -74,7 +75,11 @@ module PoolOperationEventTest =
             member _.GetBetSettlementStateAsync(_, _, _) = failwith "not used"
             member _.ApplySettlementAsync(_) = failwith "not used"
             member _.ApplyPositionAsync(_) = failwith "not used"
-            member _.GetPoolsWithMatchPageAsync(_, _) = failwith "not used" }
+            member _.GetPoolsWithMatchPageAsync(_, _) = failwith "not used"
+            member _.GetRetainedBetPageAsync(_, _, _, _) = failwith "not used"
+            member _.GetRetainedBetAsync(_, _, _) = failwith "not used"
+            member _.ApplyRebindingAsync(_) = failwith "not used"
+            member _.HoldRetainedBetAsync(_) = failwith "not used" }
 
     let private layoutReader =
         { new IPoolLayoutMatchReader with

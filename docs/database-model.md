@@ -185,11 +185,11 @@ erDiagram
 - **Denormalized GSI keys.** `getPoolGamblerScoresByMatchPk/Sk` and `getGamblersByPoolLayoutPk/Sk` are extra attributes written alongside the item so a single record can be queried from multiple angles without scans. They are written by `*RequestBuilder.fs` / `*Transformer.fs` modules.
 - **Sentinel attributes act as filters.** Whether a bet is *pending* vs *finished* is decided by whether `computedRequestId` exists — pending queries use `attribute_not_exists(computedRequestId)`, finished queries hit a GSI keyed on `computedDateTime`.
 - **Uniqueness via lock items.** A second `EMAIL#…` row in `Account` enforces email uniqueness through a conditional `Put` (`attribute_not_exists(pk)`), since DynamoDB has no unique-secondary-index concept.
-- **Scoring is an ordered pool operation.** A result is dispatched as one versioned command per pool on the `UpdatePositionsQueue.fifo` queue (message group = pool) before anything is scored; the consumer settles every membership's detail and then finalizes positions as one resumable operation. See [Settlement, positions, and ranking](pool-settlement.md).
+- **Scoring is an ordered pool operation.** A result is dispatched as one versioned command per pool on the `UpdatePositionsQueue.fifo` queue (message group = pool) before anything is scored; the consumer settles every membership's detail and then finalizes positions as one resumable operation. A rejoin's restoration of retained history runs through the same queue. See [Settlement, positions, and ranking](pool-settlement.md).
 
 ## Settlement, identity, and projection records
 
-These attributes were added by the `redesign-match-bets` change. All are additive; existing attributes keep their meaning.
+These attributes were added by the `redesign-match-bets` change, and the rejoin restoration attributes by `restore-rejoin-history`. All are additive; existing attributes keep their meaning.
 
 ### Pool root (`POOL#<poolId>` / `POOL#<poolId>`)
 
@@ -197,7 +197,7 @@ These attributes were added by the `redesign-match-bets` change. All are additiv
 |---|---|---|
 | `membershipRevision` | N | Advanced in the same transaction as every join and removal (`gamblerCount` update). Position calculations capture it and restart if it changes. Absent means 0. |
 | `operationRevision` | N | Revision assigned to the last admitted operation. Absent means 0. |
-| `activeOperation` | M | The fixed-size checkpoint of the one active operation: `operationId`, `revision`, target (`MATCH` with `matchId`, `homeTeamScore`, `awayTeamScore`, `resultVersion`, or `STANDINGS`), `stage` (`SCORING`/`POSITIONS`), `cursor`, `calculationRevision`, `membershipRevision`, `ownerToken`, `leaseExpiresAt`, `attemptsWithoutProgress`, `blocked`, `unresolvedDetails`, `admittedAt`, `lastProgressAt`. Absent when no operation is active. |
+| `activeOperation` | M | The fixed-size checkpoint of the one active operation: `operationId`, `revision`, target (`MATCH` with `matchId`, `homeTeamScore`, `awayTeamScore`, `resultVersion`; `STANDINGS`; or `RESTORE` with `gamblerId` and `generation`), `stage` (`SCORING`/`POSITIONS`; a restoration rebinds details in `SCORING`), `cursor` (the last gambler ID settled, or for a restoration the last match ID of the gambler's details handled), `calculationRevision`, `membershipRevision`, `ownerToken`, `leaseExpiresAt`, `attemptsWithoutProgress`, `blocked`, `unresolvedDetails`, `restoredDetails` (details a restoration rebound so far; its positions stage runs only when this is above zero; 0 for other targets, and absent on checkpoints written before restorations existed), `admittedAt`, `lastProgressAt`. Absent when no operation is active. |
 | `lastCompletedOperationRevision` | N | Revision of the last completed operation. |
 | `rankingReadiness` | M | `state` (`READY`/`NOT_READY`), `schemaVersion`, `checkedMembers`, `checkedDetails`, `unresolved`, `checkedAt`. Ranked reads require `READY`. |
 
@@ -207,12 +207,24 @@ One small item per logical operation, kept for the pool's lifetime and deleted w
 
 | Attribute | Meaning |
 |---|---|
-| `operationId` | Stable logical identity: `RESULT#<matchId>#<resultVersion>`, `MATCH#<matchId>#<source>`, or `STANDINGS#<source>`. |
+| `operationId` | Stable logical identity (see [Operation IDs](#operation-ids)). |
 | `operationRevision` | Revision assigned at admission. |
 | `operationFingerprint` | Identifies the immutable payload; reusing the ID with another payload is an error. |
 | `operationState` | `ADMITTED`, `COMPLETED`, or `DEFERRED` (held while the pool is blocked). |
 | `operationCommand` | The versioned command JSON, so deferred commands can be enqueued again. |
-| `admittedDateTime`, `completedDateTime`, `deferredDateTime`, `unresolvedDetails` | Audit and repair data. |
+| `admittedDateTime`, `completedDateTime`, `deferredDateTime`, `unresolvedDetails` | Audit and repair data. For a restoration, `unresolvedDetails` counts the retained details held for repair. |
+
+#### Operation IDs
+
+| Operation ID | Command | Requested by |
+|---|---|---|
+| `RESULT#<matchId>#<resultVersion>` | `SETTLE_RESULT` | Result dispatch |
+| `MATCH#<matchId>#<source>` | `RECONCILE_MATCH` | Added-match fan-out, join materialization, reconciliation, legacy messages |
+| `STANDINGS#<source>` | `RECONCILE_STANDINGS` | Membership joins and removals |
+| `RESTORE#<gamblerId>#<membershipGeneration>` | `RESTORE_REJOIN_HISTORY` | Every membership insert (stream), and reconciliation for a membership with retained details neither restored nor held |
+| `RESTORE#<gamblerId>#<membershipGeneration>#<source>` | `RESTORE_REJOIN_HISTORY` | An operator replay after repair (`operations/restore-rejoin-history.sh`); same payload under a new identity |
+
+The restore command carries `gamblerId` and `membershipGeneration`; its payload fingerprint is `RESTORE_REJOIN_HISTORY|<poolId>|<gamblerId>|<membershipGeneration>`, independent of the operation ID.
 
 ### Membership (`POOL#<poolId>` / `GAMBLER#<gamblerId>`)
 
@@ -228,16 +240,28 @@ One small item per logical operation, kept for the pool's lifetime and deleted w
 
 | Attribute | Meaning |
 |---|---|
-| `poolMembershipGeneration` | The membership lifetime the detail belongs to. Settlement, positions, and projection writes require it to equal the membership's generation. |
+| `poolMembershipGeneration` | The membership lifetime the detail belongs to. Settlement, positions, and projection writes require it to equal the membership's generation. Only a rejoin restoration moves a computed detail to a later generation. |
 | `resultVersion` | Result version the detail reflects. A computed detail without it reflects version 1 (scored before versioning). |
-| `settlementOperationId`, `settlementOperationRevision` | The operation that last applied a result. |
+| `settlementOperationId`, `settlementOperationRevision` | The operation that last applied a result, or the restoration that rebound the detail. |
 | `positionOperationRevision`, `positionCalculationRevision` | As on the membership; the membership and detail positions are written in one transaction. |
 | `totalPoolPoints`, `totalPoolPointsState` | Copy of the membership total (`KNOWN`), or `UNAVAILABLE` without a number. Never the match award. |
 | `poolScoreVersion` | The membership `scoreVersion` the copy reflects; copies only move forward. |
 | `rankingActive` | `true` while the detail belongs to a current membership; `false` is a retained tombstone after removal. |
 | `getPoolMatchBetsByTotalPk`, `getPoolMatchBetsByTotalSk` | Ranking index keys; removed when the projection is retired. |
-
+| `restoreExcludedGeneration` | The membership generation whose restoration held this retained detail for repair (malformed, or its match is missing or has no result). Restoration and reconciliation treat the detail as resolved for that generation only; a later rejoin's generation is not blocked by it. Removed when the detail is rebound. |
+| `restoreExclusionReason` | Why the detail was held, for example `computed detail without an award` or `match missing`. |
 `score` on the detail stays this match's award; `computedRequestId` and `computedDateTime` keep their meaning, and `computedDateTime` is preserved by corrections.
+
+### Rejoin restoration writes
+
+`PoolProjectionRequestBuilder.rebind` moves one retained computed detail to the rejoined membership in one transaction:
+
+| Item | Writes | Condition |
+|---|---|---|
+| Detail | `poolMembershipGeneration` = new generation, `rankingActive = true`, both ranking keys, `totalPoolPoints` / `totalPoolPointsState = KNOWN` / `poolScoreVersion` = the membership's total and score version after this transaction, `resultVersion`, `settlementOperationId` / `settlementOperationRevision` = the restore operation; with a re-evaluated award also `homeTeamScore`, `awayTeamScore`, `score`. Removes `restoreExcludedGeneration`, `restoreExclusionReason`. Predictions, `computedDateTime`, and positions are not touched. | `attribute_exists(pk)`, `attribute_exists(computedRequestId)`, `poolMembershipGeneration` = the generation read (or `attribute_not_exists` when read without one), `score` = the award read, `resultVersion` = the version read (or `attribute_not_exists`) |
+| Membership | `score` = previous total + award and `scoreVersion` + 1 when the award is not zero; otherwise a condition check only. `beforeScore` is not changed. | `membershipGeneration` = new generation, `scoreVersion` = expected, `score` = previous total |
+
+`PoolProjectionRequestBuilder.holdForRestore` sets `restoreExcludedGeneration` = new generation and `restoreExclusionReason` on a detail, conditioned on `attribute_exists(pk)` and the generation read (or its absence).
 
 ### Ranking key
 
@@ -261,5 +285,5 @@ The leading `1` is the key schema version that ranked cursors carry.
 | Discover pools with a match (dispatch) | `GetPoolGamblerScoresByMatch-index`, every page, including computed details. Eventually consistent: discovery only, never a completion barrier. |
 | Authoritative memberships (settlement, positions, migration) | Base table `pk = POOL#<poolId>`, `begins_with(sk, GAMBLER#)`, `ConsistentRead`. |
 | Existing details of a match (settlement, positions) | `BatchGetItem` with `ConsistentRead`, unprocessed keys retried. |
-| A member's details (propagation, removal, backfill) | Base table `pk = GAMBLER#<gamblerId>#POOL#<poolId>`, `ConsistentRead`. |
+| A member's details (propagation, removal, backfill, rejoin restoration) | Base table `pk = GAMBLER#<gamblerId>#POOL#<poolId>`, `ConsistentRead`. |
 | Ranked participant page | `GetPoolMatchBetsByTotal-index` only, no enrichment. |

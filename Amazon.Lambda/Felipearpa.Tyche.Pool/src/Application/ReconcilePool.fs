@@ -11,7 +11,12 @@ type PoolReconciliationReport =
       StaleProjections: int
       UninitializedProjections: int
       RetiredGenerations: int
-      StalePositions: int }
+      StalePositions: int
+      /// Memberships with retained details of an earlier generation that were neither restored
+      /// nor held for repair, for which a restoration was requested.
+      RequestedRestorations: int
+      /// Retained details held for repair against their membership's current generation.
+      HeldRetainedDetails: int }
 
 type private MemberInspection =
     { Membership: MembershipState
@@ -19,15 +24,18 @@ type private MemberInspection =
       Unsettled: Ulid list
       StaleProjections: int
       Uninitialized: int
-      OtherGenerations: BetProjectionState list }
+      OtherGenerations: BetProjectionState list
+      AwaitsRestoration: bool
+      HeldRetained: int }
 
 /// Finds work that delivery failures, expired retention, or index lag left undone for a page
 /// of memberships, and repairs it through the normal guarded and durable paths: missing
 /// details are materialized through the guarded initializer, matches whose result a detail
 /// does not reflect get a match reconciliation, lagging totals get propagation,
 /// uninitialized projections get a backfill, active details of another generation are
-/// retired, and memberships behind the last completed operation get a standings
-/// reconciliation. It reads authoritative state; a failed read raises instead of being
+/// retired, memberships behind the last completed operation get a standings reconciliation,
+/// and memberships with retained details of an earlier generation that are neither restored
+/// nor held for repair get their rejoin restoration. It reads authoritative state; a failed read raises instead of being
 /// treated as zero, unavailable, or missing.
 type ReconcilePool
     (
@@ -72,6 +80,21 @@ type ReconcilePool
             let own (bet: BetProjectionState) =
                 binding |> Option.exists (fun b -> bet.Generation = Some b.Generation)
 
+            // Only details bound to an earlier generation are retained from an earlier
+            // membership for certain: an unbound computed detail can also belong to a membership
+            // that identity initialization held for repair, whose total may already count it.
+            let awaitsRestoration (bet: BetProjectionState) =
+                binding
+                |> Option.exists (fun b ->
+                    bet.IsComputed
+                    && bet.Generation.IsSome
+                    && bet.Generation <> Some b.Generation
+                    && bet.RestoreExcludedGeneration <> Some b.Generation)
+
+            let heldRetained (bet: BetProjectionState) =
+                binding
+                |> Option.exists (fun b -> bet.Generation <> Some b.Generation && bet.RestoreExcludedGeneration = Some b.Generation)
+
             let stale (bet: BetProjectionState) =
                 binding
                 |> Option.exists (fun b -> own bet && bet.Active && bet.ScoreVersion |> Option.exists (fun v -> v < b.ScoreVersion))
@@ -87,7 +110,9 @@ type ReconcilePool
                   Uninitialized = details |> List.filter (fun bet -> own bet && not bet.Active) |> List.length
                   OtherGenerations =
                     details
-                    |> List.filter (fun bet -> bet.Generation.IsSome && not (own bet) && (bet.Active || bet.HasRankingKey)) }
+                    |> List.filter (fun bet -> bet.Generation.IsSome && not (own bet) && (bet.Active || bet.HasRankingKey))
+                  AwaitsRestoration = details |> List.exists awaitsRestoration
+                  HeldRetained = details |> List.filter heldRetained |> List.length }
         }
 
     let materializeMissing poolId (inspection: MemberInspection) =
@@ -129,11 +154,19 @@ type ReconcilePool
             |> Option.forall (fun revision -> revision < root.LastCompletedOperationRevision))
         |> List.length
 
+    let restorations poolId (inspections: MemberInspection list) =
+        inspections
+        |> List.filter _.AwaitsRestoration
+        |> List.choose (fun inspection ->
+            inspection.Membership.Generation
+            |> Option.map (PoolCommand.restoreRejoinHistory poolId inspection.Membership.GamblerId))
+
     let publish poolId source next (inspections: MemberInspection list) unsettled stale =
         async {
             let commands =
                 (unsettled |> List.map (fun matchId -> PoolCommand.reconcileMatch poolId matchId source))
                 @ (if stale > 0 then [ PoolCommand.reconcileStandings poolId source ] else [])
+                @ restorations poolId inspections
 
             let jobs =
                 (inspections
@@ -159,7 +192,9 @@ type ReconcilePool
           StaleProjections = 0
           UninitializedProjections = 0
           RetiredGenerations = 0
-          StalePositions = 0 }
+          StalePositions = 0
+          RequestedRestorations = 0
+          HeldRetainedDetails = 0 }
 
     /// Reconciles one page of memberships and continues through a durable continuation. The
     /// source names the reconciliation run so its match reconciliations get stable identities.
@@ -194,5 +229,7 @@ type ReconcilePool
                       StaleProjections = inspections |> List.sumBy _.StaleProjections
                       UninitializedProjections = inspections |> List.sumBy _.Uninitialized
                       RetiredGenerations = inspections |> List.sumBy (fun inspection -> inspection.OtherGenerations.Length)
-                      StalePositions = stale }
+                      StalePositions = stale
+                      RequestedRestorations = restorations poolId inspections |> List.length
+                      HeldRetainedDetails = inspections |> List.sumBy _.HeldRetained }
         }

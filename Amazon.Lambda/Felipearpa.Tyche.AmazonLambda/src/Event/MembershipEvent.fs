@@ -21,7 +21,8 @@ module MembershipEventFilter =
             let gamblerId = Ulid.newOf gamblerId
 
             match record.EventName with
-            | "INSERT" -> Some(MembershipCreated(poolId, gamblerId))
+            | "INSERT" ->
+                Some(MembershipCreated(poolId, gamblerId, StreamBatch.imageString "membershipGeneration" record.Dynamodb.NewImage))
             | "REMOVE" -> Some(MembershipRemoved(poolId, gamblerId))
             | "MODIFY" ->
                 let oldImage = record.Dynamodb.OldImage
@@ -37,8 +38,9 @@ module MembershipEventFilter =
                     None
             | _ -> None
 
-/// Turns committed membership changes into durable standings reconciliation and total
-/// propagation. The event source mapping filters the stream to membership records.
+/// Turns committed membership changes into durable standings reconciliation, rejoin
+/// restoration, and total propagation. Commands are enqueued before the records are
+/// acknowledged. The event source mapping filters the stream to membership records.
 type MembershipEvent(configureServices: IServiceCollection -> unit) =
 
     let serviceProvider = PoolServices.build configureServices

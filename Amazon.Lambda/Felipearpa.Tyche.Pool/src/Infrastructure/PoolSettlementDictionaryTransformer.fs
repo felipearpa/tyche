@@ -94,7 +94,13 @@ module PoolSettlementDictionaryTransformer =
           Total = totalProjection dictionary
           Award = tryInt PoolTable.Attribute.score dictionary
           IsComputed = dictionary.ContainsKey PoolTable.Attribute.computedRequestId
-          HasRankingKey = dictionary.ContainsKey PoolTable.Attribute.getPoolMatchBetsByTotalSk }
+          HasRankingKey = dictionary.ContainsKey PoolTable.Attribute.getPoolMatchBetsByTotalSk
+          RestoreExcludedGeneration = tryString PoolTable.Attribute.restoreExcludedGeneration dictionary }
+
+    let toRetainedBetState (dictionary: IDictionary<string, AttributeValue>) : RetainedBetState =
+        { Settlement = toBetSettlementState dictionary
+          RestoreExcludedGeneration = tryString PoolTable.Attribute.restoreExcludedGeneration dictionary
+          SettlementOperationId = tryString PoolTable.Attribute.settlementOperationId dictionary }
 
     [<RequireQualifiedAccess>]
     module private Checkpoint =
@@ -105,6 +111,8 @@ module PoolSettlementDictionaryTransformer =
         let homeTeamScore = "homeTeamScore"
         let awayTeamScore = "awayTeamScore"
         let resultVersion = "resultVersion"
+        let gamblerId = "gamblerId"
+        let generation = "generation"
         let stage = "stage"
         let cursor = "cursor"
         let calculationRevision = "calculationRevision"
@@ -114,6 +122,7 @@ module PoolSettlementDictionaryTransformer =
         let attemptsWithoutProgress = "attemptsWithoutProgress"
         let blocked = "blocked"
         let unresolvedDetails = "unresolvedDetails"
+        let restoredDetails = "restoredDetails"
         let admittedAt = "admittedAt"
         let lastProgressAt = "lastProgressAt"
 
@@ -128,6 +137,10 @@ module PoolSettlementDictionaryTransformer =
                   Checkpoint.awayTeamScore, n (int64 result.AwayTeamScore)
                   Checkpoint.resultVersion, n (int64 result.Version) ]
             | CurrentStandings -> [ Checkpoint.target, s "STANDINGS" ]
+            | RejoinRestoration(gamblerId, generation) ->
+                [ Checkpoint.target, s "RESTORE"
+                  Checkpoint.gamblerId, s gamblerId.Value
+                  Checkpoint.generation, s generation ]
 
         let cursor =
             active.Cursor |> Option.map (fun value -> Checkpoint.cursor, s value) |> Option.toList
@@ -143,6 +156,7 @@ module PoolSettlementDictionaryTransformer =
               Checkpoint.attemptsWithoutProgress, n (int64 active.AttemptsWithoutProgress)
               Checkpoint.blocked, AttributeValue(BOOL = active.Blocked)
               Checkpoint.unresolvedDetails, n (int64 active.UnresolvedDetails)
+              Checkpoint.restoredDetails, n (int64 active.RestoredDetails)
               Checkpoint.admittedAt, s (formatInstant active.AdmittedAt)
               Checkpoint.lastProgressAt, s (formatInstant active.LastProgressAt) ]
             @ target
@@ -167,6 +181,7 @@ module PoolSettlementDictionaryTransformer =
                       Version = requiredInt64 Checkpoint.resultVersion |> int }
                 )
             | "STANDINGS" -> CurrentStandings
+            | "RESTORE" -> RejoinRestoration(required Checkpoint.gamblerId |> Ulid.newOf, required Checkpoint.generation)
             | other -> failwith $"Unknown checkpoint target {other}"
 
         { OperationId = required Checkpoint.operationId
@@ -185,6 +200,7 @@ module PoolSettlementDictionaryTransformer =
           AttemptsWithoutProgress = requiredInt64 Checkpoint.attemptsWithoutProgress |> int
           Blocked = tryBool Checkpoint.blocked map |> Option.defaultValue false
           UnresolvedDetails = tryInt Checkpoint.unresolvedDetails map |> Option.defaultValue 0
+          RestoredDetails = tryInt Checkpoint.restoredDetails map |> Option.defaultValue 0
           AdmittedAt = required Checkpoint.admittedAt |> parseInstant
           LastProgressAt = required Checkpoint.lastProgressAt |> parseInstant }
 

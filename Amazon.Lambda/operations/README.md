@@ -1,6 +1,6 @@
 # Pool settlement operations
 
-Runbook for the ordered settlement flow, the pool-total projection, and the ranked match-bets rollout. How the flow works is described in [docs/pool-settlement.md](../../docs/pool-settlement.md); the records are in [docs/database-model.md](../../docs/database-model.md).
+Runbook for the ordered settlement flow, rejoin restoration, the pool-total projection, and the ranked match-bets rollout. How the flow works is described in [docs/pool-settlement.md](../../docs/pool-settlement.md); the records are in [docs/database-model.md](../../docs/database-model.md).
 
 All scripts default to the production stack (`TycheApi`, tables `Pool` and `PoolLayout`, region `us-east-2`). Set `POOL_TABLE_NAME`, `POOL_LAYOUT_TABLE_NAME`, `POOL_COMMAND_QUEUE_URL`, and `POOL_MAINTENANCE_QUEUE_URL` to target other resources.
 
@@ -38,7 +38,7 @@ Custom metrics are in the `Tyche/PoolOperations` namespace, dimension `Handler`.
 | `ProjectionBacklogAgeAlarm` | A maintenance job waited over 15 minutes | Propagation lag: ranked order is behind totals |
 | `StreamRecordFailuresAlarm`, `Pool…IteratorAgeAlarm` | Stream records keep failing, or handling is over 10 minutes behind | [Retained stream failure](#retained-stream-failure) |
 
-Other metrics: `OperationCompleted`, `OperationYielded` (deliberate deadline yields, not failures), `CommandFailures`, `CommandDeferred`, `CommandAlreadyCompleted`, `SettledDetails`, `UnresolvedDetails`, `ResultCommandsDispatched`, `TotalsPropagated`, `ProjectionsInitialized`, `ReadinessUnresolved`, `Reconciled*`, `JobFailures`.
+Other metrics: `OperationCompleted`, `OperationYielded` (deliberate deadline yields, not failures), `CommandFailures`, `CommandDeferred`, `CommandAlreadyCompleted`, `SettledDetails`, `UnresolvedDetails`, `ResultCommandsDispatched`, `TotalsPropagated`, `ProjectionsInitialized`, `ReadinessUnresolved`, `Reconciled*` (including `ReconciledRestorations`, restorations requested by reconciliation), `RestoreHeldDetails` (retained details held for repair, counted by reconciliation), `JobFailures`. A restoration reports its rebound details as `SettledDetails` and its held details as `UnresolvedDetails`.
 
 ## Procedures
 
@@ -78,8 +78,38 @@ Objects in the failure bucket (`aws/lambda/<mapping-uuid>/<shard>/<date>/…`) h
 
 - PoolLayout records with a new result: `./request-match-reconciliation.sh <matchId>`.
 - PoolLayout match insertions: `./enqueue-maintenance.sh RECONCILE_POOL <poolId>` for the layout's pools (materializes missing details and requests settlement).
-- Pool membership insertions or total changes: `./enqueue-maintenance.sh RECONCILE_POOL <poolId>`.
+- Pool membership insertions or total changes: `./enqueue-maintenance.sh RECONCILE_POOL <poolId>`. For an insertion, also replay its restoration with `./restore-rejoin-history.sh <poolId> <gamblerId> --replay`: reconciliation requests a restoration only for details bound to an earlier generation, and a detail retained from before generations existed has none.
 - Pool membership removals: `./enqueue-maintenance.sh RETIRE_MEMBERSHIP <poolId> <gamblerId> <membershipGeneration from OldImage>`, then `RECONCILE_POOL`.
+
+### Rejoin restoration
+
+Every join enqueues `RESTORE_REJOIN_HISTORY` (`RESTORE#<gamblerId>#<membershipGeneration>`), which runs as an ordered pool operation; the flow is in [docs/pool-settlement.md](../../docs/pool-settlement.md#rejoin-restoration). Its failures use the procedures above: a command that keeps failing is retried by the queue, then blocks the pool after 5 claims without progress ([Blocked pool](#blocked-pool)) or reaches the dead-letter queue ([Dead-lettered command](#dead-lettered-command)); a join whose stream record could not be handled is in the failure bucket ([Retained stream failure](#retained-stream-failure)). Rebinding is guarded per detail, so replaying a restoration never counts an award twice.
+
+Inspect a gambler's restoration (read-only): the membership, the restore receipt (`operationState`, `unresolvedDetails`), and every computed detail not bound to the membership, with the reason for any held one:
+
+```bash
+./restore-rejoin-history.sh <poolId> <gamblerId>
+```
+
+A detail listed without `heldFor` waits for restoration (the receipt is missing or the operation is still running); one whose `generation` is the earlier membership's and `heldFor` is the current generation was held for repair.
+
+### Held rejoin detail
+
+A restoration holds a retained detail for repair, outside the total, when it is malformed (`computed detail without an award`), its match is missing or has no result, or it reflects a newer result version than its match (`detail reflects a newer result than its match`). The rest of the history is restored.
+
+1. Inspect it: `./restore-rejoin-history.sh <poolId> <gamblerId>`, then read the full detail and its layout match:
+
+   ```bash
+   aws dynamodb get-item --region us-east-2 --table-name Pool --consistent-read \
+     --key '{"pk":{"S":"GAMBLER#<gamblerId>#POOL#<poolId>"},"sk":{"S":"MATCH#<matchId>"}}'
+   aws dynamodb get-item --region us-east-2 --table-name PoolLayout --consistent-read \
+     --key '{"pk":{"S":"POOLLAYOUT#<poolLayoutId>"},"sk":{"S":"MATCH#<matchId>"}}'
+   ```
+
+2. Repair the data that caused the hold (for example restore the detail's award from its prediction and the match result, or restore the layout match). Do not change the detail's `poolMembershipGeneration`, and do not change the membership total by hand.
+3. Clear the marker of each repaired detail, conditioned on it being held for the current membership: `./restore-rejoin-history.sh <poolId> <gamblerId> --clear <matchId>`.
+4. Replay the restoration: `./restore-rejoin-history.sh <poolId> <gamblerId> --replay`. It enqueues the command under a new operation ID (`RESTORE#<gamblerId>#<membershipGeneration>#OPERATOR-<time>`), because the first restoration's receipt is already completed. Details restored earlier are skipped; the repaired ones are rebound and their awards added once, and positions are recalculated.
+5. Confirm with the inspect command that no computed detail is left unbound. The replay's receipt is `SETTLEMENT#<operation ID printed by --replay>` on the pool partition; it is `COMPLETED` with `unresolvedDetails` 0 when nothing was held again.
 
 ### Migration and readiness
 

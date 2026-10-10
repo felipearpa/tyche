@@ -1,0 +1,10 @@
+## repair (restore the award from prediction 1-1 and result 1-1 = 20)
+repaired 23:34:53
+## ./restore-rejoin-history.sh <pool> <B> --clear <M5>
+Cleared. Replay the restoration with --replay once every held detail of the gambler is repaired.
+## second --clear (marker already gone; must be refused)
+
+aws: [ERROR]: An error occurred (ConditionalCheckFailedException) when calling the UpdateItem operation: The conditional request failed
+## ./restore-rejoin-history.sh <pool> <B> --replay
+02d6d1eb-c646-4726-b5fe-51dd14e6e102
+Enqueued RESTORE#01M4M2DEECR8QQX3S5Z91KXPMM#01M4M2N7XFGC6YB54Y05E8HPW4#OPERATOR-20261010T233457Z.

@@ -37,6 +37,7 @@
         <Compile Include="Domain\InitialPoolGamblerBetTransformer.fs" />
         <Compile Include="Domain\BetEvaluator.fs" />
         <Compile Include="Domain\SettlementPolicy.fs" />
+        <Compile Include="Domain\RestorePolicy.fs" />
         <Compile Include="Domain\PositionPolicy.fs" />
         <Compile Include="Domain\IPoolSettlementRepository.fs" />
         <Compile Include="Domain\IPoolProjectionRepository.fs" />
@@ -98,6 +99,7 @@
         <Compile Include="Application\PoolOperationSettings.fs" />
         <Compile Include="Application\GuardedWriteRetry.fs" />
         <Compile Include="Application\PoolOperationPasses.fs" />
+        <Compile Include="Application\RestorePass.fs" />
         <Compile Include="Application\ProcessPoolCommand.fs" />
         <Compile Include="Application\DispatchMatchResult.fs" />
         <Compile Include="Application\BetMaterialization.fs" />

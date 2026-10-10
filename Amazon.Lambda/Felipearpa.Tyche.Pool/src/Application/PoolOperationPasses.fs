@@ -145,7 +145,8 @@ module PositionsPass =
     let private targetMatch (active: ActiveOperation) =
         match active.Target with
         | MatchSettlement(matchId, _) -> Some matchId
-        | CurrentStandings -> None
+        | CurrentStandings
+        | RejoinRestoration _ -> None
 
     let private plan (poolId: Ulid) (active: ActiveOperation) (pairedDetails: Map<Ulid, string option>) ranked =
         ranked

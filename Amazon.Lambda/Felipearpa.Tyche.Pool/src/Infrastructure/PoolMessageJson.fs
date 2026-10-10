@@ -49,7 +49,11 @@ module PoolMessageJson =
             | ReconcileMatch matchId ->
                 writer.WriteString("kind", "RECONCILE_MATCH")
                 writer.WriteString("matchId", matchId.Value)
-            | ReconcileStandings -> writer.WriteString("kind", "RECONCILE_STANDINGS"))
+            | ReconcileStandings -> writer.WriteString("kind", "RECONCILE_STANDINGS")
+            | RestoreRejoinHistory(gamblerId, generation) ->
+                writer.WriteString("kind", "RESTORE_REJOIN_HISTORY")
+                writer.WriteString("gamblerId", gamblerId.Value)
+                writer.WriteString("membershipGeneration", generation))
 
     let private requireSchema (root: JsonElement) =
         match root.TryGetProperty "schema" with
@@ -82,6 +86,8 @@ module PoolMessageJson =
                 )
             | "RECONCILE_MATCH" -> ReconcileMatch(text root "matchId" |> Ulid.newOf)
             | "RECONCILE_STANDINGS" -> ReconcileStandings
+            | "RESTORE_REJOIN_HISTORY" ->
+                RestoreRejoinHistory(text root "gamblerId" |> Ulid.newOf, text root "membershipGeneration")
             | other -> raise (InvalidDataException $"Unknown pool command kind {other}")
 
         { OperationId = text root "operationId"

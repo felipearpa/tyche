@@ -203,13 +203,15 @@ module ProjectionTest =
             detail harness.Fake gamblerC match1 |> has "getPoolMatchBetsByTotalSk" |> shouldEqual true
             detail harness.Fake gamblerC match2 |> Option.isSome |> shouldEqual true
 
-            // The retained detail of the old membership is not reactivated or rebound.
-            detail harness.Fake gamblerC match0 |> text "poolMembershipGeneration" |> shouldEqual oldGeneration
-            detail harness.Fake gamblerC match0 |> has "getPoolMatchBetsByTotalSk" |> shouldEqual false
+            // The retained detail was restored to the new membership, and the delayed removal
+            // of the old one does not retire it again.
+            detail harness.Fake gamblerC match0 |> text "poolMembershipGeneration" |> shouldEqual newGeneration
+            detail harness.Fake gamblerC match0 |> has "getPoolMatchBetsByTotalSk" |> shouldEqual true
+            total harness.Fake gamblerC |> shouldEqual (Some 6)
 
             // A delayed score of the old membership cannot charge the new one.
             do! harness.SettleAsync(match1, 1, 0)
-            total harness.Fake gamblerC |> shouldEqual (Some 0)
+            total harness.Fake gamblerC |> shouldEqual (Some 6)
         }
 
     [<Fact>]

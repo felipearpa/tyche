@@ -210,6 +210,36 @@ type PoolSettlementDynamoDbRepository(client: IAmazonDynamoDB) =
             |> send
             |> GuardedWrite.run
 
+        member _.GetRetainedBetPageAsync(poolId, gamblerId, afterMatchId, limit) =
+            async {
+                let! response =
+                    client.QueryAsync(PoolProjectionRequestBuilder.betProjectionPage poolId gamblerId afterMatchId limit)
+                    |> Async.AwaitTask
+
+                let next = lastSortKeySuffix PoolTable.Prefix.match' response.Items response.LastEvaluatedKey
+                return response.Items |> Seq.map toRetainedBetState |> List.ofSeq, next
+            }
+
+        member _.GetRetainedBetAsync(poolId, gamblerId, matchId) =
+            async {
+                let! item = tryGetItem (PoolSettlementRequestBuilder.getDetail poolId gamblerId matchId)
+                return item |> Option.map toRetainedBetState
+            }
+
+        member _.ApplyRebindingAsync(write) =
+            PoolProjectionRequestBuilder.rebind write
+            |> client.TransactWriteItemsAsync
+            |> Async.AwaitTask
+            |> send
+            |> GuardedWrite.run
+
+        member _.HoldRetainedBetAsync(hold) =
+            PoolProjectionRequestBuilder.holdForRestore hold
+            |> client.UpdateItemAsync
+            |> Async.AwaitTask
+            |> send
+            |> GuardedWrite.run
+
         member _.GetPoolsWithMatchPageAsync(matchId, next) =
             async {
                 let start =
