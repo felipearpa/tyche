@@ -26,10 +26,15 @@
     <Compile Include="Function\AccountFunction.fs" />
     <Compile Include="Function\VersionFunction.fs" />
     <Compile Include="Event\FieldResolver.fs" />
+    <Compile Include="Event\OperationMetrics.fs" />
+    <Compile Include="Event\StreamBatch.fs" />
+    <Compile Include="Event\PoolServices.fs" />
     <Compile Include="Event\PoolEvent.fs" />
+    <Compile Include="Event\MembershipEvent.fs" />
     <Compile Include="Event\PoolLayoutEventFilter.fs" />
     <Compile Include="Event\PoolLayoutEvent.fs" />
-    <Compile Include="Event\UpdatePositionsEvent.fs" />
+    <Compile Include="Event\PoolOperationEvent.fs" />
+    <Compile Include="Event\PoolMaintenanceEvent.fs" />
     <Compile Include="Event\MatchScoreIngestionEventFilter.fs" />
     <Compile Include="Event\MatchScoreIngestionEvent.fs" />
     <Compile Include="Event\MatchScoreEvent.fs" />

@@ -1,0 +1,18 @@
+PASS migration readiness — Some(Ready)
+PASS unresolved migration blocks readiness — Some(NotReady)
+PASS no-bet leader first on a locked match — Ok   [("01M4FRJG8JD3WWXHK6FYKS2J99", None); ("01M4FRJG8J4RGZZT5GW69WZCKM", None);    ("01M4FRJG8J61MMHVCHF8XTSWG4", None); ("01M4FRJG8J3THGHXAAVMVDTCBE", None)]
+PASS deadline yields are redelivered from the queue and resume — deliveries=[(1, False); (2, False); (3, True)]
+PASS settlement totals — [|("VDTCBE", Some 24); ("9WZCKM", Some 10); ("XTSWG4", Some 6);   ("KS2J99", Some 20)|]
+PASS authoritative positions — [|Some 1; Some 3; Some 4; Some 2|]
+PASS ranked page converges to pool totals with this match's awards — converged after 13.2s from the result write; rows=[("01M4FRJG8J3THGHXAAVMVDTCBE", Some 20); ("01M4FRJG8JD3WWXHK6FYKS2J99", Some 0);  ("01M4FRJG8J4RGZZT5GW69WZCKM", Some 0); ("01M4FRJG8J61MMHVCHF8XTSWG4", Some 0)]
+PASS older match ranks by current totals — Some 00:00:00.0083400
+PASS per-pool FIFO order is kept — standings=Some(2) match2=Some(3)
+PASS failed commands reach the dead-letter queue without holding the fence — dlq=1 active=False
+PASS legacy position messages are processed as match reconciliations — last completed revision 4
+PASS correction applies the award difference once — ([|Some 38; Some 18; Some 6; Some 20|],  map    [("01M4FRJG8J3THGHXAAVMVDTCBE", 38); ("01M4FRJG8J4RGZZT5GW69WZCKM", 18);     ("01M4FRJG8J61MMHVCHF8XTSWG4", 6); ("01M4FRJG8JD3WWXHK6FYKS2J99", 20)])
+PASS ranking reflects the correction after convergence — Some 00:00:00.0123467
+PASS a removed requester is denied before cleanup — Error NotPoolMember
+PASS removed membership leaves the ranked feed — Some 00:00:00.0155680
+PASS rejoined membership gets a new generation; retained details are not rebound — (Some (Some "01M4FRPGHB71JW81WS1CERENBS", Some 0, Some 4),  Some (Some "01M4FRJR3QCQS8ACGBMR4AHWCR"),  Ok    [("01M4FRJG8J3THGHXAAVMVDTCBE", Some 14);     ("01M4FRJG8JD3WWXHK6FYKS2J99", Some 0);     ("01M4FRJG8J4RGZZT5GW69WZCKM", Some 4)])
+PASS a match inserted with its result is settled for every member — [(true, Some 0); (true, Some 0); (true, Some 0); (true, Some 0)]
+PASS stream batches recovered — retried stream deliveries: 0

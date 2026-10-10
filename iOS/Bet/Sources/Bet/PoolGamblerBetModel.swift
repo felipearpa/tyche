@@ -76,6 +76,10 @@ extension PoolGamblerBetModel {
             self.isComputed = original.isComputed
         }
 
+        mutating func lock() {
+            isLocked = true
+        }
+
         fileprivate func build() -> PoolGamblerBetModel {
             PoolGamblerBetModel(
                 poolId: self.poolId,

@@ -15,4 +15,6 @@ type PoolLayoutMatch =
       Round: string
       GroupName: string option
       HomeTeamScore: int option
-      AwayTeamScore: int option }
+      AwayTeamScore: int option
+      /// The version of the current result; None while the match has no result.
+      ResultVersion: int option }

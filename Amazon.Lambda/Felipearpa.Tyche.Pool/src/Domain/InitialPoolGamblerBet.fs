@@ -22,4 +22,6 @@ type InitialPoolGamblerBet =
       AwayTeamScore: int option
       BetScore: int option
       ComputedDateTime: DateTime option
-      ComputedRequestId: string option }
+      ComputedRequestId: string option
+      /// The result version a detail created already computed reflects.
+      ResultVersion: int option }

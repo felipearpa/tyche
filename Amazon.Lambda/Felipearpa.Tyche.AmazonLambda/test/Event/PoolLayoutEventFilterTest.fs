@@ -4,6 +4,7 @@ open System
 open System.Collections.Generic
 open Amazon.Lambda.DynamoDBEvents
 open Felipearpa.Tyche.AmazonLambda.Event
+open Felipearpa.Tyche.Pool.Domain
 open Felipearpa.Tyche.Pool.Type
 open Felipearpa.Type
 open FsUnit.Xunit
@@ -88,8 +89,45 @@ module PoolLayoutEventFilterTest =
         actualScore
         |> should
             equal
-            { TeamScore.HomeTeamValue = 2
-              AwayTeamValue = 1 }
+            { MatchResult.HomeTeamScore = 2
+              AwayTeamScore = 1
+              Version = 1 }
+
+    [<Fact>]
+    let ``given a correction with a higher result version when extracting then the new version is returned`` () =
+        let record =
+            makeRecord
+                "MODIFY"
+                (dict [ "matchId", stringAttr matchId; "homeTeamScore", intAttr 1; "awayTeamScore", intAttr 0 ])
+                (dict
+                    [ "matchId", stringAttr matchId
+                      "homeTeamScore", intAttr 2
+                      "awayTeamScore", intAttr 0
+                      "resultVersion", intAttr 2 ])
+
+        PoolLayoutEventFilter.tryResultChange record
+        |> should
+            equal
+            (Some(
+                Ulid.newOf matchId,
+                { MatchResult.HomeTeamScore = 2
+                  AwayTeamScore = 0
+                  Version = 2 }
+            ))
+
+    [<Fact>]
+    let ``given a result version initialized on an existing result when extracting then nothing is returned`` () =
+        let record =
+            makeRecord
+                "MODIFY"
+                (dict [ "matchId", stringAttr matchId; "homeTeamScore", intAttr 1; "awayTeamScore", intAttr 0 ])
+                (dict
+                    [ "matchId", stringAttr matchId
+                      "homeTeamScore", intAttr 1
+                      "awayTeamScore", intAttr 0
+                      "resultVersion", intAttr 1 ])
+
+        PoolLayoutEventFilter.tryResultChange record |> should equal None
 
     [<Fact>]
     let ``given an update with both old and new scores when extracting then nothing is returned`` () =

@@ -1,0 +1,37 @@
+[xUnit.net 00:00:00.72]       Expected: "Equals [Some 3; Some 1; Some 2]"
+[xUnit.net 00:00:00.72]       Actual:   "[Some 1; Some 2; Some 3]"
+[xUnit.net 00:00:00.74]       Expected: "Equals [Some 1; Some 2; Some 3]"
+[xUnit.net 00:00:00.74]       Actual:   "[Some 3; Some 1; Some 2]"
+[xUnit.net 00:00:00.76]       Expected: "Equals [Some 3; Some 1; Some 2]"
+[xUnit.net 00:00:00.76]       Actual:   "[Some 1; Some 2; Some 3]"
+[xUnit.net 00:00:00.77]       Expected: "Equals true"
+[xUnit.net 00:00:00.77]       Actual:   "false"
+[xUnit.net 00:00:00.79]       Expected: "Equals [(true, Some 0); (true, Some 0); (true, Som"···
+[xUnit.net 00:00:00.79]       Actual:   "[(false, None); (false, None); (false, None)]"
+[xUnit.net 00:00:00.79]       Expected: "Equals [Some 1; Some 2; Some 3]"
+[xUnit.net 00:00:00.79]       Actual:   "[Some 3; Some 1; Some 2]"
+[xUnit.net 00:00:00.79]       Expected: "Equals [(true, Some 0); (true, Some 0); (true, Som"···
+[xUnit.net 00:00:00.79]       Actual:   "[(false, None); (false, None); (false, None)]"
+  Failed Felipearpa.Tyche.Pool.Test.Settlement.LegacySettlementBaselineTest.older operation replay is a no-op [210 ms]
+Expected: "Equals [Some 3; Some 1; Some 2]"
+Actual:   "[Some 1; Some 2; Some 3]"
+  Failed Felipearpa.Tyche.Pool.Test.Settlement.LegacySettlementBaselineTest.lost post-commit notification [18 ms]
+Expected: "Equals [Some 1; Some 2; Some 3]"
+Actual:   "[Some 3; Some 1; Some 2]"
+  Failed Felipearpa.Tyche.Pool.Test.Settlement.LegacySettlementBaselineTest.partial position write keeps previous positions [17 ms]
+Expected: "Equals [Some 3; Some 1; Some 2]"
+Actual:   "[Some 1; Some 2; Some 3]"
+  Failed Felipearpa.Tyche.Pool.Test.Settlement.LegacySettlementBaselineTest.cancellation is not settlement [5 ms]
+Expected: "Equals true"
+Actual:   "false"
+  Passed Felipearpa.Tyche.Pool.Test.Settlement.LegacySettlementBaselineTest.interrupted settlement resumes [4 ms]
+  Failed Felipearpa.Tyche.Pool.Test.Settlement.LegacySettlementBaselineTest.insertion and result in one delivery converge [13 ms]
+Expected: "Equals [(true, Some 0); (true, Some 0); (true, Som"···
+Actual:   "[(false, None); (false, None); (false, None)]"
+  Failed Felipearpa.Tyche.Pool.Test.Settlement.LegacySettlementBaselineTest.positions ignore a lagging leaderboard index [4 ms]
+Expected: "Equals [Some 1; Some 2; Some 3]"
+Actual:   "[Some 3; Some 1; Some 2]"
+  Failed Felipearpa.Tyche.Pool.Test.Settlement.LegacySettlementBaselineTest.match inserted with its result is settled [2 ms]
+Expected: "Equals [(true, Some 0); (true, Some 0); (true, Som"···
+Actual:   "[(false, None); (false, None); (false, None)]"
+Total tests: 8

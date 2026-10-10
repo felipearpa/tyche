@@ -24,7 +24,11 @@ internal interface PoolGamblerBetDataSource {
         searchText: String? = null,
     ): CursorPage<PoolGamblerBetResponse>
 
-    suspend fun getPoolMatchGamblerBets(
+    /**
+     * The ranked participant page. Throws [RankedMatchBetsException] for the ranked mode's own
+     * error responses.
+     */
+    suspend fun getRankedPoolMatchGamblerBets(
         poolId: String,
         matchId: String,
         next: String? = null,

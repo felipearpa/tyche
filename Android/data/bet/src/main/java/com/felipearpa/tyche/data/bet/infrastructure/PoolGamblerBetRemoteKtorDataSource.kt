@@ -4,14 +4,19 @@ import com.felipearpa.tyche.core.paging.CursorPage
 import com.felipearpa.tyche.data.bet.domain.BetRequest
 import com.felipearpa.tyche.data.bet.domain.PoolGamblerBetDataSource
 import com.felipearpa.tyche.data.bet.domain.PoolGamblerBetResponse
+import com.felipearpa.tyche.data.bet.domain.RankedMatchBetsException
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
+import io.ktor.client.plugins.ResponseException
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
 import io.ktor.client.request.patch
 import io.ktor.client.request.setBody
+import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.Json
 
 internal class PoolGamblerBetRemoteKtorDataSource(private val httpClient: HttpClient) :
     PoolGamblerBetDataSource {
@@ -48,14 +53,20 @@ internal class PoolGamblerBetRemoteKtorDataSource(private val httpClient: HttpCl
             parameter("searchText", searchText)
         }.body()
 
-    override suspend fun getPoolMatchGamblerBets(
+    override suspend fun getRankedPoolMatchGamblerBets(
         poolId: String,
         matchId: String,
         next: String?,
     ): CursorPage<PoolGamblerBetResponse> =
-        httpClient.get("pools/$poolId/matches/$matchId/bets") {
-            parameter("next", next)
-        }.body()
+        try {
+            httpClient.get("pools/$poolId/matches/$matchId/bets") {
+                parameter("sort", POOL_SCORE_DESCENDING_SORT)
+                // Ktor omits a null parameter, so a first page sends no cursor.
+                parameter("next", next)
+            }.body()
+        } catch (exception: ResponseException) {
+            throw exception.toRankedMatchBetsException() ?: exception
+        }
 
     override suspend fun getPoolGamblerBet(
         poolId: String,
@@ -78,4 +89,23 @@ internal class PoolGamblerBetRemoteKtorDataSource(private val httpClient: HttpCl
             contentType(ContentType.Application.Json)
             setBody(betRequest)
         }.body()
+}
+
+/** The ranked match-bets order: total points in the pool, greatest first. */
+private const val POOL_SCORE_DESCENDING_SORT = "pool-score-desc"
+
+@Serializable
+private data class ErrorResponse(val error: String? = null)
+
+private val errorResponseJson = Json { ignoreUnknownKeys = true }
+
+/**
+ * The ranked failure for this error response, or `null` when it is not one of the ranked mode's
+ * own errors. A body that is not the expected JSON is not a ranked error.
+ */
+private suspend fun ResponseException.toRankedMatchBetsException(): RankedMatchBetsException? {
+    val errorCode = runCatching {
+        errorResponseJson.decodeFromString<ErrorResponse>(response.bodyAsText()).error
+    }.getOrNull()
+    return RankedMatchBetsException.from(statusCode = response.status.value, errorCode = errorCode)
 }

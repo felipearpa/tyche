@@ -214,20 +214,7 @@ struct HistoryBetItem: View {
     }
 
     private var pointsPill: some View {
-        Text(pointsPillText)
-            .font(.body.weight(.semibold))
-            .monospacedDigit()
-            .lineLimit(1)
-            .fixedSize()
-            .loadedForeground(
-                isPositiveAward ? HistoryStyle.positiveText : HistoryStyle.secondaryText,
-                isPlaceholder: isPlaceholder
-            )
-            .padding(.horizontal, pillHorizontalPadding)
-            .padding(.vertical, pillVerticalPadding)
-            .background(
-                Capsule().fill(isPositiveAward ? HistoryStyle.positiveFill : HistoryStyle.neutralFill)
-            )
+        HistoryPointsPill(text: pointsPillText, isPositive: isPositiveAward, isPlaceholder: isPlaceholder)
     }
 
     // MARK: Text
@@ -326,8 +313,6 @@ private let flagAspectRatio: CGFloat = 0.75
 private let maximumFlagWidth: CGFloat = 52
 private let scoreSpacing: CGFloat = 12
 private let betLabelSpacing: CGFloat = 8
-private let pillHorizontalPadding: CGFloat = 14
-private let pillVerticalPadding: CGFloat = 6
 
 #Preview("Loaded and placeholder") {
     ScrollView {

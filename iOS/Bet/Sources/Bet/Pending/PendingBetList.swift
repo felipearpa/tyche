@@ -89,14 +89,14 @@ struct PendingBetList: View {
     }
 }
 
+/// Opens the match screen for a loaded entry, upcoming matches included: while betting is open
+/// the screen shows the hidden-bets state instead of other participants' predictions.
 func invokeMatchOpen(_ handler: MatchOpenHandler?, _ poolGamblerBet: PoolGamblerBetModel) {
-    if (!poolGamblerBet.isPending) {
-        handler?(
-            poolGamblerBet.poolId,
-            poolGamblerBet.gamblerId,
-            poolGamblerBet.matchId
-        )
-    }
+    handler?(
+        poolGamblerBet.poolId,
+        poolGamblerBet.gamblerId,
+        poolGamblerBet.matchId
+    )
 }
 
 private extension View {

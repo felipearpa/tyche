@@ -8,7 +8,13 @@ open Microsoft.FSharp.Core
 
 type BetFailure = | MatchLocked
 
-type AddMatchFailure = | AlreadyExist
+/// Outcome of creating a match detail bound to a membership.
+type MaterializationOutcome =
+    | Materialized
+    | AlreadyMaterialized
+    /// The membership was removed or its generation or score version changed after the
+    /// binding was read.
+    | BindingChanged
 
 type IPoolGamblerBetRepository =
     abstract GetPendingPoolGamblerBetsAsync:
@@ -27,10 +33,11 @@ type IPoolGamblerBetRepository =
 
     abstract BetAsync: Ulid * Ulid * Ulid * TeamScore<BetScore> -> Result<PoolGamblerBet, BetFailure> Async
 
-    abstract AddPoolGamblerMatchAsync: InitialPoolGamblerBet -> Result<PoolGamblerBet, AddMatchFailure> Async
+    /// Creates the detail unless it exists, together with its identity and pool-total
+    /// projection, conditioned on the membership still matching the binding. Without a
+    /// binding the detail is created unbound for a membership whose identity is not
+    /// initialized yet.
+    abstract MaterializeBetAsync: InitialPoolGamblerBet * MembershipBinding option -> Async<MaterializationOutcome>
 
-    abstract AddPoolGamblerMatchesAsync: InitialPoolGamblerBet seq -> Async<Result<PoolGamblerBet, AddMatchFailure> seq>
-
-    abstract MaterializeMatchForGamblerAsync: InitialPoolGamblerBet * int -> Async<unit>
-
-    abstract DeleteUncomputedBetsAsync: Ulid * Ulid -> Async<unit>
+    /// Records that the membership has every match through the layout version.
+    abstract RaisePoolLayoutVersionAsync: poolId: Ulid * gamblerId: Ulid * poolLayoutVersion: int -> Async<unit>

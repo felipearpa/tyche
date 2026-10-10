@@ -29,10 +29,11 @@ val betViewModelModule = module {
     viewModel { params ->
         MatchBetListViewModel(
             poolId = params.get(),
-            gamblerId = params.get(),
+            routedGamblerId = params.get(),
             matchId = params.get(),
+            viewerAccountId = params.get(),
             getPoolGamblerBet = get(),
-            getPoolMatchGamblerBets = get(),
+            getRankedPoolMatchGamblerBets = get(),
         )
     }
 

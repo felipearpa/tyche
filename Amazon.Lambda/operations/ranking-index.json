@@ -1,0 +1,17 @@
+{
+  "IndexName": "GetPoolMatchBetsByTotal-index",
+  "KeySchema": [
+    { "AttributeName": "getPoolMatchBetsByTotalPk", "KeyType": "HASH" },
+    { "AttributeName": "getPoolMatchBetsByTotalSk", "KeyType": "RANGE" }
+  ],
+  "Projection": {
+    "ProjectionType": "INCLUDE",
+    "NonKeyAttributes": [
+      "poolId", "gamblerId", "gamblerUsername", "matchId", "poolLayoutId",
+      "homeTeamId", "homeTeamName", "awayTeamId", "awayTeamName",
+      "homeTeamBet", "awayTeamBet", "homeTeamScore", "awayTeamScore", "score",
+      "matchDateTime", "round", "groupName", "computedRequestId",
+      "totalPoolPoints", "totalPoolPointsState"
+    ]
+  }
+}

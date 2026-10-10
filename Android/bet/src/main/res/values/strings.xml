@@ -5,10 +5,7 @@
     <string name="forbidden_bet_title">Forbidden bet</string>
     <string name="forbidden_bet_message">Oops! Betting is currently unavailable</string>
     <string name="match_bets_view_title">Score</string>
-    <string name="live_label">LIVE</string>
     <string name="bet_timeline_view_title">Timeline</string>
-    <string name="predictions_open_title">Predictions are still open</string>
-    <string name="predictions_open_message">To keep things fair, other gamblers\' bets will be revealed once predictions close for this match.</string>
     <string name="history_your_bet_label">Your bet</string>
     <string name="history_no_bet_label">No bet</string>
     <string name="history_earned_label">earned</string>
@@ -52,4 +49,19 @@
     <string name="history_gambler_summary_unavailable_accessibility">Points earned by %1$s in this pool unavailable</string>
     <string name="history_gambler_summary_load_failure">Couldn\'t load points.</string>
     <string name="history_gambler_summary_refresh_failure">Couldn\'t update points. Showing the last total.</string>
+    <string name="match_bets_starts_label">Starts %1$s</string>
+    <string name="match_bets_closed_label">Bets closed</string>
+    <string name="match_bets_versus_label">VS</string>
+    <string name="match_bets_hidden_title">Bets are hidden</string>
+    <string name="match_bets_hidden_message">Everyone\'s bets are revealed when betting closes for this match.</string>
+    <string name="match_bets_you_label">You</string>
+    <string name="match_bets_own_bet_failure">Couldn\'t load your bet.</string>
+    <string name="match_bets_heading_refresh_failure">Couldn\'t update the match. Showing the last details.</string>
+    <string name="match_bets_matchup_accessibility">%1$s versus %2$s</string>
+    <string name="match_bets_own_bet_accessibility">Your bet: %1$s %2$d, %3$s %4$d</string>
+    <string name="match_bets_participant_bet_accessibility">Bet: %1$s %2$d, %3$s %4$d</string>
+    <string name="match_bets_ranking_unavailable_title">Bets can\'t be shown right now</string>
+    <string name="match_bets_ranking_unavailable_message">Try again in a few minutes.</string>
+    <string name="match_bets_list_changed_title">The standings changed</string>
+    <string name="match_bets_list_changed_message">Load the list again to see the current order.</string>
 </resources>

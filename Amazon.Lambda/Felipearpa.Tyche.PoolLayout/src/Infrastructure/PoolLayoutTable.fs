@@ -1,9 +1,16 @@
 namespace Felipearpa.Tyche.PoolLayout.Infrastructure
 
+open System
+
 module PoolLayoutTable =
 
-    [<Literal>]
-    let name = "PoolLayout"
+    /// The deployed table is "PoolLayout". POOL_LAYOUT_TABLE_NAME points the code at an
+    /// isolated copy used by integration and load checks.
+    let name =
+        Environment.GetEnvironmentVariable "POOL_LAYOUT_TABLE_NAME"
+        |> Option.ofObj
+        |> Option.filter (String.IsNullOrWhiteSpace >> not)
+        |> Option.defaultValue "PoolLayout"
 
     module Prefix =
 
@@ -59,6 +66,10 @@ module PoolLayoutTable =
 
         [<Literal>]
         let groupName = "groupName"
+
+        /// 1 for the first published result; each supported correction increments it.
+        [<Literal>]
+        let resultVersion = "resultVersion"
 
     module Index =
 

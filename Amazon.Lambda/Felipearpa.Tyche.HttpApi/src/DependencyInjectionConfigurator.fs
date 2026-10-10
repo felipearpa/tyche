@@ -27,6 +27,8 @@ open Felipearpa.Crypto
 [<AutoOpen>]
 module DependencyInjectionConfigurator =
 
+    let private utcNow: unit -> System.DateTime = fun () -> System.DateTime.UtcNow
+
     let registerDependencies (app: WebApplicationBuilder) =
         app.Services
             .AddSingleton<IJwtSetting, LocalJwtSetting>()
@@ -64,6 +66,19 @@ module DependencyInjectionConfigurator =
             .AddScoped<IPoolLayoutRepository, PoolLayoutDynamoDbRepository>()
             .AddScoped<GetOpenPoolLayouts>()
             .AddScoped<IPoolLayoutVersionResolver, PoolLayoutVersionResolver>()
+            .AddScoped<IPoolSettlementRepository>(
+                System.Func<System.IServiceProvider, IPoolSettlementRepository>(fun sp ->
+                    PoolSettlementDynamoDbRepository(sp.GetRequiredService<IAmazonDynamoDB>()))
+            )
+            .AddScoped<IPoolProjectionRepository>(
+                System.Func<System.IServiceProvider, IPoolProjectionRepository>(fun sp ->
+                    PoolSettlementDynamoDbRepository(sp.GetRequiredService<IAmazonDynamoDB>()))
+            )
+            .AddScoped<IPoolLayoutMatchReader, PoolLayoutMatchReader>()
+            .AddScoped<IRankedMatchBetsRepository, RankedMatchBetsDynamoDbRepository>()
+            .AddSingleton<RankedMatchBetsSettings>(RankedMatchBetsSettings.Default)
+            .AddSingleton<unit -> System.DateTime>(utcNow)
+            .AddScoped<GetRankedPoolMatchBets>()
         |> ignore
 
     let registerJwt (app: WebApplicationBuilder) =

@@ -39,8 +39,8 @@ public class BetAssembly: Assembly {
             )
         }
 
-        container.register(GetPoolMatchGamblerBetsUseCase.self) { resolver in
-            GetPoolMatchGamblerBetsUseCase(
+        container.register(GetRankedPoolMatchGamblerBetsUseCase.self) { resolver in
+            GetRankedPoolMatchGamblerBetsUseCase(
                 poolGamblerBetRepository: resolver.resolve(PoolGamblerBetRepository.self)!
             )
         }

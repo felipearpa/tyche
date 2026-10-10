@@ -1,0 +1,52 @@
+[
+    {
+        "function": "arn:aws:lambda:us-east-2:567776770335:function:TycheApi-OnPoolChange-6NiGdcsc4tNW",
+        "source": "arn:aws:dynamodb:us-east-2:567776770335:table/Pool/stream/2025-08-18T16:45:55.692",
+        "state": "Enabled",
+        "retry": -1,
+        "age": -1,
+        "bisect": false,
+        "destination": {
+            "OnFailure": {}
+        },
+        "responseTypes": [],
+        "filters": null
+    },
+    {
+        "function": "arn:aws:lambda:us-east-2:567776770335:function:TycheApi-OnPoolLayoutChange-q5QNPyQnr27s",
+        "source": "arn:aws:dynamodb:us-east-2:567776770335:table/PoolLayout/stream/2025-09-27T02:24:29.497",
+        "state": "Enabled",
+        "retry": -1,
+        "age": -1,
+        "bisect": false,
+        "destination": {
+            "OnFailure": {}
+        },
+        "responseTypes": [],
+        "filters": null
+    },
+    {
+        "function": "arn:aws:lambda:us-east-2:567776770335:function:TycheApi-OnMatchScoreIngestionChange-Z8t2lmQLtTKd",
+        "source": "arn:aws:dynamodb:us-east-2:567776770335:table/MatchScoreIngestion/stream/2026-06-17T16:26:29.662",
+        "state": "Enabled",
+        "retry": -1,
+        "age": -1,
+        "bisect": false,
+        "destination": {
+            "OnFailure": {}
+        },
+        "responseTypes": [],
+        "filters": null
+    },
+    {
+        "function": "arn:aws:lambda:us-east-2:567776770335:function:TycheApi-OnUpdatePositions-ABlSsCE3xrGK",
+        "source": "arn:aws:sqs:us-east-2:567776770335:UpdatePositionsQueue.fifo",
+        "state": "Enabled",
+        "retry": null,
+        "age": null,
+        "bisect": null,
+        "destination": null,
+        "responseTypes": [],
+        "filters": null
+    }
+]

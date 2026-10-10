@@ -26,7 +26,8 @@ interface PoolGamblerBetRepository {
         searchText: String? = null
     ): Result<CursorPage<PoolGamblerBet>>
 
-    suspend fun getPoolMatchGamblerBets(
+    /** See `GetRankedPoolMatchGamblerBets`. */
+    suspend fun getRankedPoolMatchGamblerBets(
         poolId: String,
         matchId: String,
         next: String? = null,

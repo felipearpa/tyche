@@ -90,4 +90,5 @@ dependencies {
     implementation(project(":account"))
     implementation(project(":data:bet"))
     implementation(project(":data:pool"))
+    implementation(project(":network:core"))
 }

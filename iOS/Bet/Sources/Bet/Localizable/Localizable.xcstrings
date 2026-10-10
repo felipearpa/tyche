@@ -994,25 +994,330 @@
         }
       }
     },
-    "live_label" : {
+    "match_bets_closed_label" : {
+      "comment" : "Status pill of a match whose betting is closed and whose points are not computed yet. It does not claim the match is being played.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "LIVE"
+            "value" : "Bets closed"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "EN VIVO"
+            "value" : "Apuestas cerradas"
           }
         },
         "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "EN DIRECTO"
+            "value" : "Apuestas cerradas"
+          }
+        }
+      }
+    },
+    "match_bets_heading_refresh_failure" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Couldn't update the match. Showing the last details."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se pudo actualizar el partido. Se muestran los últimos datos."
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se pudo actualizar el partido. Se muestran los últimos datos."
+          }
+        }
+      }
+    },
+    "match_bets_hidden_message" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Everyone's bets are revealed when betting closes for this match."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Las apuestas de todos se mostrarán cuando se cierren las apuestas de este partido."
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Las apuestas de todos se mostrarán cuando se cierren las apuestas de este partido."
+          }
+        }
+      }
+    },
+    "match_bets_hidden_title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bets are hidden"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Las apuestas están ocultas"
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Las apuestas están ocultas"
+          }
+        }
+      }
+    },
+    "match_bets_list_changed_message" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Load the list again to see the current order."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vuelve a cargar la lista para ver el orden actual."
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vuelve a cargar la lista para ver el orden actual."
+          }
+        }
+      }
+    },
+    "match_bets_list_changed_title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The standings changed"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La clasificación cambió"
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La clasificación ha cambiado"
+          }
+        }
+      }
+    },
+    "match_bets_matchup_accessibility" : {
+      "comment" : "Spoken matchup without a score. Arguments: home team, away team.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ versus %2$@"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ contra %2$@"
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ contra %2$@"
+          }
+        }
+      }
+    },
+    "match_bets_own_bet_accessibility" : {
+      "comment" : "Spoken prediction of the signed-in gambler while bets are hidden. Arguments: home team, home goals, away team, away goals.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your bet: %1$@ %2$lld, %3$@ %4$lld"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tu apuesta: %1$@ %2$lld, %3$@ %4$lld"
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tu apuesta: %1$@ %2$lld, %3$@ %4$lld"
+          }
+        }
+      }
+    },
+    "match_bets_own_bet_failure" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Couldn't load your bet."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se pudo cargar tu apuesta."
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se pudo cargar tu apuesta."
+          }
+        }
+      }
+    },
+    "match_bets_participant_bet_accessibility" : {
+      "comment" : "Spoken prediction of a participant. Arguments: home team, home goals, away team, away goals.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bet: %1$@ %2$lld, %3$@ %4$lld"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apuesta: %1$@ %2$lld, %3$@ %4$lld"
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apuesta: %1$@ %2$lld, %3$@ %4$lld"
+          }
+        }
+      }
+    },
+    "match_bets_ranking_unavailable_message" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Try again in a few minutes."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Inténtalo de nuevo en unos minutos."
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Inténtalo de nuevo en unos minutos."
+          }
+        }
+      }
+    },
+    "match_bets_ranking_unavailable_title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bets can't be shown right now"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se pueden mostrar las apuestas ahora"
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se pueden mostrar las apuestas ahora"
+          }
+        }
+      }
+    },
+    "match_bets_starts_label" : {
+      "comment" : "Status pill above an upcoming match while bets are hidden. Argument: the localized kickoff date and time.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Starts %@"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Empieza %@"
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Empieza %@"
+          }
+        }
+      }
+    },
+    "match_bets_versus_label" : {
+      "comment" : "Shown between the two teams when there is no score.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "VS"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "VS"
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "VS"
           }
         }
       }
@@ -1040,48 +1345,26 @@
         }
       }
     },
-    "predictions_open_message" : {
+    "match_bets_you_label" : {
+      "comment" : "Marks the signed-in gambler’s row in the match’s participant list.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "To keep things fair, other gamblers' bets will be revealed once predictions close for this match."
+            "value" : "You"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Para que el juego sea justo, las apuestas de los demás se mostrarán cuando se cierren las predicciones para este partido."
+            "value" : "Tú"
           }
         },
         "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Para que el juego sea limpio, las apuestas del resto se mostrarán cuando se cierren las predicciones de este partido."
-          }
-        }
-      }
-    },
-    "predictions_open_title" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Predictions are still open"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Las predicciones aún están abiertas"
-          }
-        },
-        "es-ES" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Las predicciones siguen abiertas"
+            "value" : "Tú"
           }
         }
       }

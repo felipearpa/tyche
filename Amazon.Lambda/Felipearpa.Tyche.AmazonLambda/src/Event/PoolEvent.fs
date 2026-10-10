@@ -2,220 +2,61 @@ namespace Felipearpa.Tyche.AmazonLambda.Event
 
 #nowarn "3536"
 
-open System
 open System.Threading.Tasks
-open Amazon.DynamoDBv2
 open Amazon.Lambda.Core
 open Amazon.Lambda.DynamoDBEvents
-open Felipearpa.Core
-open Felipearpa.Core.Json
-open Felipearpa.Data.DynamoDb
 open Felipearpa.Tyche.Pool.Application
 open Felipearpa.Tyche.Pool.Domain
-open Felipearpa.Tyche.Pool.Infrastructure
-open Felipearpa.Tyche.PoolLayout.Application
-open Felipearpa.Tyche.PoolLayout.Domain
-open Felipearpa.Tyche.PoolLayout.Infrastructure
 open Felipearpa.Type
 open Microsoft.Extensions.DependencyInjection
 open Microsoft.Extensions.Logging
 
+/// Pool stream handler for membership lifecycle: a new membership's bet sheet is
+/// materialized through the guarded initializer, and a removed membership's generation is
+/// retired from its details.
 type PoolEvent(configureServices: IServiceCollection -> unit) =
-    [<Literal>]
-    let poolKeyPrefix = "POOL"
 
-    [<Literal>]
-    let gamblerKeyPrefix = "GAMBLER"
+    let serviceProvider = PoolServices.build configureServices
 
-    [<Literal>]
-    let insertEventName = "INSERT"
+    let tryJoinedGambler (record: DynamoDBEvent.DynamodbStreamRecord) =
+        let image = record.Dynamodb.NewImage
 
-    [<Literal>]
-    let removeEventName = "REMOVE"
-
-    [<Literal>]
-    let poolIdField = "poolId"
-
-    [<Literal>]
-    let gamblerIdField = "gamblerId"
-
-    [<Literal>]
-    let gamblerUsernameField = "gamblerUsername"
-
-    [<Literal>]
-    let gamblerEmailField = "gamblerEmail"
-
-    [<Literal>]
-    let poolLayoutIdField = "poolLayoutId"
-
-    [<Literal>]
-    let poolLayoutVersionField = "poolLayoutVersion"
-
-    [<Literal>]
-    let pkField = "pk"
-
-    [<Literal>]
-    let skField = "sk"
-
-    let buildServiceProvider () =
-        let services = ServiceCollection()
-
-        services
-            .AddAWSService<IAmazonDynamoDB>()
-            .AddLogging(fun builder -> builder.AddLambdaLogger() |> ignore)
-            .AddSingleton<ISerializer, JsonSerializer>()
-            .AddSingleton<IKeySerializer, DynamoDbKeySerializer>()
-            .AddScoped<IPoolLayoutRepository, PoolLayoutDynamoDbRepository>()
-            .AddScoped<IPoolGamblerBetRepository, PoolGamblerBetDynamoDbRepository>()
-            .AddScoped<GetPendingPoolLayoutMatches>()
-            .AddScoped<AddMatches>()
-        |> ignore
-
-        configureServices services
-
-        services.BuildServiceProvider()
-
-    let serviceProvider = buildServiceProvider ()
-
-    let extractInsertedPoolGamblerRecords (event: DynamoDBEvent) =
-        event.Records
-        |> Seq.filter (fun record -> record.EventName = insertEventName)
-        |> Seq.choose (fun record ->
-            let image = record.Dynamodb.NewImage
-
-            let hasRequiredFields =
-                image.ContainsKey(poolIdField)
-                && image.ContainsKey(gamblerIdField)
-                && image.ContainsKey(gamblerUsernameField)
-                && image.ContainsKey(gamblerEmailField)
-                && image.ContainsKey(poolLayoutIdField)
-                && image.ContainsKey(poolLayoutVersionField)
-                && image.ContainsKey(pkField)
-                && image.ContainsKey(skField)
-
-            if not hasRequiredFields then
-                None
-            else
-                let pk = image[pkField].S
-                let sk = image[skField].S
-
-                let keyMatches =
-                    pk.StartsWith($"{poolKeyPrefix}#") && sk.StartsWith($"{gamblerKeyPrefix}#")
-
-                if keyMatches then
-                    Some(
-                        image[poolIdField].S |> Ulid.newOf,
-                        image[gamblerIdField].S |> Ulid.newOf,
-                        image[gamblerUsernameField].S |> NonEmptyString100.newOf,
-                        image[gamblerEmailField].S |> NonEmptyString100.newOf,
-                        image[poolLayoutIdField].S |> Ulid.newOf,
-                        image[poolLayoutVersionField].N |> int
-                    )
-                else
-                    None)
-
-    let extractRemovedPoolGamblerRecords (event: DynamoDBEvent) =
-        event.Records
-        |> Seq.filter (fun record -> record.EventName = removeEventName)
-        |> Seq.choose (fun record ->
-            let keys = record.Dynamodb.Keys
-
-            if keys <> null && keys.ContainsKey(pkField) && keys.ContainsKey(skField) then
-                let pk = keys[pkField].S
-                let sk = keys[skField].S
-
-                let keyMatches =
-                    pk.StartsWith($"{poolKeyPrefix}#") && sk.StartsWith($"{gamblerKeyPrefix}#")
-
-                if keyMatches then
-                    Some(
-                        pk.Substring(poolKeyPrefix.Length + 1) |> Ulid.newOf,
-                        sk.Substring(gamblerKeyPrefix.Length + 1) |> Ulid.newOf
-                    )
-                else
-                    None
-            else
-                None)
-
-    let applyPendingLayoutMatches
-        (getPendingPoolLayoutMatches: GetPendingPoolLayoutMatches)
-        (addMatches: AddMatches)
-        (poolId, gamblerId, gamblerUsername, gamblerEmail, poolLayoutId, poolLayoutVersion)
-        : Async<unit> =
-        let computedRequestId = Ulid.random().ToString()
-        let computedDateTime = DateTime.UtcNow
-
-        let buildBet (m: PoolLayoutMatch) =
-            let baseBet =
-                { InitialPoolGamblerBet.PoolId = poolId
-                  GamblerId = gamblerId
-                  GamblerUsername = gamblerUsername
-                  GamblerEmail = gamblerEmail
-                  MatchId = m.MatchId
-                  PoolLayoutId = poolLayoutId
-                  HomeTeamId = m.HomeTeamId
-                  HomeTeamName = m.HomeTeamName
-                  AwayTeamId = m.AwayTeamId
-                  AwayTeamName = m.AwayTeamName
-                  MatchDateTime = m.MatchDateTime
-                  PoolLayoutVersion = m.PoolLayoutVersion
-                  Round = m.Round
-                  GroupName = m.GroupName
-                  HomeTeamScore = None
-                  AwayTeamScore = None
-                  BetScore = None
-                  ComputedDateTime = None
-                  ComputedRequestId = None }
-
-            match m.HomeTeamScore, m.AwayTeamScore with
-            | Some _, Some _ ->
-                { baseBet with
-                    HomeTeamScore = m.HomeTeamScore
-                    AwayTeamScore = m.AwayTeamScore
-                    BetScore = Some 0
-                    ComputedDateTime = Some computedDateTime
-                    ComputedRequestId = Some computedRequestId }
-            | _ -> baseBet
-
-        let rec loop (next: string option) : Async<unit> =
-            async {
-                let! page = getPendingPoolLayoutMatches.ExecuteAsync(poolLayoutId, poolLayoutVersion, next)
-
-                let poolGamblerBets: InitialPoolGamblerBet seq = page.Items |> Seq.map buildBet
-
-                let! _ = addMatches.ExecuteAsync poolGamblerBets
-
-                match page.Next with
-                | Some n -> return! loop (Some n)
-                | None -> return ()
-            }
-
-        loop None
+        match
+            StreamBatch.imageString "poolId" image,
+            StreamBatch.imageString "gamblerId" image,
+            StreamBatch.imageString "gamblerUsername" image,
+            StreamBatch.imageString "gamblerEmail" image,
+            StreamBatch.imageString "poolLayoutId" image,
+            StreamBatch.imageNumber "poolLayoutVersion" image
+        with
+        | Some poolId, Some gamblerId, Some username, Some email, Some poolLayoutId, Some poolLayoutVersion ->
+            Some
+                { PoolLayoutGambler.PoolId = Ulid.newOf poolId
+                  PoolLayoutId = Ulid.newOf poolLayoutId
+                  PoolLayoutVersion = int poolLayoutVersion
+                  GamblerId = Ulid.newOf gamblerId
+                  GamblerUsername = NonEmptyString100.newOf username
+                  GamblerEmail = NonEmptyString100.newOf email }
+        | _ -> None
 
     new() = PoolEvent(fun _ -> ())
 
-    member this.OnPoolChangeAsync(event: DynamoDBEvent, _: ILambdaContext) : Task =
-        (async {
-            use scope = serviceProvider.CreateScope()
+    member this.OnPoolChangeAsync(event: DynamoDBEvent, _: ILambdaContext) : Task<StreamsEventResponse> =
+        let materialize = serviceProvider.GetRequiredService<MaterializeJoinedGambler>()
+        let cleanUp = serviceProvider.GetRequiredService<CleanUpRemovedMembership>()
+        let logger = serviceProvider.GetRequiredService<ILogger<PoolEvent>>()
 
-            let getPendingPoolLayoutMatches =
-                scope.ServiceProvider.GetRequiredService<GetPendingPoolLayoutMatches>()
+        let handle (record: DynamoDBEvent.DynamodbStreamRecord) =
+            async {
+                match record.EventName, StreamBatch.tryMembershipKey record with
+                | "INSERT", Some _ ->
+                    match tryJoinedGambler record with
+                    | Some gambler -> do! materialize.ExecuteAsync(gambler, record.EventID)
+                    | None -> logger.LogWarning("Membership insert {EventId} lacks materialization fields", record.EventID)
+                | "REMOVE", Some(poolId, gamblerId) ->
+                    let generation = StreamBatch.imageString "membershipGeneration" record.Dynamodb.OldImage
+                    do! cleanUp.ExecuteAsync(Ulid.newOf poolId, Ulid.newOf gamblerId, generation)
+                | _ -> ()
+            }
 
-            let addMatches = scope.ServiceProvider.GetRequiredService<AddMatches>()
-
-            let poolGamblerBetRepository =
-                scope.ServiceProvider.GetRequiredService<IPoolGamblerBetRepository>()
-
-            do!
-                extractInsertedPoolGamblerRecords event
-                |> Seq.iterAsync (applyPendingLayoutMatches getPendingPoolLayoutMatches addMatches)
-
-            do!
-                extractRemovedPoolGamblerRecords event
-                |> Seq.iterAsync (fun (poolId, gamblerId) ->
-                    poolGamblerBetRepository.DeleteUncomputedBetsAsync(poolId, gamblerId))
-
-            return ()
-         }
-         |> Async.StartAsTask
-        :> Task)
+        StreamBatch.processInOrder "PoolEvent" logger handle event |> Async.StartAsTask

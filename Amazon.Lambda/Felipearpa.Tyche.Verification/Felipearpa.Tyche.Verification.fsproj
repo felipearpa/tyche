@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <!-- Integration and load checks against isolated temporary AWS resources. Not a test
+         project: run explicitly (see README.md), never as part of `dotnet test`. -->
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net10.0</TargetFramework>
+        <IsPackable>false</IsPackable>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Compile Include="Environment.fs" />
+        <Compile Include="StreamPump.fs" />
+        <Compile Include="QueueWorkers.fs" />
+        <Compile Include="Pipeline.fs" />
+        <Compile Include="Seed.fs" />
+        <Compile Include="Integration.fs" />
+        <Compile Include="Load.fs" />
+        <Compile Include="Program.fs" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Felipearpa.Tyche.AmazonLambda\src\Felipearpa.Tyche.AmazonLambda.fsproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="AWSSDK.DynamoDBStreams" Version="4.0.3.4" />
+        <PackageReference Include="Amazon.Lambda.TestUtilities" Version="3.0.1" />
+    </ItemGroup>
+
+</Project>

@@ -33,12 +33,26 @@ module PoolLayoutMatchDictionaryTransformer =
           HomeTeamName = dictionary[PoolLayoutTable.Attribute.homeTeamName].S |> NonEmptyString100.newOf
           AwayTeamId = dictionary[PoolLayoutTable.Attribute.awayTeamId].S
           AwayTeamName = dictionary[PoolLayoutTable.Attribute.awayTeamName].S |> NonEmptyString100.newOf
-          MatchDateTime = DateTime.Parse(dictionary[PoolLayoutTable.Attribute.matchDateTime].S)
+          MatchDateTime =
+            DateTime.Parse(
+                dictionary[PoolLayoutTable.Attribute.matchDateTime].S,
+                Globalization.CultureInfo.InvariantCulture,
+                Globalization.DateTimeStyles.AdjustToUniversal ||| Globalization.DateTimeStyles.AssumeUniversal
+            )
           PoolLayoutVersion = dictionary[PoolLayoutTable.Attribute.poolLayoutVersion].N |> int
           Round = getStringOrDefault dictionary PoolLayoutTable.Attribute.round defaultRound
           GroupName = tryGetStringAttribute dictionary PoolLayoutTable.Attribute.groupName
           HomeTeamScore = tryGetIntAttribute dictionary PoolLayoutTable.Attribute.homeTeamScore
-          AwayTeamScore = tryGetIntAttribute dictionary PoolLayoutTable.Attribute.awayTeamScore }
+          AwayTeamScore = tryGetIntAttribute dictionary PoolLayoutTable.Attribute.awayTeamScore
+          ResultVersion =
+            match
+                tryGetIntAttribute dictionary PoolLayoutTable.Attribute.homeTeamScore,
+                tryGetIntAttribute dictionary PoolLayoutTable.Attribute.resultVersion
+            with
+            | Some _, Some version -> Some version
+            // Results published before versioning are version 1.
+            | Some _, None -> Some 1
+            | None, _ -> None }
 
     type Extensions =
         [<Extension>]

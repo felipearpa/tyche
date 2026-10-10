@@ -172,7 +172,7 @@ private final class ScriptedBetRepository: PoolGamblerBetRepository {
         poolId: String, gamblerId: String, next: String?, searchText: String?
     ) async -> Result<CursorPage<PoolGamblerBet>, Error> { .failure(Unused()) }
 
-    nonisolated func getPoolMatchGamblerBets(
+    nonisolated func getRankedPoolMatchGamblerBets(
         poolId: String, matchId: String, next: String?
     ) async -> Result<CursorPage<PoolGamblerBet>, Error> { .failure(Unused()) }
 

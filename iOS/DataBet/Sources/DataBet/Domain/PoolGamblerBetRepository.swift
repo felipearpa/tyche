@@ -22,7 +22,9 @@ public protocol PoolGamblerBetRepository {
         searchText: String?
     ) async -> Result<CursorPage<PoolGamblerBet>, Error>
 
-    func getPoolMatchGamblerBets(
+    /// The match's participant bets ordered by pool total (`sort=pool-score-desc`). Fails with
+    /// `RankedMatchBetsError` for the ranked mode's own outcomes.
+    func getRankedPoolMatchGamblerBets(
         poolId: String,
         matchId: String,
         next: String?

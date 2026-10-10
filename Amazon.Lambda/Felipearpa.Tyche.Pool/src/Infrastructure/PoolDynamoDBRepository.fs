@@ -329,6 +329,11 @@ type PoolDynamoDbRepository(keySerializer: IKeySerializer, client: IAmazonDynamo
 
                 do! deleteKeysAsync gamblerKeys
 
+                let! receiptKeys =
+                    queryAllKeysAsync (GetPoolGamblerKeysRequestBuilder.buildForPrefix PoolTable.Prefix.settlement poolId)
+
+                do! deleteKeysAsync receiptKeys
+
                 let poolPk = KeyPrefix.build PoolTable.Prefix.pool poolId.Value
 
                 let poolKey =

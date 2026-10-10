@@ -5,10 +5,7 @@
     <string name="forbidden_bet_title">Apuesta no permitida</string>
     <string name="forbidden_bet_message">¡Vaya! Las apuestas están actualmente deshabilitadas</string>
     <string name="match_bets_view_title">Marcador</string>
-    <string name="live_label">EN VIVO</string>
     <string name="bet_timeline_view_title">Línea de tiempo</string>
-    <string name="predictions_open_title">Las predicciones aún están abiertas</string>
-    <string name="predictions_open_message">Para que el juego sea justo, las apuestas de los demás se mostrarán cuando se cierren las predicciones para este partido.</string>
     <string name="history_your_bet_label">Tu apuesta</string>
     <string name="history_no_bet_label">Sin apuesta</string>
     <string name="history_earned_label">ganados</string>
@@ -57,4 +54,19 @@
     <string name="history_gambler_summary_unavailable_accessibility">Puntos ganados por %1$s en esta polla no disponibles</string>
     <string name="history_gambler_summary_load_failure">No se pudieron cargar los puntos.</string>
     <string name="history_gambler_summary_refresh_failure">No se pudieron actualizar los puntos. Se muestra el último total.</string>
+    <string name="match_bets_starts_label">Empieza %1$s</string>
+    <string name="match_bets_closed_label">Apuestas cerradas</string>
+    <string name="match_bets_versus_label">VS</string>
+    <string name="match_bets_hidden_title">Las apuestas están ocultas</string>
+    <string name="match_bets_hidden_message">Las apuestas de todos se mostrarán cuando se cierren las apuestas de este partido.</string>
+    <string name="match_bets_you_label">Tú</string>
+    <string name="match_bets_own_bet_failure">No se pudo cargar tu apuesta.</string>
+    <string name="match_bets_heading_refresh_failure">No se pudo actualizar el partido. Se muestran los últimos datos.</string>
+    <string name="match_bets_matchup_accessibility">%1$s contra %2$s</string>
+    <string name="match_bets_own_bet_accessibility">Tu apuesta: %1$s %2$d, %3$s %4$d</string>
+    <string name="match_bets_participant_bet_accessibility">Apuesta: %1$s %2$d, %3$s %4$d</string>
+    <string name="match_bets_ranking_unavailable_title">No se pueden mostrar las apuestas ahora</string>
+    <string name="match_bets_ranking_unavailable_message">Inténtalo de nuevo en unos minutos.</string>
+    <string name="match_bets_list_changed_title">La clasificación cambió</string>
+    <string name="match_bets_list_changed_message">Vuelve a cargar la lista para ver el orden actual.</string>
 </resources>

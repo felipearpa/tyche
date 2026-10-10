@@ -1,6 +1,5 @@
 package com.felipearpa.tyche.bet.finished
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -12,7 +11,6 @@ import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -21,7 +19,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
@@ -98,14 +95,14 @@ internal fun HistoryRowDivider() {
     HorizontalDivider(modifier = Modifier.padding(horizontal = HistoryStyle.horizontalPadding))
 }
 
-/** The shared pulse for one content leaf, in [shape] or the pulse's text shape. */
+/** The shared pulse for one content leaf, in the pulse's text shape. */
 @Composable
-private fun leafMask(isPlaceholder: Boolean, shape: Shape? = null): Modifier {
+private fun leafMask(isPlaceholder: Boolean): Modifier {
     if (!isPlaceholder) return Modifier
     val pulse = LocalLoadingPlaceholderPulse.current
     return Modifier.placeholder(
         color = pulse.color,
-        shape = shape ?: pulse.shape,
+        shape = pulse.shape,
         highlight = pulse.highlight,
     )
 }
@@ -306,25 +303,14 @@ private fun BetLine(poolGamblerBet: PoolGamblerBetModel, owner: HistoryOwner, le
 
 @Composable
 private fun PointsPill(points: HistoryRowPoints, isPlaceholder: Boolean) {
-    val isPositive = points is HistoryRowPoints.Awarded && points.points.isPositive
-    // A placeholder masks the whole pill once, rather than its fill and its text separately.
-    val fill = if (isPlaceholder) Modifier else Modifier.background(
-        color = if (isPositive) HistoryStyle.positiveFill else HistoryStyle.neutralFill,
-        shape = CircleShape,
-    )
-    Text(
+    HistoryPointsPill(
         text = when (points) {
             is HistoryRowPoints.Awarded -> historyPointsShortText(points.points)
             HistoryRowPoints.Pending -> stringResource(R.string.history_points_pending_label)
         },
-        style = MaterialTheme.typography.bodyLarge.copy(fontFeatureSettings = TABULAR_NUMBERS),
-        fontWeight = FontWeight.SemiBold,
-        color = if (isPositive) HistoryStyle.positiveText else HistoryStyle.secondaryText,
-        // A numeric award stays on one line; the pending words may wrap at large font scales.
+        isPositive = points is HistoryRowPoints.Awarded && points.points.isPositive,
         maxLines = if (points is HistoryRowPoints.Awarded) 1 else Int.MAX_VALUE,
-        modifier = leafMask(isPlaceholder, CircleShape)
-            .then(fill)
-            .padding(horizontal = PILL_HORIZONTAL_PADDING, vertical = PILL_VERTICAL_PADDING),
+        isPlaceholder = isPlaceholder,
     )
 }
 
@@ -424,8 +410,6 @@ private val SCORE_SIZE = 44.sp
 private const val SEPARATOR_SCALE = 0.6f
 private val SCORE_SPACING = 12.dp
 private val BET_LABEL_SPACING = 8.dp
-private val PILL_HORIZONTAL_PADDING = 14.dp
-private val PILL_VERTICAL_PADDING = 6.dp
 private const val TABULAR_NUMBERS = "tnum"
 
 /** At or above this font scale the teams stack around the result. */

@@ -66,13 +66,13 @@ internal class PoolGamblerBetRemoteRepository(
         }
     }
 
-    override suspend fun getPoolMatchGamblerBets(
+    override suspend fun getRankedPoolMatchGamblerBets(
         poolId: String,
         matchId: String,
         next: String?,
     ): Result<CursorPage<PoolGamblerBet>> {
         return networkExceptionHandler.handle {
-            poolGamblerBetDataSource.getPoolMatchGamblerBets(
+            poolGamblerBetDataSource.getRankedPoolMatchGamblerBets(
                 poolId = poolId,
                 matchId = matchId,
                 next = next,

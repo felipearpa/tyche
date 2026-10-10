@@ -23,6 +23,7 @@ module CreatePoolRequestBuilder =
                   PoolTable.Attribute.poolLayoutId, AttributeValue(S = (createPoolInput.PoolLayoutId |> Ulid.value))
                   PoolTable.Attribute.creatorGamblerId,
                   AttributeValue(S = (createPoolInput.OwnerGamblerId |> Ulid.value))
-                  PoolTable.Attribute.gamblerCount, AttributeValue(N = "1") ]
+                  PoolTable.Attribute.gamblerCount, AttributeValue(N = "1")
+                  PoolTable.Attribute.membershipRevision, AttributeValue(N = "1") ]
 
         Put(TableName = PoolTable.name, Item = (attributeValues |> Dictionary))

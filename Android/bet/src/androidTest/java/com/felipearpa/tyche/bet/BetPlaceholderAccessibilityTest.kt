@@ -9,6 +9,7 @@ import androidx.compose.ui.test.assertHasNoClickAction
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithTag
+import com.felipearpa.tyche.bet.match.MatchBetsPresentation
 import com.felipearpa.tyche.bet.match.MatchGamblerBetItem
 import com.felipearpa.tyche.bet.match.MatchHeader
 import com.felipearpa.tyche.bet.pending.PendingBetItem
@@ -43,9 +44,10 @@ class BetPlaceholderAccessibilityTest {
     fun matchGamblerBetPlaceholderExposesNoValuesOrActions() {
         assertInert { modifier ->
             MatchGamblerBetItem(
-                poolGamblerBet = poolGamblerBetFakeModel(),
+                poolGamblerBet = matchGamblerBetPlaceholderModel(isComputed = true),
                 modifier = modifier,
                 isPlaceholder = true,
+                onClick = {},
             )
         }
     }
@@ -54,7 +56,8 @@ class BetPlaceholderAccessibilityTest {
     fun matchHeaderPlaceholderExposesNoValuesOrActions() {
         assertInert { modifier ->
             MatchHeader(
-                bet = poolGamblerBetFakeModel().copy(isLocked = false, isComputed = false),
+                match = matchHeaderPlaceholderModel(),
+                presentation = MatchBetsPresentation.HIDDEN,
                 modifier = modifier,
                 isPlaceholder = true,
             )
@@ -71,6 +74,7 @@ class BetPlaceholderAccessibilityTest {
         composeTestRule.onAllNodesWithText("X", substring = true).assertCountEquals(0)
         composeTestRule.onAllNodesWithText("100", substring = true).assertCountEquals(0)
         composeTestRule.onAllNodesWithText("+10", substring = true).assertCountEquals(0)
+        composeTestRule.onAllNodesWithText("0", substring = true).assertCountEquals(0)
         composeTestRule.onNodeWithTag(PLACEHOLDER_TAG).assertHasNoClickAction()
     }
 }
