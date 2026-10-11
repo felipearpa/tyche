@@ -11,6 +11,7 @@ module PoolMessageJsonTest =
 
     let private poolId = Ulid.newOf "01K1PX1TX2NM1HG851S1V0P001"
     let private matchId = Ulid.newOf "01K1PX1TX2NM1HG851S1V0M001"
+    let private gamblerId = Ulid.newOf "01K1PX1TX2NM1HG851S1V0GD01"
 
     [<Fact>]
     let ``versioned commands round-trip with stable operation identities`` () =
@@ -22,13 +23,29 @@ module PoolMessageJsonTest =
         for command in
             [ PoolCommand.settleResult poolId matchId result
               PoolCommand.reconcileMatch poolId matchId "EVENT-1"
-              PoolCommand.reconcileStandings poolId "EVENT-2" ] do
+              PoolCommand.reconcileStandings poolId "EVENT-2"
+              PoolCommand.restoreRejoinHistory poolId gamblerId "G2" ] do
             match PoolMessageJson.encodeCommand command |> PoolMessageJson.decodePoolMessage with
             | PoolMessageJson.Command decoded -> decoded |> shouldEqual command
             | other -> failwith $"unexpected {other}"
 
         (PoolCommand.settleResult poolId matchId result).OperationId
         |> shouldEqual $"RESULT#{matchId.Value}#3"
+
+        (PoolCommand.restoreRejoinHistory poolId gamblerId "G2").OperationId
+        |> shouldEqual $"RESTORE#{gamblerId.Value}#G2"
+
+    [<Fact>]
+    let ``an operator's restore replay decodes with its own operation ID and the same payload`` () =
+        let body =
+            $"{{\"schema\":1,\"operationId\":\"RESTORE#{gamblerId.Value}#G2#OPERATOR-1\",\"poolId\":\"{poolId.Value}\",\"kind\":\"RESTORE_REJOIN_HISTORY\",\"gamblerId\":\"{gamblerId.Value}\",\"membershipGeneration\":\"G2\"}}"
+
+        match PoolMessageJson.decodePoolMessage body with
+        | PoolMessageJson.Command decoded ->
+            decoded.OperationId |> shouldEqual $"RESTORE#{gamblerId.Value}#G2#OPERATOR-1"
+            decoded.Kind |> shouldEqual (RestoreRejoinHistory(gamblerId, "G2"))
+            PoolCommand.fingerprint decoded |> shouldEqual (PoolCommand.fingerprint (PoolCommand.restoreRejoinHistory poolId gamblerId "G2"))
+        | other -> failwith $"unexpected {other}"
 
     [<Fact>]
     let ``messages from the previous position worker decode as legacy positions`` () =

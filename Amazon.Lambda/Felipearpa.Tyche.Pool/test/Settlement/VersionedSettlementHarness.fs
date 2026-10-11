@@ -251,7 +251,11 @@ type VersionedSettlementHarness(options: HarnessOptions) =
                     let gamblerId = Ulid.newOf image["gamblerId"].S
 
                     match change.OldImage, change.NewImage with
-                    | None, Some _ -> Some(MembershipCreated(poolId, gamblerId), $"EVENT{change.Sequence}")
+                    | None, Some _ ->
+                        Some(
+                            MembershipCreated(poolId, gamblerId, attribute "membershipGeneration" change.NewImage),
+                            $"EVENT{change.Sequence}"
+                        )
                     | Some _, None -> Some(MembershipRemoved(poolId, gamblerId), $"EVENT{change.Sequence}")
                     | old, current when
                         attribute "scoreVersion" old <> attribute "scoreVersion" current
@@ -274,6 +278,7 @@ type VersionedSettlementHarness(options: HarnessOptions) =
     member _.Bets = bets
     member _.Pools = pools
     member _.LayoutRepository = layoutRepository
+    member _.LayoutReader = layoutReader
     member _.ProcessCommand = processCommand
     member _.Dispatch = dispatch
     member _.CommandPublisher = commandPublisher

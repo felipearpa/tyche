@@ -57,7 +57,9 @@ type PoolMaintenanceEvent(configureServices: IServiceCollection -> unit) =
                       OperationMetrics.count "ReconciledUnsettledMatches" report.UnsettledMatches.Length
                       OperationMetrics.count "ReconciledStaleProjections" report.StaleProjections
                       OperationMetrics.count "ReconciledStalePositions" report.StalePositions
-                      OperationMetrics.count "ReconciledStaleGenerations" report.RetiredGenerations ],
+                      OperationMetrics.count "ReconciledStaleGenerations" report.RetiredGenerations
+                      OperationMetrics.count "ReconciledRestorations" report.RequestedRestorations
+                      OperationMetrics.count "RestoreHeldDetails" report.HeldRetainedDetails ],
                     [ "poolId", poolId.Value ]
             | RetireMembership(poolId, gamblerId, generation) ->
                 do! serviceProvider.GetRequiredService<CleanUpRemovedMembership>().ExecuteAsync(poolId, gamblerId, generation)

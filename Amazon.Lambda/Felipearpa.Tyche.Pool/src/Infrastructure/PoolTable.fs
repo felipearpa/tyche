@@ -197,6 +197,14 @@ module PoolTable =
         [<Literal>]
         let getPoolMatchBetsByTotalSk = "getPoolMatchBetsByTotalSk"
 
+        // Match detail held for repair by a rejoin restoration.
+
+        [<Literal>]
+        let restoreExcludedGeneration = "restoreExcludedGeneration"
+
+        [<Literal>]
+        let restoreExclusionReason = "restoreExclusionReason"
+
         // Settlement receipt.
 
         [<Literal>]

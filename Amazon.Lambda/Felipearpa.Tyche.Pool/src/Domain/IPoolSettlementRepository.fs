@@ -27,6 +27,26 @@ type PositionWrite =
       Change: PositionChange
       TargetMatchId: Ulid option }
 
+/// One guarded rebinding of a retained detail together with the rejoined membership's total.
+type RebindWrite =
+    { PoolId: Ulid
+      GamblerId: Ulid
+      MatchId: Ulid
+      OperationId: string
+      OperationRevision: int64
+      Change: RebindChange }
+
+/// Marks a retained detail as held for repair against the membership generation, so
+/// restoration and reconciliation treat it as resolved until an operator clears the mark.
+type RestoreHold =
+    { PoolId: Ulid
+      GamblerId: Ulid
+      MatchId: Ulid
+      /// The generation the detail was read with; None for a detail read without one.
+      ReadGeneration: string option
+      Generation: string
+      Reason: string }
+
 /// Data access for ordered pool operations: the pool root checkpoint, settlement receipts,
 /// authoritative membership and detail reads, and single guarded writes. It performs no
 /// messaging or orchestration.
@@ -77,6 +97,22 @@ type IPoolSettlementRepository =
     abstract ApplySettlementAsync: write: SettlementWrite -> Async<GuardedWriteOutcome>
 
     abstract ApplyPositionAsync: write: PositionWrite -> Async<GuardedWriteOutcome>
+
+    /// A strongly consistent page of the gambler's details in the pool, in match ID order
+    /// after the cursor.
+    abstract GetRetainedBetPageAsync:
+        poolId: Ulid * gamblerId: Ulid * afterMatchId: string option * limit: int ->
+            Async<RetainedBetState list * string option>
+
+    abstract GetRetainedBetAsync: poolId: Ulid * gamblerId: Ulid * matchId: Ulid -> Async<RetainedBetState option>
+
+    /// Moves a retained detail to the membership generation with its full projection, and adds
+    /// its award to the membership total, in one transaction guarded by the detail's read state
+    /// and the membership's generation, score version, and total.
+    abstract ApplyRebindingAsync: write: RebindWrite -> Async<GuardedWriteOutcome>
+
+    /// Stores the exclusion marker on a retained detail that still has its read generation.
+    abstract HoldRetainedBetAsync: hold: RestoreHold -> Async<GuardedWriteOutcome>
 
     /// A page of distinct pool IDs that have a detail for the match in the match index,
     /// including computed details. The index is eventually consistent.

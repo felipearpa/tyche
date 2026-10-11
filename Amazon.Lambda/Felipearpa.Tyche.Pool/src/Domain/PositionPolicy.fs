@@ -40,13 +40,14 @@ module PositionPolicy =
         |> List.mapi (fun index membership -> membership, index + 1)
 
     /// Decides the write for one membership. Only a match settlement or correction records
-    /// the previous position; a standings reconciliation after a join or removal leaves it
-    /// as the last scored match left it.
+    /// the previous position; a standings reconciliation after a join or removal and a
+    /// rejoin restoration leave it as the last scored match left it.
     let decide (target: OperationTarget) (operationRevision: int64) (membership: MembershipState) (position: int) =
         let baseline value =
             match target with
             | MatchSettlement _ -> Some value
-            | CurrentStandings -> None
+            | CurrentStandings
+            | RejoinRestoration _ -> None
 
         match membership.PositionOperationRevision with
         | Some written when written > operationRevision -> PositionSuperseded

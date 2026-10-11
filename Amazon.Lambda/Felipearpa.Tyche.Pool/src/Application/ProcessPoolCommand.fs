@@ -30,8 +30,8 @@ type PoolCommandReport =
       RetryAfter: TimeSpan option }
 
 /// Runs one ordered pool operation per command on the per-pool FIFO queue: admission with a
-/// durable receipt, fenced checkpoints, settlement, authoritative positions, and atomic
-/// completion. A later command first helps the active operation finish and never overtakes it.
+/// durable receipt, fenced checkpoints, settlement or rejoin restoration, authoritative
+/// positions, and atomic completion. A later command first helps the active operation finish and never overtakes it.
 type ProcessPoolCommand
     (
         repository: IPoolSettlementRepository,
@@ -137,6 +137,8 @@ type ProcessPoolCommand
                 match active.Stage, active.Target with
                 | Scoring, MatchSettlement(matchId, result) -> return! scorePage poolId deadline active matchId result settled
                 | Scoring, CurrentStandings -> return! moveToPositions poolId deadline active settled
+                | Scoring, RejoinRestoration(gamblerId, generation) ->
+                    return! restorePage poolId deadline active gamblerId generation settled
                 | Positions, _ -> return! finalizePositions poolId deadline active settled
         }
 
@@ -160,6 +162,26 @@ type ProcessPoolCommand
             match next with
             | Some cursor -> return! continueIfOwned poolId deadline { active with Cursor = Some cursor } settled
             | None -> return! endScoringPass poolId deadline active settled
+        }
+
+    /// Restores one page of the gambler's retained details. The pass ends when the details
+    /// are exhausted or the membership ended; current standings are then recalculated only if
+    /// a detail was rebound, since the join's own standings command already placed the
+    /// membership.
+    and restorePage poolId deadline active gamblerId generation settled =
+        async {
+            let! page = RestorePass.run repository layoutMatchReader settings poolId active gamblerId generation
+            let settled = settled + page.Restored
+
+            let active =
+                { progressed active with
+                    UnresolvedDetails = active.UnresolvedDetails + page.Held
+                    RestoredDetails = active.RestoredDetails + page.Restored }
+
+            match page.Next with
+            | Some cursor -> return! continueIfOwned poolId deadline { active with Cursor = Some cursor } settled
+            | None when active.RestoredDetails > 0 -> return! moveToPositions poolId deadline active settled
+            | None -> return! complete poolId active settled
         }
 
     /// A scoring pass ends only if the membership set did not change during it; otherwise
@@ -251,6 +273,7 @@ type ProcessPoolCommand
             match command.Kind with
             | SettleResult(matchId, result) -> return Some(MatchSettlement(matchId, result))
             | ReconcileStandings -> return Some CurrentStandings
+            | RestoreRejoinHistory(gamblerId, generation) -> return Some(RejoinRestoration(gamblerId, generation))
             | ReconcileMatch matchId ->
                 let! state = layoutMatchReader.GetMatchAsync(root.PoolLayoutId, matchId)
 
@@ -276,7 +299,8 @@ type ProcessPoolCommand
           Target = target
           Stage =
             match target with
-            | MatchSettlement _ -> Scoring
+            | MatchSettlement _
+            | RejoinRestoration _ -> Scoring
             | CurrentStandings -> Positions
           Cursor = None
           CalculationRevision = 1
@@ -286,6 +310,7 @@ type ProcessPoolCommand
           AttemptsWithoutProgress = 0
           Blocked = false
           UnresolvedDetails = 0
+          RestoredDetails = 0
           AdmittedAt = admittedAt
           LastProgressAt = admittedAt }
 

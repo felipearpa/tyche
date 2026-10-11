@@ -158,6 +158,7 @@ module PoolOperationTest =
                   AttemptsWithoutProgress = 0
                   Blocked = false
                   UnresolvedDetails = 0
+                  RestoredDetails = 0
                   AdmittedAt = DateTime.UtcNow
                   LastProgressAt = DateTime.UtcNow }
 
@@ -204,6 +205,7 @@ module PoolOperationTest =
                   AttemptsWithoutProgress = 0
                   Blocked = false
                   UnresolvedDetails = 0
+                  RestoredDetails = 0
                   AdmittedAt = harness.Now()
                   LastProgressAt = harness.Now() }
 
@@ -402,7 +404,8 @@ module PoolOperationTest =
             let afterMany = (root harness.Fake |> Option.get).Keys |> Set.ofSeq
 
             afterMany |> shouldEqual afterOne
-            root harness.Fake |> number "lastCompletedOperationRevision" |> shouldEqual (Some 4)
+            // The join's standings and restoration, two results, and the removal's standings.
+            root harness.Fake |> number "lastCompletedOperationRevision" |> shouldEqual (Some 5)
         }
 
     [<Fact>]

@@ -29,9 +29,12 @@ module MembershipEventFilterTest =
     let private membershipKey = $"GAMBLER#{gamblerId}"
 
     [<Fact>]
-    let ``joins and removals request standings reconciliation`` () =
+    let ``joins and removals request standings reconciliation, and joins carry their generation`` () =
+        MembershipEventFilter.tryChange (record "INSERT" membershipKey [] [ "membershipGeneration", attr "G2" ])
+        |> should equal (Some(MembershipCreated(Ulid.newOf poolId, Ulid.newOf gamblerId, Some "G2")))
+
         MembershipEventFilter.tryChange (record "INSERT" membershipKey [] [])
-        |> should equal (Some(MembershipCreated(Ulid.newOf poolId, Ulid.newOf gamblerId)))
+        |> should equal (Some(MembershipCreated(Ulid.newOf poolId, Ulid.newOf gamblerId, None)))
 
         MembershipEventFilter.tryChange (record "REMOVE" membershipKey [] [])
         |> should equal (Some(MembershipRemoved(Ulid.newOf poolId, Ulid.newOf gamblerId)))

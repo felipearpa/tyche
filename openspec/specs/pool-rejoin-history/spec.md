@@ -1,10 +1,10 @@
-# Spec Delta
+# pool-rejoin-history Specification
 
 ## Purpose
 
 Let a gambler who was removed from a pool and later rejoins it continue with the bets and points they earned before removal, consistently across pool totals, positions, ranked match lists, and later result corrections.
 
-## ADDED Requirements
+## Requirements
 
 ### Requirement: Rejoining restores retained history
 
@@ -66,11 +66,23 @@ After restoration, the gambler's current pool position SHALL reflect the restore
 - **GIVEN** restoration added points to the rejoined gambler's total
 - **WHEN** restoration completes
 - **THEN** current pool positions are recalculated using the restored total
+- **AND** no gambler's position before the latest match is changed
 - **AND** previously recorded positions for earlier matches are not rewritten
+
+#### Scenario: Previous membership reached a higher score version
+- **GIVEN** the gambler's earlier membership had its total change many more times than the new membership has
+- **WHEN** the gambler rejoins and propagation converges
+- **THEN** every restored row carries the restored total and appears in its match's ranked list
 
 ### Requirement: Restoration is exactly-once and safe under concurrency
 
 Restoration SHALL be durable and SHALL complete after interruptions, retries, and duplicate delivery without counting any award twice. It SHALL be ordered with other operations on the same pool, so it does not interleave unsafely with settlement, corrections, or position calculation. If the gambler is removed again before restoration finishes, no restored award SHALL be added to a membership that no longer exists, and restoration of later memberships SHALL remain possible. A result correction applied after restoration SHALL adjust the restored total by the difference from the restored award.
+
+#### Scenario: A retained bet cannot be restored
+- **GIVEN** a retained bet is malformed or its match no longer exists
+- **WHEN** restoration runs
+- **THEN** that bet is held for repair and excluded from the total
+- **AND** restoration completes for the remaining bets and is not requested again for the held bet until it is repaired
 
 #### Scenario: Restoration is interrupted and retried
 - **GIVEN** restoration re-linked some retained bets before failing
