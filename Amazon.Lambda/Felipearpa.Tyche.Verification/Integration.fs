@@ -38,7 +38,7 @@ type Integration(dynamo: IAmazonDynamoDB, sqs: IAmazonSQS, pipeline: Pipeline) =
         checks.Add { Name = name; Passed = passed; Detail = detail }
         printfn "%s %s — %s" (if passed then "PASS" else "FAIL") name detail
 
-    let keySerializer = DynamoDbKeySerializer(JsonSerializer())
+    let keySerializer = DynamoDbKeySerializer()
     let repository = PoolSettlementDynamoDbRepository(dynamo)
     let settlement = repository :> IPoolSettlementRepository
     let projection = repository :> IPoolProjectionRepository

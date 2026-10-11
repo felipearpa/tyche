@@ -75,7 +75,9 @@ create_copy() {
     --billing-mode PAY_PER_REQUEST \
     --stream-specification StreamEnabled=true,StreamViewType=NEW_AND_OLD_IMAGES \
     --attribute-definitions AttributeName=pk,AttributeType=S AttributeName=sk,AttributeType=S \
+      AttributeName=status,AttributeType=S AttributeName=startDateTime,AttributeType=S \
     --key-schema AttributeName=pk,KeyType=HASH AttributeName=sk,KeyType=RANGE \
+    --global-secondary-indexes "[$(index GetOpenedPoolLayout-index status startDateTime)]" \
     --query 'TableDescription.TableStatus' --output text
   aws dynamodb wait table-exists --region "$REGION" --table-name "$pool"
   aws dynamodb wait table-exists --region "$REGION" --table-name "$layout"

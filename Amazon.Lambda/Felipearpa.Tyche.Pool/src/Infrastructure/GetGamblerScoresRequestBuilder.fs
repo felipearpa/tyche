@@ -7,7 +7,18 @@ open Felipearpa.Type
 
 module GetGamblerScoresRequestBuilder =
 
-    let build (gamblerId: Ulid) (maybeNext: IDictionary<string, AttributeValue> option) =
+    /// The start key of the scores-by-gambler index: a membership's table keys and its score.
+    let startKeyContract (gamblerId: Ulid) : StartKeyContract =
+        Map
+            [ Key.pk, StringStartingWith(KeyPrefix.build PoolTable.Prefix.pool "")
+              Key.sk, StringEqualTo(KeyPrefix.build PoolTable.Prefix.gambler gamblerId.Value)
+              PoolTable.Attribute.score, AnyNumber ]
+
+    let build
+        (gamblerId: Ulid)
+        (maybeNext: string option)
+        (deserialize: string -> IDictionary<string, AttributeValue>)
+        =
         let keyConditionExpression = $"{ExpressionAttribute.name Key.sk} = :sk"
 
         let filterExpression =
@@ -32,5 +43,5 @@ module GetGamblerScoresRequestBuilder =
             ExclusiveStartKey =
                 match maybeNext with
                 | None -> null
-                | Some next -> Dictionary next
+                | Some next -> StartKeyContract.startKey (startKeyContract gamblerId) deserialize next
         )

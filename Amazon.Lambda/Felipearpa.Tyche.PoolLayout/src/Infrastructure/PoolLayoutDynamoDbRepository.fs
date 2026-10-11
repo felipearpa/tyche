@@ -18,18 +18,13 @@ type PoolLayoutDynamoDbRepository(keySerializer: IKeySerializer, client: IAmazon
         member this.GetOpenPoolLayoutsAsync(maybeNext) =
             async {
                 let! response =
-                    GetOpenPoolLayoutRequestBuilder.build (maybeNext |> Option.map keySerializer.Deserialize)
+                    GetOpenPoolLayoutRequestBuilder.build maybeNext keySerializer.Deserialize
                     |> client.QueryAsync
                     |> Async.AwaitTask
 
-                let maybeLastEvaluatedKey = response.LastEvaluatedKey |> Option.ofObj
-
                 return
                     { CursorPage.Items = response.Items |> Seq.map toPoolLayout
-                      Next =
-                        match maybeLastEvaluatedKey with
-                        | Some lastEvaluatedKey -> keySerializer.Serialize(lastEvaluatedKey) |> Some
-                        | None -> None }
+                      Next = KeySerializer.next keySerializer response.LastEvaluatedKey }
             }
 
         member this.GetPoolLayoutByIdAsync(poolLayoutId) =
@@ -49,18 +44,14 @@ type PoolLayoutDynamoDbRepository(keySerializer: IKeySerializer, client: IAmazon
                     GetPendingPoolLayoutMatchesRequestBuilder.build
                         poolLayoutId
                         poolLayoutVersion
-                        (maybeNext |> Option.map keySerializer.Deserialize)
+                        maybeNext
+                        keySerializer.Deserialize
                     |> client.QueryAsync
                     |> Async.AwaitTask
 
-                let maybeLastEvaluatedKey = response.LastEvaluatedKey |> Option.ofObj
-
                 return
                     { CursorPage.Items = response.Items |> Seq.map toPoolLayoutMatch
-                      Next =
-                        match maybeLastEvaluatedKey with
-                        | Some lastEvaluatedKey -> keySerializer.Serialize(lastEvaluatedKey) |> Some
-                        | None -> None }
+                      Next = KeySerializer.next keySerializer response.LastEvaluatedKey }
             }
 
         member this.SetMatchFinalScoreAsync(poolLayoutId, matchId, homeTeamScore, awayTeamScore) =

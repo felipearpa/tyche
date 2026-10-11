@@ -9,6 +9,17 @@ open Felipearpa.Type
 
 module GetPoolMatchGamblerBetsRequestBuilder =
 
+    /// The start key of the bets-by-match index within one pool: a bet's table keys and its
+    /// match and pool/gambler index keys.
+    let startKeyContract (poolId: Ulid) (matchId: Ulid) : StartKeyContract =
+        Map
+            [ Key.pk, StringStartingWith(KeyPrefix.build PoolTable.Prefix.gambler "")
+              Key.sk, StringEqualTo(KeyPrefix.build PoolTable.Prefix.match' matchId.Value)
+              PoolTable.Attribute.getPoolGamblerScoresByMatchPk,
+              StringEqualTo(KeyPrefix.build PoolTable.Prefix.match' matchId.Value)
+              PoolTable.Attribute.getPoolGamblerScoresByMatchSk,
+              StringStartingWith $"{KeyPrefix.build PoolTable.Prefix.pool poolId.Value}#" ]
+
     let build
         (poolId: Ulid)
         (matchId: Ulid)
@@ -46,5 +57,5 @@ module GetPoolMatchGamblerBetsRequestBuilder =
             ExclusiveStartKey =
                 match maybeNext with
                 | None -> null
-                | Some next -> Dictionary(next |> deserialize)
+                | Some next -> StartKeyContract.startKey (startKeyContract poolId matchId) deserialize next
         )

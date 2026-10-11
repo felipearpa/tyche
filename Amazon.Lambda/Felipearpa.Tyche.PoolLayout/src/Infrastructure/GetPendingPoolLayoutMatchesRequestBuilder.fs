@@ -7,7 +7,18 @@ open Felipearpa.Type
 
 module GetPendingPoolLayoutMatchesRequestBuilder =
 
-    let build (poolLayoutId: Ulid) (poolLayoutVersion: int) (maybeNext: IDictionary<string, AttributeValue> option) =
+    /// The base-table start key of a layout's matches. A legacy pk/sk token is complete for it.
+    let startKeyContract (poolLayoutId: Ulid) : StartKeyContract =
+        Map
+            [ Key.pk, StringEqualTo(KeyPrefix.build PoolLayoutTable.Prefix.poolLayout poolLayoutId.Value)
+              Key.sk, StringStartingWith(KeyPrefix.build PoolLayoutTable.Prefix.match' "") ]
+
+    let build
+        (poolLayoutId: Ulid)
+        (poolLayoutVersion: int)
+        (maybeNext: string option)
+        (deserialize: string -> IDictionary<string, AttributeValue>)
+        =
         let keyConditionExpression =
             $"{ExpressionAttribute.name Key.pk} = :pk AND begins_with({ExpressionAttribute.name Key.sk}, :matchPrefix)"
 
@@ -33,5 +44,5 @@ module GetPendingPoolLayoutMatchesRequestBuilder =
             ExclusiveStartKey =
                 match maybeNext with
                 | None -> null
-                | Some next -> Dictionary next
+                | Some next -> StartKeyContract.startKey (startKeyContract poolLayoutId) deserialize next
         )

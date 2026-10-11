@@ -23,7 +23,7 @@ let package = Package(
         .package(path: "../Account"),
         .package(url: "https://github.com/Alamofire/Alamofire.git", exact: "5.10.2"),
         .package(url: "https://github.com/Swinject/Swinject.git", exact: "2.9.1"),
-        .package(url: "https://github.com/felipearpa/lazy-paging-swift.git", exact: "0.0.3"),
+        .package(url: "https://github.com/felipearpa/lazy-paging-swift.git", exact: "0.0.5"),
         .package(url: "https://github.com/felipearpa/viewing-state-swift.git", from: "0.0.1"),
         .package(url: "https://github.com/nalexn/ViewInspector", exact: "0.10.3"),
     ],

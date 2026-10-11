@@ -32,6 +32,7 @@
       <Compile Include="Fakes\FakeTables.fs" />
       <Compile Include="Fakes\FakeFifoQueue.fs" />
       <Compile Include="Fakes\FakeDynamoDbTest.fs" />
+      <Compile Include="Infrastructure\PaginationSupport.fs" />
       <Compile Include="Domain\BetEvaluatorTest.fs" />
       <Compile Include="Domain\RankingKeyTest.fs" />
       <Compile Include="Domain\SettlementPolicyTest.fs" />
@@ -58,6 +59,7 @@
       <Compile Include="Settlement\SettlementScenarios.fs" />
       <Compile Include="Settlement\SettlementFailurePathTest.fs" />
       <Compile Include="Application\FanOutMatchToGamblersTest.fs" />
+      <Compile Include="Application\ContinuationTraversalTest.fs" />
       <Compile Include="Settlement\PoolOperationTest.fs" />
       <Compile Include="Settlement\DispatchAndStandingsTest.fs" />
       <Compile Include="Settlement\CorrectionAndMaterializationTest.fs" />
@@ -65,6 +67,7 @@
       <Compile Include="Settlement\MigrationAndReconciliationTest.fs" />
       <Compile Include="Settlement\RankedMatchBetsTest.fs" />
       <Compile Include="Settlement\RejoinRestorationTest.fs" />
+      <Compile Include="Infrastructure\SharedCodecPaginationTest.fs" />
     </ItemGroup>
 
 </Project>

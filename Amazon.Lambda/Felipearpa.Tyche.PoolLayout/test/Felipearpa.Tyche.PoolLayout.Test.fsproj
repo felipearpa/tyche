@@ -9,6 +9,7 @@
     <ItemGroup>
         <Compile Include="Domain\PoolLayoutDictionaryTransformerTest.fs" />
         <Compile Include="Domain\PoolLayoutMatchDictionaryTransformerTest.fs" />
+        <Compile Include="Infrastructure\PoolLayoutPaginationTest.fs" />
     </ItemGroup>
 
     <ItemGroup>

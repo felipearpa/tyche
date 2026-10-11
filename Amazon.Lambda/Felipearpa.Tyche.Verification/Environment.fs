@@ -18,6 +18,11 @@ module VerificationEnvironment =
     let maintenanceQueueUrl () = required "POOL_MAINTENANCE_QUEUE_URL"
     let commandDeadLetterQueueUrl () = required "POOL_COMMAND_DLQ_URL"
 
+    /// Refuses to run against the production table names.
+    let assertIsolatedTables () =
+        if poolTable () = "Pool" || poolLayoutTable () = "PoolLayout" then
+            failwith "Refusing to run verification against production tables"
+
     /// Refuses to run against the production names.
     let assertIsolated () =
         if poolTable () = "Pool" || poolLayoutTable () = "PoolLayout" || commandQueueUrl().EndsWith "/UpdatePositionsQueue.fifo" then

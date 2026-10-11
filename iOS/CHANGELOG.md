@@ -34,6 +34,8 @@
 - The menu adapts to wide windows, landscape, large text, and right-to-left layouts, with scrolling to keep every action reachable
 - VoiceOver focus stays inside the open menu and returns to the menu button when it closes, with an accessibility escape gesture to dismiss it
 - Fix: navigation titles and toolbar buttons stay aligned as the menu moves and the device rotates
+- Long lists such as your pools, the leaderboard, History, and Timeline load every entry exactly once as you scroll, with no repeated, missing, or stalled rows
+- A pool no longer keeps reloading in the background after you open a match or the player list
 
 ## 1.7.2
 

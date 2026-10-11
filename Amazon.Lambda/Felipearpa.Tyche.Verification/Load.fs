@@ -31,7 +31,7 @@ type Load(dynamo: IAmazonDynamoDB, sqs: IAmazonSQS, pipeline: Pipeline, members:
         measurements.Add { Name = name; Value = value }
         printfn "MEASURE %s = %s" name value
 
-    let keySerializer = DynamoDbKeySerializer(JsonSerializer())
+    let keySerializer = DynamoDbKeySerializer()
     let repository = PoolSettlementDynamoDbRepository(dynamo)
     let settlement = repository :> IPoolSettlementRepository
     let projection = repository :> IPoolProjectionRepository

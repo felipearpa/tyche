@@ -63,5 +63,9 @@ module GetLivePoolGamblerBetsRequestBuilder =
             ExclusiveStartKey =
                 match maybeNext with
                 | None -> null
-                | Some next -> Dictionary(next |> deserialize)
+                | Some next ->
+                    StartKeyContract.startKey
+                        (GetPendingPoolGamblerBetsRequestBuilder.startKeyContract poolId gamblerId)
+                        deserialize
+                        next
         )
