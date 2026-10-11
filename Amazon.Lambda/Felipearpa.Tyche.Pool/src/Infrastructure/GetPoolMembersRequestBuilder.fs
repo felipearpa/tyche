@@ -7,7 +7,19 @@ open Felipearpa.Type
 
 module GetPoolMembersRequestBuilder =
 
-    let build (poolId: Ulid) (maybeNext: IDictionary<string, AttributeValue> option) =
+    /// The start key of the members-by-username index: a membership's table keys and its
+    /// username.
+    let startKeyContract (poolId: Ulid) : StartKeyContract =
+        Map
+            [ Key.pk, StringEqualTo(KeyPrefix.build PoolTable.Prefix.pool poolId.Value)
+              Key.sk, StringStartingWith(KeyPrefix.build PoolTable.Prefix.gambler "")
+              PoolTable.Attribute.gamblerUsername, AnyString ]
+
+    let build
+        (poolId: Ulid)
+        (maybeNext: string option)
+        (deserialize: string -> IDictionary<string, AttributeValue>)
+        =
         let keyConditionExpression = $"{ExpressionAttribute.name Key.pk} = :pk"
 
         let attributeValues =
@@ -25,5 +37,5 @@ module GetPoolMembersRequestBuilder =
             ExclusiveStartKey =
                 match maybeNext with
                 | None -> null
-                | Some next -> Dictionary next
+                | Some next -> StartKeyContract.startKey (startKeyContract poolId) deserialize next
         )

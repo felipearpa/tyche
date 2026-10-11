@@ -11,19 +11,19 @@ module GetPoolMembersRequestBuilderTest =
 
     [<Fact>]
     let ``given a pool id when built then it targets the gamblers-by-username index`` () =
-        let request = GetPoolMembersRequestBuilder.build poolId None
+        let request = GetPoolMembersRequestBuilder.build poolId None (fun _ -> failwith "no token")
 
         request.IndexName |> shouldEqual "GetPoolGamblersByUsername-index"
 
     [<Fact>]
     let ``given a pool id when built then it scans ascending by username`` () =
-        let request = GetPoolMembersRequestBuilder.build poolId None
+        let request = GetPoolMembersRequestBuilder.build poolId None (fun _ -> failwith "no token")
 
         request.ScanIndexForward.Value |> shouldEqual true
 
     [<Fact>]
     let ``given a pool id when built then it partitions on the pool key`` () =
-        let request = GetPoolMembersRequestBuilder.build poolId None
+        let request = GetPoolMembersRequestBuilder.build poolId None (fun _ -> failwith "no token")
 
         request.ExpressionAttributeValues[":pk"].S
         |> shouldEqual "POOL#01K1PX1TX2NM1HG851S1V0QG6A"

@@ -6,7 +6,16 @@ open Felipearpa.Data.DynamoDb
 
 module GetOpenPoolLayoutRequestBuilder =
 
-    let build (maybeNext: IDictionary<string, AttributeValue> option) =
+    /// The start key of the open-layouts index: a layout root's table keys, its status, and
+    /// its start date.
+    let startKeyContract: StartKeyContract =
+        Map
+            [ Key.pk, StringStartingWith(KeyPrefix.build PoolLayoutTable.Prefix.poolLayout "")
+              Key.sk, StringStartingWith(KeyPrefix.build PoolLayoutTable.Prefix.poolLayout "")
+              PoolLayoutTable.Attribute.status, StringEqualTo "OPENED"
+              PoolLayoutTable.Attribute.startDateTime, AnyString ]
+
+    let build (maybeNext: string option) (deserialize: string -> IDictionary<string, AttributeValue>) =
         let keyConditionExpression =
             $"{ExpressionAttribute.name PoolLayoutTable.Attribute.status} = :status"
 
@@ -23,5 +32,5 @@ module GetOpenPoolLayoutRequestBuilder =
             ExclusiveStartKey =
                 match maybeNext with
                 | None -> null
-                | Some next -> Dictionary next
+                | Some next -> StartKeyContract.startKey startKeyContract deserialize next
         )

@@ -30,14 +30,9 @@ type PoolGamblerBetDynamoDbRepository(keySerializer: IKeySerializer, client: IAm
 
                 let! response = client.QueryAsync(request) |> Async.AwaitTask
 
-                let maybeLastEvaluatedKey = response.LastEvaluatedKey |> Option.ofObj
-
                 return
                     { CursorPage.Items = response.Items.Select(toPoolGamblerBet)
-                      Next =
-                        match maybeLastEvaluatedKey with
-                        | Some lastEvaluatedKey -> keySerializer.Serialize(lastEvaluatedKey) |> Some
-                        | None -> None }
+                      Next = KeySerializer.next keySerializer response.LastEvaluatedKey }
             }
 
         member this.GetFinishedPoolGamblerBetsAsync(poolId, gamblerId, maybeSearchText, maybeNext) =
@@ -52,14 +47,9 @@ type PoolGamblerBetDynamoDbRepository(keySerializer: IKeySerializer, client: IAm
 
                 let! response = client.QueryAsync(request) |> Async.AwaitTask
 
-                let maybeLastEvaluatedKey = response.LastEvaluatedKey |> Option.ofObj
-
                 return
                     { CursorPage.Items = response.Items.Select(toPoolGamblerBet)
-                      Next =
-                        match maybeLastEvaluatedKey with
-                        | Some lastEvaluatedKey -> keySerializer.Serialize(lastEvaluatedKey) |> Some
-                        | None -> None }
+                      Next = KeySerializer.next keySerializer response.LastEvaluatedKey }
             }
 
         member this.GetLivePoolGamblerBetsAsync(poolId, gamblerId, maybeSearchText, maybeNext) =
@@ -74,14 +64,9 @@ type PoolGamblerBetDynamoDbRepository(keySerializer: IKeySerializer, client: IAm
 
                 let! response = client.QueryAsync(request) |> Async.AwaitTask
 
-                let maybeLastEvaluatedKey = response.LastEvaluatedKey |> Option.ofObj
-
                 return
                     { CursorPage.Items = response.Items.Select(toPoolGamblerBet)
-                      Next =
-                        match maybeLastEvaluatedKey with
-                        | Some lastEvaluatedKey -> keySerializer.Serialize(lastEvaluatedKey) |> Some
-                        | None -> None }
+                      Next = KeySerializer.next keySerializer response.LastEvaluatedKey }
             }
 
         member this.GetPoolMatchGamblerBetsAsync(poolId, matchId, maybeNext) =
@@ -95,14 +80,9 @@ type PoolGamblerBetDynamoDbRepository(keySerializer: IKeySerializer, client: IAm
 
                 let! response = client.QueryAsync(request) |> Async.AwaitTask
 
-                let maybeLastEvaluatedKey = response.LastEvaluatedKey |> Option.ofObj
-
                 return
                     { CursorPage.Items = response.Items.Select(toPoolGamblerBet)
-                      Next =
-                        match maybeLastEvaluatedKey with
-                        | Some lastEvaluatedKey -> keySerializer.Serialize(lastEvaluatedKey) |> Some
-                        | None -> None }
+                      Next = KeySerializer.next keySerializer response.LastEvaluatedKey }
             }
 
         member this.GetPoolGamblerBetByIdAsync(poolId, gamblerId, matchId) =

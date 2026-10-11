@@ -115,36 +115,25 @@ type PoolDynamoDbRepository(keySerializer: IKeySerializer, client: IAmazonDynamo
         member this.GetGamblersByPoolLayoutAsync(poolLayoutId, maybeNext) =
             async {
                 let request =
-                    GetGamblersByPoolLayoutRequestBuilder.build
-                        poolLayoutId
-                        (maybeNext |> Option.map keySerializer.Deserialize)
+                    GetGamblersByPoolLayoutRequestBuilder.build poolLayoutId maybeNext keySerializer.Deserialize
 
                 let! response = client.QueryAsync(request) |> Async.AwaitTask
 
-                let maybeLastEvaluatedKey = response.LastEvaluatedKey |> Option.ofObj
-
                 return
                     { CursorPage.Items = response.Items |> Seq.map toPoolLayoutGambler
-                      Next =
-                        match maybeLastEvaluatedKey with
-                        | Some lastEvaluatedKey -> keySerializer.Serialize(lastEvaluatedKey) |> Some
-                        | None -> None }
+                      Next = KeySerializer.next keySerializer response.LastEvaluatedKey }
             }
 
         member this.GetPoolMembersAsync(poolId, maybeNext) =
             async {
                 let request =
-                    GetPoolMembersRequestBuilder.build poolId (maybeNext |> Option.map keySerializer.Deserialize)
+                    GetPoolMembersRequestBuilder.build poolId maybeNext keySerializer.Deserialize
 
                 let! response = client.QueryAsync(request) |> Async.AwaitTask
-                let maybeLastEvaluatedKey = response.LastEvaluatedKey |> Option.ofObj
 
                 return
                     { CursorPage.Items = response.Items |> Seq.map toPoolMember
-                      Next =
-                        match maybeLastEvaluatedKey with
-                        | Some lastEvaluatedKey -> keySerializer.Serialize(lastEvaluatedKey) |> Some
-                        | None -> None }
+                      Next = KeySerializer.next keySerializer response.LastEvaluatedKey }
             }
 
         member this.RemoveGamblerAsync(poolId, gamblerId) =

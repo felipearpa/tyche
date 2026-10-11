@@ -56,6 +56,9 @@ type FakeDynamoDb(tables: FakeTable list) =
     let calls = Dictionary<string, int>()
     let mutable changes: FakeChange list = []
     let mutable sequence = 0L
+    let mutable queryPageSize: int option = None
+    let mutable emptyFinalKey = false
+    let mutable queries: QueryRequest list = []
 
     /// Stores or removes an item through client writes, recording the change like a stream.
     let commit (table: FakeTable) (key: string) (next: Dictionary<string, AttributeValue> option) =
@@ -126,6 +129,11 @@ type FakeDynamoDb(tables: FakeTable list) =
 
     let count name =
         calls[name] <- (match calls.TryGetValue name with | true, n -> n | _ -> 0) + 1
+
+    let record (request: obj) =
+        match request with
+        | :? QueryRequest as query -> queries <- queries @ [ query ]
+        | _ -> ()
 
     let intercept (request: obj) (apply: unit -> 'T) : 'T =
         match interceptor request with
@@ -216,6 +224,22 @@ type FakeDynamoDb(tables: FakeTable list) =
             project (keys @ attributes) item
         | _ -> cloneItem item
 
+    /// The attributes of a query's `LastEvaluatedKey` and `ExclusiveStartKey`.
+    let startKeyNames (table: FakeTable) (index: FakeIndex option) =
+        [ table.Hash ]
+        @ (table.Range |> Option.toList)
+        @ (index |> Option.map (fun i -> i.Hash :: (i.Range |> Option.toList)) |> Option.defaultValue [])
+        |> List.distinct
+
+    /// DynamoDB rejects a start key that lacks or adds key attributes, or holds a value that is
+    /// not a string or number. Value types are not checked against a schema.
+    let validateStartKey (table: FakeTable) (index: FakeIndex option) (start: Dictionary<string, AttributeValue>) =
+        let expected = startKeyNames table index |> Set.ofList
+        let scalar (value: AttributeValue) = not (isNull value.S) || not (isNull value.N)
+
+        if Set.ofSeq start.Keys <> expected || not (start.Values |> Seq.forall scalar) then
+            raise (AmazonDynamoDBException "The provided starting key is invalid")
+
     let query (request: QueryRequest) =
         let table = tableOf request.TableName
 
@@ -265,6 +289,11 @@ type FakeDynamoDb(tables: FakeTable list) =
             else
                 List.rev ordered
 
+        request.ExclusiveStartKey
+        |> Option.ofObj
+        |> Option.filter (fun start -> start.Count > 0)
+        |> Option.iter (validateStartKey table index)
+
         let afterStart =
             match request.ExclusiveStartKey |> Option.ofObj with
             | Some start when start.Count > 0 ->
@@ -277,7 +306,9 @@ type FakeDynamoDb(tables: FakeTable list) =
                     if forward then result > 0 else result < 0)
             | _ -> ordered
 
-        let limit = request.Limit.GetValueOrDefault Int32.MaxValue
+        let limit =
+            min (request.Limit.GetValueOrDefault Int32.MaxValue) (queryPageSize |> Option.defaultValue Int32.MaxValue)
+
         let evaluated = afterStart |> List.truncate limit
         let hasMore = afterStart.Length > evaluated.Length
 
@@ -296,18 +327,10 @@ type FakeDynamoDb(tables: FakeTable list) =
             | _ -> filtered
 
         let lastEvaluatedKey =
-            if hasMore then
-                let last = evaluated |> List.last
-
-                let keyNames =
-                    [ table.Hash ]
-                    @ (table.Range |> Option.toList)
-                    @ (index |> Option.map (fun i -> i.Hash :: (i.Range |> Option.toList)) |> Option.defaultValue [])
-                    |> List.distinct
-
-                project keyNames last
-            else
-                null
+            match hasMore, emptyFinalKey with
+            | true, _ -> project (startKeyNames table index) (evaluated |> List.last)
+            | false, true -> Dictionary()
+            | false, false -> null
 
         QueryResponse(
             Items = ResizeArray(projected |> List.map (fun item -> item :> Dictionary<string, AttributeValue>)),
@@ -568,6 +591,7 @@ type FakeDynamoDb(tables: FakeTable list) =
         let handle name (request: obj) work =
             asTask (fun () ->
                 count name
+                record request
                 intercept request work)
 
         client
@@ -660,6 +684,21 @@ type FakeDynamoDb(tables: FakeTable list) =
             taken)
 
     member _.HasPendingChanges = lock gate (fun () -> not changes.IsEmpty)
+
+    /// Caps every query's storage page at `pageSize` evaluated items, as a small `Limit`
+    /// would, without changing the request the code under test built.
+    member _.LimitQueryPages(pageSize: int) = lock gate (fun () -> queryPageSize <- Some pageSize)
+
+    /// Ends complete queries with an empty `LastEvaluatedKey` map instead of none.
+    member _.EndQueriesWithEmptyKey() = lock gate (fun () -> emptyFinalKey <- true)
+
+    /// Returns and forgets the query requests received since the last call, including ones
+    /// an interception failed.
+    member _.TakeQueries() =
+        lock gate (fun () ->
+            let taken = queries
+            queries <- []
+            taken)
 
     member _.CallCount(name: string) =
         lock gate (fun () -> match calls.TryGetValue name with | true, n -> n | _ -> 0)

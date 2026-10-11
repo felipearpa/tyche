@@ -58,10 +58,9 @@ type PoolGamblerScoreDynamoDbRepository(keySerializer: IKeySerializer, client: I
         member this.GetGamblerScoresAsync(gamblerId, maybeNext) =
             async {
                 let request =
-                    GetGamblerScoresRequestBuilder.build gamblerId (maybeNext |> Option.map keySerializer.Deserialize)
+                    GetGamblerScoresRequestBuilder.build gamblerId maybeNext keySerializer.Deserialize
 
                 let! response = client.QueryAsync(request) |> Async.AwaitTask
-                let maybeLastEvaluatedKey = response.LastEvaluatedKey |> Option.ofObj
 
                 let scores = response.Items |> Seq.map toPoolGamblerScore |> Seq.toList
                 let! gamblerCounts = scores |> List.map _.PoolId |> List.distinct |> getGamblerCountsAsync
@@ -72,26 +71,19 @@ type PoolGamblerScoreDynamoDbRepository(keySerializer: IKeySerializer, client: I
                         |> Seq.map (fun score ->
                             { score with
                                 GamblerCount = gamblerCounts |> Map.tryFind score.PoolId })
-                      Next =
-                        match maybeLastEvaluatedKey with
-                        | Some lastEvaluatedKey -> keySerializer.Serialize(lastEvaluatedKey) |> Some
-                        | None -> None }
+                      Next = KeySerializer.next keySerializer response.LastEvaluatedKey }
             }
 
         member this.GetPoolScoresAsync(poolId, maybeNext) =
             async {
                 let request =
-                    GetPoolScoresRequestBuilder.build poolId (maybeNext |> Option.map keySerializer.Deserialize)
+                    GetPoolScoresRequestBuilder.build poolId maybeNext keySerializer.Deserialize
 
                 let! response = client.QueryAsync(request) |> Async.AwaitTask
-                let maybeLastEvaluatedKey = response.LastEvaluatedKey |> Option.ofObj
 
                 return
                     { CursorPage.Items = response.Items.Select(toPoolGamblerScore)
-                      Next =
-                        match maybeLastEvaluatedKey with
-                        | Some lastEvaluatedKey -> keySerializer.Serialize(lastEvaluatedKey) |> Some
-                        | None -> None }
+                      Next = KeySerializer.next keySerializer response.LastEvaluatedKey }
             }
 
         member this.GetPoolGamblerScoreByIdAsync(poolId, gamblerId) =

@@ -12,3 +12,4 @@ module PoolLayoutFunction =
             let! page = getOpenedPoolLayoutsQuery.ExecuteAsync next
             return Results.Ok(page |> CursorPage.map PoolLayoutTransformer.toPoolLayoutResponse)
         }
+        |> ContinuationResponse.orInvalidCursor

@@ -7,7 +7,21 @@ open Felipearpa.Type
 
 module GetGamblersByPoolLayoutRequestBuilder =
 
-    let build (poolLayoutId: Ulid) (maybeNext: IDictionary<string, AttributeValue> option) =
+    /// The start key of the gamblers-by-layout index: a membership's table keys and its
+    /// layout and pool/gambler index keys.
+    let startKeyContract (poolLayoutId: Ulid) : StartKeyContract =
+        Map
+            [ Key.pk, StringStartingWith(KeyPrefix.build PoolTable.Prefix.pool "")
+              Key.sk, StringStartingWith(KeyPrefix.build PoolTable.Prefix.gambler "")
+              PoolTable.Attribute.getGamblersByPoolLayoutPk,
+              StringEqualTo(KeyPrefix.build PoolTable.Prefix.poolLayout poolLayoutId.Value)
+              PoolTable.Attribute.getGamblersByPoolLayoutSk, StringStartingWith(KeyPrefix.build PoolTable.Prefix.pool "") ]
+
+    let build
+        (poolLayoutId: Ulid)
+        (maybeNext: string option)
+        (deserialize: string -> IDictionary<string, AttributeValue>)
+        =
         let keyConditionExpression =
             $"{ExpressionAttribute.name PoolTable.Attribute.getGamblersByPoolLayoutPk} = :pk"
 
@@ -28,5 +42,5 @@ module GetGamblersByPoolLayoutRequestBuilder =
             ExclusiveStartKey =
                 match maybeNext with
                 | None -> null
-                | Some next -> Dictionary next
+                | Some next -> StartKeyContract.startKey (startKeyContract poolLayoutId) deserialize next
         )

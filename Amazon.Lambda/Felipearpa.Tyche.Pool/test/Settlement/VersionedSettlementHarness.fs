@@ -20,14 +20,17 @@ type HarnessOptions =
       /// The time an invocation may work before it must yield.
       InvocationBudget: TimeSpan
       RankedPageSize: int
-      CommandRedriveLimit: int }
+      CommandRedriveLimit: int
+      /// Encodes and decodes the repositories' continuation tokens.
+      KeySerializer: IKeySerializer }
 
     static member Default =
         { Settings = PoolOperationSettings.Default
           Tick = TimeSpan.Zero
           InvocationBudget = TimeSpan.FromHours 1.0
           RankedPageSize = 50
-          CommandRedriveLimit = 25 }
+          CommandRedriveLimit = 25
+          KeySerializer = DynamoDbKeySerializer() }
 
 /// A command delivery that yielded, with the wait the handler asked the queue for.
 exception CommandYielded of TimeSpan option
@@ -46,7 +49,7 @@ type VersionedSettlementHarness(options: HarnessOptions) =
         clockOffset <- clockOffset + options.Tick
         DateTime.UtcNow + clockOffset
 
-    let keySerializer = DynamoDbKeySerializer(JsonSerializer())
+    let keySerializer = options.KeySerializer
     let repository = PoolSettlementDynamoDbRepository(fake.Client)
     let settlement = repository :> IPoolSettlementRepository
     let projection = repository :> IPoolProjectionRepository

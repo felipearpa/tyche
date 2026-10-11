@@ -7,6 +7,7 @@
 
   <ItemGroup>
     <Compile Include="HttpResultsExtensions.fs" />
+    <Compile Include="ContinuationResponse.fs" />
     <Compile Include="Request\BetRequest.fs" />
     <Compile Include="Request\CreatePoolRequest.fs" />
     <Compile Include="Request\CreatePoolRequestTransformer.fs" />

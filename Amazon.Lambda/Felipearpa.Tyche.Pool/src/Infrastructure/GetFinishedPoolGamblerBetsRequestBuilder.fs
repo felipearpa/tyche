@@ -8,6 +8,15 @@ open Felipearpa.Type
 
 module GetFinishedPoolGamblerBetsRequestBuilder =
 
+    /// The start key of the finished-bets index: the bet's table keys and its computed date.
+    let startKeyContract (poolId: Ulid) (gamblerId: Ulid) : StartKeyContract =
+        Map
+            [ Key.pk,
+              StringEqualTo
+                  $"{KeyPrefix.build PoolTable.Prefix.gambler gamblerId.Value}#{KeyPrefix.build PoolTable.Prefix.pool poolId.Value}"
+              Key.sk, StringStartingWith(KeyPrefix.build PoolTable.Prefix.match' "")
+              PoolTable.Attribute.computedDateTime, AnyString ]
+
     let build
         (poolId: Ulid)
         (gamblerId: Ulid)
@@ -49,5 +58,5 @@ module GetFinishedPoolGamblerBetsRequestBuilder =
             ExclusiveStartKey =
                 match maybeNext with
                 | None -> null
-                | Some next -> Dictionary(next |> deserialize)
+                | Some next -> StartKeyContract.startKey (startKeyContract poolId gamblerId) deserialize next
         )

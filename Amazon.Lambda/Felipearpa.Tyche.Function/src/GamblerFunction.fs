@@ -18,6 +18,7 @@ module GamblerFunction =
 
             return Results.Ok(page |> CursorPage.map PoolGamblerScoreTransformer.toResponse)
         }
+        |> ContinuationResponse.orInvalidCursor
 
     let getPoolMembersAsync
         (poolId: string)
@@ -34,6 +35,7 @@ module GamblerFunction =
                 | Error GetPoolMembersFailure.PoolNotFound -> Results.NotFound("Pool not found")
                 | Error GetPoolMembersFailure.NotOwner -> Results.Forbid()
         }
+        |> ContinuationResponse.orInvalidCursor
 
     let removeGamblerAsync
         (poolId: string)

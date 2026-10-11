@@ -10,13 +10,14 @@
     <ItemGroup>
         <Compile Include="DictionaryTest.fs" />
         <Compile Include="KeySerializerTests.fs" />
+        <Compile Include="StartKeyContractTest.fs" />
+        <Compile Include="RolloutCompatibilityTest.fs" />
     </ItemGroup>
 
     <ItemGroup>
         <PackageReference Include="FsUnit" Version="7.1.1" />
         <PackageReference Include="FsUnit.xUnit" Version="7.1.1" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.4.0" />
-        <PackageReference Include="Moq" Version="4.20.72" />
         <PackageReference Include="xunit.runner.visualstudio" Version="3.1.5">
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
             <PrivateAssets>all</PrivateAssets>

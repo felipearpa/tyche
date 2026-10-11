@@ -8,6 +8,16 @@ open Felipearpa.Type
 
 module GetPendingPoolGamblerBetsRequestBuilder =
 
+    /// The start key of the pending-bets index: the bet's table keys and its match date.
+    /// The live-bets query reads the same index with the same contract.
+    let startKeyContract (poolId: Ulid) (gamblerId: Ulid) : StartKeyContract =
+        Map
+            [ Key.pk,
+              StringEqualTo
+                  $"{KeyPrefix.build PoolTable.Prefix.gambler gamblerId.Value}#{KeyPrefix.build PoolTable.Prefix.pool poolId.Value}"
+              Key.sk, StringStartingWith(KeyPrefix.build PoolTable.Prefix.match' "")
+              PoolTable.Attribute.matchDateTime, AnyString ]
+
     let build
         (poolId: Ulid)
         (gamblerId: Ulid)
@@ -52,5 +62,5 @@ module GetPendingPoolGamblerBetsRequestBuilder =
             ExclusiveStartKey =
                 match maybeNext with
                 | None -> null
-                | Some next -> Dictionary(next |> deserialize)
+                | Some next -> StartKeyContract.startKey (startKeyContract poolId gamblerId) deserialize next
         )

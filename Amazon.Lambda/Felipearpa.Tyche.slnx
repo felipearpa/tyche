@@ -12,6 +12,7 @@
   <Project Path="Felipearpa.Tyche.Function/src/Felipearpa.Tyche.Function.fsproj" />
   <Project Path="Felipearpa.Tyche.Function/test/Felipearpa.Tyche.Function.Test.fsproj" />
   <Project Path="Felipearpa.Tyche.HttpApi/src/Felipearpa.Tyche.HttpApi.fsproj" />
+  <Project Path="Felipearpa.Tyche.HttpApi/test/Felipearpa.Tyche.HttpApi.Test.fsproj" />
   <Project Path="Felipearpa.Tyche.Pool/src/Felipearpa.Tyche.Pool.fsproj" />
   <Project Path="Felipearpa.Tyche.Pool/test/Felipearpa.Tyche.Pool.Test.fsproj" />
   <Project Path="Felipearpa.Tyche.PoolLayout/src/Felipearpa.Tyche.PoolLayout.fsproj" />

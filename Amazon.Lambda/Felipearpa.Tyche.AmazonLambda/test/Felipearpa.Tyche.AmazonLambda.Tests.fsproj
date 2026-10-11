@@ -50,5 +50,6 @@
     <Compile Include="Function\Account\LinkAccountTest.fs" />
     <Compile Include="Function\Account\UpdateUsernameTest.fs" />
     <Compile Include="Function\Account\GetCurrentAccountTest.fs" />
+    <Compile Include="Function\InvalidCursorTest.fs" />
   </ItemGroup>
 </Project>

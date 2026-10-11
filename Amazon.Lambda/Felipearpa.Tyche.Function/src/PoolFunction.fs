@@ -32,6 +32,7 @@ module PoolFunction =
             let! page = getPoolGamblerScoresByPool.ExecuteAsync(poolId |> Ulid.newOf, next)
             return Results.Ok(page |> CursorPage.map PoolGamblerScoreTransformer.toResponse)
         }
+        |> ContinuationResponse.orInvalidCursor
 
     let getPoolGamblerScoreByIdAsync
         (poolId: string)
@@ -63,6 +64,7 @@ module PoolFunction =
 
             return Results.Ok(page |> CursorPage.map PoolGamblerBetTransformer.toResponse)
         }
+        |> ContinuationResponse.orInvalidCursor
 
     let getFinishedBetsAsync
         (poolId: string)
@@ -77,6 +79,7 @@ module PoolFunction =
 
             return Results.Ok(page |> CursorPage.map PoolGamblerBetTransformer.toResponse)
         }
+        |> ContinuationResponse.orInvalidCursor
 
     let getLiveBetsAsync
         (poolId: string)
@@ -91,6 +94,7 @@ module PoolFunction =
 
             return Results.Ok(page |> CursorPage.map PoolGamblerBetTransformer.toResponse)
         }
+        |> ContinuationResponse.orInvalidCursor
 
     let getBetsTimelineAsync
         (poolId: string)
@@ -103,6 +107,7 @@ module PoolFunction =
 
             return Results.Ok(page |> CursorPage.map PoolGamblerBetTransformer.toResponse)
         }
+        |> ContinuationResponse.orInvalidCursor
 
     let getMatchBetsAsync
         (poolId: string)
@@ -114,6 +119,7 @@ module PoolFunction =
             let! page = getPoolMatchGamblerBets.ExecuteAsync(poolId |> Ulid.newOf, matchId |> Ulid.newOf, next)
             return Results.Ok(page |> CursorPage.map PoolGamblerBetTransformer.toResponse)
         }
+        |> ContinuationResponse.orInvalidCursor
 
     /// The match-bets ordering mode that ranks participants by their pool totals.
     [<Literal>]
