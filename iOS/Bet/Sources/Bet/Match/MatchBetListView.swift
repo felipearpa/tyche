@@ -4,7 +4,9 @@ import SwiftUI
 import UI
 
 /// The match screen: the match heading, then either the hidden-bets explanation with the
-/// viewer's own prediction, or every participant's prediction in pool-total order.
+/// viewer's own prediction, or every participant's prediction in pool-total order. No
+/// participant data is requested or shown until the heading confirms the gate; until then the
+/// heading and the rows show their placeholders.
 ///
 /// `gamblerId` is the gambler whose entry opened the screen and can be another participant;
 /// `viewerAccountId` is the signed-in account, which owns "Your bet" and the "You" row.
@@ -138,17 +140,24 @@ private struct MatchBetListContent: View {
     }
 }
 
-/// The heading's placeholder while the gate is unknown. No participant content is shown, not
-/// even placeholders, until the gate is confirmed.
+/// The loading screen while the gate is unknown: the heading's placeholder above placeholder
+/// rows, laid out as `MatchBetList` lays out its first load, so confirming a revealed match only
+/// fills in the heading. The rows are filler, never participant data, and nothing is requested
+/// for them.
 private struct MatchHeadingPlaceholderContent: View {
     @Environment(\.boxSpacing) private var boxSpacing
 
     var body: some View {
         ScrollView {
-            MatchHeader(match: matchHeaderPlaceholderModel(), presentation: .hidden, isPlaceholder: true)
-                .historyHorizontalGutter()
-                .padding(.vertical, boxSpacing.medium)
+            VStack(spacing: 0) {
+                MatchHeader(match: matchHeaderPlaceholderModel(), presentation: .hidden, isPlaceholder: true)
+                    .historyHorizontalGutter()
+                    .padding(.bottom, boxSpacing.large)
+                MatchBetPlaceholderList(isComputed: false)
+            }
+            .padding(.vertical, boxSpacing.medium)
         }
+        .scrollDisabled(true)
     }
 }
 

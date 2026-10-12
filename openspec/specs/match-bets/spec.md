@@ -417,6 +417,13 @@ Model-backed header, participant, and own-prediction loading regions SHALL use t
 - **THEN** its real production component uses a stable placeholder model and the shared treatment
 - **AND** filler values are neither announced nor actionable and trigger no avatar request
 
+#### Scenario: Placeholders while the visibility gate is unknown
+- **GIVEN** the match screen opens and the visibility gate is not yet confirmed
+- **WHEN** the screen renders
+- **THEN** the header placeholder appears above participant placeholder rows from the first frame, without a progress indicator or an empty participant area
+- **AND** no participant data is requested or shown until the gate is confirmed
+- **AND** a revealed gate keeps the participant placeholders until the first page replaces them, while a hidden gate replaces them with the hidden-bets presentation
+
 #### Scenario: Refresh or append partially fails
 - **GIVEN** accessible confirmed match content and rows are already shown
 - **WHEN** refresh or append fails

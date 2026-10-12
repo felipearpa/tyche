@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
@@ -59,8 +60,9 @@ import com.felipearpa.tyche.ui.R as SharedR
 
 /**
  * The match screen: the match heading, then either the hidden-bets explanation with the viewer's
- * own prediction, or every participant's prediction in pool-total order. Nothing about other
- * participants is shown, not even placeholders, until the heading confirms the gate.
+ * own prediction, or every participant's prediction in pool-total order. No participant data is
+ * requested or shown until the heading confirms the gate; until then the heading and the rows show
+ * their placeholders.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -87,7 +89,11 @@ fun MatchBetListView(
             .consumeWindowInsets(innerPadding)
         when (val presentation = heading.presentation) {
             MatchHeadingState.Presentation.Placeholder ->
-                MatchHeadingPlaceholderContent(contentPadding = innerPadding, modifier = contentModifier)
+                MatchHeadingPlaceholderContent(
+                    placeholderCount = viewModel.pageSize,
+                    contentPadding = innerPadding,
+                    modifier = contentModifier,
+                )
 
             MatchHeadingState.Presentation.Failed ->
                 MatchHeadingFailureContent(onRetry = viewModel::load, contentPadding = innerPadding, modifier = contentModifier)
@@ -186,22 +192,22 @@ private fun Modifier.headingPadding() =
         .padding(top = LocalBoxSpacing.current.medium, bottom = LocalBoxSpacing.current.large)
 
 /**
- * The heading's placeholder while the gate is unknown. No participant content is shown, not even
- * placeholders, until the gate is confirmed.
+ * The loading screen while the gate is unknown: the heading's placeholder above placeholder rows,
+ * laid out as [MatchBetList] lays out its first load, so confirming a revealed match only fills
+ * in the heading. The rows are filler, never participant data, and nothing is requested for them.
  */
 @Composable
-private fun MatchHeadingPlaceholderContent(contentPadding: PaddingValues, modifier: Modifier) {
-    Column(
-        modifier = modifier
-            .verticalScroll(rememberScrollState())
-            .padding(contentPadding),
-    ) {
-        MatchHeader(
-            match = matchHeaderPlaceholderModel(),
-            presentation = MatchBetsPresentation.HIDDEN,
-            isPlaceholder = true,
-            modifier = Modifier.headingPadding(),
-        )
+private fun MatchHeadingPlaceholderContent(placeholderCount: Int, contentPadding: PaddingValues, modifier: Modifier) {
+    LazyColumn(modifier = modifier, contentPadding = contentPadding, userScrollEnabled = false) {
+        item {
+            MatchHeader(
+                match = matchHeaderPlaceholderModel(),
+                presentation = MatchBetsPresentation.HIDDEN,
+                isPlaceholder = true,
+                modifier = Modifier.headingPadding(),
+            )
+        }
+        matchBetPlaceholderList(count = placeholderCount, isComputed = false)
     }
 }
 

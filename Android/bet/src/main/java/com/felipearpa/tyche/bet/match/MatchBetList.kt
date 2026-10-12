@@ -118,7 +118,7 @@ fun MatchBetList(
 }
 
 /** [count] production placeholder rows for an initial load. */
-private fun LazyListScope.matchBetPlaceholderList(count: Int, isComputed: Boolean) {
+internal fun LazyListScope.matchBetPlaceholderList(count: Int, isComputed: Boolean) {
     items(count = count, contentType = { PARTICIPANT_ROW_CONTENT_TYPE }) {
         MatchBetPlaceholderRow(isComputed = isComputed)
     }
