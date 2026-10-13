@@ -66,8 +66,8 @@ final class ScriptedMatchRepository: PoolGamblerBetRepository {
     ) async -> Result<CursorPage<PoolGamblerBet>, Error> { .failure(Unused()) }
 
     nonisolated func getFinishedPoolGamblerBets(
-        poolId: String, gamblerId: String, next: String?, searchText: String?
-    ) async -> Result<CursorPage<PoolGamblerBet>, Error> { .failure(Unused()) }
+        poolId: String, gamblerId: String, next: String?
+    ) async -> Result<CursorPage<KickoffGroup>, Error> { .failure(Unused()) }
 
     nonisolated func getLivePoolGamblerBets(
         poolId: String, gamblerId: String, next: String?, searchText: String?
@@ -75,7 +75,7 @@ final class ScriptedMatchRepository: PoolGamblerBetRepository {
 
     nonisolated func getGamblerBetsTimeline(
         poolId: String, gamblerId: String, next: String?
-    ) async -> Result<CursorPage<PoolGamblerBet>, Error> { .failure(Unused()) }
+    ) async -> Result<CursorPage<KickoffGroup>, Error> { .failure(Unused()) }
 
     nonisolated func bet(bet: Bet) async -> Result<PoolGamblerBet, Error> { .failure(Unused()) }
 

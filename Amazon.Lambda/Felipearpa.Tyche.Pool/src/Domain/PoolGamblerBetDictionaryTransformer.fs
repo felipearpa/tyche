@@ -71,6 +71,28 @@ module PoolGamblerBetDictionaryTransformer =
             |> tryGetAttributeValueOrNone (PoolTable.Attribute.computedRequestId)
             |> Option.isSome }
 
+    let private parseInstant (value: string) =
+        DateTime.Parse(value, Globalization.CultureInfo.InvariantCulture, Globalization.DateTimeStyles.RoundtripKind)
+
+    let private tryInt (attribute: string) (dictionary: IDictionary<string, AttributeValue>) =
+        dictionary
+        |> tryGetAttributeValueOrNone attribute
+        |> Option.map (fun value -> int value.N)
+
+    /// A detail read from a by-kickoff index, ordered by its `kickoffAttribute`.
+    let toGroupedBet (kickoffAttribute: string) (dictionary: IDictionary<string, AttributeValue>) =
+        let storedKickoff = dictionary[kickoffAttribute].S
+
+        { GroupedBet.Bet = toPoolGamblerBet dictionary
+          Kickoff = parseInstant storedKickoff
+          StoredKickoff = storedKickoff
+          ComputedDateTime =
+            dictionary
+            |> tryGetAttributeValueOrNone PoolTable.Attribute.computedDateTime
+            |> Option.map (fun value -> parseInstant value.S)
+          BeforePosition = tryInt PoolTable.Attribute.beforePosition dictionary
+          Position = tryInt PoolTable.Attribute.position dictionary }
+
     type Extensions =
         [<Extension>]
         static member ToPoolGamblerBet(this: IDictionary<string, AttributeValue>) = toPoolGamblerBet this

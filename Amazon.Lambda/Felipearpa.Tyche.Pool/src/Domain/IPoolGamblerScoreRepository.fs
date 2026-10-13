@@ -11,3 +11,6 @@ type IPoolGamblerScoreRepository =
     abstract GetPoolScoresAsync: Ulid * string option -> Async<PoolGamblerScore CursorPage>
 
     abstract GetPoolGamblerScoreByIdAsync: Ulid * Ulid -> Result<PoolGamblerScore option, Unit> Async
+
+    /// The trend state of each existing pool root; pools without a root are omitted.
+    abstract GetPoolTrendsAsync: poolIds: Ulid list -> Async<PoolTrend list>

@@ -24,6 +24,8 @@ import com.felipearpa.tyche.bet.finished.HistoryPoints
 import com.felipearpa.tyche.bet.finished.HistoryPointsSummaryState
 import com.felipearpa.tyche.bet.finished.Localized
 import com.felipearpa.tyche.bet.historyBetPreviewModels
+import com.felipearpa.tyche.bet.kickoffgroup.KickoffGroupModel
+import com.felipearpa.tyche.core.type.RankMovement
 import com.felipearpa.tyche.ui.exception.UnknownLocalizedException
 import com.felipearpa.tyche.ui.theme.TycheTheme
 import io.kotest.matchers.collections.shouldContainExactly
@@ -32,6 +34,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import org.junit.Rule
 import org.junit.Test
 import java.util.Locale
+import kotlin.time.Instant
 
 /**
  * Timeline's composition: the selected gambler's identity and total stay usable whatever the
@@ -43,7 +46,7 @@ class BetTimelineListTest {
 
     @Test
     fun identityIsAHeadingAndTheTotalIsAnnouncedForTheSelectedGambler() {
-        setTimeline(rows = PagingData.from(listOf(settledRow())))
+        setTimeline(rows = PagingData.from(listOf(settledGroup())))
 
         composeTestRule.onNode(hasHeading("El mono")).assertExists()
         composeTestRule.onNodeWithContentDescription("El mono earned 676 points in this pool").assertExists()
@@ -52,7 +55,7 @@ class BetTimelineListTest {
     @Test
     fun aRowOpensItsMatchOnceAndTheHeaderOpensNothing() {
         val opened = mutableListOf<String>()
-        setTimeline(rows = PagingData.from(listOf(settledRow())), onMatchOpen = { opened += it.matchId })
+        setTimeline(rows = PagingData.from(listOf(settledGroup())), onMatchOpen = { opened += it.matchId })
 
         composeTestRule.onNode(hasHeading("El mono")).assertHasNoAction()
         composeTestRule.onNodeWithContentDescription("El mono earned 676 points in this pool").assertHasNoAction()
@@ -84,7 +87,7 @@ class BetTimelineListTest {
         var summaryRetries = 0
         val opened = mutableListOf<String>()
         setTimeline(
-            rows = PagingData.from(listOf(settledRow())),
+            rows = PagingData.from(listOf(settledGroup())),
             pointsSummary = HistoryPointsSummaryState.initial.failed(),
             onPointsSummaryRetry = { summaryRetries++ },
             onMatchOpen = { opened += it.matchId },
@@ -120,7 +123,7 @@ class BetTimelineListTest {
     }
 
     private fun setTimeline(
-        rows: PagingData<PoolGamblerBetModel>,
+        rows: PagingData<KickoffGroupModel>,
         pointsSummary: HistoryPointsSummaryState =
             HistoryPointsSummaryState.initial.loaded(HistoryPoints.Earned(676)),
         onPointsSummaryRetry: () -> Unit = {},
@@ -135,10 +138,11 @@ class BetTimelineListTest {
                             // Empty, so the avatar renders the shared letter fallback without a load.
                             gamblerId = "",
                             gamblerUsername = "El mono",
-                            lazyBets = MutableStateFlow(rows).collectAsLazyPagingItems(),
+                            lazyKickoffGroups = MutableStateFlow(rows).collectAsLazyPagingItems(),
                             pointsSummary = pointsSummary,
                             onPointsSummaryRetry = onPointsSummaryRetry,
                             onRefresh = {},
+                            onFeedRestart = {},
                             placeholderCount = placeholderCount,
                             onMatchOpen = onMatchOpen,
                             modifier = Modifier.fillMaxSize(),
@@ -149,7 +153,13 @@ class BetTimelineListTest {
         }
     }
 
-    private fun settledRow() = historyBetPreviewModels().first()
+    private fun settledGroup() = KickoffGroupModel(
+        kickoffDateTime = Instant.parse("2026-07-19T19:00:00Z"),
+        totalMatches = 1,
+        computedMatches = 1,
+        movement = RankMovement.Moved(places = 0, partialProgress = null),
+        matches = listOf(historyBetPreviewModels().first()),
+    )
 
     private fun hasHeading(text: String) =
         SemanticsMatcher.keyIsDefined(SemanticsProperties.Heading) and

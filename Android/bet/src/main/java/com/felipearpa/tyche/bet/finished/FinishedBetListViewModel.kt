@@ -6,56 +6,47 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
-import com.felipearpa.foundation.emptyString
-import com.felipearpa.tyche.bet.pending.PendingBetPagingSource
+import com.felipearpa.tyche.bet.kickoffgroup.KickoffGroupFeed
+import com.felipearpa.tyche.bet.kickoffgroup.KickoffGroupModel
 import com.felipearpa.tyche.data.bet.application.GetFinishedPoolGamblerBets
 import com.felipearpa.tyche.data.pool.application.GetPoolGamblerScore
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 
+/**
+ * The signed-in gambler's History in one pool: the grouped feed of their computed matches, newest
+ * kickoff first, and their authoritative earned-points total. The two load independently, so
+ * either can succeed while the other is loading or failed.
+ */
 class FinishedBetListViewModel(
     private val poolId: String,
     val gamblerId: String,
     private val getFinishedPoolGamblerBets: GetFinishedPoolGamblerBets,
-    private val getPoolGamblerScore: GetPoolGamblerScore,
+    getPoolGamblerScore: GetPoolGamblerScore,
 ) : ViewModel() {
 
-    val pageSize = PAGE_SIZE
-    private var _searchText = MutableStateFlow(emptyString())
+    /** How many production group placeholders fill the first load. */
+    val placeholderCount = PLACEHOLDER_GROUP_COUNT
 
-    @OptIn(ExperimentalCoroutinesApi::class)
-    val poolGamblerBets = _searchText.flatMapLatest { newSearchText ->
-        buildPager(searchText = newSearchText).flow.cachedIn(scope = viewModelScope)
-    }.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.Lazily,
-        initialValue = PagingData.empty(),
+    private val feed = KickoffGroupFeed(
+        query = { next ->
+            getFinishedBetsPagingQuery(
+                next = next,
+                poolId = poolId,
+                gamblerId = gamblerId,
+                getFinishedPoolGamblerBets = getFinishedPoolGamblerBets,
+            )
+        },
     )
 
-    private fun buildPager(searchText: String) =
-        Pager(
-            config = PagingConfig(
-                pageSize = pageSize,
-                prefetchDistance = PREFETCH_DISTANCE,
-                enablePlaceholders = false,
-            ),
-            pagingSourceFactory = {
-                PendingBetPagingSource(
-                    pagingQuery = { next ->
-                        getFinishedBetsPagingQuery(
-                            next = next,
-                            poolId = poolId,
-                            gamblerId = gamblerId,
-                            search = { searchText.ifEmpty { null } },
-                            getFinishedPoolGamblerBets = getFinishedPoolGamblerBets,
-                        )
-                    },
-                )
-            },
+    /** The kickoff groups in the server's order; see [KickoffGroupFeed]. */
+    val kickoffGroups: StateFlow<PagingData<KickoffGroupModel>> = buildPager().flow
+        .cachedIn(scope = viewModelScope)
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.Lazily,
+            initialValue = PagingData.empty(),
         )
 
     private val pointsSummaryLoader = HistoryPointsSummaryLoader(
@@ -72,20 +63,36 @@ class FinishedBetListViewModel(
         loadPointsSummary()
     }
 
-    fun search(searchText: String) {
-        _searchText.value = searchText.trim()
-    }
-
-    /** Requests only the total, as a summary retry does; the rows are not reloaded. */
+    /** Requests only the total, as a summary retry does; the groups are not reloaded. */
     fun loadPointsSummary() {
         pointsSummaryLoader.load()
     }
 
-    /** Requests the total for a pull to refresh, which also refreshes the rows. */
-    fun refreshPointsSummary() {
+    /**
+     * A pull to refresh: requests the total and allows the groups, which restart from their first
+     * page by themselves, one more automatic restart.
+     */
+    fun refresh() {
+        feed.resetAutomaticRestart()
         pointsSummaryLoader.refresh()
     }
+
+    /** Called before the groups restart from their first page at the viewer's request. */
+    fun onFeedRestart() {
+        feed.resetAutomaticRestart()
+    }
+
+    private fun buildPager() =
+        Pager(
+            config = PagingConfig(
+                pageSize = PAGE_SIZE,
+                prefetchDistance = PREFETCH_DISTANCE,
+                enablePlaceholders = false,
+            ),
+            pagingSourceFactory = feed::pagingSource,
+        )
 }
 
-private const val PAGE_SIZE = 50
-private const val PREFETCH_DISTANCE = 5
+private const val PAGE_SIZE = 20
+private const val PREFETCH_DISTANCE = 3
+private const val PLACEHOLDER_GROUP_COUNT = 4

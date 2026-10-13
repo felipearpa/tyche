@@ -69,6 +69,7 @@ erDiagram
         number awayTeamScore
         string matchDateTime
         string computedDateTime
+        string computedMatchDateTime
         string computedRequestId
         number score
         string getPoolGamblerScoresByMatchPk
@@ -168,7 +169,8 @@ erDiagram
 |---|---|---|---|---|
 | Account | `GetByEmail-index` | `email` | — | Look up account by email at sign-in |
 | Pool | `GetPendingPoolGamblerBets-index` | `pk` (`GAMBLER#…#POOL#…`) | `matchDateTime` | Bets a gambler still has to make, oldest match first |
-| Pool | `GetFinishedPoolGamblerBets-index` | `pk` (`GAMBLER#…#POOL#…`) | `computedDateTime` | Bets already scored, newest first (timeline) |
+| Pool | `GetFinishedPoolGamblerBets-index` | `pk` (`GAMBLER#…#POOL#…`) | `computedDateTime` | Bets already scored, by computation time. No code reads it since History and Timeline became grouped; kept for operator queries |
+| Pool | `GetFinishedPoolGamblerBetsByMatchDate-index` | `pk` (`GAMBLER#…#POOL#…`) | `computedMatchDateTime` | Bets already scored by kickoff, so a kickoff group's rows are adjacent (grouped History and Timeline); ALL projection, owned by `operations/pool-table.sh` |
 | Pool | `GetPoolGamblerScoresByGambler-index` | `sk` (`GAMBLER#…`) | `score` | All pools a gambler is in, ranked |
 | Pool | `GetPoolGamblerScoresByPool-index` | `pk` (`POOL#…`) | `score` | Leaderboard within a pool |
 | Pool | `GetPoolGamblerScoresByMatch-index` | `getPoolGamblerScoresByMatchPk` (`MATCH#…`) | `getPoolGamblerScoresByMatchSk` (`POOL#…#GAMBLER#…`) | Fan-out: every bet on a match across all pools when score is published |
@@ -183,13 +185,13 @@ erDiagram
 - **`MatchScoreIngestion` is a stream-driven control table.** One pk-only item per match to auto-ingest; its DynamoDB Stream (`NEW_AND_OLD_IMAGES`) creates a per-match self-terminating EventBridge schedule that polls football-data.org and writes the score, which the existing `GetPoolGamblerScoresByMatch-index` fan-out then propagates. `status` moves `PENDING → COMPLETED` (or `EXPIRED`).
 - **Composite keys encode the access pattern.** `POOL#…` + `GAMBLER#…` lets one query return a pool and all its members; `GAMBLER#…#POOL#…` + `MATCH#…` localizes a gambler's bets to one partition for fast list queries.
 - **Denormalized GSI keys.** `getPoolGamblerScoresByMatchPk/Sk` and `getGamblersByPoolLayoutPk/Sk` are extra attributes written alongside the item so a single record can be queried from multiple angles without scans. They are written by `*RequestBuilder.fs` / `*Transformer.fs` modules.
-- **Sentinel attributes act as filters.** Whether a bet is *pending* vs *finished* is decided by whether `computedRequestId` exists — pending queries use `attribute_not_exists(computedRequestId)`, finished queries hit a GSI keyed on `computedDateTime`.
+- **Sentinel attributes act as filters.** Whether a bet is *pending* vs *finished* is decided by whether `computedRequestId` exists — pending queries use `attribute_not_exists(computedRequestId)`, finished queries hit the GSI keyed on `computedMatchDateTime` to read finished bets by kickoff (the older GSI keyed on `computedDateTime` remains on the table). Both sort keys are written only when a detail is computed, so pending details never enter either finished index.
 - **Uniqueness via lock items.** A second `EMAIL#…` row in `Account` enforces email uniqueness through a conditional `Put` (`attribute_not_exists(pk)`), since DynamoDB has no unique-secondary-index concept.
 - **Scoring is an ordered pool operation.** A result is dispatched as one versioned command per pool on the `UpdatePositionsQueue.fifo` queue (message group = pool) before anything is scored; the consumer settles every membership's detail and then finalizes positions as one resumable operation. A rejoin's restoration of retained history runs through the same queue. See [Settlement, positions, and ranking](pool-settlement.md).
 
 ## Settlement, identity, and projection records
 
-These attributes were added by the `redesign-match-bets` change, and the rejoin restoration attributes by `restore-rejoin-history`. All are additive; existing attributes keep their meaning.
+These attributes were added by the `redesign-match-bets` change, the rejoin restoration attributes by `restore-rejoin-history`, and the kickoff-group attributes (`trendKickoffDateTime`, `computedMatchDateTime`, the checkpoint's trend decision) by `group-kickoff-rank-movement`. All are additive; existing attributes keep their meaning.
 
 ### Pool root (`POOL#<poolId>` / `POOL#<poolId>`)
 
@@ -197,9 +199,10 @@ These attributes were added by the `redesign-match-bets` change, and the rejoin 
 |---|---|---|
 | `membershipRevision` | N | Advanced in the same transaction as every join and removal (`gamblerCount` update). Position calculations capture it and restart if it changes. Absent means 0. |
 | `operationRevision` | N | Revision assigned to the last admitted operation. Absent means 0. |
-| `activeOperation` | M | The fixed-size checkpoint of the one active operation: `operationId`, `revision`, target (`MATCH` with `matchId`, `homeTeamScore`, `awayTeamScore`, `resultVersion`; `STANDINGS`; or `RESTORE` with `gamblerId` and `generation`), `stage` (`SCORING`/`POSITIONS`; a restoration rebinds details in `SCORING`), `cursor` (the last gambler ID settled, or for a restoration the last match ID of the gambler's details handled), `calculationRevision`, `membershipRevision`, `ownerToken`, `leaseExpiresAt`, `attemptsWithoutProgress`, `blocked`, `unresolvedDetails`, `restoredDetails` (details a restoration rebound so far; its positions stage runs only when this is above zero; 0 for other targets, and absent on checkpoints written before restorations existed), `admittedAt`, `lastProgressAt`. Absent when no operation is active. |
+| `activeOperation` | M | The fixed-size checkpoint of the one active operation: `operationId`, `revision`, target (`MATCH` with `matchId`, `homeTeamScore`, `awayTeamScore`, `resultVersion`, and the trend decision taken at admission: `trendEffect` `OPENS` with `trendKickoff`, or `KEEPS`; a match checkpoint without `trendEffect` was admitted before kickoffs were compared and records the baseline without changing the trend kickoff; `STANDINGS`; or `RESTORE` with `gamblerId` and `generation`), `stage` (`SCORING`/`POSITIONS`; a restoration rebinds details in `SCORING`), `cursor` (the last gambler ID settled, or for a restoration the last match ID of the gambler's details handled), `calculationRevision`, `membershipRevision`, `ownerToken`, `leaseExpiresAt`, `attemptsWithoutProgress`, `blocked`, `unresolvedDetails`, `restoredDetails` (details a restoration rebound so far; its positions stage runs only when this is above zero; 0 for other targets, and absent on checkpoints written before restorations existed), `admittedAt`, `lastProgressAt`. Absent when no operation is active. |
 | `lastCompletedOperationRevision` | N | Revision of the last completed operation. |
 | `rankingReadiness` | M | `state` (`READY`/`NOT_READY`), `schemaVersion`, `checkedMembers`, `checkedDetails`, `unresolved`, `checkedAt`. Ranked reads require `READY`. |
+| `trendKickoffDateTime` | S | ISO-8601 UTC kickoff of the trend group: the group whose baseline the memberships' `beforePosition` holds. A match settlement whose kickoff is newer than this value (or that finds it absent) records each membership's previous position on its first write, and its completion sets this value in the same transaction that clears the checkpoint, fenced by the owner token. A settlement of the same or an older kickoff keeps both. It only moves forward. Absent until the first match settlement completes; score responses expose it as `trendGroup`. The kickoff-group backfill sets it on a root that has none, conditioned on no active operation and the `operationRevision` it read. |
 
 ### Settlement receipt (`POOL#<poolId>` / `SETTLEMENT#<operationId>`)
 
@@ -232,7 +235,7 @@ The restore command carries `gamblerId` and `membershipGeneration`; its payload 
 |---|---|
 | `membershipGeneration` | Unique per membership lifetime (a ULID written at join). A rejoin gets a new one. |
 | `scoreVersion` | Starts at 1 and advances in the same transaction as every change of `score`. |
-| `positionOperationRevision`, `positionCalculationRevision` | The operation and calculation that last wrote `position`; `beforePosition` is recorded only on the first write of a match settlement or correction, and a standings reconciliation leaves it unchanged. |
+| `positionOperationRevision`, `positionCalculationRevision` | The operation and calculation that last wrote `position`; `beforePosition` is recorded only on the first write of a match settlement that opens a newer kickoff group (see the root's `trendKickoffDateTime`), so it holds the position before that group. Later settlements of the same group, late results and corrections of older groups, and standings reconciliations leave it unchanged. |
 
 `score` stays the authoritative pool total and `beforeScore` keeps its meaning (the total before the latest settled match).
 
@@ -250,7 +253,9 @@ The restore command carries `gamblerId` and `membershipGeneration`; its payload 
 | `getPoolMatchBetsByTotalPk`, `getPoolMatchBetsByTotalSk` | Ranking index keys; removed when the projection is retired. |
 | `restoreExcludedGeneration` | The membership generation whose restoration held this retained detail for repair (malformed, or its match is missing or has no result). Restoration and reconciliation treat the detail as resolved for that generation only; a later rejoin's generation is not blocked by it. Removed when the detail is rebound. |
 | `restoreExclusionReason` | Why the detail was held, for example `computed detail without an award` or `match missing`. |
-`score` on the detail stays this match's award; `computedRequestId` and `computedDateTime` keep their meaning, and `computedDateTime` is preserved by corrections.
+| `computedMatchDateTime` | Copy of the detail's `matchDateTime` (same ISO-8601 UTC format), written with `if_not_exists` by the settlement write that first computes the detail, or with the late-join computed detail. Corrections keep it. Pending details never have it, so it gates `GetFinishedPoolGamblerBetsByMatchDate-index`. Details computed before it existed lack it until the kickoff-group backfill. |
+
+`score` on the detail stays this match's award; `computedRequestId` and `computedDateTime` keep their meaning, and `computedDateTime` is preserved by corrections. The detail's `position` and `beforePosition` are its own snapshot, written on the first write of every match settlement or correction whatever its kickoff group.
 
 ### Rejoin restoration writes
 
@@ -287,3 +292,6 @@ The leading `1` is the key schema version that ranked cursors carry.
 | Existing details of a match (settlement, positions) | `BatchGetItem` with `ConsistentRead`, unprocessed keys retried. |
 | A member's details (propagation, removal, backfill, rejoin restoration) | Base table `pk = GAMBLER#<gamblerId>#POOL#<poolId>`, `ConsistentRead`. |
 | Ranked participant page | `GetPoolMatchBetsByTotal-index` only, no enrichment. |
+| Grouped History, Timeline's settled phase | `GetFinishedPoolGamblerBetsByMatchDate-index`, newest kickoff first, plus one `computedMatchDateTime = <kickoff>` query to complete the page's last group; the layout partition for counts. |
+| Timeline's unsettled phase | `GetPendingPoolGamblerBets-index` (`matchDateTime` up to the lock horizon, uncomputed only), plus one `matchDateTime = <kickoff>` query per group for all of its details. |
+| Kickoff copies (rescheduled match, backfill) | `GetPoolGamblerScoresByMatch-index` for the match (narrowed with `begins_with(getPoolGamblerScoresByMatchSk, POOL#<poolId>#)` by the backfill), then one `UpdateItem` per detail conditioned on the `matchDateTime` and `computedMatchDateTime` it was planned from; a failed condition re-reads the detail strongly. |

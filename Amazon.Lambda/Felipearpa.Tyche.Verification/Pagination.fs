@@ -16,6 +16,7 @@ open Felipearpa.Data.DynamoDb
 open Felipearpa.Tyche.Pool.Application
 open Felipearpa.Tyche.Pool.Domain
 open Felipearpa.Tyche.Pool.Infrastructure
+open Felipearpa.Tyche.PoolLayout.Application
 open Felipearpa.Tyche.PoolLayout.Infrastructure
 open Felipearpa.Type
 
@@ -68,7 +69,8 @@ type PaginationOperation =
 
 /// Service-backed pagination fixture for the shared continuation codec, the eight indexes it
 /// serves, and the base-table layout-match query, with the ranked, username-propagation, and
-/// settlement-discovery continuations as regression controls. Runs only on isolated tables
+/// settlement-discovery continuations as regression controls, plus whole kickoff groups in the
+/// grouped History and Timeline feeds. Runs only on isolated tables
 /// (`POOL_TABLE_NAME`, `POOL_LAYOUT_TABLE_NAME`); see README.md.
 module Pagination =
 
@@ -126,11 +128,12 @@ module Pagination =
     // reads and are the only finished bets; their pairs fill whole pages in every order.
     let private computedMatches = set [ 2; 3; 6; 7; 8; 9 ]
 
-    /// Finished order (newest settlement first); matches 7 and 6 share a settlement time.
+    /// Finished order (newest settlement first); matches 7 and 6 share a settlement time and,
+    /// on the finished-by-kickoff index, a kickoff, so a tie spans a page boundary there too.
     let private finishedOrder = [ 9; 8; 7; 6; 3; 2 ]
 
+    /// Matches whose teams differ, so the bets carry two filter texts.
     let private searchedMatches = set [ 9; 8; 3; 2 ]
-    let private searchText = "brasil"
 
     /// Layout matches 2 and 3 belong to version 2, so a version 1 read has an empty page.
     let private versionTwoMatches = set [ 2; 3 ]
@@ -140,7 +143,7 @@ module Pagination =
     let private unlockedMatchBets = set [ 2; 3 ]
 
     let private matchDate (fixture: Fixture) index =
-        fixture.Base.AddHours(float (if index = 5 then 4 else index))
+        fixture.Base.AddHours(float (if index = 5 then 4 elif index = 7 then 6 else index))
 
     let private settledAt (fixture: Fixture) index =
         let rank = finishedOrder |> List.findIndex ((=) index)
@@ -209,7 +212,8 @@ module Pagination =
                   "awayTeamScore", n 0
                   "score", n 5
                   "computedRequestId", s "VERIFICATION"
-                  "computedDateTime", s (instant at) ])
+                  "computedDateTime", s (instant at)
+                  "computedMatchDateTime", s (instant kickoff) ])
             |> Option.defaultValue []
 
         let ranked =
@@ -239,7 +243,14 @@ module Pagination =
     let private layoutMatch (fixture: Fixture) index =
         let matchId = fixture.Matches[index]
 
-        item
+        // Computed matches have their result, so their kickoff groups are settled for Timeline.
+        let result =
+            if computedMatches.Contains index then
+                [ "homeTeamScore", n 1; "awayTeamScore", n 0; "resultVersion", n 1 ]
+            else
+                []
+
+        item (
             [ "pk", s $"POOLLAYOUT#{fixture.LayoutId}"
               "sk", s $"MATCH#{matchId}"
               "matchId", s matchId
@@ -251,6 +262,8 @@ module Pagination =
               "matchDateTime", s (instant (matchDate fixture index))
               "poolLayoutVersion", n (if versionTwoMatches.Contains index then 2 else 1)
               "round", s "Fase de grupos" ]
+            @ result
+        )
 
     let poolItems (fixture: Fixture) =
         let gambler = fixture.Gambler
@@ -317,7 +330,7 @@ module Pagination =
     let private page (items: 'T seq) (id: 'T -> string) (next: string option) =
         { Ids = items |> Seq.map id |> List.ofSeq; Next = next }
 
-    /// The ten shared-codec operations with what the fixture makes them return.
+    /// The shared-codec operations with what the fixture makes them return.
     let operations (client: IAmazonDynamoDB) (fixture: Fixture) : PaginationOperation list =
         let bets serializer = PoolGamblerBetDynamoDbRepository(serializer, client) :> IPoolGamblerBetRepository
         let scores serializer = PoolGamblerScoreDynamoDbRepository(serializer, client) :> IPoolGamblerScoreRepository
@@ -337,10 +350,11 @@ module Pagination =
             }
 
         let pendingContract = GetPendingPoolGamblerBetsRequestBuilder.startKeyContract poolId gamblerId
-        let finishedContract = GetFinishedPoolGamblerBetsRequestBuilder.startKeyContract poolId gamblerId
-
-        let finishedRequest search () =
-            GetFinishedPoolGamblerBetsRequestBuilder.build poolId gamblerId search None unused
+        let groupedPage (read: IPoolGamblerBetRepository -> Async<GroupedBet CursorPage>) serializer =
+            async {
+                let! result = read (bets serializer)
+                return page result.Items (fun grouped -> betMatch grouped.Bet) result.Next
+            }
 
         [ { Name = "pending bets"
             Fetch = fun serializer next -> betPage (fun r -> r.GetPendingPoolGamblerBetsAsync(poolId, gamblerId, None, next)) serializer
@@ -360,25 +374,24 @@ module Pagination =
             FirstRequest = fun () -> GetLivePoolGamblerBetsRequestBuilder.build poolId gamblerId None None unused
             ExpectsFilteredEmptyPage = true
             LegacyComplete = false }
-          { Name = "finished bets"
+          { Name = "finished bets by kickoff"
             Fetch =
-              fun serializer next -> betPage (fun r -> r.GetFinishedPoolGamblerBetsAsync(poolId, gamblerId, None, next)) serializer
+              fun serializer next -> groupedPage (fun r -> r.GetFinishedBetsByKickoffAsync(poolId, gamblerId, next)) serializer
             Expected = matchIds fixture finishedOrder
-            Contract = finishedContract
-            SortAttribute = "computedDateTime"
+            Contract = GroupedBetFeedRequestBuilder.finishedContract poolId gamblerId
+            SortAttribute = "computedMatchDateTime"
             Order = Descending
-            FirstRequest = finishedRequest None
+            FirstRequest = fun () -> GroupedBetFeedRequestBuilder.finishedPage poolId gamblerId None unused
             ExpectsFilteredEmptyPage = false
             LegacyComplete = false }
-          { Name = "finished bets, search text"
+          { Name = "unsettled bets by kickoff"
             Fetch =
-              fun serializer next ->
-                  betPage (fun r -> r.GetFinishedPoolGamblerBetsAsync(poolId, gamblerId, Some searchText, next)) serializer
-            Expected = finishedOrder |> List.filter searchedMatches.Contains |> matchIds fixture
-            Contract = finishedContract
-            SortAttribute = "computedDateTime"
-            Order = Descending
-            FirstRequest = finishedRequest (Some searchText)
+              fun serializer next -> groupedPage (fun r -> r.GetUnsettledBetsByKickoffAsync(poolId, gamblerId, next)) serializer
+            Expected = pendingMatches fixture
+            Contract = pendingContract
+            SortAttribute = "matchDateTime"
+            Order = Ascending
+            FirstRequest = fun () -> GroupedBetFeedRequestBuilder.unsettledPage poolId gamblerId None unused DateTime.UtcNow
             ExpectsFilteredEmptyPage = true
             LegacyComplete = false }
           { Name = "legacy match bets"
@@ -625,6 +638,14 @@ module Pagination =
                           $"rejected before the query with MissingKeyAttribute {rejectedByContract}; the same pk/sk start key sent to DynamoDB fails: {serviceError}" ]
         }
 
+    /// When the last items exactly fill a storage page, DynamoDB may or may not return a key
+    /// with them; with one, the traversal ends with an extra empty page and no key. Both endings
+    /// visit the same items through the same boundaries.
+    let private withoutEmptyEnding (pages: FixturePage list) =
+        match List.rev pages with
+        | last :: previous :: earlier when last.Ids.IsEmpty && last.Next.IsNone -> List.rev ({ previous with Next = None } :: earlier)
+        | _ -> pages
+
     let private traversalChecks (client: IAmazonDynamoDB) (operation: PaginationOperation) =
         async {
             let typed = DynamoDbKeySerializer() :> IKeySerializer
@@ -676,11 +697,32 @@ module Pagination =
                     else
                         []
 
+                let sameTraversal = withoutEmptyEnding repeated = withoutEmptyEnding pages
+
+                let difference =
+                    if sameTraversal then
+                        ""
+                    else
+                        let index =
+                            Seq.zip pages repeated
+                            |> Seq.tryFindIndex (fun (left, right) -> left <> right)
+                            |> Option.defaultValue (min pages.Length repeated.Length)
+
+                        let describe (traversal: FixturePage list) =
+                            traversal
+                            |> List.tryItem index
+                            |> Option.map (fun current ->
+                                let next = current.Next |> Option.map (decodeKey >> ContinuationKey.attributes >> Map.toList >> List.map (fun (name, value) -> $"{name}={sortValue name (Map [ name, value ])}") >> String.concat ";")
+                                $"ids {current.Ids} next {next}")
+                            |> Option.defaultValue "none"
+
+                        $"; differed: first traversal pages {pagesText pages}, repeated {pagesText repeated}; at page {index + 1} first {describe pages}, repeated {describe repeated}"
+
                 let repeatable =
                     check
                         $"{operation.Name}: repeated traversal"
-                        (repeated = pages)
-                        "following the same tokens again returned the same pages and tokens"
+                        sameTraversal
+                        $"following the same tokens again returned the same pages and tokens, up to an empty last page after an exactly full one{difference}"
 
                 let! legacy = legacyChecks client operation keys.Head
                 return [ traversal; complete ] @ filtered @ [ repeatable ] @ legacy
@@ -691,14 +733,17 @@ module Pagination =
             let repository =
                 PoolGamblerBetDynamoDbRepository(DynamoDbKeySerializer(), client) :> IPoolGamblerBetRepository
 
-            let timeline =
-                GetGamblerBetsTimeline(GetLivePoolGamblerBets repository, GetFinishedPoolGamblerBets repository)
+            let kickoffGroups =
+                KickoffGroupReader(PoolLayoutMatchReader(PoolLayoutDynamoDbRepository(DynamoDbKeySerializer(), client)))
+
+            let timeline = GetGamblerBetsTimeline(repository, kickoffGroups)
 
             let! pages =
                 traverse (fun next ->
                     async {
                         let! result = timeline.ExecuteAsync(Ulid.newOf fixture.PoolId, Ulid.newOf fixture.Gambler, next)
-                        return page result.Items (fun bet -> bet.MatchId.Value) result.Next
+                        let bets = result.Items |> Seq.collect _.Bets
+                        return page bets (fun bet -> bet.MatchId.Value) result.Next
                     })
 
             let live = set (pendingMatches fixture)
@@ -811,6 +856,461 @@ module Pagination =
                     $"raw-key queries over {fixture.OtherPoolIds.Length + 1} memberships and {fixture.Matches.Length} bets in one pool ({pageLimit}-item pages) updated {updated} of {keys.Length} items"
         }
 
+    /// Fixture of the grouped History and Timeline feeds: one gambler in a pool and layout of
+    /// their own, with five kickoff groups on one calendar day, oldest first. K0 has one settled
+    /// match; K1 two matches, only the first with a result; K2 four settled matches; K3 two
+    /// settled matches; K4 two matches without results. On the finished index, newest first,
+    /// two-item storage pages hold K3, then the first two of K2's four children.
+    type GroupedFixture =
+        { PoolId: string
+          LayoutId: string
+          Gambler: string
+          /// Match IDs per group, in ID order.
+          Groups: string list list
+          Base: DateTime }
+
+    let private groupSizes = [ 1; 2; 4; 2; 2 ]
+
+    /// The partial group and the position of its match that settles during the run.
+    let private partialGroup, lateMatch = 1, 1
+
+    let private settledAtSeed group position =
+        match group with
+        | 0
+        | 2
+        | 3 -> true
+        | 1 -> position <> lateMatch
+        | _ -> false
+
+    let newGroupedFixture () =
+        { PoolId = Ulid.random().Value
+          LayoutId = Ulid.random().Value
+          Gambler = Ulid.random().Value
+          Groups = groupSizes |> List.map ids
+          Base = DateTime.UtcNow.Date.AddDays(-20.0) }
+
+    let private groupKickoff (fixture: GroupedFixture) group = fixture.Base.AddHours(float (10 + group))
+
+    /// A computed child's settlement snapshot: the k-th settled child of a group moves the gambler
+    /// from 8 - k to 7 - k, so a group with n computed children moves from 8 to 8 - n.
+    let private settlement (fixture: GroupedFixture) group position =
+        let kickoff = groupKickoff fixture group
+
+        [ "homeTeamScore", n 1
+          "awayTeamScore", n 0
+          "score", n 5
+          "computedRequestId", s "VERIFICATION"
+          "computedDateTime", s (instant (fixture.Base.AddDays(1.0).AddHours(float group).AddMinutes(float position)))
+          "computedMatchDateTime", s (instant kickoff)
+          "beforePosition", n (8 - position)
+          "position", n (7 - position) ]
+
+    let private groupedDetail (fixture: GroupedFixture) group position settled =
+        let matchId = fixture.Groups[group][position]
+
+        item (
+            [ "pk", s $"GAMBLER#{fixture.Gambler}#POOL#{fixture.PoolId}"
+              "sk", s $"MATCH#{matchId}"
+              "poolId", s fixture.PoolId
+              "gamblerId", s fixture.Gambler
+              "gamblerUsername", s "ana"
+              "gamblerEmail", s $"{fixture.Gambler.ToLowerInvariant()}@verification.invalid"
+              "matchId", s matchId
+              "homeTeamId", s "COL"
+              "homeTeamName", s "Colombia"
+              "awayTeamId", s "ARG"
+              "awayTeamName", s "Argentina"
+              "matchDateTime", s (instant (groupKickoff fixture group))
+              "poolLayoutId", s fixture.LayoutId
+              "poolLayoutVersion", n 1
+              "round", s "Fase de grupos"
+              "filter", s "colombia argentina"
+              "homeTeamBet", n 1
+              "awayTeamBet", n 0 ]
+            @ (if settled then settlement fixture group position else [])
+        )
+
+    let private groupedLayoutMatch (fixture: GroupedFixture) group position settled =
+        let matchId = fixture.Groups[group][position]
+
+        item (
+            [ "pk", s $"POOLLAYOUT#{fixture.LayoutId}"
+              "sk", s $"MATCH#{matchId}"
+              "matchId", s matchId
+              "poolLayoutId", s fixture.LayoutId
+              "homeTeamId", s "COL"
+              "homeTeamName", s "Colombia"
+              "awayTeamId", s "ARG"
+              "awayTeamName", s "Argentina"
+              "matchDateTime", s (instant (groupKickoff fixture group))
+              "poolLayoutVersion", n 1
+              "round", s "Fase de grupos" ]
+            @ (if settled then [ "homeTeamScore", n 1; "awayTeamScore", n 0; "resultVersion", n 1 ] else [])
+        )
+
+    let private groupedPositions (fixture: GroupedFixture) =
+        fixture.Groups |> List.indexed |> List.collect (fun (group, members) -> members |> List.mapi (fun position _ -> group, position))
+
+    let groupedPoolItems (fixture: GroupedFixture) =
+        groupedPositions fixture
+        |> List.map (fun (group, position) -> groupedDetail fixture group position (settledAtSeed group position))
+
+    let groupedLayoutItems (fixture: GroupedFixture) =
+        groupedPositions fixture
+        |> List.map (fun (group, position) -> groupedLayoutMatch fixture group position (settledAtSeed group position))
+
+    /// A grouped feed item as the checks compare it: the group's index in the fixture (-1 for a
+    /// kickoff the fixture does not have), its layout counts, its rows, and its movement.
+    type GroupSummary =
+        { Group: int
+          Total: int
+          Computed: int
+          Children: string list
+          Movement: (int * int) option }
+
+    /// One grouped page as a client sees it: the token it was requested with, its groups, and
+    /// the `next` token.
+    type GroupedPage =
+        { Request: string option
+          Groups: GroupSummary list
+          Next: string option }
+
+    let private groupOf (fixture: GroupedFixture) (kickoff: DateTime) =
+        [ 0 .. fixture.Groups.Length - 1 ]
+        |> List.tryFind (fun group -> KickoffGroup.instant (groupKickoff fixture group) = KickoffGroup.instant kickoff)
+        |> Option.defaultValue -1
+
+    let private summarize (fixture: GroupedFixture) (groupItem: KickoffGroupItem) =
+        { Group = groupOf fixture groupItem.Group.KickoffDateTime
+          Total = groupItem.Group.TotalMatches
+          Computed = groupItem.Group.ComputedMatches
+          Children = groupItem.Bets |> List.map _.MatchId.Value
+          Movement = groupItem.Movement |> Option.map (fun movement -> movement.BeforePosition, movement.Position) }
+
+    /// What a feed returns for a group: `rows` selects the group's children by position.
+    let private expectedGroup (fixture: GroupedFixture) settled group (rows: int -> bool) =
+        let members = fixture.Groups[group]
+        let computed = members |> List.indexed |> List.filter (fun (position, _) -> settled group position) |> List.length
+        let children = members |> List.indexed |> List.filter (fst >> rows) |> List.map snd
+
+        { Group = group
+          Total = members.Length
+          Computed = computed
+          Children = children
+          Movement = if computed = 0 then None else Some(8, 8 - computed) }
+
+    /// History: groups with a computed child, newest kickoff first, with computed rows only.
+    let private expectedHistory fixture settled =
+        [ 3; 2; 1; 0 ] |> List.map (fun group -> expectedGroup fixture settled group (settled group))
+
+    /// Timeline: unsettled groups oldest first with every row, then settled groups newest first.
+    let private expectedTimeline fixture settled unsettledGroups settledGroups =
+        (unsettledGroups @ settledGroups) |> List.map (fun group -> expectedGroup fixture settled group (fun _ -> true))
+
+    let private settledAfterLateResult group position = group = partialGroup || settledAtSeed group position
+
+    /// Follows `next` from the first page until it is absent, sending each token through
+    /// `httpTransport`. Fails after 50 pages.
+    let private traverseGroups (fixture: GroupedFixture) (read: string option -> Async<KickoffGroupItem CursorPage>) =
+        let rec loop request pages =
+            async {
+                if List.length pages >= 50 then
+                    failwith "the grouped traversal did not end"
+
+                let! result = read (request |> Option.map httpTransport)
+
+                let current =
+                    { Request = request
+                      Groups = result.Items |> Seq.map (summarize fixture) |> List.ofSeq
+                      Next = result.Next }
+
+                let pages = pages @ [ current ]
+
+                match current.Next with
+                | Some _ -> return! loop current.Next pages
+                | None -> return pages
+            }
+
+        loop None []
+
+    /// Polls the full grouped traversal with a deadline until it returns the expected groups;
+    /// index writes are eventually consistent.
+    let private convergeGroups (traversal: unit -> Async<GroupedPage list>) (expected: GroupSummary list) =
+        async {
+            let watch = Stopwatch.StartNew()
+
+            let rec poll attempt =
+                async {
+                    let! pages = traversal ()
+
+                    if pages |> List.collect _.Groups = expected then
+                        return Ok(pages, attempt, watch.Elapsed)
+                    elif watch.Elapsed > convergenceDeadline then
+                        return Error(pages, attempt)
+                    else
+                        do! Async.Sleep 1000
+                        return! poll (attempt + 1)
+                }
+
+            return! poll 1
+        }
+
+    let private phaseOf (token: string option) =
+        match token with
+        | None -> "first"
+        | Some token when token.StartsWith "live:" -> "live"
+        | Some token when token.StartsWith "finished:" -> "finished"
+        | Some _ -> "token"
+
+    let private groupedPagesText (pages: GroupedPage list) =
+        pages
+        |> List.map (fun current ->
+            let groups =
+                current.Groups
+                |> List.map (fun group -> $"K{group.Group} {group.Computed}/{group.Total} x{group.Children.Length}")
+                |> String.concat ", "
+
+            $"{phaseOf current.Request}[{groups}]")
+        |> String.concat " | "
+
+    let private notConverged name (pages: GroupedPage list) attempts (expected: GroupSummary list) =
+        check name false $"after {attempts} attempts the traversal returned {groupedPagesText pages}; expected {expected.Length} groups"
+
+    type private GroupedFeeds =
+        { Repository: IPoolGamblerBetRepository
+          History: GetFinishedPoolGamblerBets
+          Timeline: GetGamblerBetsTimeline
+          PoolId: Ulid
+          GamblerId: Ulid }
+
+    let private groupedFeeds (client: IAmazonDynamoDB) (fixture: GroupedFixture) =
+        let repository = PoolGamblerBetDynamoDbRepository(DynamoDbKeySerializer(), client) :> IPoolGamblerBetRepository
+
+        let kickoffGroups =
+            KickoffGroupReader(PoolLayoutMatchReader(PoolLayoutDynamoDbRepository(DynamoDbKeySerializer(), client)))
+
+        { Repository = repository
+          History = GetFinishedPoolGamblerBets(repository, kickoffGroups)
+          Timeline = GetGamblerBetsTimeline(repository, kickoffGroups)
+          PoolId = Ulid.newOf fixture.PoolId
+          GamblerId = Ulid.newOf fixture.Gambler }
+
+    let private historyTraversal (feeds: GroupedFeeds) fixture () =
+        traverseGroups fixture (fun next -> feeds.History.ExecuteAsync(feeds.PoolId, feeds.GamblerId, next))
+
+    let private timelineTraversal (feeds: GroupedFeeds) fixture () =
+        traverseGroups fixture (fun next -> feeds.Timeline.ExecuteAsync(feeds.PoolId, feeds.GamblerId, next))
+
+    /// (a) History's storage page ends inside K2: the History page completes K2 with its full
+    /// counts and movement, and no later page repeats it.
+    let private historyBoundaryCheck (feeds: GroupedFeeds) (fixture: GroupedFixture) =
+        async {
+            let name = "grouped History: storage page ends inside a kickoff group"
+            let expected = expectedHistory fixture settledAtSeed
+            let! converged = convergeGroups (historyTraversal feeds fixture) expected
+
+            match converged with
+            | Error(pages, attempts) -> return notConverged name pages attempts expected
+            | Ok(pages, attempts, elapsed) ->
+                let boundaryPage = pages |> List.findIndex (fun current -> current.Groups |> List.exists (fun group -> group.Group = 2))
+                let request = pages[boundaryPage].Request
+
+                // The storage query behind that page, with the same token.
+                let! storage =
+                    feeds.Repository.GetFinishedBetsByKickoffAsync(feeds.PoolId, feeds.GamblerId, request |> Option.map httpTransport)
+
+                let storageGroups = storage.Items |> Seq.map (fun bet -> groupOf fixture bet.Kickoff) |> List.ofSeq
+                let storageInGroup = storageGroups |> List.filter ((=) 2) |> List.length
+                let endsInside = storage.Next.IsSome && List.tryLast storageGroups = Some 2 && storageInGroup < 4
+                let returned = pages[boundaryPage].Groups |> List.find (fun group -> group.Group = 2)
+
+                let repeatedLater =
+                    pages |> List.skip (boundaryPage + 1) |> List.exists (fun current -> current.Groups |> List.exists (fun group -> group.Group = 2))
+
+                return
+                    check
+                        name
+                        (endsInside && returned.Children.Length = 4 && not repeatedLater)
+                        $"pages {groupedPagesText pages}; the storage page behind page {boundaryPage + 1} held {storageInGroup} of K2's 4 children and continued, the History page returned K2 with {returned.Children.Length} rows, counts {returned.Computed}/{returned.Total}, movement {returned.Movement}, and no later page repeated it; every group once in kickoff-descending order; converged on attempt {attempts} after {elapsed.TotalSeconds:F1} s"
+        }
+
+    /// Where K1 appears in a Timeline traversal: its page index and whether that page was served
+    /// from the unsettled phase (requested without a token or with a `live:` token).
+    let private partialGroupPlacement (pages: GroupedPage list) =
+        pages
+        |> List.indexed
+        |> List.collect (fun (index, current) ->
+            current.Groups
+            |> List.filter (fun group -> group.Group = partialGroup)
+            |> List.map (fun group -> index, phaseOf current.Request, group))
+
+    let private phaseTokens (pages: GroupedPage list) =
+        pages |> List.map (fun current -> phaseOf current.Next) |> List.countBy id |> Map.ofList
+
+    /// (b) Before its last result, K1 appears once, in the unsettled phase, with both rows; the
+    /// finished phase skips it.
+    let private timelinePartialCheck (feeds: GroupedFeeds) (fixture: GroupedFixture) =
+        async {
+            let name = "grouped Timeline: partial group in the unsettled phase"
+            let expected = expectedTimeline fixture settledAtSeed [ 1; 4 ] [ 3; 2; 0 ]
+            let! converged = convergeGroups (timelineTraversal feeds fixture) expected
+
+            match converged with
+            | Error(pages, attempts) -> return notConverged name pages attempts expected
+            | Ok(pages, attempts, elapsed) ->
+                let placement = partialGroupPlacement pages
+                let tokens = phaseTokens pages
+
+                let servedLive =
+                    match placement with
+                    | [ (_, phase, group) ] -> (phase = "first" || phase = "live") && group.Children.Length = 2
+                    | _ -> false
+
+                let crossesPages = tokens.ContainsKey "live" && tokens.ContainsKey "finished"
+
+                return
+                    check
+                        name
+                        (servedLive && crossesPages)
+                        $"pages {groupedPagesText pages}; K1 appeared once, on page {placement |> List.map (fun (index, _, _) -> index + 1)}, served from the unsettled phase with both rows and counts 1/2; the finished phase skipped it; unsettled groups oldest first, then settled newest first, both phases over several pages; converged on attempt {attempts} after {elapsed.TotalSeconds:F1} s"
+        }
+
+    /// Writes K1's last result as settlement leaves it: the layout match's result and the
+    /// detail's computed attributes and snapshots.
+    let private settleLateMatch (client: IAmazonDynamoDB) (fixture: GroupedFixture) =
+        async {
+            let put table entries =
+                client.PutItemAsync(PutItemRequest(TableName = table, Item = entries)) |> Async.AwaitTask |> Async.Ignore
+
+            do! put PoolTable.name (groupedDetail fixture partialGroup lateMatch true)
+            do! put PoolLayoutTable.name (groupedLayoutMatch fixture partialGroup lateMatch true)
+        }
+
+    /// (b) After its last result, K1 appears once, in the finished phase, with both rows and
+    /// counts 2/2; History shows both rows too.
+    let private timelineSettledCheck (feeds: GroupedFeeds) (fixture: GroupedFixture) =
+        async {
+            let name = "grouped Timeline: group after its last result in the finished phase"
+            let expected = expectedTimeline fixture settledAfterLateResult [ 4 ] [ 3; 2; 1; 0 ]
+            let! converged = convergeGroups (timelineTraversal feeds fixture) expected
+            let expectedHistory = expectedHistory fixture settledAfterLateResult
+            let! history = convergeGroups (historyTraversal feeds fixture) expectedHistory
+
+            match converged, history with
+            | Error(pages, attempts), _ -> return notConverged name pages attempts expected
+            | _, Error(pages, attempts) -> return notConverged name pages attempts expectedHistory
+            | Ok(pages, attempts, elapsed), Ok(historyPages, _, _) ->
+                let placement = partialGroupPlacement pages
+
+                // The expected order already puts K1 among the settled groups, after K4.
+                let servedFinished =
+                    match placement with
+                    | [ (_, _, group) ] -> group.Computed = 2 && group.Children.Length = 2
+                    | _ -> false
+
+                let tokens = phaseTokens pages
+
+                return
+                    check
+                        name
+                        (servedFinished && tokens.ContainsKey "finished")
+                        $"after K1's last result: pages {groupedPagesText pages}; K1 appeared once, on page {placement |> List.map (fun (index, _, _) -> index + 1)}, among the settled groups with both rows and counts 2/2; History {groupedPagesText historyPages}; converged on attempt {attempts} after {elapsed.TotalSeconds:F1} s"
+        }
+
+    /// (c) A token issued from the computation-time index, as the backend before the grouped
+    /// feeds wrote it, is rejected by History and by Timeline's finished phase before any query
+    /// runs with it; a first-page request then succeeds and its token reads the next page.
+    let private oldFinishedTokenCheck (client: IAmazonDynamoDB) (feeds: GroupedFeeds) (fixture: GroupedFixture) =
+        async {
+            let request () =
+                QueryRequest(
+                    TableName = PoolTable.name,
+                    IndexName = "GetFinishedPoolGamblerBets-index",
+                    KeyConditionExpression = "#pk = :pk",
+                    ExpressionAttributeNames = Dictionary(dict [ "#pk", "pk" ]),
+                    ExpressionAttributeValues = Dictionary(dict [ ":pk", s $"GAMBLER#{fixture.Gambler}#POOL#{fixture.PoolId}" ]),
+                    ScanIndexForward = false,
+                    Limit = Nullable 2
+                )
+
+            let watch = Stopwatch.StartNew()
+
+            let rec oldKey () =
+                async {
+                    let! response = client.QueryAsync(request ()) |> Async.AwaitTask
+
+                    match response.LastEvaluatedKey |> Option.ofObj with
+                    | Some key when key.Count > 0 -> return key
+                    | _ when watch.Elapsed > convergenceDeadline -> return failwith "the computedDateTime index issued no continuation"
+                    | _ ->
+                        do! Async.Sleep 1000
+                        return! oldKey ()
+                }
+
+            let! key = oldKey ()
+            let oldToken = (DynamoDbKeySerializer() :> IKeySerializer).Serialize key
+            let oldAttributes = decodeKey oldToken |> ContinuationKey.attributes |> describeKey
+
+            let! historyAppend =
+                feeds.History.ExecuteAsync(feeds.PoolId, feeds.GamblerId, Some(httpTransport oldToken)) |> Async.Catch
+
+            let! timelineAppend =
+                feeds.Timeline.ExecuteAsync(feeds.PoolId, feeds.GamblerId, Some(httpTransport $"finished:{oldToken}"))
+                |> Async.Catch
+
+            let rejection outcome =
+                match outcome with
+                | Choice2Of2(InvalidContinuationException(MissingKeyAttribute attribute)) -> Some attribute
+                | _ -> None
+
+            let historyRejected = rejection historyAppend
+            let timelineRejected = rejection timelineAppend
+
+            let! firstPage = feeds.History.ExecuteAsync(feeds.PoolId, feeds.GamblerId, None)
+            let first = firstPage.Items |> Seq.map (summarize fixture) |> List.ofSeq
+            let! secondPage = feeds.History.ExecuteAsync(feeds.PoolId, feeds.GamblerId, firstPage.Next |> Option.map httpTransport)
+            let second = secondPage.Items |> Seq.map (summarize fixture) |> List.ofSeq
+            let! timelineFirst = feeds.Timeline.ExecuteAsync(feeds.PoolId, feeds.GamblerId, None)
+
+            let newContract =
+                firstPage.Next
+                |> Option.map (fun token ->
+                    StartKeyContract.check
+                        (GroupedBetFeedRequestBuilder.finishedContract feeds.PoolId feeds.GamblerId)
+                        (ContinuationKey.toAttributeValues (decodeKey token)))
+
+            let passed =
+                historyRejected = Some PoolTable.Attribute.computedMatchDateTime
+                && timelineRejected = Some PoolTable.Attribute.computedMatchDateTime
+                && (first |> List.map _.Group) = [ 3 ]
+                && newContract = Some(Ok())
+                && (second |> List.map _.Group) = [ 2 ]
+                && phaseOf timelineFirst.Next = "live"
+
+            return
+                check
+                    "grouped feeds: old computedDateTime token rejected, first page reloads"
+                    passed
+                    $"old token ({oldAttributes}) from GetFinishedPoolGamblerBets-index: History append rejected with MissingKeyAttribute {historyRejected}, Timeline finished: append rejected with MissingKeyAttribute {timelineRejected} (the hosts answer 400 INVALID_CURSOR); one first-page History request returned K{first |> List.map _.Group} and a token fitting the finished-by-kickoff contract, which read K{second |> List.map _.Group}; Timeline's first page returned {Seq.length timelineFirst.Items} groups and a {phaseOf timelineFirst.Next} token (its first storage page holds only computed details)"
+        }
+
+    /// Seeds the grouped fixture, then checks the History boundary, the Timeline phase before
+    /// and after the partial group's last result, and the old-token rejection, in that order.
+    let private groupedChecks (client: IAmazonDynamoDB) =
+        async {
+            let fixture = newGroupedFixture ()
+            printfn "Grouped fixture pool %s, layout %s, gambler %s" fixture.PoolId fixture.LayoutId fixture.Gambler
+            do! Seed.writeAll client PoolTable.name (groupedPoolItems fixture) 4
+            do! Seed.writeAll client PoolLayoutTable.name (groupedLayoutItems fixture) 4
+            let feeds = groupedFeeds client fixture
+            let! history = historyBoundaryCheck feeds fixture
+            let! partial = timelinePartialCheck feeds fixture
+            do! settleLateMatch client fixture
+            let! settled = timelineSettledCheck feeds fixture
+            let! oldToken = oldFinishedTokenCheck client feeds fixture
+            return [ history; partial; settled; oldToken ]
+        }
+
     /// Seeds the fixture, then runs every check. Returns the checks in order.
     let runAsync (client: IAmazonDynamoDB) =
         async {
@@ -827,8 +1327,9 @@ module Pagination =
             let! timeline = timelineCheck client fixture
             let! ranked = rankedCheck client fixture
             let! discovery = discoveryCheck client fixture
+            let! grouped = groupedChecks client
             // Last: it rewrites gambler 0's username, which the members index orders by.
             let! propagation = propagationCheck client fixture
 
-            return (traversals |> List.ofArray |> List.concat) @ [ timeline; ranked; discovery; propagation ]
+            return (traversals |> List.ofArray |> List.concat) @ [ timeline; ranked; discovery ] @ grouped @ [ propagation ]
         }

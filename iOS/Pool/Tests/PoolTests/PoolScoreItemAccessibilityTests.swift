@@ -1,3 +1,4 @@
+import Core
 import SwiftUI
 import Testing
 import UI
@@ -46,15 +47,15 @@ struct PoolScoreItemAccessibilityTests {
         )
         .accessibilityLabel
 
-        // The pool is still identified and counted; only rank and points report unavailable,
-        // and with no rank there is nothing to compare, so no movement is announced.
+        // The pool is still identified and counted; rank, points, and movement report
+        // unavailable rather than being omitted.
         #expect(
-            label == "Neptune World Series 2023, Rank unavailable, Points unavailable, 101 members"
+            label == "Neptune World Series 2023, Rank unavailable, Points unavailable, 101 members, Movement unavailable"
         )
     }
 
     @Test
-    func rankWithoutAPreviousRankAnnouncesNoMovement() {
+    func rankWithoutAPreviousRankAnnouncesUnavailableMovement() {
         let label = PoolScoreItem(
             poolGamblerScore: model(position: 4, beforePosition: nil, score: 8, gamblerCount: 101),
             onOpen: {},
@@ -62,7 +63,39 @@ struct PoolScoreItemAccessibilityTests {
         )
         .accessibilityLabel
 
-        #expect(label == "Neptune World Series 2023, Rank 4, 8 points, 101 members")
+        #expect(label == "Neptune World Series 2023, Rank 4, 8 points, 101 members, Movement unavailable")
+    }
+
+    @Test
+    func partialGroupEndsWithTheMovementAndItsComputedCount() {
+        let label = PoolScoreItem(
+            poolGamblerScore: model(
+                position: 5,
+                beforePosition: 8,
+                score: 8,
+                gamblerCount: 101,
+                trendGroup: KickoffGroupProgress(computedMatches: 2, totalMatches: 4)
+            ),
+            onOpen: {},
+            onJoin: {}
+        )
+        .accessibilityLabel
+
+        #expect(
+            label == "Neptune World Series 2023, Rank 5, 8 points, 101 members, Up 3 places, 2 of 4 matches computed"
+        )
+    }
+
+    @Test
+    func noTrendGroupIsAnnouncedAsPending() {
+        let label = PoolScoreItem(
+            poolGamblerScore: model(position: 4, beforePosition: 4, score: 8, gamblerCount: 101, trendGroup: nil),
+            onOpen: {},
+            onJoin: {}
+        )
+        .accessibilityLabel
+
+        #expect(label == "Neptune World Series 2023, Rank 4, 8 points, 101 members, Movement pending")
     }
 
     @Test
@@ -149,7 +182,8 @@ struct PoolScoreItemAccessibilityTests {
         position: Int?,
         beforePosition: Int?,
         score: Int?,
-        gamblerCount: Int?
+        gamblerCount: Int?,
+        trendGroup: KickoffGroupProgress? = KickoffGroupProgress(computedMatches: 2, totalMatches: 2)
     ) -> PoolGamblerScoreModel {
         PoolGamblerScoreModel(
             poolId: "A3C2E1",
@@ -159,7 +193,8 @@ struct PoolScoreItemAccessibilityTests {
             position: position,
             beforePosition: beforePosition,
             score: score,
-            gamblerCount: gamblerCount
+            gamblerCount: gamblerCount,
+            trendGroup: trendGroup
         )
     }
 }

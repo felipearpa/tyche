@@ -27,7 +27,8 @@ public enum RankedMatchBetsError: Error, Equatable {
     }
 }
 
-/// The body of a ranked match-bets error response.
-struct RankedMatchBetsErrorResponse: Decodable {
+/// The body of an error response that carries a machine-readable code, such as the ranked feed's
+/// and the grouped feeds' `INVALID_CURSOR`.
+struct ErrorCodeResponse: Decodable {
     let error: String
 }

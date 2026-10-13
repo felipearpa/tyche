@@ -148,7 +148,7 @@ module PoolOperationTest =
             let stale =
                 { OperationId = command.OperationId
                   Revision = 1L
-                  Target = MatchSettlement(Ulid.newOf match1, result 1 0 1)
+                  Target = MatchSettlement(Ulid.newOf match1, result 1 0 1, OpensGroup pastKickoff)
                   Stage = Scoring
                   Cursor = None
                   CalculationRevision = 1
@@ -178,7 +178,7 @@ module PoolOperationTest =
             report.Outcome |> shouldEqual PoolCommandOutcome.OperationCompleted
 
             let! saved = harness.Settlement.ReplaceCheckpointAsync(pool, "stale-owner", { stale with Cursor = Some "x" })
-            let! completed = harness.Settlement.CompleteAsync(pool, stale, 0)
+            let! completed = harness.Settlement.CompleteAsync(pool, stale, 0, None)
             saved |> shouldEqual ConditionNotMet
             completed |> shouldEqual ConditionNotMet
             total harness.Fake gamblerA |> shouldEqual (Some 24)
@@ -195,7 +195,7 @@ module PoolOperationTest =
             let held =
                 { OperationId = command.OperationId
                   Revision = 1L
-                  Target = MatchSettlement(Ulid.newOf match1, result 1 0 1)
+                  Target = MatchSettlement(Ulid.newOf match1, result 1 0 1, OpensGroup pastKickoff)
                   Stage = Scoring
                   Cursor = None
                   CalculationRevision = 1
@@ -403,7 +403,8 @@ module PoolOperationTest =
             do! harness.RunUntilQuiescentAsync()
             let afterMany = (root harness.Fake |> Option.get).Keys |> Set.ofSeq
 
-            afterMany |> shouldEqual afterOne
+            // The first match settlement adds the trend kickoff once; nothing grows per operation.
+            afterMany |> shouldEqual (afterOne |> Set.add "trendKickoffDateTime")
             // The join's standings and restoration, two results, and the removal's standings.
             root harness.Fake |> number "lastCompletedOperationRevision" |> shouldEqual (Some 5)
         }

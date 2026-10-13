@@ -1,16 +1,27 @@
 package com.felipearpa.tyche.pool.gamblerscore
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.size
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.assertHasClickAction
 import androidx.compose.ui.test.assertHasNoClickAction
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.getUnclippedBoundsInRoot
+import androidx.compose.ui.test.hasScrollToIndexAction
+import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollToNode
+import androidx.compose.ui.test.performTouchInput
+import androidx.compose.ui.test.swipeUp
+import androidx.compose.ui.unit.dp
 import androidx.paging.PagingData
 import androidx.paging.compose.collectAsLazyPagingItems
+import com.felipearpa.tyche.core.type.KickoffGroupProgress
 import com.felipearpa.tyche.pool.AvatarImageStoreKoinRule
 import com.felipearpa.tyche.pool.PoolGamblerScoreModel
 import com.felipearpa.tyche.pool.poolGamblerScoreDummyModels
@@ -125,9 +136,46 @@ class GamblerScoreListTest {
 
         composeTestRule
             .onNodeWithContentDescription(
-                "Rank unavailable, $username, Points unavailable",
+                "Rank unavailable, $username, Points unavailable, Movement unavailable",
             )
             .assertIsDisplayed()
+    }
+
+    @Test
+    fun theLastGamblerEndsAboveTheBottomPaddingAtTheScrollLimit() {
+        val models = List(LEADERBOARD_SIZE) { index ->
+            score(username = "Gambler $index", position = index + 1, beforePosition = index + 1, score = 100 - index)
+                .copy(gamblerId = "gambler-$index")
+        }
+        composeTestRule.setContent {
+            TycheTheme {
+                Box(modifier = Modifier.size(width = 360.dp, height = VIEWPORT_HEIGHT)) {
+                    GamblerScoreList(
+                        lazyPoolGamblerScores = MutableStateFlow(PagingData.from(models)).collectAsLazyPagingItems(),
+                        loggedInGamblerId = models.first().gamblerId,
+                        contentPadding = PaddingValues(top = TOP_PADDING, bottom = BOTTOM_PADDING),
+                        modifier = Modifier.fillMaxSize(),
+                    )
+                }
+            }
+        }
+        val lastRowTag = "gamblerScoreRow:${models.last().gamblerId}"
+        composeTestRule.waitUntil(timeoutMillis = 5_000) {
+            composeTestRule.onAllNodes(hasScrollToIndexAction()).fetchSemanticsNodes().isNotEmpty()
+        }
+
+        val list = composeTestRule.onNode(hasScrollToIndexAction())
+        list.performScrollToNode(hasTestTag(lastRowTag))
+        // Fling past the end so the list rests at its scroll limit.
+        repeat(3) { list.performTouchInput { swipeUp() } }
+        composeTestRule.waitForIdle()
+
+        val lastRowBottom = composeTestRule.onNodeWithTag(lastRowTag).getUnclippedBoundsInRoot().bottom
+        val paddedEnd = VIEWPORT_HEIGHT - BOTTOM_PADDING
+        assertTrue(
+            "Last row ends at $lastRowBottom; the padded end is $paddedEnd",
+            lastRowBottom <= paddedEnd && lastRowBottom >= paddedEnd - 1.dp,
+        )
     }
 
     private fun score(
@@ -144,5 +192,11 @@ class GamblerScoreListTest {
         beforePosition = beforePosition,
         score = score,
         gamblerCount = 10,
+        trendGroup = KickoffGroupProgress(computedMatches = 1, totalMatches = 1),
     )
 }
+
+private const val LEADERBOARD_SIZE = 13
+private val VIEWPORT_HEIGHT = 480.dp
+private val TOP_PADDING = 64.dp
+private val BOTTOM_PADDING = 80.dp

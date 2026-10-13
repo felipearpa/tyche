@@ -1,3 +1,12 @@
+import Foundation
+
+/// A two-match kickoff group with one result, so dummy rows show partial movement.
+private let dummyTrendGroup = TrendGroup(
+    kickoffDateTime: Date(timeIntervalSince1970: 1_781_283_600),
+    computedMatches: 1,
+    totalMatches: 2
+)
+
 func dummyPoolGamblerScore() -> PoolGamblerScore {
     PoolGamblerScore(
         poolId: "A3C2E1",
@@ -8,6 +17,7 @@ func dummyPoolGamblerScore() -> PoolGamblerScore {
         beforePosition: 3,
         score: 8,
         gamblerCount: 71,
+        trendGroup: dummyTrendGroup
     )
 }
 
@@ -22,6 +32,7 @@ func poolGamblerScoreDummyModels() -> [PoolGamblerScore] {
             beforePosition: 2,
             score: 150,
             gamblerCount: 100,
+            trendGroup: dummyTrendGroup
         ),
         PoolGamblerScore(
             poolId: "pool002",
@@ -32,6 +43,7 @@ func poolGamblerScoreDummyModels() -> [PoolGamblerScore] {
             beforePosition: 4,
             score: 120,
             gamblerCount: 100,
+            trendGroup: dummyTrendGroup
         ),
         PoolGamblerScore(
             poolId: "pool003",
@@ -42,6 +54,7 @@ func poolGamblerScoreDummyModels() -> [PoolGamblerScore] {
             beforePosition: 2,
             score: 200,
             gamblerCount: 111,
+            trendGroup: dummyTrendGroup
         ),
         PoolGamblerScore(
             poolId: "pool004",
@@ -52,6 +65,7 @@ func poolGamblerScoreDummyModels() -> [PoolGamblerScore] {
             beforePosition: 15,
             score: 80,
             gamblerCount: 77,
+            trendGroup: dummyTrendGroup
         ),
         PoolGamblerScore(
             poolId: "pool005",
@@ -62,6 +76,7 @@ func poolGamblerScoreDummyModels() -> [PoolGamblerScore] {
             beforePosition: 1,
             score: 95,
             gamblerCount: 35,
+            trendGroup: dummyTrendGroup
         ),
         PoolGamblerScore(
             poolId: "pool006",
@@ -72,6 +87,7 @@ func poolGamblerScoreDummyModels() -> [PoolGamblerScore] {
             beforePosition: 8,
             score: 110,
             gamblerCount: 59,
+            trendGroup: dummyTrendGroup
         ),
         PoolGamblerScore(
             poolId: "pool007",
@@ -82,6 +98,7 @@ func poolGamblerScoreDummyModels() -> [PoolGamblerScore] {
             beforePosition: 3,
             score: 140,
             gamblerCount: 89,
+            trendGroup: dummyTrendGroup
         ),
         PoolGamblerScore(
             poolId: "pool008",
@@ -92,6 +109,7 @@ func poolGamblerScoreDummyModels() -> [PoolGamblerScore] {
             beforePosition: 6,
             score: 130,
             gamblerCount: 95,
+            trendGroup: dummyTrendGroup
         ),
         PoolGamblerScore(
             poolId: "pool009",
@@ -101,7 +119,8 @@ func poolGamblerScoreDummyModels() -> [PoolGamblerScore] {
             position: 12,
             beforePosition: 10,
             score: 70,
-            gamblerCount: 27
+            gamblerCount: 27,
+            trendGroup: dummyTrendGroup
         ),
         PoolGamblerScore(
             poolId: "pool010",
@@ -112,6 +131,7 @@ func poolGamblerScoreDummyModels() -> [PoolGamblerScore] {
             beforePosition: 1,
             score: 160,
             gamblerCount: 121,
+            trendGroup: dummyTrendGroup
         )
     ]
 }

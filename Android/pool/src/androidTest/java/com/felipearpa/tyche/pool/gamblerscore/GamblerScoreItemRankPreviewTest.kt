@@ -5,6 +5,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
+import com.felipearpa.tyche.core.type.KickoffGroupProgress
 import com.felipearpa.tyche.pool.AvatarImageStoreKoinRule
 import com.felipearpa.tyche.pool.PoolGamblerScoreModel
 import com.felipearpa.tyche.ui.theme.TycheTheme
@@ -88,6 +89,7 @@ class GamblerScoreItemRankPreviewTest {
             beforePosition = 2,
             score = 18,
             gamblerCount = null,
+            trendGroup = KickoffGroupProgress(computedMatches = 1, totalMatches = 1),
         )
     }
 }

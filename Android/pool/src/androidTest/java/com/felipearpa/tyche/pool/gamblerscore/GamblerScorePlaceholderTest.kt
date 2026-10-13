@@ -33,6 +33,7 @@ import androidx.paging.PagingData
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import androidx.paging.compose.collectAsLazyPagingItems
+import com.felipearpa.tyche.core.type.KickoffGroupProgress
 import com.felipearpa.tyche.pool.AvatarImageStoreKoinRule
 import com.felipearpa.tyche.pool.PoolGamblerScoreModel
 import com.felipearpa.tyche.pool.RecordingImageLoaderRule
@@ -300,6 +301,7 @@ class GamblerScorePlaceholderTest {
         beforePosition = 3,
         score = 150,
         gamblerCount = 10,
+        trendGroup = KickoffGroupProgress(computedMatches = 1, totalMatches = 1),
     )
 }
 

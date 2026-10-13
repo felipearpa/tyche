@@ -178,4 +178,5 @@ private val poolGamblerScore = PoolGamblerScore(
     beforePosition = 1,
     score = 41,
     gamblerCount = 13,
+    trendGroup = null,
 )

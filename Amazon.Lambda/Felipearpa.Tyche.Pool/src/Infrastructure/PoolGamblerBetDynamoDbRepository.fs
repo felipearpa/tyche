@@ -17,28 +17,46 @@ open Felipearpa.Tyche.Pool.Domain.PoolGamblerBetDictionaryTransformer
 
 type PoolGamblerBetDynamoDbRepository(keySerializer: IKeySerializer, client: IAmazonDynamoDB) =
 
+    /// Builds the request inside the computation, so an unusable token fails when the page is
+    /// read, like the other page reads.
+    let groupedPage (kickoffAttribute: string) (request: unit -> QueryRequest) =
+        async {
+            let! response = client.QueryAsync(request ()) |> Async.AwaitTask
+
+            return
+                { CursorPage.Items = response.Items |> Seq.map (toGroupedBet kickoffAttribute) |> List.ofSeq
+                  Next = KeySerializer.next keySerializer response.LastEvaluatedKey }
+        }
+
+    /// Reads every page of a one-kickoff query and encodes the index key of its last item.
+    let wholeGroup
+        (kickoffAttribute: string)
+        (keyOf: IDictionary<string, AttributeValue> -> Dictionary<string, AttributeValue>)
+        (request: Dictionary<string, AttributeValue> -> QueryRequest)
+        =
+        let rec loop (start: Dictionary<string, AttributeValue>) (acc: Dictionary<string, AttributeValue> list) =
+            async {
+                let! response = client.QueryAsync(request start) |> Async.AwaitTask
+                let acc = acc @ List.ofSeq response.Items
+
+                match response.LastEvaluatedKey |> Option.ofObj with
+                | Some key when key.Count > 0 -> return! loop key acc
+                | _ -> return acc
+            }
+
+        async {
+            let! items = loop null []
+
+            return
+                items |> List.map (toGroupedBet kickoffAttribute),
+                items |> List.tryLast |> Option.map (keyOf >> keySerializer.Serialize)
+        }
+
     interface IPoolGamblerBetRepository with
         member this.GetPendingPoolGamblerBetsAsync(poolId, gamblerId, maybeSearchText, maybeNext) =
             async {
                 let request =
                     GetPendingPoolGamblerBetsRequestBuilder.build
-                        poolId
-                        gamblerId
-                        maybeSearchText
-                        maybeNext
-                        keySerializer.Deserialize
-
-                let! response = client.QueryAsync(request) |> Async.AwaitTask
-
-                return
-                    { CursorPage.Items = response.Items.Select(toPoolGamblerBet)
-                      Next = KeySerializer.next keySerializer response.LastEvaluatedKey }
-            }
-
-        member this.GetFinishedPoolGamblerBetsAsync(poolId, gamblerId, maybeSearchText, maybeNext) =
-            async {
-                let request =
-                    GetFinishedPoolGamblerBetsRequestBuilder.build
                         poolId
                         gamblerId
                         maybeSearchText
@@ -68,6 +86,26 @@ type PoolGamblerBetDynamoDbRepository(keySerializer: IKeySerializer, client: IAm
                     { CursorPage.Items = response.Items.Select(toPoolGamblerBet)
                       Next = KeySerializer.next keySerializer response.LastEvaluatedKey }
             }
+
+        member this.GetFinishedBetsByKickoffAsync(poolId, gamblerId, next) =
+            groupedPage PoolTable.Attribute.computedMatchDateTime (fun () ->
+                GroupedBetFeedRequestBuilder.finishedPage poolId gamblerId next keySerializer.Deserialize)
+
+        member this.GetFinishedBetsAtKickoffAsync(poolId, gamblerId, storedKickoff) =
+            wholeGroup
+                PoolTable.Attribute.computedMatchDateTime
+                GroupedBetFeedRequestBuilder.finishedKeyOf
+                (GroupedBetFeedRequestBuilder.finishedAt poolId gamblerId storedKickoff)
+
+        member this.GetUnsettledBetsByKickoffAsync(poolId, gamblerId, next) =
+            groupedPage PoolTable.Attribute.matchDateTime (fun () ->
+                GroupedBetFeedRequestBuilder.unsettledPage poolId gamblerId next keySerializer.Deserialize DateTime.UtcNow)
+
+        member this.GetBetsAtKickoffAsync(poolId, gamblerId, storedKickoff) =
+            wholeGroup
+                PoolTable.Attribute.matchDateTime
+                GroupedBetFeedRequestBuilder.pendingKeyOf
+                (GroupedBetFeedRequestBuilder.unsettledAt poolId gamblerId storedKickoff)
 
         member this.GetPoolMatchGamblerBetsAsync(poolId, matchId, maybeNext) =
             async {

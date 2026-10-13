@@ -27,7 +27,7 @@ import com.felipearpa.tyche.bet.PoolGamblerBetModel
 import com.felipearpa.tyche.bet.R
 import com.felipearpa.tyche.bet.finished.HistoryPoints
 import com.felipearpa.tyche.bet.finished.HistoryPointsSummaryState
-import com.felipearpa.tyche.bet.timelineBetPreviewModels
+import com.felipearpa.tyche.bet.kickoffgroup.timelineGroupPreviewModels
 import kotlinx.coroutines.flow.MutableStateFlow
 import com.felipearpa.tyche.ui.R as SharedR
 
@@ -58,14 +58,15 @@ fun BetTimelineListView(
     ) { innerPadding ->
         if (LocalInspectionMode.current) {
             val lazyItems =
-                MutableStateFlow(PagingData.from(timelineBetPreviewModels())).collectAsLazyPagingItems()
+                MutableStateFlow(PagingData.from(timelineGroupPreviewModels())).collectAsLazyPagingItems()
             BetTimelineList(
                 gamblerId = gamblerId,
                 gamblerUsername = gamblerUsername,
-                lazyBets = lazyItems,
+                lazyKickoffGroups = lazyItems,
                 pointsSummary = HistoryPointsSummaryState.initial.loaded(HistoryPoints.Earned(676)),
                 onPointsSummaryRetry = {},
                 onRefresh = {},
+                onFeedRestart = {},
                 contentPadding = innerPadding,
                 modifier = Modifier.fillMaxSize(),
             )
@@ -123,7 +124,7 @@ private fun BetTimelineListView(
     contentPadding: PaddingValues,
     onMatchOpen: ((PoolGamblerBetModel) -> Unit)?,
 ) {
-    val lazyItems = viewModel.poolGamblerBets.collectAsLazyPagingItems()
+    val lazyItems = viewModel.kickoffGroups.collectAsLazyPagingItems()
     val pointsSummary by viewModel.pointsSummary.collectAsState()
 
     // The list scrolls under the top app bar and the system bars; its content padding keeps the
@@ -131,11 +132,12 @@ private fun BetTimelineListView(
     BetTimelineList(
         gamblerId = viewModel.gamblerId,
         gamblerUsername = gamblerUsername,
-        lazyBets = lazyItems,
+        lazyKickoffGroups = lazyItems,
         pointsSummary = pointsSummary,
         onPointsSummaryRetry = viewModel::loadPointsSummary,
-        onRefresh = viewModel::refreshPointsSummary,
-        placeholderCount = viewModel.pageSize,
+        onRefresh = viewModel::refresh,
+        onFeedRestart = viewModel::onFeedRestart,
+        placeholderCount = viewModel.placeholderCount,
         contentPadding = contentPadding,
         modifier = Modifier
             .fillMaxSize()

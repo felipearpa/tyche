@@ -9,6 +9,8 @@
 #
 #   ./pool-table.sh describe [table]               keys, indexes, stream, billing
 #   ./pool-table.sh ensure-ranking-index [table]   add GetPoolMatchBetsByTotal-index if missing
+#   ./pool-table.sh ensure-kickoff-index [table]   add GetFinishedPoolGamblerBetsByMatchDate-index
+#                                                  if missing
 #   ./pool-table.sh create-copy <pool-table> <layout-table>
 #                                                  isolated copies with the same schema, for
 #                                                  verification only
@@ -17,24 +19,25 @@ set -euo pipefail
 REGION="${AWS_REGION:-us-east-2}"
 HERE="$(cd "$(dirname "$0")" && pwd)"
 INDEX_FILE="$HERE/ranking-index.json"
+KICKOFF_INDEX_FILE="$HERE/finished-by-match-date-index.json"
 
 describe() {
   aws dynamodb describe-table --region "$REGION" --table-name "$1" --output json \
     --query 'Table.{keys:KeySchema,stream:StreamSpecification,streamArn:LatestStreamArn,billing:BillingModeSummary.BillingMode,indexes:GlobalSecondaryIndexes[].{name:IndexName,keys:KeySchema,projection:Projection.ProjectionType,status:IndexStatus}}'
 }
 
-ensure_ranking_index() {
-  local table="$1"
+# ensure_index <table> <index-name> <index-file> <attribute-definition>...
+ensure_index() {
+  local table="$1" name="$2" file="$3"
+  shift 3
   if aws dynamodb describe-table --region "$REGION" --table-name "$table" \
-      --query "Table.GlobalSecondaryIndexes[?IndexName=='GetPoolMatchBetsByTotal-index'].IndexName" \
-      --output text | grep -q GetPoolMatchBetsByTotal-index; then
-    echo "GetPoolMatchBetsByTotal-index already exists on $table"
+      --query "Table.GlobalSecondaryIndexes[?IndexName=='$name'].IndexName" \
+      --output text | grep -q "$name"; then
+    echo "$name already exists on $table"
   else
     aws dynamodb update-table --region "$REGION" --table-name "$table" \
-      --attribute-definitions \
-        AttributeName=getPoolMatchBetsByTotalPk,AttributeType=S \
-        AttributeName=getPoolMatchBetsByTotalSk,AttributeType=S \
-      --global-secondary-index-updates "[{\"Create\": $(cat "$INDEX_FILE")}]" \
+      --attribute-definitions "$@" \
+      --global-secondary-index-updates "[{\"Create\": $(cat "$file")}]" \
       --query 'TableDescription.TableStatus' --output text
   fi
   echo "Waiting for $table and its indexes to become active"
@@ -43,6 +46,20 @@ ensure_ranking_index() {
     sleep 15
   done
   echo "Active"
+}
+
+ensure_ranking_index() {
+  ensure_index "$1" GetPoolMatchBetsByTotal-index "$INDEX_FILE" \
+    AttributeName=getPoolMatchBetsByTotalPk,AttributeType=S \
+    AttributeName=getPoolMatchBetsByTotalSk,AttributeType=S
+}
+
+# Finished details by kickoff, for the grouped History and Timeline feeds. Only computed
+# details carry computedMatchDateTime, so pending details never enter it.
+ensure_kickoff_index() {
+  ensure_index "$1" GetFinishedPoolGamblerBetsByMatchDate-index "$KICKOFF_INDEX_FILE" \
+    AttributeName=pk,AttributeType=S \
+    AttributeName=computedMatchDateTime,AttributeType=S
 }
 
 create_copy() {
@@ -56,6 +73,7 @@ create_copy() {
     --attribute-definitions \
       AttributeName=pk,AttributeType=S AttributeName=sk,AttributeType=S \
       AttributeName=matchDateTime,AttributeType=S AttributeName=computedDateTime,AttributeType=S \
+      AttributeName=computedMatchDateTime,AttributeType=S \
       AttributeName=score,AttributeType=N AttributeName=gamblerUsername,AttributeType=S \
       AttributeName=getPoolGamblerScoresByMatchPk,AttributeType=S AttributeName=getPoolGamblerScoresByMatchSk,AttributeType=S \
       AttributeName=getGamblersByPoolLayoutPk,AttributeType=S AttributeName=getGamblersByPoolLayoutSk,AttributeType=S \
@@ -64,6 +82,7 @@ create_copy() {
     --global-secondary-indexes "[
       $(index GetPendingPoolGamblerBets-index pk matchDateTime),
       $(index GetFinishedPoolGamblerBets-index pk computedDateTime),
+      $(cat "$KICKOFF_INDEX_FILE"),
       {\"IndexName\":\"GetPoolGamblerScoresByGambler-index\",\"KeySchema\":[{\"AttributeName\":\"sk\",\"KeyType\":\"HASH\"},{\"AttributeName\":\"score\",\"KeyType\":\"RANGE\"}],\"Projection\":$all},
       {\"IndexName\":\"GetPoolGamblerScoresByPool-index\",\"KeySchema\":[{\"AttributeName\":\"pk\",\"KeyType\":\"HASH\"},{\"AttributeName\":\"score\",\"KeyType\":\"RANGE\"}],\"Projection\":$all},
       $(index GetPoolGamblerScoresByMatch-index getPoolGamblerScoresByMatchPk getPoolGamblerScoresByMatchSk),
@@ -86,6 +105,7 @@ create_copy() {
 case "${1:-}" in
   describe) describe "${2:-Pool}" ;;
   ensure-ranking-index) ensure_ranking_index "${2:-Pool}" ;;
+  ensure-kickoff-index) ensure_kickoff_index "${2:-Pool}" ;;
   create-copy) create_copy "$2" "$3" ;;
-  *) echo "usage: $0 describe|ensure-ranking-index [table] | create-copy <pool-table> <layout-table>" >&2; exit 2 ;;
+  *) echo "usage: $0 describe|ensure-ranking-index|ensure-kickoff-index [table] | create-copy <pool-table> <layout-table>" >&2; exit 2 ;;
 esac

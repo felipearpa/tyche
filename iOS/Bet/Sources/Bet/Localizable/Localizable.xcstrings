@@ -362,6 +362,126 @@
         }
       }
     },
+    "history_group_match_count" : {
+      "comment" : "Total matches in a History or Timeline kickoff group, shown after its time and spoken in its header. Counts every match at that kickoff, not only the visible rows. Argument: match count.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld match"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld matches"
+                }
+              }
+            }
+          }
+        },
+        "es" : {
+          "variations" : {
+            "plural" : {
+              "many" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld partidos"
+                }
+              },
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld partido"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld partidos"
+                }
+              }
+            }
+          }
+        },
+        "es-ES" : {
+          "variations" : {
+            "plural" : {
+              "many" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld partidos"
+                }
+              },
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld partido"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld partidos"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "history_list_changed_message" : {
+      "comment" : "Error message under history_list_changed_title; the Retry action below it loads the list from the start.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Load the list again to see the latest matches."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vuelve a cargar la lista para ver los partidos más recientes."
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vuelve a cargar la lista para ver los partidos más recientes."
+          }
+        }
+      }
+    },
+    "history_list_changed_title" : {
+      "comment" : "Error title when the server rejects the History or Timeline continuation again right after reloading the list.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The list changed"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La lista cambió"
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La lista ha cambiado"
+          }
+        }
+      }
+    },
     "history_match_score_accessibility" : {
       "comment" : "Spoken match score of an entry whose points are not computed yet; the score is not final. Arguments: home team, home goals, away team, away goals.",
       "extractionState" : "manual",

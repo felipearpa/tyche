@@ -2,13 +2,13 @@ package com.felipearpa.tyche.bet.finished
 
 import androidx.paging.PagingDataEvent
 import androidx.paging.PagingDataPresenter
-import com.felipearpa.tyche.bet.PoolGamblerBetModel
 import com.felipearpa.tyche.bet.finished.HistoryPointsSummaryState.Presentation
 import com.felipearpa.tyche.bet.finished.HistoryPointsSummaryState.RefreshStatus
+import com.felipearpa.tyche.bet.kickoffgroup.KickoffGroupModel
+import com.felipearpa.tyche.bet.kickoffgroup.kickoffGroup
+import com.felipearpa.tyche.bet.kickoffgroup.settledBet
 import com.felipearpa.tyche.core.paging.CursorPage
-import com.felipearpa.tyche.core.type.TeamScore
 import com.felipearpa.tyche.data.bet.application.GetFinishedPoolGamblerBets
-import com.felipearpa.tyche.data.bet.domain.PoolGamblerBet
 import com.felipearpa.tyche.data.pool.application.GetPoolGamblerScore
 import com.felipearpa.tyche.data.pool.domain.PoolGamblerScore
 import io.kotest.matchers.shouldBe
@@ -27,10 +27,11 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kotlinx.coroutines.withContext
-import kotlinx.datetime.LocalDateTime
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import kotlin.time.Duration.Companion.hours
+import kotlin.time.Instant
 
 /**
  * History's earned-points total: requested on entry, on pull to refresh, and on summary retry;
@@ -113,7 +114,7 @@ class FinishedBetListViewModelPointsSummaryTest {
             Result.success(score(589)) coAndThen { gate.await() }
         val viewModel = viewModel(getPoolGamblerScore)
 
-        viewModel.refreshPointsSummary()
+        viewModel.refresh()
         viewModel.pointsSummary.value.presentation shouldBe
             Presentation.Points(HistoryPoints.Earned(589), RefreshStatus.REFRESHING)
         viewModel.pointsSummary.value.isPullRefreshing shouldBe true
@@ -133,7 +134,7 @@ class FinishedBetListViewModelPointsSummaryTest {
         )
         val viewModel = viewModel(getPoolGamblerScore)
 
-        viewModel.refreshPointsSummary()
+        viewModel.refresh()
 
         viewModel.pointsSummary.value.presentation shouldBe
             Presentation.Points(HistoryPoints.Unavailable, RefreshStatus.CURRENT)
@@ -151,7 +152,7 @@ class FinishedBetListViewModelPointsSummaryTest {
             { withContext(NonCancellable) { newer.await() } }
         val viewModel = viewModel(getPoolGamblerScore)
 
-        viewModel.refreshPointsSummary()
+        viewModel.refresh()
         viewModel.loadPointsSummary()
         newer.complete(Result.success(score(30)))
         older.complete(Result.success(score(20)))
@@ -172,8 +173,8 @@ class FinishedBetListViewModelPointsSummaryTest {
                 { withContext(NonCancellable) { newer.await() } }
             val viewModel = viewModel(getPoolGamblerScore)
 
-            viewModel.refreshPointsSummary()
-            viewModel.refreshPointsSummary()
+            viewModel.refresh()
+            viewModel.refresh()
             newer.complete(Result.success(score(30)))
             older.complete(Result.failure(IllegalStateException("offline")))
 
@@ -204,15 +205,15 @@ class FinishedBetListViewModelPointsSummaryTest {
     fun `given loaded rows when further pages load then the total is neither requested again nor changed`() =
         runTest {
             val getFinishedPoolGamblerBets = mockk<GetFinishedPoolGamblerBets>()
-            coEvery { getFinishedPoolGamblerBets.execute(POOL_ID, GAMBLER_ID, null, null) } returns
-                Result.success(CursorPage(items = bets(prefix = "first", count = 3), next = "page-2"))
-            coEvery { getFinishedPoolGamblerBets.execute(POOL_ID, GAMBLER_ID, "page-2", null) } returns
-                Result.success(CursorPage(items = bets(prefix = "second", count = 3), next = null))
+            coEvery { getFinishedPoolGamblerBets.execute(POOL_ID, GAMBLER_ID, null) } returns
+                Result.success(CursorPage(items = groups(firstHour = 0, count = 3), next = "page-2"))
+            coEvery { getFinishedPoolGamblerBets.execute(POOL_ID, GAMBLER_ID, "page-2") } returns
+                Result.success(CursorPage(items = groups(firstHour = 3, count = 3), next = null))
             val getPoolGamblerScore = scores(Result.success(score(120)))
             val viewModel = viewModel(getPoolGamblerScore, getFinishedPoolGamblerBets)
             val presenter = RecordingPresenter()
 
-            val collection = launch { viewModel.poolGamblerBets.collectLatest(presenter::collectFrom) }
+            val collection = launch { viewModel.kickoffGroups.collectLatest(presenter::collectFrom) }
             advanceUntilIdle()
             presenter.size shouldBe 3
             presenter[presenter.size - 1]
@@ -220,7 +221,7 @@ class FinishedBetListViewModelPointsSummaryTest {
             presenter.size shouldBe 6
             collection.cancel()
 
-            coVerify(exactly = 2) { getFinishedPoolGamblerBets.execute(any(), any(), any(), any()) }
+            coVerify(exactly = 2) { getFinishedPoolGamblerBets.execute(any(), any(), any()) }
             coVerify(exactly = 1) { getPoolGamblerScore.execute(any(), any()) }
             viewModel.pointsSummary.value.presentation shouldBe
                 Presentation.Points(HistoryPoints.Earned(120), RefreshStatus.CURRENT)
@@ -229,8 +230,8 @@ class FinishedBetListViewModelPointsSummaryTest {
     @Test
     fun `given a failed total when the summary is retried then the rows are not requested again`() = runTest {
         val getFinishedPoolGamblerBets = mockk<GetFinishedPoolGamblerBets>()
-        coEvery { getFinishedPoolGamblerBets.execute(POOL_ID, GAMBLER_ID, null, null) } returns
-            Result.success(CursorPage(items = bets(prefix = "first", count = 3), next = null))
+        coEvery { getFinishedPoolGamblerBets.execute(POOL_ID, GAMBLER_ID, null) } returns
+            Result.success(CursorPage(items = groups(firstHour = 0, count = 3), next = null))
         val getPoolGamblerScore = mockk<GetPoolGamblerScore>()
         coEvery { getPoolGamblerScore.execute(POOL_ID, GAMBLER_ID) } returnsMany listOf(
             Result.failure(IllegalStateException("offline")),
@@ -238,7 +239,7 @@ class FinishedBetListViewModelPointsSummaryTest {
         )
         val viewModel = viewModel(getPoolGamblerScore, getFinishedPoolGamblerBets)
         val presenter = RecordingPresenter()
-        val collection = launch { viewModel.poolGamblerBets.collectLatest(presenter::collectFrom) }
+        val collection = launch { viewModel.kickoffGroups.collectLatest(presenter::collectFrom) }
         advanceUntilIdle()
 
         viewModel.loadPointsSummary()
@@ -246,7 +247,7 @@ class FinishedBetListViewModelPointsSummaryTest {
 
         presenter.size shouldBe 3
         collection.cancel()
-        coVerify(exactly = 1) { getFinishedPoolGamblerBets.execute(any(), any(), any(), any()) }
+        coVerify(exactly = 1) { getFinishedPoolGamblerBets.execute(any(), any(), any()) }
         viewModel.pointsSummary.value.presentation shouldBe
             Presentation.Points(HistoryPoints.Earned(120), RefreshStatus.CURRENT)
     }
@@ -279,34 +280,23 @@ class FinishedBetListViewModelPointsSummaryTest {
         beforePosition = 8,
         score = value,
         gamblerCount = 13,
+        trendGroup = null,
     )
 
-    private fun bets(prefix: String, count: Int) = (1..count).map { index ->
-        PoolGamblerBet(
-            poolId = POOL_ID,
-            gamblerId = GAMBLER_ID,
-            gamblerUsername = "felipe",
-            matchId = "$prefix-$index",
-            homeTeamId = "es",
-            homeTeamName = "España",
-            awayTeamId = "ar",
-            awayTeamName = "Argentina",
-            awayTeamScore = 0,
-            matchScore = TeamScore(0, 0),
-            betScore = TeamScore(3, 2),
-            score = 0,
-            matchDateTime = LocalDateTime(year = 2026, month = 7, day = 19, hour = 14, minute = 0),
-            isLocked = true,
-            isComputed = true,
+    /** [count] one-match groups, an hour apart, starting [firstHour] hours after a fixed kickoff. */
+    private fun groups(firstHour: Int, count: Int) = (firstHour until firstHour + count).map { hour ->
+        kickoffGroup(
+            (FIRST_KICKOFF + hour.hours).toString(),
+            settledBet(matchId = "match-$hour", score = 0, gamblerId = GAMBLER_ID),
         )
     }
 
     /** Presents paging data the way a list does, so reading the last row requests the next page. */
-    private class RecordingPresenter : PagingDataPresenter<PoolGamblerBetModel>(
+    private class RecordingPresenter : PagingDataPresenter<KickoffGroupModel>(
         mainContext = Dispatchers.Main,
     ) {
         override suspend fun presentPagingDataEvent(
-            event: PagingDataEvent<PoolGamblerBetModel>,
+            event: PagingDataEvent<KickoffGroupModel>,
         ) = Unit
     }
 }
@@ -314,3 +304,4 @@ class FinishedBetListViewModelPointsSummaryTest {
 private const val POOL_ID = "pool-id"
 private const val OTHER_POOL_ID = "other-pool-id"
 private const val GAMBLER_ID = "gambler-id"
+private val FIRST_KICKOFF = Instant.parse("2026-07-01T00:00:00Z")

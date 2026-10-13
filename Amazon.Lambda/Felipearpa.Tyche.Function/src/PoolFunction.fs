@@ -30,7 +30,7 @@ module PoolFunction =
         : IResult Async =
         async {
             let! page = getPoolGamblerScoresByPool.ExecuteAsync(poolId |> Ulid.newOf, next)
-            return Results.Ok(page |> CursorPage.map PoolGamblerScoreTransformer.toResponse)
+            return Results.Ok(page |> CursorPage.map PoolGamblerScoreTransformer.ofStanding)
         }
         |> ContinuationResponse.orInvalidCursor
 
@@ -47,7 +47,7 @@ module PoolFunction =
                 | Ok maybeScore ->
                     match maybeScore with
                     | None -> Results.NotFound()
-                    | Some score -> Results.Ok(score |> PoolGamblerScoreTransformer.toResponse)
+                    | Some standing -> Results.Ok(standing |> PoolGamblerScoreTransformer.ofStanding)
                 | Error _ -> Results.InternalServerError()
         }
 
@@ -66,18 +66,16 @@ module PoolFunction =
         }
         |> ContinuationResponse.orInvalidCursor
 
+    /// History: whole kickoff groups, newest kickoff first.
     let getFinishedBetsAsync
         (poolId: string)
         (gamblerId: string)
-        (searchText: string option)
         (next: string option)
         (getFinishedPoolGamblerBets: GetFinishedPoolGamblerBets)
         : IResult Async =
         async {
-            let! page =
-                getFinishedPoolGamblerBets.ExecuteAsync(poolId |> Ulid.newOf, gamblerId |> Ulid.newOf, searchText, next)
-
-            return Results.Ok(page |> CursorPage.map PoolGamblerBetTransformer.toResponse)
+            let! page = getFinishedPoolGamblerBets.ExecuteAsync(poolId |> Ulid.newOf, gamblerId |> Ulid.newOf, next)
+            return Results.Ok(page |> CursorPage.map KickoffGroupTransformer.toResponse)
         }
         |> ContinuationResponse.orInvalidCursor
 
@@ -96,6 +94,7 @@ module PoolFunction =
         }
         |> ContinuationResponse.orInvalidCursor
 
+    /// Timeline: whole kickoff groups, unsettled groups first, then settled ones.
     let getBetsTimelineAsync
         (poolId: string)
         (gamblerId: string)
@@ -105,7 +104,7 @@ module PoolFunction =
         async {
             let! page = getGamblerBetsTimeline.ExecuteAsync(poolId |> Ulid.newOf, gamblerId |> Ulid.newOf, next)
 
-            return Results.Ok(page |> CursorPage.map PoolGamblerBetTransformer.toResponse)
+            return Results.Ok(page |> CursorPage.map KickoffGroupTransformer.toResponse)
         }
         |> ContinuationResponse.orInvalidCursor
 

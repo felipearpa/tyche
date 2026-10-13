@@ -1,3 +1,4 @@
+import Core
 import Foundation
 import Pool
 import Testing
@@ -20,7 +21,7 @@ struct UsernamePreviewTests {
         #expect(model.gamblerId == accountId)
         #expect(model.position == 1)
         #expect(model.beforePosition == 2)
-        #expect(model.rank() == 1) // production rank rail renders an upward movement of one place
+        #expect(model.movement == .moved(places: 1, partialProgress: nil)) // production rank rail renders an upward movement of one place
         #expect(model.score == 18)
         #expect(model.gamblerCount == nil)
     }

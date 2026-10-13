@@ -2,6 +2,8 @@ package com.felipearpa.tyche.data.bet.infrastructure
 
 import com.felipearpa.tyche.core.paging.CursorPage
 import com.felipearpa.tyche.data.bet.domain.BetRequest
+import com.felipearpa.tyche.data.bet.domain.KickoffGroupFeedException
+import com.felipearpa.tyche.data.bet.domain.KickoffGroupResponse
 import com.felipearpa.tyche.data.bet.domain.PoolGamblerBetDataSource
 import com.felipearpa.tyche.data.bet.domain.PoolGamblerBetResponse
 import com.felipearpa.tyche.data.bet.domain.RankedMatchBetsException
@@ -35,12 +37,15 @@ internal class PoolGamblerBetRemoteKtorDataSource(private val httpClient: HttpCl
         poolId: String,
         gamblerId: String,
         next: String?,
-        searchText: String?,
-    ): CursorPage<PoolGamblerBetResponse> =
-        httpClient.get("pools/$poolId/gamblers/$gamblerId/bets/finished") {
-            parameter("next", next)
-            parameter("searchText", searchText)
-        }.body()
+    ): CursorPage<KickoffGroupResponse> =
+        try {
+            httpClient.get("pools/$poolId/gamblers/$gamblerId/bets/finished") {
+                // Ktor omits a null parameter, so a first page sends no cursor.
+                parameter("next", next)
+            }.body()
+        } catch (exception: ResponseException) {
+            throw exception.toKickoffGroupFeedException() ?: exception
+        }
 
     override suspend fun getLivePoolGamblerBets(
         poolId: String,
@@ -79,10 +84,14 @@ internal class PoolGamblerBetRemoteKtorDataSource(private val httpClient: HttpCl
         poolId: String,
         gamblerId: String,
         next: String?,
-    ): CursorPage<PoolGamblerBetResponse> =
-        httpClient.get("pools/$poolId/gamblers/$gamblerId/bets/timeline") {
-            parameter("next", next)
-        }.body()
+    ): CursorPage<KickoffGroupResponse> =
+        try {
+            httpClient.get("pools/$poolId/gamblers/$gamblerId/bets/timeline") {
+                parameter("next", next)
+            }.body()
+        } catch (exception: ResponseException) {
+            throw exception.toKickoffGroupFeedException() ?: exception
+        }
 
     override suspend fun bet(betRequest: BetRequest): PoolGamblerBetResponse =
         httpClient.patch("bets") {
@@ -99,13 +108,19 @@ private data class ErrorResponse(val error: String? = null)
 
 private val errorResponseJson = Json { ignoreUnknownKeys = true }
 
+/** The response's `error` code, or `null` when the body is not the expected error JSON. */
+private suspend fun ResponseException.errorCode(): String? =
+    runCatching {
+        errorResponseJson.decodeFromString<ErrorResponse>(response.bodyAsText()).error
+    }.getOrNull()
+
 /**
  * The ranked failure for this error response, or `null` when it is not one of the ranked mode's
  * own errors. A body that is not the expected JSON is not a ranked error.
  */
-private suspend fun ResponseException.toRankedMatchBetsException(): RankedMatchBetsException? {
-    val errorCode = runCatching {
-        errorResponseJson.decodeFromString<ErrorResponse>(response.bodyAsText()).error
-    }.getOrNull()
-    return RankedMatchBetsException.from(statusCode = response.status.value, errorCode = errorCode)
-}
+private suspend fun ResponseException.toRankedMatchBetsException(): RankedMatchBetsException? =
+    RankedMatchBetsException.from(statusCode = response.status.value, errorCode = errorCode())
+
+/** The grouped-feed failure for this error response, or `null` when it is not one of its own errors. */
+private suspend fun ResponseException.toKickoffGroupFeedException(): KickoffGroupFeedException? =
+    KickoffGroupFeedException.from(statusCode = response.status.value, errorCode = errorCode())

@@ -1,7 +1,7 @@
 #!/bin/bash
 # Enqueues a maintenance job for one pool or for every pool.
 #
-#   ./enqueue-maintenance.sh INITIALIZE_IDENTITIES|BACKFILL_PROJECTION|VERIFY_READINESS|RECONCILE_POOL <poolId|--all>
+#   ./enqueue-maintenance.sh INITIALIZE_IDENTITIES|BACKFILL_PROJECTION|BACKFILL_KICKOFF_GROUPS|VERIFY_READINESS|RECONCILE_POOL <poolId|--all>
 #   ./enqueue-maintenance.sh PROPAGATE_TOTAL <poolId> <gamblerId>
 #   ./enqueue-maintenance.sh RETIRE_MEMBERSHIP <poolId> <gamblerId> [membershipGeneration]
 #
@@ -25,7 +25,7 @@ case "$kind" in
     body="{\"schema\":1,\"kind\":\"RETIRE_MEMBERSHIP\",\"poolId\":\"$target\",\"gamblerId\":\"$3\""
     [ -n "$generation" ] && body="$body,\"generation\":\"$generation\""
     send "$body}" ;;
-  INITIALIZE_IDENTITIES|BACKFILL_PROJECTION|VERIFY_READINESS|RECONCILE_POOL)
+  INITIALIZE_IDENTITIES|BACKFILL_PROJECTION|BACKFILL_KICKOFF_GROUPS|VERIFY_READINESS|RECONCILE_POOL)
     if [ "$target" = "--all" ]; then
       pools=$(aws dynamodb scan --region "$REGION" --table-name "$POOL_TABLE" \
         --filter-expression "begins_with(pk, :p) AND pk = sk" \

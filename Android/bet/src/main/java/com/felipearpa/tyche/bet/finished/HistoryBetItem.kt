@@ -3,6 +3,7 @@ package com.felipearpa.tyche.bet.finished
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
@@ -24,7 +25,9 @@ import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewLightDark
@@ -39,22 +42,28 @@ import com.felipearpa.tyche.bet.timelineBetPreviewModels
 import com.felipearpa.tyche.ui.FlagImage
 import com.felipearpa.tyche.ui.theme.LocalLoadingPlaceholderPulse
 import com.felipearpa.tyche.ui.theme.TycheTheme
+import kotlin.time.Instant
 import com.revenuecat.placeholder.placeholder
 
 /**
- * One match in History or another gambler's Timeline: the date and time, both teams around the
- * score, and the owner's bet with its points. Loading slots render this same component from
- * [historyBetPlaceholderModel] with [isPlaceholder] set: each content leaf is then masked with the
- * shared [LocalLoadingPlaceholderPulse], the row ignores taps, and nothing reaches TalkBack.
+ * One match of a kickoff group in History or another gambler's Timeline: both teams around the
+ * score, and the owner's bet with its points. The group header shows the date and time, so the
+ * row does not repeat them visibly; its announcement still starts with them, from
+ * [kickoffDateTime], so a row focused directly keeps its own date and time context. Loading slots
+ * render this same component from [historyBetPlaceholderModel] with [isPlaceholder] set: each
+ * content leaf is then masked with the shared [LocalLoadingPlaceholderPulse], the row ignores
+ * taps, and nothing reaches TalkBack.
  *
  * [owner] selects the ownership wording; it defaults to the signed-in gambler's "Your bet". A
  * computed entry shows the final score and the awarded points. An entry whose points are not
  * computed yet shows the match score available so far (or dashes) and "Points pending", and never
- * describes that score as final or the match as live.
+ * describes that score as final or the match as live. The row has no horizontal gutter; its
+ * group section provides it.
  */
 @Composable
 fun HistoryBetItem(
     poolGamblerBet: PoolGamblerBetModel,
+    kickoffDateTime: Instant,
     dateFormat: HistoryMatchDateFormat,
     modifier: Modifier = Modifier,
     owner: HistoryOwner = HistoryOwner.SignedInGambler,
@@ -62,8 +71,8 @@ fun HistoryBetItem(
     onClick: (() -> Unit)? = null,
 ) {
     val leafMask = leafMask(isPlaceholder)
-    val dateText = dateFormat.date(poolGamblerBet.matchDateTime)
-    val timeText = dateFormat.time(poolGamblerBet.matchDateTime)
+    val dateText = dateFormat.date(kickoffDateTime)
+    val timeText = dateFormat.time(kickoffDateTime)
     val announcement = historyBetAnnouncement(poolGamblerBet, owner, dateText, timeText)
 
     val interaction = if (!isPlaceholder && onClick != null) Modifier.clickable(onClick = onClick) else Modifier
@@ -77,13 +86,14 @@ fun HistoryBetItem(
         modifier = modifier
             .then(interaction)
             .then(semantics)
-            .padding(horizontal = HistoryStyle.horizontalPadding, vertical = VERTICAL_PADDING),
+            .padding(vertical = VERTICAL_PADDING),
     ) {
-        DateTimeLine(dateText = dateText, timeText = timeText, leafMask = leafMask)
-        if (LocalDensity.current.fontScale >= STACKED_FONT_SCALE) {
-            StackedMatchup(poolGamblerBet = poolGamblerBet, leafMask = leafMask)
-        } else {
-            Matchup(poolGamblerBet = poolGamblerBet, leafMask = leafMask)
+        BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
+            if (shouldStackMatchup(poolGamblerBet = poolGamblerBet, availableWidth = maxWidth)) {
+                StackedMatchup(poolGamblerBet = poolGamblerBet, leafMask = leafMask)
+            } else {
+                Matchup(poolGamblerBet = poolGamblerBet, leafMask = leafMask)
+            }
         }
         Footer(poolGamblerBet = poolGamblerBet, owner = owner, leafMask = leafMask, isPlaceholder = isPlaceholder)
     }
@@ -107,28 +117,32 @@ private fun leafMask(isPlaceholder: Boolean): Modifier {
     )
 }
 
-@OptIn(ExperimentalLayoutApi::class)
+/**
+ * Whether the teams stack around the result: at large font scales, or when a team name's widest
+ * word cannot fit its column beside the result, so names wrap only between words.
+ */
 @Composable
-private fun DateTimeLine(dateText: String, timeText: String, leafMask: Modifier) {
-    // Date leading and time trailing; the time moves below the date when both do not fit.
-    FlowRow(
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalArrangement = Arrangement.spacedBy(2.dp),
-        modifier = Modifier.fillMaxWidth(),
-    ) {
-        Text(
-            text = dateText,
-            style = MaterialTheme.typography.bodyMedium,
-            color = HistoryStyle.secondaryText,
-            modifier = Modifier.padding(end = MINIMUM_GAP).then(leafMask),
-        )
-        Text(
-            text = timeText,
-            style = MaterialTheme.typography.bodyMedium,
-            color = HistoryStyle.secondaryText,
-            modifier = leafMask,
-        )
+private fun shouldStackMatchup(poolGamblerBet: PoolGamblerBetModel, availableWidth: Dp): Boolean {
+    if (LocalDensity.current.fontScale >= STACKED_FONT_SCALE) return true
+    val textMeasurer = rememberTextMeasurer()
+    val nameStyle = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.SemiBold)
+    val scoreStyle = MaterialTheme.typography.displayMedium.copy(
+        fontSize = SCORE_SIZE,
+        fontWeight = FontWeight.Bold,
+        fontFeatureSettings = TABULAR_NUMBERS,
+    )
+    fun width(text: String, style: TextStyle) = textMeasurer.measure(text, style, softWrap = false).size.width
+    val density = LocalDensity.current
+    val resultWidth = with(density) {
+        (width(scoreText(poolGamblerBet.matchScore?.homeTeamValue), scoreStyle) +
+            width("–", scoreStyle.copy(fontSize = SCORE_SIZE * SEPARATOR_SCALE)) +
+            width(scoreText(poolGamblerBet.matchScore?.awayTeamValue), scoreStyle)).toDp() + SCORE_SPACING * 2
     }
+    val columnWidth = (availableWidth - resultWidth - MINIMUM_GAP * 2) / 2
+    val widestWord = listOf(poolGamblerBet.homeTeamName, poolGamblerBet.awayTeamName)
+        .flatMap { it.split(' ') }
+        .maxOf { width(it, nameStyle) }
+    return with(density) { widestWord.toDp() } > columnWidth
 }
 
 /**
@@ -412,7 +426,7 @@ private val SCORE_SPACING = 12.dp
 private val BET_LABEL_SPACING = 8.dp
 private const val TABULAR_NUMBERS = "tnum"
 
-/** At or above this font scale the teams stack around the result. */
+/** At or above this font scale the teams always stack around the result. */
 private const val STACKED_FONT_SCALE = 1.5f
 
 @PreviewLightDark
@@ -423,13 +437,19 @@ private fun HistoryBetItemPreview() {
     val dateFormat = rememberHistoryMatchDateFormat()
     TycheTheme {
         Surface {
-            Column {
+            Column(modifier = Modifier.padding(horizontal = HistoryStyle.horizontalPadding)) {
                 historyBetPreviewModels().forEach { bet ->
-                    HistoryBetItem(poolGamblerBet = bet, dateFormat = dateFormat, onClick = {})
-                    HistoryRowDivider()
+                    HistoryBetItem(
+                        poolGamblerBet = bet,
+                        kickoffDateTime = PREVIEW_KICKOFF,
+                        dateFormat = dateFormat,
+                        onClick = {},
+                    )
+                    HorizontalDivider()
                 }
                 HistoryBetItem(
                     poolGamblerBet = historyBetPlaceholderModel(),
+                    kickoffDateTime = PREVIEW_KICKOFF,
                     dateFormat = dateFormat,
                     isPlaceholder = true,
                 )
@@ -445,17 +465,20 @@ private fun HistoryBetItemSelectedGamblerPreview() {
     val dateFormat = rememberHistoryMatchDateFormat()
     TycheTheme {
         Surface {
-            Column {
+            Column(modifier = Modifier.padding(horizontal = HistoryStyle.horizontalPadding)) {
                 timelineBetPreviewModels().forEach { bet ->
                     HistoryBetItem(
                         poolGamblerBet = bet,
+                        kickoffDateTime = PREVIEW_KICKOFF,
                         dateFormat = dateFormat,
                         owner = HistoryOwner.SelectedGambler(name = "El mono"),
                         onClick = {},
                     )
-                    HistoryRowDivider()
+                    HorizontalDivider()
                 }
             }
         }
     }
 }
+
+private val PREVIEW_KICKOFF = Instant.parse("2026-07-19T19:00:00Z")

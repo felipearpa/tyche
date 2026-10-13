@@ -1,5 +1,6 @@
 package com.felipearpa.tyche
 
+import com.felipearpa.tyche.core.type.KickoffGroupProgress
 import com.felipearpa.tyche.pool.PoolGamblerScoreModel
 
 /**
@@ -20,6 +21,12 @@ object UsernamePreview {
      * (`beforePosition - position`) renders an upward movement of one place.
      */
     const val BEFORE_POSITION = 2
+
+    /**
+     * Fixed illustrative trend group: complete, so the rank rail shows the movement without a
+     * computed-count qualifier.
+     */
+    val TREND_GROUP = KickoffGroupProgress(computedMatches = 1, totalMatches = 1)
 
     /** Fixed illustrative score shown in the preview row. */
     const val SCORE = 18
@@ -52,6 +59,7 @@ object UsernamePreview {
             beforePosition = BEFORE_POSITION,
             score = SCORE,
             gamblerCount = null,
+            trendGroup = TREND_GROUP,
         )
     }
 }

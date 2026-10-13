@@ -38,6 +38,7 @@ module InitialPoolGamblerBetTransformerTest =
         item.ContainsKey("score") |> shouldEqual false
         item.ContainsKey("computedDateTime") |> shouldEqual false
         item.ContainsKey("computedRequestId") |> shouldEqual false
+        item.ContainsKey("computedMatchDateTime") |> shouldEqual false
         item.ContainsKey("homeTeamScore") |> shouldEqual false
         item.ContainsKey("awayTeamScore") |> shouldEqual false
         item.ContainsKey("groupName") |> shouldEqual false
@@ -88,3 +89,4 @@ module InitialPoolGamblerBetTransformerTest =
         item["awayTeamScore"].N |> shouldEqual "1"
         item["computedRequestId"].S |> shouldEqual "01K1PX1TX2NM1HG851S1V0QG6Z"
         item["computedDateTime"].S |> shouldEqual (computedAt.ToString("o"))
+        item["computedMatchDateTime"].S |> shouldEqual item["matchDateTime"].S

@@ -11,8 +11,11 @@
         <Compile Include="Infrastructure\PoolTable.fs" />
         <Compile Include="Domain\AttributeValueTransformer.fs" />
         <Compile Include="Domain\LockPolicy.fs" />
+        <Compile Include="Domain\KickoffGroup.fs" />
         <Compile Include="Domain\PoolGamblerScore.fs" />
         <Compile Include="Domain\PoolGamblerBet.fs" />
+        <Compile Include="Domain\KickoffGroupFeed.fs" />
+        <Compile Include="Domain\DetailKickoff.fs" />
         <Compile Include="Domain\InitialPoolGamblerBet.fs" />
         <Compile Include="Domain\PoolOperation.fs" />
         <Compile Include="Domain\RankingKey.fs" />
@@ -40,6 +43,7 @@
         <Compile Include="Domain\RestorePolicy.fs" />
         <Compile Include="Domain\PositionPolicy.fs" />
         <Compile Include="Domain\IPoolSettlementRepository.fs" />
+        <Compile Include="Domain\IDetailKickoffRepository.fs" />
         <Compile Include="Domain\IPoolProjectionRepository.fs" />
         <Compile Include="Domain\PoolMessaging.fs" />
         <Compile Include="Domain\IRankedMatchBetsRepository.fs" />
@@ -50,6 +54,8 @@
         <Compile Include="Infrastructure\PoolSettlementRequestBuilder.fs" />
         <Compile Include="Infrastructure\PoolProjectionRequestBuilder.fs" />
         <Compile Include="Infrastructure\PoolSettlementDynamoDbRepository.fs" />
+        <Compile Include="Infrastructure\DetailKickoffRequestBuilder.fs" />
+        <Compile Include="Infrastructure\DetailKickoffDynamoDbRepository.fs" />
         <Compile Include="Infrastructure\RankedMatchBetsCursor.fs" />
         <Compile Include="Infrastructure\RankedMatchBetsDynamoDbRepository.fs" />
         <Compile Include="Infrastructure\PoolSqsPublishers.fs" />
@@ -57,9 +63,10 @@
         <Compile Include="Infrastructure\GetPoolScoresRequestBuilder.fs" />
         <Compile Include="Infrastructure\GetPoolGamblerScoreRequestBuilder.fs" />
         <Compile Include="Infrastructure\GetGamblerCountsRequestBuilder.fs" />
+        <Compile Include="Infrastructure\GetPoolTrendsRequestBuilder.fs" />
         <Compile Include="Infrastructure\GetPendingPoolGamblerBetsRequestBuilder.fs" />
-        <Compile Include="Infrastructure\GetFinishedPoolGamblerBetsRequestBuilder.fs" />
         <Compile Include="Infrastructure\GetLivePoolGamblerBetsRequestBuilder.fs" />
+        <Compile Include="Infrastructure\GroupedBetFeedRequestBuilder.fs" />
         <Compile Include="Infrastructure\IsPoolMemberRequestBuilder.fs" />
         <Compile Include="Infrastructure\BetRequestBuilder.fs" />
         <Compile Include="Infrastructure\UpdatePoolLayoutVersionRequestBuilder.fs" />
@@ -80,6 +87,9 @@
         <Compile Include="Infrastructure\UpdateGamblerScoreUsernameRequestBuilder.fs" />
         <Compile Include="Infrastructure\UpdateGamblerBetUsernameRequestBuilder.fs" />
         <Compile Include="Infrastructure\PoolDynamoDBRepository.fs" />
+        <Compile Include="Application\KickoffGroupReader.fs" />
+        <Compile Include="Application\GroupedBetFeed.fs" />
+        <Compile Include="Application\PoolStandings.fs" />
         <Compile Include="Application\GetPoolGamblerScoresByGambler.fs" />
         <Compile Include="Application\GetPoolGamblerScoresByPool.fs" />
         <Compile Include="Application\Bet.fs" />
@@ -102,6 +112,7 @@
         <Compile Include="Application\RestorePass.fs" />
         <Compile Include="Application\ProcessPoolCommand.fs" />
         <Compile Include="Application\DispatchMatchResult.fs" />
+        <Compile Include="Application\KickoffCopies.fs" />
         <Compile Include="Application\BetMaterialization.fs" />
         <Compile Include="Application\FanOutMatchToGamblers.fs" />
         <Compile Include="Application\MaterializeJoinedGambler.fs" />

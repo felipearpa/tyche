@@ -1,0 +1,297 @@
+[
+  {
+    "Name": "pending bets: typed traversal",
+    "Passed": true,
+    "Detail": "6 storage pages (items per page 2,0,2,0,0,2), 6 items, no duplicates; converged on attempt 1 after 0,7 s"
+  },
+  {
+    "Name": "pending bets: complete keys",
+    "Passed": true,
+    "Detail": "5 tokens, each matchDateTime:S,pk:S,sk:S; all fit the query\u0027s start-key contract; unchanged by URL transport; boundaries in index order"
+  },
+  {
+    "Name": "pending bets: filtered-empty page",
+    "Passed": true,
+    "Detail": "a page with no items kept its token and the traversal continued"
+  },
+  {
+    "Name": "pending bets: repeated traversal",
+    "Passed": true,
+    "Detail": "following the same tokens again returned the same pages and tokens, up to an empty last page after an exactly full one"
+  },
+  {
+    "Name": "pending bets: legacy pk/sk token",
+    "Passed": true,
+    "Detail": "rejected before the query with MissingKeyAttribute Some(matchDateTime); the same pk/sk start key sent to DynamoDB fails: Some(The provided starting key is invalid)"
+  },
+  {
+    "Name": "live bets: typed traversal",
+    "Passed": true,
+    "Detail": "6 storage pages (items per page 2,0,0,2,0,2), 6 items, no duplicates; converged on attempt 1 after 0,6 s"
+  },
+  {
+    "Name": "live bets: complete keys",
+    "Passed": true,
+    "Detail": "5 tokens, each matchDateTime:S,pk:S,sk:S; all fit the query\u0027s start-key contract; unchanged by URL transport; boundaries in index order"
+  },
+  {
+    "Name": "live bets: filtered-empty page",
+    "Passed": true,
+    "Detail": "a page with no items kept its token and the traversal continued"
+  },
+  {
+    "Name": "live bets: repeated traversal",
+    "Passed": true,
+    "Detail": "following the same tokens again returned the same pages and tokens, up to an empty last page after an exactly full one"
+  },
+  {
+    "Name": "live bets: legacy pk/sk token",
+    "Passed": true,
+    "Detail": "rejected before the query with MissingKeyAttribute Some(matchDateTime); the same pk/sk start key sent to DynamoDB fails: Some(The provided starting key is invalid)"
+  },
+  {
+    "Name": "finished bets by kickoff: typed traversal",
+    "Passed": true,
+    "Detail": "4 storage pages (items per page 2,2,2,0), 6 items, no duplicates; converged on attempt 1 after 0,4 s"
+  },
+  {
+    "Name": "finished bets by kickoff: complete keys",
+    "Passed": true,
+    "Detail": "3 tokens, each computedMatchDateTime:S,pk:S,sk:S; all fit the query\u0027s start-key contract; unchanged by URL transport; boundaries in index order"
+  },
+  {
+    "Name": "finished bets by kickoff: repeated traversal",
+    "Passed": true,
+    "Detail": "following the same tokens again returned the same pages and tokens, up to an empty last page after an exactly full one"
+  },
+  {
+    "Name": "finished bets by kickoff: legacy pk/sk token",
+    "Passed": true,
+    "Detail": "rejected before the query with MissingKeyAttribute Some(computedMatchDateTime); the same pk/sk start key sent to DynamoDB fails: Some(The provided starting key is invalid)"
+  },
+  {
+    "Name": "unsettled bets by kickoff: typed traversal",
+    "Passed": true,
+    "Detail": "6 storage pages (items per page 2,0,2,0,0,2), 6 items, no duplicates; converged on attempt 1 after 0,6 s"
+  },
+  {
+    "Name": "unsettled bets by kickoff: complete keys",
+    "Passed": true,
+    "Detail": "5 tokens, each matchDateTime:S,pk:S,sk:S; all fit the query\u0027s start-key contract; unchanged by URL transport; boundaries in index order"
+  },
+  {
+    "Name": "unsettled bets by kickoff: filtered-empty page",
+    "Passed": true,
+    "Detail": "a page with no items kept its token and the traversal continued"
+  },
+  {
+    "Name": "unsettled bets by kickoff: repeated traversal",
+    "Passed": true,
+    "Detail": "following the same tokens again returned the same pages and tokens, up to an empty last page after an exactly full one"
+  },
+  {
+    "Name": "unsettled bets by kickoff: legacy pk/sk token",
+    "Passed": true,
+    "Detail": "rejected before the query with MissingKeyAttribute Some(matchDateTime); the same pk/sk start key sent to DynamoDB fails: Some(The provided starting key is invalid)"
+  },
+  {
+    "Name": "legacy match bets: typed traversal",
+    "Passed": true,
+    "Detail": "4 storage pages (items per page 2,0,2,2), 6 items, no duplicates; converged on attempt 1 after 0,4 s"
+  },
+  {
+    "Name": "legacy match bets: complete keys",
+    "Passed": true,
+    "Detail": "3 tokens, each getPoolGamblerScoresByMatchPk:S,getPoolGamblerScoresByMatchSk:S,pk:S,sk:S; all fit the query\u0027s start-key contract; unchanged by URL transport; boundaries in index order"
+  },
+  {
+    "Name": "legacy match bets: filtered-empty page",
+    "Passed": true,
+    "Detail": "a page with no items kept its token and the traversal continued"
+  },
+  {
+    "Name": "legacy match bets: repeated traversal",
+    "Passed": true,
+    "Detail": "following the same tokens again returned the same pages and tokens, up to an empty last page after an exactly full one"
+  },
+  {
+    "Name": "legacy match bets: legacy pk/sk token",
+    "Passed": true,
+    "Detail": "rejected before the query with MissingKeyAttribute Some(getPoolGamblerScoresByMatchPk); the same pk/sk start key sent to DynamoDB fails: Some(The provided starting key is invalid)"
+  },
+  {
+    "Name": "gambler pool scores: typed traversal",
+    "Passed": true,
+    "Detail": "4 storage pages (items per page 2,0,2,1), 5 items, no duplicates; converged on attempt 1 after 0,8 s"
+  },
+  {
+    "Name": "gambler pool scores: complete keys",
+    "Passed": true,
+    "Detail": "3 tokens, each pk:S,score:N,sk:S; all fit the query\u0027s start-key contract; unchanged by URL transport; boundaries in index order"
+  },
+  {
+    "Name": "gambler pool scores: filtered-empty page",
+    "Passed": true,
+    "Detail": "a page with no items kept its token and the traversal continued"
+  },
+  {
+    "Name": "gambler pool scores: repeated traversal",
+    "Passed": true,
+    "Detail": "following the same tokens again returned the same pages and tokens, up to an empty last page after an exactly full one"
+  },
+  {
+    "Name": "gambler pool scores: legacy pk/sk token",
+    "Passed": true,
+    "Detail": "rejected before the query with MissingKeyAttribute Some(score); the same pk/sk start key sent to DynamoDB fails: Some(The provided starting key is invalid)"
+  },
+  {
+    "Name": "pool leaderboard: typed traversal",
+    "Passed": true,
+    "Detail": "4 storage pages (items per page 2,2,0,2), 6 items, no duplicates; converged on attempt 1 after 0,4 s"
+  },
+  {
+    "Name": "pool leaderboard: complete keys",
+    "Passed": true,
+    "Detail": "3 tokens, each pk:S,score:N,sk:S; all fit the query\u0027s start-key contract; unchanged by URL transport; boundaries in index order"
+  },
+  {
+    "Name": "pool leaderboard: filtered-empty page",
+    "Passed": true,
+    "Detail": "a page with no items kept its token and the traversal continued"
+  },
+  {
+    "Name": "pool leaderboard: repeated traversal",
+    "Passed": true,
+    "Detail": "following the same tokens again returned the same pages and tokens, up to an empty last page after an exactly full one"
+  },
+  {
+    "Name": "pool leaderboard: legacy pk/sk token",
+    "Passed": true,
+    "Detail": "rejected before the query with MissingKeyAttribute Some(score); the same pk/sk start key sent to DynamoDB fails: Some(The provided starting key is invalid)"
+  },
+  {
+    "Name": "pool members: typed traversal",
+    "Passed": true,
+    "Detail": "5 storage pages (items per page 2,2,2,2,0), 8 items, no duplicates; converged on attempt 1 after 0,5 s"
+  },
+  {
+    "Name": "pool members: complete keys",
+    "Passed": true,
+    "Detail": "4 tokens, each gamblerUsername:S,pk:S,sk:S; all fit the query\u0027s start-key contract; unchanged by URL transport; boundaries in index order"
+  },
+  {
+    "Name": "pool members: repeated traversal",
+    "Passed": true,
+    "Detail": "following the same tokens again returned the same pages and tokens, up to an empty last page after an exactly full one"
+  },
+  {
+    "Name": "pool members: legacy pk/sk token",
+    "Passed": true,
+    "Detail": "rejected before the query with MissingKeyAttribute Some(gamblerUsername); the same pk/sk start key sent to DynamoDB fails: Some(The provided starting key is invalid)"
+  },
+  {
+    "Name": "gamblers by layout (fan-out): typed traversal",
+    "Passed": true,
+    "Detail": "8 storage pages (items per page 2,2,2,2,2,2,2,0), 14 items, no duplicates; converged on attempt 1 after 0,9 s"
+  },
+  {
+    "Name": "gamblers by layout (fan-out): complete keys",
+    "Passed": true,
+    "Detail": "7 tokens, each getGamblersByPoolLayoutPk:S,getGamblersByPoolLayoutSk:S,pk:S,sk:S; all fit the query\u0027s start-key contract; unchanged by URL transport; boundaries in index order"
+  },
+  {
+    "Name": "gamblers by layout (fan-out): repeated traversal",
+    "Passed": true,
+    "Detail": "following the same tokens again returned the same pages and tokens, up to an empty last page after an exactly full one"
+  },
+  {
+    "Name": "gamblers by layout (fan-out): legacy pk/sk token",
+    "Passed": true,
+    "Detail": "rejected before the query with MissingKeyAttribute Some(getGamblersByPoolLayoutPk); the same pk/sk start key sent to DynamoDB fails: Some(The provided starting key is invalid)"
+  },
+  {
+    "Name": "open layouts: typed traversal",
+    "Passed": true,
+    "Detail": "4 storage pages (items per page 2,2,2,1), 7 items, no duplicates; converged on attempt 1 after 0,4 s"
+  },
+  {
+    "Name": "open layouts: complete keys",
+    "Passed": true,
+    "Detail": "3 tokens, each pk:S,sk:S,startDateTime:S,status:S; all fit the query\u0027s start-key contract; unchanged by URL transport; boundaries in index order"
+  },
+  {
+    "Name": "open layouts: repeated traversal",
+    "Passed": true,
+    "Detail": "following the same tokens again returned the same pages and tokens, up to an empty last page after an exactly full one"
+  },
+  {
+    "Name": "open layouts: legacy pk/sk token",
+    "Passed": true,
+    "Detail": "rejected before the query with MissingKeyAttribute Some(startDateTime); the same pk/sk start key sent to DynamoDB fails: Some(The provided starting key is invalid)"
+  },
+  {
+    "Name": "layout matches (base table): typed traversal",
+    "Passed": true,
+    "Detail": "6 storage pages (items per page 2,0,2,2,2,2), 10 items, no duplicates; converged on attempt 1 after 0,7 s"
+  },
+  {
+    "Name": "layout matches (base table): complete keys",
+    "Passed": true,
+    "Detail": "5 tokens, each pk:S,sk:S; all fit the query\u0027s start-key contract; unchanged by URL transport; boundaries in index order"
+  },
+  {
+    "Name": "layout matches (base table): filtered-empty page",
+    "Passed": true,
+    "Detail": "a page with no items kept its token and the traversal continued"
+  },
+  {
+    "Name": "layout matches (base table): repeated traversal",
+    "Passed": true,
+    "Detail": "following the same tokens again returned the same pages and tokens, up to an empty last page after an exactly full one"
+  },
+  {
+    "Name": "layout matches (base table): legacy pk/sk token",
+    "Passed": true,
+    "Detail": "legacy tokens traverse all 6 pages; DynamoDB accepts the pk/sk start key"
+  },
+  {
+    "Name": "timeline: live then finished phases",
+    "Passed": true,
+    "Detail": "9 pages (items 2,0,2,0,0,4,2,2,0), tokens live,live,live,live,live,finished,finished,finished,end; every live entry precedes every finished entry; an empty live page kept its live: token"
+  },
+  {
+    "Name": "regression control: ranked match bets",
+    "Passed": true,
+    "Detail": "RankedMatchBetsCursor over 4 pages (items 2,2,2,2) returned all 8 participants in total order"
+  },
+  {
+    "Name": "regression control: settlement match-index discovery",
+    "Passed": true,
+    "Detail": "raw-key discovery cursor over 8 pages found all 7 pools with the match"
+  },
+  {
+    "Name": "grouped History: storage page ends inside a kickoff group",
+    "Passed": true,
+    "Detail": "pages first[K3 2/2 x2] | token[K2 4/4 x4] | token[K1 1/2 x1, K0 1/1 x1] | token[]; the storage page behind page 2 held 2 of K2\u0027s 4 children and continued, the History page returned K2 with 4 rows, counts 4/4, movement Some((8, 4)), and no later page repeated it; every group once in kickoff-descending order; converged on attempt 1 after 2,9 s"
+  },
+  {
+    "Name": "grouped Timeline: partial group in the unsettled phase",
+    "Passed": true,
+    "Detail": "pages first[] | live[K1 1/2 x2] | live[] | live[] | live[] | live[K4 0/2 x2, K3 2/2 x2] | finished[K2 4/4 x4] | finished[K0 1/1 x1] | finished[]; K1 appeared once, on page [2], served from the unsettled phase with both rows and counts 1/2; the finished phase skipped it; unsettled groups oldest first, then settled newest first, both phases over several pages; converged on attempt 1 after 5,0 s"
+  },
+  {
+    "Name": "grouped Timeline: group after its last result in the finished phase",
+    "Passed": true,
+    "Detail": "after K1\u0027s last result: pages first[] | live[] | live[] | live[] | live[K4 0/2 x2] | live[K3 2/2 x2] | finished[K2 4/4 x4] | finished[K1 2/2 x2] | finished[K0 1/1 x1]; K1 appeared once, on page [8], among the settled groups with both rows and counts 2/2; History first[K3 2/2 x2] | token[K2 4/4 x4] | token[K1 2/2 x2] | token[K0 1/1 x1]; converged on attempt 1 after 5,0 s"
+  },
+  {
+    "Name": "grouped feeds: old computedDateTime token rejected, first page reloads",
+    "Passed": true,
+    "Detail": "old token (computedDateTime:S,pk:S,sk:S) from GetFinishedPoolGamblerBets-index: History append rejected with MissingKeyAttribute Some(computedMatchDateTime), Timeline finished: append rejected with MissingKeyAttribute Some(computedMatchDateTime) (the hosts answer 400 INVALID_CURSOR); one first-page History request returned K[3] and a token fitting the finished-by-kickoff contract, which read K[2]; Timeline\u0027s first page returned 0 groups and a live token (its first storage page holds only computed details)"
+  },
+  {
+    "Name": "regression control: username propagation",
+    "Passed": true,
+    "Detail": "raw-key queries over 7 memberships and 12 bets in one pool (2-item pages) updated 25 of 25 items"
+  }
+]

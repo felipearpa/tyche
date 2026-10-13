@@ -2,8 +2,10 @@ import SwiftUI
 import Core
 import UI
 
-/// One match in History or another gambler's Timeline: the date and time, both teams around the
-/// score, and the owner's bet with its points. Loading slots render this same component from a
+/// One match in History or another gambler's Timeline: both teams around the score, and the
+/// owner's bet with its points. Its kickoff group's header shows the date and time, so the row
+/// does not repeat them visually; its announcement still starts with them, so a row focused
+/// directly is understandable on its own. Loading slots render this same component from a
 /// placeholder model with `isPlaceholder: true`: native redaction under the shared
 /// `LoadingPlaceholderPulse` conceals its content, and it ignores touches and stays out of the
 /// accessibility tree.
@@ -50,40 +52,30 @@ struct HistoryBetItem: View {
 
     private var content: some View {
         VStack(spacing: sectionSpacing) {
-            dateTimeLine
-            if dynamicTypeSize.isAccessibilitySize {
-                stackedMatchup
-            } else {
-                matchup
-            }
+            teamsAndResult
             footer
         }
         .padding(.vertical, verticalPadding)
     }
 
-    // MARK: Date and time
-
-    private var dateTimeLine: some View {
-        ViewThatFits(in: .horizontal) {
-            HStack(alignment: .firstTextBaseline) {
-                Text(dateText)
-                Spacer(minLength: minimumGap)
-                Text(timeText)
-            }
-            VStack(alignment: .leading, spacing: 2) {
-                Text(dateText)
-                Text(timeText)
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-        }
-        .font(.subheadline)
-        .loadedForeground(HistoryStyle.secondaryText, isPlaceholder: isPlaceholder)
-    }
-
     // MARK: Teams and result
 
     /// Home on the left and away on the right of an intrinsic-width result; both team columns
-    /// share the remaining width, which keeps the result centered.
+    /// share the remaining width, which keeps the result centered. At accessibility text sizes,
+    /// or when either name's widest word cannot fit its column, the teams stack around the
+    /// result instead, so names wrap between words rather than inside one.
+    @ViewBuilder
+    private var teamsAndResult: some View {
+        if dynamicTypeSize.isAccessibilitySize {
+            stackedMatchup
+        } else {
+            ViewThatFits(in: .horizontal) {
+                matchup
+                stackedMatchup
+            }
+        }
+    }
+
     private var matchup: some View {
         HStack(alignment: .center, spacing: minimumGap) {
             teamColumn(code: poolGamblerBet.homeTeamId, name: poolGamblerBet.homeTeamName)
@@ -92,8 +84,8 @@ struct HistoryBetItem: View {
         }
     }
 
-    /// Accessibility text sizes leave no room for three columns, so the result sits between the
-    /// home and away teams vertically.
+    /// The result sits between the home and away teams vertically, and each team line gets the
+    /// full width.
     private var stackedMatchup: some View {
         VStack(alignment: .leading, spacing: sectionSpacing) {
             teamLine(code: poolGamblerBet.homeTeamId, name: poolGamblerBet.homeTeamName)
@@ -103,20 +95,48 @@ struct HistoryBetItem: View {
         }
     }
 
+    /// Both columns reserve the widest word of either name, so the three-column layout is only
+    /// chosen when every word fits the narrower of the two equal columns.
     private func teamColumn(code: String, name: String) -> some View {
         VStack(spacing: flagNameSpacing) {
             flag(code)
-            teamName(name)
+            wordWrappedName(name, reservingWordsOf: [poolGamblerBet.homeTeamName, poolGamblerBet.awayTeamName])
                 .multilineTextAlignment(.center)
         }
         .frame(maxWidth: .infinity)
     }
 
+    /// The flag sits beside the name while the name's widest word fits next to it; otherwise the
+    /// flag goes above the name, which then takes the whole width. A single word wider than the
+    /// whole width still wraps inside itself, since the text is never shrunk.
     private func teamLine(code: String, name: String) -> some View {
-        HStack(spacing: flagNameSpacing * 2) {
-            flag(code)
+        ViewThatFits(in: .horizontal) {
+            HStack(spacing: flagNameSpacing * 2) {
+                flag(code)
+                wordWrappedName(name, reservingWordsOf: [name])
+            }
+            VStack(alignment: .leading, spacing: flagNameSpacing) {
+                flag(code)
+                teamName(name)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
+        }
+    }
+
+    /// The team name, whose ideal width is that of the widest word in `names` rather than of the
+    /// whole name on one line; `ViewThatFits` therefore accepts a layout when the name can wrap
+    /// between words. The hidden words carry no text for assistive technology: the row is one
+    /// accessibility element with its own label.
+    private func wordWrappedName(_ name: String, reservingWordsOf names: [String]) -> some View {
+        ZStack(alignment: .leading) {
+            ForEach(Set(names.flatMap(historyNameWords)).sorted(), id: \.self) { word in
+                Text(verbatim: word)
+                    .font(teamNameFont)
+                    .fixedSize()
+                    .hidden()
+            }
             teamName(name)
-                .frame(maxWidth: .infinity, alignment: .leading)
+                .frame(minWidth: 0, idealWidth: 0, maxWidth: .infinity, alignment: .leading)
         }
     }
 
@@ -130,9 +150,13 @@ struct HistoryBetItem: View {
 
     private func teamName(_ name: String) -> some View {
         Text(name)
-            .font(.body.weight(.semibold))
+            .font(teamNameFont)
             .fixedSize(horizontal: false, vertical: true)
             .loadedForeground(HistoryStyle.primaryText, isPlaceholder: isPlaceholder)
+    }
+
+    private var teamNameFont: Font {
+        .body.weight(.semibold)
     }
 
     private var result: some View {
@@ -177,13 +201,17 @@ struct HistoryBetItem: View {
     @ViewBuilder
     private var betLine: some View {
         if let betScore = poolGamblerBet.betScore {
-            HStack(alignment: .firstTextBaseline, spacing: betLabelSpacing) {
-                Text(betLabel)
-                    .loadedForeground(HistoryStyle.secondaryText, isPlaceholder: isPlaceholder)
-                Text(verbatim: "\(betScore.homeTeamValue) – \(betScore.awayTeamValue)")
-                    .fontWeight(.semibold)
-                    .monospacedDigit()
-                    .loadedForeground(HistoryStyle.primaryText, isPlaceholder: isPlaceholder)
+            // The label keeps its words whole: when it does not fit beside the prediction, the
+            // prediction moves below it and the label wraps across the full width.
+            ViewThatFits(in: .horizontal) {
+                HStack(alignment: .firstTextBaseline, spacing: betLabelSpacing) {
+                    betLabelText
+                    betScoreText(betScore)
+                }
+                VStack(alignment: .leading, spacing: betLabelStackedSpacing) {
+                    betLabelText
+                    betScoreText(betScore)
+                }
             }
             .font(.body)
         } else {
@@ -191,6 +219,19 @@ struct HistoryBetItem: View {
                 .font(.body)
                 .loadedForeground(HistoryStyle.secondaryText, isPlaceholder: isPlaceholder)
         }
+    }
+
+    private var betLabelText: some View {
+        Text(betLabel)
+            .fixedSize(horizontal: false, vertical: true)
+            .loadedForeground(HistoryStyle.secondaryText, isPlaceholder: isPlaceholder)
+    }
+
+    private func betScoreText(_ betScore: TeamScore<Int>) -> some View {
+        Text(verbatim: "\(betScore.homeTeamValue) – \(betScore.awayTeamValue)")
+            .fontWeight(.semibold)
+            .monospacedDigit()
+            .loadedForeground(HistoryStyle.primaryText, isPlaceholder: isPlaceholder)
     }
 
     private var betLabel: LocalizedStringResource {
@@ -294,6 +335,11 @@ struct HistoryBetItem: View {
     }
 }
 
+/// The words a team name can wrap between.
+func historyNameWords(_ name: String) -> [String] {
+    name.split(whereSeparator: \.isWhitespace).map(String.init)
+}
+
 /// A row's points: the authoritative award once the entry is computed, otherwise pending. A
 /// pending entry never shows a score value as an award.
 enum HistoryRowPoints: Equatable {
@@ -313,6 +359,7 @@ private let flagAspectRatio: CGFloat = 0.75
 private let maximumFlagWidth: CGFloat = 52
 private let scoreSpacing: CGFloat = 12
 private let betLabelSpacing: CGFloat = 8
+private let betLabelStackedSpacing: CGFloat = 2
 
 #Preview("Loaded and placeholder") {
     ScrollView {

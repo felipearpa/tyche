@@ -8,7 +8,14 @@ extension PoolGamblerScoreResponse {
             position: position,
             beforePosition: beforePosition,
             score: score,
-            gamblerCount: gamblerCount
+            gamblerCount: gamblerCount,
+            trendGroup: trendGroup.map {
+                TrendGroup(
+                    kickoffDateTime: $0.kickoffDateTime,
+                    computedMatches: $0.computedMatches,
+                    totalMatches: $0.totalMatches
+                )
+            }
         )
     }
 }

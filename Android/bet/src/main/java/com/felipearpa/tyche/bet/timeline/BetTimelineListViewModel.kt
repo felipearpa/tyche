@@ -8,7 +8,8 @@ import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.felipearpa.tyche.bet.finished.HistoryPointsSummaryLoader
 import com.felipearpa.tyche.bet.finished.HistoryPointsSummaryState
-import com.felipearpa.tyche.bet.pending.PendingBetPagingSource
+import com.felipearpa.tyche.bet.kickoffgroup.KickoffGroupFeed
+import com.felipearpa.tyche.bet.kickoffgroup.KickoffGroupModel
 import com.felipearpa.tyche.data.bet.application.GetGamblerBetsTimeline
 import com.felipearpa.tyche.data.pool.application.GetPoolGamblerScore
 import kotlinx.coroutines.flow.SharingStarted
@@ -16,9 +17,10 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 
 /**
- * Another gambler's Timeline in one pool: the existing feed of their bets, in server order, and
- * their authoritative earned-points total. The two load independently, so either can succeed
- * while the other is loading or failed.
+ * Another gambler's Timeline in one pool: the grouped feed of their bets, unsettled kickoff groups
+ * first, in server order, and their authoritative earned-points total. The two load
+ * independently, so either can succeed while the other is loading or failed. Another pool or
+ * gambler gets another view model, so an earlier context's groups never reach it.
  */
 class BetTimelineListViewModel(
     private val poolId: String,
@@ -27,9 +29,22 @@ class BetTimelineListViewModel(
     getPoolGamblerScore: GetPoolGamblerScore,
 ) : ViewModel() {
 
-    val pageSize = PAGE_SIZE
+    /** How many production group placeholders fill the first load. */
+    val placeholderCount = PLACEHOLDER_GROUP_COUNT
 
-    val poolGamblerBets = buildPager().flow
+    private val feed = KickoffGroupFeed(
+        query = { next ->
+            getBetsTimelinePagingQuery(
+                next = next,
+                poolId = poolId,
+                gamblerId = gamblerId,
+                getGamblerBetsTimeline = getGamblerBetsTimeline,
+            )
+        },
+    )
+
+    /** The kickoff groups in the server's order; see [KickoffGroupFeed]. */
+    val kickoffGroups: StateFlow<PagingData<KickoffGroupModel>> = buildPager().flow
         .cachedIn(scope = viewModelScope)
         .stateIn(
             scope = viewModelScope,
@@ -54,37 +69,36 @@ class BetTimelineListViewModel(
         loadPointsSummary()
     }
 
-    /** Requests only the total, as a summary retry does; the rows are not reloaded. */
+    /** Requests only the total, as a summary retry does; the groups are not reloaded. */
     fun loadPointsSummary() {
         pointsSummaryLoader.load()
     }
 
-    /** Requests the total for a pull to refresh, which also refreshes the rows. */
-    fun refreshPointsSummary() {
+    /**
+     * A pull to refresh: requests the total and allows the groups, which restart from their first
+     * page by themselves, one more automatic restart.
+     */
+    fun refresh() {
+        feed.resetAutomaticRestart()
         pointsSummaryLoader.refresh()
+    }
+
+    /** Called before the groups restart from their first page at the viewer's request. */
+    fun onFeedRestart() {
+        feed.resetAutomaticRestart()
     }
 
     private fun buildPager() =
         Pager(
             config = PagingConfig(
-                pageSize = pageSize,
+                pageSize = PAGE_SIZE,
                 prefetchDistance = PREFETCH_DISTANCE,
                 enablePlaceholders = false,
             ),
-            pagingSourceFactory = {
-                PendingBetPagingSource(
-                    pagingQuery = { next ->
-                        getBetsTimelinePagingQuery(
-                            next = next,
-                            poolId = poolId,
-                            gamblerId = gamblerId,
-                            getGamblerBetsTimeline = getGamblerBetsTimeline,
-                        )
-                    },
-                )
-            },
+            pagingSourceFactory = feed::pagingSource,
         )
 }
 
-private const val PAGE_SIZE = 50
-private const val PREFETCH_DISTANCE = 5
+private const val PAGE_SIZE = 20
+private const val PREFETCH_DISTANCE = 3
+private const val PLACEHOLDER_GROUP_COUNT = 4

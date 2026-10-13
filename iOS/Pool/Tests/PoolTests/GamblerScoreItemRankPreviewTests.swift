@@ -1,3 +1,4 @@
+import Core
 import XCTest
 import ViewInspector
 @testable import Pool
@@ -89,7 +90,8 @@ final class GamblerScoreItemRankPreviewTests: XCTestCase {
             position: 1,
             beforePosition: 2,
             score: 18,
-            gamblerCount: nil
+            gamblerCount: nil,
+            trendGroup: KickoffGroupProgress(computedMatches: 1, totalMatches: 1)
         )
     }
 }

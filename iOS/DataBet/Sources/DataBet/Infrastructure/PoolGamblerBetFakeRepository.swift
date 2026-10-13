@@ -20,12 +20,11 @@ public class PoolGamblerBetFakeRepository: PoolGamblerBetRepository {
     public func getFinishedPoolGamblerBets(
         poolId: String,
         gamblerId: String,
-        next: String?,
-        searchText: String?
-    ) async -> Result<CursorPage<PoolGamblerBet>, Error> {
+        next: String?
+    ) async -> Result<CursorPage<KickoffGroup>, Error> {
         return .success(
             CursorPage(
-                items: poolGamblerBetFinishedDummyModels(),
+                items: kickoffGroupFinishedDummyModels(),
                 next: nil
             )
         )
@@ -70,10 +69,10 @@ public class PoolGamblerBetFakeRepository: PoolGamblerBetRepository {
         poolId: String,
         gamblerId: String,
         next: String?
-    ) async -> Result<CursorPage<PoolGamblerBet>, Error> {
+    ) async -> Result<CursorPage<KickoffGroup>, Error> {
         return .success(
             CursorPage(
-                items: poolGamblerBetDummyModels(),
+                items: kickoffGroupTimelineDummyModels(),
                 next: nil
             )
         )

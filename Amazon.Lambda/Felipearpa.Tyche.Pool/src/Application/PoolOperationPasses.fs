@@ -144,7 +144,7 @@ module PositionsPass =
 
     let private targetMatch (active: ActiveOperation) =
         match active.Target with
-        | MatchSettlement(matchId, _) -> Some matchId
+        | MatchSettlement(matchId, _, _) -> Some matchId
         | CurrentStandings
         | RejoinRestoration _ -> None
 

@@ -6,7 +6,10 @@ data class PoolGamblerScore(
     val gamblerId: String,
     val gamblerUsername: String,
     val position: Int?,
+    /** The position before the [trendGroup]'s first settlement. */
     val beforePosition: Int?,
     val score: Int?,
     val gamblerCount: Int?,
+    /** `null` while the pool has no settled kickoff group. */
+    val trendGroup: TrendGroup?,
 )

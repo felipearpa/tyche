@@ -98,6 +98,8 @@ type VersionedSettlementHarness(options: HarnessOptions) =
     let identities = InitializePoolIdentities(projection, maintenancePublisher)
     let backfill = BackfillPoolProjection(projection, maintenancePublisher)
     let readiness = VerifyPoolRankingReadiness(settlement, projection)
+    let detailKickoffs = DetailKickoffDynamoDbRepository(fake.Client) :> IDetailKickoffRepository
+    let kickoffBackfill = BackfillPoolKickoffGroups(settlement, detailKickoffs, layoutReader, maintenancePublisher)
     let reconcile =
         Felipearpa.Tyche.Pool.Application.ReconcilePool(
             settlement,
@@ -204,6 +206,9 @@ type VersionedSettlementHarness(options: HarnessOptions) =
                 let! _ = reconcile.ExecuteAsync(poolId, cursor, $"RECONCILE#{message.DeduplicationId}")
                 ()
             | RetireMembership(poolId, gamblerId, generation) -> do! cleanUp.ExecuteAsync(poolId, gamblerId, generation)
+            | BackfillKickoffGroups(poolId, cursor) ->
+                let! _ = kickoffBackfill.ExecuteAsync(poolId, cursor)
+                ()
         }
 
     let isMembership (image: Dictionary<string, AttributeValue> option) =
@@ -282,6 +287,7 @@ type VersionedSettlementHarness(options: HarnessOptions) =
     member _.Pools = pools
     member _.LayoutRepository = layoutRepository
     member _.LayoutReader = layoutReader
+    member _.DetailKickoffs = detailKickoffs
     member _.ProcessCommand = processCommand
     member _.Dispatch = dispatch
     member _.CommandPublisher = commandPublisher

@@ -12,187 +12,251 @@ open Amazon.Lambda.TestUtilities
 open Felipearpa.Core
 open Felipearpa.Core.Json
 open Felipearpa.Core.Paging
+open Felipearpa.Data.DynamoDb
 open Felipearpa.Tyche.AmazonLambda.Function
 open Felipearpa.Tyche.AmazonLambda.Function.Tests.AuthorizationTestHelpers
 open Felipearpa.Tyche.Function.Response
-open FsUnit.Xunit
+open Felipearpa.Tyche.Pool.Test.Fakes
 open FsUnitTyped
 open Microsoft.Extensions.DependencyInjection
 open Microsoft.Extensions.Logging
 open Microsoft.Extensions.Logging.Abstractions
-open Moq
 open Xunit
 
+/// History (GET /pools/{poolId}/gamblers/{gamblerId}/bets/finished) and Timeline
+/// (GET .../bets/timeline) serve whole kickoff groups with layout counts and movement from the
+/// stored snapshots, over the in-memory table with forced storage pages.
 module GetFinishedBetsTest =
 
-    let private ``given an existing pending bets`` () =
-        let expectedBets: CursorPage<PoolGamblerBetResponse> =
-            { Items =
-                seq {
-                    { PoolId = "01K1PX1TX2NM1HG851S1V0QG6N"
-                      GamblerId = "01K1PX1TX2NM1HG851S1V0QG6N"
-                      GamblerUsername = "felipearcila@gmail.com"
-                      MatchId = "01K1PX1TX2NM1HG851S1V0QG6N"
-                      PoolLayoutId = "01K1PX1TX2NM1HG851S1V0QG6N"
-                      HomeTeamId = "01K1PX1TX2NM1HG851S1V0QG6N"
-                      HomeTeamName = "Team Alpha"
-                      HomeTeamScore = Some 2
-                      HomeTeamBet = Some 1
-                      AwayTeamId = "01K1PX1TX2NM1HG851S1V0QG6N"
-                      AwayTeamName = "Team Beta"
-                      AwayTeamScore = Some 1
-                      AwayTeamBet = Some 1
-                      Score = Some 3
-                      MatchDateTime = DateTime(2024, 10, 12, 18, 0, 0, DateTimeKind.Utc)
-                      Round = "Fase de grupos"
-                      GroupName = None
-                      isLocked = true
-                      isComputed = true }
+    let private poolId = "01K1PX1TX2NM1HG851S1V0P001"
+    let private layoutId = "01K1PX1TX2NM1HG851S1V0Y001"
+    let private gamblerId = "01K1PX1TX2NM1HG851S1V0GA01"
+    let private kickoff = DateTime(2026, 6, 12, 17, 0, 0, DateTimeKind.Utc)
+    let private matchOf (number: int) = $"01K1PX1TX2NM1HG851S1V0M{number:D3}"
+    let private iso (value: DateTime) = value.ToString("o")
+    let private s (value: string) = AttributeValue(S = value)
+    let private n (value: int) = AttributeValue(N = string value)
 
-                    { PoolId = "01K1PX1TX2NM1HG851S1V0QG6N"
-                      GamblerId = "01K1PX1TX2NM1HG851S1V0QG6N"
-                      GamblerUsername = "felipearcila@gmail.com"
-                      MatchId = "01K1PX1TX2NM1HG851S1V0QG6N"
-                      PoolLayoutId = "01K1PX1TX2NM1HG851S1V0QG6N"
-                      HomeTeamId = "01K1PX1TX2NM1HG851S1V0QG6N"
-                      HomeTeamName = "Team Gamma"
-                      HomeTeamScore = Some 0
-                      HomeTeamBet = Some 0
-                      AwayTeamId = "01K1PX1TX2NM1HG851S1V0QG6N"
-                      AwayTeamName = "Team Delta"
-                      AwayTeamScore = Some 2
-                      AwayTeamBet = Some 2
-                      Score = Some 1
-                      MatchDateTime = DateTime(2024, 10, 13, 20, 30, 0, DateTimeKind.Utc)
-                      Round = "Fase de grupos"
-                      GroupName = None
-                      isLocked = true
-                      isComputed = true }
-                }
-              Next = None }
+    let private layoutMatch (number: int) (matchKickoff: DateTime) (hasResult: bool) =
+        let item =
+            Dictionary(
+                dict
+                    [ "pk", s $"POOLLAYOUT#{layoutId}"
+                      "sk", s $"MATCH#{matchOf number}"
+                      "matchId", s (matchOf number)
+                      "poolLayoutId", s layoutId
+                      "homeTeamId", s "COL"
+                      "homeTeamName", s "Colombia"
+                      "awayTeamId", s "ARG"
+                      "awayTeamName", s "Argentina"
+                      "matchDateTime", s (iso matchKickoff)
+                      "poolLayoutVersion", n 1
+                      "round", s "Fase de grupos" ]
+            )
 
-        let client = Mock<IAmazonDynamoDB>()
+        if hasResult then
+            item["homeTeamScore"] <- n 2
+            item["awayTeamScore"] <- n 1
 
-        let items =
-            [ dict
-                  [ "pk", AttributeValue(S = "POOL#01K1PX1TX2NM1HG851S1V0QG6N")
-                    "sk", AttributeValue(S = "GAMBLER#01K1PX1TX2NM1HG851S1V0QG6N")
-                    "poolId", AttributeValue(S = "01K1PX1TX2NM1HG851S1V0QG6N")
-                    "gamblerId", AttributeValue(S = "01K1PX1TX2NM1HG851S1V0QG6N")
-                    "gamblerUsername", AttributeValue(S = "felipearcila@gmail.com")
-                    "matchId", AttributeValue(S = "01K1PX1TX2NM1HG851S1V0QG6N")
-                    "poolLayoutId", AttributeValue(S = "01K1PX1TX2NM1HG851S1V0QG6N")
-                    "homeTeamId", AttributeValue(S = "01K1PX1TX2NM1HG851S1V0QG6N")
-                    "homeTeamName", AttributeValue(S = "Team Alpha")
-                    "homeTeamScore", AttributeValue(N = "2")
-                    "homeTeamBet", AttributeValue(N = "1")
-                    "awayTeamId", AttributeValue(S = "01K1PX1TX2NM1HG851S1V0QG6N")
-                    "awayTeamName", AttributeValue(S = "Team Beta")
-                    "awayTeamScore", AttributeValue(N = "1")
-                    "awayTeamBet", AttributeValue(N = "1")
-                    "score", AttributeValue(N = "3")
-                    "matchDateTime", AttributeValue(S = "2024-10-12T18:00:00Z")
-                    "computedRequestId", AttributeValue(S = "01K1PX1TX2NM1HG851S1V0QG6N") ]
+        item
 
-              dict
-                  [ "pk", AttributeValue(S = "POOL#01K1PX1TX2NM1HG851S1V0QG6N")
-                    "sk", AttributeValue(S = "GAMBLER#01K1PX1TX2NM1HG851S1V0QG6N")
-                    "poolId", AttributeValue(S = "01K1PX1TX2NM1HG851S1V0QG6N")
-                    "gamblerId", AttributeValue(S = "01K1PX1TX2NM1HG851S1V0QG6N")
-                    "gamblerUsername", AttributeValue(S = "felipearcila@gmail.com")
-                    "matchId", AttributeValue(S = "01K1PX1TX2NM1HG851S1V0QG6N")
-                    "poolLayoutId", AttributeValue(S = "01K1PX1TX2NM1HG851S1V0QG6N")
-                    "homeTeamId", AttributeValue(S = "01K1PX1TX2NM1HG851S1V0QG6N")
-                    "homeTeamName", AttributeValue(S = "Team Gamma")
-                    "homeTeamScore", AttributeValue(N = "0")
-                    "homeTeamBet", AttributeValue(N = "0")
-                    "awayTeamId", AttributeValue(S = "01K1PX1TX2NM1HG851S1V0QG6N")
-                    "awayTeamName", AttributeValue(S = "Team Delta")
-                    "awayTeamScore", AttributeValue(N = "2")
-                    "awayTeamBet", AttributeValue(N = "2")
-                    "score", AttributeValue(N = "1")
-                    "matchDateTime", AttributeValue(S = "2024-10-13T20:30:00Z")
-                    "computedRequestId", AttributeValue(S = "01K1PX1TX2NM1HG851S1V0QG6N") ] ]
+    /// A detail; a computed one carries its computation hour and optional snapshot.
+    let private detail (number: int) (matchKickoff: DateTime) (computed: (float * (int * int) option) option) =
+        let item =
+            Dictionary(
+                dict
+                    [ "pk", s $"GAMBLER#{gamblerId}#POOL#{poolId}"
+                      "sk", s $"MATCH#{matchOf number}"
+                      "poolId", s poolId
+                      "gamblerId", s gamblerId
+                      "gamblerUsername", s "ana"
+                      "matchId", s (matchOf number)
+                      "poolLayoutId", s layoutId
+                      "homeTeamId", s "COL"
+                      "homeTeamName", s "Colombia"
+                      "awayTeamId", s "ARG"
+                      "awayTeamName", s "Argentina"
+                      "homeTeamBet", n 2
+                      "awayTeamBet", n 1
+                      "matchDateTime", s (iso matchKickoff) ]
+            )
 
-        client
-            .Setup(_.QueryAsync(It.IsAny<QueryRequest>()))
-            .ReturnsAsync(QueryResponse(Items = (items |> List.map (fun it -> Dictionary it) |> ResizeArray)))
-        |> ignore
+        computed
+        |> Option.iter (fun (hours, snapshot) ->
+            item["homeTeamScore"] <- n 2
+            item["awayTeamScore"] <- n 1
+            item["score"] <- n 3
+            item["computedRequestId"] <- s "01K1PX1TX2NM1HG851S1V0R000"
+            item["computedDateTime"] <- s (iso (kickoff.AddHours hours))
+            item["computedMatchDateTime"] <- s (iso matchKickoff)
 
-        let callerGamblerId = "01K0DCFFB08W35AW5Q6F82R6NQ"
+            snapshot
+            |> Option.iter (fun (before, after) ->
+                item["beforePosition"] <- n before
+                item["position"] <- n after))
 
-        let functions =
-            PoolFunction(fun services ->
-                services.AddLogging(fun builder ->
-                    builder.ClearProviders() |> ignore
+        item
 
-                    builder.AddProvider(
-                        { new ILoggerProvider with
-                            member _.CreateLogger _ = NullLogger.Instance
-                            member _.Dispose() = () }
-                    )
-                    |> ignore)
-                |> ignore
+    let private fourMatches = kickoff.AddDays 2.0
+    let private partial = kickoff.AddDays 1.0
 
-                services.AddSingleton<IAmazonDynamoDB>(client.Object) |> ignore
-                registerAuthAsCaller services callerGamblerId)
+    /// A four-match group settled 8 → 5 → 6 → 4 → 3; a two-match group with one result
+    /// (7 → 2); and an older group whose only child predates position snapshots.
+    let private seed () =
+        let fake = FakeTables.create ()
 
-        let context = TestLambdaContext()
+        let fixtures =
+            [ 101, fourMatches, true, Some(50.0, Some(8, 5))
+              102, fourMatches, true, Some(51.0, Some(5, 6))
+              103, fourMatches, true, Some(52.0, Some(6, 4))
+              104, fourMatches, true, Some(53.0, Some(4, 3))
+              201, partial, true, Some(30.0, Some(7, 2))
+              202, partial, false, None
+              301, kickoff, true, Some(2.0, None) ]
 
+        for number, matchKickoff, hasResult, computed in fixtures do
+            fake.Put("PoolLayout", layoutMatch number matchKickoff hasResult)
+            fake.Put("Pool", detail number matchKickoff computed)
+
+        fake.LimitQueryPages 3
+        fake
+
+    let private functions (client: IAmazonDynamoDB) =
+        PoolFunction(fun services ->
+            services.AddLogging(fun builder ->
+                builder.ClearProviders() |> ignore
+
+                builder.AddProvider(
+                    { new ILoggerProvider with
+                        member _.CreateLogger _ = NullLogger.Instance
+                        member _.Dispose() = () }
+                )
+                |> ignore)
+            |> ignore
+
+            services.AddSingleton<IAmazonDynamoDB>(client) |> ignore
+            registerAuthAsCaller services gamblerId)
+
+    let private request (next: string option) =
         let request = APIGatewayHttpApiV2ProxyRequest()
-
-        request.PathParameters <-
-            dict
-                [ "poolId", "01K0DCFFB08W35AW5Q6F82R6NQ"
-                  "gamblerId", callerGamblerId ]
-
+        request.PathParameters <- dict [ "poolId", poolId; "gamblerId", gamblerId ]
+        next |> Option.iter (fun token -> request.QueryStringParameters <- dict [ "next", token ])
         attachJwtClaim request testEmail |> ignore
+        request
 
-        (expectedBets, context, request, functions)
+    let private history (functions: PoolFunction) next =
+        functions.GetFinishedBetsAsync(request next, TestLambdaContext()) |> Async.AwaitTask
 
-    let private ``when requesting its information`` (functions: PoolFunction) request context =
-        async { return! functions.GetFinishedBetsAsync(request, context) |> Async.AwaitTask }
+    let private timeline (functions: PoolFunction) next =
+        functions.GetBetsTimelineAsync(request next, TestLambdaContext()) |> Async.AwaitTask
 
-    let private ``then the pending bets are returned``
-        (response: APIGatewayHttpApiV2ProxyResponse)
-        (expectedBets: CursorPage<PoolGamblerBetResponse>)
-        =
-        response.StatusCode |> should equal (int HttpStatusCode.OK)
+    let private read (response: APIGatewayHttpApiV2ProxyResponse) =
+        response.StatusCode |> shouldEqual (int HttpStatusCode.OK)
+        (JsonSerializer() :> ISerializer).Deserialize<CursorPage<KickoffGroupResponse>>(response.Body)
 
-        let serializer = JsonSerializer() :> ISerializer
+    let private traverse (fetch: string option -> Async<APIGatewayHttpApiV2ProxyResponse>) =
+        let rec loop next pages =
+            async {
+                let! response = fetch next
+                let page = read response
+                let pages = pages @ [ List.ofSeq page.Items, page.Next ]
 
-        let actualBets =
-            serializer.Deserialize<CursorPage<PoolGamblerBetResponse>>(response.Body)
+                match page.Next with
+                | Some _ when pages.Length < 20 -> return! loop page.Next pages
+                | _ -> return pages
+            }
 
-        actualBets.Items |> Seq.toList |> shouldEqual (expectedBets.Items |> Seq.toList)
+        loop None []
 
-    let private ``given a request without poolId`` () =
-        let functions = PoolFunction()
+    let private describe (group: KickoffGroupResponse) =
+        group.KickoffDateTime,
+        group.Matches |> List.map (fun row -> row.MatchId),
+        (group.ComputedMatches, group.TotalMatches),
+        group.Movement |> Option.map (fun movement -> movement.BeforePosition, movement.Position)
 
-        let context = TestLambdaContext()
+    let private fourMatchGroup =
+        fourMatches, [ matchOf 101; matchOf 102; matchOf 103; matchOf 104 ], (4, 4), Some(8, 3)
 
-        let request = APIGatewayHttpApiV2ProxyRequest()
-
-        (context, request, functions)
-
-    let private ``then a bad response is returned`` (response: APIGatewayHttpApiV2ProxyResponse) =
-        response.StatusCode |> shouldEqual (int HttpStatusCode.BadRequest)
+    let private partialInHistory = partial, [ matchOf 201 ], (1, 2), Some(7, 2)
+    let private legacyGroup = kickoff, [ matchOf 301 ], (1, 1), None
 
     [<Fact>]
-    let ``given an existing finished bets when requesting its information then the finished bets are returned`` () =
+    let ``History returns whole groups across storage pages with counts and movement`` () =
         async {
-            let expectedBets, context, request, functions =
-                ``given an existing pending bets`` ()
+            let functions = functions (seed ()).Client
+            let! pages = traverse (history functions)
 
-            let! response = ``when requesting its information`` functions request context
+            // The four-match group is cut by the first storage page and completed.
+            pages
+            |> List.map (fst >> List.map describe)
+            |> shouldEqual [ [ fourMatchGroup ]; [ partialInHistory; legacyGroup ] ]
 
-            ``then the pending bets are returned`` response expectedBets
+            pages |> List.last |> snd |> shouldEqual None
         }
 
     [<Fact>]
-    let ``given a request without path parameters when requesting its information then bad response is returned`` () =
+    let ``History serializes a missing snapshot as a null movement and keeps the rows`` () =
         async {
-            let context, request, functions = ``given a request without poolId`` ()
-            let! response = ``when requesting its information`` functions request context
-            ``then a bad response is returned`` response
+            let fake = seed ()
+            fake.LimitQueryPages 10
+            let! response = history (functions fake.Client) None
+
+            response.Body |> shouldContainText "\"kickoffDateTime\":\"2026-06-12T17:00:00Z\""
+            response.Body |> shouldContainText "\"movement\":null"
+
+            let legacy = (read response).Items |> Seq.last
+            legacy.Matches |> List.map (fun row -> row.Score, row.HomeTeamScore, row.HomeTeamBet) |> shouldEqual [ Some 3, Some 2, Some 2 ]
+        }
+
+    [<Fact>]
+    let ``History rejects a token of the computation-time index with INVALID_CURSOR`` () =
+        async {
+            let oldToken =
+                match
+                    ContinuationKey.tryCreate (
+                        Map
+                            [ "pk", S $"GAMBLER#{gamblerId}#POOL#{poolId}"
+                              "sk", S $"MATCH#{matchOf 101}"
+                              "computedDateTime", S (iso kickoff) ]
+                    )
+                with
+                | Ok key -> ContinuationToken.encode key
+                | Error error -> failwith $"invalid test key: %A{error}"
+
+            let fake = seed ()
+            let! response = history (functions fake.Client) (Some oldToken)
+
+            response.StatusCode |> shouldEqual (int HttpStatusCode.BadRequest)
+
+            response.Body
+            |> shouldEqual """{"error":"INVALID_CURSOR","message":"The continuation is not valid; restart from the first page"}"""
+
+            // A fresh request returns the grouped contract.
+            let! fresh = history (functions fake.Client) None
+            (read fresh).Items |> Seq.head |> describe |> shouldEqual fourMatchGroup
+        }
+
+    [<Fact>]
+    let ``Timeline shows a partial group once, unsettled first, with every revealed row`` () =
+        async {
+            let functions = functions (seed ()).Client
+            let! pages = traverse (timeline functions)
+
+            pages
+            |> List.collect fst
+            |> List.map describe
+            |> shouldEqual
+                [ partial, [ matchOf 201; matchOf 202 ], (1, 2), Some(7, 2)
+                  fourMatchGroup
+                  legacyGroup ]
+
+            let pending = pages |> List.collect fst |> List.head |> _.Matches |> List.last
+            (pending.isComputed, pending.Score) |> shouldEqual (false, None)
+        }
+
+    [<Fact>]
+    let ``given a request without path parameters when History is requested then bad response is returned`` () =
+        async {
+            let! response = PoolFunction().GetFinishedBetsAsync(APIGatewayHttpApiV2ProxyRequest(), TestLambdaContext()) |> Async.AwaitTask
+            response.StatusCode |> shouldEqual (int HttpStatusCode.BadRequest)
         }

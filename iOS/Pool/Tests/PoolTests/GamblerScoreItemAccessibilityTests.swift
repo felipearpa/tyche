@@ -1,3 +1,4 @@
+import Core
 import SwiftUI
 import Testing
 import UI
@@ -11,7 +12,8 @@ import UI
 /// Nothing here touches ViewInspector, so the leaderboard row's field order, separators, and
 /// plural agreement stay guarded locally, the way `GamblerScoreListTest` guards them on Android.
 ///
-/// Order under test: rank, username, "You" when signed in, points, movement.
+/// Order under test: rank, username, "You" when signed in, points, movement, and the computed
+/// count of a partial trend group.
 ///
 /// These assertions are English literals resolved through the *simulator's* language, so they
 /// require an English-language simulator — the same trap the repo already records for Android's
@@ -50,7 +52,7 @@ struct GamblerScoreItemAccessibilityTests {
         )
         .accessibilityLabel
 
-        #expect(label == "Rank unavailable, ElGoleador, Points unavailable")
+        #expect(label == "Rank unavailable, ElGoleador, Points unavailable, Movement unavailable")
     }
 
     @Test
@@ -82,6 +84,45 @@ struct GamblerScoreItemAccessibilityTests {
     }
 
     @Test
+    func partialGroupAnnouncesItsComputedCountAfterTheMovement() {
+        // The trend group started with the gambler at 8; one of two matches has a result.
+        let label = GamblerScoreItem(
+            poolGamblerScore: model(
+                position: 5,
+                beforePosition: 8,
+                score: 150,
+                trendGroup: KickoffGroupProgress(computedMatches: 1, totalMatches: 2)
+            ),
+            isCurrentUser: false
+        )
+        .accessibilityLabel
+
+        #expect(label == "Rank 5, ElGoleador, 150 points, Up 3 places, 1 of 2 matches computed")
+    }
+
+    @Test
+    func noTrendGroupIsAnnouncedAsPendingRatherThanSteady() {
+        let label = GamblerScoreItem(
+            poolGamblerScore: model(position: 3, beforePosition: 3, score: 150, trendGroup: nil),
+            isCurrentUser: false
+        )
+        .accessibilityLabel
+
+        #expect(label == "Rank 3, ElGoleador, 150 points, Movement pending")
+    }
+
+    @Test
+    func aMissingBaselineIsAnnouncedAsUnavailable() {
+        let label = GamblerScoreItem(
+            poolGamblerScore: model(position: 3, beforePosition: nil, score: 150),
+            isCurrentUser: false
+        )
+        .accessibilityLabel
+
+        #expect(label == "Rank 3, ElGoleador, 150 points, Movement unavailable")
+    }
+
+    @Test
     func placeholderRowContributesNoAnnouncement() {
         let item = GamblerScoreItem(
             poolGamblerScore: poolGamblerScorePlaceholderModel(),
@@ -93,7 +134,12 @@ struct GamblerScoreItemAccessibilityTests {
         #expect(item.accessibilityLabel.isEmpty)
     }
 
-    private func model(position: Int?, beforePosition: Int?, score: Int?) -> PoolGamblerScoreModel {
+    private func model(
+        position: Int?,
+        beforePosition: Int?,
+        score: Int?,
+        trendGroup: KickoffGroupProgress? = KickoffGroupProgress(computedMatches: 2, totalMatches: 2)
+    ) -> PoolGamblerScoreModel {
         PoolGamblerScoreModel(
             poolId: "A3C2E1",
             poolName: "Neptune World Series 2023",
@@ -102,7 +148,8 @@ struct GamblerScoreItemAccessibilityTests {
             position: position,
             beforePosition: beforePosition,
             score: score,
-            gamblerCount: nil
+            gamblerCount: nil,
+            trendGroup: trendGroup
         )
     }
 }

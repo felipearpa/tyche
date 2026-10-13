@@ -10,12 +10,12 @@ internal interface PoolGamblerBetDataSource {
         searchText: String? = null,
     ): CursorPage<PoolGamblerBetResponse>
 
+    /** Throws [KickoffGroupFeedException] for the grouped feed's own error responses. */
     suspend fun getFinishedPoolGamblerBets(
         poolId: String,
         gamblerId: String,
         next: String? = null,
-        searchText: String? = null,
-    ): CursorPage<PoolGamblerBetResponse>
+    ): CursorPage<KickoffGroupResponse>
 
     suspend fun getLivePoolGamblerBets(
         poolId: String,
@@ -40,11 +40,12 @@ internal interface PoolGamblerBetDataSource {
         matchId: String,
     ): PoolGamblerBetResponse
 
+    /** Throws [KickoffGroupFeedException] for the grouped feed's own error responses. */
     suspend fun getGamblerBetsTimeline(
         poolId: String,
         gamblerId: String,
         next: String? = null,
-    ): CursorPage<PoolGamblerBetResponse>
+    ): CursorPage<KickoffGroupResponse>
 
     suspend fun bet(betRequest: BetRequest): PoolGamblerBetResponse
 }

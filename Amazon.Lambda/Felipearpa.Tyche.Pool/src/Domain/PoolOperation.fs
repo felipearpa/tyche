@@ -87,11 +87,31 @@ type PoolMaintenanceJob =
     /// Retire a removed membership's generation from its details, as the removal stream
     /// handler does; used to replay a retained removal record.
     | RetireMembership of poolId: Ulid * gamblerId: Ulid * generation: string option
+    /// Copy the kickoff onto computed details that lack their finished-feed copy, a few layout
+    /// matches per job from the match cursor on, then record the pool's trend kickoff when it
+    /// has none.
+    | BackfillKickoffGroups of poolId: Ulid * afterMatchId: string option
+
+/// How a match settlement relates to the pool's trend kickoff group: the group whose rank
+/// baseline the memberships hold. Decided once at admission from the settling match's kickoff
+/// and the pool root, so every resume of the operation applies the same decision.
+type TrendEffect =
+    /// The match's kickoff is newer than the trend kickoff, or the pool has none. The
+    /// operation's first write to each membership records its previous position as the new
+    /// baseline, and completion makes this kickoff (UTC) the pool's trend kickoff.
+    | OpensGroup of kickoff: DateTime
+    /// The match belongs to the trend group or an older one, as a late result or a correction
+    /// does. Positions move and every membership keeps its baseline.
+    | KeepsGroup
+    /// The match's kickoff is unknown: the checkpoint was admitted before kickoffs were
+    /// compared, or the layout no longer has the match. The baseline is recorded as for a
+    /// newer group, and the trend kickoff is left unchanged.
+    | Ungrouped
 
 /// What an admitted operation does. Match reconciliation resolves to a concrete result at
 /// admission, so every resume applies the same immutable input.
 type OperationTarget =
-    | MatchSettlement of matchId: Ulid * result: MatchResult
+    | MatchSettlement of matchId: Ulid * result: MatchResult * trend: TrendEffect
     | CurrentStandings
     /// Rebinds the gambler's retained details to the membership generation, then recalculates
     /// current standings.
@@ -138,7 +158,10 @@ type PoolSettlementRoot =
       OperationRevision: int64
       LastCompletedOperationRevision: int64
       ActiveOperation: ActiveOperation option
-      RankingReadiness: RankingReadiness option }
+      RankingReadiness: RankingReadiness option
+      /// The kickoff (UTC) of the group whose rank baseline the memberships hold; None until
+      /// a match settlement first completes.
+      TrendKickoffDateTime: DateTime option }
 
 type ReceiptState =
     | Admitted

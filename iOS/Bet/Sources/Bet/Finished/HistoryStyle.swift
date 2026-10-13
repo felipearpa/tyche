@@ -12,6 +12,8 @@ enum HistoryStyle {
     static let positiveText = Color(sharedResource: .currentUser)
     static let positiveFill = Color(sharedResource: .currentUserContainer)
     static let neutralFill = Color(uiColor: .secondarySystemFill)
+    /// The decorative rail that joins a kickoff group's rows; it carries no information.
+    static let railFill = Color(sharedResource: .onSurface).opacity(0.2)
 
     static let horizontalPadding: CGFloat = 16
 }

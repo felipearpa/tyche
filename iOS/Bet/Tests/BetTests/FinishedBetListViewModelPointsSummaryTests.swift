@@ -141,7 +141,7 @@ struct FinishedBetListViewModelPointsSummaryTests {
     @Test
     func summaryRetryDoesNotReloadTheRows() async throws {
         let scores = GatedScoreRepository()
-        let bets = PagedBetRepository(pages: [historyPage(count: 3, next: nil)])
+        let bets = ScriptedGroupedFeedRepository(pages: [historyPage(count: 3, next: nil)])
         let viewModel = makeViewModel(scores: scores, bets: bets)
         await viewModel.lazyPager.refresh()
         let betRequestsBeforeRetry = bets.requestCount
@@ -156,9 +156,9 @@ struct FinishedBetListViewModelPointsSummaryTests {
     @Test
     func appendingAPageNeitherRequestsNorChangesTheTotal() async throws {
         let scores = GatedScoreRepository()
-        let bets = PagedBetRepository(pages: [
+        let bets = ScriptedGroupedFeedRepository(pages: [
             historyPage(count: 3, prefix: "first", next: "page-2"),
-            historyPage(count: 3, prefix: "second", next: nil),
+            historyPage(count: 3, prefix: "second", firstHour: -3, next: nil),
         ])
         let viewModel = makeViewModel(scores: scores, bets: bets)
         try await load(viewModel, scores, request: 1, with: .success(try score(120)))
@@ -175,7 +175,7 @@ struct FinishedBetListViewModelPointsSummaryTests {
     @Test
     func pullToRefreshReloadsBothAndWaitsForTheSlowerTotal() async throws {
         let scores = GatedScoreRepository()
-        let bets = PagedBetRepository(pages: [historyPage(count: 2, next: nil)])
+        let bets = ScriptedGroupedFeedRepository(pages: [historyPage(count: 2, next: nil)])
         let viewModel = makeViewModel(scores: scores, bets: bets)
 
         let refresh = Task { await viewModel.refreshListAndPointsSummary() }
@@ -194,7 +194,7 @@ struct FinishedBetListViewModelPointsSummaryTests {
     @Test
     func aFailedTotalDuringPullToRefreshKeepsTheRefreshedRows() async throws {
         let scores = GatedScoreRepository()
-        let bets = PagedBetRepository(pages: [historyPage(count: 2, next: nil)])
+        let bets = ScriptedGroupedFeedRepository(pages: [historyPage(count: 2, next: nil)])
         let viewModel = makeViewModel(scores: scores, bets: bets)
 
         let refresh = Task { await viewModel.refreshListAndPointsSummary() }
@@ -209,7 +209,7 @@ struct FinishedBetListViewModelPointsSummaryTests {
     @Test
     func listRetryRequestsOnlyTheRowsOnceAndPullToRefreshStillReloadsBoth() async throws {
         let scores = GatedScoreRepository()
-        let bets = PagedBetRepository(pages: [historyPage(count: 2, next: nil)], failsWith: URLError(.timedOut))
+        let bets = ScriptedGroupedFeedRepository(pages: [historyPage(count: 2, next: nil)], failsWith: URLError(.timedOut))
         let viewModel = makeViewModel(scores: scores, bets: bets)
         try await load(viewModel, scores, request: 1, with: .success(try score(9)))
         await viewModel.lazyPager.refresh()
@@ -220,7 +220,9 @@ struct FinishedBetListViewModelPointsSummaryTests {
         let list = FinishedBetList(
             lazyPagingItems: viewModel.lazyPager,
             pointsSummary: viewModel.pointsSummary,
-            onPointsSummaryRetry: { summaryRetries += 1 }
+            onPointsSummaryRetry: { summaryRetries += 1 },
+            onRetryFirstPage: { Task { await viewModel.retryFirstPage() } },
+            onRetryPage: { _ in }
         )
         try list.inspect().find(ViewType.Button.self, where: { try $0.labelView().text().string() == "Retry" }).tap()
         try await waitUntil { viewModel.lazyPager.itemCount == 2 }
@@ -240,6 +242,26 @@ struct FinishedBetListViewModelPointsSummaryTests {
         #expect(viewModel.pointsSummary.presentation == .points(.earned(11), .current))
     }
 
+    /// The list's Retry, driven through the view model so it runs where ViewInspector cannot: it
+    /// requests the first page again and never the total.
+    @Test
+    func firstPageRetryRequestsOnlyTheRowsAndKeepsTheTotal() async throws {
+        let scores = GatedScoreRepository()
+        let bets = ScriptedGroupedFeedRepository(pages: [historyPage(count: 2, next: nil)], failsWith: URLError(.timedOut))
+        let viewModel = makeViewModel(scores: scores, bets: bets)
+        try await load(viewModel, scores, request: 1, with: .success(try score(9)))
+        await viewModel.lazyPager.refresh()
+        #expect(viewModel.lazyPager.loadState.refresh.isFailure)
+
+        bets.failure = nil
+        await viewModel.retryFirstPage()
+        try await waitUntil { viewModel.lazyPager.itemCount == 2 }
+
+        #expect(bets.requests.map(\.next) == [nil, nil])
+        #expect(scores.requests.count == 1)
+        #expect(viewModel.pointsSummary.presentation == .points(.earned(9), .current))
+    }
+
     // MARK: Helpers
 
     private func load(
@@ -256,13 +278,13 @@ struct FinishedBetListViewModelPointsSummaryTests {
 
     private func makeViewModel(
         scores: GatedScoreRepository,
-        bets: PagedBetRepository? = nil,
+        bets: ScriptedGroupedFeedRepository? = nil,
         poolId: String = "pool-id",
         gamblerId: String = "gambler-id"
     ) -> FinishedBetListViewModel {
         FinishedBetListViewModel(
             getFinishedPoolGamblerBetsUseCase: GetFinishedPoolGamblerBetsUseCase(
-                poolGamblerBetRepository: bets ?? PagedBetRepository(pages: [])
+                poolGamblerBetRepository: bets ?? ScriptedGroupedFeedRepository()
             ),
             getPoolGamblerScoreUseCase: GetPoolGamblerScoreUseCase(poolGamblerScoreRepository: scores),
             gamblerId: gamblerId,
@@ -305,19 +327,14 @@ private func score(
     return try JSONDecoder().decode(PoolGamblerScore.self, from: data)
 }
 
-private func historyPage(count: Int, prefix: String = "match", next: String?) -> CursorPage<PoolGamblerBet> {
-    CursorPage(
-        items: (0..<count).map { index in
-            historyBet(poolGamblerBetDummyModel().copy { $0.matchId = "\(prefix)-\(index)" })
+/// One page of `count` kickoff groups, newest first and an hour apart from `firstHour`.
+private func historyPage(count: Int, prefix: String = "match", firstHour: Int = 0, next: String?) -> CursorPage<KickoffGroup> {
+    GroupFixtures.page(
+        (0..<count).map { index in
+            GroupFixtures.group("\(prefix)-\(index)", kickoff: GroupFixtures.kickoff(hours: firstHour - index))
         },
         next: next
     )
-}
-
-/// `PoolGamblerBet`'s memberwise initializer is internal to `DataBet`; both types share their
-/// Codable shape.
-private func historyBet(_ model: PoolGamblerBetModel) -> PoolGamblerBet {
-    try! JSONDecoder().decode(PoolGamblerBet.self, from: JSONEncoder().encode(model))
 }
 
 private struct ScoreRequest: Equatable {
@@ -367,59 +384,6 @@ private final class GatedScoreRepository: PoolGamblerScoreRepository {
     nonisolated func getPoolGamblerScoresByPool(
         poolId: String, next: String?, searchText: String?
     ) async -> Result<CursorPage<PoolGamblerScore>, Error> { .failure(Unused()) }
-
-    private struct Unused: Error {}
-}
-
-/// Serves finished-bet pages in order: the first request (no cursor) gets the first page, and a
-/// request with a cursor gets the page after it.
-@MainActor
-private final class PagedBetRepository: PoolGamblerBetRepository {
-    private let pages: [CursorPage<PoolGamblerBet>]
-    /// While set, every request fails with it.
-    var failure: Error?
-    private(set) var requestCount = 0
-
-    init(pages: [CursorPage<PoolGamblerBet>], failsWith failure: Error? = nil) {
-        self.pages = pages
-        self.failure = failure
-    }
-
-    private func page(after next: String?) -> Result<CursorPage<PoolGamblerBet>, Error> {
-        requestCount += 1
-        if let failure { return .failure(failure) }
-        guard let next else { return .success(pages.first ?? CursorPage(items: [], next: nil)) }
-        let index = pages.firstIndex { $0.next == next }.map { $0 + 1 } ?? pages.count
-        return .success(index < pages.count ? pages[index] : CursorPage(items: [], next: nil))
-    }
-
-    nonisolated func getFinishedPoolGamblerBets(
-        poolId: String, gamblerId: String, next: String?, searchText: String?
-    ) async -> Result<CursorPage<PoolGamblerBet>, Error> {
-        await page(after: next)
-    }
-
-    nonisolated func getPoolGamblerBet(
-        poolId: String, gamblerId: String, matchId: String
-    ) async -> Result<PoolGamblerBet, Error> { .failure(Unused()) }
-
-    nonisolated func getPendingPoolGamblerBets(
-        poolId: String, gamblerId: String, next: String?, searchText: String?
-    ) async -> Result<CursorPage<PoolGamblerBet>, Error> { .failure(Unused()) }
-
-    nonisolated func getLivePoolGamblerBets(
-        poolId: String, gamblerId: String, next: String?, searchText: String?
-    ) async -> Result<CursorPage<PoolGamblerBet>, Error> { .failure(Unused()) }
-
-    nonisolated func getRankedPoolMatchGamblerBets(
-        poolId: String, matchId: String, next: String?
-    ) async -> Result<CursorPage<PoolGamblerBet>, Error> { .failure(Unused()) }
-
-    nonisolated func getGamblerBetsTimeline(
-        poolId: String, gamblerId: String, next: String?
-    ) async -> Result<CursorPage<PoolGamblerBet>, Error> { .failure(Unused()) }
-
-    nonisolated func bet(bet: Bet) async -> Result<PoolGamblerBet, Error> { .failure(Unused()) }
 
     private struct Unused: Error {}
 }

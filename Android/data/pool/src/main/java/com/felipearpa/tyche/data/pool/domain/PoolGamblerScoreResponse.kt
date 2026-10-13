@@ -12,4 +12,14 @@ internal data class PoolGamblerScoreResponse(
     val beforePosition: Int?,
     val score: Int?,
     val gamblerCount: Int?,
+    /** JSON null, or absent, while the pool has no settled kickoff group. */
+    val trendGroup: TrendGroupResponse? = null,
+)
+
+/** [kickoffDateTime] is an ISO-8601 UTC instant. */
+@Serializable
+internal data class TrendGroupResponse(
+    val kickoffDateTime: String,
+    val computedMatches: Int,
+    val totalMatches: Int,
 )

@@ -158,19 +158,26 @@ module SharedCodecPaginationTest =
           poolItem "" (bet pool (id 'G' 2) (id 'M' 1) (at 0.0) [])
           poolItem "" (bet otherPool gambler (id 'M' 1) (at 0.0) []) ]
 
-    /// Seven computed bets, newest first: a tie on K004/K003 across a boundary, K005/K004
-    /// outside the search text, and one uncomputed bet the index does not hold.
+    /// Seven computed bets, newest kickoff first: K004/K003 share a kickoff across a boundary,
+    /// and one uncomputed bet has no kickoff copy, so the index does not hold it.
     let private finishedBets =
-        let computed number hours filter =
-            bet pool gambler (id 'K' number) kickoff (computedAt (kickoff.AddHours hours) @ [ "filter", s filter ])
+        let computed number hours =
+            let matchKickoff = kickoff.AddHours hours
 
-        [ poolItem "K001" (computed 1 1.0 "colombia argentina")
-          poolItem "K002" (computed 2 2.0 "colombia argentina")
-          poolItem "K003" (computed 3 3.0 "colombia argentina")
-          poolItem "K004" (computed 4 3.0 "brasil peru")
-          poolItem "K005" (computed 5 5.0 "brasil peru")
-          poolItem "K006" (computed 6 6.0 "colombia argentina")
-          poolItem "K007" (computed 7 7.0 "colombia argentina")
+            bet
+                pool
+                gambler
+                (id 'K' number)
+                matchKickoff
+                (computedAt (matchKickoff.AddHours 2.0) @ [ "computedMatchDateTime", s (iso matchKickoff) ])
+
+        [ poolItem "K001" (computed 1 1.0)
+          poolItem "K002" (computed 2 2.0)
+          poolItem "K003" (computed 3 3.0)
+          poolItem "K004" (computed 4 3.0)
+          poolItem "K005" (computed 5 5.0)
+          poolItem "K006" (computed 6 6.0)
+          poolItem "K007" (computed 7 7.0)
           poolItem "" (bet pool gambler (id 'K' 8) kickoff []) ]
 
     /// Bets on one match from seven members of the pool; G003/G004 are not locked yet, so the
@@ -263,15 +270,24 @@ module SharedCodecPaginationTest =
                   (bets serializer client).GetLivePoolGamblerBetsAsync(poolId, gamblerId, None, next) |> ids matchIdOf
             Pages = [ [ "M008"; "M007" ]; []; [ "M004"; "M003" ]; [ "M002"; "M001" ] ]
             Boundaries = [ "M007"; "M005"; "M003" ] }
-          { Name = "finished bets"
+          { Name = "finished bets by kickoff"
             Seed = finishedBets
-            KeyNames = [ "pk"; "sk"; "computedDateTime" ]
+            KeyNames = [ "pk"; "sk"; "computedMatchDateTime" ]
             Fetch =
               fun serializer client next ->
-                  (bets serializer client).GetFinishedPoolGamblerBetsAsync(poolId, gamblerId, Some "Colombia", next)
-                  |> ids matchIdOf
-            Pages = [ [ "K007"; "K006" ]; []; [ "K003"; "K002" ]; [ "K001" ] ]
+                  (bets serializer client).GetFinishedBetsByKickoffAsync(poolId, gamblerId, next)
+                  |> ids (fun grouped -> matchIdOf grouped.Bet)
+            Pages = [ [ "K007"; "K006" ]; [ "K005"; "K004" ]; [ "K003"; "K002" ]; [ "K001" ] ]
             Boundaries = [ "K006"; "K004"; "K002" ] }
+          { Name = "unsettled bets by kickoff"
+            Seed = gamblerBets
+            KeyNames = [ "pk"; "sk"; "matchDateTime" ]
+            Fetch =
+              fun serializer client next ->
+                  (bets serializer client).GetUnsettledBetsByKickoffAsync(poolId, gamblerId, next)
+                  |> ids (fun grouped -> matchIdOf grouped.Bet)
+            Pages = [ [ "M001"; "M002" ]; [ "M003"; "M004" ]; []; [ "M007"; "M008" ] ]
+            Boundaries = [ "M002"; "M004"; "M006" ] }
           { Name = "legacy match bets"
             Seed = matchBets
             KeyNames = [ "pk"; "sk"; "getPoolGamblerScoresByMatchPk"; "getPoolGamblerScoresByMatchSk" ]
@@ -337,7 +353,7 @@ module SharedCodecPaginationTest =
 
     let queryNames: obj array seq = queries |> Seq.map (fun query -> [| box query.Name |])
 
-    /// The nine index queries; the base-table layout-match query is complete with pk/sk alone.
+    /// The index queries; the base-table layout-match query is complete with pk/sk alone.
     let indexQueryNames: obj array seq =
         queries
         |> Seq.filter (fun query -> query.Name <> "layout matches")
@@ -463,7 +479,12 @@ module SharedCodecPaginationTest =
         [ "pending bets", betKey pool (id 'G' 2) "matchDateTime", KeyOutOfScope("pk", "the value belongs to another partition or key")
           "live bets", betKey otherPool gambler "matchDateTime", KeyOutOfScope("pk", "the value belongs to another partition or key")
           "live bets", betKey pool gambler "computedDateTime", MissingKeyAttribute "matchDateTime"
-          "finished bets", betKey pool gambler "matchDateTime", MissingKeyAttribute "computedDateTime"
+          "finished bets by kickoff", betKey pool gambler "matchDateTime", MissingKeyAttribute "computedMatchDateTime"
+          "finished bets by kickoff", betKey pool gambler "computedDateTime", MissingKeyAttribute "computedMatchDateTime"
+          "finished bets by kickoff",
+          betKey pool (id 'G' 2) "computedMatchDateTime",
+          KeyOutOfScope("pk", "the value belongs to another partition or key")
+          "unsettled bets by kickoff", betKey pool gambler "computedMatchDateTime", MissingKeyAttribute "matchDateTime"
           "legacy match bets",
           [ "pk", s $"GAMBLER#{gambler}#POOL#{otherPool}"
             "sk", s $"MATCH#{matchOne}"

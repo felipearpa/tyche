@@ -12,9 +12,9 @@ open Microsoft.Extensions.DependencyInjection
 open Microsoft.Extensions.Logging
 
 /// Consumer of the standard maintenance queue: total propagation, identity initialization,
-/// projection backfill, readiness checks, and reconciliation. Each job enqueues its own
-/// continuation before it is acknowledged; failed jobs are retried and then retained in the
-/// dead-letter queue.
+/// projection and kickoff-group backfill, readiness checks, and reconciliation. Each job
+/// enqueues its own continuation before it is acknowledged; failed jobs are retried and then
+/// retained in the dead-letter queue.
 type PoolMaintenanceEvent(configureServices: IServiceCollection -> unit) =
 
     let serviceProvider = PoolServices.build configureServices
@@ -61,6 +61,14 @@ type PoolMaintenanceEvent(configureServices: IServiceCollection -> unit) =
                       OperationMetrics.count "ReconciledRestorations" report.RequestedRestorations
                       OperationMetrics.count "RestoreHeldDetails" report.HeldRetainedDetails ],
                     [ "poolId", poolId.Value ]
+            | BackfillKickoffGroups(poolId, cursor) ->
+                let! report = serviceProvider.GetRequiredService<BackfillPoolKickoffGroups>().ExecuteAsync(poolId, cursor)
+
+                return
+                    [ OperationMetrics.count "KickoffCopiesBackfilled" report.CopiedDetails ],
+                    [ "poolId", poolId.Value
+                      "trendKickoff",
+                      report.RecordedTrendKickoff |> Option.map (fun kickoff -> kickoff.ToString("o")) |> Option.defaultValue "" ]
             | RetireMembership(poolId, gamblerId, generation) ->
                 do! serviceProvider.GetRequiredService<CleanUpRemovedMembership>().ExecuteAsync(poolId, gamblerId, generation)
                 return [ OperationMetrics.count "MembershipsRetired" 1 ], [ "poolId", poolId.Value; "gamblerId", gamblerId.Value ]

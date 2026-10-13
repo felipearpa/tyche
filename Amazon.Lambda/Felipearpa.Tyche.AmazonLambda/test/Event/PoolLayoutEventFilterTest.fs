@@ -253,3 +253,37 @@ module PoolLayoutEventFilterTest =
         let result = PoolLayoutEventFilter.extractInsertedMatches event |> Seq.toList
 
         result |> should haveLength 1
+
+    let private kickoffRecord (eventName: string) (previous: string) (current: string) =
+        makeRecord
+            eventName
+            (dict [ "matchId", stringAttr matchId; "matchDateTime", stringAttr previous ])
+            (dict [ "matchId", stringAttr matchId; "matchDateTime", stringAttr current ])
+
+    [<Fact>]
+    let ``given a modified kickoff when reading the change then the previous and new instants are returned`` () =
+        kickoffRecord "MODIFY" "2026-06-13T16:00:00Z" "2026-06-14T16:00:00.0000000Z"
+        |> PoolLayoutEventFilter.tryKickoffChange
+        |> should
+            equal
+            (Some(
+                Ulid.newOf matchId,
+                DateTime(2026, 6, 13, 16, 0, 0, DateTimeKind.Utc),
+                DateTime(2026, 6, 14, 16, 0, 0, DateTimeKind.Utc)
+            ))
+
+    [<Fact>]
+    let ``given the same instant written with another offset when reading the change then there is none`` () =
+        kickoffRecord "MODIFY" "2026-06-13T16:00:00Z" "2026-06-13T18:00:00+02:00"
+        |> PoolLayoutEventFilter.tryKickoffChange
+        |> should equal None
+
+    [<Fact>]
+    let ``given an inserted match or a result without a kickoff change when reading the change then there is none`` () =
+        kickoffRecord "INSERT" "2026-06-13T16:00:00Z" "2026-06-14T16:00:00Z"
+        |> PoolLayoutEventFilter.tryKickoffChange
+        |> should equal None
+
+        ``given an update record with both old and new scores`` ()
+        |> PoolLayoutEventFilter.tryKickoffChange
+        |> should equal None

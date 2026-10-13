@@ -97,6 +97,8 @@ private struct BetTimelineListContent: View {
             pointsSummary: viewModel.pointsSummary,
             showsSummaryRefreshProgress: !isPullRefreshing,
             onPointsSummaryRetry: { Task { await viewModel.loadPointsSummary() } },
+            onRetryFirstPage: { Task { await viewModel.retryFirstPage() } },
+            onRetryPage: { error in Task { await viewModel.retryPage(after: error) } },
             onMatchOpen: onMatchOpen
         )
         .refreshable {

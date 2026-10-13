@@ -166,21 +166,23 @@ module InvalidCursorTest =
                 "another pool", betToken otherPoolId gamblerId "matchDateTime" ]
             Invoke = pool (fun f -> f.GetLiveBetsAsync) betPath }
           { Name = "finished bets"
-            Index = "GetFinishedPoolGamblerBets-index"
-            Valid = betToken poolId gamblerId "computedDateTime"
+            Index = "GetFinishedPoolGamblerBetsByMatchDate-index"
+            Valid = betToken poolId gamblerId "computedMatchDateTime"
             Invalid =
               [ malformed
-                "legacy, missing computedDateTime", legacy $"GAMBLER#{gamblerId}#POOL#{poolId}" $"MATCH#{matchId}"
-                "another gambler", betToken poolId otherGamblerId "computedDateTime" ]
+                "legacy, missing computedMatchDateTime", legacy $"GAMBLER#{gamblerId}#POOL#{poolId}" $"MATCH#{matchId}"
+                "computation-time index", betToken poolId gamblerId "computedDateTime"
+                "another gambler", betToken poolId otherGamblerId "computedMatchDateTime" ]
             Invoke = pool (fun f -> f.GetFinishedBetsAsync) betPath }
           { Name = "timeline"
-            Index = "GetFinishedPoolGamblerBets-index"
-            Valid = "finished:" + betToken poolId gamblerId "computedDateTime"
+            Index = "GetFinishedPoolGamblerBetsByMatchDate-index"
+            Valid = "finished:" + betToken poolId gamblerId "computedMatchDateTime"
             Invalid =
               [ "live, malformed", "live:not a token"
                 "live, legacy", "live:" + legacy $"GAMBLER#{gamblerId}#POOL#{poolId}" $"MATCH#{matchId}"
-                "finished, another pool", "finished:" + betToken otherPoolId gamblerId "computedDateTime"
-                "unprefixed finished key", betToken poolId gamblerId "computedDateTime" ]
+                "finished, computation-time index", "finished:" + betToken poolId gamblerId "computedDateTime"
+                "finished, another pool", "finished:" + betToken otherPoolId gamblerId "computedMatchDateTime"
+                "unprefixed finished key", betToken poolId gamblerId "computedMatchDateTime" ]
             Invoke = pool (fun f -> f.GetBetsTimelineAsync) betPath }
           { Name = "legacy match bets"
             Index = "GetPoolGamblerScoresByMatch-index"

@@ -11,9 +11,8 @@ protocol PoolGamblerBetRemoteDataSource {
     func getFinishedPoolGamblerBets(
         poolId: String,
         gamblerId: String,
-        next: String?,
-        searchText: String?
-    ) async throws -> CursorPage<PoolGamblerBetResponse>
+        next: String?
+    ) async throws -> CursorPage<KickoffGroupResponse>
 
     func getLivePoolGamblerBets(
         poolId: String,
@@ -38,7 +37,7 @@ protocol PoolGamblerBetRemoteDataSource {
         poolId: String,
         gamblerId: String,
         next: String?
-    ) async throws -> CursorPage<PoolGamblerBetResponse>
+    ) async throws -> CursorPage<KickoffGroupResponse>
 
     func bet(betRequest: BetRequest) async throws -> PoolGamblerBetResponse
 }

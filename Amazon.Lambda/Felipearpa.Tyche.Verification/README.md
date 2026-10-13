@@ -4,7 +4,9 @@ Runs the production stream and queue handlers, unchanged, against **isolated tem
 tables, streams, and queues to check the settlement → positions → projection → ranked page
 pipeline end to end (`integration`), and to measure it at scale (`load`, `latency`). The
 `pagination` mode checks continuation tokens of every shared-codec query against DynamoDB
-itself (see [backend pagination](../../docs/backend-pagination.md#service-fixture)). It is not
+itself, and whole kickoff groups across storage pages and Timeline phases in the grouped History
+and Timeline feeds, on newly created tables (see
+[backend pagination](../../docs/backend-pagination.md#service-fixture)). It is not
 a test project and never runs as part of `dotnet test`. It refuses to start when the
 variables below point at the production names.
 
@@ -17,6 +19,7 @@ variables below point at the production names.
 
 ```bash
 dotnet run -- integration results.json
+dotnet run -- kickoff-groups results.json         # kickoff-group settlement sequence (task 5.1)
 dotnet run -- load results.json 5000 100 1000     # members, matches per member, viewers
 dotnet run -- latency results.json 5000           # after load, on the same tables
 dotnet run -- pagination results.json             # tables only; a few minutes at most

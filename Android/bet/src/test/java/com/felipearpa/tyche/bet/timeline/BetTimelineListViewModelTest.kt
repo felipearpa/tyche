@@ -3,14 +3,17 @@ package com.felipearpa.tyche.bet.timeline
 import androidx.paging.LoadState
 import androidx.paging.PagingDataEvent
 import androidx.paging.PagingDataPresenter
-import com.felipearpa.tyche.bet.PoolGamblerBetModel
 import com.felipearpa.tyche.bet.finished.HistoryPoints
 import com.felipearpa.tyche.bet.finished.HistoryPointsSummaryState.Presentation
 import com.felipearpa.tyche.bet.finished.HistoryPointsSummaryState.RefreshStatus
 import com.felipearpa.tyche.bet.finished.HistoryRowPoints
+import com.felipearpa.tyche.bet.kickoffgroup.KickoffGroupModel
 import com.felipearpa.tyche.core.paging.CursorPage
+import com.felipearpa.tyche.core.type.RankMovement
 import com.felipearpa.tyche.core.type.TeamScore
 import com.felipearpa.tyche.data.bet.application.GetGamblerBetsTimeline
+import com.felipearpa.tyche.data.bet.domain.GroupMovement
+import com.felipearpa.tyche.data.bet.domain.KickoffGroup
 import com.felipearpa.tyche.data.bet.domain.PoolGamblerBet
 import com.felipearpa.tyche.data.pool.application.GetPoolGamblerScore
 import com.felipearpa.tyche.data.pool.domain.PoolGamblerScore
@@ -36,11 +39,12 @@ import kotlinx.datetime.LocalDateTime
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import kotlin.time.Instant
 
 /**
- * Timeline's rows and the selected gambler's authoritative total: requested with the routed pool
- * and gambler, independent of each other, never summed from rows, and never replaced by a
- * superseded response or another gambler's answer.
+ * Timeline's kickoff groups and the selected gambler's authoritative total: requested with the
+ * routed pool and gambler, independent of each other, never summed from rows, and never replaced
+ * by a superseded response or another gambler's answer.
  */
 @OptIn(ExperimentalCoroutinesApi::class)
 class BetTimelineListViewModelTest {
@@ -58,7 +62,7 @@ class BetTimelineListViewModelTest {
     @Test
     fun `given a Timeline when it opens then rows and total are requested for the routed pool and gambler`() =
         runTest {
-            val timeline = timeline(pages = mapOf(null to page(settled("a", score = 5), next = null)))
+            val timeline = timeline(pages = mapOf(null to page(group(SUNDAY, settled("a", score = 5)), next = null)))
             val scores = scores(Result.success(score(120)))
             val viewModel = viewModel(timeline, scores)
 
@@ -75,7 +79,7 @@ class BetTimelineListViewModelTest {
     fun `given awards on loaded rows when the total loads then it is the server total rather than their sum`() =
         runTest {
             val timeline = timeline(
-                pages = mapOf(null to page(settled("a", score = 10), settled("b", score = 5), next = null)),
+                pages = mapOf(null to page(group(SUNDAY, settled("a", score = 10), settled("b", score = 5)), next = null)),
             )
             val viewModel = viewModel(timeline, scores(Result.success(score(120))))
             collect(viewModel)
@@ -85,12 +89,12 @@ class BetTimelineListViewModelTest {
         }
 
     @Test
-    fun `given pending and settled pages when the next page loads then the cursor and order are kept and the total is not requested again`() =
+    fun `given unsettled and finished group pages when the next page loads then the cursor and order are kept and the total is not requested again`() =
         runTest {
             val timeline = timeline(
                 pages = mapOf(
-                    null to page(pending("p1"), pending("p2"), next = "page-2"),
-                    "page-2" to page(settled("s1", score = 3), settled("s2", score = 0), next = null),
+                    null to page(group(SUNDAY, pending("p1"), pending("p2"), movement = null), next = "live:2"),
+                    "live:2" to page(group(SATURDAY, settled("s1", score = 3), settled("s2", score = 0)), next = null),
                 ),
             )
             val scores = scores(Result.success(score(120)))
@@ -99,14 +103,16 @@ class BetTimelineListViewModelTest {
             val presenter = collect(viewModel, readLastRow = true)
 
             presenter.items() shouldBe listOf("p1", "p2", "s1", "s2")
-            presenter.snapshot().map { bet -> HistoryRowPoints.of(bet!!) } shouldBe listOf(
+            presenter.snapshot().map { group -> group!!.movement } shouldBe
+                listOf(RankMovement.Pending, RankMovement.Moved(places = 2, partialProgress = null))
+            presenter.snapshot().flatMap { group -> group!!.matches }.map(HistoryRowPoints::of) shouldBe listOf(
                 HistoryRowPoints.Pending,
                 HistoryRowPoints.Pending,
                 HistoryRowPoints.Awarded(HistoryPoints.Earned(3)),
                 HistoryRowPoints.Awarded(HistoryPoints.Earned(0)),
             )
             coVerify(exactly = 1) { timeline.execute(POOL_ID, GAMBLER_ID, null) }
-            coVerify(exactly = 1) { timeline.execute(POOL_ID, GAMBLER_ID, "page-2") }
+            coVerify(exactly = 1) { timeline.execute(POOL_ID, GAMBLER_ID, "live:2") }
             coVerify(exactly = 1) { scores.execute(any(), any()) }
         }
 
@@ -127,7 +133,7 @@ class BetTimelineListViewModelTest {
     @Test
     fun `given a failed total when the summary is retried then only the total is requested and the rows stay`() =
         runTest {
-            val timeline = timeline(pages = mapOf(null to page(settled("a", score = 2), next = null)))
+            val timeline = timeline(pages = mapOf(null to page(group(SUNDAY, settled("a", score = 2)), next = null)))
             val scores = mockk<GetPoolGamblerScore>()
             coEvery { scores.execute(POOL_ID, GAMBLER_ID) } returnsMany listOf(
                 Result.failure(IllegalStateException("offline")),
@@ -155,7 +161,7 @@ class BetTimelineListViewModelTest {
         coEvery { scores.execute(POOL_ID, GAMBLER_ID) } returns Result.success(score(676)) coAndThen { gate.await() }
         val viewModel = viewModel(timeline(pages = emptyMap()), scores)
 
-        viewModel.refreshPointsSummary()
+        viewModel.refresh()
         viewModel.pointsSummary.value.presentation shouldBe
             Presentation.Points(HistoryPoints.Earned(676), RefreshStatus.REFRESHING)
         viewModel.pointsSummary.value.isPullRefreshing shouldBe true
@@ -176,7 +182,7 @@ class BetTimelineListViewModelTest {
             )
             val viewModel = viewModel(timeline(pages = emptyMap()), scores)
 
-            viewModel.refreshPointsSummary()
+            viewModel.refresh()
 
             viewModel.pointsSummary.value.presentation shouldBe
                 Presentation.Points(HistoryPoints.Unavailable, RefreshStatus.CURRENT)
@@ -194,8 +200,8 @@ class BetTimelineListViewModelTest {
             { withContext(NonCancellable) { newer.await() } }
         val viewModel = viewModel(timeline(pages = emptyMap()), scores)
 
-        viewModel.refreshPointsSummary()
-        viewModel.refreshPointsSummary()
+        viewModel.refresh()
+        viewModel.refresh()
         newer.complete(Result.success(score(30)))
         older.complete(Result.failure(IllegalStateException("offline")))
 
@@ -226,20 +232,42 @@ class BetTimelineListViewModelTest {
     fun `given a pending row when a refresh returns it computed then it becomes an award`() = runTest {
         val timeline = mockk<GetGamblerBetsTimeline>()
         coEvery { timeline.execute(POOL_ID, GAMBLER_ID, null) } returnsMany listOf(
-            Result.success(page(pending("m1", matchScore = TeamScore(1, 0)), next = null)),
-            Result.success(page(settled("m1", score = 2), next = null)),
+            Result.success(page(group(SUNDAY, pending("m1", matchScore = TeamScore(1, 0)), movement = null), next = null)),
+            Result.success(page(group(SUNDAY, settled("m1", score = 2)), next = null)),
         )
         val viewModel = viewModel(timeline, scores(Result.success(score(120))))
         val presenter = collect(viewModel, keepCollecting = true)
-        HistoryRowPoints.of(presenter.snapshot().single()!!) shouldBe HistoryRowPoints.Pending
+        HistoryRowPoints.of(presenter.snapshot().single()!!.matches.single()) shouldBe HistoryRowPoints.Pending
+        presenter.snapshot().single()!!.movement shouldBe RankMovement.Pending
 
+        viewModel.refresh()
         presenter.refresh()
         advanceUntilIdle()
 
-        HistoryRowPoints.of(presenter.snapshot().single()!!) shouldBe
+        HistoryRowPoints.of(presenter.snapshot().single()!!.matches.single()) shouldBe
             HistoryRowPoints.Awarded(HistoryPoints.Earned(2))
+        presenter.snapshot().single()!!.movement shouldBe RankMovement.Moved(places = 2, partialProgress = null)
         presenter.stop()
     }
+
+    @Test
+    fun `given a selected gambler's movement when it differs from the signed-in gambler's standing then the group shows the feed's value`() =
+        runTest {
+            val timeline = timeline(
+                pages = mapOf(
+                    null to page(
+                        group(SUNDAY, settled("a", score = 4), movement = GroupMovement(beforePosition = 9, position = 6)),
+                        next = null,
+                    ),
+                ),
+            )
+            // The selected gambler's score row says something else; the group never reads it.
+            val viewModel = viewModel(timeline, scores(Result.success(score(120))))
+
+            val presenter = collect(viewModel)
+
+            presenter.snapshot().single()!!.movement shouldBe RankMovement.Moved(places = 3, partialProgress = null)
+        }
 
     private fun viewModel(
         getGamblerBetsTimeline: GetGamblerBetsTimeline,
@@ -259,7 +287,7 @@ class BetTimelineListViewModelTest {
         keepCollecting: Boolean = false,
     ): RecordingPresenter {
         val presenter = RecordingPresenter()
-        val job = launch { viewModel.poolGamblerBets.collectLatest(presenter::collectFrom) }
+        val job = launch { viewModel.kickoffGroups.collectLatest(presenter::collectFrom) }
         advanceUntilIdle()
         if (readLastRow) {
             var size: Int
@@ -273,7 +301,7 @@ class BetTimelineListViewModelTest {
         return presenter
     }
 
-    private fun timeline(pages: Map<String?, CursorPage<PoolGamblerBet>>) = mockk<GetGamblerBetsTimeline> {
+    private fun timeline(pages: Map<String?, CursorPage<KickoffGroup>>) = mockk<GetGamblerBetsTimeline> {
         pages.forEach { (next, page) ->
             coEvery { execute(POOL_ID, any(), next) } returns Result.success(page)
         }
@@ -292,9 +320,22 @@ class BetTimelineListViewModelTest {
         beforePosition = 1,
         score = value,
         gamblerCount = 13,
+        trendGroup = null,
     )
 
-    private fun page(vararg bets: PoolGamblerBet, next: String?) = CursorPage(items = bets.toList(), next = next)
+    private fun page(vararg groups: KickoffGroup, next: String?) = CursorPage(items = groups.toList(), next = next)
+
+    private fun group(
+        kickoff: String,
+        vararg bets: PoolGamblerBet,
+        movement: GroupMovement? = GroupMovement(beforePosition = 8, position = 6),
+    ) = KickoffGroup(
+        kickoffDateTime = Instant.parse(kickoff),
+        totalMatches = bets.size,
+        computedMatches = bets.count { it.isComputed },
+        movement = movement,
+        matches = bets.toList(),
+    )
 
     private fun settled(matchId: String, score: Int?) = bet(matchId).copy(
         matchScore = TeamScore(1, 2),
@@ -327,15 +368,16 @@ class BetTimelineListViewModelTest {
     )
 
     /** Presents paging data the way a list does, so reading the last row requests the next page. */
-    private class RecordingPresenter : PagingDataPresenter<PoolGamblerBetModel>(
+    private class RecordingPresenter : PagingDataPresenter<KickoffGroupModel>(
         mainContext = Dispatchers.Main,
     ) {
         var stop: () -> Unit = {}
 
-        fun items() = snapshot().map { bet -> bet?.matchId }
+        /** The loaded rows' match IDs, group by group, in list order. */
+        fun items() = snapshot().flatMap { group -> group!!.matches.map { bet -> bet.matchId } }
 
         override suspend fun presentPagingDataEvent(
-            event: PagingDataEvent<PoolGamblerBetModel>,
+            event: PagingDataEvent<KickoffGroupModel>,
         ) = Unit
     }
 }
@@ -343,3 +385,5 @@ class BetTimelineListViewModelTest {
 private const val POOL_ID = "pool-a"
 private const val GAMBLER_ID = "gambler-7"
 private const val OTHER_GAMBLER_ID = "gambler-9"
+private const val SUNDAY = "2026-07-19T19:00:00Z"
+private const val SATURDAY = "2026-07-18T16:00:00Z"

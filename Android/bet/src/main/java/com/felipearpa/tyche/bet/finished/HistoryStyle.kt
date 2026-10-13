@@ -35,6 +35,11 @@ internal object HistoryStyle {
         @Composable @ReadOnlyComposable
         get() = MaterialTheme.colorScheme.onSurface.copy(alpha = NEUTRAL_FILL_ALPHA)
 
+    /** The decorative rail that joins a kickoff group's rows. */
+    val railFill: Color
+        @Composable @ReadOnlyComposable
+        get() = MaterialTheme.colorScheme.outlineVariant
+
     /** Rows span the full content width on every window size, inside this gutter. */
     val horizontalPadding = 16.dp
 

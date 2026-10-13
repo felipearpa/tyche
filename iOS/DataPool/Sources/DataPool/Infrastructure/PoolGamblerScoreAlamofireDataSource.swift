@@ -1,3 +1,4 @@
+import Foundation
 import Alamofire
 import Core
 import Session
@@ -22,7 +23,10 @@ class PoolGamblerScoreAlamofireDateSource: PoolGamblerScoreRemoteDataSource {
                 parameters: ["next": next, "searchText": searchText]
             )
             .validate()
-            .responseDecodable(of: CursorPage<PoolGamblerScoreResponse>.self) { response in
+            .responseDecodable(
+                of: CursorPage<PoolGamblerScoreResponse>.self,
+                decoder: JSONDecoder().withISODate()
+            ) { response in
                 switch response.result {
                 case .success(let page):
                     continuation.resume(returning: page)
@@ -44,7 +48,10 @@ class PoolGamblerScoreAlamofireDateSource: PoolGamblerScoreRemoteDataSource {
                 parameters: ["next": next, "searchText": searchText]
             )
             .validate()
-            .responseDecodable(of: CursorPage<PoolGamblerScoreResponse>.self) { response in
+            .responseDecodable(
+                of: CursorPage<PoolGamblerScoreResponse>.self,
+                decoder: JSONDecoder().withISODate()
+            ) { response in
                 switch response.result {
                 case .success(let page):
                     continuation.resume(returning: page)
@@ -64,7 +71,10 @@ class PoolGamblerScoreAlamofireDateSource: PoolGamblerScoreRemoteDataSource {
                 urlBasePathProvider.prependBasePath("pools/\(poolId)/gamblers/\(gamblerId)")!
             )
             .validate()
-            .responseDecodable(of: PoolGamblerScoreResponse.self) { response in
+            .responseDecodable(
+                of: PoolGamblerScoreResponse.self,
+                decoder: JSONDecoder().withISODate()
+            ) { response in
                 switch response.result {
                 case .success(let poolGamblerScore):
                     continuation.resume(returning: poolGamblerScore)

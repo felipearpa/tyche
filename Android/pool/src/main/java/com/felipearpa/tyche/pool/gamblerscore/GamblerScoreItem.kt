@@ -2,12 +2,11 @@ package com.felipearpa.tyche.pool.gamblerscore
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -24,6 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.compositeOver
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.clearAndSetSemantics
@@ -34,21 +34,25 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.felipearpa.tyche.account.AccountAvatar
 import com.felipearpa.tyche.account.AccountAvatarFallback
 import com.felipearpa.tyche.pool.PoolGamblerScoreModel
 import com.felipearpa.tyche.pool.PositionIndicator
 import com.felipearpa.tyche.pool.R
+import com.felipearpa.tyche.pool.movement
 import com.felipearpa.tyche.pool.poolGamblerScoreDummyModel
 import com.felipearpa.tyche.pool.poolGamblerScoreDummyModelWithoutPosition
 import com.felipearpa.tyche.pool.poolGamblerScorePlaceholderModel
-import com.felipearpa.tyche.pool.rank
+import com.felipearpa.tyche.pool.poolGamblerScoreTrendStateDummyModels
 import com.felipearpa.tyche.ui.TrendIndicator
+import com.felipearpa.tyche.ui.accessibilityText
+import com.felipearpa.tyche.ui.hasLabel
+import com.felipearpa.tyche.ui.labelWordWidth
 import com.felipearpa.tyche.ui.theme.LocalExtendedColorScheme
 import com.felipearpa.tyche.ui.theme.LocalLoadingPlaceholderPulse
 import com.felipearpa.tyche.ui.theme.TycheTheme
 import com.revenuecat.placeholder.placeholder
-import kotlin.math.abs
 
 /**
  * One leaderboard row. Loading rows render this same component from
@@ -56,6 +60,11 @@ import kotlin.math.abs
  * leaf (rank digits, trend, avatar, username, score) with the shared
  * [LocalLoadingPlaceholderPulse], requests no avatar, and exposes nothing to TalkBack. The rank
  * tile keeps its container color. Callers pass no effect.
+ *
+ * At ordinary font scales the username stays on one line, ellipsized before the score. At large
+ * font scales one line cannot hold the rail, avatar, username, and score without clipping or
+ * truncating them, so the row reflows: the rail, avatar, and score share the first line (the score
+ * moves below when even that does not fit), and the username wraps across the full width beneath.
  */
 @Composable
 fun GamblerScoreItem(
@@ -64,172 +73,216 @@ fun GamblerScoreItem(
     modifier: Modifier = Modifier,
     isPlaceholder: Boolean = false,
 ) {
-    val pulse = LocalLoadingPlaceholderPulse.current
     val extendedColors = LocalExtendedColorScheme.current
     val rowBackground = if (isCurrentUser && !isPlaceholder) {
         extendedColors.currentUserContainer
     } else {
         Color.Transparent
     }
-    val rowForeground = if (isCurrentUser) {
-        extendedColors.onCurrentUserContainer
+    val parts = GamblerScoreParts(
+        poolGamblerScore = poolGamblerScore,
+        isCurrentUser = isCurrentUser,
+        isPlaceholder = isPlaceholder,
+    )
+    val accessibilityDescription = gamblerScoreAccessibilityDescription(
+        poolGamblerScore = poolGamblerScore,
+        isCurrentUser = isCurrentUser,
+    )
+    val rowModifier = modifier
+        .fillMaxWidth()
+        .heightIn(min = ROW_MINIMUM_HEIGHT)
+        .background(rowBackground)
+        .padding(horizontal = HORIZONTAL_PADDING, vertical = VERTICAL_PADDING)
+        .clearAndSetSemantics {
+            if (!isPlaceholder) contentDescription = accessibilityDescription
+        }
+
+    if (LocalDensity.current.fontScale >= REFLOW_FONT_SCALE) {
+        ReflowedContent(parts = parts, modifier = rowModifier)
     } else {
-        MaterialTheme.colorScheme.onSurface
+        InlineContent(parts = parts, modifier = rowModifier)
     }
-    val rankBackground = if (isCurrentUser) {
+}
+
+/** The pieces both layouts arrange. */
+private class GamblerScoreParts(
+    val poolGamblerScore: PoolGamblerScoreModel,
+    val isCurrentUser: Boolean,
+    val isPlaceholder: Boolean,
+)
+
+@Composable
+private fun InlineContent(parts: GamblerScoreParts, modifier: Modifier) {
+    Row(
+        modifier = modifier,
+        horizontalArrangement = Arrangement.spacedBy(IDENTITY_SPACING),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        RankRail(parts = parts)
+        Avatar(parts = parts)
+        Identity(parts = parts, isSingleLine = true, modifier = Modifier.weight(1f))
+        Score(parts = parts, modifier = Modifier.widthIn(min = SCORE_MINIMUM_WIDTH))
+    }
+}
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun ReflowedContent(parts: GamblerScoreParts, modifier: Modifier) {
+    Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(REFLOWED_SPACING)) {
+        FlowRow(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalArrangement = Arrangement.spacedBy(REFLOWED_SPACING),
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            Row(horizontalArrangement = Arrangement.spacedBy(IDENTITY_SPACING)) {
+                RankRail(parts = parts)
+                Avatar(parts = parts)
+            }
+            Score(parts = parts)
+        }
+        Identity(parts = parts, isSingleLine = false, modifier = Modifier.fillMaxWidth())
+    }
+}
+
+/**
+ * The rank tile with the movement beneath it. A movement with a qualifier or state label gets a
+ * wider definite width, scaled with the font and never narrower than the label's widest word, so
+ * the label wraps on word boundaries. A plain
+ * movement is as wide as the tile, or as its symbol and number when large text makes them wider,
+ * so they never clip.
+ */
+@Composable
+private fun RankRail(parts: GamblerScoreParts) {
+    val extendedColors = LocalExtendedColorScheme.current
+    val movement = parts.poolGamblerScore.movement()
+    val rankBackground = if (parts.isCurrentUser) {
         extendedColors.currentUser
             .copy(alpha = CURRENT_USER_TILE_OVERLAY_OPACITY)
             .compositeOver(extendedColors.currentUserContainer)
     } else {
         MaterialTheme.colorScheme.surfaceVariant
     }
-    val rankForeground = if (isCurrentUser) {
+    val rankForeground = if (parts.isCurrentUser) {
         extendedColors.onCurrentUserContainer
     } else {
         MaterialTheme.colorScheme.onSurfaceVariant
     }
-    val accessibilityDescription = gamblerScoreAccessibilityDescription(
-        poolGamblerScore = poolGamblerScore,
-        isCurrentUser = isCurrentUser,
-    )
+    val trendTextStyle = MaterialTheme.typography.labelSmall.copy(fontFeatureSettings = "tnum")
+    val railWidth = if (movement.hasLabel) {
+        val labelWidth = with(LocalDensity.current) { RAIL_LABEL_WIDTH.toDp() }
+        Modifier.width(maxOf(labelWidth, movement.labelWordWidth(trendTextStyle)))
+    } else {
+        Modifier.widthIn(min = RANK_TILE_SIZE)
+    }
 
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .heightIn(min = ROW_MINIMUM_HEIGHT)
-            .background(rowBackground)
-            .padding(horizontal = HORIZONTAL_PADDING, vertical = VERTICAL_PADDING)
-            .clearAndSetSemantics {
-                if (!isPlaceholder) contentDescription = accessibilityDescription
-            },
-        horizontalArrangement = Arrangement.spacedBy(IDENTITY_SPACING),
-        verticalAlignment = Alignment.CenterVertically,
+    Column(
+        modifier = railWidth,
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(RANK_SPACING),
     ) {
-        Column(
-            modifier = Modifier.width(RANK_TILE_SIZE),
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            PositionIndicator(
-                position = poolGamblerScore.position,
-                shouldUsePrimaryColor = false,
-                size = RANK_TILE_SIZE,
-                shape = RoundedCornerShape(RANK_CORNER_RADIUS),
-                containerColor = rankBackground,
-                contentColor = rankForeground,
-                textStyle = MaterialTheme.typography.titleMedium.copy(
-                    fontWeight = FontWeight.SemiBold,
-                    fontFeatureSettings = "tnum",
-                ),
-                isPlaceholder = isPlaceholder,
-            )
-
-            Spacer(modifier = Modifier.height(RANK_SPACING))
-
-            Box(
-                modifier = Modifier.height(MOVEMENT_HEIGHT),
-                contentAlignment = Alignment.Center,
-            ) {
-                poolGamblerScore.rank()?.let { difference ->
-                    TrendIndicator(
-                        rank = difference,
-                        textStyle = MaterialTheme.typography.labelSmall.copy(
-                            fontFeatureSettings = "tnum",
-                        ),
-                        isPlaceholder = isPlaceholder,
-                    )
-                }
-            }
-        }
-
-        AccountAvatar(
-            accountId = poolGamblerScore.gamblerId,
-            fallback = AccountAvatarFallback(
-                identity = poolGamblerScore.gamblerUsername,
-                colorKey = poolGamblerScore.gamblerUsername,
-                backgroundColor = if (isCurrentUser) extendedColors.currentUser else null,
-                foregroundColor = if (isCurrentUser) extendedColors.onCurrentUser else null,
+        PositionIndicator(
+            position = parts.poolGamblerScore.position,
+            shouldUsePrimaryColor = false,
+            size = RANK_TILE_SIZE,
+            shape = RoundedCornerShape(RANK_CORNER_RADIUS),
+            containerColor = rankBackground,
+            contentColor = rankForeground,
+            textStyle = MaterialTheme.typography.titleMedium.copy(
+                fontWeight = FontWeight.SemiBold,
+                fontFeatureSettings = "tnum",
             ),
-            modifier = Modifier
-                .size(AVATAR_SIZE)
-                .clip(CircleShape)
-                .then(
-                    if (isPlaceholder) {
-                        Modifier.placeholder(
-                            color = pulse.color,
-                            shape = CircleShape,
-                            highlight = pulse.highlight,
-                        )
-                    } else {
-                        Modifier
-                    },
-                ),
-            isPlaceholder = isPlaceholder,
+            isPlaceholder = parts.isPlaceholder,
         )
+        TrendIndicator(
+            movement = movement,
+            textStyle = trendTextStyle,
+            isPlaceholder = parts.isPlaceholder,
+            modifier = Modifier.heightIn(min = MOVEMENT_HEIGHT),
+        )
+    }
+}
 
-        Column(
-            modifier = Modifier.weight(1f),
-            verticalArrangement = Arrangement.spacedBy(IDENTITY_TEXT_SPACING),
-        ) {
-            Text(
-                text = poolGamblerScore.gamblerUsername,
-                color = rowForeground,
-                style = MaterialTheme.typography.bodyLarge.copy(
-                    fontWeight = FontWeight.SemiBold,
-                ),
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                modifier = if (isPlaceholder) {
+@Composable
+private fun Avatar(parts: GamblerScoreParts) {
+    val extendedColors = LocalExtendedColorScheme.current
+    val pulse = LocalLoadingPlaceholderPulse.current
+    AccountAvatar(
+        accountId = parts.poolGamblerScore.gamblerId,
+        fallback = AccountAvatarFallback(
+            identity = parts.poolGamblerScore.gamblerUsername,
+            colorKey = parts.poolGamblerScore.gamblerUsername,
+            backgroundColor = if (parts.isCurrentUser) extendedColors.currentUser else null,
+            foregroundColor = if (parts.isCurrentUser) extendedColors.onCurrentUser else null,
+        ),
+        modifier = Modifier
+            .size(AVATAR_SIZE)
+            .clip(CircleShape)
+            .then(
+                if (parts.isPlaceholder) {
                     Modifier.placeholder(
                         color = pulse.color,
-                        shape = pulse.shape,
+                        shape = CircleShape,
                         highlight = pulse.highlight,
                     )
                 } else {
                     Modifier
                 },
-            )
-            if (isCurrentUser) {
-                Text(
-                    text = stringResource(R.string.leaderboard_you),
-                    color = rowForeground,
-                    style = MaterialTheme.typography.bodySmall,
-                    modifier = if (isPlaceholder) {
-                        Modifier.placeholder(
-                            color = pulse.color,
-                            shape = pulse.shape,
-                            highlight = pulse.highlight,
-                        )
-                    } else {
-                        Modifier
-                    },
-                )
-            }
-        }
-
-        Text(
-            text = poolGamblerScore.score?.toString() ?: "—",
-            color = rowForeground,
-            style = MaterialTheme.typography.headlineSmall.copy(
-                fontWeight = FontWeight.Bold,
-                fontFeatureSettings = "tnum",
             ),
-            maxLines = 1,
-            textAlign = TextAlign.End,
-            modifier = Modifier
-                .widthIn(min = SCORE_MINIMUM_WIDTH)
-                .then(
-                    if (isPlaceholder) {
-                        Modifier.placeholder(
-                            color = pulse.color,
-                            shape = pulse.shape,
-                            highlight = pulse.highlight,
-                        )
-                    } else {
-                        Modifier
-                    },
-                ),
+        isPlaceholder = parts.isPlaceholder,
+    )
+}
+
+@Composable
+private fun Identity(parts: GamblerScoreParts, isSingleLine: Boolean, modifier: Modifier) {
+    val foreground = rowForeground(parts.isCurrentUser)
+    val leafMask = leafMask(parts.isPlaceholder)
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(IDENTITY_TEXT_SPACING),
+    ) {
+        Text(
+            text = parts.poolGamblerScore.gamblerUsername,
+            color = foreground,
+            style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.SemiBold),
+            maxLines = if (isSingleLine) 1 else Int.MAX_VALUE,
+            overflow = if (isSingleLine) TextOverflow.Ellipsis else TextOverflow.Clip,
+            modifier = leafMask,
         )
+        if (parts.isCurrentUser) {
+            Text(
+                text = stringResource(R.string.leaderboard_you),
+                color = foreground,
+                style = MaterialTheme.typography.bodySmall,
+                modifier = leafMask,
+            )
+        }
     }
+}
+
+@Composable
+private fun Score(parts: GamblerScoreParts, modifier: Modifier = Modifier) {
+    Text(
+        text = parts.poolGamblerScore.score?.toString() ?: "—",
+        color = rowForeground(parts.isCurrentUser),
+        style = MaterialTheme.typography.headlineSmall.copy(
+            fontWeight = FontWeight.Bold,
+            fontFeatureSettings = "tnum",
+        ),
+        maxLines = 1,
+        textAlign = TextAlign.End,
+        modifier = modifier.then(leafMask(parts.isPlaceholder)),
+    )
+}
+
+@Composable
+private fun rowForeground(isCurrentUser: Boolean): Color =
+    if (isCurrentUser) LocalExtendedColorScheme.current.onCurrentUserContainer else MaterialTheme.colorScheme.onSurface
+
+@Composable
+private fun leafMask(isPlaceholder: Boolean): Modifier {
+    if (!isPlaceholder) return Modifier
+    val pulse = LocalLoadingPlaceholderPulse.current
+    return Modifier.placeholder(color = pulse.color, shape = pulse.shape, highlight = pulse.highlight)
 }
 
 @Composable
@@ -243,30 +296,13 @@ private fun gamblerScoreAccessibilityDescription(
     val score = poolGamblerScore.score?.let {
         pluralStringResource(R.plurals.leaderboard_points_accessibility, it, it)
     } ?: stringResource(R.string.leaderboard_score_missing_accessibility)
-    val movement = poolGamblerScore.rank()?.let { difference ->
-        when {
-            difference > 0 -> pluralStringResource(
-                R.plurals.leaderboard_movement_up_accessibility,
-                abs(difference),
-                abs(difference),
-            )
-
-            difference < 0 -> pluralStringResource(
-                R.plurals.leaderboard_movement_down_accessibility,
-                abs(difference),
-                abs(difference),
-            )
-
-            else -> stringResource(R.string.leaderboard_movement_unchanged_accessibility)
-        }
-    }
 
     return listOfNotNull(
         rank,
         poolGamblerScore.gamblerUsername,
         stringResource(R.string.leaderboard_you).takeIf { isCurrentUser },
         score,
-        movement,
+        poolGamblerScore.movement().accessibilityText(),
     ).joinToString(separator = ", ")
 }
 
@@ -278,6 +314,13 @@ private val IDENTITY_SPACING = 12.dp
 private val IDENTITY_TEXT_SPACING = 2.dp
 private val RANK_SPACING = 2.dp
 private val MOVEMENT_HEIGHT = 16.dp
+
+/** Room for a partial group's qualifier or a pending or unavailable label beneath the tile. */
+private val RAIL_LABEL_WIDTH = 64.sp
+private val REFLOWED_SPACING = 8.dp
+
+/** At or above this font scale the row reflows instead of ellipsizing the username. */
+private const val REFLOW_FONT_SCALE = 1.5f
 private val SCORE_MINIMUM_WIDTH = 52.dp
 private val HORIZONTAL_PADDING = 16.dp
 private val VERTICAL_PADDING = 10.dp
@@ -335,6 +378,31 @@ private fun GamblerScoreItemGeometryPreview() {
                     isCurrentUser = false,
                     isPlaceholder = true,
                 )
+            }
+        }
+    }
+}
+
+@PreviewLightDark
+@Preview(name = "Trend states, large text", fontScale = 2f, widthDp = 320)
+@Preview(name = "Trend states, Spanish", locale = "es-rCO")
+@Composable
+private fun GamblerScoreItemTrendStatesPreview() {
+    TycheTheme {
+        Surface {
+            Column {
+                poolGamblerScoreTrendStateDummyModels().forEach { score ->
+                    GamblerScoreItem(
+                        poolGamblerScore = score.copy(
+                            gamblerUsername = if (score.gamblerId == "trend-up") {
+                                "A very long username that cannot fit on one line"
+                            } else {
+                                score.gamblerUsername
+                            },
+                        ),
+                        isCurrentUser = score.gamblerId == "trend-partial",
+                    )
+                }
             }
         }
     }

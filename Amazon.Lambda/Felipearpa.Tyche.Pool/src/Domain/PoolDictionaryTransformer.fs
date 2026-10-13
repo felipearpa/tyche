@@ -1,6 +1,8 @@
 namespace Felipearpa.Tyche.Pool.Domain
 
+open System
 open System.Collections.Generic
+open System.Globalization
 open System.Runtime.CompilerServices
 open Amazon.DynamoDBv2.Model
 open Felipearpa.Data.DynamoDb.Dictionary
@@ -22,6 +24,15 @@ module PoolDictionaryTransformer =
         dictionary
         |> tryGetAttributeValueOrNone PoolTable.Attribute.gamblerCount
         |> Option.map (fun gamblerCount -> dictionary[PoolTable.Attribute.poolId].S |> Ulid.newOf, int gamblerCount.N)
+
+    let toPoolTrend (dictionary: IDictionary<string, AttributeValue>) =
+        { PoolTrend.PoolId = dictionary[PoolTable.Attribute.poolId].S |> Ulid.newOf
+          PoolLayoutId = dictionary[PoolTable.Attribute.poolLayoutId].S |> Ulid.newOf
+          TrendKickoffDateTime =
+            dictionary
+            |> tryGetAttributeValueOrNone PoolTable.Attribute.trendKickoffDateTime
+            |> Option.map (fun value ->
+                DateTime.Parse(value.S, CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind)) }
 
     type Extensions =
         [<Extension>]

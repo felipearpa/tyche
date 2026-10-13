@@ -1,17 +1,18 @@
+import Core
 import XCTest
 import ViewInspector
 @testable import Pool
 
 final class PoolTests: XCTestCase {
     func testRankMovementClassificationInputs() {
-        XCTAssertEqual(score(position: 2, beforePosition: 5).rank(), 3)
-        XCTAssertEqual(score(position: 5, beforePosition: 2).rank(), -3)
-        XCTAssertEqual(score(position: 2, beforePosition: 2).rank(), 0)
+        XCTAssertEqual(score(position: 2, beforePosition: 5).movement, .moved(places: 3, partialProgress: nil))
+        XCTAssertEqual(score(position: 5, beforePosition: 2).movement, .moved(places: -3, partialProgress: nil))
+        XCTAssertEqual(score(position: 2, beforePosition: 2).movement, .moved(places: 0, partialProgress: nil))
     }
 
-    func testRankMovementIsUnknownWhenEitherPositionIsMissing() {
-        XCTAssertNil(score(position: nil, beforePosition: 2).rank())
-        XCTAssertNil(score(position: 2, beforePosition: nil).rank())
+    func testRankMovementIsUnavailableWhenEitherPositionIsMissing() {
+        XCTAssertEqual(score(position: nil, beforePosition: 2).movement, .unavailable)
+        XCTAssertEqual(score(position: 2, beforePosition: nil).movement, .unavailable)
     }
 
     func testPositionIndicatorSupportsDefaultLeaderboardAndMissingStates() throws {
@@ -94,7 +95,8 @@ final class PoolTests: XCTestCase {
             position: position,
             beforePosition: beforePosition,
             score: score,
-            gamblerCount: 10
+            gamblerCount: 10,
+            trendGroup: KickoffGroupProgress(computedMatches: 1, totalMatches: 1)
         )
     }
 }

@@ -8,6 +8,12 @@
 - A removed gambler who rejoins a pool now gets their history back: retained scored bets move to the new membership, their earned points count toward the new total exactly once, and they reappear in the ranked player lists of matches they played
 - Rejoin restoration leaves predictions, match awards, and each gambler's previous position unchanged, recalculates current standings, and lets later score corrections adjust the restored total correctly; bets deleted at removal are not recreated, and matches scored while the gambler was away still earn zero
 - Internal: restoration runs as an ordered, idempotent per-pool operation on the existing FIFO queue, safe under retries, duplicate delivery, concurrent settlement, and a repeat removal, with an operator runbook script for inspecting and replaying held restores
+- Rank trend now covers every match that shares a kickoff: the baseline position resets only when a newer kickoff group gets its first result, so later results, late scores, and corrections in the same window keep the comparison
+- Pool score responses carry a `trendGroup` with the group's kickoff time and how many of its matches are scored versus the total, so clients can show progress like 1 of 2; the existing position fields keep their meaning
+- History and Timeline now return one item per kickoff group, never split across pages, each with its match rows, scored and total counts, and the gambler's rank movement computed from stored position snapshots, or marked unavailable when a snapshot is missing
+- Timeline switches between upcoming and finished at the group level, History no longer takes a search filter, and continuations from the previous finished-bets listing restart at the first page with `INVALID_CURSOR`
+- Rescheduling a match in the pool layout now copies the new kickoff onto every gambler's bet for that match, so groups follow the change
+- Internal: finished bets are queried through a new kickoff-ordered index, a maintenance backfill copies kickoffs onto scored bets and records each pool's current trend group before cutover, and the settlement and maintenance consumers explicitly allow their bounded self-requeue loops
 - Internal: pool root items are batch-fetched via `BatchGetItem` (chunked with unprocessed-key retries) to enrich score pages with gambler counts
 
 ## 1.7.1
