@@ -140,6 +140,52 @@ module PoolSettlementRequestBuilder =
             ExclusiveStartKey = start
         )
 
+    /// Completed receipts of result settlements (`SETTLEMENT#RESULT#…`).
+    let getCompletedResultReceipts (poolId: Ulid) (start: Dictionary<string, AttributeValue>) =
+        QueryRequest(
+            TableName = PoolTable.name,
+            ConsistentRead = true,
+            KeyConditionExpression = $"{name Key.pk} = :pk AND begins_with({name Key.sk}, :prefix)",
+            FilterExpression = $"{name PoolTable.Attribute.operationState} = :completed",
+            ExpressionAttributeNames = names [ Key.pk; Key.sk; PoolTable.Attribute.operationState ],
+            ExpressionAttributeValues =
+                values
+                    [ ":pk", s (poolKey poolId)
+                      ":prefix", s $"{PoolTable.Prefix.settlement}#RESULT#"
+                      ":completed", s (receiptStateValue Completed) ],
+            ExclusiveStartKey = start
+        )
+
+    /// Sets the trend kickoff of a root that has none, provided no operation is active and no
+    /// operation was admitted since the root was read. An operation records its own trend
+    /// kickoff at completion under its owner fence; this write can therefore never overwrite
+    /// one, and an operation admitted after it compares with the value it wrote.
+    let recordTrendKickoff (root: PoolSettlementRoot) (kickoff: DateTime) =
+        let revisionCondition =
+            if root.OperationRevision = 0L then
+                $"(attribute_not_exists({name PoolTable.Attribute.operationRevision}) OR {name PoolTable.Attribute.operationRevision} = :observed)"
+            else
+                $"{name PoolTable.Attribute.operationRevision} = :observed"
+
+        UpdateItemRequest(
+            TableName = PoolTable.name,
+            Key = rootKey root.PoolId,
+            UpdateExpression = $"SET {name PoolTable.Attribute.trendKickoffDateTime} = :trendKickoff",
+            ConditionExpression =
+                $"attribute_exists({name Key.pk}) \
+                 AND attribute_not_exists({name PoolTable.Attribute.trendKickoffDateTime}) \
+                 AND attribute_not_exists({name PoolTable.Attribute.activeOperation}) \
+                 AND {revisionCondition}",
+            ExpressionAttributeNames =
+                names
+                    [ Key.pk
+                      PoolTable.Attribute.trendKickoffDateTime
+                      PoolTable.Attribute.activeOperation
+                      PoolTable.Attribute.operationRevision ],
+            ExpressionAttributeValues =
+                values [ ":trendKickoff", s (instant kickoff); ":observed", n root.OperationRevision ]
+        )
+
     let private checkpointOwnerCondition =
         $"{name PoolTable.Attribute.activeOperation}.#checkpointOperationId = :operationId AND \
          {name PoolTable.Attribute.activeOperation}.#checkpointOwnerToken = :ownerToken"
@@ -166,7 +212,15 @@ module PoolSettlementRequestBuilder =
                       ":ownerToken", s expectedOwnerToken ]
         )
 
-    let complete (poolId: Ulid) (active: ActiveOperation) (unresolvedDetails: int) (now: DateTime) =
+    /// Completes the receipt and clears the checkpoint, fenced by the owner token. A trend
+    /// kickoff, when given, becomes the root's in the same transaction.
+    let complete
+        (poolId: Ulid)
+        (active: ActiveOperation)
+        (unresolvedDetails: int)
+        (trendKickoff: DateTime option)
+        (now: DateTime)
+        =
         let completeReceipt =
             Update(
                 TableName = PoolTable.name,
@@ -192,20 +246,37 @@ module PoolSettlementRequestBuilder =
                           ":revision", n active.Revision ]
             )
 
+        let trendAssignment, trendNames, trendValues =
+            match trendKickoff with
+            | Some kickoff ->
+                $", {name PoolTable.Attribute.trendKickoffDateTime} = :trendKickoff",
+                [ name PoolTable.Attribute.trendKickoffDateTime, PoolTable.Attribute.trendKickoffDateTime ],
+                [ ":trendKickoff", s (instant kickoff) ]
+            | None -> "", [], []
+
         let clearCheckpoint =
             Update(
                 TableName = PoolTable.name,
                 Key = rootKey poolId,
                 UpdateExpression =
-                    $"REMOVE {name PoolTable.Attribute.activeOperation} SET {name PoolTable.Attribute.lastCompletedOperationRevision} = :revision",
+                    $"REMOVE {name PoolTable.Attribute.activeOperation} SET {name PoolTable.Attribute.lastCompletedOperationRevision} = :revision{trendAssignment}",
                 ConditionExpression = checkpointOwnerCondition,
                 ExpressionAttributeNames =
-                    Dictionary(dict (checkpointNames @ [ name PoolTable.Attribute.lastCompletedOperationRevision, PoolTable.Attribute.lastCompletedOperationRevision ])),
+                    Dictionary(
+                        dict (
+                            checkpointNames
+                            @ [ name PoolTable.Attribute.lastCompletedOperationRevision,
+                                PoolTable.Attribute.lastCompletedOperationRevision ]
+                            @ trendNames
+                        )
+                    ),
                 ExpressionAttributeValues =
-                    values
+                    values (
                         [ ":revision", n active.Revision
                           ":operationId", s active.OperationId
                           ":ownerToken", s active.OwnerToken ]
+                        @ trendValues
+                    )
             )
 
         TransactWriteItemsRequest(
@@ -288,7 +359,8 @@ module PoolSettlementRequestBuilder =
                      {name PoolTable.Attribute.settlementOperationId} = :operationId, \
                      {name PoolTable.Attribute.settlementOperationRevision} = :operationRevision, \
                      {name PoolTable.Attribute.computedRequestId} = if_not_exists({name PoolTable.Attribute.computedRequestId}, :operationId), \
-                     {name PoolTable.Attribute.computedDateTime} = if_not_exists({name PoolTable.Attribute.computedDateTime}, :now)",
+                     {name PoolTable.Attribute.computedDateTime} = if_not_exists({name PoolTable.Attribute.computedDateTime}, :now), \
+                     {name PoolTable.Attribute.computedMatchDateTime} = if_not_exists({name PoolTable.Attribute.computedMatchDateTime}, {name PoolTable.Attribute.matchDateTime})",
                 ConditionExpression =
                     $"attribute_exists({name Key.pk}) AND {name PoolTable.Attribute.poolMembershipGeneration} = :generation AND {expectation}",
                 ExpressionAttributeNames =
@@ -302,6 +374,8 @@ module PoolSettlementRequestBuilder =
                           PoolTable.Attribute.settlementOperationRevision
                           PoolTable.Attribute.computedRequestId
                           PoolTable.Attribute.computedDateTime
+                          PoolTable.Attribute.computedMatchDateTime
+                          PoolTable.Attribute.matchDateTime
                           PoolTable.Attribute.poolMembershipGeneration ],
                 ExpressionAttributeValues =
                     values (

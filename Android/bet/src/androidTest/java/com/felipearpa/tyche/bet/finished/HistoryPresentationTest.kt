@@ -31,9 +31,11 @@ import io.kotest.matchers.string.shouldNotContain
 import io.kotest.matchers.string.shouldStartWith
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.TimeZone
 import org.junit.Rule
 import org.junit.Test
 import java.util.Locale
+import kotlin.time.Instant
 
 /**
  * History's row and summary as TalkBack reads them, its placeholders, and its date format. The
@@ -49,7 +51,8 @@ class HistoryPresentationTest {
         setLocalized(Locale.US) {
             HistoryBetItem(
                 poolGamblerBet = positiveRow(),
-                dateFormat = HistoryMatchDateFormat(Locale.US, is24HourClock = false, today = TODAY),
+                kickoffDateTime = KICKOFF,
+                dateFormat = utcDateFormat(Locale.US, is24HourClock = false),
                 modifier = Modifier.fillMaxWidth().testTag(ROW_TAG),
                 onClick = { opened++ },
             )
@@ -66,7 +69,8 @@ class HistoryPresentationTest {
         setLocalized(Locale.US) {
             HistoryBetItem(
                 poolGamblerBet = positiveRow().copy(matchScore = null, betScore = null, score = null),
-                dateFormat = HistoryMatchDateFormat(Locale.US, is24HourClock = false, today = TODAY),
+                kickoffDateTime = KICKOFF,
+                dateFormat = utcDateFormat(Locale.US, is24HourClock = false),
                 modifier = Modifier.fillMaxWidth().testTag(ROW_TAG),
             )
         }
@@ -83,7 +87,8 @@ class HistoryPresentationTest {
         setLocalized(SPANISH) {
             HistoryBetItem(
                 poolGamblerBet = positiveRow().copy(score = 1),
-                dateFormat = HistoryMatchDateFormat(SPANISH, is24HourClock = false, today = TODAY),
+                kickoffDateTime = KICKOFF,
+                dateFormat = utcDateFormat(SPANISH, is24HourClock = false),
                 modifier = Modifier.fillMaxWidth().testTag(ROW_TAG),
             )
         }
@@ -150,7 +155,8 @@ class HistoryPresentationTest {
                 HistoryPointsSummary(points = historyPointsPlaceholderModel, isPlaceholder = true)
                 HistoryBetItem(
                     poolGamblerBet = historyBetPlaceholderModel(),
-                    dateFormat = HistoryMatchDateFormat(Locale.US, is24HourClock = false, today = TODAY),
+                    kickoffDateTime = KICKOFF,
+                    dateFormat = utcDateFormat(Locale.US, is24HourClock = false),
                     isPlaceholder = true,
                     onClick = { error("A placeholder must not open a match") },
                 )
@@ -168,9 +174,9 @@ class HistoryPresentationTest {
     @Test
     fun theDateFollowsTheLocaleOrderAndLanguage() {
         val match = LocalDateTime(2026, 7, 19, 14, 0)
-        HistoryMatchDateFormat(Locale.US, is24HourClock = false, today = TODAY).date(match) shouldBe "Sunday, Jul 19"
+        utcDateFormat(Locale.US, is24HourClock = false).date(match) shouldBe "Sunday, Jul 19"
         // Spanish puts the day before the month.
-        HistoryMatchDateFormat(SPANISH, is24HourClock = false, today = TODAY).date(match).let { date ->
+        utcDateFormat(SPANISH, is24HourClock = false).date(match).let { date ->
             date shouldStartWith "domingo"
             date shouldContain "19 de jul"
         }
@@ -178,7 +184,7 @@ class HistoryPresentationTest {
 
     @Test
     fun aMatchFromAnotherYearIncludesIt() {
-        val format = HistoryMatchDateFormat(Locale.US, is24HourClock = false, today = TODAY)
+        val format = utcDateFormat(Locale.US, is24HourClock = false)
 
         format.date(LocalDateTime(2025, 6, 11, 20, 0)) shouldContain "2025"
         format.date(LocalDateTime(2026, 6, 11, 20, 0)) shouldNotContain "2026"
@@ -188,8 +194,8 @@ class HistoryPresentationTest {
     fun theTimeFollowsTheClockPreference() {
         val match = LocalDateTime(2026, 7, 19, 14, 0)
 
-        HistoryMatchDateFormat(Locale.US, is24HourClock = false, today = TODAY).time(match) shouldBe "2:00 PM"
-        HistoryMatchDateFormat(Locale.US, is24HourClock = true, today = TODAY).time(match) shouldBe "14:00"
+        utcDateFormat(Locale.US, is24HourClock = false).time(match) shouldBe "2:00 PM"
+        utcDateFormat(Locale.US, is24HourClock = true).time(match) shouldBe "14:00"
     }
 
     @Test
@@ -197,7 +203,8 @@ class HistoryPresentationTest {
         setLocalized(Locale.US) {
             HistoryBetItem(
                 poolGamblerBet = positiveRow(),
-                dateFormat = HistoryMatchDateFormat(Locale.US, is24HourClock = false, today = TODAY),
+                kickoffDateTime = KICKOFF,
+                dateFormat = utcDateFormat(Locale.US, is24HourClock = false),
                 modifier = Modifier.fillMaxWidth().testTag(ROW_TAG),
                 owner = SELECTED,
                 onClick = {},
@@ -359,7 +366,8 @@ class HistoryPresentationTest {
                 )
                 HistoryBetItem(
                     poolGamblerBet = historyBetPlaceholderModel(),
-                    dateFormat = HistoryMatchDateFormat(Locale.US, is24HourClock = false, today = TODAY),
+                    kickoffDateTime = KICKOFF,
+                    dateFormat = utcDateFormat(Locale.US, is24HourClock = false),
                     owner = SELECTED,
                     isPlaceholder = true,
                     onClick = { error("A placeholder must not open a match") },
@@ -387,7 +395,8 @@ class HistoryPresentationTest {
                         TycheTheme {
                             HistoryBetItem(
                                 poolGamblerBet = bet,
-                                dateFormat = HistoryMatchDateFormat(locale, is24HourClock = false, today = TODAY),
+                                kickoffDateTime = KICKOFF,
+                                dateFormat = utcDateFormat(locale, is24HourClock = false),
                                 modifier = Modifier.fillMaxWidth().testTag("$ROW_TAG$index"),
                                 owner = SELECTED,
                             )
@@ -435,3 +444,10 @@ private val SPAIN = Locale.forLanguageTag("es-ES")
 private val SELECTED = HistoryOwner.SelectedGambler(name = "El mono")
 private const val ROW_TAG = "historyRow"
 private const val SUMMARY_TAG = "historySummary"
+
+/** The rows' kickoff, shown in UTC so the expected labels do not depend on the device zone. */
+private val KICKOFF = Instant.parse("2026-07-19T14:00:00Z")
+
+/** History's date format with the test's fixed day, in UTC. */
+private fun utcDateFormat(locale: Locale, is24HourClock: Boolean) =
+    HistoryMatchDateFormat(locale, is24HourClock = is24HourClock, today = TODAY, timeZone = TimeZone.UTC)

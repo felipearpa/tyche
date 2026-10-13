@@ -1,6 +1,7 @@
 package com.felipearpa.tyche
 
-import com.felipearpa.tyche.pool.rank
+import com.felipearpa.tyche.core.type.RankMovement
+import com.felipearpa.tyche.pool.movement
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 
@@ -20,7 +21,8 @@ class UsernamePreviewTest {
         model.gamblerId shouldBe accountId
         model.position shouldBe 1
         model.beforePosition shouldBe 2
-        model.rank() shouldBe 1 // production rank rail renders an upward movement of one place
+        // The production rank rail renders an upward movement of one place.
+        model.movement() shouldBe RankMovement.Moved(places = 1, partialProgress = null)
         model.score shouldBe 18
         model.gamblerCount shouldBe null
     }

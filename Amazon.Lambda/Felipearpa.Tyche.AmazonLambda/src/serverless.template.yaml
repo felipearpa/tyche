@@ -103,9 +103,11 @@ Resources:
             - Effect: Allow
               Action:
                 - dynamodb:Query
+                - dynamodb:BatchGetItem
               Resource:
                 - arn:aws:dynamodb:us-east-2:567776770335:table/Pool
                 - arn:aws:dynamodb:us-east-2:567776770335:table/Pool/index/GetPoolGamblerScoresByPool-index
+                - arn:aws:dynamodb:us-east-2:567776770335:table/PoolLayout
       Architectures: [ arm64 ]
       Events:
         HttpApi:
@@ -129,8 +131,10 @@ Resources:
             - Effect: Allow
               Action:
                 - dynamodb:Query
+                - dynamodb:BatchGetItem
               Resource:
                 - arn:aws:dynamodb:us-east-2:567776770335:table/Pool
+                - arn:aws:dynamodb:us-east-2:567776770335:table/PoolLayout
       Architectures: [ arm64 ]
       Events:
         HttpApi:
@@ -211,7 +215,8 @@ Resources:
                 - dynamodb:GetItem
               Resource:
                 - arn:aws:dynamodb:us-east-2:567776770335:table/Pool
-                - arn:aws:dynamodb:us-east-2:567776770335:table/Pool/index/GetFinishedPoolGamblerBets-index
+                - arn:aws:dynamodb:us-east-2:567776770335:table/Pool/index/GetFinishedPoolGamblerBetsByMatchDate-index
+                - arn:aws:dynamodb:us-east-2:567776770335:table/PoolLayout
                 - arn:aws:dynamodb:us-east-2:567776770335:table/Account
                 - arn:aws:dynamodb:us-east-2:567776770335:table/Account/index/GetByEmail-index
       Architectures: [ arm64 ]
@@ -270,7 +275,8 @@ Resources:
               Resource:
                 - arn:aws:dynamodb:us-east-2:567776770335:table/Pool
                 - arn:aws:dynamodb:us-east-2:567776770335:table/Pool/index/GetPendingPoolGamblerBets-index
-                - arn:aws:dynamodb:us-east-2:567776770335:table/Pool/index/GetFinishedPoolGamblerBets-index
+                - arn:aws:dynamodb:us-east-2:567776770335:table/Pool/index/GetFinishedPoolGamblerBetsByMatchDate-index
+                - arn:aws:dynamodb:us-east-2:567776770335:table/PoolLayout
                 - arn:aws:dynamodb:us-east-2:567776770335:table/Account
                 - arn:aws:dynamodb:us-east-2:567776770335:table/Account/index/GetByEmail-index
       Architectures: [ arm64 ]
@@ -331,6 +337,7 @@ Resources:
               Resource:
                 - arn:aws:dynamodb:us-east-2:567776770335:table/Pool
                 - arn:aws:dynamodb:us-east-2:567776770335:table/Pool/index/GetPoolGamblerScoresByGambler-index
+                - arn:aws:dynamodb:us-east-2:567776770335:table/PoolLayout
       Architectures: [ arm64 ]
       Events:
         HttpApi:
@@ -938,6 +945,8 @@ Resources:
       CodeUri: .
       MemorySize: 1024
       Timeout: 300
+      # Deferred commands are republished to this function's own queue; recursion is intended and bounded.
+      RecursiveLoop: Allow
       Environment:
         Variables:
           POOL_COMMAND_QUEUE_URL: !Ref UpdatePositionsQueue
@@ -984,6 +993,8 @@ Resources:
       CodeUri: .
       MemorySize: 1024
       Timeout: 120
+      # Jobs enqueue their continuations on this function's own queue; recursion is intended and bounded.
+      RecursiveLoop: Allow
       Environment:
         Variables:
           POOL_COMMAND_QUEUE_URL: !Ref UpdatePositionsQueue
@@ -1013,6 +1024,7 @@ Resources:
                 - dynamodb:TransactWriteItems
               Resource:
                 - arn:aws:dynamodb:us-east-2:567776770335:table/Pool
+                - arn:aws:dynamodb:us-east-2:567776770335:table/Pool/index/GetPoolGamblerScoresByMatch-index
                 - arn:aws:dynamodb:us-east-2:567776770335:table/PoolLayout
       Architectures: [ arm64 ]
       Events:

@@ -16,7 +16,7 @@ module GamblerFunction =
         async {
             let! page = getPoolGamblerScoresByGambler.ExecuteAsync(gamblerId |> Ulid.newOf, next)
 
-            return Results.Ok(page |> CursorPage.map PoolGamblerScoreTransformer.toResponse)
+            return Results.Ok(page |> CursorPage.map PoolGamblerScoreTransformer.ofStanding)
         }
         |> ContinuationResponse.orInvalidCursor
 

@@ -197,21 +197,23 @@ module InvalidCursorTest =
                 "another pool", betToken otherPoolId gamblerId "matchDateTime" ] }
           { Name = "finished bets"
             Path = $"{bets}/finished"
-            Index = "GetFinishedPoolGamblerBets-index"
-            Valid = betToken poolId gamblerId "computedDateTime"
+            Index = "GetFinishedPoolGamblerBetsByMatchDate-index"
+            Valid = betToken poolId gamblerId "computedMatchDateTime"
             Invalid =
               [ malformed
-                "legacy, missing computedDateTime", legacy $"GAMBLER#{gamblerId}#POOL#{poolId}" $"MATCH#{matchId}"
-                "another gambler", betToken poolId otherGamblerId "computedDateTime" ] }
+                "legacy, missing computedMatchDateTime", legacy $"GAMBLER#{gamblerId}#POOL#{poolId}" $"MATCH#{matchId}"
+                "computation-time index", betToken poolId gamblerId "computedDateTime"
+                "another gambler", betToken poolId otherGamblerId "computedMatchDateTime" ] }
           { Name = "timeline"
             Path = $"{bets}/timeline"
-            Index = "GetFinishedPoolGamblerBets-index"
-            Valid = "finished:" + betToken poolId gamblerId "computedDateTime"
+            Index = "GetFinishedPoolGamblerBetsByMatchDate-index"
+            Valid = "finished:" + betToken poolId gamblerId "computedMatchDateTime"
             Invalid =
               [ "live, malformed", "live:not a token"
                 "live, legacy", "live:" + legacy $"GAMBLER#{gamblerId}#POOL#{poolId}" $"MATCH#{matchId}"
-                "finished, another pool", "finished:" + betToken otherPoolId gamblerId "computedDateTime"
-                "unprefixed finished key", betToken poolId gamblerId "computedDateTime" ] }
+                "finished, computation-time index", "finished:" + betToken poolId gamblerId "computedDateTime"
+                "finished, another pool", "finished:" + betToken otherPoolId gamblerId "computedMatchDateTime"
+                "unprefixed finished key", betToken poolId gamblerId "computedMatchDateTime" ] }
           { Name = "legacy match bets"
             Path = $"/pools/{poolId}/matches/{matchId}/bets"
             Index = "GetPoolGamblerScoresByMatch-index"

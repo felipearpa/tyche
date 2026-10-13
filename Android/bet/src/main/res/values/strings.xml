@@ -64,4 +64,10 @@
     <string name="match_bets_ranking_unavailable_message">Try again in a few minutes.</string>
     <string name="match_bets_list_changed_title">The standings changed</string>
     <string name="match_bets_list_changed_message">Load the list again to see the current order.</string>
+    <plurals name="history_group_match_count">
+        <item quantity="one">%1$d match</item>
+        <item quantity="other">%1$d matches</item>
+    </plurals>
+    <string name="history_list_changed_title">The list changed</string>
+    <string name="history_list_changed_message">Load the list again to see the latest matches.</string>
 </resources>

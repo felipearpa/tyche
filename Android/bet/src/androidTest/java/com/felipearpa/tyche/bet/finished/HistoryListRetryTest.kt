@@ -19,8 +19,8 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import androidx.paging.compose.collectAsLazyPagingItems
-import com.felipearpa.tyche.bet.PoolGamblerBetModel
-import com.felipearpa.tyche.bet.historyBetPreviewModels
+import com.felipearpa.tyche.bet.kickoffgroup.KickoffGroupModel
+import com.felipearpa.tyche.bet.kickoffgroup.historyGroupPreviewModels
 import com.felipearpa.tyche.bet.timeline.BetTimelineList
 import com.felipearpa.tyche.ui.theme.TycheTheme
 import io.kotest.matchers.shouldBe
@@ -47,10 +47,11 @@ class HistoryListRetryTest {
         composeTestRule.setContent {
             Screen {
                 FinishedBetList(
-                    lazyPoolGamblerBets = rememberRows(source),
+                    lazyKickoffGroups = rememberRows(source),
                     pointsSummary = HistoryPointsSummaryState.initial.loaded(HistoryPoints.Earned(589)),
                     onPointsSummaryRetry = { counts.summaryRetries++ },
                     onRefresh = { counts.totalRefreshes++ },
+                    onFeedRestart = {},
                     modifier = Modifier.fillMaxSize().testTag(LIST_TAG),
                 )
             }
@@ -69,10 +70,11 @@ class HistoryListRetryTest {
                     // Empty, so the avatar renders the shared letter fallback without a load.
                     gamblerId = "",
                     gamblerUsername = "El mono",
-                    lazyBets = rememberRows(source),
+                    lazyKickoffGroups = rememberRows(source),
                     pointsSummary = HistoryPointsSummaryState.initial.loaded(HistoryPoints.Earned(676)),
                     onPointsSummaryRetry = { counts.summaryRetries++ },
                     onRefresh = { counts.totalRefreshes++ },
+                    onFeedRestart = {},
                     modifier = Modifier.fillMaxSize().testTag(LIST_TAG),
                 )
             }
@@ -131,21 +133,21 @@ private class Counts {
     var totalRefreshes = 0
 }
 
-/** One page of rows; the first load fails. [loads] counts every load. */
+/** One page of kickoff groups; the first load fails. [loads] counts every load. */
 private class FailingFirstSource {
     val loads = AtomicInteger(0)
     private val failNext = AtomicBoolean(true)
 
-    fun create(): PagingSource<Int, PoolGamblerBetModel> = object : PagingSource<Int, PoolGamblerBetModel>() {
-        override suspend fun load(params: LoadParams<Int>): LoadResult<Int, PoolGamblerBetModel> {
+    fun create(): PagingSource<Int, KickoffGroupModel> = object : PagingSource<Int, KickoffGroupModel>() {
+        override suspend fun load(params: LoadParams<Int>): LoadResult<Int, KickoffGroupModel> {
             loads.incrementAndGet()
             // Like a network page, the load spans frames, so the list composes its loading state.
             delay(LOAD_MILLIS)
             if (failNext.getAndSet(false)) return LoadResult.Error(IOException("offline"))
-            return LoadResult.Page(data = historyBetPreviewModels(), prevKey = null, nextKey = null)
+            return LoadResult.Page(data = historyGroupPreviewModels(), prevKey = null, nextKey = null)
         }
 
-        override fun getRefreshKey(state: PagingState<Int, PoolGamblerBetModel>): Int? = null
+        override fun getRefreshKey(state: PagingState<Int, KickoffGroupModel>): Int? = null
     }
 }
 

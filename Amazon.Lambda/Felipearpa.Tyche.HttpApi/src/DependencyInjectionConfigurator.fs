@@ -75,6 +75,8 @@ module DependencyInjectionConfigurator =
                     PoolSettlementDynamoDbRepository(sp.GetRequiredService<IAmazonDynamoDB>()))
             )
             .AddScoped<IPoolLayoutMatchReader, PoolLayoutMatchReader>()
+            .AddScoped<KickoffGroupReader>()
+            .AddScoped<PoolStandings>()
             .AddScoped<IRankedMatchBetsRepository, RankedMatchBetsDynamoDbRepository>()
             .AddSingleton<RankedMatchBetsSettings>(RankedMatchBetsSettings.Default)
             .AddSingleton<unit -> System.DateTime>(utcNow)

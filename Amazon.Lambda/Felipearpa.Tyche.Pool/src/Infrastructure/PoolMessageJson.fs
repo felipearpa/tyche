@@ -132,7 +132,11 @@ module PoolMessageJson =
                 writer.WriteString("kind", "RETIRE_MEMBERSHIP")
                 writer.WriteString("poolId", poolId.Value)
                 writer.WriteString("gamblerId", gamblerId.Value)
-                generation |> Option.iter (fun value -> writer.WriteString("generation", value)))
+                generation |> Option.iter (fun value -> writer.WriteString("generation", value))
+            | BackfillKickoffGroups(poolId, afterMatchId) ->
+                writer.WriteString("kind", "BACKFILL_KICKOFF_GROUPS")
+                writer.WriteString("poolId", poolId.Value)
+                cursor writer afterMatchId)
 
     let decodeJob (body: string) =
         use document = JsonDocument.Parse body
@@ -149,6 +153,7 @@ module PoolMessageJson =
         | "RECONCILE_POOL" -> ReconcilePool(poolId, cursor)
         | "RETIRE_MEMBERSHIP" ->
             RetireMembership(poolId, text root "gamblerId" |> Ulid.newOf, optionalText root "generation")
+        | "BACKFILL_KICKOFF_GROUPS" -> BackfillKickoffGroups(poolId, cursor)
         | other -> raise (InvalidDataException $"Unknown maintenance job kind {other}")
 
     /// The FIFO deduplication ID for a command: its pool and operation ID, hashed when longer

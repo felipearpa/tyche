@@ -111,6 +111,8 @@ module PoolSettlementDictionaryTransformer =
         let homeTeamScore = "homeTeamScore"
         let awayTeamScore = "awayTeamScore"
         let resultVersion = "resultVersion"
+        let trendEffect = "trendEffect"
+        let trendKickoff = "trendKickoff"
         let gamblerId = "gamblerId"
         let generation = "generation"
         let stage = "stage"
@@ -126,16 +128,32 @@ module PoolSettlementDictionaryTransformer =
         let admittedAt = "admittedAt"
         let lastProgressAt = "lastProgressAt"
 
+    /// The stored trend decision of a match settlement. Ungrouped stores nothing, which is
+    /// also how checkpoints admitted before kickoffs were compared read back.
+    let private trendEntries (trend: TrendEffect) =
+        match trend with
+        | OpensGroup kickoff -> [ Checkpoint.trendEffect, s "OPENS"; Checkpoint.trendKickoff, s (formatInstant kickoff) ]
+        | KeepsGroup -> [ Checkpoint.trendEffect, s "KEEPS" ]
+        | Ungrouped -> []
+
+    let private toTrendEffect (map: IDictionary<string, AttributeValue>) =
+        match tryString Checkpoint.trendEffect map, tryString Checkpoint.trendKickoff map with
+        | Some "OPENS", Some kickoff -> OpensGroup(parseInstant kickoff)
+        | Some "KEEPS", _ -> KeepsGroup
+        | None, _ -> Ungrouped
+        | Some other, _ -> failwith $"Unknown checkpoint trend effect {other}"
+
     /// The stored map for the active checkpoint.
     let activeOperationAttribute (active: ActiveOperation) =
         let target =
             match active.Target with
-            | MatchSettlement(matchId, result) ->
+            | MatchSettlement(matchId, result, trend) ->
                 [ Checkpoint.target, s "MATCH"
                   Checkpoint.matchId, s matchId.Value
                   Checkpoint.homeTeamScore, n (int64 result.HomeTeamScore)
                   Checkpoint.awayTeamScore, n (int64 result.AwayTeamScore)
                   Checkpoint.resultVersion, n (int64 result.Version) ]
+                @ trendEntries trend
             | CurrentStandings -> [ Checkpoint.target, s "STANDINGS" ]
             | RejoinRestoration(gamblerId, generation) ->
                 [ Checkpoint.target, s "RESTORE"
@@ -178,7 +196,8 @@ module PoolSettlementDictionaryTransformer =
                     required Checkpoint.matchId |> Ulid.newOf,
                     { HomeTeamScore = requiredInt64 Checkpoint.homeTeamScore |> int
                       AwayTeamScore = requiredInt64 Checkpoint.awayTeamScore |> int
-                      Version = requiredInt64 Checkpoint.resultVersion |> int }
+                      Version = requiredInt64 Checkpoint.resultVersion |> int },
+                    toTrendEffect map
                 )
             | "STANDINGS" -> CurrentStandings
             | "RESTORE" -> RejoinRestoration(required Checkpoint.gamblerId |> Ulid.newOf, required Checkpoint.generation)
@@ -222,7 +241,8 @@ module PoolSettlementDictionaryTransformer =
             |> tryGetAttributeValueOrNone PoolTable.Attribute.rankingReadiness
             |> Option.bind (fun value -> Option.ofObj value.M)
             |> Option.bind (fun readiness -> tryString "state" readiness)
-            |> Option.map (fun state -> if state = "READY" then Ready else NotReady) }
+            |> Option.map (fun state -> if state = "READY" then Ready else NotReady)
+          TrendKickoffDateTime = tryString PoolTable.Attribute.trendKickoffDateTime dictionary |> Option.map parseInstant }
 
     let private receiptStateName (state: ReceiptState) =
         match state with

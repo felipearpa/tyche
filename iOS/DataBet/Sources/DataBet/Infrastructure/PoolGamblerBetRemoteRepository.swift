@@ -35,18 +35,16 @@ class PoolGamblerBetRemoteRepository: PoolGamblerBetRepository {
     func getFinishedPoolGamblerBets(
         poolId: String,
         gamblerId: String,
-        next: String?,
-        searchText: String?
-    ) async -> Result<CursorPage<PoolGamblerBet>, Error> {
+        next: String?
+    ) async -> Result<CursorPage<KickoffGroup>, Error> {
         return await networkErrorHandler.handle {
             let page = try await poolGamblerBetRemoteDataSource.getFinishedPoolGamblerBets(
                 poolId: poolId,
                 gamblerId: gamblerId,
-                next: next,
-                searchText: searchText
+                next: next
             )
-            return page.map { poolGamblerBetResponse in
-                poolGamblerBetResponse.toPoolGamblerBet()
+            return page.map { kickoffGroupResponse in
+                kickoffGroupResponse.toKickoffGroup()
             }
         }
     }
@@ -106,15 +104,15 @@ class PoolGamblerBetRemoteRepository: PoolGamblerBetRepository {
         poolId: String,
         gamblerId: String,
         next: String?
-    ) async -> Result<CursorPage<PoolGamblerBet>, Error> {
+    ) async -> Result<CursorPage<KickoffGroup>, Error> {
         return await networkErrorHandler.handle {
             let page = try await poolGamblerBetRemoteDataSource.getGamblerBetsTimeline(
                 poolId: poolId,
                 gamblerId: gamblerId,
                 next: next
             )
-            return page.map { poolGamblerBetResponse in
-                poolGamblerBetResponse.toPoolGamblerBet()
+            return page.map { kickoffGroupResponse in
+                kickoffGroupResponse.toKickoffGroup()
             }
         }
     }

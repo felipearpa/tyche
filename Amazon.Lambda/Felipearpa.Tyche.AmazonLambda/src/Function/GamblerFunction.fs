@@ -16,6 +16,9 @@ open Felipearpa.Tyche.Function.GamblerFunction
 open Felipearpa.Tyche.Pool.Application
 open Felipearpa.Tyche.Pool.Domain
 open Felipearpa.Tyche.Pool.Infrastructure
+open Felipearpa.Tyche.PoolLayout.Application
+open Felipearpa.Tyche.PoolLayout.Domain
+open Felipearpa.Tyche.PoolLayout.Infrastructure
 open Microsoft.Extensions.DependencyInjection
 open Microsoft.Extensions.Logging
 
@@ -42,6 +45,10 @@ type GamblerFunction(configureServices: IServiceCollection -> unit) =
             .AddScoped<IPoolGamblerBetRepository, PoolGamblerBetDynamoDbRepository>()
             .AddScoped<IPoolRepository, PoolDynamoDbRepository>()
             .AddScoped<IAccountRepository, AccountDynamoDbRepository>()
+            .AddScoped<IPoolLayoutRepository, PoolLayoutDynamoDbRepository>()
+            .AddScoped<IPoolLayoutMatchReader, PoolLayoutMatchReader>()
+            .AddScoped<KickoffGroupReader>()
+            .AddScoped<PoolStandings>()
             .AddScoped<GetPoolGamblerScoresByGambler>()
             .AddScoped<GetPoolGamblerScoresByPool>()
             .AddScoped<GetPendingPoolGamblerBets>()

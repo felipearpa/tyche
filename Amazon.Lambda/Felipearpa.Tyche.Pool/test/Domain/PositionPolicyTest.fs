@@ -1,5 +1,6 @@
 namespace Felipearpa.Tyche.Pool.Test.Domain
 
+open System
 open Felipearpa.Tyche.Pool.Domain
 open Felipearpa.Type
 open FsUnitTyped
@@ -21,13 +22,30 @@ module PositionPolicyTest =
           PositionOperationRevision = None
           PositionCalculationRevision = None }
 
-    let private settlement =
+    let private kickoff = DateTime(2026, 6, 12, 14, 0, 0, DateTimeKind.Utc)
+
+    let private settlementWith trend =
         MatchSettlement(
             Ulid.newOf "01K1PX1TX2NM1HG851S1V0M001",
             { HomeTeamScore = 1
               AwayTeamScore = 0
-              Version = 1 }
+              Version = 1 },
+            trend
         )
+
+    let private settlement = settlementWith (OpensGroup kickoff)
+
+    /// Applies a decided write to the membership as the guarded position write stores it.
+    let private apply (revision: int64) (decision: PositionDecision) (current: MembershipState) =
+        match decision with
+        | WritePosition change ->
+            { current with
+                Position = Some change.Position
+                BeforePosition = change.MembershipBeforePosition |> Option.orElse current.BeforePosition
+                PositionOperationRevision =
+                    if change.FirstWrite then Some revision else current.PositionOperationRevision }
+        | PositionCurrent
+        | PositionSuperseded -> current
 
     [<Fact>]
     let ``members rank by total descending, then gambler ID, with missing totals last`` () =
@@ -103,3 +121,80 @@ module PositionPolicyTest =
             change.MembershipBeforePosition |> shouldEqual (Some 4)
             change.DetailBeforePosition |> shouldEqual None
         | other -> failwith $"unexpected {other}"
+
+    [<Fact>]
+    let ``a newer kickoff, or a pool without a trend kickoff, opens a group`` () =
+        PositionPolicy.trendEffect None (Some kickoff) |> shouldEqual (OpensGroup kickoff)
+
+        PositionPolicy.trendEffect (Some kickoff) (Some(kickoff.AddHours 4.0))
+        |> shouldEqual (OpensGroup(kickoff.AddHours 4.0))
+
+    [<Fact>]
+    let ``the same kickoff in another offset, or an older kickoff, keeps the group`` () =
+        let sameInstant = DateTimeOffset(2026, 6, 12, 9, 0, 0, TimeSpan.FromHours -5.0).UtcDateTime
+        let sameInstantLocal = kickoff.ToLocalTime()
+
+        PositionPolicy.trendEffect (Some kickoff) (Some sameInstant) |> shouldEqual KeepsGroup
+        PositionPolicy.trendEffect (Some kickoff) (Some sameInstantLocal) |> shouldEqual KeepsGroup
+        PositionPolicy.trendEffect (Some kickoff) (Some(kickoff.AddDays -1.0)) |> shouldEqual KeepsGroup
+
+    [<Fact>]
+    let ``an unknown kickoff leaves the trend kickoff unchanged`` () =
+        PositionPolicy.trendEffect (Some kickoff) None |> shouldEqual Ungrouped
+        PositionPolicy.completedTrendKickoff (settlementWith Ungrouped) |> shouldEqual None
+        PositionPolicy.completedTrendKickoff (settlementWith KeepsGroup) |> shouldEqual None
+        PositionPolicy.completedTrendKickoff CurrentStandings |> shouldEqual None
+        PositionPolicy.completedTrendKickoff settlement |> shouldEqual (Some kickoff)
+
+    [<Fact>]
+    let ``two settlements of one group keep the baseline taken before the group`` () =
+        // Eighth before the group; the first match leaves the gambler fifth, the second sixth.
+        let eighth = { membership "01K1PX1TX2NM1HG851S1V0GA01" (Some 5) with Position = Some 8; BeforePosition = Some 4; PositionOperationRevision = Some 3L }
+
+        let afterFirst = eighth |> apply 4L (PositionPolicy.decide (settlementWith (OpensGroup kickoff)) 4L eighth 5)
+        (afterFirst.BeforePosition, afterFirst.Position) |> shouldEqual (Some 8, Some 5)
+
+        let secondDecision = PositionPolicy.decide (settlementWith KeepsGroup) 5L afterFirst 6
+        let afterSecond = afterFirst |> apply 5L secondDecision
+        (afterSecond.BeforePosition, afterSecond.Position) |> shouldEqual (Some 8, Some 6)
+
+        match secondDecision with
+        | WritePosition change ->
+            // The settled match detail still gets its own snapshot: fifth before, sixth after.
+            change.DetailBeforePosition |> shouldEqual (Some 5)
+            change.MembershipBeforePosition |> shouldEqual None
+        | other -> failwith $"unexpected {other}"
+
+    [<Fact>]
+    let ``a newer kickoff resets the baseline to the position before its first settlement`` () =
+        let held = { membership "01K1PX1TX2NM1HG851S1V0GA01" (Some 5) with Position = Some 6; BeforePosition = Some 8; PositionOperationRevision = Some 5L }
+
+        let next = held |> apply 6L (PositionPolicy.decide (settlementWith (OpensGroup(kickoff.AddHours 4.0))) 6L held 2)
+        (next.BeforePosition, next.Position) |> shouldEqual (Some 6, Some 2)
+
+    [<Fact>]
+    let ``a late result or correction of an older group keeps the baseline`` () =
+        let held = { membership "01K1PX1TX2NM1HG851S1V0GA01" (Some 5) with Position = Some 6; BeforePosition = Some 8; PositionOperationRevision = Some 5L }
+
+        match PositionPolicy.decide (settlementWith KeepsGroup) 6L held 3 with
+        | WritePosition change ->
+            change.FirstWrite |> shouldEqual true
+            change.Position |> shouldEqual 3
+            change.MembershipBeforePosition |> shouldEqual None
+            change.DetailBeforePosition |> shouldEqual (Some 6)
+        | other -> failwith $"unexpected {other}"
+
+    [<Fact>]
+    let ``a resumed operation does not reset a membership it already wrote`` () =
+        let before = { membership "01K1PX1TX2NM1HG851S1V0GA01" (Some 5) with Position = Some 8; PositionOperationRevision = Some 3L }
+        let opening = settlementWith (OpensGroup kickoff)
+        let written = before |> apply 4L (PositionPolicy.decide opening 4L before 5)
+
+        // The resumed worker recalculates under the same stored decision: the baseline stays 8.
+        match PositionPolicy.decide opening 4L written 7 with
+        | WritePosition change ->
+            change.FirstWrite |> shouldEqual false
+            change.MembershipBeforePosition |> shouldEqual None
+        | other -> failwith $"unexpected {other}"
+
+        PositionPolicy.decide opening 4L written 5 |> shouldEqual PositionCurrent

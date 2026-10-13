@@ -11,7 +11,7 @@ public class GetGamblerBetsTimelineUseCase {
         poolId: String,
         gamblerId: String,
         next: String? = nil
-    ) async -> Result<CursorPage<PoolGamblerBet>, Error> {
+    ) async -> Result<CursorPage<KickoffGroup>, Error> {
         return await poolGamblerBetRepository.getGamblerBetsTimeline(
             poolId: poolId,
             gamblerId: gamblerId,

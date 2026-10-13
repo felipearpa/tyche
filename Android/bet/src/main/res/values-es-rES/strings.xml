@@ -69,4 +69,11 @@
     <string name="match_bets_ranking_unavailable_message">Inténtalo de nuevo en unos minutos.</string>
     <string name="match_bets_list_changed_title">La clasificación ha cambiado</string>
     <string name="match_bets_list_changed_message">Vuelve a cargar la lista para ver el orden actual.</string>
+    <plurals name="history_group_match_count">
+        <item quantity="one">%1$d partido</item>
+        <item quantity="many">%1$d partidos</item>
+        <item quantity="other">%1$d partidos</item>
+    </plurals>
+    <string name="history_list_changed_title">La lista ha cambiado</string>
+    <string name="history_list_changed_message">Vuelve a cargar la lista para ver los partidos más recientes.</string>
 </resources>

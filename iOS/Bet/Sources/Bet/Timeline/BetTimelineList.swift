@@ -3,28 +3,33 @@ import UI
 import Core
 import LazyPaging
 
-/// Another gambler's Timeline: their identity and pool total, then one shared History row per
-/// entry in the feed's order, uncomputed entries included. Identity and total scroll with the
-/// rows and start every list state (initial loading, loaded, empty, failed), so they stay usable
-/// whatever happens to the rows. Rows carry their own date, so there are no pinned date headers.
+/// Another gambler's Timeline: their identity and pool total, then one kickoff group per item of
+/// the grouped feed in the server's order, unsettled groups before finished ones. Identity and
+/// total scroll with the groups and start every list state (initial loading, loaded, empty,
+/// failed), so they stay usable whatever happens to the groups. Group headers scroll with the
+/// rows; none is pinned.
 struct BetTimelineList: View {
-    var lazyPagingItems: LazyPaging.LazyPagingItems<String, PoolGamblerBetModel>
+    var lazyPagingItems: LazyPaging.LazyPagingItems<String, KickoffGroupModel>
     let gamblerId: String
     let gamblerUsername: String
     let pointsSummary: HistoryPointsSummaryState
     let showsSummaryRefreshProgress: Bool
     let onPointsSummaryRetry: () -> Void
+    let onRetryFirstPage: () -> Void
+    let onRetryPage: (Error) -> Void
     let onMatchOpen: MatchOpenHandler?
 
     @Environment(\.boxSpacing) private var boxSpacing
 
     init(
-        lazyPagingItems: LazyPaging.LazyPagingItems<String, PoolGamblerBetModel>,
+        lazyPagingItems: LazyPaging.LazyPagingItems<String, KickoffGroupModel>,
         gamblerId: String,
         gamblerUsername: String,
         pointsSummary: HistoryPointsSummaryState,
         showsSummaryRefreshProgress: Bool = false,
         onPointsSummaryRetry: @escaping () -> Void,
+        onRetryFirstPage: @escaping () -> Void,
+        onRetryPage: @escaping (Error) -> Void,
         onMatchOpen: MatchOpenHandler? = nil
     ) {
         self.lazyPagingItems = lazyPagingItems
@@ -33,6 +38,8 @@ struct BetTimelineList: View {
         self.pointsSummary = pointsSummary
         self.showsSummaryRefreshProgress = showsSummaryRefreshProgress
         self.onPointsSummaryRetry = onPointsSummaryRetry
+        self.onRetryFirstPage = onRetryFirstPage
+        self.onRetryPage = onRetryPage
         self.onMatchOpen = onMatchOpen
     }
 
@@ -43,54 +50,53 @@ struct BetTimelineList: View {
     var body: some View {
         let contentInsets = EdgeInsets(top: boxSpacing.medium, leading: 0, bottom: boxSpacing.medium, trailing: 0)
         // The plain paging stack: Timeline supplies its own pull to refresh, which reloads the
-        // rows and the total together (see `BetTimelineListView`).
-        LazyPagingVStack(
+        // groups and the total together (see `BetTimelineListView`).
+        AppendPagingVStack(
             lazyPagingItems: lazyPagingItems,
             // The spacing goes inside the scroll view, so rows scroll beneath the bars.
             contentInsets: contentInsets,
             loadingContent: {
                 header
-                HistoryBetPlaceholderList(count: 50)
+                KickoffGroupPlaceholderList(count: initialPlaceholderGroupCount)
             },
             emptyContent: {
                 LazyPagingVStackEmpty(header: { header })
             },
             errorContent: { error in
-                // Retry reloads only the rows; the total keeps its own retry in the header.
-                LazyPagingVStackError(
-                    localizedError: error.orDefaultLocalized(),
-                    retry: { Task { await lazyPagingItems.refresh() } },
-                    header: { header }
-                )
+                if error.isKickoffGroupReloadInProgress {
+                    header
+                    KickoffGroupPlaceholderList(count: initialPlaceholderGroupCount)
+                } else {
+                    // Retry reloads only the groups; the total keeps its own retry in the header.
+                    LazyPagingVStackError(
+                        localizedError: error.kickoffGroupFeedLocalized(),
+                        retry: onRetryFirstPage,
+                        header: { header }
+                    )
+                }
             },
-            prependLoadingContent: { EmptyView() },
-            appendLoadingContent: { HistoryBetPlaceholderRow() },
-            prependErrorContent: { _ in EmptyView() },
+            appendLoadingContent: { KickoffGroupPlaceholderList(count: 1) },
             appendErrorContent: { error in
-                LazyPagingVStackConcatenateError(
-                    localizedError: error.orDefaultLocalized(),
-                    retry: { Task { await lazyPagingItems.retry() } }
-                )
-                .historyHorizontalGutter()
-                .padding(.vertical, boxSpacing.large)
+                if error.isKickoffGroupReloadInProgress {
+                    KickoffGroupPlaceholderList(count: 1)
+                } else {
+                    LazyPagingVStackConcatenateError(
+                        localizedError: error.kickoffGroupFeedLocalized(),
+                        retry: { onRetryPage(error) }
+                    )
+                    .historyHorizontalGutter()
+                    .padding(.vertical, boxSpacing.large)
+                }
             }
         ) { index in
             VStack(spacing: 0) {
                 if index == 0 {
                     header
                 }
-                if let poolGamblerBet = lazyPagingItems.peek(at: index) {
-                    Button {
-                        invokeMatchOpen(onMatchOpen, poolGamblerBet)
-                    } label: {
-                        HistoryBetItem(poolGamblerBet: poolGamblerBet, owner: owner)
-                            .historyHorizontalGutter()
-                    }
-                    .buttonStyle(InteractiveRowButtonStyle())
-
-                    HistoryRowDivider()
+                if let group = lazyPagingItems.peek(at: index) {
+                    KickoffGroupSection(group: group, owner: owner, onMatchOpen: onMatchOpen)
                 } else {
-                    HistoryBetPlaceholderRow()
+                    KickoffGroupPlaceholderList(count: 1)
                 }
             }
         }
@@ -119,8 +125,8 @@ struct BetTimelineList: View {
             pager: Pager(
                 config: LazyPaging.PagingConfig(pageSize: 25, prefetchDistance: 5),
                 pagingSourceFactory: {
-                    LazyPagingCursorSource<PoolGamblerBetModel>(
-                        pagingQuery: { _ in .success(CursorPage(items: timelineBetPreviewModels(), next: nil)) }
+                    LazyPagingCursorSource<KickoffGroupModel>(
+                        pagingQuery: { _ in .success(CursorPage(items: timelineGroupPreviewModels(), next: nil)) }
                     )
                 }
             )
@@ -128,7 +134,9 @@ struct BetTimelineList: View {
         gamblerId: "",
         gamblerUsername: "El mono",
         pointsSummary: .initial.loaded(.earned(20)),
-        onPointsSummaryRetry: {}
+        onPointsSummaryRetry: {},
+        onRetryFirstPage: {},
+        onRetryPage: { _ in }
     )
 }
 
@@ -138,8 +146,8 @@ struct BetTimelineList: View {
             pager: Pager(
                 config: LazyPaging.PagingConfig(pageSize: 25, prefetchDistance: 5),
                 pagingSourceFactory: {
-                    LazyPagingCursorSource<PoolGamblerBetModel>(
-                        pagingQuery: { _ in .success(CursorPage(items: timelineBetPreviewModels(), next: nil)) }
+                    LazyPagingCursorSource<KickoffGroupModel>(
+                        pagingQuery: { _ in .success(CursorPage(items: timelineGroupPreviewModels(), next: nil)) }
                     )
                 }
             )
@@ -147,7 +155,9 @@ struct BetTimelineList: View {
         gamblerId: "",
         gamblerUsername: "El mono",
         pointsSummary: .initial.failed(),
-        onPointsSummaryRetry: {}
+        onPointsSummaryRetry: {},
+        onRetryFirstPage: {},
+        onRetryPage: { _ in }
     )
 }
 
@@ -157,7 +167,7 @@ struct BetTimelineList: View {
             pager: Pager(
                 config: LazyPaging.PagingConfig(pageSize: 25, prefetchDistance: 5),
                 pagingSourceFactory: {
-                    LazyPagingCursorSource<PoolGamblerBetModel>(
+                    LazyPagingCursorSource<KickoffGroupModel>(
                         pagingQuery: { _ in .failure(UnknownLocalizedError()) }
                     )
                 }
@@ -166,7 +176,9 @@ struct BetTimelineList: View {
         gamblerId: "",
         gamblerUsername: "El mono",
         pointsSummary: .initial.loaded(.earned(4)),
-        onPointsSummaryRetry: {}
+        onPointsSummaryRetry: {},
+        onRetryFirstPage: {},
+        onRetryPage: { _ in }
     )
 }
 
@@ -176,7 +188,7 @@ struct BetTimelineList: View {
             pager: Pager(
                 config: LazyPaging.PagingConfig(pageSize: 25, prefetchDistance: 5),
                 pagingSourceFactory: {
-                    LazyPagingCursorSource<PoolGamblerBetModel>(
+                    LazyPagingCursorSource<KickoffGroupModel>(
                         pagingQuery: { _ in
                             try? await Task.sleep(for: .seconds(3600))
                             return .success(CursorPage(items: [], next: nil))
@@ -188,6 +200,8 @@ struct BetTimelineList: View {
         gamblerId: "",
         gamblerUsername: "El mono",
         pointsSummary: .initial.loading(),
-        onPointsSummaryRetry: {}
+        onPointsSummaryRetry: {},
+        onRetryFirstPage: {},
+        onRetryPage: { _ in }
     )
 }

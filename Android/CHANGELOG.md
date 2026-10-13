@@ -4,8 +4,12 @@
 
 - Add a profile picture: pick a photo or take one, crop it to fit, and it appears in the menu button wherever your account shows
 - Redesigned pool leaderboard: every player shows their photo or a colored initial next to a clearer rank, trend, and score, and your own row is highlighted as You
-- Redesigned History: your total points in the pool sit at the top, and each match shows its final score up front, with your bet, the points it earned, and the match date right in the row
-- Redesigned Timeline: another player's photo and name sit at the top with their total points in the pool, and each match shows its score, their bet, the points it earned, and the date right in the row, with Points pending until a match is scored
+- Your rank trend now covers every match that kicks off at the same time, updating as each one is scored and showing how many are in, like 1 of 2, on both the leaderboard and your pool list
+- Before any match in a pool is scored the trend says Pending, and it says Unavailable when there is no earlier rank to compare, so neither is mistaken for no change
+- Redesigned History: your total points in the pool sit at the top, and matches that kick off at the same time sit together under one date and time with how your rank moved, each showing its final score up front with your bet and the points it earned
+- Redesigned Timeline: another player's photo and name sit at the top with their total points in the pool, and matches that kick off at the same time sit together under one date and time with how that player's rank moved, each showing its score, their bet, and the points it earned, with Points pending until a match is scored
+- If History or Timeline changes while you scroll, the list says The list changed and a Retry button loads it again from the top instead of showing repeated or missing matches
+- TalkBack reads each rank trend in full, such as Up 2 places, 1 of 2 matches computed, Movement pending, or Movement unavailable, and reads each kickoff group's date, match count, and rank movement together
 - Redesigned match screen: the teams sit at the top with the kickoff time, a Bets closed note, or the final score, and every player below shows their photo or a colored initial, their name, their bet, and the points it earned once the match is scored, with your own row marked You
 - Players on a match are now listed by their total points in the pool, so the pool leader comes first no matter how they did on that match, and the order holds as you scroll and when you refresh
 - Before betting closes, the match screen shows the start time, the two teams, and a lock explaining that everyone's bets are revealed when betting closes, with your own bet underneath so you can check what you predicted
@@ -17,6 +21,7 @@
 - A new photo shows up everywhere in the app right away, and a username changed on another device catches up on its own
 - Your pool list now shows your points and how many members each pool has, so you can compare pools at a glance
 - Your ranking trend now appears right under your position in the pool list
+- Up, down, and unchanged trend arrows are easier to read in light mode
 - Your pool list now reads as one clear line with TalkBack, giving each pool's name, your rank, points, members, and trend together, and you can open the pool or send an invite without leaving the row
 - Counts now read correctly when there is only one of something, so a pool with a single member says "1 member" and a one-place move says "Up 1 place"
 - Text on green buttons and highlights is easier to read, with a darker brand green in light mode and dark labels in dark mode

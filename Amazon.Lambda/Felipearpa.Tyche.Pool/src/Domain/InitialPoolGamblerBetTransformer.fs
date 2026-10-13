@@ -65,7 +65,9 @@ module InitialPoolGamblerBetTransformer =
         | None -> ()
 
         match poolGamblerBet.ComputedRequestId with
-        | Some computedRequestId -> item[PoolTable.Attribute.computedRequestId] <- AttributeValue(S = computedRequestId)
+        | Some computedRequestId ->
+            item[PoolTable.Attribute.computedRequestId] <- AttributeValue(S = computedRequestId)
+            item[PoolTable.Attribute.computedMatchDateTime] <- AttributeValue(S = matchDateTime)
         | None -> ()
 
         match poolGamblerBet.ResultVersion with

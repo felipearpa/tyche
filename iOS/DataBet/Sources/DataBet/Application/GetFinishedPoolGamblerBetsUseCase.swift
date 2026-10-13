@@ -10,14 +10,12 @@ public class GetFinishedPoolGamblerBetsUseCase {
     public func execute(
         poolId: String,
         gamblerId: String,
-        next: String? = nil,
-        searchText: String? = nil
-    ) async -> Result<CursorPage<PoolGamblerBet>, Error> {
+        next: String? = nil
+    ) async -> Result<CursorPage<KickoffGroup>, Error> {
         return await poolGamblerBetRepository.getFinishedPoolGamblerBets(
             poolId: poolId,
             gamblerId: gamblerId,
-            next: next,
-            searchText: searchText
+            next: next
         )
     }
 }

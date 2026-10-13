@@ -29,7 +29,11 @@
     <ProjectReference Include="..\src\Felipearpa.Tyche.AmazonLambda.fsproj" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\..\Felipearpa.Tyche.Pool\test\Fakes\FakeExpression.fs" Link="Fakes\FakeExpression.fs" />
+    <Compile Include="..\..\Felipearpa.Tyche.Pool\test\Fakes\FakeDynamoDb.fs" Link="Fakes\FakeDynamoDb.fs" />
+    <Compile Include="..\..\Felipearpa.Tyche.Pool\test\Fakes\FakeTables.fs" Link="Fakes\FakeTables.fs" />
     <Compile Include="Event\PoolLayoutEventFilterTest.fs" />
+    <Compile Include="Event\PoolLayoutKickoffEventTest.fs" />
     <Compile Include="Event\MatchScoreIngestionEventFilterTest.fs" />
     <Compile Include="Event\MembershipEventFilterTest.fs" />
     <Compile Include="Event\MembershipEventTest.fs" />
@@ -51,5 +55,6 @@
     <Compile Include="Function\Account\UpdateUsernameTest.fs" />
     <Compile Include="Function\Account\GetCurrentAccountTest.fs" />
     <Compile Include="Function\InvalidCursorTest.fs" />
+    <Compile Include="Function\TrendGroupScoreTest.fs" />
   </ItemGroup>
 </Project>

@@ -90,6 +90,8 @@ type PoolFunction(configureServices: IServiceCollection -> unit) =
                     sp.GetRequiredService<PoolSettlementDynamoDbRepository>() :> IPoolProjectionRepository)
             )
             .AddScoped<IPoolLayoutMatchReader, PoolLayoutMatchReader>()
+            .AddScoped<KickoffGroupReader>()
+            .AddScoped<PoolStandings>()
             .AddScoped<IRankedMatchBetsRepository, RankedMatchBetsDynamoDbRepository>()
             .AddSingleton<RankedMatchBetsSettings>(RankedMatchBetsSettings.Default)
             .AddSingleton<unit -> DateTime>(clock)
@@ -271,19 +273,12 @@ type PoolFunction(configureServices: IServiceCollection -> unit) =
                 |> Option.defaultValue Map.empty
                 |> tryGetStringParamOrNone nextParameter
 
-            let maybeSearchText =
-                request.QueryStringParameters
-                |> Option.ofObj
-                |> Option.defaultValue Map.empty
-                |> tryGetStringParamOrNone searchTextParameter
-
-            match poolIdResult, gamblerIdResult, maybeNext, maybeSearchText with
-            | Ok poolId, Ok gamblerId, next, searchText ->
+            match poolIdResult, gamblerIdResult, maybeNext with
+            | Ok poolId, Ok gamblerId, next ->
                 let! response =
                     getFinishedBetsAsync
                         poolId
                         gamblerId
-                        searchText
                         next
                         (scope.ServiceProvider.GetService<GetFinishedPoolGamblerBets>())
 

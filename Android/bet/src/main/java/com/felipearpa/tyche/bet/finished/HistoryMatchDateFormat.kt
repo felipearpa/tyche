@@ -10,23 +10,29 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toJavaLocalDateTime
+import kotlinx.datetime.toLocalDateTime
 import kotlinx.datetime.todayIn
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
 
 /**
- * The date and time shown in a History row. The date names the weekday, abbreviated month, and
- * day in the locale's order, and adds the year only when the match falls outside the current
- * calendar year. The time follows the locale and the device's 12/24-hour setting.
+ * The date and time shown in a History or Timeline kickoff-group header and the match screen
+ * heading. The date names the weekday, abbreviated month, and day in the locale's order, and adds
+ * the year only when the match falls outside the current calendar year. The time follows the
+ * locale and the device's 12/24-hour setting.
  *
- * Match times arrive already converted to the device's time zone.
+ * A kickoff instant is shown in [timeZone]. A [LocalDateTime] match time arrives already
+ * converted to the device's time zone. Formatted values are labels only: two different kickoffs
+ * can read alike, for example when daylight saving time ends, so nothing is grouped by them.
  */
 class HistoryMatchDateFormat(
     private val locale: Locale,
     private val is24HourClock: Boolean,
     private val today: LocalDate,
+    private val timeZone: TimeZone = TimeZone.currentSystemDefault(),
 ) {
     private val currentYearDate = formatter(DATE_SKELETON)
     private val otherYearDate = formatter(DATE_WITH_YEAR_SKELETON)
@@ -38,6 +44,10 @@ class HistoryMatchDateFormat(
     }
 
     fun time(dateTime: LocalDateTime): String = time.format(dateTime.toJavaLocalDateTime())
+
+    fun date(instant: Instant): String = date(instant.toLocalDateTime(timeZone))
+
+    fun time(instant: Instant): String = time(instant.toLocalDateTime(timeZone))
 
     private fun formatter(skeleton: String): DateTimeFormatter =
         DateTimeFormatter.ofPattern(DateFormat.getBestDateTimePattern(locale, skeleton), locale)
@@ -56,8 +66,9 @@ internal fun rememberHistoryMatchDateFormat(): HistoryMatchDateFormat {
     val context = LocalContext.current
     val locale = ConfigurationCompat.getLocales(configuration)[0] ?: Locale.getDefault()
     val is24HourClock = DateFormat.is24HourFormat(context)
-    val today = Clock.System.todayIn(TimeZone.currentSystemDefault())
-    return remember(locale, is24HourClock, today) {
-        HistoryMatchDateFormat(locale = locale, is24HourClock = is24HourClock, today = today)
+    val timeZone = TimeZone.currentSystemDefault()
+    val today = Clock.System.todayIn(timeZone)
+    return remember(locale, is24HourClock, today, timeZone) {
+        HistoryMatchDateFormat(locale = locale, is24HourClock = is24HourClock, today = today, timeZone = timeZone)
     }
 }

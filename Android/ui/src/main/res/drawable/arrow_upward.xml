@@ -1,0 +1,13 @@
+<!-- Derived from assets/icons/arrow_upward.svg (Material Symbols "arrow_upward", Apache 2.0). The path data is
+     copied unchanged; the group moves the SVG's viewBox origin (0, -960) to the viewport origin. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="960"
+    android:viewportHeight="960">
+    <group android:translateY="960">
+        <path
+            android:fillColor="#FF000000"
+            android:pathData="M440-160v-487L216-423l-56-57 320-320 320 320-56 57-224-224v487h-80Z" />
+    </group>
+</vector>

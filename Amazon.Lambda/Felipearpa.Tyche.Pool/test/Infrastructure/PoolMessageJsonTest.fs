@@ -70,7 +70,9 @@ module PoolMessageJsonTest =
               VerifyReadiness poolId
               ReconcilePool(poolId, None)
               RetireMembership(poolId, gamblerId, Some "G1")
-              RetireMembership(poolId, gamblerId, None) ] do
+              RetireMembership(poolId, gamblerId, None)
+              BackfillKickoffGroups(poolId, Some "01K1PX1TX2NM1HG851S1V0M001")
+              BackfillKickoffGroups(poolId, None) ] do
             PoolMessageJson.encodeJob job |> PoolMessageJson.decodeJob |> shouldEqual job
 
     [<Fact>]

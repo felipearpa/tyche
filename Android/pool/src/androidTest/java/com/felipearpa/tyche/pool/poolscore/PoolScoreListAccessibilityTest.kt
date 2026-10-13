@@ -15,6 +15,7 @@ import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.performClick
 import androidx.paging.PagingData
 import androidx.paging.compose.collectAsLazyPagingItems
+import com.felipearpa.tyche.core.type.KickoffGroupProgress
 import com.felipearpa.tyche.pool.PoolGamblerScoreModel
 import com.felipearpa.tyche.pool.creator.PoolLayoutModel
 import com.felipearpa.tyche.ui.theme.TycheTheme
@@ -128,5 +129,6 @@ class PoolScoreListAccessibilityTest {
         beforePosition = 3,
         score = 8,
         gamblerCount = 101,
+        trendGroup = KickoffGroupProgress(computedMatches = 1, totalMatches = 1),
     )
 }

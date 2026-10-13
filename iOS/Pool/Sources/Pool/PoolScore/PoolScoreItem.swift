@@ -1,3 +1,4 @@
+import Core
 import SwiftUI
 import UI
 
@@ -18,6 +19,7 @@ struct PoolScoreItem: View {
     /// rail, this row's rail has no fixed width, so the tile can afford to scale.
     @ScaledMetric(relativeTo: .body) private var rankTileSize: CGFloat = 32
     @ScaledMetric(relativeTo: .body) private var inviteIconSize: CGFloat = 20
+    @ScaledMetric(relativeTo: .footnote) private var rankRailMaximumWidth: CGFloat = 72
 
     init(
         poolGamblerScore: PoolGamblerScoreModel,
@@ -96,7 +98,9 @@ struct PoolScoreItem: View {
                 inviteButton
             }
 
+            // Wraps to as many lines as it needs; a taller rank rail must not squeeze it.
             Text(poolGamblerScore.poolName)
+                .fixedSize(horizontal: false, vertical: true)
 
             metaCounts
         }
@@ -114,14 +118,21 @@ struct PoolScoreItem: View {
                 )
             }
 
-            if let rank = poolGamblerScore.rank() {
-                TrendIndicator(
-                    difference: rank,
-                    textStyle: Font.TextStyle.footnote,
-                    isPlaceholder: isPlaceholder
-                )
-            }
+            TrendIndicator(
+                movement: poolGamblerScore.movement,
+                textStyle: Font.TextStyle.footnote,
+                isPlaceholder: isPlaceholder
+            )
         }
+        // In the inline row a partial group's qualifier or a pending or unavailable label wraps on
+        // word boundaries within a capped rail; a definite width lets it report its full height.
+        // The reflowed row gives the rail its own line, so the label keeps its natural width there.
+        .frame(width: labeledRailWidth)
+    }
+
+    private var labeledRailWidth: CGFloat? {
+        guard poolGamblerScore.movement.hasLabel, !dynamicTypeSize.isAccessibilitySize else { return nil }
+        return rankRailMaximumWidth
     }
 
     private var inviteButton: some View {
@@ -206,17 +217,8 @@ struct PoolScoreItem: View {
         return String(localized: .gamblersText(gamblerCount))
     }
 
-    private var movementAccessibilityText: String? {
-        guard let difference = poolGamblerScore.rank() else { return nil }
-
-        switch difference {
-        case let value where value > 0:
-            return String(localized: .leaderboardMovementUpAccessibility(abs(value)))
-        case let value where value < 0:
-            return String(localized: .leaderboardMovementDownAccessibility(abs(value)))
-        default:
-            return String(localized: .leaderboardMovementUnchangedAccessibility)
-        }
+    private var movementAccessibilityText: String {
+        poolGamblerScore.movement.accessibilityText
     }
 }
 
@@ -250,11 +252,35 @@ private let countMinimumScaleFactor: CGFloat = 0.7
             position: 4,
             beforePosition: 3,
             score: 8,
-            gamblerCount: 101
+            gamblerCount: 101,
+            trendGroup: KickoffGroupProgress(computedMatches: 2, totalMatches: 4)
         ),
         onOpen: {},
         onJoin: {}
     )
+}
+
+#Preview("Trend states") {
+    ScrollView {
+        VStack(spacing: 0) {
+            ForEach(poolGamblerScoreTrendStateDummyModels()) { score in
+                PoolScoreItem(poolGamblerScore: score, onOpen: {}, onJoin: {})
+                Divider()
+            }
+        }
+    }
+}
+
+#Preview("Trend states, accessibility text") {
+    ScrollView {
+        VStack(spacing: 0) {
+            ForEach(poolGamblerScoreTrendStateDummyModels()) { score in
+                PoolScoreItem(poolGamblerScore: score, onOpen: {}, onJoin: {})
+                Divider()
+            }
+        }
+    }
+    .environment(\.dynamicTypeSize, .accessibility3)
 }
 
 #Preview("Placeholder") {

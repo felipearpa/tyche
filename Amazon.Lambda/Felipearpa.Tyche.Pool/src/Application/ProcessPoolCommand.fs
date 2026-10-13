@@ -104,9 +104,14 @@ type ProcessPoolCommand
                 do! commandPublisher.RepublishAsync(deferred |> List.map _.Command)
         }
 
+    /// Completes the operation. A match settlement that opened a newer kickoff group makes its
+    /// kickoff the pool's trend kickoff in the same fenced write.
     let complete (poolId: Ulid) (active: ActiveOperation) settled =
         async {
-            let! completed = fenced (fun () -> repository.CompleteAsync(poolId, active, active.UnresolvedDetails)) 0
+            let trendKickoff = PositionPolicy.completedTrendKickoff active.Target
+
+            let! completed =
+                fenced (fun () -> repository.CompleteAsync(poolId, active, active.UnresolvedDetails, trendKickoff)) 0
 
             if completed then
                 do! republishDeferred poolId
@@ -135,7 +140,7 @@ type ProcessPoolCommand
                 return! release poolId active
             else
                 match active.Stage, active.Target with
-                | Scoring, MatchSettlement(matchId, result) -> return! scorePage poolId deadline active matchId result settled
+                | Scoring, MatchSettlement(matchId, result, _) -> return! scorePage poolId deadline active matchId result settled
                 | Scoring, CurrentStandings -> return! moveToPositions poolId deadline active settled
                 | Scoring, RejoinRestoration(gamblerId, generation) ->
                     return! restorePage poolId deadline active gamblerId generation settled
@@ -268,10 +273,19 @@ type ProcessPoolCommand
                 return! (if owned then advance poolId deadline claimed 0 else yieldToOwner poolId active 0)
         }
 
+    /// Resolves the command to its immutable target. A match settlement compares its match's
+    /// kickoff with the root's trend kickoff here, once, so every resume of the operation
+    /// applies the same baseline decision.
     let resolveTarget (root: PoolSettlementRoot) (command: PoolCommand) =
+        let settlement matchId result (state: PoolLayoutMatchSnapshot option) =
+            let kickoff = state |> Option.map _.MatchDateTime
+            MatchSettlement(matchId, result, PositionPolicy.trendEffect root.TrendKickoffDateTime kickoff)
+
         async {
             match command.Kind with
-            | SettleResult(matchId, result) -> return Some(MatchSettlement(matchId, result))
+            | SettleResult(matchId, result) ->
+                let! state = layoutMatchReader.GetMatchAsync(root.PoolLayoutId, matchId)
+                return Some(settlement matchId result state)
             | ReconcileStandings -> return Some CurrentStandings
             | RestoreRejoinHistory(gamblerId, generation) -> return Some(RejoinRestoration(gamblerId, generation))
             | ReconcileMatch matchId ->
@@ -280,7 +294,7 @@ type ProcessPoolCommand
                 return
                     state
                     |> Option.bind _.Result
-                    |> Option.map (fun result -> MatchSettlement(matchId, result))
+                    |> Option.map (fun result -> settlement matchId result state)
         }
 
     let receiptOf (command: PoolCommand) state revision =

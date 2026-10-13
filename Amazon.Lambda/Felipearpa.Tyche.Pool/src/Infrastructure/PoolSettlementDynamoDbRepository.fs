@@ -161,6 +161,29 @@ type PoolSettlementDynamoDbRepository(client: IAmazonDynamoDB) =
                 return receipts |> List.sortBy (fun receipt -> receipt.DeferredAt, receipt.OperationId)
             }
 
+        member _.GetCompletedResultReceiptsAsync(poolId) =
+            let rec loop (start: Dictionary<string, AttributeValue>) acc =
+                async {
+                    let! response =
+                        client.QueryAsync(PoolSettlementRequestBuilder.getCompletedResultReceipts poolId start)
+                        |> Async.AwaitTask
+
+                    let acc = acc @ (response.Items |> Seq.map toReceipt |> List.ofSeq)
+
+                    match response.LastEvaluatedKey |> Option.ofObj with
+                    | Some key when key.Count > 0 -> return! loop key acc
+                    | _ -> return acc
+                }
+
+            loop null []
+
+        member _.RecordTrendKickoffAsync(root, kickoff) =
+            PoolSettlementRequestBuilder.recordTrendKickoff root kickoff
+            |> client.UpdateItemAsync
+            |> Async.AwaitTask
+            |> send
+            |> GuardedWrite.run
+
         member _.ReplaceCheckpointAsync(poolId, expectedOwnerToken, next) =
             PoolSettlementRequestBuilder.replaceCheckpoint poolId expectedOwnerToken next
             |> client.UpdateItemAsync
@@ -168,8 +191,8 @@ type PoolSettlementDynamoDbRepository(client: IAmazonDynamoDB) =
             |> send
             |> GuardedWrite.run
 
-        member _.CompleteAsync(poolId, active, unresolvedDetails) =
-            PoolSettlementRequestBuilder.complete poolId active unresolvedDetails DateTime.UtcNow
+        member _.CompleteAsync(poolId, active, unresolvedDetails, trendKickoff) =
+            PoolSettlementRequestBuilder.complete poolId active unresolvedDetails trendKickoff DateTime.UtcNow
             |> client.TransactWriteItemsAsync
             |> Async.AwaitTask
             |> send

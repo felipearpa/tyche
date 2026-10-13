@@ -24,21 +24,26 @@ struct GamblerScoreList: View {
         let _ = Self._printChangesIfDebug()
 
         let contentInsets = EdgeInsets(top: boxSpacing.medium, leading: 0, bottom: boxSpacing.medium, trailing: 0)
-        RefreshableLazyPagingVStack(
+        AppendPagingVStack(
             lazyPagingItems: lazyPagingItems,
             // The spacing goes inside the scroll view: an outer padding would keep it off the
             // bars' safe-area edges, so rows would stop short of them instead of scrolling beneath.
             contentInsets: contentInsets,
             loadingContent: { GamblerScorePlaceholderList() },
-            prependLoadingContent: { EmptyView() },
+            emptyContent: { LazyPagingVStackEmpty() },
+            errorContent: { error in
+                LazyPagingVStackError(
+                    localizedError: error.orDefaultLocalized(),
+                    retry: { Task { await lazyPagingItems.refresh() } }
+                )
+            },
             appendLoadingContent: { GamblerScorePlaceholderRow() },
-            prependErrorContent: { _ in EmptyView() },
             appendErrorContent: { error in
                 LazyPagingVStackConcatenateError(
                     localizedError: error.localizedErrorOrDefault(),
                     retry: { Task { await lazyPagingItems.retry() } }
                 )
-            },
+            }
         ) { index in
             if let poolGamblerScore = lazyPagingItems.peek(at: index) {
                 let isSignedInGambler =
@@ -67,6 +72,7 @@ struct GamblerScoreList: View {
                 }
             }
         }
+        .refreshable { await lazyPagingItems.refresh() }
         .fullListStateViewport(contentInsets: contentInsets)
     }
 

@@ -1,7 +1,7 @@
 {
   "images" : [
     {
-      "filename" : "arrow_downward_FILL0_wght400_GRAD0_opsz24.svg",
+      "filename" : "arrow_downward.svg",
       "idiom" : "universal"
     }
   ],
@@ -10,6 +10,7 @@
     "version" : 1
   },
   "properties" : {
+    "preserves-vector-representation" : true,
     "template-rendering-intent" : "template"
   }
 }

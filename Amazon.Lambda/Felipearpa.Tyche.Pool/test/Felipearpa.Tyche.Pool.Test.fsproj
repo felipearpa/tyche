@@ -60,6 +60,8 @@
       <Compile Include="Settlement\SettlementFailurePathTest.fs" />
       <Compile Include="Application\FanOutMatchToGamblersTest.fs" />
       <Compile Include="Application\ContinuationTraversalTest.fs" />
+      <Compile Include="Application\GroupedBetFeedTest.fs" />
+      <Compile Include="Application\KickoffGroupReaderTest.fs" />
       <Compile Include="Settlement\PoolOperationTest.fs" />
       <Compile Include="Settlement\DispatchAndStandingsTest.fs" />
       <Compile Include="Settlement\CorrectionAndMaterializationTest.fs" />
@@ -67,6 +69,8 @@
       <Compile Include="Settlement\MigrationAndReconciliationTest.fs" />
       <Compile Include="Settlement\RankedMatchBetsTest.fs" />
       <Compile Include="Settlement\RejoinRestorationTest.fs" />
+      <Compile Include="Settlement\KickoffGroupSettlementTest.fs" />
+      <Compile Include="Settlement\KickoffChangeAndBackfillTest.fs" />
       <Compile Include="Infrastructure\SharedCodecPaginationTest.fs" />
     </ItemGroup>
 

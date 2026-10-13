@@ -16,4 +16,24 @@
     <string name="close_menu_action">Close menu</string>
     <string name="back_action">Back</string>
     <string name="go_home_action">Home</string>
+    <!-- Rank movement (TrendIndicator). Visible labels, then the spoken forms. -->
+    <string name="trend_pending_label">Pending</string>
+    <string name="trend_unavailable_label">Unavailable</string>
+    <string name="trend_progress_label">%1$d of %2$d computed</string>
+    <string name="trend_unchanged_accessibility">Rank unchanged</string>
+    <string name="trend_pending_accessibility">Movement pending</string>
+    <string name="trend_unavailable_accessibility">Movement unavailable</string>
+    <plurals name="trend_up_accessibility">
+        <item quantity="one">Up %1$d place</item>
+        <item quantity="other">Up %1$d places</item>
+    </plurals>
+    <plurals name="trend_down_accessibility">
+        <item quantity="one">Down %1$d place</item>
+        <item quantity="other">Down %1$d places</item>
+    </plurals>
+    <!-- Quantity selects on the total (%2$d). -->
+    <plurals name="trend_progress_accessibility">
+        <item quantity="one">%1$d of %2$d match computed</item>
+        <item quantity="other">%1$d of %2$d matches computed</item>
+    </plurals>
 </resources>

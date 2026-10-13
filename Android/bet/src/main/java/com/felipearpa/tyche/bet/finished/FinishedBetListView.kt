@@ -14,7 +14,8 @@ import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.felipearpa.tyche.bet.PoolGamblerBetModel
-import com.felipearpa.tyche.bet.historyBetPreviewModels
+import com.felipearpa.tyche.bet.kickoffgroup.KickoffGroupModel
+import com.felipearpa.tyche.bet.kickoffgroup.historyGroupPreviewModels
 import com.felipearpa.tyche.ui.theme.TycheTheme
 import kotlinx.coroutines.flow.MutableStateFlow
 
@@ -24,15 +25,16 @@ fun FinishedBetListView(
     contentPadding: PaddingValues = PaddingValues(0.dp),
     onMatchOpen: ((PoolGamblerBetModel) -> Unit)? = null,
 ) {
-    val lazyItems = viewModel.poolGamblerBets.collectAsLazyPagingItems()
+    val lazyItems = viewModel.kickoffGroups.collectAsLazyPagingItems()
     val pointsSummary by viewModel.pointsSummary.collectAsState()
 
     FinishedBetListView(
-        lazyGamblerBets = lazyItems,
+        lazyKickoffGroups = lazyItems,
         pointsSummary = pointsSummary,
         onPointsSummaryRetry = viewModel::loadPointsSummary,
-        onRefresh = viewModel::refreshPointsSummary,
-        placeholderCount = viewModel.pageSize,
+        onRefresh = viewModel::refresh,
+        onFeedRestart = viewModel::onFeedRestart,
+        placeholderCount = viewModel.placeholderCount,
         onMatchOpen = onMatchOpen,
         contentPadding = contentPadding,
         modifier = Modifier.fillMaxSize(),
@@ -41,10 +43,11 @@ fun FinishedBetListView(
 
 @Composable
 private fun FinishedBetListView(
-    lazyGamblerBets: LazyPagingItems<PoolGamblerBetModel>,
+    lazyKickoffGroups: LazyPagingItems<KickoffGroupModel>,
     pointsSummary: HistoryPointsSummaryState,
     onPointsSummaryRetry: () -> Unit,
     onRefresh: () -> Unit,
+    onFeedRestart: () -> Unit,
     placeholderCount: Int,
     onMatchOpen: ((PoolGamblerBetModel) -> Unit)?,
     contentPadding: PaddingValues,
@@ -53,10 +56,11 @@ private fun FinishedBetListView(
     // The list scrolls under the screen's app bars; its content padding keeps the first and
     // last rows clear of them.
     FinishedBetList(
-        lazyPoolGamblerBets = lazyGamblerBets,
+        lazyKickoffGroups = lazyKickoffGroups,
         pointsSummary = pointsSummary,
         onPointsSummaryRetry = onPointsSummaryRetry,
         onRefresh = onRefresh,
+        onFeedRestart = onFeedRestart,
         placeholderCount = placeholderCount,
         contentPadding = contentPadding,
         modifier = modifier.consumeWindowInsets(contentPadding),
@@ -67,16 +71,17 @@ private fun FinishedBetListView(
 @PreviewLightDark
 @Composable
 fun FinishedBetListViewPreview(contentPadding: PaddingValues = PaddingValues(0.dp)) {
-    val lazyItems = MutableStateFlow(PagingData.from(historyBetPreviewModels())).collectAsLazyPagingItems()
+    val lazyItems = MutableStateFlow(PagingData.from(historyGroupPreviewModels())).collectAsLazyPagingItems()
 
     TycheTheme {
         Surface {
             FinishedBetListView(
-                lazyGamblerBets = lazyItems,
+                lazyKickoffGroups = lazyItems,
                 pointsSummary = HistoryPointsSummaryState.initial.loaded(HistoryPoints.Earned(4)),
                 onPointsSummaryRetry = {},
                 onRefresh = {},
-                placeholderCount = 50,
+                onFeedRestart = {},
+                placeholderCount = 4,
                 onMatchOpen = {},
                 contentPadding = contentPadding,
                 modifier = Modifier.fillMaxSize(),

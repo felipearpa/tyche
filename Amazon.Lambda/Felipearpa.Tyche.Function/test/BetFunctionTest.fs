@@ -22,8 +22,11 @@ module BetFunctionTest =
     let private fakeRepoReturningMatchLocked () =
         { new IPoolGamblerBetRepository with
             member _.GetPendingPoolGamblerBetsAsync(_, _, _, _) = failwith "not used"
-            member _.GetFinishedPoolGamblerBetsAsync(_, _, _, _) = failwith "not used"
             member _.GetLivePoolGamblerBetsAsync(_, _, _, _) = failwith "not used"
+            member _.GetFinishedBetsByKickoffAsync(_, _, _) = failwith "not used"
+            member _.GetFinishedBetsAtKickoffAsync(_, _, _) = failwith "not used"
+            member _.GetUnsettledBetsByKickoffAsync(_, _, _) = failwith "not used"
+            member _.GetBetsAtKickoffAsync(_, _, _) = failwith "not used"
             member _.GetPoolMatchGamblerBetsAsync(_, _, _) = failwith "not used"
             member _.GetPoolGamblerBetByIdAsync(_, _, _) = failwith "not used"
             member _.MaterializeBetAsync(_, _) = failwith "not used"

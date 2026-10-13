@@ -11,7 +11,7 @@ open Amazon.DynamoDBv2
 open Amazon.DynamoDBv2.Model
 open Amazon.SQS
 
-/// Usage: dotnet run -- integration|load|latency|pagination <results.json> [members matches viewers]
+/// Usage: dotnet run -- integration|kickoff-groups|load|latency|pagination <results.json> [members matches viewers]
 /// The resource environment variables are described in README.md.
 module Program =
 
@@ -58,6 +58,13 @@ module Program =
             integration.RunAsync() |> Async.RunSynchronously
             File.WriteAllText(output, JsonSerializer.Serialize(integration.Checks, options))
             if integration.Checks |> List.forall _.Passed then 0 else 1
+        | Some "kickoff-groups" ->
+            let sequence =
+                KickoffGroupSequence(dynamo, pipeline, streams, streamArn dynamo (VerificationEnvironment.poolLayoutTable ()))
+
+            sequence.RunAsync() |> Async.RunSynchronously
+            File.WriteAllText(output, JsonSerializer.Serialize(sequence.Checks, options))
+            if sequence.Checks |> List.forall _.Passed then 0 else 1
         | Some "load" ->
             let number index fallback = argv |> Array.tryItem index |> Option.map int |> Option.defaultValue fallback
             let load = Load(dynamo, sqs, pipeline, number 2 5000, number 3 100, number 4 1000)
@@ -71,7 +78,7 @@ module Program =
             File.WriteAllText(output, JsonSerializer.Serialize(load.Measurements, options))
             0
         | _ ->
-            eprintfn "Usage: integration|load|latency|pagination <results.json> [members matches viewers]"
+            eprintfn "Usage: integration|kickoff-groups|load|latency|pagination <results.json> [members matches viewers]"
             2
 
     [<EntryPoint>]

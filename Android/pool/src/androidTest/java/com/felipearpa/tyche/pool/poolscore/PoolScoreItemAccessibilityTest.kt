@@ -8,6 +8,7 @@ import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.onAllNodesWithContentDescription
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithContentDescription
+import com.felipearpa.tyche.core.type.KickoffGroupProgress
 import com.felipearpa.tyche.pool.PoolGamblerScoreModel
 import com.felipearpa.tyche.pool.poolGamblerScorePlaceholderModel
 import com.felipearpa.tyche.ui.theme.TycheTheme
@@ -42,24 +43,58 @@ class PoolScoreItemAccessibilityTest {
 
     @Test
     fun missingRankAndScoreAreAnnouncedAsUnavailable() {
-        // The pool is still identified and counted; with no rank there is nothing to
-        // compare, so no movement is announced.
+        // The pool is still identified and counted; the pool has a trend group but no rank to
+        // compare, so movement is announced as unavailable rather than omitted.
         renderRow(model(position = null, beforePosition = null, score = null, gamblerCount = 101))
 
         composeTestRule
             .onNodeWithContentDescription(
-                "Neptune World Series 2023, Rank unavailable, Points unavailable, 101 members",
+                "Neptune World Series 2023, Rank unavailable, Points unavailable, 101 members, Movement unavailable",
             )
             .assertIsDisplayed()
     }
 
     @Test
-    fun rankWithoutAPreviousRankAnnouncesNoMovement() {
+    fun rankWithoutAPreviousRankAnnouncesUnavailableMovement() {
         renderRow(model(position = 4, beforePosition = null, score = 8, gamblerCount = 101))
 
         composeTestRule
-            .onNodeWithContentDescription("Neptune World Series 2023, Rank 4, 8 points, 101 members")
+            .onNodeWithContentDescription(
+                "Neptune World Series 2023, Rank 4, 8 points, 101 members, Movement unavailable",
+            )
             .assertIsDisplayed()
+    }
+
+    @Test
+    fun aPoolWithoutASettledKickoffGroupAnnouncesPendingMovement() {
+        renderRow(model(position = 4, beforePosition = 4, score = 8, gamblerCount = 101, trendGroup = null))
+
+        composeTestRule
+            .onNodeWithContentDescription(
+                "Neptune World Series 2023, Rank 4, 8 points, 101 members, Movement pending",
+            )
+            .assertIsDisplayed()
+    }
+
+    @Test
+    fun aPartialGroupEndsWithItsComputedCount() {
+        renderRow(
+            model(
+                position = 5,
+                beforePosition = 8,
+                score = 8,
+                gamblerCount = 101,
+                trendGroup = KickoffGroupProgress(computedMatches = 2, totalMatches = 4),
+            ),
+        )
+
+        composeTestRule
+            .onNodeWithContentDescription(
+                "Neptune World Series 2023, Rank 5, 8 points, 101 members, Up 3 places, 2 of 4 matches computed",
+            )
+            .assertIsDisplayed()
+        // The qualifier is part of the row's announcement, never a stop of its own.
+        composeTestRule.onAllNodesWithText("2 of 4 computed").assertCountEquals(0)
     }
 
     @Test
@@ -156,6 +191,7 @@ class PoolScoreItemAccessibilityTest {
         beforePosition: Int?,
         score: Int?,
         gamblerCount: Int?,
+        trendGroup: KickoffGroupProgress? = KickoffGroupProgress(computedMatches = 1, totalMatches = 1),
     ) = PoolGamblerScoreModel(
         poolId = "A3C2E1",
         poolName = "Neptune World Series 2023",
@@ -165,5 +201,6 @@ class PoolScoreItemAccessibilityTest {
         beforePosition = beforePosition,
         score = score,
         gamblerCount = gamblerCount,
+        trendGroup = trendGroup,
     )
 }

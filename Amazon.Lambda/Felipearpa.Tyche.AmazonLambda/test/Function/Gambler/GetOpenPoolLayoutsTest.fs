@@ -35,7 +35,8 @@ module GetOpenPoolLayoutsTest =
                       BeforePosition = Some 2
                       Score = Some 15
                       BeforeScore = Some 10
-                      GamblerCount = Some 5 }
+                      GamblerCount = Some 5
+                      TrendGroup = None }
 
                     { PoolId = "01KZXZNSK2WT2BVRZBW1H7E92Y"
                       PoolName = "Hola mundo"
@@ -45,7 +46,8 @@ module GetOpenPoolLayoutsTest =
                       BeforePosition = Some 4
                       Score = Some 20
                       BeforeScore = Some 12
-                      GamblerCount = Some 3 }
+                      GamblerCount = Some 3
+                      TrendGroup = None }
                 }
               Next = None }
 
@@ -79,9 +81,11 @@ module GetOpenPoolLayoutsTest =
         let poolRootItems =
             [ dict
                   [ "poolId", AttributeValue(S = "01K0DCFFB08W35AW5Q6F82R6NQ")
+                    "poolLayoutId", AttributeValue(S = "01HY8V7VXGPNN8CS5QY8AVMZ2C")
                     "gamblerCount", AttributeValue(N = "5") ]
               dict
                   [ "poolId", AttributeValue(S = "01KZXZNSK2WT2BVRZBW1H7E92Y")
+                    "poolLayoutId", AttributeValue(S = "01HZX7HJK63MAZK6V27ZRX50XE")
                     "gamblerCount", AttributeValue(N = "3") ] ]
 
         client

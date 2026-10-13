@@ -16,4 +16,25 @@
     <string name="close_menu_action">Cerrar menú</string>
     <string name="back_action">Atrás</string>
     <string name="go_home_action">Inicio</string>
+    <string name="trend_pending_label">Pendiente</string>
+    <string name="trend_unavailable_label">No disponible</string>
+    <string name="trend_progress_label">%1$d de %2$d con resultado</string>
+    <string name="trend_unchanged_accessibility">Puesto sin cambios</string>
+    <string name="trend_pending_accessibility">Movimiento pendiente</string>
+    <string name="trend_unavailable_accessibility">Movimiento no disponible</string>
+    <plurals name="trend_up_accessibility">
+        <item quantity="one">Subió %1$d puesto</item>
+        <item quantity="many">Subió %1$d puestos</item>
+        <item quantity="other">Subió %1$d puestos</item>
+    </plurals>
+    <plurals name="trend_down_accessibility">
+        <item quantity="one">Bajó %1$d puesto</item>
+        <item quantity="many">Bajó %1$d puestos</item>
+        <item quantity="other">Bajó %1$d puestos</item>
+    </plurals>
+    <plurals name="trend_progress_accessibility">
+        <item quantity="one">%1$d de %2$d partido con resultado</item>
+        <item quantity="many">%1$d de %2$d partidos con resultado</item>
+        <item quantity="other">%1$d de %2$d partidos con resultado</item>
+    </plurals>
 </resources>

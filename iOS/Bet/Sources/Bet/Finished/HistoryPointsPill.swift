@@ -34,21 +34,30 @@ struct HistoryPointsPill: View {
         self.isPlaceholder = isPlaceholder
     }
 
+    /// One line when it fits; otherwise, at large text on a narrow width, the text wraps between
+    /// words instead of pushing the pill past the row's edge.
     var body: some View {
-        ZStack {
-            if let reservedText {
-                Text(reservedText).hidden()
+        ViewThatFits(in: .horizontal) {
+            ZStack {
+                if let reservedText {
+                    Text(reservedText).hidden()
+                }
+                Text(text)
             }
+            .lineLimit(1)
+            .fixedSize()
             Text(text)
+                .multilineTextAlignment(.center)
+                .fixedSize(horizontal: false, vertical: true)
         }
         .font(.body.weight(.semibold))
         .monospacedDigit()
-        .lineLimit(1)
-        .fixedSize()
         .loadedForeground(foreground, isPlaceholder: isPlaceholder)
         .padding(.horizontal, pillHorizontalPadding)
         .padding(.vertical, pillVerticalPadding)
         .background(Capsule().fill(fill))
+        // Neighboring text gives way first, so the pill keeps one line wherever it did before.
+        .layoutPriority(1)
     }
 
     private var foreground: Color {

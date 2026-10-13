@@ -2,6 +2,7 @@ namespace Felipearpa.Tyche.Pool.Infrastructure
 
 #nowarn "3536"
 
+open System.Collections.Generic
 open System.Linq
 open Amazon.DynamoDBv2
 open Amazon.DynamoDBv2.Model
@@ -19,8 +20,9 @@ type PoolGamblerScoreDynamoDbRepository(keySerializer: IKeySerializer, client: I
     [<Literal>]
     let batchGetItemLimit = 100
 
-    let getGamblerCountsAsync (poolIds: Ulid list) =
-        let rec fetch (request: BatchGetItemRequest) (gamblerCounts: Map<Ulid, int>) =
+    /// Pool root items read in batches, following unprocessed keys.
+    let getRootItemsAsync (build: Ulid list -> BatchGetItemRequest) (poolIds: Ulid list) =
+        let rec fetch (request: BatchGetItemRequest) (acc: Dictionary<string, AttributeValue> list) =
             async {
                 let! response = client.BatchGetItemAsync(request) |> Async.AwaitTask
 
@@ -28,29 +30,33 @@ type PoolGamblerScoreDynamoDbRepository(keySerializer: IKeySerializer, client: I
                     match response.Responses |> Option.ofObj with
                     | Some responses ->
                         match responses.TryGetValue PoolTable.name with
-                        | true, items -> items :> seq<_>
-                        | _ -> Seq.empty
-                    | None -> Seq.empty
+                        | true, items -> items |> List.ofSeq
+                        | _ -> []
+                    | None -> []
 
-                let gamblerCounts =
-                    poolRootItems
-                    |> Seq.choose toGamblerCountEntry
-                    |> Seq.fold (fun counts (poolId, count) -> counts |> Map.add poolId count) gamblerCounts
+                let acc = acc @ poolRootItems
 
                 match response.UnprocessedKeys |> Option.ofObj with
                 | Some unprocessedKeys when unprocessedKeys.Count > 0 ->
-                    return! fetch (BatchGetItemRequest(RequestItems = unprocessedKeys)) gamblerCounts
-                | _ -> return gamblerCounts
+                    return! fetch (BatchGetItemRequest(RequestItems = unprocessedKeys)) acc
+                | _ -> return acc
             }
 
         async {
-            let! gamblerCountMaps =
+            let! chunks =
                 poolIds
+                |> List.distinct
                 |> List.chunkBySize batchGetItemLimit
-                |> List.map (fun poolIds -> fetch (GetGamblerCountsRequestBuilder.build poolIds) Map.empty)
+                |> List.map (fun chunk -> fetch (build chunk) [])
                 |> Async.Parallel
 
-            return gamblerCountMaps |> Seq.fold (Map.foldBack Map.add) Map.empty
+            return chunks |> List.concat
+        }
+
+    let getGamblerCountsAsync (poolIds: Ulid list) =
+        async {
+            let! items = getRootItemsAsync GetGamblerCountsRequestBuilder.build poolIds
+            return items |> List.choose toGamblerCountEntry |> Map.ofList
         }
 
     interface IPoolGamblerScoreRepository with
@@ -96,4 +102,10 @@ type PoolGamblerScoreDynamoDbRepository(keySerializer: IKeySerializer, client: I
                      | Some item -> item.ToPoolGamblerScore() |> Some
                      | None -> None)
                     |> Ok
+            }
+
+        member this.GetPoolTrendsAsync(poolIds) =
+            async {
+                let! items = getRootItemsAsync GetPoolTrendsRequestBuilder.build poolIds
+                return items |> List.map toPoolTrend
             }

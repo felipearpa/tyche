@@ -12,12 +12,12 @@ interface PoolGamblerBetRepository {
         searchText: String? = null
     ): Result<CursorPage<PoolGamblerBet>>
 
+    /** See `GetFinishedPoolGamblerBets`. */
     suspend fun getFinishedPoolGamblerBets(
         poolId: String,
         gamblerId: String,
         next: String? = null,
-        searchText: String? = null
-    ): Result<CursorPage<PoolGamblerBet>>
+    ): Result<CursorPage<KickoffGroup>>
 
     suspend fun getLivePoolGamblerBets(
         poolId: String,
@@ -39,9 +39,10 @@ interface PoolGamblerBetRepository {
         matchId: String,
     ): Result<PoolGamblerBet>
 
+    /** See `GetGamblerBetsTimeline`. */
     suspend fun getGamblerBetsTimeline(
         poolId: String,
         gamblerId: String,
         next: String? = null,
-    ): Result<CursorPage<PoolGamblerBet>>
+    ): Result<CursorPage<KickoffGroup>>
 }

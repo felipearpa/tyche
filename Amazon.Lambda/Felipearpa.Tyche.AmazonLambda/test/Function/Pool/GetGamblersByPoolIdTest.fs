@@ -35,7 +35,8 @@ module GetGamblersByPoolIdTest =
                       BeforePosition = None
                       Score = None
                       BeforeScore = None
-                      GamblerCount = None }
+                      GamblerCount = None
+                      TrendGroup = None }
 
                     { PoolId = "01KZXZNSK2WT2BVRZBW1H7E92Y"
                       PoolName = "Hola mundo"
@@ -45,7 +46,8 @@ module GetGamblersByPoolIdTest =
                       BeforePosition = None
                       Score = None
                       BeforeScore = None
-                      GamblerCount = None }
+                      GamblerCount = None
+                      TrendGroup = None }
                 }
               Next = None }
 
@@ -76,6 +78,12 @@ module GetGamblersByPoolIdTest =
         client
             .Setup(_.QueryAsync(It.IsAny<QueryRequest>()))
             .ReturnsAsync(QueryResponse(Items = (items |> List.map (fun it -> Dictionary it) |> ResizeArray)))
+        |> ignore
+
+        // The pool root has no trend kickoff yet.
+        client
+            .Setup(_.BatchGetItemAsync(It.IsAny<BatchGetItemRequest>()))
+            .ReturnsAsync(BatchGetItemResponse(Responses = Dictionary(dict [ "Pool", ResizeArray<Dictionary<string, AttributeValue>>() ])))
         |> ignore
 
         let functions =

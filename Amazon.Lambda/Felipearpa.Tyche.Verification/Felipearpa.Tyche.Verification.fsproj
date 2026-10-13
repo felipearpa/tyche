@@ -15,6 +15,7 @@
         <Compile Include="Pipeline.fs" />
         <Compile Include="Seed.fs" />
         <Compile Include="Integration.fs" />
+        <Compile Include="KickoffGroupSequence.fs" />
         <Compile Include="Load.fs" />
         <Compile Include="Pagination.fs" />
         <Compile Include="Program.fs" />

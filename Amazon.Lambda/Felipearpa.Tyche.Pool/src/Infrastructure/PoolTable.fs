@@ -118,6 +118,11 @@ module PoolTable =
         [<Literal>]
         let computedRequestId = "computedRequestId"
 
+        /// Copy of a computed detail's kickoff, written at its first computation. Only finished
+        /// details have it, so it gates the finished-by-kickoff index.
+        [<Literal>]
+        let computedMatchDateTime = "computedMatchDateTime"
+
         [<Literal>]
         let getPoolGamblerScoresByMatchPk = "getPoolGamblerScoresByMatchPk"
 
@@ -146,6 +151,10 @@ module PoolTable =
 
         [<Literal>]
         let rankingReadiness = "rankingReadiness"
+
+        /// Kickoff of the group whose rank baseline the memberships hold.
+        [<Literal>]
+        let trendKickoffDateTime = "trendKickoffDateTime"
 
         // Membership identity and versioned total.
 
@@ -240,7 +249,7 @@ module PoolTable =
         let pendingPoolGamblerBets = "GetPendingPoolGamblerBets-index"
 
         [<Literal>]
-        let finishedPoolGamblerBets = "GetFinishedPoolGamblerBets-index"
+        let finishedPoolGamblerBetsByMatchDate = "GetFinishedPoolGamblerBetsByMatchDate-index"
 
         [<Literal>]
         let scoresByGambler = "GetPoolGamblerScoresByGambler-index"

@@ -1,0 +1,8 @@
+{
+  "IndexName": "GetFinishedPoolGamblerBetsByMatchDate-index",
+  "KeySchema": [
+    { "AttributeName": "pk", "KeyType": "HASH" },
+    { "AttributeName": "computedMatchDateTime", "KeyType": "RANGE" }
+  ],
+  "Projection": { "ProjectionType": "ALL" }
+}

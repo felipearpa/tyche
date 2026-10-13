@@ -1,6 +1,6 @@
 # Pool settlement operations
 
-Runbook for the ordered settlement flow, rejoin restoration, the pool-total projection, and the ranked match-bets rollout. How the flow works is described in [docs/pool-settlement.md](../../docs/pool-settlement.md); the records are in [docs/database-model.md](../../docs/database-model.md).
+Runbook for the ordered settlement flow, rejoin restoration, the pool-total projection, the ranked match-bets rollout, and kickoff groups. How the flow works is described in [docs/pool-settlement.md](../../docs/pool-settlement.md); the records are in [docs/database-model.md](../../docs/database-model.md).
 
 All scripts default to the production stack (`TycheApi`, tables `Pool` and `PoolLayout`, region `us-east-2`). Set `POOL_TABLE_NAME`, `POOL_LAYOUT_TABLE_NAME`, `POOL_COMMAND_QUEUE_URL`, and `POOL_MAINTENANCE_QUEUE_URL` to target other resources.
 
@@ -11,15 +11,19 @@ All scripts default to the production stack (`TycheApi`, tables `Pool` and `Pool
 | `UpdatePositionsQueue.fifo` | Ordered pool commands (group = pool). Visibility 1800 s, retention 14 days, redrive after 30 receives. |
 | `UpdatePositionsQueue-dlq.fifo` | Pool commands that exhausted their receives. The pool keeps its active fence. |
 | `PoolMaintenanceQueue` / `PoolMaintenanceQueue-dlq` | Propagation, migration, and reconciliation jobs; redrive after 5 receives. `OnPoolMaintenanceJob` runs at most 16 concurrent invocations (`PoolMaintenanceMaximumConcurrency`). |
+
+`OnPoolMaintenanceJob` and `OnUpdatePositions` set `RecursiveLoop: Allow`. Both send work back to the queue that invokes them (job continuations, re-enqueued deferred commands). Under Lambda's default, a chain of about 16 such hops is stopped before the handler runs: nothing is logged, the message stays in flight until its visibility timeout, and it is retried until it is dead-lettered. With `Allow`, Lambda no longer emits `RecursiveInvocationsDropped` for these functions; the dead-letter alarms and backlog-age alarms still catch work that stops moving. If `RecursiveInvocationsDropped` ever appears for either function, check the deployed setting with `aws lambda get-function-recursion-config --function-name <function>`.
 | `tyche-stream-failures-567776770335` | Stream batches that exhausted 10 retries or 6 hours, with their complete records; expires after 90 days. |
 | `tyche-pool-operations-alarms` (SNS) | Target of every alarm below. It has no subscriptions; subscribe an email or chat integration to be notified. |
 | `GetPoolMatchBetsByTotal-index` | Ranking index on `Pool`, owned by `pool-table.sh`. |
+| `GetFinishedPoolGamblerBetsByMatchDate-index` | Finished details by kickoff on `Pool`, owned by `pool-table.sh`. |
 
 The `Pool`, `PoolLayout`, and `MatchScoreIngestion` tables are not CloudFormation resources. `pool-table.sh` is the reviewed owner of what this repository adds to `Pool`:
 
 ```bash
 ./pool-table.sh describe Pool                 # keys, indexes, stream, billing
 ./pool-table.sh ensure-ranking-index Pool     # idempotent, additive
+./pool-table.sh ensure-kickoff-index Pool     # idempotent, additive
 ```
 
 Stream ARNs are stack parameters (`PoolStreamArn`, `PoolLayoutStreamArn`, `MatchScoreIngestionStreamArn`); update them if a stream is ever re-created.
@@ -38,7 +42,7 @@ Custom metrics are in the `Tyche/PoolOperations` namespace, dimension `Handler`.
 | `ProjectionBacklogAgeAlarm` | A maintenance job waited over 15 minutes | Propagation lag: ranked order is behind totals |
 | `StreamRecordFailuresAlarm`, `Pool…IteratorAgeAlarm` | Stream records keep failing, or handling is over 10 minutes behind | [Retained stream failure](#retained-stream-failure) |
 
-Other metrics: `OperationCompleted`, `OperationYielded` (deliberate deadline yields, not failures), `CommandFailures`, `CommandDeferred`, `CommandAlreadyCompleted`, `SettledDetails`, `UnresolvedDetails`, `ResultCommandsDispatched`, `TotalsPropagated`, `ProjectionsInitialized`, `ReadinessUnresolved`, `Reconciled*` (including `ReconciledRestorations`, restorations requested by reconciliation), `RestoreHeldDetails` (retained details held for repair, counted by reconciliation), `JobFailures`. A restoration reports its rebound details as `SettledDetails` and its held details as `UnresolvedDetails`.
+Other metrics: `OperationCompleted`, `OperationYielded` (deliberate deadline yields, not failures), `CommandFailures`, `CommandDeferred`, `CommandAlreadyCompleted`, `SettledDetails`, `UnresolvedDetails`, `ResultCommandsDispatched`, `TotalsPropagated`, `ProjectionsInitialized`, `ReadinessUnresolved`, `Reconciled*` (including `ReconciledRestorations`, restorations requested by reconciliation), `RestoreHeldDetails` (retained details held for repair, counted by reconciliation), `KickoffCopiesMoved` (details a rescheduled match's kickoff was copied to), `KickoffCopiesBackfilled`, `JobFailures`. A restoration reports its rebound details as `SettledDetails` and its held details as `UnresolvedDetails`.
 
 ## Procedures
 
@@ -122,6 +126,38 @@ Per pool, in order, waiting for the maintenance queue to drain between steps:
 ```
 
 Readiness is stored on each pool root (`rankingReadiness`). A `NOT_READY` pool with `unresolved > 0` usually has a membership held by identity initialization (its computed awards do not add up to its total); the `IdentityMembersHeld` metric record lists it. Repair the data, then run the three steps again for that pool.
+
+### Kickoff-group backfill
+
+Before the grouped History and Timeline are released, every pool needs the kickoff copy on its computed details and a trend kickoff on its root ([docs/pool-settlement.md](../../docs/pool-settlement.md#kickoff-groups)):
+
+1. Create the index and wait for it to be `ACTIVE`: `./pool-table.sh ensure-kickoff-index Pool`.
+2. Deploy the backend that writes `computedMatchDateTime` and handles `BACKFILL_KICKOFF_GROUPS`.
+3. Enqueue the job and wait for the maintenance queue to drain:
+
+   ```bash
+   ./enqueue-maintenance.sh BACKFILL_KICKOFF_GROUPS --all
+   ```
+
+   Each job copies `matchDateTime` to `computedMatchDateTime` on the pool's computed details that lack it, eight layout matches at a time (found through `GetPoolGamblerScoresByMatch-index`, so details retained from removed memberships are included), and enqueues its continuation. The last job sets the root's `trendKickoffDateTime`, when the root has none, to the kickoff of the match whose `RESULT#` receipt (`SETTLEMENT#RESULT#…` in the pool's partition) was completed last. A pool settled before receipts existed has none; it gets the latest kickoff among the layout matches that have a computed detail in the pool. A pool without computed details keeps no trend kickoff. That write is conditioned on no active operation and on the root's `operationRevision` being the one read, so it never overwrites the value an operation records at completion. While an operation is active the job fails and the queue retries it after the visibility timeout; after 5 receives it is dead-lettered ([Dead-lettered job](#dead-lettered-job)) and can simply be enqueued again. Memberships keep their `beforePosition`. Rerunning the job writes nothing.
+4. Verify (read-only scans):
+
+   ```bash
+   # Pool roots without a trend kickoff: only pools without computed details (never settled a result) should be listed.
+   aws dynamodb scan --region us-east-2 --table-name Pool --projection-expression pk \
+     --filter-expression "begins_with(pk, :p) AND pk = sk AND attribute_not_exists(trendKickoffDateTime)" \
+     --expression-attribute-values '{":p":{"S":"POOL#"}}'
+   # Computed details without the kickoff copy: none should be listed.
+   aws dynamodb scan --region us-east-2 --table-name Pool --projection-expression pk,sk \
+     --filter-expression "begins_with(pk, :g) AND attribute_exists(computedRequestId) AND attribute_not_exists(computedMatchDateTime)" \
+     --expression-attribute-values '{":g":{"S":"GAMBLER#"}}'
+   ```
+
+### Reschedule a match
+
+Change the layout match's `matchDateTime` (ISO-8601 UTC) with an `UpdateItem` on `PoolLayout`. The PoolLayout stream copies the new kickoff onto every gambler's detail in every pool using the layout (`matchDateTime`, and `computedMatchDateTime` on computed details), so the match moves to its new kickoff group in History and Timeline; the `KickoffCopiesMoved` metric counts the details written. Copies are only moved when they still hold the previous kickoff, so a redelivered or older change writes nothing. The pool's trend kickoff is not changed. A match rescheduled after it was settled keeps the position snapshots taken under its old group.
+
+The result ingestion is not rescheduled with it. If the match has a `MatchScoreIngestion` item, delete it (its `REMOVE` deletes the old polling schedule; a postponed match may already be `EXPIRED`) and put it again with the new `matchDateTime`, `status` `PENDING`, and no poll fields, so its `INSERT` creates a schedule for the new kickoff.
 
 ### Rollout and rollback
 

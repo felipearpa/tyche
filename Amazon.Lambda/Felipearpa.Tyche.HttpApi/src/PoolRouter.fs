@@ -77,11 +77,10 @@ module PoolRouter =
             this
                 .MapGet(
                     "/pools/{poolId}/gamblers/{gamblerId}/bets/finished",
-                    Func<_, _, _, _, _, _>
+                    Func<_, _, _, _, _>
                         (fun
                             (poolId: string)
                             (gamblerId: string)
-                            (searchText: string)
                             (next: string)
                             (getFinishedPoolGamblerBets: GetFinishedPoolGamblerBets) ->
                             async {
@@ -89,7 +88,6 @@ module PoolRouter =
                                     getFinishedBetsAsync
                                         poolId
                                         gamblerId
-                                        (searchText |> Option.ofObj)
                                         (next |> Option.ofObj)
                                         getFinishedPoolGamblerBets
                             }

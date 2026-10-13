@@ -2,7 +2,6 @@ package com.felipearpa.tyche.bet.timeline
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
@@ -16,18 +15,17 @@ import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.felipearpa.tyche.bet.PoolGamblerBetModel
-import com.felipearpa.tyche.bet.finished.HISTORY_ROW_CONTENT_TYPE
-import com.felipearpa.tyche.bet.finished.HistoryBetItem
-import com.felipearpa.tyche.bet.finished.HistoryBetPlaceholderRow
 import com.felipearpa.tyche.bet.finished.HistoryOwner
 import com.felipearpa.tyche.bet.finished.HistoryPoints
 import com.felipearpa.tyche.bet.finished.HistoryPointsHeader
 import com.felipearpa.tyche.bet.finished.HistoryPointsSummaryState
-import com.felipearpa.tyche.bet.finished.HistoryRowDivider
-import com.felipearpa.tyche.bet.finished.historyBetPlaceholderList
-import com.felipearpa.tyche.bet.finished.historyRowKey
 import com.felipearpa.tyche.bet.finished.rememberHistoryMatchDateFormat
-import com.felipearpa.tyche.bet.timelineBetPreviewModels
+import com.felipearpa.tyche.bet.kickoffgroup.KickoffGroupModel
+import com.felipearpa.tyche.bet.kickoffgroup.KickoffGroupPlaceholderSection
+import com.felipearpa.tyche.bet.kickoffgroup.kickoffGroupAppendError
+import com.felipearpa.tyche.bet.kickoffgroup.kickoffGroupItems
+import com.felipearpa.tyche.bet.kickoffgroup.kickoffGroupPlaceholderList
+import com.felipearpa.tyche.bet.kickoffgroup.timelineGroupPreviewModels
 import com.felipearpa.tyche.ui.exception.UnknownLocalizedException
 import com.felipearpa.tyche.ui.lazy.RefreshableLazyPagingColumn
 import com.felipearpa.tyche.ui.lazy.lazyPagingColumnEmpty
@@ -36,23 +34,25 @@ import com.felipearpa.tyche.ui.theme.TycheTheme
 import kotlinx.coroutines.flow.MutableStateFlow
 
 /**
- * Another gambler's Timeline: their identity and earned-points total, then one shared History row
- * per entry in the feed's order, pending entries included. Identity and total scroll with the
- * rows, and every list state (initial loading, loaded, empty, failed) starts with them, so they
- * stay usable whatever happens to the rows. Rows carry their own date, so there are no sticky date
- * headers.
+ * Another gambler's Timeline: their identity and earned-points total, then one shared History
+ * kickoff group per scheduled kickoff in the feed's order, unsettled groups first. Identity, total,
+ * and group headers scroll with the rows, and every list state (initial loading, loaded, empty,
+ * failed) starts with identity and total, so they stay usable whatever happens to the groups.
  *
- * One pull refreshes the rows and calls [onRefresh] for the total; the pull indicator stays while
- * the total's pull request is pending. The list error's Retry reloads only the rows.
+ * One pull restarts the groups from their first page and calls [onRefresh] for the total; the pull
+ * indicator stays while the total's pull request is pending. The list error's Retry, and the Retry
+ * shown after the server rejected the continuation twice, call [onFeedRestart] and reload only the
+ * groups; any other failed page is repeated.
  */
 @Composable
 fun BetTimelineList(
     gamblerId: String,
     gamblerUsername: String,
-    lazyBets: LazyPagingItems<PoolGamblerBetModel>,
+    lazyKickoffGroups: LazyPagingItems<KickoffGroupModel>,
     pointsSummary: HistoryPointsSummaryState,
     onPointsSummaryRetry: () -> Unit,
     onRefresh: () -> Unit,
+    onFeedRestart: () -> Unit,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(0.dp),
     placeholderCount: Int = 0,
@@ -68,16 +68,20 @@ fun BetTimelineList(
             HistoryPointsHeader(state = pointsSummary, onRetry = onPointsSummaryRetry, owner = owner)
         }
     }
+    val restart = {
+        onFeedRestart()
+        lazyKickoffGroups.refresh()
+    }
 
     RefreshableLazyPagingColumn(
         modifier = modifier,
-        lazyPagingItems = lazyBets,
+        lazyPagingItems = lazyKickoffGroups,
         contentPadding = contentPadding,
         onRefresh = onRefresh,
         isCompanionRefreshing = pointsSummary.isPullRefreshing,
         loadingContent = {
             header()
-            historyBetPlaceholderList(count = placeholderCount, dateFormat = dateFormat, owner = owner)
+            kickoffGroupPlaceholderList(count = placeholderCount, dateFormat = dateFormat, owner = owner)
         },
         emptyContent = {
             header()
@@ -85,30 +89,21 @@ fun BetTimelineList(
         },
         errorContent = { exception ->
             header()
-            // Reloads only the rows; the total keeps its own retry.
-            lazyPagingColumnError(exception = exception, onRetry = lazyBets::refresh)
+            // Reloads only the groups; the total keeps its own retry.
+            lazyPagingColumnError(exception = exception, onRetry = restart)
         },
-        appendLoadingContent = { item { HistoryBetPlaceholderRow(dateFormat = dateFormat, owner = owner) } },
+        appendLoadingContent = { item { KickoffGroupPlaceholderSection(dateFormat = dateFormat, owner = owner) } },
+        appendErrorContent = { exception ->
+            kickoffGroupAppendError(exception = exception, onRetry = lazyKickoffGroups::retry, onRestart = restart)
+        },
     ) {
         header()
-        items(
-            count = lazyBets.itemCount,
-            key = { index ->
-                val poolGamblerBet = lazyBets.peek(index)
-                if (poolGamblerBet == null) index else historyRowKey(poolGamblerBet)
-            },
-            contentType = { HISTORY_ROW_CONTENT_TYPE },
-        ) { index ->
-            val poolGamblerBet = lazyBets[index] ?: return@items
-            HistoryBetItem(
-                poolGamblerBet = poolGamblerBet,
-                dateFormat = dateFormat,
-                modifier = Modifier.fillMaxWidth(),
-                owner = owner,
-                onClick = onMatchOpen?.let { open -> { open(poolGamblerBet) } },
-            )
-            HistoryRowDivider()
-        }
+        kickoffGroupItems(
+            lazyKickoffGroups = lazyKickoffGroups,
+            dateFormat = dateFormat,
+            owner = owner,
+            onMatchOpen = onMatchOpen,
+        )
     }
 }
 
@@ -119,16 +114,17 @@ private const val POINTS_SUMMARY_KEY = "timelinePointsSummary"
 @Preview(locale = "es-rCO", fontScale = 2f)
 @Composable
 private fun BetTimelineListPreview() {
-    val items = MutableStateFlow(PagingData.from(timelineBetPreviewModels())).collectAsLazyPagingItems()
+    val items = MutableStateFlow(PagingData.from(timelineGroupPreviewModels())).collectAsLazyPagingItems()
     TycheTheme {
         Surface {
             BetTimelineList(
                 gamblerId = "",
                 gamblerUsername = "El mono",
-                lazyBets = items,
+                lazyKickoffGroups = items,
                 pointsSummary = HistoryPointsSummaryState.initial.loaded(HistoryPoints.Earned(676)),
                 onPointsSummaryRetry = {},
                 onRefresh = {},
+                onFeedRestart = {},
                 modifier = Modifier.fillMaxSize(),
             )
         }
@@ -144,17 +140,18 @@ private fun BetTimelineListRowsFailedPreview() {
         append = LoadState.NotLoading(endOfPaginationReached = false),
     )
     val items = MutableStateFlow(
-        PagingData.empty<PoolGamblerBetModel>(sourceLoadStates = failed),
+        PagingData.empty<KickoffGroupModel>(sourceLoadStates = failed),
     ).collectAsLazyPagingItems()
     TycheTheme {
         Surface {
             BetTimelineList(
                 gamblerId = "",
                 gamblerUsername = "El mono",
-                lazyBets = items,
+                lazyKickoffGroups = items,
                 pointsSummary = HistoryPointsSummaryState.initial.loaded(HistoryPoints.Earned(676)),
                 onPointsSummaryRetry = {},
                 onRefresh = {},
+                onFeedRestart = {},
                 modifier = Modifier.fillMaxSize(),
             )
         }

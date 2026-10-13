@@ -1,3 +1,4 @@
+import Core
 import Foundation
 import Pool
 
@@ -14,6 +15,8 @@ enum UsernamePreview {
     /// Fixed illustrative previous rank; the production rank calculation
     /// (`beforePosition - position`) renders an upward movement of one place.
     static let beforePosition = 2
+    /// A settled illustrative trend group, so the movement is a plain number with no qualifier.
+    static let trendGroup = KickoffGroupProgress(computedMatches: 1, totalMatches: 1)
     /// Fixed illustrative score shown in the preview row.
     static let score = 18
     /// Local-only pool identity for the preview row; never sent anywhere.
@@ -42,7 +45,8 @@ enum UsernamePreview {
             position: position,
             beforePosition: beforePosition,
             score: score,
-            gamblerCount: nil
+            gamblerCount: nil,
+            trendGroup: trendGroup
         )
     }
 }

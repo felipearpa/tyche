@@ -7,10 +7,12 @@ import com.felipearpa.tyche.core.paging.CursorPage
 import com.felipearpa.tyche.core.paging.map
 import com.felipearpa.tyche.data.bet.domain.Bet
 import com.felipearpa.tyche.data.bet.domain.BetException
+import com.felipearpa.tyche.data.bet.domain.KickoffGroup
 import com.felipearpa.tyche.data.bet.domain.PoolGamblerBet
 import com.felipearpa.tyche.data.bet.domain.PoolGamblerBetDataSource
 import com.felipearpa.tyche.data.bet.domain.PoolGamblerBetRepository
 import com.felipearpa.tyche.data.bet.domain.toBetRequest
+import com.felipearpa.tyche.data.bet.domain.toKickoffGroup
 import com.felipearpa.tyche.data.bet.domain.toPoolGamblerBet
 
 internal class PoolGamblerBetRemoteRepository(
@@ -38,15 +40,13 @@ internal class PoolGamblerBetRemoteRepository(
         poolId: String,
         gamblerId: String,
         next: String?,
-        searchText: String?,
-    ): Result<CursorPage<PoolGamblerBet>> {
+    ): Result<CursorPage<KickoffGroup>> {
         return networkExceptionHandler.handle {
             poolGamblerBetDataSource.getFinishedPoolGamblerBets(
                 poolId = poolId,
                 gamblerId = gamblerId,
                 next = next,
-                searchText = searchText,
-            ).map { poolGamblerBetResponse -> poolGamblerBetResponse.toPoolGamblerBet() }
+            ).map { kickoffGroupResponse -> kickoffGroupResponse.toKickoffGroup() }
         }
     }
 
@@ -98,13 +98,13 @@ internal class PoolGamblerBetRemoteRepository(
         poolId: String,
         gamblerId: String,
         next: String?,
-    ): Result<CursorPage<PoolGamblerBet>> {
+    ): Result<CursorPage<KickoffGroup>> {
         return networkExceptionHandler.handle {
             poolGamblerBetDataSource.getGamblerBetsTimeline(
                 poolId = poolId,
                 gamblerId = gamblerId,
                 next = next,
-            ).map { poolGamblerBetResponse -> poolGamblerBetResponse.toPoolGamblerBet() }
+            ).map { kickoffGroupResponse -> kickoffGroupResponse.toKickoffGroup() }
         }
     }
 

@@ -32,7 +32,8 @@ module GetPoolGamblerScoreByIdTest =
               BeforePosition = None
               Score = None
               BeforeScore = None
-              GamblerCount = None }
+              GamblerCount = None
+              TrendGroup = None }
 
         let client = Mock<IAmazonDynamoDB>()
 
@@ -51,6 +52,12 @@ module GetPoolGamblerScoreByIdTest =
         client
             .Setup(_.QueryAsync(It.IsAny<QueryRequest>()))
             .ReturnsAsync(QueryResponse(Items = (items |> List.map (fun it -> Dictionary it) |> ResizeArray)))
+        |> ignore
+
+        // The pool root has no trend kickoff yet.
+        client
+            .Setup(_.BatchGetItemAsync(It.IsAny<BatchGetItemRequest>()))
+            .ReturnsAsync(BatchGetItemResponse(Responses = Dictionary(dict [ "Pool", ResizeArray<Dictionary<string, AttributeValue>>() ])))
         |> ignore
 
         let functions =

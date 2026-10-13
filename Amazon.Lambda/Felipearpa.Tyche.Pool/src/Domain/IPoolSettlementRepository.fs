@@ -72,15 +72,25 @@ type IPoolSettlementRepository =
     /// Deferred receipts in the order they were deferred.
     abstract GetDeferredReceiptsAsync: poolId: Ulid -> Async<OperationReceipt list>
 
+    /// Strongly consistent read of every completed result-settlement receipt.
+    abstract GetCompletedResultReceiptsAsync: poolId: Ulid -> Async<OperationReceipt list>
+
+    /// Sets the trend kickoff of a pool root that has none, provided no operation is active
+    /// and the operation revision is still the one in the given root. ConditionNotMet means
+    /// the root moved on.
+    abstract RecordTrendKickoffAsync: root: PoolSettlementRoot * kickoff: DateTime -> Async<GuardedWriteOutcome>
+
     /// Replaces the checkpoint when the stored owner token still matches the expected one.
     /// ConditionNotMet means ownership moved; Contended means the write can be tried again.
     abstract ReplaceCheckpointAsync:
         poolId: Ulid * expectedOwnerToken: string * next: ActiveOperation -> Async<GuardedWriteOutcome>
 
     /// Completes the receipt and clears the active checkpoint in one transaction, fenced by
-    /// the owner token. ConditionNotMet means ownership moved; Contended means the write can
-    /// be tried again.
-    abstract CompleteAsync: poolId: Ulid * active: ActiveOperation * unresolvedDetails: int -> Async<GuardedWriteOutcome>
+    /// the owner token, and records the trend kickoff on the root when one is given.
+    /// ConditionNotMet means ownership moved; Contended means the write can be tried again.
+    abstract CompleteAsync:
+        poolId: Ulid * active: ActiveOperation * unresolvedDetails: int * trendKickoff: DateTime option ->
+            Async<GuardedWriteOutcome>
 
     /// A strongly consistent page of memberships in gambler ID order after the cursor.
     abstract GetMembershipPageAsync:

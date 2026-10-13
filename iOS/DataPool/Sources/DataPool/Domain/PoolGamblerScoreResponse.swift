@@ -1,3 +1,5 @@
+import Foundation
+
 struct PoolGamblerScoreResponse : Codable {
     let poolId: String
     let poolName: String
@@ -7,4 +9,12 @@ struct PoolGamblerScoreResponse : Codable {
     let beforePosition: Int?
     let score: Int?
     let gamblerCount: Int?
+    /// JSON null, or absent from an older server, while the pool has no settled kickoff group.
+    let trendGroup: TrendGroupResponse?
+}
+
+struct TrendGroupResponse: Codable {
+    let kickoffDateTime: Date
+    let computedMatches: Int
+    let totalMatches: Int
 }

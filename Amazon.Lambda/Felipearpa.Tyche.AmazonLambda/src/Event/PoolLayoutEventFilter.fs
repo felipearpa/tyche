@@ -93,6 +93,25 @@ module PoolLayoutEventFilter =
 
     let extractUpdatedPoolLayouts (event: DynamoDBEvent) = event.Records |> Seq.choose tryResultChange
 
+    let private tryKickoff (image: IDictionary<string, DynamoDBEvent.AttributeValue>) =
+        tryGetStringFieldOrNone matchDateTimeAttributeKey image
+        |> Option.map (fun stored ->
+            DateTime.Parse(stored, Globalization.CultureInfo.InvariantCulture, Globalization.DateTimeStyles.RoundtripKind)
+            |> KickoffGroup.instant)
+
+    /// The previous and new kickoff of a modified match whose scheduled instant changed. A
+    /// rewrite of the same instant in another format is not a change.
+    let tryKickoffChange (record: DynamoDBEvent.DynamodbStreamRecord) : (Ulid * DateTime * DateTime) option =
+        if record.EventName <> modifyEventName then
+            None
+        else
+            let oldImage = orEmpty record.Dynamodb.OldImage
+            let newImage = orEmpty record.Dynamodb.NewImage
+
+            match tryGetStringFieldOrNone matchIdAttributeKey newImage, tryKickoff oldImage, tryKickoff newImage with
+            | Some matchId, Some previous, Some kickoff when previous <> kickoff -> Some(Ulid.newOf matchId, previous, kickoff)
+            | _ -> None
+
     let tryInsertedMatch (record: DynamoDBEvent.DynamodbStreamRecord) : FanOutMatchInput option =
         if record.EventName <> insertEventName then
             None

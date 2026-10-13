@@ -23,6 +23,8 @@
     <Compile Include="Response\PoolMemberTransformer.fs" />
     <Compile Include="Response\PoolGamblerBetResponse.fs" />
     <Compile Include="Response\PoolGamblerBetTransformer.fs" />
+    <Compile Include="Response\KickoffGroupResponse.fs" />
+    <Compile Include="Response\KickoffGroupTransformer.fs" />
     <Compile Include="Response\PoolResponse.fs" />
     <Compile Include="Response\CreatePoolOutputTransformer.fs" />
     <Compile Include="Response\PoolTransformer.fs" />

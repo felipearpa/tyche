@@ -20,11 +20,29 @@ type IPoolGamblerBetRepository =
     abstract GetPendingPoolGamblerBetsAsync:
         Ulid * Ulid * string option * string option -> Async<PoolGamblerBet CursorPage>
 
-    abstract GetFinishedPoolGamblerBetsAsync:
-        Ulid * Ulid * string option * string option -> Async<PoolGamblerBet CursorPage>
-
     abstract GetLivePoolGamblerBetsAsync:
         Ulid * Ulid * string option * string option -> Async<PoolGamblerBet CursorPage>
+
+    /// A storage page of the gambler's computed details by kickoff, newest kickoff first.
+    abstract GetFinishedBetsByKickoffAsync:
+        poolId: Ulid * gamblerId: Ulid * next: string option -> Async<GroupedBet CursorPage>
+
+    /// Every computed detail of the gambler at the stored kickoff, in the paged order, with
+    /// the continuation that resumes that traversal after the last of them (None when there is
+    /// none).
+    abstract GetFinishedBetsAtKickoffAsync:
+        poolId: Ulid * gamblerId: Ulid * storedKickoff: string -> Async<GroupedBet list * string option>
+
+    /// A storage page of the gambler's uncomputed details whose predictions are revealed,
+    /// oldest kickoff first.
+    abstract GetUnsettledBetsByKickoffAsync:
+        poolId: Ulid * gamblerId: Ulid * next: string option -> Async<GroupedBet CursorPage>
+
+    /// Every detail of the gambler at the stored kickoff, computed or not, in the unsettled
+    /// traversal's order, with the continuation that resumes that traversal after the last of
+    /// them (None when there is none).
+    abstract GetBetsAtKickoffAsync:
+        poolId: Ulid * gamblerId: Ulid * storedKickoff: string -> Async<GroupedBet list * string option>
 
     abstract GetPoolMatchGamblerBetsAsync:
         Ulid * Ulid * string option -> Async<PoolGamblerBet CursorPage>
