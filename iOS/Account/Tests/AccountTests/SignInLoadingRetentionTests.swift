@@ -74,7 +74,8 @@ struct SignInLoadingRetentionTests {
 }
 
 private let typedEmail = "loading-probe@example.com"
-private let typedPassword = "not-a-real-password"
+/// Under the 16-character cap `PasswordTextField` applies to its value.
+private let typedPassword = "loading-probe-1"
 private let signedInAccount = AccountBundle(accountId: "account", externalAccountId: "external", email: typedEmail)
 
 @MainActor
@@ -132,12 +133,18 @@ private func settle() {
     RunLoop.main.run(until: Date().addingTimeInterval(0.3))
 }
 
-/// Appends `text` and reports the edit the way the field reports typing, so SwiftUI's binding
-/// takes the new value.
+/// Appends `text` and reports the edit to the field's `.editingChanged` targets, so SwiftUI's
+/// binding takes the new value. The targets are called directly: `sendActions(for:)` dispatches
+/// through `UIApplication`, which a package test process does not have, and on iOS 26 that drops
+/// the edit before it reaches the binding.
 @MainActor
 private func type(_ text: String, into field: UITextField) {
     field.text = (field.text ?? "") + text
-    field.sendActions(for: .editingChanged)
+    for target in field.allTargets {
+        for action in field.actions(forTarget: target, forControlEvent: .editingChanged) ?? [] {
+            _ = (target as AnyObject).perform(Selector(action), with: field)
+        }
+    }
     settle()
 }
 
