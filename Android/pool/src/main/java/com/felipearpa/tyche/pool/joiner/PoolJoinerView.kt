@@ -79,19 +79,15 @@ internal fun PoolJoinerContainer(
     onAbort: () -> Unit,
 ) {
     when (joinPoolState) {
-        SaveState.Idle ->
-            PoolLoadContainer(
-                poolState = poolState,
-                onJoinPool = onJoinPool,
-                onAbort = onAbort,
-            )
-
-        is SaveState.Saving, is SaveState.Saved -> LoadingContainerView {
-            PoolLoadContainer(
-                poolState = poolState,
-                onJoinPool = {},
-                onAbort = {},
-            )
+        SaveState.Idle, is SaveState.Saving, is SaveState.Saved -> {
+            val isJoining = joinPoolState != SaveState.Idle
+            LoadingContainerView(isLoading = isJoining) {
+                PoolLoadContainer(
+                    poolState = poolState,
+                    onJoinPool = if (isJoining) ({}) else onJoinPool,
+                    onAbort = if (isJoining) ({}) else onAbort,
+                )
+            }
         }
 
         is SaveState.Failure -> JoinFailureContent(
@@ -118,7 +114,7 @@ private fun PoolLoadContainer(
         .padding(horizontal = LocalBoxSpacing.current.medium)
 
     when (poolState) {
-        LoadState.Idle, LoadState.Loading -> LoadingContainerView {}
+        LoadState.Idle, LoadState.Loading -> LoadingContainerView(isLoading = true)
         is LoadState.Loaded ->
             SuccessContent(
                 pool = poolState(),

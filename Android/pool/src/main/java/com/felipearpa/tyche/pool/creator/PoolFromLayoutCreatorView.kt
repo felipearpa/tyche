@@ -121,7 +121,7 @@ internal fun PoolFromLayoutCreatorView(
 
     val isOverlayVisible = state is MutationState.Mutating || state is MutationState.Mutated
 
-    Box(modifier = Modifier.fillMaxSize()) {
+    LoadingContainerView(isLoading = isOverlayVisible) {
         Scaffold(
             modifier = Modifier
                 .fillMaxSize()
@@ -147,62 +147,30 @@ internal fun PoolFromLayoutCreatorView(
                 )
             },
         ) { paddingValues ->
-            when (state) {
-                is MutationState.Idle ->
-                    Stepper(
-                        step = step,
-                        onStepChange = { newStep -> step = newStep },
-                        onSaveClick = { onSaveClick(createPoolModel) },
-                        createPoolModel = createPoolModel,
-                        onCreatePoolModelChange = { newCreatePoolModel ->
-                            createPoolModel = newCreatePoolModel
-                        },
-                        stepOneView = stepOneView,
-                        contentPadding = paddingValues,
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .consumeWindowInsets(paddingValues),
-                    )
+            // One stepper for every mutation state, so saving or failing never recreates the
+            // step or its unsaved field values; only the idle state accepts edits.
+            val isEditable = state is MutationState.Idle
+            Stepper(
+                step = step,
+                onStepChange = { newStep -> if (isEditable) step = newStep },
+                onSaveClick = { if (isEditable) onSaveClick(createPoolModel) },
+                createPoolModel = createPoolModel,
+                onCreatePoolModelChange = { newCreatePoolModel ->
+                    if (isEditable) createPoolModel = newCreatePoolModel
+                },
+                stepOneView = stepOneView,
+                contentPadding = paddingValues,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .consumeWindowInsets(paddingValues),
+            )
 
-                is MutationState.Mutating,
-                is MutationState.Mutated,
-                    ->
-                    Stepper(
-                        step = step,
-                        onStepChange = {},
-                        onSaveClick = {},
-                        createPoolModel = createPoolModel,
-                        onCreatePoolModelChange = {},
-                        stepOneView = stepOneView,
-                        contentPadding = paddingValues,
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .consumeWindowInsets(paddingValues),
-                    )
-
-                is MutationState.Failure -> {
-                    Stepper(
-                        step = step,
-                        onStepChange = {},
-                        onSaveClick = {},
-                        createPoolModel = createPoolModel,
-                        onCreatePoolModelChange = {},
-                        stepOneView = stepOneView,
-                        contentPadding = paddingValues,
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .consumeWindowInsets(paddingValues),
-                    )
-                    ExceptionAlertDialog(
-                        exception = state.exception.localizedOrDefault(),
-                        onDismiss = { reset() },
-                    )
-                }
+            if (state is MutationState.Failure) {
+                ExceptionAlertDialog(
+                    exception = state.exception.localizedOrDefault(),
+                    onDismiss = { reset() },
+                )
             }
-        }
-
-        if (isOverlayVisible) {
-            LoadingContainerView {}
         }
     }
 

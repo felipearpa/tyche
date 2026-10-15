@@ -24,6 +24,13 @@ import com.felipearpa.tyche.ui.theme.TycheTheme
 private const val labelAnimation = "ProgressIndicator"
 private const val iconSize = 64
 
+/**
+ * The Tyche ball, turning once every two seconds at a constant speed.
+ *
+ * The rotation follows the system animator duration scale, read live: 0.5x turns it in one second
+ * and 2x in four. With animations off (scale 0) the ball rests upright and no frames are requested
+ * until animations are turned on again. The rotation stops when the ball leaves the composition.
+ */
 @Composable
 fun BallSpinner(modifier: Modifier = Modifier) {
     val infiniteTransition = rememberInfiniteTransition(label = labelAnimation)

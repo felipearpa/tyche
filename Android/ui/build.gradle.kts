@@ -70,7 +70,6 @@ dependencies {
     implementation(libs.revenuecat.placeholder)
     implementation(libs.felipearpa.foundation)
     implementation(libs.felipearpa.lazy.paging)
-    implementation(libs.cloudy)
     implementation(libs.coil.compose)
 
     testImplementation(platform(libs.junit5.bom))

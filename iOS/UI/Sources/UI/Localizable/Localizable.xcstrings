@@ -145,6 +145,30 @@
         }
       }
     },
+    "loading_status" : {
+      "comment" : "Spoken status of a full-screen loader while a blocking operation runs.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Loading"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cargando"
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cargando"
+          }
+        }
+      }
+    },
     "open_menu_action" : {
       "comment" : "Accessibility label for the control that opens the navigation drawer.",
       "extractionState" : "manual",

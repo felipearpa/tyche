@@ -10,8 +10,6 @@ public struct PoolFromLayoutCreatorView: View {
     let preselectedPoolLayoutId: String?
     let preselectedPoolName: String?
 
-    @Environment(\.boxSpacing) private var boxSpacing
-
     public init(
         viewModel: @autoclosure @escaping () -> PoolFromLayoutCreatorViewModel,
         onPoolCreated: @escaping (String) -> Void,
@@ -34,11 +32,13 @@ public struct PoolFromLayoutCreatorView: View {
             preselectedPoolName: preselectedPoolName,
         )
         .navigationTitle(String(localized: .poolFromLayoutCreatorTitle))
-        .padding(boxSpacing.medium)
     }
 }
 
-private struct PoolFromLayoutCreatorStatefulView: View {
+/// One stepper, with its template list, step, and draft, serves every creation state: the loader
+/// covers it while the pool is created and until the created pool is opened, and a failure leaves
+/// it as it was for a retry.
+struct PoolFromLayoutCreatorStatefulView: View {
     let state: MutationState<CreatePoolModel>
     let onSaveClick: (CreatePoolModel) -> Void
     let onPoolCreated: (String) -> Void
@@ -47,6 +47,7 @@ private struct PoolFromLayoutCreatorStatefulView: View {
     let preselectedPoolName: String?
 
     @Environment(\.diResolver) private var diResolver: DIResolver
+    @Environment(\.boxSpacing) private var boxSpacing
     @State private var step: Step
 
     init(
@@ -75,61 +76,28 @@ private struct PoolFromLayoutCreatorStatefulView: View {
         )
     }
 
+    private var createdPoolId: String? {
+        guard case .mutated(_, let createdPoolModel) = state else { return nil }
+        return createdPoolModel.poolId
+    }
+
     var body: some View {
-        switch state {
-        case .idle:
+        LoadingContainerView(isLoading: state.isMutating() || state.isMutated()) {
             StepperView(
                 poolFromLayoutCreatorStepOneViewModel: PoolFromLayoutCreatorStepOneViewModel(
                     getOpenPoolLayoutsUseCase: diResolver.resolve(GetOpenPoolLayoutsUseCase.self)!,
                 ),
                 step: $step,
-                onSaveClick: { createPoolModel in
-                    onSaveClick(createPoolModel)
-                },
+                onSaveClick: onSaveClick,
                 initialCreatePoolModel: initialCreatePoolModel,
             )
-
-        case .mutating:
-            LoadingContainerView {
-                StepperView(
-                    poolFromLayoutCreatorStepOneViewModel: PoolFromLayoutCreatorStepOneViewModel(
-                        getOpenPoolLayoutsUseCase: diResolver.resolve(GetOpenPoolLayoutsUseCase.self)!,
-                    ),
-                    step: $step,
-                    onSaveClick: { createPoolModel in },
-                    initialCreatePoolModel: initialCreatePoolModel,
-                )
-            }
-
-        case .mutated(_, let succededCreatePoolModel):
-            LoadingContainerView {
-                StepperView(
-                    poolFromLayoutCreatorStepOneViewModel: PoolFromLayoutCreatorStepOneViewModel(
-                        getOpenPoolLayoutsUseCase: diResolver.resolve(GetOpenPoolLayoutsUseCase.self)!,
-                    ),
-                    step: $step,
-                    onSaveClick: { createPoolModel in
-                        onSaveClick(createPoolModel)
-                    },
-                    initialCreatePoolModel: initialCreatePoolModel,
-                )
-            }.onAppear {
-                guard let poolId = succededCreatePoolModel.poolId else { return }
-                onPoolCreated(poolId)
-            }
-
-        case .failure( _, _, let error):
-            StepperView(
-                poolFromLayoutCreatorStepOneViewModel: PoolFromLayoutCreatorStepOneViewModel(
-                    getOpenPoolLayoutsUseCase: diResolver.resolve(GetOpenPoolLayoutsUseCase.self)!,
-                ),
-                step: $step,
-                onSaveClick: { createPoolModel in
-                    onSaveClick(createPoolModel)
-                },
-                initialCreatePoolModel: initialCreatePoolModel,
-            )
-            .errorAlert(.constant(error.localizedErrorOrNil()!), onDismiss: reset)
+            .padding(boxSpacing.medium)
+        }
+        .errorAlert(.constant(state.errorOrNil().map { $0.localizedErrorOrNil()! }), onDismiss: reset)
+        // Reported on the change to a created pool, so redrawing the screen does not open it again.
+        .onChange(of: createdPoolId) { poolId in
+            guard let poolId else { return }
+            onPoolCreated(poolId)
         }
     }
 }

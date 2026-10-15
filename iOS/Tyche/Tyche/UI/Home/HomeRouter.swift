@@ -23,16 +23,21 @@ struct HomeRouter: View {
 
     var body: some View {
         NavigationStack(path: $path) {
-            HomeView(
-                onSignInWithEmail: { path.append(EmailSignInRoute()) },
-                onSignInWithEmailAndPassword: { path.append(EmailAndPasswordSignInRoute()) },
-                socialSignInSlot: {
-                    SocialSignInRow(
-                        googleState: googleSignInViewModel.state,
-                        onSignInWithGoogle: { googleSignInViewModel.signInWithGoogle(presenting: topViewController()) },
-                    )
-                },
-            )
+            // The welcome screen stays behind the loader from the Google account's verification
+            // until the signed-in account is routed away; the provider's own sheet comes before
+            // that and is never covered.
+            LoadingContainerView(isLoading: isSigningInWithGoogle) {
+                HomeView(
+                    onSignInWithEmail: { path.append(EmailSignInRoute()) },
+                    onSignInWithEmailAndPassword: { path.append(EmailAndPasswordSignInRoute()) },
+                    socialSignInSlot: {
+                        SocialSignInRow(
+                            googleState: googleSignInViewModel.state,
+                            onSignInWithGoogle: { googleSignInViewModel.signInWithGoogle(presenting: topViewController()) },
+                        )
+                    },
+                )
+            }
             .navigationDestination(for: EmailSignInRoute.self) { route in
                 EmailSignInView(
                     viewModel: EmailSignInViewModel(
@@ -48,8 +53,9 @@ struct HomeRouter: View {
                     onSignIn: onSignIn,
                 )
             }
-            .overlay {
-                googleOverlay
+            .onChange(of: googleSignInViewModel.state.valueOrNil()) { accountBundle in
+                guard let accountBundle else { return }
+                onSignIn(accountBundle)
             }
             .errorAlert(
                 .constant(googleSignInViewModel.state.errorOrNil()?.localizedErrorOrNil()),
@@ -58,17 +64,8 @@ struct HomeRouter: View {
         }
     }
 
-    @ViewBuilder
-    private var googleOverlay: some View {
-        switch googleSignInViewModel.state {
-        case .loading:
-            LoadingContainerView { Color.clear }
-        case .loaded(let accountBundle):
-            Color.clear
-                .onAppear { onSignIn(accountBundle) }
-        case .idle, .failure:
-            EmptyView()
-        }
+    private var isSigningInWithGoogle: Bool {
+        googleSignInViewModel.state.isLoading() || googleSignInViewModel.state.isLoaded()
     }
 
     private func topViewController() -> UIViewController {

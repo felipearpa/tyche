@@ -28,7 +28,6 @@ kotlinx-datetime = "0.8.0"
 felipearpa-viewing-state = "1.0.0"
 felipearpa-foundation = "v0.0.1"
 felipearpa-lazy-paging = "0.0.3"
-cloudy = "0.5.0"
 coil = "3.4.0"
 androidx-credentials = "1.5.0"
 google-id = "1.1.1"
@@ -86,7 +85,6 @@ kotlinx-datetime = { group = "org.jetbrains.kotlinx", name = "kotlinx-datetime",
 felipearpa-viewing-state = { group = "com.felipearpa", name = "viewing-state", version.ref = "felipearpa-viewing-state" }
 felipearpa-foundation = { group = "com.github.felipearpa", name = "foundation-android", version.ref = "felipearpa-foundation" }
 felipearpa-lazy-paging = { group = "com.felipearpa", name = "lazy-paging", version.ref = "felipearpa-lazy-paging" }
-cloudy = { group = "com.github.skydoves", name = "cloudy", version.ref = "cloudy" }
 coil-compose = { group = "io.coil-kt.coil3", name = "coil-compose", version.ref = "coil" }
 coil-network-okhttp = { group = "io.coil-kt.coil3", name = "coil-network-okhttp", version.ref = "coil" }
 coil-network-cache-control = { group = "io.coil-kt.coil3", name = "coil-network-cache-control", version.ref = "coil" }

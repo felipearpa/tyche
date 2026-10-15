@@ -53,20 +53,18 @@ private struct PoolJoinerStatefulView: View {
     @Environment(\.boxSpacing) private var boxSpacing
 
     var body: some View {
-        switch joinPoolState {
-        case .idle:
-            PoolLoadStatefulView(poolState: poolState, onJoinPool: onJoinPool, onAbort: onAbort)
-        case .loading, .loaded:
-            LoadingContainerView {
-                PoolLoadStatefulView(poolState: poolState, onJoinPool: {}, onAbort: {})
-            }
-        case .failure(let error):
+        // The loaded pool stays one subtree while joining and until the joined pool is opened.
+        if case .failure(let error) = joinPoolState {
             JoinFailureContent(
                 localizedError: error.localizedErrorOrDefault(),
                 onRetry: onJoinPool,
                 onAbort: onAbort,
             )
             .padding(boxSpacing.medium)
+        } else {
+            LoadingContainerView(isLoading: joinPoolState.isLoading() || joinPoolState.isLoaded()) {
+                PoolLoadStatefulView(poolState: poolState, onJoinPool: onJoinPool, onAbort: onAbort)
+            }
         }
     }
 }
@@ -81,7 +79,7 @@ private struct PoolLoadStatefulView: View {
     var body: some View {
         switch poolState {
         case .idle, .loading:
-            LoadingContainerView { EmptyView() }
+            LoadingContainerView(isLoading: true)
         case .loaded(let pool):
             SuccessContent(pool: pool, onJoinPool: onJoinPool, onAbort: onAbort)
                 .padding(boxSpacing.medium)

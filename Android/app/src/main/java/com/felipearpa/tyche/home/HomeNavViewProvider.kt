@@ -1,11 +1,8 @@
 package com.felipearpa.tyche.home
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
@@ -49,7 +46,7 @@ internal fun HomeScreen(
     val context = LocalContext.current
     val isSignInAvailable = !googleState.isBusy
 
-    Box(modifier = Modifier.fillMaxSize()) {
+    LoadingContainerView(isLoading = googleState.isBusy) {
         HomeView(
             onSignInWithEmail = onSignInWithEmail.takeIf { isSignInAvailable },
             onSignInWithEmailAndPassword = onSignInWithEmailAndPassword.takeIf { isSignInAvailable },
@@ -63,9 +60,5 @@ internal fun HomeScreen(
                 )
             },
         )
-
-        if (googleState.isBusy) {
-            LoadingContainerView {}
-        }
     }
 }

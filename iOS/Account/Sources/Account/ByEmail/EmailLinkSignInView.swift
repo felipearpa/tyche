@@ -59,7 +59,7 @@ private struct EmailLinkSignInStatefulView: View {
     var body: some View {
         switch viewState {
         case .idle, .loading:
-            LoadingContainerView { EmptyView() }
+            LoadingContainerView(isLoading: true)
         case .loaded(let accountBundle):
             SuccessContent(email: email, start: { onStart(accountBundle) })
                 .padding(boxSpacing.medium)

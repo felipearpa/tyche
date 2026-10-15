@@ -100,7 +100,7 @@ internal fun EmailAndPasswordSignInView(
 
     val isOverlayVisible = viewState.isLoading() || viewState is LoadState.Loaded
 
-    Box(modifier = Modifier.fillMaxSize()) {
+    LoadingContainerView(isLoading = isOverlayVisible) {
         Scaffold(
             topBar = {
                 TopBar(onBack = onBack.takeUnless { isOverlayVisible })
@@ -128,10 +128,6 @@ internal fun EmailAndPasswordSignInView(
                     modifier = Modifier.viewStyle(paddingValues = innerPadding),
                 )
             }
-        }
-
-        if (isOverlayVisible) {
-            LoadingContainerView {}
         }
     }
 

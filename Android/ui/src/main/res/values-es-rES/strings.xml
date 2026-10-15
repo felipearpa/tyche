@@ -16,6 +16,7 @@
     <string name="close_menu_action">Cerrar menú</string>
     <string name="back_action">Atrás</string>
     <string name="go_home_action">Inicio</string>
+    <string name="loading_status">Cargando</string>
     <string name="trend_pending_label">Pendiente</string>
     <string name="trend_unavailable_label">No disponible</string>
     <string name="trend_progress_label">%1$d de %2$d con resultado</string>
