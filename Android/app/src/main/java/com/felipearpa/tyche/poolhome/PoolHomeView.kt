@@ -197,7 +197,7 @@ internal fun PoolHomeContent(
         onOpenChange = onDrawerOpenChange,
         drawerContent = drawerContent,
     ) {
-        val scaffoldContent = @Composable {
+        LoadingContainerView(isLoading = isSaving) {
             Scaffold(
                 modifier = Modifier
                     .fillMaxSize()
@@ -225,12 +225,6 @@ internal fun PoolHomeContent(
             ) { innerPadding ->
                 content(innerPadding)
             }
-        }
-
-        if (isSaving) {
-            LoadingContainerView { scaffoldContent() }
-        } else {
-            scaffoldContent()
         }
     }
 }

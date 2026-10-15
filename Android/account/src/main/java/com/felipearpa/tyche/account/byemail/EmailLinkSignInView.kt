@@ -85,7 +85,7 @@ fun EmailLinkSignInView(
         }
 
         LoadState.Idle, LoadState.Loading -> {
-            LoadingContainerView {}
+            LoadingContainerView(isLoading = true)
         }
 
         is LoadState.Loaded ->

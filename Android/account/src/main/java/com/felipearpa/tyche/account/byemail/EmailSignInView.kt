@@ -87,9 +87,7 @@ internal fun EmailSignInView(
     }
     val back = if (viewState.isLoading()) null else onBack
 
-    val isOverlayVisible = viewState.isLoading()
-
-    Box(modifier = Modifier.fillMaxSize()) {
+    LoadingContainerView(isLoading = viewState.isLoading()) {
         Scaffold(
             topBar = { TopBar(onBack = back) },
         ) { innerPadding ->
@@ -118,10 +116,6 @@ internal fun EmailSignInView(
                     onReset = onReset,
                 )
             }
-        }
-
-        if (isOverlayVisible) {
-            LoadingContainerView {}
         }
     }
 }

@@ -69,12 +69,10 @@ private struct PoolHomeRouterContent: View {
     }
 
     var body: some View {
-        Group {
-            if drawerViewModel.deleteState.isLoading() {
-                LoadingContainerView { mainContent }
-            } else {
-                mainContent
-            }
+        // Pool home stays one subtree while the pool is deleted, so its tabs, navigation, and
+        // scroll positions are kept if the deletion fails.
+        LoadingContainerView(isLoading: drawerViewModel.deleteState.isLoading()) {
+            mainContent
         }
         .errorAlert(
             Binding(

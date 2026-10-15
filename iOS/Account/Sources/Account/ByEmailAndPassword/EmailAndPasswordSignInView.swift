@@ -29,7 +29,9 @@ public struct EmailAndPasswordSignInView: View {
     }
 }
 
-private struct EmailAndPasswordSignInStatefulView: View {
+/// The sign-in form stays one subtree through signing in, a failure, and a retry, so the entered
+/// email and password are kept.
+struct EmailAndPasswordSignInStatefulView: View {
     let viewState: LoadState<AccountBundle>
     let onSignIn: (String, String) -> Void
     let onReset: () -> Void
@@ -50,36 +52,21 @@ private struct EmailAndPasswordSignInStatefulView: View {
     }
 
     var body: some View {
-        switch viewState {
-        case .idle:
+        // The loader stays up after a successful sign-in until the caller routes away, as the
+        // form is not usable again once the account is signed in.
+        LoadingContainerView(isLoading: viewState.isLoading() || viewState.isLoaded()) {
             SignInContent(
                 email: $email,
                 password: $password,
                 onSignIn: signIn
             )
-        case .loading:
-            LoadingContainerView {
-                SignInContent(
-                    email: $email,
-                    password: $password,
-                )
-            }
-        case .loaded(let accountBundle):
-            LoadingContainerView {
-                SignInContent(
-                    email: $email,
-                    password: $password,
-                )
-            }
-            .onAppear {
-                onAuthenticate(accountBundle)
-            }
-        case .failure(let error):
-            SignInContent(
-                email: $email,
-                password: $password,
-            )
-            .errorAlert(.constant(error.localizedErrorOrNil()!), onDismiss: onReset)
+        }
+        .errorAlert(.constant(viewState.errorOrNil()?.localizedErrorOrNil()), onDismiss: onReset)
+        // Reported on the change to a signed-in account, so redrawing the screen does not report
+        // the same sign-in again.
+        .onChange(of: viewState.valueOrNil()) { accountBundle in
+            guard let accountBundle else { return }
+            onAuthenticate(accountBundle)
         }
     }
 }

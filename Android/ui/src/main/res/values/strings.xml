@@ -16,6 +16,7 @@
     <string name="close_menu_action">Close menu</string>
     <string name="back_action">Back</string>
     <string name="go_home_action">Home</string>
+    <string name="loading_status">Loading</string>
     <!-- Rank movement (TrendIndicator). Visible labels, then the spoken forms. -->
     <string name="trend_pending_label">Pending</string>
     <string name="trend_unavailable_label">Unavailable</string>

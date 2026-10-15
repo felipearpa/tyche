@@ -22,7 +22,9 @@ public struct EmailSignInView: View {
     }
 }
 
-private struct EmailSignInStatefulView: View {
+/// The send-link form stays one subtree while the link is sent and when sending fails, so the
+/// entered address survives loading, the error, and a retry. Only a sent link replaces it.
+struct EmailSignInStatefulView: View {
     let viewState: LoadState<String>
     let signInWithEmail: (String) -> Void
     let reset: () -> Void
@@ -42,19 +44,14 @@ private struct EmailSignInStatefulView: View {
     var body: some View {
         let signIn: (() -> Void)? = if Email.isValid(email) { { signInWithEmail(email) } } else { nil }
 
-        ZStack {
-            switch viewState {
-            case .idle:
-                EmailSignInContent(email: $email, signIn: signIn)
-            case .loading:
-                LoadingContainerView {
-                    EmailSignInContent(email: .constant(email), signIn: {})
-                }
-            case .loaded(let sentEmail):
+        Group {
+            if case .loaded(let sentEmail) = viewState {
                 SuccessContent(email: sentEmail)
-            case .failure(let error):
-                EmailSignInContent(email: .constant(email), signIn: {})
-                    .errorAlert(.constant(error.localizedErrorOrNil()!), onDismiss: reset)
+            } else {
+                LoadingContainerView(isLoading: viewState.isLoading()) {
+                    EmailSignInContent(email: $email, signIn: signIn)
+                }
+                .errorAlert(.constant(viewState.errorOrNil()?.localizedErrorOrNil()), onDismiss: reset)
             }
         }
         .navigationTitle(String(localized: .signInTitle))
