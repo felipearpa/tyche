@@ -9,15 +9,14 @@ import com.felipearpa.tyche.session.AccountStorageInKeyStore
 import com.felipearpa.tyche.session.AuthTokenFirebaseRetriever
 import com.felipearpa.tyche.session.AuthTokenRetriever
 import com.felipearpa.tyche.session.CurrentAccountCoordinator
+import com.felipearpa.tyche.session.authTokenBearer
+import com.felipearpa.tyche.session.authenticatedRequestLogging
 import com.google.firebase.auth.FirebaseAuth
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.okhttp.OkHttp
-import io.ktor.client.plugins.auth.providers.BearerTokens
-import io.ktor.client.plugins.auth.providers.bearer
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.plugins.logging.ANDROID
-import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.Logging
 import io.ktor.serialization.kotlinx.json.json
@@ -70,17 +69,10 @@ val sessionModule = module {
                 )
             }
             install(Logging) {
-                logger = Logger.ANDROID
-                level = LogLevel.ALL
+                authenticatedRequestLogging(logger = Logger.ANDROID)
             }
             install(KtorAuth) {
-                bearer {
-                    loadTokens {
-                        get<AuthTokenRetriever>().authToken()?.let { token ->
-                            BearerTokens(token, "")
-                        }
-                    }
-                }
+                authTokenBearer(authTokenRetriever = get())
             }
             defaultRequest {
                 url(get<UrlBasePathProvider>().basePath)

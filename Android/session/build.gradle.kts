@@ -65,6 +65,7 @@ dependencies {
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.io.mockk)
     testImplementation(libs.kotest.assertions.core)
+    testImplementation(libs.ktor.client.mock)
 
     testRuntimeOnly(libs.bundles.junit5.runtime)
 

@@ -7,7 +7,8 @@ final class AuthTokenFirebaseRetriever: AuthTokenRetriever {
         self.firebaseAuth = firebaseAuth
     }
     
-    func authToken() async -> String? {
-        try? await firebaseAuth.currentUser?.getIDToken()
+    func authToken(forceRefresh: Bool) async throws -> String? {
+        guard let user = firebaseAuth.currentUser else { return nil }
+        return try await user.getIDToken(forcingRefresh: forceRefresh)
     }
 }
