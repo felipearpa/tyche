@@ -3,14 +3,13 @@ package com.felipearpa.tyche.pool.managegamblers
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.awaitEachGesture
+import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -18,10 +17,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -36,34 +32,62 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.input.pointer.PointerEventPass
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.onClick
+import androidx.compose.ui.semantics.CustomAccessibilityAction
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.customActions
+import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.ViewModelStoreProvider
+import androidx.lifecycle.viewmodel.compose.rememberViewModelStoreOwner
+import androidx.lifecycle.viewmodel.compose.rememberViewModelStoreProvider
+import androidx.paging.LoadStates
+import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemContentType
 import androidx.paging.compose.itemKey
 import com.felipearpa.tyche.pool.R
+import com.felipearpa.tyche.ui.exception.UnknownLocalizedException
 import com.felipearpa.tyche.ui.lazy.RefreshableLazyPagingColumn
+import com.felipearpa.tyche.ui.lazy.lazyPagingColumnError
 import com.felipearpa.tyche.ui.lazy.lazyPagingConcatenateError
-import com.felipearpa.tyche.ui.theme.LocalBoxSpacing
+import com.felipearpa.tyche.ui.lazy.viewportFillingItem
+import com.felipearpa.tyche.ui.theme.LocalExtendedColorScheme
+import com.felipearpa.tyche.ui.theme.LocalLoadingPlaceholderPulse
 import com.felipearpa.tyche.ui.theme.TycheTheme
+import com.felipearpa.ui.state.LoadState
 import com.felipearpa.ui.state.MutationState
 import com.felipearpa.ui.state.activeValue
+import com.revenuecat.placeholder.placeholder
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.launch
+import org.koin.compose.viewmodel.koinViewModel
+import org.koin.core.parameter.parametersOf
+import androidx.paging.LoadState as PagingLoadState
 import com.felipearpa.tyche.ui.R as SharedR
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -76,13 +100,22 @@ fun ManageGamblersView(
 ) {
     val viewModel = manageGamblersViewModel(poolId = poolId)
     val lazyMembers = viewModel.poolMembers.collectAsLazyPagingItems()
-    val removalStates by viewModel.removalStates.collectAsStateWithLifecycle()
-    val failedGambler = removalStates.values
-        .firstOrNull { state -> state is MutationState.Failure }
-        ?.activeValue()
+    val removedGamblerIds by viewModel.removedGamblerIds.collectAsStateWithLifecycle()
+    val gamblerCount by viewModel.gamblerCount.collectAsStateWithLifecycle()
+    // One store per gambler row, kept while the row scrolls away and across rotation; the
+    // navigation entry's disposal clears whatever is left.
+    val removalStores = rememberViewModelStoreProvider()
 
-    var isEditing by rememberSaveable { mutableStateOf(false) }
-    var gamblerPendingRemoval by remember { mutableStateOf<PoolMemberModel?>(null) }
+    // A removed row's store is released once its row leaves composition (immediately when it
+    // already has); the ID stays in the set so the cached pages cannot bring the row back.
+    LaunchedEffect(removedGamblerIds) {
+        removedGamblerIds.forEach(removalStores::clearKey)
+    }
+    FailureHaptics(failedGamblerIds = viewModel.failedGamblerIds.collectAsStateWithLifecycle().value)
+    ReportMembersRefreshed(
+        refreshLoadState = lazyMembers.loadState.refresh,
+        onMembersRefreshed = viewModel::onMembersRefreshed,
+    )
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
@@ -93,88 +126,100 @@ fun ManageGamblersView(
                     IconButton(onClick = onBack) {
                         Icon(
                             painter = painterResource(id = SharedR.drawable.arrow_back),
-                            contentDescription = null,
-                        )
-                    }
-                },
-                actions = {
-                    TextButton(onClick = { isEditing = !isEditing }) {
-                        Text(
-                            text = stringResource(
-                                id = if (isEditing) {
-                                    R.string.manage_gamblers_done_action
-                                } else {
-                                    R.string.manage_gamblers_edit_action
-                                },
-                            ),
-                            color = if (isEditing) {
-                                MaterialTheme.colorScheme.secondary
-                            } else {
-                                MaterialTheme.colorScheme.primary
-                            },
-                            fontWeight = if (isEditing) FontWeight.Bold else FontWeight.Normal,
+                            contentDescription = stringResource(id = SharedR.string.back_action),
                         )
                     }
                 },
             )
         },
     ) { innerPadding ->
-        Box(
+        // The list scrolls under the top app bar and the navigation bar; its content padding
+        // keeps the first and last rows clear of both.
+        ManageGamblersList(
+            lazyMembers = lazyMembers,
+            gamblerCount = gamblerCount,
+            removedGamblerIds = removedGamblerIds,
+            removableRow = { member ->
+                RemovableGamblerRow(
+                    poolId = poolId,
+                    member = member,
+                    registry = viewModel,
+                    removalStores = removalStores,
+                )
+            },
+            onRefresh = viewModel::refresh,
+            contentPadding = innerPadding,
             modifier = Modifier
                 .fillMaxSize()
                 .consumeWindowInsets(innerPadding),
-        ) {
-            // The list scrolls under the top app bar and the navigation bar; its content
-            // padding keeps the first and last rows clear of both.
-            ManageGamblersList(
-                lazyMembers = lazyMembers,
-                isEditing = isEditing,
-                removalStates = removalStates,
-                onRequestRemove = { gamblerPendingRemoval = it },
-                contentPadding = innerPadding,
-                modifier = Modifier.fillMaxSize(),
-            )
-
-            failedGambler?.let { failed ->
-                ManageGamblerErrorBanner(
-                    username = failed.gamblerUsername,
-                    onRetry = { viewModel.remove(failed) },
-                    modifier = Modifier
-                        .align(Alignment.BottomCenter)
-                        .padding(innerPadding)
-                        .padding(LocalBoxSpacing.current.medium),
-                )
-            }
-        }
-    }
-
-    gamblerPendingRemoval?.let { member ->
-        RemoveGamblerConfirmationDialog(
-            username = member.gamblerUsername,
-            onConfirm = {
-                viewModel.remove(member)
-                gamblerPendingRemoval = null
-            },
-            onDismiss = { gamblerPendingRemoval = null },
         )
     }
 }
 
+/**
+ * Plays the error haptic when a gambler joins [failedGamblerIds], wherever their row is. Failures
+ * already present when the screen is composed (after rotation, say) were felt before.
+ */
+@Composable
+private fun FailureHaptics(failedGamblerIds: Set<String>) {
+    val haptics = LocalHapticFeedback.current
+    var feltFailures by remember { mutableStateOf(failedGamblerIds) }
+    LaunchedEffect(failedGamblerIds) {
+        if ((failedGamblerIds - feltFailures).isNotEmpty()) {
+            haptics.performHapticFeedback(HapticFeedbackType.Reject)
+        }
+        feltFailures = failedGamblerIds
+    }
+}
+
+/** Calls [onMembersRefreshed] each time a members reload finishes and its first page is shown. */
+@Composable
+private fun ReportMembersRefreshed(refreshLoadState: PagingLoadState, onMembersRefreshed: () -> Unit) {
+    var isReloading by remember { mutableStateOf(false) }
+    LaunchedEffect(refreshLoadState) {
+        when (refreshLoadState) {
+            is PagingLoadState.Loading -> isReloading = true
+            is PagingLoadState.Error -> isReloading = false
+            is PagingLoadState.NotLoading -> {
+                if (isReloading) onMembersRefreshed()
+                isReloading = false
+            }
+        }
+    }
+}
+
+/**
+ * The heading followed by one row per member. The heading scrolls with the rows and starts every
+ * list state (first load, loaded, failed), so the count stays visible whatever the rows do.
+ */
 @Composable
 private fun ManageGamblersList(
     lazyMembers: LazyPagingItems<PoolMemberModel>,
-    isEditing: Boolean,
-    removalStates: Map<String, MutationState<PoolMemberModel>>,
-    onRequestRemove: (PoolMemberModel) -> Unit,
+    gamblerCount: LoadState<Int>,
+    removedGamblerIds: Set<String>,
+    removableRow: @Composable (PoolMemberModel) -> Unit,
+    onRefresh: () -> Unit,
     contentPadding: PaddingValues,
     modifier: Modifier = Modifier,
 ) {
+    val headerItem: LazyListScope.() -> Unit = {
+        item(key = HEADING_KEY, contentType = HEADING_KEY) { ManageGamblersHeader(count = gamblerCount) }
+    }
+
     RefreshableLazyPagingColumn(
         modifier = modifier,
         lazyPagingItems = lazyMembers,
         contentPadding = contentPadding,
-        loadingContent = { managePlaceholderList(count = 8) },
-        emptyContent = {},
+        onRefresh = onRefresh,
+        loadingContent = {
+            headerItem()
+            managePlaceholderList(count = FIRST_LOAD_PLACEHOLDER_COUNT)
+        },
+        errorContent = { exception ->
+            headerItem()
+            lazyPagingColumnError(exception = exception, onRetry = lazyMembers::refresh)
+        },
+        emptyContent = { headerItem() },
         appendLoadingContent = { managePlaceholderItemRow() },
         appendErrorContent = { exception ->
             lazyPagingConcatenateError(
@@ -183,120 +228,246 @@ private fun ManageGamblersList(
             )
         },
     ) {
+        headerItem()
         items(
             count = lazyMembers.itemCount,
             key = lazyMembers.itemKey { member -> member.gamblerId },
-            contentType = lazyMembers.itemContentType { "PoolMember" },
+            contentType = lazyMembers.itemContentType { MEMBER_CONTENT_TYPE },
         ) { index ->
             val member = lazyMembers[index] ?: return@items
-            val state = removalStates[member.gamblerId] ?: MutationState.Idle(member)
-            AnimatedVisibility(
-                visible = state !is MutationState.Mutated,
-                exit = shrinkVertically() + fadeOut(),
-            ) {
+            if (member.isOwner) {
                 ManageGamblerRow(
-                    isEditing = isEditing,
-                    state = state,
-                    onRequestRemove = { onRequestRemove(member) },
+                    state = MutationState.Idle(member),
+                    onRequestRemove = {},
+                    onRetry = {},
+                    onDismissFailure = {},
                 )
+                return@items
             }
+            // A row composed while its gambler is still listed plays its own exit when the
+            // removal lands; one composed after the removal (scrolled back, rotated, re-paged)
+            // draws nothing and creates no removal state.
+            val isRemoved = member.gamblerId in removedGamblerIds
+            val wasListedWhenComposed = remember { !isRemoved }
+            if (wasListedWhenComposed) removableRow(member)
+        }
+        if (holdsOnlyTheOwner(lazyMembers, removedGamblerIds)) {
+            viewportFillingItem { NoOtherGamblers() }
         }
     }
 }
 
 /**
- * One member row. Loading rows pass [isPlaceholder] with `poolMemberPlaceholderModel()`: the row
- * keeps its production padding, background, and divider but offers no swipe, remove control, or
- * accessibility action, and its [ManageGamblerItem] renders the shared loading placeholder.
+ * Whether every member has loaded and, apart from gamblers removed here, only the owner is left.
+ * Never while a page is loading or after a load error.
  */
-@OptIn(ExperimentalMaterial3Api::class)
+private fun holdsOnlyTheOwner(
+    lazyMembers: LazyPagingItems<PoolMemberModel>,
+    removedGamblerIds: Set<String>,
+): Boolean {
+    val loadState = lazyMembers.loadState
+    if (loadState.refresh !is PagingLoadState.NotLoading) return false
+    if (!loadState.append.endOfPaginationReached) return false
+    val remaining = lazyMembers.itemSnapshotList.items.filterNot { member -> member.gamblerId in removedGamblerIds }
+    return remaining.isNotEmpty() && remaining.all { member -> member.isOwner }
+}
+
+/**
+ * The scrolling "Gamblers" heading with the pool's gambler count beneath it. The count line is a
+ * loading placeholder until the count arrives, and is left out when it could not be loaded.
+ */
+@Composable
+private fun ManageGamblersHeader(count: LoadState<Int>, modifier: Modifier = Modifier) {
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(start = HORIZONTAL_PADDING, end = HORIZONTAL_PADDING, bottom = HORIZONTAL_PADDING),
+    ) {
+        Text(
+            text = stringResource(id = R.string.manage_gamblers_title),
+            style = MaterialTheme.typography.headlineLarge.copy(fontWeight = FontWeight.Bold),
+            color = MaterialTheme.colorScheme.onSurface,
+            modifier = Modifier.semantics { heading() },
+        )
+        when (count) {
+            is LoadState.Loaded -> GamblerCountLine(count = count.value)
+            LoadState.Idle, LoadState.Loading -> GamblerCountLine(count = PLACEHOLDER_COUNT, isPlaceholder = true)
+            is LoadState.Failure -> Unit
+        }
+    }
+}
+
+/**
+ * "N gamblers in this pool". With [isPlaceholder] the line is masked with the shared
+ * [LocalLoadingPlaceholderPulse] and hidden from TalkBack; [count] is then filler.
+ */
+@Composable
+private fun GamblerCountLine(count: Int, isPlaceholder: Boolean = false) {
+    val pulse = LocalLoadingPlaceholderPulse.current
+    Text(
+        text = pluralStringResource(id = R.plurals.manage_gamblers_count, count = count, count),
+        style = MaterialTheme.typography.bodyMedium,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        modifier = if (isPlaceholder) {
+            Modifier
+                .placeholder(color = pulse.color, shape = pulse.shape, highlight = pulse.highlight)
+                .clearAndSetSemantics {}
+        } else {
+            Modifier
+        },
+    )
+}
+
+/**
+ * A non-owner row with its own [RemoveGamblerViewModel], kept in [removalStores] under the
+ * gambler's ID so the removal outlives the row leaving composition.
+ */
+@Composable
+private fun RemovableGamblerRow(
+    poolId: String,
+    member: PoolMemberModel,
+    registry: RemovalRegistry,
+    removalStores: ViewModelStoreProvider,
+) {
+    val storeOwner = rememberViewModelStoreOwner(key = member.gamblerId, provider = removalStores)
+    val removal = koinViewModel<RemoveGamblerViewModel>(viewModelStoreOwner = storeOwner) {
+        parametersOf(poolId, member, registry)
+    }
+    val state by removal.state.collectAsStateWithLifecycle()
+    var isConfirming by remember { mutableStateOf(false) }
+
+    AnimatedVisibility(
+        visible = state !is MutationState.Mutated,
+        exit = shrinkVertically() + fadeOut(),
+    ) {
+        ManageGamblerRow(
+            state = state,
+            onRequestRemove = { isConfirming = true },
+            onRetry = removal::retry,
+            onDismissFailure = removal::dismissFailure,
+        )
+    }
+
+    if (isConfirming) {
+        RemoveGamblerConfirmationDialog(
+            username = member.gamblerUsername,
+            onConfirm = {
+                removal.remove()
+                isConfirming = false
+            },
+            onDismiss = { isConfirming = false },
+        )
+    }
+}
+
+/**
+ * One member row with its separator. A non-owner row is removed by swiping it toward the leading
+ * edge or through its TalkBack "Remove" action; both call [onRequestRemove] unless a removal is
+ * running. The owner's row is the current-user row and offers neither.
+ *
+ * Loading rows pass [isPlaceholder] with `poolMemberPlaceholderModel()`: the row keeps its
+ * production padding, background, and divider but offers no swipe or accessibility action, and its
+ * [ManageGamblerItem] renders the shared loading placeholder.
+ */
 @Composable
 private fun ManageGamblerRow(
-    isEditing: Boolean,
     state: MutationState<PoolMemberModel>,
     onRequestRemove: () -> Unit,
+    onRetry: () -> Unit,
+    onDismissFailure: () -> Unit,
     isPlaceholder: Boolean = false,
 ) {
-    val isDeleting = state is MutationState.Mutating
-    val isOwner = state.activeValue().isOwner
-    val isRemovable = !isOwner && !isPlaceholder
-    val removeLabel = stringResource(id = R.string.remove_gambler_action)
-
+    val isOwner = state.activeValue().isOwner && !isPlaceholder
     val rowContent: @Composable () -> Unit = {
-        Row(
+        ManageGamblerItem(
+            state = state,
+            onRetry = onRetry,
+            onDismissFailure = onDismissFailure,
+            isPlaceholder = isPlaceholder,
             modifier = Modifier
-                .fillMaxWidth()
                 .background(
                     if (isOwner) {
-                        MaterialTheme.colorScheme.primaryContainer
+                        LocalExtendedColorScheme.current.currentUserContainer
                     } else {
                         MaterialTheme.colorScheme.surface
                     },
                 )
-                .padding(all = LocalBoxSpacing.current.medium),
-            horizontalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.medium),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            AnimatedVisibility(visible = isEditing && !isDeleting && isRemovable) {
-                Icon(
-                    painter = painterResource(id = SharedR.drawable.remove_circle),
-                    contentDescription = removeLabel,
-                    tint = MaterialTheme.colorScheme.error,
-                    modifier = Modifier.clickable { onRequestRemove() },
-                )
-            }
-
-            ManageGamblerItem(
-                state = state,
-                modifier = Modifier.weight(1f),
-                isPlaceholder = isPlaceholder,
-            )
-        }
+                .padding(horizontal = HORIZONTAL_PADDING, vertical = VERTICAL_PADDING),
+        )
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .then(
-                if (isRemovable) {
-                    Modifier.semantics {
-                        onClick(label = removeLabel) {
-                            if (!isDeleting) onRequestRemove()
-                            true
-                        }
-                    }
-                } else {
-                    Modifier
-                },
-            ),
-    ) {
-        if (isPlaceholder) {
+    Column(modifier = Modifier.fillMaxWidth()) {
+        if (isOwner || isPlaceholder) {
             rowContent()
         } else {
-            val dismissState = rememberSwipeToDismissBoxState(
-                confirmValueChange = { value ->
-                    if (value == SwipeToDismissBoxValue.EndToStart && !isDeleting && isRemovable) {
-                        onRequestRemove()
-                    }
-                    false
-                },
-            )
-
-            SwipeToDismissBox(
-                state = dismissState,
-                enableDismissFromStartToEnd = false,
-                enableDismissFromEndToStart = !isDeleting && isRemovable,
-                backgroundContent = {
-                    ManageGamblerSwipeBackground(
-                        isPastThreshold = dismissState.targetValue == SwipeToDismissBoxValue.EndToStart,
-                    )
-                },
-                content = { rowContent() },
+            SwipeToRemove(
+                isRemoving = state is MutationState.Mutating,
+                onRequestRemove = onRequestRemove,
+                content = rowContent,
             )
         }
-
-        HorizontalDivider()
+        HorizontalDivider(modifier = Modifier.padding(horizontal = HORIZONTAL_PADDING))
     }
+}
+
+/**
+ * Swiping [content] from the trailing edge past [SWIPE_THRESHOLD] (a fixed distance, whatever the
+ * row's width) calls [onRequestRemove] and returns the row to rest; the row's TalkBack "Remove"
+ * action does the same. Neither is offered while [isRemoving].
+ *
+ * The request is made when the finger lifts past the threshold, not when the box settles: a
+ * release without velocity settles on the nearest anchor, so the box alone would only dismiss
+ * past half the row. A dismissal the box does reach only returns the row to rest.
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun SwipeToRemove(
+    isRemoving: Boolean,
+    onRequestRemove: () -> Unit,
+    content: @Composable () -> Unit,
+) {
+    val removeLabel = stringResource(id = R.string.remove_gambler_action)
+    val thresholdPx = with(LocalDensity.current) { SWIPE_THRESHOLD.toPx() }
+    val dismissState = rememberSwipeToDismissBoxState(positionalThreshold = { thresholdPx })
+    val scope = rememberCoroutineScope()
+    val isPastThreshold by remember(dismissState, thresholdPx) {
+        derivedStateOf {
+            // A settled row has no offset to read yet; a dragged one has a real number.
+            dismissState.dismissDirection == SwipeToDismissBoxValue.EndToStart &&
+                -dismissState.requireOffset() >= thresholdPx
+        }
+    }
+    val currentIsRemoving by rememberUpdatedState(isRemoving)
+    val currentOnRequestRemove by rememberUpdatedState(onRequestRemove)
+
+    SwipeToDismissBox(
+        state = dismissState,
+        enableDismissFromStartToEnd = false,
+        enableDismissFromEndToStart = !isRemoving,
+        onDismiss = { scope.launch { dismissState.reset() } },
+        backgroundContent = { ManageGamblerSwipeBackground(isPastThreshold = isPastThreshold) },
+        modifier = Modifier
+            .pointerInput(dismissState) {
+                awaitEachGesture {
+                    awaitFirstDown(requireUnconsumed = false, pass = PointerEventPass.Final)
+                    do {
+                        val event = awaitPointerEvent(pass = PointerEventPass.Final)
+                    } while (event.changes.any { change -> change.pressed })
+                    if (isPastThreshold && !currentIsRemoving) currentOnRequestRemove()
+                }
+            }
+            .semantics {
+                if (!isRemoving) {
+                    customActions = listOf(
+                        CustomAccessibilityAction(label = removeLabel) {
+                            onRequestRemove()
+                            true
+                        },
+                    )
+                }
+            },
+        content = { content() },
+    )
 }
 
 @Composable
@@ -304,16 +475,67 @@ private fun ManageGamblerSwipeBackground(isPastThreshold: Boolean) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.error),
+            // Drawn behind every row; the row's own "Remove" action is what TalkBack offers.
+            .clearAndSetSemantics {}
+            .background(MaterialTheme.colorScheme.error)
+            .padding(end = HORIZONTAL_PADDING),
         contentAlignment = Alignment.CenterEnd,
     ) {
-        Icon(
-            painter = painterResource(id = SharedR.drawable.delete_forever),
-            contentDescription = null,
-            tint = Color.White,
-            modifier = Modifier
-                .padding(end = 26.dp)
-                .size(if (isPastThreshold) 28.dp else 24.dp),
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Box(modifier = Modifier.size(SWIPE_GLYPH_PAST_THRESHOLD_SIZE), contentAlignment = Alignment.Center) {
+                Icon(
+                    painter = painterResource(id = SharedR.drawable.person_remove),
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onError,
+                    modifier = Modifier.size(
+                        if (isPastThreshold) SWIPE_GLYPH_PAST_THRESHOLD_SIZE else SWIPE_GLYPH_SIZE,
+                    ),
+                )
+            }
+            Text(
+                text = stringResource(id = R.string.remove_gambler_action),
+                style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.SemiBold),
+                color = MaterialTheme.colorScheme.onError,
+            )
+        }
+    }
+}
+
+/** Shown below the owner's row when nobody else is in the pool. */
+@Composable
+private fun NoOtherGamblers() {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = EMPTY_STATE_HORIZONTAL_PADDING, vertical = HORIZONTAL_PADDING),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
+        Surface(
+            shape = CircleShape,
+            color = MaterialTheme.colorScheme.surfaceVariant,
+            contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.size(EMPTY_STATE_BADGE_SIZE),
+        ) {
+            Box(contentAlignment = Alignment.Center) {
+                Icon(
+                    painter = painterResource(id = SharedR.drawable.group),
+                    contentDescription = null,
+                    modifier = Modifier.size(EMPTY_STATE_GLYPH_SIZE),
+                )
+            }
+        }
+        Text(
+            text = stringResource(id = R.string.no_other_gamblers_title),
+            style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
+            color = MaterialTheme.colorScheme.onSurface,
+            textAlign = TextAlign.Center,
+        )
+        Text(
+            text = stringResource(id = R.string.no_other_gamblers_message),
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            textAlign = TextAlign.Center,
         )
     }
 }
@@ -323,67 +545,14 @@ private fun LazyListScope.managePlaceholderList(count: Int) {
 }
 
 private fun LazyListScope.managePlaceholderItemRow() {
-    item {
+    item(contentType = MEMBER_CONTENT_TYPE) {
         ManageGamblerRow(
-            isEditing = false,
             state = MutationState.Idle(poolMemberPlaceholderModel()),
             onRequestRemove = {},
+            onRetry = {},
+            onDismissFailure = {},
             isPlaceholder = true,
         )
-    }
-}
-
-@Composable
-private fun ManageGamblerErrorBanner(
-    username: String,
-    onRetry: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    Surface(
-        modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(12.dp),
-        color = MaterialTheme.colorScheme.surface,
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.error.copy(alpha = 0.4f)),
-        shadowElevation = 8.dp,
-    ) {
-        Row(
-            modifier = Modifier.padding(LocalBoxSpacing.current.medium),
-            horizontalArrangement = Arrangement.spacedBy(LocalBoxSpacing.current.medium),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Icon(
-                painter = painterResource(id = SharedR.drawable.error),
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.error,
-            )
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = stringResource(id = R.string.remove_gambler_failure_title, "@$username"),
-                    style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.SemiBold),
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                )
-                Text(
-                    text = stringResource(id = R.string.remove_gambler_failure_message),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    maxLines = 2,
-                )
-            }
-            Button(
-                onClick = onRetry,
-                shape = CircleShape,
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.error,
-                    contentColor = Color.White,
-                ),
-            ) {
-                Text(
-                    text = stringResource(id = SharedR.string.retry_action),
-                    fontWeight = FontWeight.Bold,
-                )
-            }
-        }
     }
 }
 
@@ -413,20 +582,92 @@ private fun RemoveGamblerConfirmationDialog(
     )
 }
 
-@PreviewLightDark
+private const val HEADING_KEY = "manageGamblersHeading"
+private const val MEMBER_CONTENT_TYPE = "PoolMember"
+private const val FIRST_LOAD_PLACEHOLDER_COUNT = 8
+
+/** Filler for the count line's loading placeholder; never shown. */
+private const val PLACEHOLDER_COUNT = 12
+private val HORIZONTAL_PADDING = 16.dp
+private val VERTICAL_PADDING = 12.dp
+private val SWIPE_THRESHOLD = 56.dp
+private val SWIPE_GLYPH_SIZE = 24.dp
+private val SWIPE_GLYPH_PAST_THRESHOLD_SIZE = 28.dp
+private val EMPTY_STATE_HORIZONTAL_PADDING = 32.dp
+private val EMPTY_STATE_BADGE_SIZE = 64.dp
+private val EMPTY_STATE_GLYPH_SIZE = 32.dp
+
+private fun previewMembers() = listOf(
+    PoolMemberModel(gamblerId = "1", gamblerUsername = "felipearpa", gamblerEmail = "felipe@example.com", isOwner = true),
+    PoolMemberModel(gamblerId = "2", gamblerUsername = "jaime", gamblerEmail = "jaime@example.com"),
+    PoolMemberModel(gamblerId = "3", gamblerUsername = "santiago", gamblerEmail = "santiago@example.com"),
+)
+
+private val fullyLoaded = LoadStates(
+    refresh = PagingLoadState.NotLoading(endOfPaginationReached = false),
+    prepend = PagingLoadState.NotLoading(endOfPaginationReached = true),
+    append = PagingLoadState.NotLoading(endOfPaginationReached = true),
+)
+
 @Composable
-private fun ManageGamblerRowPreview() {
-    val member = PoolMemberModel(
-        gamblerId = "1",
-        gamblerUsername = "felipearpa",
-        gamblerEmail = "felipe@example.com",
-    )
+private fun ManageGamblersListPreviewContent(members: List<PoolMemberModel>, count: LoadState<Int>) {
+    val items = MutableStateFlow(PagingData.from(members, sourceLoadStates = fullyLoaded))
+        .collectAsLazyPagingItems()
     TycheTheme {
         Surface {
-            ManageGamblerRow(
-                isEditing = false,
-                state = MutationState.Idle(member),
-                onRequestRemove = {},
+            ManageGamblersList(
+                lazyMembers = items,
+                gamblerCount = count,
+                removedGamblerIds = emptySet(),
+                removableRow = { member ->
+                    ManageGamblerRow(
+                        state = MutationState.Idle(member),
+                        onRequestRemove = {},
+                        onRetry = {},
+                        onDismissFailure = {},
+                    )
+                },
+                onRefresh = {},
+                contentPadding = PaddingValues(0.dp),
+                modifier = Modifier.fillMaxSize(),
+            )
+        }
+    }
+}
+
+@PreviewLightDark
+@Preview(name = "Loaded, Spanish, large text", locale = "es-rCO", fontScale = 2f)
+@Composable
+private fun ManageGamblersListPreview() {
+    ManageGamblersListPreviewContent(members = previewMembers(), count = LoadState.Loaded(3))
+}
+
+@PreviewLightDark
+@Composable
+private fun ManageGamblersOnlyOwnerPreview() {
+    ManageGamblersListPreviewContent(members = previewMembers().take(1), count = LoadState.Loaded(1))
+}
+
+@PreviewLightDark
+@Composable
+private fun ManageGamblersFirstLoadPreview() {
+    val loading = LoadStates(
+        refresh = PagingLoadState.Loading,
+        prepend = PagingLoadState.NotLoading(endOfPaginationReached = false),
+        append = PagingLoadState.NotLoading(endOfPaginationReached = false),
+    )
+    val items = MutableStateFlow(PagingData.empty<PoolMemberModel>(sourceLoadStates = loading))
+        .collectAsLazyPagingItems()
+    TycheTheme {
+        Surface {
+            ManageGamblersList(
+                lazyMembers = items,
+                gamblerCount = LoadState.Loading,
+                removedGamblerIds = emptySet(),
+                removableRow = {},
+                onRefresh = {},
+                contentPadding = PaddingValues(0.dp),
+                modifier = Modifier.fillMaxSize(),
             )
         }
     }
@@ -434,38 +675,38 @@ private fun ManageGamblerRowPreview() {
 
 @PreviewLightDark
 @Composable
-private fun ManageGamblerRowEditingPreview() {
-    val member = PoolMemberModel(
-        gamblerId = "1",
-        gamblerUsername = "felipearpa",
-        gamblerEmail = "felipe@example.com",
-    )
+private fun ManageGamblersHeaderLoadedPreview() {
     TycheTheme {
-        Surface {
-            ManageGamblerRow(
-                isEditing = true,
-                state = MutationState.Idle(member),
-                onRequestRemove = {},
-            )
-        }
+        Surface { ManageGamblersHeader(count = LoadState.Loaded(3)) }
+    }
+}
+
+@PreviewLightDark
+@Composable
+private fun ManageGamblersHeaderPlaceholderPreview() {
+    TycheTheme {
+        Surface { ManageGamblersHeader(count = LoadState.Loading) }
+    }
+}
+
+@PreviewLightDark
+@Composable
+private fun ManageGamblersHeaderOmittedCountPreview() {
+    TycheTheme {
+        Surface { ManageGamblersHeader(count = LoadState.Failure(UnknownLocalizedException())) }
     }
 }
 
 @PreviewLightDark
 @Composable
 private fun ManageGamblerOwnerRowPreview() {
-    val owner = PoolMemberModel(
-        gamblerId = "1",
-        gamblerUsername = "felipearpa",
-        gamblerEmail = "felipe@example.com",
-        isOwner = true,
-    )
     TycheTheme {
         Surface {
             ManageGamblerRow(
-                isEditing = true,
-                state = MutationState.Idle(owner),
+                state = MutationState.Idle(previewMembers().first()),
                 onRequestRemove = {},
+                onRetry = {},
+                onDismissFailure = {},
             )
         }
     }
@@ -473,12 +714,31 @@ private fun ManageGamblerOwnerRowPreview() {
 
 @PreviewLightDark
 @Composable
-private fun ManageGamblerErrorBannerPreview() {
+private fun ManageGamblerFailedRowPreview() {
+    val member = previewMembers().last()
     TycheTheme {
         Surface {
-            ManageGamblerErrorBanner(
-                username = "felipearpa",
+            ManageGamblerRow(
+                state = MutationState.Failure(original = member, updated = member, exception = UnknownLocalizedException()),
+                onRequestRemove = {},
                 onRetry = {},
+                onDismissFailure = {},
+            )
+        }
+    }
+}
+
+@PreviewLightDark
+@Composable
+private fun ManageGamblerPlaceholderRowPreview() {
+    TycheTheme {
+        Surface {
+            ManageGamblerRow(
+                state = MutationState.Idle(poolMemberPlaceholderModel()),
+                onRequestRemove = {},
+                onRetry = {},
+                onDismissFailure = {},
+                isPlaceholder = true,
             )
         }
     }
@@ -498,23 +758,20 @@ private fun RemoveGamblerConfirmationDialogPreview() {
 
 @PreviewLightDark
 @Composable
-private fun ManageGamblerPlaceholderRowPreview() {
+private fun ManageGamblerSwipeBackgroundPreview() {
     TycheTheme {
-        Surface {
-            ManageGamblerRow(
-                isEditing = false,
-                state = MutationState.Idle(poolMemberPlaceholderModel()),
-                onRequestRemove = {},
-                isPlaceholder = true,
-            )
+        Box(modifier = Modifier.size(width = 120.dp, height = 64.dp)) {
+            ManageGamblerSwipeBackground(isPastThreshold = false)
         }
     }
 }
 
 @PreviewLightDark
 @Composable
-private fun ManageGamblerSwipeBackgroundPreview() {
+private fun ManageGamblerSwipeBackgroundPastThresholdPreview() {
     TycheTheme {
-        ManageGamblerSwipeBackground(isPastThreshold = false)
+        Box(modifier = Modifier.size(width = 120.dp, height = 64.dp)) {
+            ManageGamblerSwipeBackground(isPastThreshold = true)
+        }
     }
 }
