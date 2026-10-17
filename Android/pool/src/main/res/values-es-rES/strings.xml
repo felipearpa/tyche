@@ -22,13 +22,21 @@
     <string name="pool_already_joined_error_description">Ya estás en esta quiniela</string>
     <string name="pool_already_joined_failure_reason">Parece que ya te uniste antes</string>
     <string name="pool_already_joined_recovery_suggestion">Ábrela desde “Mis quinielas” para empezar a jugar</string>
-    <string name="manage_gamblers_edit_action">Editar</string>
-    <string name="manage_gamblers_done_action">Listo</string>
+    <string name="manage_gamblers_title">Jugadores</string>
+    <plurals name="manage_gamblers_count">
+        <item quantity="one">%1$d jugador en esta quiniela</item>
+        <item quantity="many">%1$d jugadores en esta quiniela</item>
+        <item quantity="other">%1$d jugadores en esta quiniela</item>
+    </plurals>
+    <string name="manage_gamblers_you_label">Tú</string>
+    <string name="manage_gamblers_owner_label">Dueño</string>
     <string name="remove_gambler_action">Eliminar</string>
     <string name="remove_gambler_alert_title">¿Eliminar a %1$s de esta quiniela?</string>
     <string name="remove_gambler_alert_message">Esto eliminará a este jugador de la quiniela. Esta acción no se puede deshacer.</string>
-    <string name="remove_gambler_failure_title">No se pudo eliminar a %1$s</string>
-    <string name="remove_gambler_failure_message">Comprueba tu conexión e inténtalo de nuevo.</string>
+    <string name="remove_gambler_failure_text">No se pudo eliminar</string>
+    <string name="remove_gambler_failure_announcement">No se pudo eliminar a %1$s</string>
+    <string name="retry_remove_gambler_action">Reintentar eliminar a %1$s</string>
+    <string name="dismiss_remove_gambler_failure_action">Descartar, no se pudo eliminar a %1$s</string>
     <string name="no_other_gamblers_title">Aún no hay otros jugadores</string>
     <string name="no_other_gamblers_message">Cuando alguien se una a esta quiniela, podrás gestionarlos desde aquí.</string>
     <string name="invite_gamblers_action">Invitar jugadores</string>

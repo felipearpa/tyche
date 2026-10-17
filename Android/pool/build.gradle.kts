@@ -61,6 +61,7 @@ dependencies {
     implementation(libs.constraint.layout.compose)
     implementation(platform(libs.koin.bom))
     implementation(libs.koin.compose.viewmodel)
+    implementation(libs.lifecycle.viewmodel.compose)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.kotlinx.datetime)
     implementation(libs.felipearpa.foundation)
