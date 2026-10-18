@@ -1,6 +1,7 @@
 package com.felipearpa.tyche.pool.managegamblers
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
@@ -61,9 +62,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.ViewModelStoreProvider
-import androidx.lifecycle.viewmodel.compose.rememberViewModelStoreOwner
-import androidx.lifecycle.viewmodel.compose.rememberViewModelStoreProvider
 import androidx.paging.LoadStates
 import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
@@ -85,8 +83,6 @@ import com.felipearpa.ui.state.activeValue
 import com.revenuecat.placeholder.placeholder
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
-import org.koin.compose.viewmodel.koinViewModel
-import org.koin.core.parameter.parametersOf
 import androidx.paging.LoadState as PagingLoadState
 import com.felipearpa.tyche.ui.R as SharedR
 
@@ -102,15 +98,8 @@ fun ManageGamblersView(
     val lazyMembers = viewModel.poolMembers.collectAsLazyPagingItems()
     val removedGamblerIds by viewModel.removedGamblerIds.collectAsStateWithLifecycle()
     val gamblerCount by viewModel.gamblerCount.collectAsStateWithLifecycle()
-    // One store per gambler row, kept while the row scrolls away and across rotation; the
-    // navigation entry's disposal clears whatever is left.
-    val removalStores = rememberViewModelStoreProvider()
+    val rowHolders by viewModel.rowHolders.collectAsStateWithLifecycle()
 
-    // A removed row's store is released once its row leaves composition (immediately when it
-    // already has); the ID stays in the set so the cached pages cannot bring the row back.
-    LaunchedEffect(removedGamblerIds) {
-        removedGamblerIds.forEach(removalStores::clearKey)
-    }
     FailureHaptics(failedGamblerIds = viewModel.failedGamblerIds.collectAsStateWithLifecycle().value)
     ReportMembersRefreshed(
         refreshLoadState = lazyMembers.loadState.refresh,
@@ -141,10 +130,10 @@ fun ManageGamblersView(
             removedGamblerIds = removedGamblerIds,
             removableRow = { member ->
                 RemovableGamblerRow(
-                    poolId = poolId,
                     member = member,
-                    registry = viewModel,
-                    removalStores = removalStores,
+                    holder = rowHolders[member.gamblerId],
+                    isRemoved = member.gamblerId in removedGamblerIds,
+                    onRemove = { viewModel.remove(member) },
                 )
             },
             onRefresh = viewModel::refresh,
@@ -319,32 +308,33 @@ private fun GamblerCountLine(count: Int, isPlaceholder: Boolean = false) {
 }
 
 /**
- * A non-owner row with its own [RemoveGamblerViewModel], kept in [removalStores] under the
- * gambler's ID so the removal outlives the row leaving composition.
+ * A non-owner row. Its removal state comes from [holder], which the screen's view model keeps so
+ * the removal outlives the row leaving composition; a row without a holder is idle, or removed when
+ * [isRemoved]. Once the row has started its exit it stays hidden, even after the gambler leaves the
+ * removed set.
  */
 @Composable
 private fun RemovableGamblerRow(
-    poolId: String,
     member: PoolMemberModel,
-    registry: RemovalRegistry,
-    removalStores: ViewModelStoreProvider,
+    holder: GamblerRowHolder?,
+    isRemoved: Boolean,
+    onRemove: () -> Unit,
 ) {
-    val storeOwner = rememberViewModelStoreOwner(key = member.gamblerId, provider = removalStores)
-    val removal = koinViewModel<RemoveGamblerViewModel>(viewModelStoreOwner = storeOwner) {
-        parametersOf(poolId, member, registry)
-    }
-    val state by removal.state.collectAsStateWithLifecycle()
+    val state = holder?.removal?.collectAsStateWithLifecycle()?.value
+        ?: if (isRemoved) MutationState.Mutated(original = member, updated = member) else MutationState.Idle(member)
     var isConfirming by remember { mutableStateOf(false) }
+    val visibility = remember { MutableTransitionState(initialState = true) }
+    if (state is MutationState.Mutated) visibility.targetState = false
 
     AnimatedVisibility(
-        visible = state !is MutationState.Mutated,
+        visibleState = visibility,
         exit = shrinkVertically() + fadeOut(),
     ) {
         ManageGamblerRow(
             state = state,
             onRequestRemove = { isConfirming = true },
-            onRetry = removal::retry,
-            onDismissFailure = removal::dismissFailure,
+            onRetry = { holder?.retry() },
+            onDismissFailure = { holder?.dismissFailure() },
         )
     }
 
@@ -352,7 +342,7 @@ private fun RemovableGamblerRow(
         RemoveGamblerConfirmationDialog(
             username = member.gamblerUsername,
             onConfirm = {
-                removal.remove()
+                onRemove()
                 isConfirming = false
             },
             onDismiss = { isConfirming = false },

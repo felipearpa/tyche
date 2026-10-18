@@ -8,8 +8,10 @@ import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.felipearpa.tyche.data.pool.application.GetPool
 import com.felipearpa.tyche.data.pool.application.GetPoolMembers
+import com.felipearpa.tyche.data.pool.application.RemoveGambler
 import com.felipearpa.tyche.ui.exception.orDefaultLocalized
 import com.felipearpa.ui.state.LoadState
+import com.felipearpa.ui.state.MutationState
 import com.felipearpa.ui.state.map
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -28,7 +30,8 @@ class ManageGamblersViewModel(
     private val poolId: String,
     private val getPoolMembers: GetPoolMembers,
     private val getPool: GetPool,
-) : ViewModel(), RemovalRegistry {
+    private val removeGambler: RemoveGambler,
+) : ViewModel() {
 
     val pageSize = PAGE_SIZE
 
@@ -40,11 +43,22 @@ class ManageGamblersViewModel(
             initialValue = PagingData.empty(),
         )
 
+    private val _rowHolders = MutableStateFlow<Map<String, GamblerRowHolder>>(emptyMap())
+
+    /**
+     * One holder per gambler the owner acted on, keyed by gambler ID. Rows without a holder are
+     * idle. A holder is dropped once its work is done: when the removal succeeds, when a failure is
+     * dismissed, and, for failures, on [refresh].
+     */
+    val rowHolders: StateFlow<Map<String, GamblerRowHolder>> = _rowHolders.asStateFlow()
+
+    private val outcomes = RowOutcomes()
+
     private val _removedGamblerIds = MutableStateFlow<Set<String>>(emptySet())
     val removedGamblerIds: StateFlow<Set<String>> = _removedGamblerIds.asStateFlow()
 
     private val _failedGamblerIds = MutableStateFlow<Set<String>>(emptySet())
-    override val failedGamblerIds: StateFlow<Set<String>> = _failedGamblerIds.asStateFlow()
+    val failedGamblerIds: StateFlow<Set<String>> = _failedGamblerIds.asStateFlow()
 
     private val fetchedCount = MutableStateFlow(FetchedCount(state = LoadState.Loading, reflectedRemovals = emptySet()))
     private var countJob: Job? = null
@@ -89,13 +103,25 @@ class ManageGamblersViewModel(
             },
         )
 
+    /** The holder of [gamblerId]'s row, or `null` while the owner has not acted on it. */
+    fun rowHolder(gamblerId: String): GamblerRowHolder? = _rowHolders.value[gamblerId]
+
+    /** Starts (or, from a failure, restarts) the confirmed removal of [member]. */
+    fun remove(member: PoolMemberModel) {
+        holder(member).remove()
+    }
+
     /**
      * Called with a pull-to-refresh, alongside the members' own refresh: returns every failed row to
-     * idle and requests the count again. Removed gamblers stay hidden until [onMembersRefreshed]
-     * reports that the refreshed members, which no longer contain them, are shown.
+     * idle and requests the count again. In-flight removals keep their holders. Removed gamblers stay
+     * hidden until [onMembersRefreshed] reports that the refreshed members, which no longer contain
+     * them, are shown.
      */
     fun refresh() {
-        _failedGamblerIds.value.forEach(::clearFailed)
+        _rowHolders.update { holders ->
+            holders.filterValues { holder -> holder.removal.value !is MutationState.Failure }
+        }
+        _failedGamblerIds.value = emptySet()
         removalsBeforeRefresh = _removedGamblerIds.value
         loadGamblerCount()
     }
@@ -107,17 +133,18 @@ class ManageGamblersViewModel(
         _removedGamblerIds.update { ids -> ids - removals }
     }
 
-    override fun markRemoved(gamblerId: String) {
-        _failedGamblerIds.update { ids -> ids - gamblerId }
-        _removedGamblerIds.update { ids -> ids + gamblerId }
-    }
+    private fun holder(member: PoolMemberModel): GamblerRowHolder {
+        _rowHolders.value[member.gamblerId]?.let { holder -> return holder }
 
-    override fun markFailed(gamblerId: String) {
-        _failedGamblerIds.update { ids -> ids + gamblerId }
-    }
-
-    override fun clearFailed(gamblerId: String) {
-        _failedGamblerIds.update { ids -> ids - gamblerId }
+        val holder = GamblerRowHolder(
+            member = member,
+            poolId = poolId,
+            removeGambler = removeGambler,
+            scope = viewModelScope,
+            outcomes = outcomes,
+        )
+        _rowHolders.update { holders -> holders + (member.gamblerId to holder) }
+        return holder
     }
 
     private fun loadGamblerCount() {
@@ -138,6 +165,28 @@ class ManageGamblersViewModel(
 
     private fun shownCount(fetched: FetchedCount, removedIds: Set<String>): LoadState<Int> =
         fetched.state.map { count -> count - (removedIds - fetched.reflectedRemovals).size }
+
+    private inner class RowOutcomes : GamblerRowOutcomes {
+        override fun removed(gamblerId: String) {
+            _failedGamblerIds.update { ids -> ids - gamblerId }
+            _removedGamblerIds.update { ids -> ids + gamblerId }
+            // The view renders a removed gambler without a holder as removed, so the exit
+            // animation needs nothing from the holder.
+            _rowHolders.update { holders -> holders - gamblerId }
+        }
+
+        override fun failed(gamblerId: String) {
+            _failedGamblerIds.update { ids -> ids + gamblerId }
+        }
+
+        override fun failureCleared(gamblerId: String) {
+            _failedGamblerIds.update { ids -> ids - gamblerId }
+            // A retry leaves the holder removing; only a dismissed failure has no work left.
+            _rowHolders.update { holders ->
+                if (holders[gamblerId]?.removal?.value is MutationState.Idle) holders - gamblerId else holders
+            }
+        }
+    }
 
     /** A count answer and the removals the server had already applied when it was requested. */
     private data class FetchedCount(
