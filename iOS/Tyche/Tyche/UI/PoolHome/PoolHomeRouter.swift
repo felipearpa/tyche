@@ -226,6 +226,7 @@ private struct PoolHomeDestinations: ViewModifier {
                     viewModel: ManageGamblersListViewModel(
                         getPoolMembersUseCase: diResolver.resolve(GetPoolMembersUseCase.self)!,
                         removeGamblerUseCase: diResolver.resolve(RemoveGamblerUseCase.self)!,
+                        getPoolUseCase: diResolver.resolve(GetPoolUseCase.self)!,
                         poolId: route.poolId
                     )
                 )

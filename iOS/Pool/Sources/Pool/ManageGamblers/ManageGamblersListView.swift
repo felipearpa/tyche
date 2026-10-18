@@ -6,10 +6,7 @@ import DataPool
 public struct ManageGamblersListView: View {
     @StateObject private var viewModel: ManageGamblersListViewModel
 
-    @State private var isEditing = false
     @State private var gamblerPendingRemoval: PoolMemberModel?
-
-    @Environment(\.boxSpacing) private var boxSpacing
 
     public init(
         viewModel: @autoclosure @escaping () -> ManageGamblersListViewModel
@@ -20,21 +17,14 @@ public struct ManageGamblersListView: View {
     public var body: some View {
         ManageGamblersList(
             lazyPagingItems: viewModel.lazyPager,
-            isEditing: isEditing,
-            mutationState: { viewModel.mutationState(for: $0) },
-            onRequestRemove: { gamblerPendingRemoval = $0 }
+            gamblerCount: viewModel.shownGamblerCount,
+            rowHolder: { viewModel.rowHolders[$0.gamblerId] },
+            isRemoved: { viewModel.removedGamblerIds.contains($0.gamblerId) },
+            onRequestRemove: { gamblerPendingRemoval = $0 },
+            onRefresh: { await viewModel.refresh() }
         )
-        .padding(.vertical, boxSpacing.medium)
+        // The heading is the list's first row, so the bar carries only Back.
         .navigationBarTitleDisplayMode(.inline)
-        .toolbar {
-            ToolbarItem(placement: .topBarTrailing) {
-                Button(action: { withAnimation { isEditing.toggle() } }) {
-                    Text(isEditing ? .manageGamblersDoneAction : .manageGamblersEditAction)
-                        .fontWeight(isEditing ? .bold : .regular)
-                        .foregroundStyle(isEditing ? Color.brandAccent : Color.accentColor)
-                }
-            }
-        }
         .alert(
             removalAlertTitle,
             isPresented: Binding(
@@ -57,17 +47,6 @@ public struct ManageGamblersListView: View {
         } message: { _ in
             Text(.removeGamblerAlertMessage)
         }
-        .overlay(alignment: .bottom) {
-            if let failed = viewModel.failedGambler {
-                ManageGamblerErrorBanner(
-                    username: failed.gamblerUsername,
-                    onRetry: { viewModel.remove(failed) }
-                )
-                .padding(boxSpacing.medium)
-                .transition(.move(edge: .bottom).combined(with: .opacity))
-            }
-        }
-        .animation(.spring(response: 0.3), value: viewModel.failedGambler?.id)
     }
 
     private var removalAlertTitle: String {

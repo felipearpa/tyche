@@ -1,9 +1,32 @@
 import SwiftUI
 
+/// How far a `SwipeToDismissBox` row must be dragged before releasing it confirms the swipe.
+public enum SwipeToDismissThreshold: Equatable, Sendable {
+    /// A fraction of the row's width, so wider rows need a longer drag.
+    case fraction(CGFloat)
+    /// A fixed drag distance in points, independent of the row's width.
+    case distance(CGFloat)
+
+    /// The drag distance, in points, at which a row of `rowWidth` confirms. Never less than 1 pt.
+    func distance(forRowWidth rowWidth: CGFloat) -> CGFloat {
+        switch self {
+        case .fraction(let fraction):
+            return max(rowWidth * fraction, 1)
+        case .distance(let distance):
+            return max(distance, 1)
+        }
+    }
+
+    /// Whether releasing after dragging `dragDistance` points on a row of `rowWidth` confirms.
+    func isCrossed(byDragDistance dragDistance: CGFloat, rowWidth: CGFloat) -> Bool {
+        dragDistance >= distance(forRowWidth: rowWidth)
+    }
+}
+
 /// A swipe-to-dismiss container mirroring the Android Material3 `SwipeToDismissBox` API shape.
 ///
 /// The `content` row translates horizontally as the user drags over the `background` slot. Releasing
-/// past `thresholdFraction` of the row's width invokes `onConfirm` (e.g. to open a confirmation
+/// past `threshold` (by default 35 % of the row's width) invokes `onConfirm` (e.g. to open a confirmation
 /// prompt) — it never performs the destructive action directly — and then animates the row back to
 /// rest. Releasing under the threshold snaps back with no side effect.
 ///
@@ -11,7 +34,7 @@ import SwiftUI
 /// the swipe is currently `isPastThreshold`, so the destructive affordance can track the gesture and
 /// react once the commit threshold is crossed.
 public struct SwipeToDismissBox<Background: View, Content: View>: View {
-    private let thresholdFraction: CGFloat
+    private let thresholdRule: SwipeToDismissThreshold
     private let isEnabled: Bool
     private let onConfirm: () -> Void
     private let background: (_ progress: Double, _ isPastThreshold: Bool) -> Background
@@ -21,13 +44,13 @@ public struct SwipeToDismissBox<Background: View, Content: View>: View {
     @State private var width: CGFloat = 0
 
     public init(
-        thresholdFraction: CGFloat = 0.35,
+        threshold: SwipeToDismissThreshold = .fraction(0.35),
         isEnabled: Bool = true,
         onConfirm: @escaping () -> Void,
         @ViewBuilder background: @escaping (_ progress: Double, _ isPastThreshold: Bool) -> Background,
         @ViewBuilder content: @escaping () -> Content
     ) {
-        self.thresholdFraction = thresholdFraction
+        self.thresholdRule = threshold
         self.isEnabled = isEnabled
         self.onConfirm = onConfirm
         self.background = background
@@ -35,7 +58,7 @@ public struct SwipeToDismissBox<Background: View, Content: View>: View {
     }
 
     private var threshold: CGFloat {
-        max(width * thresholdFraction, 1)
+        thresholdRule.distance(forRowWidth: width)
     }
 
     private var progress: Double {
@@ -44,7 +67,7 @@ public struct SwipeToDismissBox<Background: View, Content: View>: View {
     }
 
     private var isPastThreshold: Bool {
-        -offsetX >= threshold
+        thresholdRule.isCrossed(byDragDistance: -offsetX, rowWidth: width)
     }
 
     public var body: some View {
