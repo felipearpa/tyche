@@ -5,7 +5,6 @@ import com.felipearpa.tyche.pool.creator.StepOneViewModel
 import com.felipearpa.tyche.pool.gamblerscore.GamblerScoreListViewModel
 import com.felipearpa.tyche.pool.joiner.PoolJoinerViewModel
 import com.felipearpa.tyche.pool.managegamblers.ManageGamblersViewModel
-import com.felipearpa.tyche.pool.managegamblers.RemoveGamblerViewModel
 import com.felipearpa.tyche.pool.poolscore.PoolScoreListViewModel
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
@@ -43,15 +42,7 @@ val poolViewModelModule = module {
             poolId = params.get(),
             getPoolMembers = get(),
             getPool = get(),
-        )
-    }
-
-    viewModel { params ->
-        RemoveGamblerViewModel(
-            poolId = params.get(),
-            member = params.get(),
             removeGambler = get(),
-            registry = params.get(),
         )
     }
 }
