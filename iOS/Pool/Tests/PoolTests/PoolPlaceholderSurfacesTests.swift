@@ -7,7 +7,7 @@ import UI
 @testable import Pool
 
 /// `isPlaceholder` alone decides whether My pools rows, pool templates, and Manage gamblers rows
-/// are inert, mirroring the paths explored on the iOS 18.1 simulator: while those lists load,
+/// and count line are inert, mirroring the paths explored on the iOS 18.1 simulator: while those lists load,
 /// tapping a placeholder row or its invite control does nothing and the rows are skipped by
 /// assistive technology; once real rows arrive, they open, invite, and announce again.
 @MainActor
@@ -111,7 +111,7 @@ struct PoolPlaceholderSurfacesTests {
     }
 
     @Test
-    func loadedMemberRestoresItsEmailAvatar() throws {
+    func loadedMemberRequestsItsAccountPhoto() throws {
         let item = ManageGamblerItem(
             state: .idle(
                 PoolMemberModel(
@@ -119,11 +119,45 @@ struct PoolPlaceholderSurfacesTests {
                     gamblerUsername: "danielsanto",
                     gamblerEmail: "daniel@example.com"
                 )
-            )
+            ),
+            onRequestRemove: {},
+            onRetry: {},
+            onDismissFailure: {}
         )
 
-        _ = try item.inspect().find(EmailAvatar.self)
-        #expect(throws: (any Error).self) { try item.inspect().find(AccountAvatar.self) }
+        let avatar = try item.inspect().find(AccountAvatar.self).actualView()
+        #expect(!avatar.isPlaceholder)
+        #expect(avatar.loadsPhoto)
+    }
+
+    @Test
+    func loadingCountLineIsAProductionPlaceholderHiddenFromVoiceOver() throws {
+        let header = try ManageGamblersHeader(count: .loading).inspect()
+
+        let countLine = try header.find(ManageGamblersCountLine.self)
+        #expect(try countLine.actualView().isPlaceholder)
+        #expect(try countLine.find(ViewType.Group.self).accessibilityHidden())
+        // The heading itself is never a placeholder.
+        #expect((try? header.find(text: "Gamblers").accessibilityHidden()) != true)
+    }
+
+    @Test
+    func loadedCountLineShowsTheCountToVoiceOver() throws {
+        let header = try ManageGamblersHeader(count: .loaded(3)).inspect()
+
+        let countLine = try header.find(ManageGamblersCountLine.self)
+        #expect(!(try countLine.actualView().isPlaceholder))
+        #expect(!(try countLine.find(ViewType.Group.self).accessibilityHidden()))
+        _ = try countLine.find(text: "3 gamblers in this pool")
+    }
+
+    @Test
+    func failedOrMissingCountLeavesTheLineOut() throws {
+        let failed = try ManageGamblersHeader(count: .failure(RemovalFailure())).inspect()
+        let missing = try ManageGamblersHeader(count: .loaded(nil)).inspect()
+
+        #expect(throws: (any Error).self) { try failed.find(ManageGamblersCountLine.self) }
+        #expect(throws: (any Error).self) { try missing.find(ManageGamblersCountLine.self) }
     }
 
     /// The `Group` at the root of each component's `body`, which carries its hit-testing and

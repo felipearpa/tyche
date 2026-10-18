@@ -15,6 +15,9 @@ public extension SharedColorResource  {
     static let secondaryContainer = SharedColorResource(.secondaryContainer)
     static let onSecondaryContainer = SharedColorResource(.onSecondaryContainer)
     static let error = SharedColorResource(.error)
+    /// Content on an `error` fill: white in light mode, near-black in dark mode, where white on the
+    /// lighter dark `error` is 3.6:1 and `#1E1E1E` is 4.6:1.
+    static let onError = SharedColorResource(.onError)
     static let surfaceVariant = SharedColorResource(.surfaceVariant)
     static let onSurfaceVariant = SharedColorResource(.onSurfaceVariant)
     static let surface = SharedColorResource(.surface)

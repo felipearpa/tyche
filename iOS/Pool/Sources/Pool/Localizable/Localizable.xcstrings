@@ -47,6 +47,30 @@
         }
       }
     },
+    "dismiss_remove_gambler_failure_action" : {
+      "comment" : "Accessibility label of the dismiss (✕) button on a failed row. Argument: @username.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dismiss, couldn’t remove %@"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Descartar, no se pudo eliminar a %@"
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Descartar, no se pudo eliminar a %@"
+          }
+        }
+      }
+    },
     "fill_pool_fields_title" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -442,48 +466,176 @@
         }
       }
     },
-    "manage_gamblers_done_action" : {
+    "manage_gamblers_count" : {
+      "comment" : "Count line under the Manage gamblers heading. Argument: number of gamblers in the pool.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Done"
+            "value" : "%#@gamblers@ in this pool"
+          },
+          "substitutions" : {
+            "gamblers" : {
+              "argNum" : 1,
+              "formatSpecifier" : "lld",
+              "variations" : {
+                "plural" : {
+                  "one" : {
+                    "stringUnit" : {
+                      "state" : "translated",
+                      "value" : "%arg gambler"
+                    }
+                  },
+                  "other" : {
+                    "stringUnit" : {
+                      "state" : "translated",
+                      "value" : "%arg gamblers"
+                    }
+                  }
+                }
+              }
+            }
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Listo"
+            "value" : "%#@gamblers@ en esta polla"
+          },
+          "substitutions" : {
+            "gamblers" : {
+              "argNum" : 1,
+              "formatSpecifier" : "lld",
+              "variations" : {
+                "plural" : {
+                  "many" : {
+                    "stringUnit" : {
+                      "state" : "translated",
+                      "value" : "%arg jugadores"
+                    }
+                  },
+                  "one" : {
+                    "stringUnit" : {
+                      "state" : "translated",
+                      "value" : "%arg jugador"
+                    }
+                  },
+                  "other" : {
+                    "stringUnit" : {
+                      "state" : "translated",
+                      "value" : "%arg jugadores"
+                    }
+                  }
+                }
+              }
+            }
           }
         },
         "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Listo"
+            "value" : "%#@gamblers@ en esta quiniela"
+          },
+          "substitutions" : {
+            "gamblers" : {
+              "argNum" : 1,
+              "formatSpecifier" : "lld",
+              "variations" : {
+                "plural" : {
+                  "many" : {
+                    "stringUnit" : {
+                      "state" : "translated",
+                      "value" : "%arg jugadores"
+                    }
+                  },
+                  "one" : {
+                    "stringUnit" : {
+                      "state" : "translated",
+                      "value" : "%arg jugador"
+                    }
+                  },
+                  "other" : {
+                    "stringUnit" : {
+                      "state" : "translated",
+                      "value" : "%arg jugadores"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
     },
-    "manage_gamblers_edit_action" : {
+    "manage_gamblers_owner_label" : {
+      "comment" : "Pill on the pool owner's row in the Manage gamblers list.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Edit"
+            "value" : "Owner"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Editar"
+            "value" : "Dueño"
           }
         },
         "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Editar"
+            "value" : "Dueño"
+          }
+        }
+      }
+    },
+    "manage_gamblers_title" : {
+      "comment" : "Heading of the Manage gamblers screen.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gamblers"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Jugadores"
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Jugadores"
+          }
+        }
+      }
+    },
+    "manage_gamblers_you_label" : {
+      "comment" : "Marker beside the signed-in owner's username in the Manage gamblers list.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tú"
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tú"
           }
         }
       }
@@ -994,36 +1146,14 @@
         }
       }
     },
-    "remove_gambler_failure_message" : {
+    "remove_gambler_failure_announcement" : {
+      "comment" : "VoiceOver announcement when a removal fails. Argument: @username.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Check your connection and try again."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Comprueba tu conexión e inténtalo de nuevo."
-          }
-        },
-        "es-ES" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Comprueba tu conexión e inténtalo de nuevo."
-          }
-        }
-      }
-    },
-    "remove_gambler_failure_title" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Couldn't remove %@"
+            "value" : "Couldn’t remove %@"
           }
         },
         "es" : {
@@ -1040,25 +1170,50 @@
         }
       }
     },
-    "removing_gambler_text" : {
+    "remove_gambler_failure_text" : {
+      "comment" : "Shown in place of the email on a row whose removal failed.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Removing…"
+            "value" : "Couldn’t remove"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Eliminando…"
+            "value" : "No se pudo eliminar"
           }
         },
         "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Eliminando…"
+            "value" : "No se pudo eliminar"
+          }
+        }
+      }
+    },
+    "removing_gambler_accessibility_value" : {
+      "comment" : "VoiceOver value of a Manage gamblers row while its removal is in flight.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Removing"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Eliminando"
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Eliminando"
           }
         }
       }
@@ -1082,6 +1237,30 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Reintentar"
+          }
+        }
+      }
+    },
+    "retry_remove_gambler_action" : {
+      "comment" : "Accessibility label of the Retry button on a failed row. Argument: @username.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Retry removing %@"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reintentar eliminar a %@"
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reintentar eliminar a %@"
           }
         }
       }

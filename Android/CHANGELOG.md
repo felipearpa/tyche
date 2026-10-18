@@ -19,6 +19,10 @@
 - New Profile screen, reached from the drawer, where you can change your photo and edit your username in one place
 - A live preview shows how you will appear on the leaderboard while you type a new username, with a character counter, and Save turns on only when the name actually changes
 - A new photo shows up everywhere in the app right away, and a username changed on another device catches up on its own
+- Redesigned Gamblers for pool owners: a heading shows how many gamblers are in the pool, every member shows their photo or a colored initial with their name and email, and your own row is marked You and Owner
+- Swipe a gambler to remove them, confirm once, and their row shows the removal in place while you keep using the list, with TalkBack offering a Remove action on each row
+- If a removal fails, the gambler's row says Couldn't remove with Retry and dismiss buttons, so several failures stay visible at once instead of hiding behind one message
+- Gamblers shows loading placeholders while members load, and says No other gamblers yet when you are the only one in the pool
 - Your pool list now shows your points and how many members each pool has, so you can compare pools at a glance
 - Your ranking trend now appears right under your position in the pool list
 - Up, down, and unchanged trend arrows are easier to read in light mode
