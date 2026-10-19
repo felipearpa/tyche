@@ -2,7 +2,6 @@ package com.felipearpa.tyche.bet.di
 
 import com.felipearpa.tyche.bet.finished.FinishedBetListViewModel
 import com.felipearpa.tyche.bet.match.MatchBetListViewModel
-import com.felipearpa.tyche.bet.pending.PendingBetItemViewModel
 import com.felipearpa.tyche.bet.pending.PendingBetListViewModel
 import com.felipearpa.tyche.bet.timeline.BetTimelineListViewModel
 import org.koin.core.module.dsl.viewModel
@@ -14,6 +13,7 @@ val betViewModelModule = module {
             poolId = params.get(),
             gamblerId = params.get(),
             getPendingPoolGamblerBets = get(),
+            placeBet = get(),
         )
     }
 
@@ -43,12 +43,6 @@ val betViewModelModule = module {
             gamblerId = params.get(),
             getGamblerBetsTimeline = get(),
             getPoolGamblerScore = get(),
-        )
-    }
-
-    viewModel {
-        PendingBetItemViewModel(
-            placeBet = get(),
         )
     }
 }

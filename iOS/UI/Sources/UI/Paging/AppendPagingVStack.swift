@@ -92,6 +92,7 @@ public struct AppendPagingVStack<
             guard !Task.isCancelled else { return }
             await lazyPagingItems.refresh()
         }
+        .settlesAtTopEdge()
     }
 
     /// Loaded rows keep their item's identity across pages; an unloaded slot keys on its position.

@@ -12,16 +12,14 @@ import androidx.compose.ui.test.onNodeWithTag
 import com.felipearpa.tyche.bet.match.MatchBetsPresentation
 import com.felipearpa.tyche.bet.match.MatchGamblerBetItem
 import com.felipearpa.tyche.bet.match.MatchHeader
-import com.felipearpa.tyche.bet.pending.PendingBetItem
-import com.felipearpa.tyche.bet.pending.PendingBetItemViewState
-import com.felipearpa.tyche.bet.pending.partialPoolGamblerBetFakeModel
+import com.felipearpa.tyche.bet.pending.PendingBetPlaceholderItem
 import com.felipearpa.tyche.ui.theme.TycheTheme
 import org.junit.Rule
 import org.junit.Test
 
 /**
  * Bet list placeholders are production rows filled with `poolGamblerBetFakeModel()` and
- * rendered with `isPlaceholder = true`. Their filler (runs of "X" for names, 100–100 scores, +10 points) must not
+ * rendered with `isPlaceholder = true`. Their filler (runs of "X" for names, 88–88 or 100–100 scores, +10 points) must not
  * reach a screen reader as if it were a bet, and the rows must not be actionable.
  */
 class BetPlaceholderAccessibilityTest {
@@ -31,12 +29,7 @@ class BetPlaceholderAccessibilityTest {
     @Test
     fun pendingBetPlaceholderExposesNoValuesOrActions() {
         assertInert { modifier ->
-            PendingBetItem(
-                poolGamblerBet = poolGamblerBetFakeModel(),
-                viewState = PendingBetItemViewState.Visualization(partialPoolGamblerBetFakeModel()),
-                modifier = modifier,
-                isPlaceholder = true,
-            )
+            PendingBetPlaceholderItem(modifier = modifier)
         }
     }
 
@@ -73,6 +66,7 @@ class BetPlaceholderAccessibilityTest {
 
         composeTestRule.onAllNodesWithText("X", substring = true).assertCountEquals(0)
         composeTestRule.onAllNodesWithText("100", substring = true).assertCountEquals(0)
+        composeTestRule.onAllNodesWithText("88", substring = true).assertCountEquals(0)
         composeTestRule.onAllNodesWithText("+10", substring = true).assertCountEquals(0)
         composeTestRule.onAllNodesWithText("0", substring = true).assertCountEquals(0)
         composeTestRule.onNodeWithTag(PLACEHOLDER_TAG).assertHasNoClickAction()

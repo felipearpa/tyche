@@ -56,6 +56,7 @@ struct PoolScoreList: View {
                 }
             }
         }
+        .settlesAtTopEdge()
         .fullListStateViewport()
     }
 }

@@ -40,6 +40,7 @@ struct PoolFromLayoutCreatorList: View {
                 )
             }
         }
+        .settlesAtTopEdge()
         .fullListStateViewport()
     }
 }

@@ -56,6 +56,7 @@ struct PoolHomeView<Destinations: ViewModifier>: View {
                         getPoolGamblerBetsUseCase: GetPendingPoolGamblerBetsUseCase(
                             poolGamblerBetRepository: diResolver.resolve(PoolGamblerBetRepository.self)!
                         ),
+                        betUseCase: diResolver.resolve(BetUseCase.self)!,
                         gamblerId: gamblerId,
                         poolId: poolId
                     ),

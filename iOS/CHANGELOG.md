@@ -2,6 +2,15 @@
 
 ## 2.0.0
 
+- Redesigned Bets: matches sit as cards under Today, Tomorrow, weekday, or date headers, each with both flags, the kickoff time, and a pill that reads No bet, Incomplete, Saved, or Locked
+- Type your prediction straight into each team's score box or tap + and − beside it, with focus jumping to the other team after the first digit, so there are no Edit, Save, or Cancel buttons anymore
+- Your prediction saves on its own moments after both scores are in: the card shows a spinner while saving and Saved when done, and you can keep editing without waiting
+- A match with only one score shows an amber Incomplete pill and marks the missing side, and nothing is saved until both scores are in, so a missing score is never filled with 0 for you
+- If a save fails, the card keeps your scores, says Not saved, and offers Retry, so a dropped connection never loses a prediction
+- Filter the list with All, No bet, and Placed chips that count the matches loaded so far, so you can jump straight to the ones still missing a prediction
+- In the last hour before a match locks, its card says Locks in N min, and locked matches show your saved prediction read-only
+- When you type a score, the whole card with its steppers stays visible above the keyboard
+- VoiceOver reads each card's teams, kickoff time, status, and scores, tells you which team's score is needed to save, and reads a count like 2+ as at least 2
 - Add a profile picture: pick a photo or take one, crop it to fit, and it appears in the menu button wherever your account shows
 - Redesigned pool leaderboard: every player shows their photo or a colored initial next to a clearer rank, trend, and score, and your own row is highlighted as You
 - Your rank trend now covers every match that kicks off at the same time, updating as each one is scored and showing how many are in, like 1 of 2, on both the leaderboard and your pool list

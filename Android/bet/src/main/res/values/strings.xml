@@ -2,8 +2,6 @@
 <resources>
     <string name="retry_action">Retry</string>
     <string name="cancel_action">Cancel</string>
-    <string name="forbidden_bet_title">Forbidden bet</string>
-    <string name="forbidden_bet_message">Oops! Betting is currently unavailable</string>
     <string name="match_bets_view_title">Score</string>
     <string name="bet_timeline_view_title">Timeline</string>
     <string name="history_your_bet_label">Your bet</string>
@@ -70,4 +68,36 @@
     </plurals>
     <string name="history_list_changed_title">The list changed</string>
     <string name="history_list_changed_message">Load the list again to see the latest matches.</string>
+    <string name="bets_filter_all">All</string>
+    <string name="bets_filter_no_bet">No bet</string>
+    <string name="bets_filter_placed">Placed</string>
+    <string name="bets_filter_empty_message">Nothing left to bet on right now.</string>
+    <string name="bets_filter_placed_empty_message">You haven\'t placed any bets yet.</string>
+    <string name="bet_status_no_bet">No bet</string>
+    <string name="bet_status_incomplete">Incomplete</string>
+    <string name="bet_status_saved">Saved</string>
+    <string name="bet_status_not_saved">Not saved</string>
+    <string name="bet_status_locked">Locked</string>
+    <string name="bet_saving_accessibility_value">Saving</string>
+    <string name="bet_score_box_missing_accessibility_value">Add %1$s\'s score to save</string>
+    <string name="bet_save_failure_text">Couldn\'t save. Your bet is kept here.</string>
+    <string name="bet_score_box_accessibility">%1$s goals</string>
+    <string name="bet_increase_score_accessibility">One more goal for %1$s</string>
+    <string name="bet_decrease_score_accessibility">One less goal for %1$s</string>
+    <plurals name="bet_locks_in_minutes">
+        <item quantity="one">Locks in %d min</item>
+        <item quantity="other">Locks in %d min</item>
+    </plurals>
+    <string name="bet_score_box_empty_accessibility_value">No score</string>
+    <string name="bet_day_today">Today</string>
+    <string name="bet_day_tomorrow">Tomorrow</string>
+    <string name="bet_day_yesterday">Yesterday</string>
+    <string name="bet_saved_announcement">Bet saved: %1$s %2$d, %3$s %4$d</string>
+    <string name="bet_save_failure_announcement">Couldn\'t save your bet on %1$s versus %2$s</string>
+    <string name="bet_locked_announcement">Betting on %1$s versus %2$s is now closed</string>
+    <string name="bets_filter_count_partial">%1$s+</string>
+    <plurals name="bets_filter_count_at_least_accessibility">
+        <item quantity="one">at least %1$s match</item>
+        <item quantity="other">at least %1$s matches</item>
+    </plurals>
 </resources>

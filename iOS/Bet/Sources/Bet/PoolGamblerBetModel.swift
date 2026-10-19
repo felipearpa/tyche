@@ -20,7 +20,7 @@ struct PoolGamblerBetModel: Codable, Identifiable, Hashable, Sendable {
     let betScore: TeamScore<Int>?
     let score: Int?
     let matchDateTime: Date
-    fileprivate(set) var isLocked: Bool
+    let isLocked: Bool
     let isComputed: Bool
 
     var id: PoolGamblerBetModelId {
@@ -106,24 +106,5 @@ extension PoolGamblerBetModel {
 
     func awayTeamMatchRawValue() -> String {
         if let awayTeamMatch = self.matchScore?.awayTeamValue { String(awayTeamMatch) } else { "" }
-    }
-
-    func homeTeamBetRawValue() -> String {
-        if let homeTeamBet = self.betScore?.homeTeamValue { String(homeTeamBet) } else { "" }
-    }
-    
-    func awayTeamBetRawValue() -> String {
-        if let awayTeamBet = self.betScore?.awayTeamValue { String(awayTeamBet) } else { "" }
-    }
-
-    mutating func lock() {
-        self.isLocked = true
-    }
-
-    func toPartial() -> PartialPoolGamblerBetModel {
-        PartialPoolGamblerBetModel(
-            homeTeamBet: homeTeamBetRawValue(),
-            awayTeamBet: awayTeamBetRawValue()
-        )
     }
 }

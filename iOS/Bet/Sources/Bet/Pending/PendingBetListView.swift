@@ -23,7 +23,7 @@ public struct PendingBetListView: View {
         let _ = Self._printChangesIfDebug()
 
         PendingBetList(
-            lazyPagingItems: viewModel.lazyPager,
+            viewModel: viewModel,
             onMatchOpen: onMatchOpen
         )
     }
@@ -36,6 +36,7 @@ public struct PendingBetListView: View {
                 getPoolGamblerBetsUseCase: GetPendingPoolGamblerBetsUseCase(
                     poolGamblerBetRepository: PoolGamblerBetFakeRepository()
                 ),
+                betUseCase: BetUseCase(poolGamblerBetRepository: PoolGamblerBetFakeRepository()),
                 gamblerId: "gambler-id",
                 poolId: "pool-id"
             )
