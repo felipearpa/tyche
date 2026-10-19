@@ -46,19 +46,19 @@ On iOS and iPadOS 26 and later, navigation bars, tab bars, and ordinary toolbar 
 
 ### Requirement: Content-layer controls use standard materials
 
-App-rendered Liquid Glass SHALL NOT be used as the background of list rows, rank tiles, account or pool summaries, previews, text fields, or inline actions embedded in those content areas. Email and password fields, pool-name fields, username fields, and prediction score fields SHALL use standard theme-aware input styling. Prediction-row edit, save, cancel, and retry controls; pool-row invitation controls; paging-error retry controls within lists; and inline form submit or retry controls SHALL use standard non-glass control styling with their existing semantic emphasis. The material change SHALL preserve visible copy, validation, draft values, selection, focus, submission state, and action routing.
+App-rendered Liquid Glass SHALL NOT be used as the background of list rows, match cards, rank tiles, account or pool summaries, previews, text fields, or inline actions embedded in those content areas. Email and password fields, pool-name fields, username fields, and prediction score boxes SHALL use standard theme-aware input styling. Prediction-card steppers, filter chips, and retry controls; pool-row invitation controls; paging-error retry controls within lists; and inline form submit or retry controls SHALL use standard non-glass control styling with their existing semantic emphasis. The material change SHALL preserve visible copy, validation, draft values, selection, focus, submission state, and action routing.
 
 #### Scenario: Editing a prediction within a list
-- **GIVEN** a prediction is editable
-- **WHEN** the gambler enters edit mode, changes a score, and saves or cancels
-- **THEN** its inputs and row actions use standard non-glass styling
-- **AND** initial focus, numeric input behavior, draft retention during unrelated paging updates, and save or cancel behavior remain unchanged
+- **GIVEN** an open match card is visible
+- **WHEN** the gambler taps a score box, types a score, or taps a stepper
+- **THEN** the score boxes and steppers use standard non-glass styling
+- **AND** focus movement, numeric input behavior, draft retention during unrelated paging updates, and automatic saving follow the `bet-entry` capability
 
 #### Scenario: Retrying a failed prediction
 - **GIVEN** a prediction submission has failed
-- **WHEN** the failure actions are displayed
-- **THEN** retry and cancel remain identifiable and operable without glass backgrounds
-- **AND** retry submits the same pending prediction through the existing retry flow
+- **WHEN** the failure banner is displayed
+- **THEN** the banner and its Retry control are identifiable and operable without glass backgrounds
+- **AND** Retry submits the same scores through the existing retry flow
 
 #### Scenario: Editing and saving a username
 - **GIVEN** the username editor is open with the keyboard visible

@@ -1,0 +1,15 @@
+<!-- Material Symbols "remove" (Outlined, fill 0, weight 400, grade 0, optical size 24, Apache 2.0) from
+     google/material-design-icons commit bd8cb85bd4bad964fe6918f79665bb40c3a8efef,
+     symbols/web/remove/materialsymbolsoutlined/remove_24px.svg. The path data is copied unchanged;
+     the group moves the SVG's viewBox origin (0, -960) to the viewport origin. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="960"
+    android:viewportHeight="960">
+    <group android:translateY="960">
+        <path
+            android:fillColor="#FF000000"
+            android:pathData="M200-440v-80h560v80H200Z" />
+    </group>
+</vector>

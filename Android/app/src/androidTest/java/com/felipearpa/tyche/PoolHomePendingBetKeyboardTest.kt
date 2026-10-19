@@ -3,40 +3,42 @@ package com.felipearpa.tyche
 import android.content.ComponentName
 import androidx.activity.ComponentActivity
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.SemanticsNodeInteraction
 import androidx.compose.ui.test.assertIsDisplayed
-import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.hasScrollToIndexAction
 import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
-import androidx.compose.ui.test.onAllNodesWithText
-import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performSemanticsAction
-import androidx.compose.ui.test.performTextReplacement
+import androidx.compose.ui.test.performTextInput
+import androidx.compose.ui.test.hasClickAction
+import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.unit.toSize
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
-import androidx.paging.PagingData
-import androidx.paging.compose.collectAsLazyPagingItems
-import com.felipearpa.tyche.bet.PoolGamblerBetModel
-import com.felipearpa.tyche.bet.pending.PendingBetList
+import com.felipearpa.tyche.bet.pending.PendingBetListView
+import com.felipearpa.tyche.bet.pending.PendingBetListViewModel
+import com.felipearpa.tyche.core.paging.CursorPage
+import com.felipearpa.tyche.data.bet.application.GetPendingPoolGamblerBets
+import com.felipearpa.tyche.data.bet.application.PlaceBet
+import com.felipearpa.tyche.data.bet.domain.PoolGamblerBet
+import com.felipearpa.tyche.data.bet.domain.PoolGamblerBetRepository
+import com.felipearpa.tyche.data.bet.domain.Bet
+import com.felipearpa.tyche.data.bet.domain.KickoffGroup
+import java.io.IOException
 import com.felipearpa.tyche.poolhome.PoolHomeContent
 import com.felipearpa.tyche.poolhome.Tab
 import com.felipearpa.tyche.ui.theme.TycheTheme
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.datetime.LocalDateTime
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
@@ -47,18 +49,20 @@ import kotlin.math.abs
 import com.felipearpa.tyche.ui.R as SharedR
 
 /**
- * Keyboard regression guard for editing a pending bet on pool home.
+ * Keyboard regression guard for entering a prediction on pool home.
  *
  * Pool home keeps its tab bar at the window's bottom edge, so the keyboard covers it. The
  * pending-bet list must end at the keyboard top rather than at the keyboard top plus the tab
- * bar's height (stacked insets), bring a focused score near the end of the list above the
- * keyboard, keep the bet's Save and Cancel actions reachable, and return to its full height
- * with the draft intact once the keyboard closes.
+ * bar's height (stacked insets), bring the whole card of a focused score near the end of the list
+ * above the keyboard (both score boxes and their steppers), keep it there when focus moves from
+ * the home box to the away box, keep a failed save's Retry reachable, and return to its full
+ * height with the draft intact once the keyboard closes.
  *
  * The window is configured like MainActivity (edge to edge, with its manifest soft-input mode),
- * and the real pool-home scaffold hosts the production pending-bet list. Only the last bet is
- * open for betting, so it is the one edited. Nothing is saved. Keyboard transitions are awaited
- * by condition, never by elapsed time.
+ * and the real pool-home scaffold hosts the production Bets list and view model over a mocked
+ * repository whose saves fail, so nothing reaches a backend. Only the last match is open for
+ * betting, so it is the one edited. Keyboard transitions are awaited by condition, never by
+ * elapsed time.
  */
 class PoolHomePendingBetKeyboardTest {
     @get:Rule
@@ -70,34 +74,29 @@ class PoolHomePendingBetKeyboardTest {
     }
 
     @Test
-    fun withTheKeyboardClosedTheLastBetsActionsEndAboveTheTabs() {
+    fun withTheKeyboardClosedTheLastCardsControlsEndAboveTheTabs() {
         startPoolHome()
 
         scrollListToEnd()
-        val edit = editButton().assertIsDisplayed().bounds()
+        val stepper = lowerStepper(AWAY_TEAM_NAME).assertIsDisplayed().bounds()
 
         assertEquals(windowBottom(), list().bounds().bottom, PIXEL_TOLERANCE)
         assertTrue(
-            "Edit (bottom ${edit.bottom}) must end above the tabs (top ${tabBarTop()})",
-            edit.bottom <= tabBarTop() + PIXEL_TOLERANCE,
+            "The last stepper (bottom ${stepper.bottom}) must end above the tabs (top ${tabBarTop()})",
+            stepper.bottom <= tabBarTop() + PIXEL_TOLERANCE,
         )
     }
 
     @Test
-    fun focusingAScoreNearTheEndRevealsItAboveTheKeyboardWithoutStackingTheTabBar() {
+    fun focusingAScoreNearTheEndRevealsTheWholeCardAboveTheKeyboardWithoutStackingTheTabBar() {
         startPoolHome()
         scrollListToEnd()
         val tabTopBeforeKeyboard = tabBarTop()
-        editButton().performClick()
 
-        awayScoreField().performClick()
+        homeScoreBox().performClick()
         awaitListEndingAtKeyboard(visible = true)
 
-        val field = awayScoreField().bounds()
-        assertTrue(
-            "Focused score (bottom ${field.bottom}) must be above the keyboard (top ${keyboardTop()})",
-            field.top >= 0f && field.bottom <= keyboardTop() + PIXEL_TOLERANCE,
-        )
+        assertCardAboveKeyboard()
         assertEquals(
             "The tabs keep their window-edge position under the keyboard",
             tabTopBeforeKeyboard,
@@ -105,47 +104,62 @@ class PoolHomePendingBetKeyboardTest {
             PIXEL_TOLERANCE,
         )
 
-        enterDraft()
+        homeScoreBox().performTextInput(DRAFT_HOME_SCORE)
+        composeTestRule.waitUntil(timeoutMillis = KEYBOARD_TIMEOUT_MILLIS) { isFocused(awayScoreBox()) }
+        composeTestRule.waitForIdle()
+        assertCardAboveKeyboard()
+    }
+
+    @Test
+    fun aFailedSavesRetryIsReachableAboveTheKeyboard() {
+        startPoolHome()
         scrollListToEnd()
-        for (action in listOf(saveButton(), cancelButton())) {
-            val bounds = action.assertIsDisplayed().assertIsEnabled().bounds()
-            val gap = keyboardTop() - bounds.bottom
-            assertTrue(
-                "An action must end above the keyboard (gap $gap)",
-                gap >= -PIXEL_TOLERANCE,
-            )
-            assertTrue(
-                "The gap above the keyboard ($gap) must not include the tab bar (${tabBarHeight()})",
-                gap < tabBarHeight(),
-            )
-        }
+        homeScoreBox().performClick()
+        awaitListEndingAtKeyboard(visible = true)
+
+        enterDraft()
+        awaitRetry()
+        scrollListToEnd()
+
+        val retry = retryButton().assertIsDisplayed().bounds()
+        val gap = keyboardTop() - retry.bottom
+        assertTrue("Retry must end above the keyboard (gap $gap)", gap >= -PIXEL_TOLERANCE)
+        assertTrue(
+            "The gap above the keyboard ($gap) must not include the tab bar (${tabBarHeight()})",
+            gap < tabBarHeight(),
+        )
     }
 
     @Test
     fun closingTheKeyboardRestoresTheListHeightAndKeepsTheDraft() {
         startPoolHome()
         scrollListToEnd()
-        editButton().performClick()
-        awayScoreField().performClick()
+        homeScoreBox().performClick()
         awaitListEndingAtKeyboard(visible = true)
         enterDraft()
+        awaitRetry()
 
         setKeyboardVisible(false)
         awaitListEndingAtKeyboard(visible = false)
 
-        homeScoreField().assertTextEquals(DRAFT_HOME_SCORE)
-        awayScoreField().assertTextEquals(DRAFT_AWAY_SCORE)
+        homeScoreBox().assertTextEquals(DRAFT_HOME_SCORE)
+        awayScoreBox().assertTextEquals(DRAFT_AWAY_SCORE)
         scrollListToEnd()
-        val save = saveButton().assertIsDisplayed().assertIsEnabled().bounds()
+        val retry = retryButton().assertIsDisplayed().bounds()
         assertTrue(
-            "Save (bottom ${save.bottom}) must end above the tabs (top ${tabBarTop()})",
-            save.bottom <= tabBarTop() + PIXEL_TOLERANCE,
+            "Retry (bottom ${retry.bottom}) must end above the tabs (top ${tabBarTop()})",
+            retry.bottom <= tabBarTop() + PIXEL_TOLERANCE,
         )
     }
 
     @OptIn(ExperimentalMaterial3Api::class)
     private fun startPoolHome() {
-        val bets = MutableStateFlow(PagingData.from(pendingBets()))
+        val viewModel = PendingBetListViewModel(
+            poolId = POOL_ID,
+            gamblerId = GAMBLER_ID,
+            getPendingPoolGamblerBets = GetPendingPoolGamblerBets(failingSaveRepository()),
+            placeBet = PlaceBet(failingSaveRepository()),
+        )
         composeTestRule.setContent {
             TycheTheme {
                 PoolHomeContent(
@@ -158,17 +172,13 @@ class PoolHomePendingBetKeyboardTest {
                     drawerContent = {},
                     isSaving = false,
                     content = { contentPadding ->
-                        PendingBetList(
-                            lazyPoolGamblerBets = bets.collectAsLazyPagingItems(),
-                            contentPadding = contentPadding,
-                            modifier = Modifier.fillMaxSize(),
-                        )
+                        PendingBetListView(viewModel = viewModel, contentPadding = contentPadding)
                     },
                 )
             }
         }
         composeTestRule.waitUntil(timeoutMillis = LOAD_TIMEOUT_MILLIS) {
-            composeTestRule.onAllNodesWithText(HOME_TEAM_NAME).fetchSemanticsNodes().isNotEmpty()
+            composeTestRule.onAllNodes(hasContentDescription(HOME_TEAM_NAME, substring = true)).fetchSemanticsNodes().isNotEmpty()
         }
         applyMainActivitySoftInputMode()
         // A keyboard left open by an earlier test would cover the rows this test taps.
@@ -275,23 +285,55 @@ class PoolHomePendingBetKeyboardTest {
             SemanticsMatcher.keyIsDefined(SemanticsProperties.Selected),
     )
 
-    private fun editButton() = composeTestRule.onNodeWithText(string(SharedR.string.edit_action))
-
-    private fun saveButton() = composeTestRule.onNodeWithText(string(SharedR.string.save_action))
-
-    private fun cancelButton() =
-        composeTestRule.onNodeWithText(string(SharedR.string.cancel_action))
-
-    /** A complete score, so Save is enabled; the away field keeps focus. */
-    private fun enterDraft() {
-        homeScoreField().performTextReplacement(DRAFT_HOME_SCORE)
-        awayScoreField().performTextReplacement(DRAFT_AWAY_SCORE)
+    /** Both score boxes and the steppers of the open card end above the keyboard, below the top. */
+    private fun assertCardAboveKeyboard() {
+        val controls = listOf(
+            homeScoreBox(),
+            awayScoreBox(),
+            upperStepper(HOME_TEAM_NAME),
+            upperStepper(AWAY_TEAM_NAME),
+            lowerStepper(HOME_TEAM_NAME),
+            lowerStepper(AWAY_TEAM_NAME),
+        )
+        for (control in controls) {
+            val bounds = control.bounds()
+            assertTrue(
+                "A card control ($bounds) must be visible above the keyboard (top ${keyboardTop()})",
+                bounds.top >= list().bounds().top - PIXEL_TOLERANCE && bounds.bottom <= keyboardTop() + PIXEL_TOLERANCE,
+            )
+        }
     }
 
-    private fun homeScoreField() = composeTestRule.onAllNodes(hasSetTextAction())[0]
+    private fun awaitRetry() {
+        composeTestRule.waitUntil(timeoutMillis = SAVE_TIMEOUT_MILLIS) {
+            composeTestRule.onAllNodes(hasText(string(SharedR.string.retry_action))).fetchSemanticsNodes().isNotEmpty()
+        }
+        composeTestRule.waitForIdle()
+    }
 
-    /** The lower of the two score fields of the bet being edited. */
-    private fun awayScoreField() = composeTestRule.onAllNodes(hasSetTextAction())[1]
+    private fun isFocused(node: SemanticsNodeInteraction) =
+        node.fetchSemanticsNode().config.getOrElse(SemanticsProperties.Focused) { false }
+
+    private fun retryButton() = composeTestRule.onNode(hasText(string(SharedR.string.retry_action)))
+
+    private fun upperStepper(teamName: String) =
+        composeTestRule.onNode(hasContentDescription("One more goal for $teamName") and hasClickAction())
+
+    private fun lowerStepper(teamName: String) =
+        composeTestRule.onNode(hasContentDescription("One less goal for $teamName") and hasClickAction())
+
+    /** A complete score, saved automatically; the mocked save fails. The away box keeps focus. */
+    private fun enterDraft() {
+        homeScoreBox().performTextInput(DRAFT_HOME_SCORE)
+        composeTestRule.waitUntil(timeoutMillis = KEYBOARD_TIMEOUT_MILLIS) { isFocused(awayScoreBox()) }
+        awayScoreBox().performTextInput(DRAFT_AWAY_SCORE)
+    }
+
+    private fun homeScoreBox() =
+        composeTestRule.onNode(hasSetTextAction() and hasContentDescription("$HOME_TEAM_NAME goals"))
+
+    private fun awayScoreBox() =
+        composeTestRule.onNode(hasSetTextAction() and hasContentDescription("$AWAY_TEAM_NAME goals"))
 
     private fun string(id: Int) = composeTestRule.activity.getString(id)
 
@@ -299,24 +341,31 @@ class PoolHomePendingBetKeyboardTest {
         const val DRAFT_HOME_SCORE = "2"
         const val DRAFT_AWAY_SCORE = "7"
         const val HOME_TEAM_NAME = "Argentina"
+        const val AWAY_TEAM_NAME = "Uruguay"
+        const val POOL_ID = "pool"
+        const val GAMBLER_ID = "gambler"
         const val BET_COUNT = 20
         const val MAX_SCROLL_STEPS = 50
         const val PIXEL_TOLERANCE = 1.5f
-        const val LOAD_TIMEOUT_MILLIS = 5_000L
+        const val LOAD_TIMEOUT_MILLIS = 20_000L
         const val KEYBOARD_TIMEOUT_MILLIS = 15_000L
+        const val SAVE_TIMEOUT_MILLIS = 10_000L
+
+        fun failingSaveRepository(): PoolGamblerBetRepository = FailingSaveRepository(pendingBets())
 
         /** Locked bets except the last, which is open for betting and has no score yet. */
         fun pendingBets() = List(BET_COUNT) { index ->
             val isLast = index == BET_COUNT - 1
-            PoolGamblerBetModel(
-                poolId = "pool",
-                gamblerId = "gambler",
+            PoolGamblerBet(
+                poolId = POOL_ID,
+                gamblerId = GAMBLER_ID,
                 gamblerUsername = "gambler",
                 matchId = "match$index",
                 homeTeamId = "ar",
                 homeTeamName = HOME_TEAM_NAME,
                 awayTeamId = "uy",
-                awayTeamName = "Uruguay",
+                awayTeamName = AWAY_TEAM_NAME,
+                awayTeamScore = null,
                 matchScore = null,
                 betScore = null,
                 score = null,
@@ -326,4 +375,35 @@ class PoolHomePendingBetKeyboardTest {
             )
         }
     }
+}
+
+/** Serves one page of pending bets and fails every save, so the edited card shows Retry. */
+private class FailingSaveRepository(private val pendingBets: List<PoolGamblerBet>) : PoolGamblerBetRepository {
+    override suspend fun bet(bet: Bet): Result<PoolGamblerBet> = Result.failure(IOException("offline"))
+
+    override suspend fun getPendingPoolGamblerBets(
+        poolId: String,
+        gamblerId: String,
+        next: String?,
+        searchText: String?,
+    ): Result<CursorPage<PoolGamblerBet>> = Result.success(CursorPage(items = pendingBets, next = null))
+
+    override suspend fun getFinishedPoolGamblerBets(poolId: String, gamblerId: String, next: String?): Result<CursorPage<KickoffGroup>> =
+        Result.failure(UnsupportedOperationException())
+
+    override suspend fun getLivePoolGamblerBets(
+        poolId: String,
+        gamblerId: String,
+        next: String?,
+        searchText: String?,
+    ): Result<CursorPage<PoolGamblerBet>> = Result.failure(UnsupportedOperationException())
+
+    override suspend fun getRankedPoolMatchGamblerBets(poolId: String, matchId: String, next: String?): Result<CursorPage<PoolGamblerBet>> =
+        Result.failure(UnsupportedOperationException())
+
+    override suspend fun getPoolGamblerBet(poolId: String, gamblerId: String, matchId: String): Result<PoolGamblerBet> =
+        Result.failure(UnsupportedOperationException())
+
+    override suspend fun getGamblerBetsTimeline(poolId: String, gamblerId: String, next: String?): Result<CursorPage<KickoffGroup>> =
+        Result.failure(UnsupportedOperationException())
 }

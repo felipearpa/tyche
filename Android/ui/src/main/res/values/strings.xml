@@ -8,8 +8,6 @@
     <string name="retry_action">Retry</string>
     <string name="empty_list_message">Nothing to show</string>
     <string name="cancel_action">Cancel</string>
-    <string name="save_action">Save</string>
-    <string name="edit_action">Edit</string>
     <string name="unknown_failure_recovery_suggestion">Please try again. If the problem continues, please contact our support team for assistance</string>
     <string name="remote_communication_failure_recovery_suggestion">Please check your internet connection and give it another shot later. If the problem continues, please contact our support team for assistance</string>
     <string name="open_menu_action">Open menu</string>

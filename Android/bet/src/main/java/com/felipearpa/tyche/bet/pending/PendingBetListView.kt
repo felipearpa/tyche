@@ -4,17 +4,26 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.paging.PagingData
-import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.felipearpa.tyche.bet.PoolGamblerBetModel
 import com.felipearpa.tyche.bet.poolGamblerBetPendingDummyModels
 import com.felipearpa.tyche.ui.theme.TycheTheme
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
 
+/**
+ * The Bets tab backed by [viewModel]. The minute clock that drives the lock notes and the day
+ * headers runs while this screen is composed and stops with it.
+ */
+@OptIn(ExperimentalTime::class)
 @Composable
 fun PendingBetListView(
     viewModel: PendingBetListViewModel,
@@ -22,33 +31,22 @@ fun PendingBetListView(
     onMatchOpen: ((PoolGamblerBetModel) -> Unit)? = null,
 ) {
     val lazyItems = viewModel.poolGamblerBets.collectAsLazyPagingItems()
-    val pageSize = viewModel.pageSize
-    PendingBetListView(
+    val listState by viewModel.listState.collectAsState()
+    val now by remember { minuteTicks(Clock.System) }.collectAsState(initial = Clock.System.now())
+    PendingBetList(
         lazyPoolGamblerBets = lazyItems,
-        placeholderCount = pageSize,
+        listState = listState,
+        now = now,
+        onSelectFilter = viewModel::selectFilter,
+        fakeItemCount = viewModel.pageSize,
+        rowHolder = viewModel::rowHolder,
         onMatchOpen = onMatchOpen,
         contentPadding = contentPadding,
         modifier = Modifier.fillMaxSize(),
     )
 }
 
-@Composable
-private fun PendingBetListView(
-    lazyPoolGamblerBets: LazyPagingItems<PoolGamblerBetModel>,
-    placeholderCount: Int,
-    onMatchOpen: ((PoolGamblerBetModel) -> Unit)?,
-    contentPadding: PaddingValues,
-    modifier: Modifier = Modifier,
-) {
-    PendingBetList(
-        lazyPoolGamblerBets = lazyPoolGamblerBets,
-        fakeItemCount = placeholderCount,
-        onMatchOpen = onMatchOpen,
-        contentPadding = contentPadding,
-        modifier = modifier,
-    )
-}
-
+@OptIn(ExperimentalTime::class)
 @PreviewLightDark
 @Composable
 fun PendingBetListViewPreview(contentPadding: PaddingValues = PaddingValues(0.dp)) {
@@ -56,9 +54,12 @@ fun PendingBetListViewPreview(contentPadding: PaddingValues = PaddingValues(0.dp
 
     TycheTheme {
         Surface {
-            PendingBetListView(
+            PendingBetList(
                 lazyPoolGamblerBets = lazyItems,
-                placeholderCount = 50,
+                listState = PendingBetListState.INITIAL,
+                now = Clock.System.now(),
+                onSelectFilter = {},
+                fakeItemCount = 50,
                 onMatchOpen = {},
                 contentPadding = contentPadding,
                 modifier = Modifier.fillMaxSize(),

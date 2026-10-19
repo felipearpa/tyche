@@ -2,8 +2,6 @@
 <resources>
     <string name="retry_action">Reintentar</string>
     <string name="cancel_action">Cancelar</string>
-    <string name="forbidden_bet_title">Apuesta no permitida</string>
-    <string name="forbidden_bet_message">¡Vaya! Las apuestas no están disponibles ahora mismo</string>
     <string name="match_bets_view_title">Marcador</string>
     <string name="bet_timeline_view_title">Línea de tiempo</string>
     <string name="history_your_bet_label">Tu apuesta</string>
@@ -76,4 +74,38 @@
     </plurals>
     <string name="history_list_changed_title">La lista ha cambiado</string>
     <string name="history_list_changed_message">Vuelve a cargar la lista para ver los partidos más recientes.</string>
+    <string name="bets_filter_all">Todos</string>
+    <string name="bets_filter_no_bet">Sin apuesta</string>
+    <string name="bets_filter_placed">Con apuesta</string>
+    <string name="bets_filter_empty_message">De momento no te queda nada por apostar.</string>
+    <string name="bets_filter_placed_empty_message">Todavía no has hecho ninguna apuesta.</string>
+    <string name="bet_status_no_bet">Sin apuesta</string>
+    <string name="bet_status_incomplete">Incompleta</string>
+    <string name="bet_status_saved">Guardada</string>
+    <string name="bet_status_not_saved">No guardada</string>
+    <string name="bet_status_locked">Cerrada</string>
+    <string name="bet_saving_accessibility_value">Guardando</string>
+    <string name="bet_score_box_missing_accessibility_value">Añade los goles de %1$s para guardar</string>
+    <string name="bet_save_failure_text">No se pudo guardar. Tu apuesta sigue aquí.</string>
+    <string name="bet_score_box_accessibility">Goles de %1$s</string>
+    <string name="bet_increase_score_accessibility">Un gol más para %1$s</string>
+    <string name="bet_decrease_score_accessibility">Un gol menos para %1$s</string>
+    <plurals name="bet_locks_in_minutes">
+        <item quantity="one">Se cierra en %d min</item>
+        <item quantity="many">Se cierra en %d min</item>
+        <item quantity="other">Se cierra en %d min</item>
+    </plurals>
+    <string name="bet_score_box_empty_accessibility_value">Sin marcador</string>
+    <string name="bet_day_today">Hoy</string>
+    <string name="bet_day_tomorrow">Mañana</string>
+    <string name="bet_day_yesterday">Ayer</string>
+    <string name="bet_saved_announcement">Apuesta guardada: %1$s %2$d, %3$s %4$d</string>
+    <string name="bet_save_failure_announcement">No se ha podido guardar tu apuesta de %1$s contra %2$s</string>
+    <string name="bet_locked_announcement">Las apuestas de %1$s contra %2$s ya están cerradas</string>
+    <string name="bets_filter_count_partial">%1$s+</string>
+    <plurals name="bets_filter_count_at_least_accessibility">
+        <item quantity="one">al menos %1$s partido</item>
+        <item quantity="many">al menos %1$s partidos</item>
+        <item quantity="other">al menos %1$s partidos</item>
+    </plurals>
 </resources>

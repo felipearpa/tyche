@@ -12,8 +12,6 @@ public extension SharedStringResource {
     static let searchingLabel = SharedStringResource(.searchingLabel)
     static let retryAction = SharedStringResource(.retryAction)
     static let cancelAction = SharedStringResource(.cancelAction)
-    static let saveAction = SharedStringResource(.saveAction)
-    static let editAction = SharedStringResource(.editAction)
     static let doneAction = SharedStringResource(.doneAction)
     static let openMenuAction = SharedStringResource(.openMenuAction)
     static let goHomeAction = SharedStringResource(.goHomeAction)

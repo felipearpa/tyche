@@ -15,6 +15,9 @@ public extension SharedColorResource  {
     static let secondaryContainer = SharedColorResource(.secondaryContainer)
     static let onSecondaryContainer = SharedColorResource(.onSecondaryContainer)
     static let error = SharedColorResource(.error)
+    /// Error-colored text on a translucent `error` tint, where the dark `error` itself falls
+    /// below 4.5:1: `#B71C1C` in light mode and `#EF9A9A` in dark mode.
+    static let negative = SharedColorResource(.negative)
     /// Content on an `error` fill: white in light mode, near-black in dark mode, where white on the
     /// lighter dark `error` is 3.6:1 and `#1E1E1E` is 4.6:1.
     static let onError = SharedColorResource(.onError)

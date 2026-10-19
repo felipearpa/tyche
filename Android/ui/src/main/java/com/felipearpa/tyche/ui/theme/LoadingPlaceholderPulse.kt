@@ -105,7 +105,7 @@ val LocalLoadingPlaceholderPulse = compositionLocalOf {
  * `Settings.Global.ANIMATOR_DURATION_SCALE`, so a preference change recomposes the readers.
  */
 @Composable
-internal fun systemAnimationsEnabled(): Boolean {
+fun systemAnimationsEnabled(): Boolean {
     val scale = rememberCoroutineScope().coroutineContext[MotionDurationScale]?.scaleFactor ?: 1f
     return scale > 0f
 }
