@@ -14,6 +14,7 @@ struct ProfileViewModelTests {
         let viewModel = ProfileViewModel(
             currentAccountModel: .preview(account: nil),
             currentAccountCoordinator: .preview(account: nil),
+            avatarURL: AvatarURL(base: avatarURLBase),
             onUploadAvatar: { _ in .success(()) }
         )
 
@@ -25,6 +26,7 @@ struct ProfileViewModelTests {
         let viewModel = ProfileViewModel(
             currentAccountModel: .preview(account: storedBundle),
             currentAccountCoordinator: .preview(account: storedBundle),
+            avatarURL: AvatarURL(base: avatarURLBase),
             onUploadAvatar: { _ in .success(()) }
         )
 
@@ -32,7 +34,7 @@ struct ProfileViewModelTests {
 
         #expect(
             viewModel.avatarSource
-                == .remote(URL(string: "https://tyche-avatars.s3.us-east-2.amazonaws.com/avatars/account-1.jpg")!)
+                == .remote(URL(string: "\(avatarURLBase)/avatars/account-1.jpg")!)
         )
         #expect(viewModel.username == "ElGoleador")
         #expect(viewModel.email == "gambler@tyche.com")
@@ -44,6 +46,7 @@ struct ProfileViewModelTests {
         let viewModel = ProfileViewModel(
             currentAccountModel: .preview(account: storedBundle),
             currentAccountCoordinator: .preview(account: storedBundle),
+            avatarURL: AvatarURL(base: avatarURLBase),
             onUploadAvatar: uploader.upload
         )
         await waitUntil { viewModel.accountId == "account-1" }
@@ -60,7 +63,7 @@ struct ProfileViewModelTests {
         #expect(viewModel.uploadState.isLoaded())
         #expect(
             viewModel.avatarSource
-                == .remote(URL(string: "https://tyche-avatars.s3.us-east-2.amazonaws.com/avatars/account-1.jpg")!)
+                == .remote(URL(string: "\(avatarURLBase)/avatars/account-1.jpg")!)
         )
         #expect(uploader.receivedData == [payload])
     }
@@ -71,6 +74,7 @@ struct ProfileViewModelTests {
         let viewModel = ProfileViewModel(
             currentAccountModel: .preview(account: storedBundle),
             currentAccountCoordinator: .preview(account: storedBundle),
+            avatarURL: AvatarURL(base: avatarURLBase),
             onUploadAvatar: uploader.upload
         )
         await waitUntil { viewModel.accountId == "account-1" }
@@ -94,6 +98,7 @@ struct ProfileViewModelTests {
         let viewModel = ProfileViewModel(
             currentAccountModel: .preview(account: storedBundle),
             currentAccountCoordinator: .preview(account: storedBundle),
+            avatarURL: AvatarURL(base: avatarURLBase),
             onUploadAvatar: uploader.upload
         )
         await waitUntil { viewModel.accountId == "account-1" }
@@ -106,6 +111,8 @@ struct ProfileViewModelTests {
         #expect(viewModel.avatarSource == previousSource)
     }
 }
+
+private let avatarURLBase = "https://avatars.example.com"
 
 private let storedBundle = AccountBundle(
     accountId: "account-1",

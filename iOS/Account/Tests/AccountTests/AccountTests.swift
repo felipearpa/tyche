@@ -27,11 +27,12 @@ final class AccountAvatarTests: XCTestCase {
     }
 
     func testAvatarRequestUsesDeterministicURLAndRevalidation() {
-        let request = avatarPhotoRequest(accountId: "account-1")
+        let base = "https://avatars.example.com"
+        let request = avatarPhotoRequest(accountId: "account-1", avatarURL: AvatarURL(base: base))
 
         XCTAssertEqual(
             request?.url?.absoluteString,
-            "https://tyche-avatars.s3.us-east-2.amazonaws.com/avatars/account-1.jpg"
+            "\(base)/avatars/account-1.jpg"
         )
         XCTAssertEqual(request?.cachePolicy, .reloadRevalidatingCacheData)
     }

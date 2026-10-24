@@ -62,13 +62,27 @@ Each feature is a local Swift package consumed by the app target. This keeps the
 
 ## Building locally
 
-Open the workspace and build the `Tyche` scheme.
+Open the workspace and run the `Tyche Dev` scheme.
 
 ```bash
-open Tyche/Tyche.xcworkspace
+open Tyche.xcworkspace
 ```
 
-Build-time configuration (`SIGN_IN_URL_TEMPLATE`, `JOIN_POOL_URL_TEMPLATE`, `URL_BASE_PATH`, `ANDROID_PACKAGE_NAME`) lives in `Tyche/Tyche/AppConfig.xcconfig` and is exposed through `Info.plist`. A `GoogleService-Info.plist` is required for Firebase.
+Build-time configuration (`SIGN_IN_URL_TEMPLATE`, `JOIN_POOL_URL_TEMPLATE`, `URL_BASE_PATH`, `AVATAR_URL_BASE`, `ANDROID_PACKAGE_NAME`) lives in `Tyche/Tyche/AppConfig.xcconfig` and is exposed through `Info.plist`. A `GoogleService-Info.plist` is required for Firebase.
+
+Each scheme picks the API and the avatar bucket its build talks to:
+
+| Scheme | Configuration | xcconfig | API (`URL_BASE_PATH`) | Avatars (`AVATAR_URL_BASE`) |
+|---|---|---|---|---|
+| `Tyche` | `Debug` / `Release` | `AppConfig.xcconfig` | production | production bucket |
+| `Tyche Dev` | `Debug Dev` | `AppConfigDev.xcconfig` | dev (`tyche-api-dev.felipearpa.com`) | dev bucket |
+| `Tyche Local` | `Debug Local` | `AppConfigLocal.xcconfig` | ngrok tunnel to the local API host | dev bucket |
+
+```bash
+xcodebuild build -workspace Tyche.xcworkspace -scheme "Tyche Dev" -destination "generic/platform=iOS Simulator"
+```
+
+`Tyche Dev` is the scheme for everyday work. Xcode remembers the selected scheme per user, outside the repository, so pick `Tyche Dev` once in the scheme menu after cloning. Store archives use the `Tyche` scheme explicitly (`xcodebuild archive -workspace Tyche.xcworkspace -scheme Tyche`). All schemes share the Firebase project and the bundle id, so a device holds one of them at a time.
 
 ## Release notes
 

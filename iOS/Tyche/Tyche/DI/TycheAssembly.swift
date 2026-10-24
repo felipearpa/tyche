@@ -11,12 +11,26 @@ public class TycheAssembly : Assembly {
             LocalURLBasePathProvider()
         }
 
+        container.register(AvatarURLBaseProvider.self) { _ in
+            LocalAvatarURLBaseProvider()
+        }
+
+        container.register(AvatarURL.self) { resolver in
+            AvatarURL(base: resolver.resolve(AvatarURLBaseProvider.self)!())
+        }
+
+        container.register(AvatarImageStore.self) { resolver in
+            AvatarImageStore(avatarURL: resolver.resolve(AvatarURL.self)!)
+        }
+        .inObjectScope(.container)
+
         // The upload application flow seeds the shared avatar store before reporting
         // success (design: centralize-account-and-avatar-caching, decision 6); the app
         // supplies the store binding because Session cannot depend on Account.
-        container.register(InstallUploadedAvatar.self) { _ in
-            { imageData, accountId in
-                await AvatarImageStore.shared.installUploadedAvatar(
+        container.register(InstallUploadedAvatar.self) { resolver in
+            let store = resolver.resolve(AvatarImageStore.self)!
+            return { imageData, accountId in
+                await store.installUploadedAvatar(
                     jpegData: imageData,
                     accountId: accountId
                 )

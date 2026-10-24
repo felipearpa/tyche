@@ -9,3 +9,4 @@
 #include "AppConfig.xcconfig"
 
 URL_BASE_PATH = https:/$()/guiding-terminally-cicada.ngrok-free.app
+AVATAR_URL_BASE = https:/$()/tyche-avatars-041269245665.s3.us-east-2.amazonaws.com

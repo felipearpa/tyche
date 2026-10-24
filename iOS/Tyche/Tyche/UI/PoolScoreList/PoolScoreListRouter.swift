@@ -126,6 +126,7 @@ private struct PoolScoreListRouterContent: View {
                     viewModel: ProfileViewModel(
                         currentAccountModel: diResolver.resolve(CurrentAccountModel.self)!,
                         currentAccountCoordinator: diResolver.resolve(CurrentAccountCoordinator.self)!,
+                        avatarURL: diResolver.resolve(AvatarURL.self)!,
                         onUploadAvatar: { [diResolver] imageData in
                             await diResolver.resolve(UploadAvatarUseCase.self)!.execute(imageData: imageData)
                         }

@@ -336,6 +336,7 @@ private final class Fixture {
             return nil
         }
         return AvatarImageStore(
+            avatarURL: avatarURLBuilder,
             fetch: { request in try await fetcher.fetch(request) },
             cachedResponse: cachedByAccount,
             now: { clock.now },
@@ -430,7 +431,8 @@ private final class MutableClock: @unchecked Sendable {
 
 // MARK: - Response helpers
 
-private let avatarURL = URL(string: "https://tyche-avatars.s3.us-east-2.amazonaws.com/avatars/gambler.jpg")!
+private let avatarURLBuilder = AvatarURL(base: "https://avatars.example.com")
+private let avatarURL = avatarURLBuilder.of(accountId: "gambler")!
 
 private func uiImage(side: Int, color: UIColor = .systemRed) -> UIImage {
     let format = UIGraphicsImageRendererFormat()
