@@ -5,6 +5,9 @@ val projectMinSdk: String by project
 val projectTargetSdk: String by project
 val urlBasePath: String by project
 val urlBasePathLocal: String by project
+val urlBasePathDev: String by project
+val avatarUrlBase: String by project
+val avatarUrlBaseDev: String by project
 val signInLinkUrlTemplate: String by project
 val joinPoolUrlTemplate: String by project
 val iosBundleId: String by project
@@ -41,13 +44,20 @@ android {
     flavorDimensions += "environment"
     productFlavors {
         create("prod") {
-            isDefault = true
             dimension = "environment"
             buildConfigField(type = "String", name = "URL_BASE_PATH", value = """"$urlBasePath"""")
+            buildConfigField(type = "String", name = "AVATAR_URL_BASE", value = """"$avatarUrlBase"""")
         }
         create("local") {
             dimension = "environment"
             buildConfigField(type = "String", name = "URL_BASE_PATH", value = """"$urlBasePathLocal"""")
+            buildConfigField(type = "String", name = "AVATAR_URL_BASE", value = """"$avatarUrlBaseDev"""")
+        }
+        create("dev") {
+            isDefault = true
+            dimension = "environment"
+            buildConfigField(type = "String", name = "URL_BASE_PATH", value = """"$urlBasePathDev"""")
+            buildConfigField(type = "String", name = "AVATAR_URL_BASE", value = """"$avatarUrlBaseDev"""")
         }
     }
     buildTypes {

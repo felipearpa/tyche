@@ -23,6 +23,7 @@ val appModule = module {
         ProfileViewModel(
             uploadAvatar = get(),
             currentAccountCoordinator = get(),
+            avatarUrl = get(),
         )
     }
 }

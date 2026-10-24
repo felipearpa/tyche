@@ -1,6 +1,8 @@
 package com.felipearpa.tyche.network.di
 
 import com.felipearpa.network.serializer.LocalDateTimeSerializer
+import com.felipearpa.tyche.BuildConfig
+import com.felipearpa.tyche.account.AvatarUrl
 import com.felipearpa.tyche.core.network.UrlBasePathProvider
 import com.felipearpa.tyche.network.LocalUrlBasePathProvider
 import io.ktor.client.HttpClient
@@ -19,6 +21,7 @@ import org.koin.dsl.module
 
 val networkModule = module {
     single<UrlBasePathProvider> { LocalUrlBasePathProvider() }
+    single { AvatarUrl(host = BuildConfig.AVATAR_URL_BASE) }
 
     single {
         HttpClient(OkHttp) {

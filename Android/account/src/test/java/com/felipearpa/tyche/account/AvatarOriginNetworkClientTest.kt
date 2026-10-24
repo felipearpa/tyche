@@ -19,7 +19,7 @@ class AvatarOriginNetworkClientTest {
             val fixture = fixture(originStatus = 304, etag = "\"etag\"")
 
             val consumed = fixture.client.executeRequest(
-                NetworkRequest(url = AvatarUrl.of("account-1")),
+                NetworkRequest(url = avatarUrl.of("account-1")),
             ) { response ->
                 fixture.reported.shouldBeEmpty()
                 response.code
@@ -42,7 +42,7 @@ class AvatarOriginNetworkClientTest {
             val fixture = fixture(originStatus = 504, etag = null)
 
             val exception = shouldThrow<HttpException> {
-                fixture.client.executeRequest(NetworkRequest(url = AvatarUrl.of("account-1"))) {
+                fixture.client.executeRequest(NetworkRequest(url = avatarUrl.of("account-1"))) {
                     error("Coil must not receive a response it would leak its disk snapshot on")
                 }
             }
@@ -56,7 +56,7 @@ class AvatarOriginNetworkClientTest {
         val fixture = fixture(originStatus = 200, etag = "\"etag\"")
 
         shouldThrow<IllegalStateException> {
-            fixture.client.executeRequest(NetworkRequest(url = AvatarUrl.of("account-1"))) {
+            fixture.client.executeRequest(NetworkRequest(url = avatarUrl.of("account-1"))) {
                 error("disk full")
             }
         }
@@ -78,11 +78,11 @@ class AvatarOriginNetworkClientTest {
 
     @Test
     fun `avatar url maps back to its account and rejects every other url`() {
-        AvatarUrl.accountIdOf(AvatarUrl.of("account-1")) shouldBe "account-1"
-        AvatarUrl.accountIdOf(AvatarUrl.of("account-1") + "?X-Amz-Signature=abc") shouldBe "account-1"
-        AvatarUrl.accountIdOf(AvatarUrl.of("")) shouldBe null
-        AvatarUrl.accountIdOf(AvatarUrl.of("nested/account")) shouldBe null
-        AvatarUrl.accountIdOf("https://example.com/avatars/account-1.jpg") shouldBe null
+        avatarUrl.accountIdOf(avatarUrl.of("account-1")) shouldBe "account-1"
+        avatarUrl.accountIdOf(avatarUrl.of("account-1") + "?X-Amz-Signature=abc") shouldBe "account-1"
+        avatarUrl.accountIdOf(avatarUrl.of("")) shouldBe null
+        avatarUrl.accountIdOf(avatarUrl.of("nested/account")) shouldBe null
+        avatarUrl.accountIdOf("https://example.com/avatars/account-1.jpg") shouldBe null
     }
 
     private fun fixture(originStatus: Int, etag: String?): Fixture {
@@ -90,6 +90,7 @@ class AvatarOriginNetworkClientTest {
         return Fixture(
             client = AvatarOriginNetworkClient(
                 delegate = FixedAnswerNetworkClient(status = originStatus, etag = etag),
+                avatarUrl = avatarUrl,
                 nowEpochMillis = { REQUESTED_AT },
                 onReportExchange = { exchange -> reported += exchange },
             ),
@@ -101,6 +102,7 @@ class AvatarOriginNetworkClientTest {
 
     private companion object {
         const val REQUESTED_AT = 42L
+        val avatarUrl = AvatarUrl(host = "https://avatars.example.com")
     }
 }
 

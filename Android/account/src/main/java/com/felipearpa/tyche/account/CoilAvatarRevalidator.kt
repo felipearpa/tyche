@@ -10,10 +10,17 @@ import coil3.request.CachePolicy
  * allows. The decoded result is discarded; the request carries no memory key, so it is never
  * coalesced with a surface's own load.
  */
-internal class CoilAvatarRevalidator(private val context: Context) : AvatarRevalidator {
+internal class CoilAvatarRevalidator(
+    private val context: Context,
+    private val avatarUrl: AvatarUrl,
+) : AvatarRevalidator {
 
     override suspend fun revalidate(accountId: String, bucket: Int) {
-        val request = avatarPhotoRequestConfiguration(accountId = accountId, bucket = bucket)
+        val request = avatarPhotoRequestConfiguration(
+            avatarUrl = avatarUrl,
+            accountId = accountId,
+            bucket = bucket,
+        )
             .toImageRequestBuilder(context = context)
             .memoryCachePolicy(CachePolicy.DISABLED)
             .build()

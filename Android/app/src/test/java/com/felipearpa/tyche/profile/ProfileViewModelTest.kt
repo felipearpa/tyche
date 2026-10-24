@@ -1,6 +1,7 @@
 package com.felipearpa.tyche.profile
 
 import android.graphics.Bitmap
+import com.felipearpa.tyche.account.AvatarUrl
 import com.felipearpa.tyche.session.AccountBundle
 import com.felipearpa.tyche.session.CurrentAccountCoordinator
 import com.felipearpa.tyche.session.CurrentAccountRefreshTrigger
@@ -43,6 +44,7 @@ class ProfileViewModelTest {
         val viewModel = ProfileViewModel(
             uploadAvatar = mockk(),
             currentAccountCoordinator = coordinatorPublishing(bundle = null),
+            avatarUrl = AvatarUrl(host = AVATAR_HOST),
         )
 
         viewModel.avatarSource.value shouldBe ProfileAvatarSource.Letter
@@ -56,12 +58,11 @@ class ProfileViewModelTest {
             val viewModel = ProfileViewModel(
                 uploadAvatar = mockk(),
                 currentAccountCoordinator = coordinator,
+                avatarUrl = AvatarUrl(host = AVATAR_HOST),
             )
 
             viewModel.avatarSource.value shouldBe
-                ProfileAvatarSource.Remote(
-                    "https://tyche-avatars.s3.us-east-2.amazonaws.com/avatars/account-1.jpg",
-                )
+                ProfileAvatarSource.Remote("$AVATAR_HOST/avatars/account-1.jpg")
             viewModel.username.value shouldBe "ElGoleador"
             viewModel.email.value shouldBe "gambler@tyche.com"
             coVerify(exactly = 1) {
@@ -81,6 +82,7 @@ class ProfileViewModelTest {
             val viewModel = ProfileViewModel(
                 uploadAvatar = uploadAvatar,
                 currentAccountCoordinator = coordinatorPublishing(bundle = storedBundle),
+                avatarUrl = AvatarUrl(host = AVATAR_HOST),
             )
             val newPhoto = mockk<Bitmap>(relaxed = true)
             val imageData = byteArrayOf(9, 9)
@@ -97,9 +99,7 @@ class ProfileViewModelTest {
             // After success the remote branch is served from the store that the upload flow
             // seeded; the view model retains no local copy.
             viewModel.avatarSource.value shouldBe
-                ProfileAvatarSource.Remote(
-                    "https://tyche-avatars.s3.us-east-2.amazonaws.com/avatars/account-1.jpg",
-                )
+                ProfileAvatarSource.Remote("$AVATAR_HOST/avatars/account-1.jpg")
             coVerify(exactly = 1) { uploadAvatar.execute(imageData) }
         }
 
@@ -114,6 +114,7 @@ class ProfileViewModelTest {
             val viewModel = ProfileViewModel(
                 uploadAvatar = uploadAvatar,
                 currentAccountCoordinator = coordinatorPublishing(bundle = storedBundle),
+                avatarUrl = AvatarUrl(host = AVATAR_HOST),
             )
             val previousSource = viewModel.avatarSource.value
             val newPhoto = mockk<Bitmap>(relaxed = true)
@@ -138,6 +139,7 @@ class ProfileViewModelTest {
             val viewModel = ProfileViewModel(
                 uploadAvatar = uploadAvatar,
                 currentAccountCoordinator = coordinatorPublishing(bundle = storedBundle),
+                avatarUrl = AvatarUrl(host = AVATAR_HOST),
             )
             val previousSource = viewModel.avatarSource.value
 
@@ -149,6 +151,8 @@ class ProfileViewModelTest {
             viewModel.avatarSource.value shouldBe previousSource
         }
 }
+
+private const val AVATAR_HOST = "https://avatars.example.com"
 
 private val storedBundle = AccountBundle(
     accountId = "account-1",
