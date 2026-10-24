@@ -62,12 +62,28 @@ ensure_kickoff_index() {
     AttributeName=computedMatchDateTime,AttributeType=S
 }
 
-create_copy() {
-  local pool="$1" layout="$2"
+table_exists() {
+  local error
+  if error="$(aws dynamodb describe-table --region "$REGION" --table-name "$1" 2>&1 >/dev/null)"; then
+    return 0
+  fi
+  if grep -q ResourceNotFoundException <<<"$error"; then
+    return 1
+  fi
+  echo "$error" >&2
+  exit 1
+}
+
+wait_for_table() {
+  echo "Waiting for $1 to become active"
+  aws dynamodb wait table-exists --region "$REGION" --table-name "$1"
+}
+
+create_pool_table() {
   local all='{"ProjectionType":"ALL"}'
   local index
   index() { echo "{\"IndexName\":\"$1\",\"KeySchema\":[{\"AttributeName\":\"$2\",\"KeyType\":\"HASH\"},{\"AttributeName\":\"$3\",\"KeyType\":\"RANGE\"}],\"Projection\":$all}"; }
-  aws dynamodb create-table --region "$REGION" --table-name "$pool" \
+  aws dynamodb create-table --region "$REGION" --table-name "$1" \
     --billing-mode PAY_PER_REQUEST \
     --stream-specification StreamEnabled=true,StreamViewType=NEW_AND_OLD_IMAGES \
     --attribute-definitions \
@@ -90,16 +106,60 @@ create_copy() {
       $(index GetPoolGamblersByUsername-index pk gamblerUsername),
       $(cat "$INDEX_FILE")
     ]" --query 'TableDescription.TableStatus' --output text
-  aws dynamodb create-table --region "$REGION" --table-name "$layout" \
+}
+
+create_layout_table() {
+  aws dynamodb create-table --region "$REGION" --table-name "$1" \
     --billing-mode PAY_PER_REQUEST \
     --stream-specification StreamEnabled=true,StreamViewType=NEW_AND_OLD_IMAGES \
     --attribute-definitions AttributeName=pk,AttributeType=S AttributeName=sk,AttributeType=S \
       AttributeName=status,AttributeType=S AttributeName=startDateTime,AttributeType=S \
     --key-schema AttributeName=pk,KeyType=HASH AttributeName=sk,KeyType=RANGE \
-    --global-secondary-indexes "[$(index GetOpenedPoolLayout-index status startDateTime)]" \
+    --global-secondary-indexes '[{"IndexName":"GetOpenedPoolLayout-index","KeySchema":[{"AttributeName":"status","KeyType":"HASH"},{"AttributeName":"startDateTime","KeyType":"RANGE"}],"Projection":{"ProjectionType":"ALL"}}]' \
     --query 'TableDescription.TableStatus' --output text
+}
+
+create_account_table() {
+  aws dynamodb create-table --region "$REGION" --table-name "$1" \
+    --billing-mode PAY_PER_REQUEST \
+    --attribute-definitions AttributeName=pk,AttributeType=S AttributeName=email,AttributeType=S \
+    --key-schema AttributeName=pk,KeyType=HASH \
+    --global-secondary-indexes '[{"IndexName":"GetByEmail-index","KeySchema":[{"AttributeName":"email","KeyType":"HASH"}],"Projection":{"ProjectionType":"ALL"}}]' \
+    --query 'TableDescription.TableStatus' --output text
+}
+
+create_match_score_ingestion_table() {
+  aws dynamodb create-table --region "$REGION" --table-name "$1" \
+    --billing-mode PAY_PER_REQUEST \
+    --stream-specification StreamEnabled=true,StreamViewType=NEW_AND_OLD_IMAGES \
+    --attribute-definitions AttributeName=pk,AttributeType=S \
+    --key-schema AttributeName=pk,KeyType=HASH \
+    --query 'TableDescription.TableStatus' --output text
+}
+
+create_copy() {
+  local pool="$1" layout="$2"
+  create_pool_table "$pool"
+  create_layout_table "$layout"
   aws dynamodb wait table-exists --region "$REGION" --table-name "$pool"
   aws dynamodb wait table-exists --region "$REGION" --table-name "$layout"
+}
+
+ensure_table() {
+  if table_exists "$1"; then
+    echo "$1 already exists"
+  else
+    "$2" "$1"
+  fi
+  wait_for_table "$1"
+}
+
+create_all() {
+  export AWS_PROFILE="$1"
+  ensure_table Pool create_pool_table
+  ensure_table PoolLayout create_layout_table
+  ensure_table Account create_account_table
+  ensure_table MatchScoreIngestion create_match_score_ingestion_table
 }
 
 case "${1:-}" in
@@ -107,5 +167,6 @@ case "${1:-}" in
   ensure-ranking-index) ensure_ranking_index "${2:-Pool}" ;;
   ensure-kickoff-index) ensure_kickoff_index "${2:-Pool}" ;;
   create-copy) create_copy "$2" "$3" ;;
-  *) echo "usage: $0 describe|ensure-ranking-index|ensure-kickoff-index [table] | create-copy <pool-table> <layout-table>" >&2; exit 2 ;;
+  create-all) create_all "${2:?usage: $0 create-all <profile>}" ;;
+  *) echo "usage: $0 describe|ensure-ranking-index|ensure-kickoff-index [table] | create-copy <pool-table> <layout-table> | create-all <profile>" >&2; exit 2 ;;
 esac

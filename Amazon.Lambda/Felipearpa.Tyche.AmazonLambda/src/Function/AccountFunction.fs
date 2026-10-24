@@ -14,6 +14,7 @@ open Felipearpa.Tyche.Account.Application
 open Felipearpa.Tyche.Account.Domain
 open Felipearpa.Tyche.Account.Infrastructure
 open Felipearpa.Tyche.AmazonLambda
+open Felipearpa.Tyche.Function
 open Felipearpa.Tyche.Function.AccountFunction
 open Felipearpa.Tyche.Function.Request
 open Felipearpa.Tyche.Pool.Application
@@ -38,7 +39,8 @@ type AccountFunction(configureServices: IServiceCollection -> unit) =
             .AddSingleton<IKeySerializer, DynamoDbKeySerializer>()
             .AddScoped<IAccountRepository, AccountDynamoDbRepository>()
             .AddScoped<IPoolRepository, PoolDynamoDbRepository>()
-            .AddScoped<IAvatarStorage, AvatarS3Storage>()
+            .AddScoped<IAvatarStorage>(fun sp ->
+                AvatarS3Storage(sp.GetRequiredService<IAmazonS3>(), AvatarBucketSetting.fromEnvironment ()))
             .AddScoped<LinkAccount>()
             .AddScoped<UpdateUsername>()
             .AddScoped<IssueAvatarUploadUrl>()

@@ -4,14 +4,11 @@ Description: Tyche API v1.3.0
 Parameters:
   PoolStreamArn:
     Type: String
-    Default: arn:aws:dynamodb:us-east-2:567776770335:table/Pool/stream/2025-08-18T16:45:55.692
     Description: Stream of the externally managed Pool table (see operations/pool-table.sh).
   PoolLayoutStreamArn:
     Type: String
-    Default: arn:aws:dynamodb:us-east-2:567776770335:table/PoolLayout/stream/2025-09-27T02:24:29.497
   MatchScoreIngestionStreamArn:
     Type: String
-    Default: arn:aws:dynamodb:us-east-2:567776770335:table/MatchScoreIngestion/stream/2026-06-17T16:26:29.662
   SettlementProcessingEnabled:
     Type: String
     AllowedValues: [ "true", "false" ]
@@ -79,7 +76,7 @@ Resources:
               Action:
                 - dynamodb:Query
               Resource:
-                - arn:aws:dynamodb:us-east-2:567776770335:table/Pool
+                - !Sub "arn:aws:dynamodb:us-east-2:${AWS::AccountId}:table/Pool"
       Architectures: [ arm64 ]
       Events:
         HttpApi:
@@ -105,9 +102,9 @@ Resources:
                 - dynamodb:Query
                 - dynamodb:BatchGetItem
               Resource:
-                - arn:aws:dynamodb:us-east-2:567776770335:table/Pool
-                - arn:aws:dynamodb:us-east-2:567776770335:table/Pool/index/GetPoolGamblerScoresByPool-index
-                - arn:aws:dynamodb:us-east-2:567776770335:table/PoolLayout
+                - !Sub "arn:aws:dynamodb:us-east-2:${AWS::AccountId}:table/Pool"
+                - !Sub "arn:aws:dynamodb:us-east-2:${AWS::AccountId}:table/Pool/index/GetPoolGamblerScoresByPool-index"
+                - !Sub "arn:aws:dynamodb:us-east-2:${AWS::AccountId}:table/PoolLayout"
       Architectures: [ arm64 ]
       Events:
         HttpApi:
@@ -133,8 +130,8 @@ Resources:
                 - dynamodb:Query
                 - dynamodb:BatchGetItem
               Resource:
-                - arn:aws:dynamodb:us-east-2:567776770335:table/Pool
-                - arn:aws:dynamodb:us-east-2:567776770335:table/PoolLayout
+                - !Sub "arn:aws:dynamodb:us-east-2:${AWS::AccountId}:table/Pool"
+                - !Sub "arn:aws:dynamodb:us-east-2:${AWS::AccountId}:table/PoolLayout"
       Architectures: [ arm64 ]
       Events:
         HttpApi:
@@ -159,7 +156,7 @@ Resources:
               Action:
                 - dynamodb:GetItem
               Resource:
-                - arn:aws:dynamodb:us-east-2:567776770335:table/Pool
+                - !Sub "arn:aws:dynamodb:us-east-2:${AWS::AccountId}:table/Pool"
       Architectures: [ arm64 ]
       Events:
         HttpApi:
@@ -185,10 +182,10 @@ Resources:
                 - dynamodb:Query
                 - dynamodb:GetItem
               Resource:
-                - arn:aws:dynamodb:us-east-2:567776770335:table/Pool
-                - arn:aws:dynamodb:us-east-2:567776770335:table/Pool/index/GetPendingPoolGamblerBets-index
-                - arn:aws:dynamodb:us-east-2:567776770335:table/Account
-                - arn:aws:dynamodb:us-east-2:567776770335:table/Account/index/GetByEmail-index
+                - !Sub "arn:aws:dynamodb:us-east-2:${AWS::AccountId}:table/Pool"
+                - !Sub "arn:aws:dynamodb:us-east-2:${AWS::AccountId}:table/Pool/index/GetPendingPoolGamblerBets-index"
+                - !Sub "arn:aws:dynamodb:us-east-2:${AWS::AccountId}:table/Account"
+                - !Sub "arn:aws:dynamodb:us-east-2:${AWS::AccountId}:table/Account/index/GetByEmail-index"
       Architectures: [ arm64 ]
       Events:
         HttpApi:
@@ -214,11 +211,11 @@ Resources:
                 - dynamodb:Query
                 - dynamodb:GetItem
               Resource:
-                - arn:aws:dynamodb:us-east-2:567776770335:table/Pool
-                - arn:aws:dynamodb:us-east-2:567776770335:table/Pool/index/GetFinishedPoolGamblerBetsByMatchDate-index
-                - arn:aws:dynamodb:us-east-2:567776770335:table/PoolLayout
-                - arn:aws:dynamodb:us-east-2:567776770335:table/Account
-                - arn:aws:dynamodb:us-east-2:567776770335:table/Account/index/GetByEmail-index
+                - !Sub "arn:aws:dynamodb:us-east-2:${AWS::AccountId}:table/Pool"
+                - !Sub "arn:aws:dynamodb:us-east-2:${AWS::AccountId}:table/Pool/index/GetFinishedPoolGamblerBetsByMatchDate-index"
+                - !Sub "arn:aws:dynamodb:us-east-2:${AWS::AccountId}:table/PoolLayout"
+                - !Sub "arn:aws:dynamodb:us-east-2:${AWS::AccountId}:table/Account"
+                - !Sub "arn:aws:dynamodb:us-east-2:${AWS::AccountId}:table/Account/index/GetByEmail-index"
       Architectures: [ arm64 ]
       Events:
         HttpApi:
@@ -244,10 +241,10 @@ Resources:
                 - dynamodb:Query
                 - dynamodb:GetItem
               Resource:
-                - arn:aws:dynamodb:us-east-2:567776770335:table/Pool
-                - arn:aws:dynamodb:us-east-2:567776770335:table/Pool/index/GetPendingPoolGamblerBets-index
-                - arn:aws:dynamodb:us-east-2:567776770335:table/Account
-                - arn:aws:dynamodb:us-east-2:567776770335:table/Account/index/GetByEmail-index
+                - !Sub "arn:aws:dynamodb:us-east-2:${AWS::AccountId}:table/Pool"
+                - !Sub "arn:aws:dynamodb:us-east-2:${AWS::AccountId}:table/Pool/index/GetPendingPoolGamblerBets-index"
+                - !Sub "arn:aws:dynamodb:us-east-2:${AWS::AccountId}:table/Account"
+                - !Sub "arn:aws:dynamodb:us-east-2:${AWS::AccountId}:table/Account/index/GetByEmail-index"
       Architectures: [ arm64 ]
       Events:
         HttpApi:
@@ -273,12 +270,12 @@ Resources:
                 - dynamodb:Query
                 - dynamodb:GetItem
               Resource:
-                - arn:aws:dynamodb:us-east-2:567776770335:table/Pool
-                - arn:aws:dynamodb:us-east-2:567776770335:table/Pool/index/GetPendingPoolGamblerBets-index
-                - arn:aws:dynamodb:us-east-2:567776770335:table/Pool/index/GetFinishedPoolGamblerBetsByMatchDate-index
-                - arn:aws:dynamodb:us-east-2:567776770335:table/PoolLayout
-                - arn:aws:dynamodb:us-east-2:567776770335:table/Account
-                - arn:aws:dynamodb:us-east-2:567776770335:table/Account/index/GetByEmail-index
+                - !Sub "arn:aws:dynamodb:us-east-2:${AWS::AccountId}:table/Pool"
+                - !Sub "arn:aws:dynamodb:us-east-2:${AWS::AccountId}:table/Pool/index/GetPendingPoolGamblerBets-index"
+                - !Sub "arn:aws:dynamodb:us-east-2:${AWS::AccountId}:table/Pool/index/GetFinishedPoolGamblerBetsByMatchDate-index"
+                - !Sub "arn:aws:dynamodb:us-east-2:${AWS::AccountId}:table/PoolLayout"
+                - !Sub "arn:aws:dynamodb:us-east-2:${AWS::AccountId}:table/Account"
+                - !Sub "arn:aws:dynamodb:us-east-2:${AWS::AccountId}:table/Account/index/GetByEmail-index"
       Architectures: [ arm64 ]
       Events:
         HttpApi:
@@ -304,12 +301,12 @@ Resources:
                 - dynamodb:Query
                 - dynamodb:GetItem
               Resource:
-                - arn:aws:dynamodb:us-east-2:567776770335:table/Pool
-                - arn:aws:dynamodb:us-east-2:567776770335:table/Pool/index/GetPoolGamblerScoresByMatch-index
-                - arn:aws:dynamodb:us-east-2:567776770335:table/Pool/index/GetPoolMatchBetsByTotal-index
-                - arn:aws:dynamodb:us-east-2:567776770335:table/PoolLayout
-                - arn:aws:dynamodb:us-east-2:567776770335:table/Account
-                - arn:aws:dynamodb:us-east-2:567776770335:table/Account/index/GetByEmail-index
+                - !Sub "arn:aws:dynamodb:us-east-2:${AWS::AccountId}:table/Pool"
+                - !Sub "arn:aws:dynamodb:us-east-2:${AWS::AccountId}:table/Pool/index/GetPoolGamblerScoresByMatch-index"
+                - !Sub "arn:aws:dynamodb:us-east-2:${AWS::AccountId}:table/Pool/index/GetPoolMatchBetsByTotal-index"
+                - !Sub "arn:aws:dynamodb:us-east-2:${AWS::AccountId}:table/PoolLayout"
+                - !Sub "arn:aws:dynamodb:us-east-2:${AWS::AccountId}:table/Account"
+                - !Sub "arn:aws:dynamodb:us-east-2:${AWS::AccountId}:table/Account/index/GetByEmail-index"
       Architectures: [ arm64 ]
       Events:
         HttpApi:
@@ -335,9 +332,9 @@ Resources:
                 - dynamodb:Query
                 - dynamodb:BatchGetItem
               Resource:
-                - arn:aws:dynamodb:us-east-2:567776770335:table/Pool
-                - arn:aws:dynamodb:us-east-2:567776770335:table/Pool/index/GetPoolGamblerScoresByGambler-index
-                - arn:aws:dynamodb:us-east-2:567776770335:table/PoolLayout
+                - !Sub "arn:aws:dynamodb:us-east-2:${AWS::AccountId}:table/Pool"
+                - !Sub "arn:aws:dynamodb:us-east-2:${AWS::AccountId}:table/Pool/index/GetPoolGamblerScoresByGambler-index"
+                - !Sub "arn:aws:dynamodb:us-east-2:${AWS::AccountId}:table/PoolLayout"
       Architectures: [ arm64 ]
       Events:
         HttpApi:
@@ -364,9 +361,9 @@ Resources:
                 - dynamodb:PutItem
                 - dynamodb:TransactWriteItems
               Resource:
-                - arn:aws:dynamodb:us-east-2:567776770335:table/Pool
-                - arn:aws:dynamodb:us-east-2:567776770335:table/Account
-                - arn:aws:dynamodb:us-east-2:567776770335:table/PoolLayout
+                - !Sub "arn:aws:dynamodb:us-east-2:${AWS::AccountId}:table/Pool"
+                - !Sub "arn:aws:dynamodb:us-east-2:${AWS::AccountId}:table/Account"
+                - !Sub "arn:aws:dynamodb:us-east-2:${AWS::AccountId}:table/PoolLayout"
       Architectures: [ arm64 ]
       Events:
         HttpApi:
@@ -394,9 +391,9 @@ Resources:
                 - dynamodb:UpdateItem
                 - dynamodb:TransactWriteItems
               Resource:
-                - arn:aws:dynamodb:us-east-2:567776770335:table/Pool
-                - arn:aws:dynamodb:us-east-2:567776770335:table/Account
-                - arn:aws:dynamodb:us-east-2:567776770335:table/PoolLayout
+                - !Sub "arn:aws:dynamodb:us-east-2:${AWS::AccountId}:table/Pool"
+                - !Sub "arn:aws:dynamodb:us-east-2:${AWS::AccountId}:table/Account"
+                - !Sub "arn:aws:dynamodb:us-east-2:${AWS::AccountId}:table/PoolLayout"
       Architectures: [ arm64 ]
       Events:
         HttpApi:
@@ -423,7 +420,7 @@ Resources:
                 - dynamodb:DeleteItem
                 - dynamodb:BatchWriteItem
               Resource:
-                - arn:aws:dynamodb:us-east-2:567776770335:table/Pool
+                - !Sub "arn:aws:dynamodb:us-east-2:${AWS::AccountId}:table/Pool"
       Architectures: [ arm64 ]
       Events:
         HttpApi:
@@ -448,10 +445,10 @@ Resources:
               Action:
                 - dynamodb:Query
               Resource:
-                - arn:aws:dynamodb:us-east-2:567776770335:table/Pool
-                - arn:aws:dynamodb:us-east-2:567776770335:table/Pool/index/GetPoolGamblersByUsername-index
-                - arn:aws:dynamodb:us-east-2:567776770335:table/Account
-                - arn:aws:dynamodb:us-east-2:567776770335:table/Account/index/GetByEmail-index
+                - !Sub "arn:aws:dynamodb:us-east-2:${AWS::AccountId}:table/Pool"
+                - !Sub "arn:aws:dynamodb:us-east-2:${AWS::AccountId}:table/Pool/index/GetPoolGamblersByUsername-index"
+                - !Sub "arn:aws:dynamodb:us-east-2:${AWS::AccountId}:table/Account"
+                - !Sub "arn:aws:dynamodb:us-east-2:${AWS::AccountId}:table/Account/index/GetByEmail-index"
       Architectures: [ arm64 ]
       Events:
         HttpApi:
@@ -479,9 +476,9 @@ Resources:
                 - dynamodb:UpdateItem
                 - dynamodb:TransactWriteItems
               Resource:
-                - arn:aws:dynamodb:us-east-2:567776770335:table/Pool
-                - arn:aws:dynamodb:us-east-2:567776770335:table/Account
-                - arn:aws:dynamodb:us-east-2:567776770335:table/Account/index/GetByEmail-index
+                - !Sub "arn:aws:dynamodb:us-east-2:${AWS::AccountId}:table/Pool"
+                - !Sub "arn:aws:dynamodb:us-east-2:${AWS::AccountId}:table/Account"
+                - !Sub "arn:aws:dynamodb:us-east-2:${AWS::AccountId}:table/Account/index/GetByEmail-index"
       Architectures: [ arm64 ]
       Events:
         HttpApi:
@@ -508,9 +505,9 @@ Resources:
                 - dynamodb:GetItem
                 - dynamodb:UpdateItem
               Resource:
-                - arn:aws:dynamodb:us-east-2:567776770335:table/Pool
-                - arn:aws:dynamodb:us-east-2:567776770335:table/Account
-                - arn:aws:dynamodb:us-east-2:567776770335:table/Account/index/GetByEmail-index
+                - !Sub "arn:aws:dynamodb:us-east-2:${AWS::AccountId}:table/Pool"
+                - !Sub "arn:aws:dynamodb:us-east-2:${AWS::AccountId}:table/Account"
+                - !Sub "arn:aws:dynamodb:us-east-2:${AWS::AccountId}:table/Account/index/GetByEmail-index"
       Architectures: [ arm64 ]
       Events:
         HttpApi:
@@ -535,8 +532,8 @@ Resources:
               Action:
                 - dynamodb:Query
               Resource:
-                - arn:aws:dynamodb:us-east-2:567776770335:table/PoolLayout
-                - arn:aws:dynamodb:us-east-2:567776770335:table/PoolLayout/index/GetOpenedPoolLayout-index
+                - !Sub "arn:aws:dynamodb:us-east-2:${AWS::AccountId}:table/PoolLayout"
+                - !Sub "arn:aws:dynamodb:us-east-2:${AWS::AccountId}:table/PoolLayout/index/GetOpenedPoolLayout-index"
       Architectures: [ arm64 ]
       Events:
         HttpApi:
@@ -564,8 +561,8 @@ Resources:
                 - dynamodb:UpdateItem
                 - dynamodb:TransactWriteItems
               Resource:
-                - arn:aws:dynamodb:us-east-2:567776770335:table/Account
-                - arn:aws:dynamodb:us-east-2:567776770335:table/Account/index/GetByEmail-index
+                - !Sub "arn:aws:dynamodb:us-east-2:${AWS::AccountId}:table/Account"
+                - !Sub "arn:aws:dynamodb:us-east-2:${AWS::AccountId}:table/Account/index/GetByEmail-index"
       Architectures: [ arm64 ]
       Events:
         HttpApi:
@@ -590,8 +587,8 @@ Resources:
               Action:
                 - dynamodb:Query
               Resource:
-                - arn:aws:dynamodb:us-east-2:567776770335:table/Account
-                - arn:aws:dynamodb:us-east-2:567776770335:table/Account/index/GetByEmail-index
+                - !Sub "arn:aws:dynamodb:us-east-2:${AWS::AccountId}:table/Account"
+                - !Sub "arn:aws:dynamodb:us-east-2:${AWS::AccountId}:table/Account/index/GetByEmail-index"
       Architectures: [ arm64 ]
       Events:
         HttpApi:
@@ -617,10 +614,10 @@ Resources:
                 - dynamodb:Query
                 - dynamodb:UpdateItem
               Resource:
-                - arn:aws:dynamodb:us-east-2:567776770335:table/Account
-                - arn:aws:dynamodb:us-east-2:567776770335:table/Account/index/GetByEmail-index
-                - arn:aws:dynamodb:us-east-2:567776770335:table/Pool
-                - arn:aws:dynamodb:us-east-2:567776770335:table/Pool/index/GetPoolGamblerScoresByGambler-index
+                - !Sub "arn:aws:dynamodb:us-east-2:${AWS::AccountId}:table/Account"
+                - !Sub "arn:aws:dynamodb:us-east-2:${AWS::AccountId}:table/Account/index/GetByEmail-index"
+                - !Sub "arn:aws:dynamodb:us-east-2:${AWS::AccountId}:table/Pool"
+                - !Sub "arn:aws:dynamodb:us-east-2:${AWS::AccountId}:table/Pool/index/GetPoolGamblerScoresByGambler-index"
       Architectures: [ arm64 ]
       Events:
         HttpApi:
@@ -638,6 +635,9 @@ Resources:
       CodeUri: .
       MemorySize: 1024
       Timeout: 30
+      Environment:
+        Variables:
+          AVATAR_BUCKET_NAME: !Sub "tyche-avatars-${AWS::AccountId}"
       Policies:
         - AWSLambdaBasicExecutionRole
         - Statement:
@@ -645,13 +645,13 @@ Resources:
               Action:
                 - dynamodb:Query
               Resource:
-                - arn:aws:dynamodb:us-east-2:567776770335:table/Account
-                - arn:aws:dynamodb:us-east-2:567776770335:table/Account/index/GetByEmail-index
+                - !Sub "arn:aws:dynamodb:us-east-2:${AWS::AccountId}:table/Account"
+                - !Sub "arn:aws:dynamodb:us-east-2:${AWS::AccountId}:table/Account/index/GetByEmail-index"
             - Effect: Allow
               Action:
                 - s3:PutObject
               Resource:
-                - arn:aws:s3:::tyche-avatars/avatars/*
+                - !Sub "arn:aws:s3:::tyche-avatars-${AWS::AccountId}/avatars/*"
       Architectures: [ arm64 ]
       Events:
         HttpApi:
@@ -664,7 +664,7 @@ Resources:
   AvatarsBucket:
     Type: AWS::S3::Bucket
     Properties:
-      BucketName: tyche-avatars
+      BucketName: !Sub "tyche-avatars-${AWS::AccountId}"
       PublicAccessBlockConfiguration:
         BlockPublicAcls: true
         IgnorePublicAcls: true
@@ -683,7 +683,7 @@ Resources:
             Action:
               - s3:GetObject
             Resource:
-              - arn:aws:s3:::tyche-avatars/avatars/*
+              - !Sub "arn:aws:s3:::tyche-avatars-${AWS::AccountId}/avatars/*"
 
   # Complete stream batches that exhaust their retries are written here with their records,
   # so they can be replayed after the stream's 24-hour retention (operations/README.md).
@@ -692,7 +692,7 @@ Resources:
     DeletionPolicy: Retain
     UpdateReplacePolicy: Retain
     Properties:
-      BucketName: tyche-stream-failures-567776770335
+      BucketName: !Sub "tyche-stream-failures-${AWS::AccountId}"
       PublicAccessBlockConfiguration:
         BlockPublicAcls: true
         BlockPublicPolicy: true
@@ -740,8 +740,8 @@ Resources:
                 - dynamodb:ConditionCheckItem
                 - dynamodb:TransactWriteItems
               Resource:
-                - arn:aws:dynamodb:us-east-2:567776770335:table/PoolLayout
-                - arn:aws:dynamodb:us-east-2:567776770335:table/Pool
+                - !Sub "arn:aws:dynamodb:us-east-2:${AWS::AccountId}:table/PoolLayout"
+                - !Sub "arn:aws:dynamodb:us-east-2:${AWS::AccountId}:table/Pool"
             - Effect: Allow
               Action:
                 - sqs:SendMessage
@@ -901,10 +901,10 @@ Resources:
                 - dynamodb:ConditionCheckItem
                 - dynamodb:TransactWriteItems
               Resource:
-                - arn:aws:dynamodb:us-east-2:567776770335:table/PoolLayout
-                - arn:aws:dynamodb:us-east-2:567776770335:table/Pool
-                - arn:aws:dynamodb:us-east-2:567776770335:table/Pool/index/GetPoolGamblerScoresByMatch-index
-                - arn:aws:dynamodb:us-east-2:567776770335:table/Pool/index/GetGamblersByPoolLayout-index
+                - !Sub "arn:aws:dynamodb:us-east-2:${AWS::AccountId}:table/PoolLayout"
+                - !Sub "arn:aws:dynamodb:us-east-2:${AWS::AccountId}:table/Pool"
+                - !Sub "arn:aws:dynamodb:us-east-2:${AWS::AccountId}:table/Pool/index/GetPoolGamblerScoresByMatch-index"
+                - !Sub "arn:aws:dynamodb:us-east-2:${AWS::AccountId}:table/Pool/index/GetGamblersByPoolLayout-index"
             - Effect: Allow
               Action:
                 - sqs:SendMessage
@@ -972,8 +972,8 @@ Resources:
                 - dynamodb:ConditionCheckItem
                 - dynamodb:TransactWriteItems
               Resource:
-                - arn:aws:dynamodb:us-east-2:567776770335:table/Pool
-                - arn:aws:dynamodb:us-east-2:567776770335:table/PoolLayout
+                - !Sub "arn:aws:dynamodb:us-east-2:${AWS::AccountId}:table/Pool"
+                - !Sub "arn:aws:dynamodb:us-east-2:${AWS::AccountId}:table/PoolLayout"
       Architectures: [ arm64 ]
       Events:
         SqsEvent:
@@ -1023,9 +1023,9 @@ Resources:
                 - dynamodb:ConditionCheckItem
                 - dynamodb:TransactWriteItems
               Resource:
-                - arn:aws:dynamodb:us-east-2:567776770335:table/Pool
-                - arn:aws:dynamodb:us-east-2:567776770335:table/Pool/index/GetPoolGamblerScoresByMatch-index
-                - arn:aws:dynamodb:us-east-2:567776770335:table/PoolLayout
+                - !Sub "arn:aws:dynamodb:us-east-2:${AWS::AccountId}:table/Pool"
+                - !Sub "arn:aws:dynamodb:us-east-2:${AWS::AccountId}:table/Pool/index/GetPoolGamblerScoresByMatch-index"
+                - !Sub "arn:aws:dynamodb:us-east-2:${AWS::AccountId}:table/PoolLayout"
       Architectures: [ arm64 ]
       Events:
         SqsEvent:
@@ -1235,13 +1235,13 @@ Resources:
               Action:
                 - dynamodb:UpdateItem
               Resource:
-                - arn:aws:dynamodb:us-east-2:567776770335:table/MatchScoreIngestion
-                - arn:aws:dynamodb:us-east-2:567776770335:table/PoolLayout
+                - !Sub "arn:aws:dynamodb:us-east-2:${AWS::AccountId}:table/MatchScoreIngestion"
+                - !Sub "arn:aws:dynamodb:us-east-2:${AWS::AccountId}:table/PoolLayout"
             - Effect: Allow
               Action:
                 - ssm:GetParameter
               Resource:
-                - arn:aws:ssm:us-east-2:567776770335:parameter/tyche/football-data/token
+                - !Sub "arn:aws:ssm:us-east-2:${AWS::AccountId}:parameter/tyche/football-data/token"
       Architectures: [ arm64 ]
 
   OnMatchScoreIngestionChange:
@@ -1279,7 +1279,7 @@ Resources:
                 - scheduler:DeleteSchedule
                 - scheduler:GetSchedule
               Resource:
-                - arn:aws:scheduler:us-east-2:567776770335:schedule/default/match-score-*
+                - !Sub "arn:aws:scheduler:us-east-2:${AWS::AccountId}:schedule/default/match-score-*"
             - Effect: Allow
               Action:
                 - iam:PassRole

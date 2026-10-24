@@ -19,7 +19,6 @@
         <Compile Include="Infrastructure\GetByEmailRequestBuilder.fs" />
         <Compile Include="Infrastructure\GetByIdRequestBuilder.fs" />
         <Compile Include="Infrastructure\AccountDynamoDbRepository.fs" />
-        <Compile Include="Infrastructure\AvatarBucket.fs" />
         <Compile Include="Infrastructure\AvatarUploadUrlRequestBuilder.fs" />
         <Compile Include="Infrastructure\AvatarS3Storage.fs" />
         <Compile Include="Application\IGetAccountById.fs" />
