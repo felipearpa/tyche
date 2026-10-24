@@ -16,8 +16,8 @@
 #                                                  verification only
 set -euo pipefail
 
-REGION="${AWS_REGION:-us-east-2}"
 HERE="$(cd "$(dirname "$0")" && pwd)"
+source "$HERE/common.sh"
 INDEX_FILE="$HERE/ranking-index.json"
 KICKOFF_INDEX_FILE="$HERE/finished-by-match-date-index.json"
 
@@ -155,7 +155,6 @@ ensure_table() {
 }
 
 create_all() {
-  export AWS_PROFILE="$1"
   ensure_table Pool create_pool_table
   ensure_table PoolLayout create_layout_table
   ensure_table Account create_account_table
@@ -167,6 +166,6 @@ case "${1:-}" in
   ensure-ranking-index) ensure_ranking_index "${2:-Pool}" ;;
   ensure-kickoff-index) ensure_kickoff_index "${2:-Pool}" ;;
   create-copy) create_copy "$2" "$3" ;;
-  create-all) create_all "${2:?usage: $0 create-all <profile>}" ;;
-  *) echo "usage: $0 describe|ensure-ranking-index|ensure-kickoff-index [table] | create-copy <pool-table> <layout-table> | create-all <profile>" >&2; exit 2 ;;
+  create-all) create_all ;;
+  *) echo "usage: $0 describe|ensure-ranking-index|ensure-kickoff-index [table] | create-copy <pool-table> <layout-table> | create-all" >&2; exit 2 ;;
 esac

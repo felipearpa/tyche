@@ -59,7 +59,7 @@ ensure_deploy_bucket() {
 }
 
 ensure_tables() {
-  "$LAMBDA_DIR/operations/pool-table.sh" create-all "$AWS_PROFILE"
+  TYCHE_STAGE="$STAGE" "$LAMBDA_DIR/operations/pool-table.sh" create-all
 }
 
 stage_has_football_data_token() {

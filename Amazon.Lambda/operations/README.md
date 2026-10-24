@@ -2,7 +2,14 @@
 
 Runbook for the ordered settlement flow, rejoin restoration, the pool-total projection, the ranked match-bets rollout, and kickoff groups. How the flow works is described in [docs/pool-settlement.md](../../docs/pool-settlement.md); the records are in [docs/database-model.md](../../docs/database-model.md).
 
-All scripts default to the production stack (`TycheApi`, tables `Pool` and `PoolLayout`, region `us-east-2`). Set `POOL_TABLE_NAME`, `POOL_LAYOUT_TABLE_NAME`, `POOL_COMMAND_QUEUE_URL`, and `POOL_MAINTENANCE_QUEUE_URL` to target other resources.
+Every script requires `TYCHE_STAGE`, set to `dev` or `prod`, and refuses to run without it. The stage selects the AWS account through the profile in `../stages/<stage>.sh` (`dev` for the dev account, `default` for production); the stack (`TycheApi`), tables (`Pool`, `PoolLayout`), and region (`us-east-2`) have the same names in both accounts.
+
+```bash
+TYCHE_STAGE=dev ./unblock-pool.sh <poolId>    # dev account
+TYCHE_STAGE=prod ./unblock-pool.sh <poolId>   # production
+```
+
+The commands below write `TYCHE_STAGE=<stage>`; replace it with the stage you mean. Set `POOL_TABLE_NAME`, `POOL_LAYOUT_TABLE_NAME`, `POOL_COMMAND_QUEUE_URL`, and `POOL_MAINTENANCE_QUEUE_URL` to target other resources in the stage's account. The plain `aws` commands in this runbook use your default profile, which is production; add `--profile dev` to run them against dev.
 
 ## Resources
 
@@ -21,9 +28,9 @@ All scripts default to the production stack (`TycheApi`, tables `Pool` and `Pool
 The `Pool`, `PoolLayout`, and `MatchScoreIngestion` tables are not CloudFormation resources. `pool-table.sh` is the reviewed owner of what this repository adds to `Pool`:
 
 ```bash
-./pool-table.sh describe Pool                 # keys, indexes, stream, billing
-./pool-table.sh ensure-ranking-index Pool     # idempotent, additive
-./pool-table.sh ensure-kickoff-index Pool     # idempotent, additive
+TYCHE_STAGE=<stage> ./pool-table.sh describe Pool               # keys, indexes, stream, billing
+TYCHE_STAGE=<stage> ./pool-table.sh ensure-ranking-index Pool   # idempotent, additive
+TYCHE_STAGE=<stage> ./pool-table.sh ensure-kickoff-index Pool   # idempotent, additive
 ```
 
 Stream ARNs are stack parameters (`PoolStreamArn`, `PoolLayoutStreamArn`, `MatchScoreIngestionStreamArn`); update them if a stream is ever re-created.
@@ -46,10 +53,23 @@ Other metrics: `OperationCompleted`, `OperationYielded` (deliberate deadline yie
 
 ## Procedures
 
+### Seed a pool layout
+
+```bash
+TYCHE_STAGE=<stage> ./seed-pool-layout.sh "Fortuna QA — dev" 2026-11-20T18:00:00.000Z matches.csv
+```
+
+The script writes an `OPENED` layout root (`POOLLAYOUT#<layoutId>` as both keys, `poolLayoutVersion` 1) with the given name and start date to the stage's `PoolLayout` table, uploads the CSV's matches with `Scripting/upload_matches.py`, and prints the new layout id on the last line. The app lists the layout as open right away. Each run creates a new layout, so do not rerun it to fix a failed upload; add the missing matches to the printed layout instead.
+
+- Name: 1 to 100 characters. Start date and match dates: UTC in the format `2026-11-20T18:00:00.000Z`.
+- CSV: header `Local Team,Away Team,Date`, one match per row, as in `Scripting/example.csv`. Rows with the same team name share a team id.
+- Python: it runs `Scripting/.venv/bin/python`, which needs `boto3` and `ulid-py` (`python3 -m venv Scripting/.venv && Scripting/.venv/bin/python -m pip install -r Scripting/requirements.txt`).
+- It refuses `POOL_LAYOUT_TABLE_NAME`, because `upload_matches.py` always writes to `PoolLayout`.
+
 ### Correct a published result
 
 ```bash
-./correct-result.sh <poolLayoutId> <matchId> <home> <away> <currentResultVersion>
+TYCHE_STAGE=<stage> ./correct-result.sh <poolLayoutId> <matchId> <home> <away> <currentResultVersion>
 ```
 
 The script refuses, without writing anything, if the match's current version is not the one given or if any pool has not completed settlement of that version. On success it publishes the next result version; each pool then applies the difference between the old and new award to the total, advances the score version, and recalculates positions, in order, with the current formula. A repeated correction is a no-op; an older version can never be reapplied. This replaces the former manual procedure (direct detail and total writes, hand-built position messages, hardcoded point values).
@@ -65,9 +85,9 @@ The script refuses, without writing anything, if the match's current version is 
 ### Blocked pool
 
 ```bash
-./unblock-pool.sh <poolId>             # inspect the checkpoint
+TYCHE_STAGE=<stage> ./unblock-pool.sh <poolId>   # inspect the checkpoint
 # fix the cause (data repair, permissions, throughput)
-./unblock-pool.sh <poolId> --unblock
+TYCHE_STAGE=<stage> ./unblock-pool.sh <poolId> --unblock
 ```
 
 Then redrive the dead-lettered command (above) or send any command for the pool. Commands received while it was blocked are stored as `DEFERRED` receipts and are enqueued again, in order, when the blocked operation completes.
@@ -80,10 +100,10 @@ Maintenance jobs are version guarded and safe to repeat. Fix the cause and move 
 
 Objects in the failure bucket (`aws/lambda/<mapping-uuid>/<shard>/<date>/…`) hold the complete batch of a failed invocation: `requestContext.condition` says why (for example `RetryAttemptsExhausted`), and `payload` is a JSON string whose `Records` carry the keys and both images. Read the records with `aws s3 cp <object> - | jq -r '.payload | fromjson | .Records[] | .eventName, .dynamodb.Keys'`, replay as below, and delete the object once the replay is verified.
 
-- PoolLayout records with a new result: `./request-match-reconciliation.sh <matchId>`.
-- PoolLayout match insertions: `./enqueue-maintenance.sh RECONCILE_POOL <poolId>` for the layout's pools (materializes missing details and requests settlement).
-- Pool membership insertions or total changes: `./enqueue-maintenance.sh RECONCILE_POOL <poolId>`. For an insertion, also replay its restoration with `./restore-rejoin-history.sh <poolId> <gamblerId> --replay`: reconciliation requests a restoration only for details bound to an earlier generation, and a detail retained from before generations existed has none.
-- Pool membership removals: `./enqueue-maintenance.sh RETIRE_MEMBERSHIP <poolId> <gamblerId> <membershipGeneration from OldImage>`, then `RECONCILE_POOL`.
+- PoolLayout records with a new result: `TYCHE_STAGE=<stage> ./request-match-reconciliation.sh <matchId>`.
+- PoolLayout match insertions: `TYCHE_STAGE=<stage> ./enqueue-maintenance.sh RECONCILE_POOL <poolId>` for the layout's pools (materializes missing details and requests settlement).
+- Pool membership insertions or total changes: `TYCHE_STAGE=<stage> ./enqueue-maintenance.sh RECONCILE_POOL <poolId>`. For an insertion, also replay its restoration with `TYCHE_STAGE=<stage> ./restore-rejoin-history.sh <poolId> <gamblerId> --replay`: reconciliation requests a restoration only for details bound to an earlier generation, and a detail retained from before generations existed has none.
+- Pool membership removals: `TYCHE_STAGE=<stage> ./enqueue-maintenance.sh RETIRE_MEMBERSHIP <poolId> <gamblerId> <membershipGeneration from OldImage>`, then `RECONCILE_POOL`.
 
 ### Rejoin restoration
 
@@ -92,7 +112,7 @@ Every join enqueues `RESTORE_REJOIN_HISTORY` (`RESTORE#<gamblerId>#<membershipGe
 Inspect a gambler's restoration (read-only): the membership, the restore receipt (`operationState`, `unresolvedDetails`), and every computed detail not bound to the membership, with the reason for any held one:
 
 ```bash
-./restore-rejoin-history.sh <poolId> <gamblerId>
+TYCHE_STAGE=<stage> ./restore-rejoin-history.sh <poolId> <gamblerId>
 ```
 
 A detail listed without `heldFor` waits for restoration (the receipt is missing or the operation is still running); one whose `generation` is the earlier membership's and `heldFor` is the current generation was held for repair.
@@ -101,7 +121,7 @@ A detail listed without `heldFor` waits for restoration (the receipt is missing 
 
 A restoration holds a retained detail for repair, outside the total, when it is malformed (`computed detail without an award`), its match is missing or has no result, or it reflects a newer result version than its match (`detail reflects a newer result than its match`). The rest of the history is restored.
 
-1. Inspect it: `./restore-rejoin-history.sh <poolId> <gamblerId>`, then read the full detail and its layout match:
+1. Inspect it: `TYCHE_STAGE=<stage> ./restore-rejoin-history.sh <poolId> <gamblerId>`, then read the full detail and its layout match:
 
    ```bash
    aws dynamodb get-item --region us-east-2 --table-name Pool --consistent-read \
@@ -111,8 +131,8 @@ A restoration holds a retained detail for repair, outside the total, when it is 
    ```
 
 2. Repair the data that caused the hold (for example restore the detail's award from its prediction and the match result, or restore the layout match). Do not change the detail's `poolMembershipGeneration`, and do not change the membership total by hand.
-3. Clear the marker of each repaired detail, conditioned on it being held for the current membership: `./restore-rejoin-history.sh <poolId> <gamblerId> --clear <matchId>`.
-4. Replay the restoration: `./restore-rejoin-history.sh <poolId> <gamblerId> --replay`. It enqueues the command under a new operation ID (`RESTORE#<gamblerId>#<membershipGeneration>#OPERATOR-<time>`), because the first restoration's receipt is already completed. Details restored earlier are skipped; the repaired ones are rebound and their awards added once, and positions are recalculated.
+3. Clear the marker of each repaired detail, conditioned on it being held for the current membership: `TYCHE_STAGE=<stage> ./restore-rejoin-history.sh <poolId> <gamblerId> --clear <matchId>`.
+4. Replay the restoration: `TYCHE_STAGE=<stage> ./restore-rejoin-history.sh <poolId> <gamblerId> --replay`. It enqueues the command under a new operation ID (`RESTORE#<gamblerId>#<membershipGeneration>#OPERATOR-<time>`), because the first restoration's receipt is already completed. Details restored earlier are skipped; the repaired ones are rebound and their awards added once, and positions are recalculated.
 5. Confirm with the inspect command that no computed detail is left unbound. The replay's receipt is `SETTLEMENT#<operation ID printed by --replay>` on the pool partition; it is `COMPLETED` with `unresolvedDetails` 0 when nothing was held again.
 
 ### Migration and readiness
@@ -120,9 +140,9 @@ A restoration holds a retained detail for repair, outside the total, when it is 
 Per pool, in order, waiting for the maintenance queue to drain between steps:
 
 ```bash
-./enqueue-maintenance.sh INITIALIZE_IDENTITIES --all
-./enqueue-maintenance.sh BACKFILL_PROJECTION --all
-./enqueue-maintenance.sh VERIFY_READINESS --all
+TYCHE_STAGE=<stage> ./enqueue-maintenance.sh INITIALIZE_IDENTITIES --all
+TYCHE_STAGE=<stage> ./enqueue-maintenance.sh BACKFILL_PROJECTION --all
+TYCHE_STAGE=<stage> ./enqueue-maintenance.sh VERIFY_READINESS --all
 ```
 
 Readiness is stored on each pool root (`rankingReadiness`). A `NOT_READY` pool with `unresolved > 0` usually has a membership held by identity initialization (its computed awards do not add up to its total); the `IdentityMembersHeld` metric record lists it. Repair the data, then run the three steps again for that pool.
@@ -131,12 +151,12 @@ Readiness is stored on each pool root (`rankingReadiness`). A `NOT_READY` pool w
 
 Before the grouped History and Timeline are released, every pool needs the kickoff copy on its computed details and a trend kickoff on its root ([docs/pool-settlement.md](../../docs/pool-settlement.md#kickoff-groups)):
 
-1. Create the index and wait for it to be `ACTIVE`: `./pool-table.sh ensure-kickoff-index Pool`.
+1. Create the index and wait for it to be `ACTIVE`: `TYCHE_STAGE=<stage> ./pool-table.sh ensure-kickoff-index Pool`.
 2. Deploy the backend that writes `computedMatchDateTime` and handles `BACKFILL_KICKOFF_GROUPS`.
 3. Enqueue the job and wait for the maintenance queue to drain:
 
    ```bash
-   ./enqueue-maintenance.sh BACKFILL_KICKOFF_GROUPS --all
+   TYCHE_STAGE=<stage> ./enqueue-maintenance.sh BACKFILL_KICKOFF_GROUPS --all
    ```
 
    Each job copies `matchDateTime` to `computedMatchDateTime` on the pool's computed details that lack it, eight layout matches at a time (found through `GetPoolGamblerScoresByMatch-index`, so details retained from removed memberships are included), and enqueues its continuation. The last job sets the root's `trendKickoffDateTime`, when the root has none, to the kickoff of the match whose `RESULT#` receipt (`SETTLEMENT#RESULT#…` in the pool's partition) was completed last. A pool settled before receipts existed has none; it gets the latest kickoff among the layout matches that have a computed detail in the pool. A pool without computed details keeps no trend kickoff. That write is conditioned on no active operation and on the root's `operationRevision` being the one read, so it never overwrites the value an operation records at completion. While an operation is active the job fails and the queue retries it after the visibility timeout; after 5 receives it is dead-lettered ([Dead-lettered job](#dead-lettered-job)) and can simply be enqueued again. Memberships keep their `beforePosition`. Rerunning the job writes nothing.
@@ -166,8 +186,8 @@ The result ingestion is not rescheduled with it. If the match has a `MatchScoreI
 | Quiesce settlement | Deploy with `SettlementProcessingEnabled=false`; stream records (24 h) and queued commands (14 days) are retained. |
 | Activate settlement | Deploy with `SettlementProcessingEnabled=true` after identities are initialized. |
 | Ranked reads | Available for every pool whose `rankingReadiness` is `READY`. Ranked requests to any other pool answer `503 RANKING_NOT_READY`. |
-| Roll back ranked reads | Either the mobile apps stop sending `sort=pool-score-desc`, or mark the affected pools not ready with `./mark-pool-not-ready.sh <poolId> [reason]`. Requests without `sort` are unaffected. |
-| Re-enable ranked reads for a pool | `./enqueue-maintenance.sh VERIFY_READINESS <poolId>`; the pool answers ranked requests again only if the check records `READY`. |
+| Roll back ranked reads | Either the mobile apps stop sending `sort=pool-score-desc`, or mark the affected pools not ready with `TYCHE_STAGE=<stage> ./mark-pool-not-ready.sh <poolId> [reason]`. Requests without `sort` are unaffected. |
+| Re-enable ranked reads for a pool | `TYCHE_STAGE=<stage> ./enqueue-maintenance.sh VERIFY_READINESS <poolId>`; the pool answers ranked requests again only if the check records `READY`. |
 | Roll back settlement | Keep the versioned writers, receipts, and checkpoints. Pause with `SettlementProcessingEnabled=false`, fix, re-enable, then run `RECONCILE_POOL` for affected pools. Never redeploy the previous unguarded scoring alongside active operations, never delete the original indexes, and never rewrite totals by hand. |
 
 Deploy parameters are passed as `dotnet lambda deploy-serverless --template-parameters "SettlementProcessingEnabled=false"`.
