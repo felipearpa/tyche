@@ -41,12 +41,12 @@ class AccountAvatarTest {
     @Test
     fun `avatar request uses the deterministic public URL and the bucketed size`() {
         val request = avatarPhotoRequestConfiguration(
-            avatarUrl = AvatarUrl(host = AVATAR_HOST),
+            avatarUrl = AvatarUrl(base = AVATAR_BASE),
             accountId = "account-1",
             bucket = 64,
         )
 
-        request.url shouldBe "$AVATAR_HOST/avatars/account-1.jpg"
+        request.url shouldBe "$AVATAR_BASE/avatars/account-1.jpg"
         request.diskCacheKey shouldBe request.url
         request.sizePx shouldBe 64
     }
@@ -92,7 +92,7 @@ class AccountAvatarTest {
     // Runs the avatar request's headers through the cache strategy the app installs on Coil.
     private suspend fun readThroughCacheStrategy(storedHeaders: NetworkHeaders) =
         avatarPhotoRequestConfiguration(
-            avatarUrl = AvatarUrl(host = AVATAR_HOST),
+            avatarUrl = AvatarUrl(base = AVATAR_BASE),
             accountId = "account-1",
             bucket = 64,
         )
@@ -116,7 +116,7 @@ class AccountAvatarTest {
             }
 
     private companion object {
-        const val AVATAR_HOST = "https://avatars.example.com"
+        const val AVATAR_BASE = "https://avatars.example.com"
         const val STORED_ETAG = "\"5b660e06a59470bd760a4f4f701a001c\""
     }
 }

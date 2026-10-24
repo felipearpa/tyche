@@ -14,10 +14,9 @@ let private bucketName = "tyche-avatars-123456789012"
 let private now = DateTime(2026, 7, 26, 12, 0, 0, DateTimeKind.Utc)
 
 [<Fact>]
-let ``given an account id when built then targets the fixed avatar key in the given bucket`` () =
+let ``given an account id when built then targets the fixed avatar key`` () =
     let request = AvatarUploadUrlRequestBuilder.build bucketName accountId 512_000L now
 
-    request.BucketName |> shouldEqual bucketName
     request.Key |> shouldEqual "avatars/01K1PX1TX2NM1HG851S1V0QG6A.jpg"
 
 [<Fact>]

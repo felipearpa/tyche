@@ -21,7 +21,7 @@ import org.koin.dsl.module
 
 val networkModule = module {
     single<UrlBasePathProvider> { LocalUrlBasePathProvider() }
-    single { AvatarUrl(host = BuildConfig.AVATAR_URL_BASE) }
+    single { AvatarUrl(base = BuildConfig.AVATAR_URL_BASE) }
 
     single {
         HttpClient(OkHttp) {

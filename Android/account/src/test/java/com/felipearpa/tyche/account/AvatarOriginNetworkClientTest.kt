@@ -102,7 +102,7 @@ class AvatarOriginNetworkClientTest {
 
     private companion object {
         const val REQUESTED_AT = 42L
-        val avatarUrl = AvatarUrl(host = "https://avatars.example.com")
+        val avatarUrl = AvatarUrl(base = "https://avatars.example.com")
     }
 }
 

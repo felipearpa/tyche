@@ -1,11 +1,11 @@
 package com.felipearpa.tyche.account
 
 /**
- * Avatar objects live at a deterministic key under [host], so the URL is a pure function of the
+ * Avatar objects live at a deterministic key under [base], so the URL is a pure function of the
  * account id.
  */
-class AvatarUrl(host: String) {
-    private val pathPrefix = "$host/avatars/"
+class AvatarUrl(base: String) {
+    private val pathPrefix = "$base/avatars/"
 
     fun of(accountId: String): String = "$pathPrefix$accountId$EXTENSION"
 

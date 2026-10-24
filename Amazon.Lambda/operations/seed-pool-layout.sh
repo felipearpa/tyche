@@ -30,7 +30,7 @@ require_match_csv() {
   fi
 }
 
-require_layout_table_of_upload_script() {
+require_default_layout_table() {
   if [ "$POOL_LAYOUT_TABLE" != PoolLayout ]; then
     echo "upload_matches.py always writes to PoolLayout; unset POOL_LAYOUT_TABLE_NAME." >&2
     exit 2
@@ -68,6 +68,7 @@ put_layout_root() {
 }
 
 upload_matches() {
+  echo "Uploading matches for layout $LAYOUT_ID to $POOL_LAYOUT_TABLE in $TYCHE_STAGE" >&2
   "$PYTHON" "$SCRIPTING_DIR/upload_matches.py" --file "$CSV" \
     --poolLayoutId "$LAYOUT_ID" --poolLayoutVersion "$LAYOUT_VERSION" >&2
 }
@@ -77,9 +78,9 @@ NAME="$1"
 START="$2"
 CSV="$3"
 require_match_csv
-require_layout_table_of_upload_script
+require_default_layout_table
 require_python
 LAYOUT_ID="$(new_layout_id)"
-put_layout_root
 upload_matches
+put_layout_root
 echo "$LAYOUT_ID"

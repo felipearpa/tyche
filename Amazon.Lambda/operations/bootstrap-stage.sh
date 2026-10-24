@@ -1,7 +1,6 @@
 #!/bin/bash
 set -euo pipefail
 
-REGION=us-east-2
 TOKEN_PARAMETER=/tyche/football-data/token
 PARENT_DOMAIN=felipearpa.com
 HOSTED_ZONE_ID=Z09565921NSDP1O1BZLH3
@@ -19,20 +18,8 @@ refuse_prod_stage() {
   fi
 }
 
-require_stage() {
-  [ -n "$STAGE" ] || usage
-  refuse_prod_stage
-  [ -f "$LAMBDA_DIR/stages/$STAGE.sh" ] || usage
-}
-
 prod_profile() {
   (source "$LAMBDA_DIR/stages/prod.sh" && echo "$AWS_PROFILE")
-}
-
-load_stage_settings() {
-  PROD_PROFILE="$(prod_profile)"
-  source "$LAMBDA_DIR/stages/$STAGE.sh"
-  export AWS_PROFILE
 }
 
 account_of() {
@@ -62,18 +49,6 @@ ensure_tables() {
   TYCHE_STAGE="$STAGE" "$LAMBDA_DIR/operations/pool-table.sh" create-all
 }
 
-stage_has_football_data_token() {
-  local error
-  if error="$(aws ssm get-parameter --region "$REGION" --name "$TOKEN_PARAMETER" 2>&1 >/dev/null)"; then
-    return 0
-  fi
-  if ! grep -q ParameterNotFound <<<"$error"; then
-    echo "$error" >&2
-    exit 1
-  fi
-  return 1
-}
-
 pipe_football_data_token_from_prod_to_stage() {
   aws ssm get-parameter --profile "$PROD_PROFILE" --region "$REGION" --name "$TOKEN_PARAMETER" \
     --with-decryption --query Parameter.Value --output text \
@@ -83,7 +58,7 @@ pipe_football_data_token_from_prod_to_stage() {
 }
 
 ensure_football_data_token() {
-  if stage_has_football_data_token; then
+  if exists_unless ParameterNotFound aws ssm get-parameter --region "$REGION" --name "$TOKEN_PARAMETER"; then
     echo "$TOKEN_PARAMETER already exists"
     return
   fi
@@ -169,20 +144,8 @@ ensure_certificate() {
   echo "Certificate for $(api_domain) is issued"
 }
 
-custom_domain_exists() {
-  local error
-  if error="$(aws apigatewayv2 get-domain-name --region "$REGION" --domain-name "$(api_domain)" 2>&1 >/dev/null)"; then
-    return 0
-  fi
-  if ! grep -q NotFoundException <<<"$error"; then
-    echo "$error" >&2
-    exit 1
-  fi
-  return 1
-}
-
 ensure_custom_domain() {
-  if custom_domain_exists; then
+  if exists_unless NotFoundException aws apigatewayv2 get-domain-name --region "$REGION" --domain-name "$(api_domain)"; then
     echo "Custom domain $(api_domain) already exists"
     return
   fi
@@ -193,7 +156,7 @@ ensure_custom_domain() {
 }
 
 stack_api_id() {
-  aws cloudformation describe-stack-resource --region "$REGION" --stack-name TycheApi \
+  aws cloudformation describe-stack-resource --region "$REGION" --stack-name "$STACK" \
     --logical-resource-id AuthGatewayHttpApi --query StackResourceDetail.PhysicalResourceId --output text
 }
 
@@ -248,8 +211,9 @@ print_api_url() {
 }
 
 STAGE="${1:-}"
-require_stage
-load_stage_settings
+refuse_prod_stage
+PROD_PROFILE="$(prod_profile)"
+source "$LAMBDA_DIR/stages/load.sh" "$STAGE" || usage
 refuse_production_account
 ensure_deploy_bucket
 ensure_tables

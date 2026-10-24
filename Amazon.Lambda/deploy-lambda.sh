@@ -1,30 +1,13 @@
 #!/bin/bash
 set -euo pipefail
 
-REGION=us-east-2
-STACK=TycheApi
 CAPABILITIES=(CAPABILITY_IAM CAPABILITY_NAMED_IAM CAPABILITY_AUTO_EXPAND)
+PRESERVED_STACK_TAG=AWSServerlessAppNETCore=true
 HERE="$(cd "$(dirname "$0")" && pwd)"
 
 usage() {
   echo "usage: $0 dev|prod" >&2
   exit 2
-}
-
-require_stage() {
-  case "$STAGE" in
-    dev | prod) ;;
-    *) usage ;;
-  esac
-}
-
-load_stage_settings() {
-  source "$HERE/stages/$STAGE.sh"
-  export AWS_PROFILE
-}
-
-preserved_stack_tag() {
-  echo AWSServerlessAppNETCore=true
 }
 
 stream_arn_of() {
@@ -69,17 +52,13 @@ cloudformation_deploy() {
     --template-file "$PACKAGED_TEMPLATE" \
     --capabilities "${CAPABILITIES[@]}" \
     --no-fail-on-empty-changeset \
-    --tags "$(preserved_stack_tag)" \
+    --tags "$PRESERVED_STACK_TAG" \
     --parameter-overrides \
       "PoolStreamArn=$POOL_STREAM_ARN" \
       "PoolLayoutStreamArn=$POOL_LAYOUT_STREAM_ARN" \
       "MatchScoreIngestionStreamArn=$MATCH_SCORE_INGESTION_STREAM_ARN" \
       "PoolMaintenanceMaximumConcurrency=$POOL_MAINTENANCE_MAXIMUM_CONCURRENCY" \
     "$@"
-}
-
-deploy_to_dev() {
-  cloudformation_deploy
 }
 
 print_changeset() {
@@ -128,13 +107,12 @@ deploy_to_stage() {
   if [ "$STAGE" = prod ]; then
     deploy_to_prod_after_confirmation
   else
-    deploy_to_dev
+    cloudformation_deploy
   fi
 }
 
 STAGE="${1:-}"
-require_stage
-load_stage_settings
+source "$HERE/stages/load.sh" "$STAGE" || usage
 resolve_stream_arns
 run_tests
 package_to_deploy_bucket

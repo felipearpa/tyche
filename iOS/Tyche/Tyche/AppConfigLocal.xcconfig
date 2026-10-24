@@ -3,10 +3,9 @@
 //  Tyche
 //
 //  Local environment — used by the "Debug Local" configuration ("Tyche Local" scheme).
-//  Overrides only the values that differ from AppConfig.xcconfig.
+//  Overrides only the values that differ from AppConfigDev.xcconfig.
 //
 
-#include "AppConfig.xcconfig"
+#include "AppConfigDev.xcconfig"
 
 URL_BASE_PATH = https:/$()/guiding-terminally-cicada.ngrok-free.app
-AVATAR_URL_BASE = https:/$()/tyche-avatars-041269245665.s3.us-east-2.amazonaws.com

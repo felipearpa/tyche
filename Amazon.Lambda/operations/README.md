@@ -2,7 +2,7 @@
 
 Runbook for the ordered settlement flow, rejoin restoration, the pool-total projection, the ranked match-bets rollout, and kickoff groups. How the flow works is described in [docs/pool-settlement.md](../../docs/pool-settlement.md); the records are in [docs/database-model.md](../../docs/database-model.md).
 
-Every script requires `TYCHE_STAGE`, set to `dev` or `prod`, and refuses to run without it. The stage selects the AWS account through the profile in `../stages/<stage>.sh` (`dev` for the dev account, `default` for production); the stack (`TycheApi`), tables (`Pool`, `PoolLayout`), and region (`us-east-2`) have the same names in both accounts.
+Every script except `bootstrap-stage.sh`, which takes the stage as its argument (`./bootstrap-stage.sh <stage>`), requires `TYCHE_STAGE`, set to `dev` or `prod`, and refuses to run without it. The stage selects the AWS account through the profile in `../stages/<stage>.sh` (`dev` for the dev account, `default` for production); the stack (`TycheApi`), tables (`Pool`, `PoolLayout`), and region (`us-east-2`) have the same names in both accounts.
 
 ```bash
 TYCHE_STAGE=dev ./unblock-pool.sh <poolId>    # dev account
@@ -31,6 +31,8 @@ The `Pool`, `PoolLayout`, and `MatchScoreIngestion` tables are not CloudFormatio
 TYCHE_STAGE=<stage> ./pool-table.sh describe Pool               # keys, indexes, stream, billing
 TYCHE_STAGE=<stage> ./pool-table.sh ensure-ranking-index Pool   # idempotent, additive
 TYCHE_STAGE=<stage> ./pool-table.sh ensure-kickoff-index Pool   # idempotent, additive
+TYCHE_STAGE=<stage> ./pool-table.sh create-all                  # create Pool, PoolLayout, Account, MatchScoreIngestion if missing
+TYCHE_STAGE=<stage> ./pool-table.sh create-copy <pool-table> <layout-table>   # isolated copies with the same schema, for verification only
 ```
 
 Stream ARNs are stack parameters (`PoolStreamArn`, `PoolLayoutStreamArn`, `MatchScoreIngestionStreamArn`); update them if a stream is ever re-created.
@@ -59,7 +61,7 @@ Other metrics: `OperationCompleted`, `OperationYielded` (deliberate deadline yie
 TYCHE_STAGE=<stage> ./seed-pool-layout.sh "Fortuna QA — dev" 2026-11-20T18:00:00.000Z matches.csv
 ```
 
-The script writes an `OPENED` layout root (`POOLLAYOUT#<layoutId>` as both keys, `poolLayoutVersion` 1) with the given name and start date to the stage's `PoolLayout` table, uploads the CSV's matches with `Scripting/upload_matches.py`, and prints the new layout id on the last line. The app lists the layout as open right away. Each run creates a new layout, so do not rerun it to fix a failed upload; add the missing matches to the printed layout instead.
+The script uploads the CSV's matches with `Scripting/upload_matches.py` under a new layout id, then writes the `OPENED` layout root (`POOLLAYOUT#<layoutId>` as both keys, `poolLayoutVersion` 1) with the given name and start date to the stage's `PoolLayout` table, and prints the new layout id on the last line. The app lists the layout as open once the root is written. A failed run leaves unlisted match rows under the printed id; it is safe to rerun, which uses a new id.
 
 - Name: 1 to 100 characters. Start date and match dates: UTC in the format `2026-11-20T18:00:00.000Z`.
 - CSV: header `Local Team,Away Team,Date`, one match per row, as in `Scripting/example.csv`. Rows with the same team name share a team id.

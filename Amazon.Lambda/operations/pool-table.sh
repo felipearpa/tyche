@@ -62,27 +62,20 @@ ensure_kickoff_index() {
     AttributeName=computedMatchDateTime,AttributeType=S
 }
 
-table_exists() {
-  local error
-  if error="$(aws dynamodb describe-table --region "$REGION" --table-name "$1" 2>&1 >/dev/null)"; then
-    return 0
-  fi
-  if grep -q ResourceNotFoundException <<<"$error"; then
-    return 1
-  fi
-  echo "$error" >&2
-  exit 1
-}
-
 wait_for_table() {
   echo "Waiting for $1 to become active"
   aws dynamodb wait table-exists --region "$REGION" --table-name "$1"
 }
 
+key() {
+  echo "{\"AttributeName\":\"$1\",\"KeyType\":\"$2\"}"
+}
+
+index() {
+  echo "{\"IndexName\":\"$1\",\"KeySchema\":[$(key "$2" HASH)${3:+,$(key "$3" RANGE)}],\"Projection\":{\"ProjectionType\":\"ALL\"}}"
+}
+
 create_pool_table() {
-  local all='{"ProjectionType":"ALL"}'
-  local index
-  index() { echo "{\"IndexName\":\"$1\",\"KeySchema\":[{\"AttributeName\":\"$2\",\"KeyType\":\"HASH\"},{\"AttributeName\":\"$3\",\"KeyType\":\"RANGE\"}],\"Projection\":$all}"; }
   aws dynamodb create-table --region "$REGION" --table-name "$1" \
     --billing-mode PAY_PER_REQUEST \
     --stream-specification StreamEnabled=true,StreamViewType=NEW_AND_OLD_IMAGES \
@@ -99,8 +92,8 @@ create_pool_table() {
       $(index GetPendingPoolGamblerBets-index pk matchDateTime),
       $(index GetFinishedPoolGamblerBets-index pk computedDateTime),
       $(cat "$KICKOFF_INDEX_FILE"),
-      {\"IndexName\":\"GetPoolGamblerScoresByGambler-index\",\"KeySchema\":[{\"AttributeName\":\"sk\",\"KeyType\":\"HASH\"},{\"AttributeName\":\"score\",\"KeyType\":\"RANGE\"}],\"Projection\":$all},
-      {\"IndexName\":\"GetPoolGamblerScoresByPool-index\",\"KeySchema\":[{\"AttributeName\":\"pk\",\"KeyType\":\"HASH\"},{\"AttributeName\":\"score\",\"KeyType\":\"RANGE\"}],\"Projection\":$all},
+      $(index GetPoolGamblerScoresByGambler-index sk score),
+      $(index GetPoolGamblerScoresByPool-index pk score),
       $(index GetPoolGamblerScoresByMatch-index getPoolGamblerScoresByMatchPk getPoolGamblerScoresByMatchSk),
       $(index GetGamblersByPoolLayout-index getGamblersByPoolLayoutPk getGamblersByPoolLayoutSk),
       $(index GetPoolGamblersByUsername-index pk gamblerUsername),
@@ -115,7 +108,7 @@ create_layout_table() {
     --attribute-definitions AttributeName=pk,AttributeType=S AttributeName=sk,AttributeType=S \
       AttributeName=status,AttributeType=S AttributeName=startDateTime,AttributeType=S \
     --key-schema AttributeName=pk,KeyType=HASH AttributeName=sk,KeyType=RANGE \
-    --global-secondary-indexes '[{"IndexName":"GetOpenedPoolLayout-index","KeySchema":[{"AttributeName":"status","KeyType":"HASH"},{"AttributeName":"startDateTime","KeyType":"RANGE"}],"Projection":{"ProjectionType":"ALL"}}]' \
+    --global-secondary-indexes "[$(index GetOpenedPoolLayout-index status startDateTime)]" \
     --query 'TableDescription.TableStatus' --output text
 }
 
@@ -124,7 +117,7 @@ create_account_table() {
     --billing-mode PAY_PER_REQUEST \
     --attribute-definitions AttributeName=pk,AttributeType=S AttributeName=email,AttributeType=S \
     --key-schema AttributeName=pk,KeyType=HASH \
-    --global-secondary-indexes '[{"IndexName":"GetByEmail-index","KeySchema":[{"AttributeName":"email","KeyType":"HASH"}],"Projection":{"ProjectionType":"ALL"}}]' \
+    --global-secondary-indexes "[$(index GetByEmail-index email)]" \
     --query 'TableDescription.TableStatus' --output text
 }
 
@@ -141,12 +134,12 @@ create_copy() {
   local pool="$1" layout="$2"
   create_pool_table "$pool"
   create_layout_table "$layout"
-  aws dynamodb wait table-exists --region "$REGION" --table-name "$pool"
-  aws dynamodb wait table-exists --region "$REGION" --table-name "$layout"
+  wait_for_table "$pool"
+  wait_for_table "$layout"
 }
 
 ensure_table() {
-  if table_exists "$1"; then
+  if exists_unless ResourceNotFoundException aws dynamodb describe-table --region "$REGION" --table-name "$1"; then
     echo "$1 already exists"
   else
     "$2" "$1"

@@ -11,7 +11,7 @@ import org.koin.core.context.stopKoin
 import org.koin.dsl.module
 
 /**
- * Starts Koin with the production [avatarImageStoreModule] and the dev [AvatarUrl] for the
+ * Starts Koin with the production [avatarImageStoreModule] and an [AvatarUrl] for the
  * duration of a test: every row that renders a gambler resolves the shared `AvatarImageStore`
  * and `AvatarUrl` through Koin, so rendering one without them fails with "KoinApplication has
  * not been started". Coil's own image requests are not intercepted.
@@ -32,5 +32,5 @@ class AvatarImageStoreKoinRule : TestWatcher() {
 }
 
 private val avatarUrlModule = module {
-    single { AvatarUrl(host = "https://tyche-avatars-041269245665.s3.us-east-2.amazonaws.com") }
+    single { AvatarUrl(base = "https://avatars.example.com") }
 }
