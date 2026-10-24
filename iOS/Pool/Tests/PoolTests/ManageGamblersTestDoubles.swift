@@ -104,16 +104,16 @@ func poolMember(_ gamblerId: String, isOwner: Bool = false) -> PoolMember {
     return try! JSONDecoder().decode(PoolMember.self, from: Data(json.utf8))
 }
 
-/// Polls `condition` on the main actor until it holds or `timeout` seconds pass. The timeout is
-/// generous because parallel ViewInspector suites can hold the main actor for seconds on CI.
+/// Polls `condition` on the main actor.
+/// Budgets polls, not wall time: parallel ViewInspector suites can stall the main actor on CI far
+/// past any deadline, while the work being waited on queues behind the same stall.
 @MainActor
-func eventually(timeout: TimeInterval = 10, _ condition: () -> Bool) async -> Bool {
-    let deadline = Date().addingTimeInterval(timeout)
+func eventually(polls: Int = 1000, _ condition: () -> Bool) async -> Bool {
+    var remaining = polls
     while !condition() {
-        if Date() > deadline {
-            return false
-        }
-        try? await Task.sleep(nanoseconds: 5_000_000)
+        guard remaining > 0 else { return false }
+        remaining -= 1
+        try? await Task.sleep(for: .milliseconds(10))
     }
     return true
 }
