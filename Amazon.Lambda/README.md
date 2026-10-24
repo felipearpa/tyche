@@ -93,6 +93,26 @@ Dev answers at `https://tyche-api-dev.felipearpa.com`; prod keeps `https://tyche
 
 Both stages read the same football-data.org token, so match-score ingestion in dev and prod shares its limit of 10 requests per minute. Polling matches in dev takes requests away from prod.
 
+## Run the API locally
+
+`Felipearpa.Tyche.HttpApi` hosts the HTTP API on `http://localhost:5098` against a stage's real tables and avatar bucket. Choose the stage with a launch profile in `Felipearpa.Tyche.HttpApi/src/Properties/launchSettings.json`:
+
+| Profile | `AWS__Profile` | `AVATAR_BUCKET_NAME` |
+| --- | --- | --- |
+| `dev` | `dev` | `tyche-avatars-041269245665` |
+| `prod` | `default` | `tyche-avatars-567776770335` |
+
+From `Felipearpa.Tyche.HttpApi/src/`:
+
+```bash
+dotnet run --launch-profile dev
+dotnet run --launch-profile prod
+```
+
+Both profiles run with `ASPNETCORE_ENVIRONMENT=Development` and validate the caller's Firebase ID token from `tyche-588ce`. Plain `dotnet run` uses the first profile, `dev`. Without a launch profile (`dotnet run --no-launch-profile`, or running the built assembly) the host runs as Production on port 5000 against the `dev` profile from `appsettings.json`, with no avatar bucket, so the avatar upload-URL endpoint fails. Always pass `--launch-profile`. The `prod` profile reads and writes production data.
+
+The `local` variants of the iOS and Android apps call the ngrok address in `iOS/Tyche/Tyche/AppConfigLocal.xcconfig` (`URL_BASE_PATH`) and `Android/gradle.properties` (`urlBasePathLocal`). Point that tunnel at port 5098 and those apps see whichever stage the running profile targets.
+
 ## Operations
 
 Settlement, projection, migration, and recovery procedures are in [`operations/README.md`](operations/README.md); how the flow works is in [`docs/pool-settlement.md`](../docs/pool-settlement.md).
