@@ -11,6 +11,7 @@ open Felipearpa.Data.DynamoDb
 open Felipearpa.Tyche.Account.Application
 open Felipearpa.Tyche.Account.Domain
 open Felipearpa.Tyche.Account.Infrastructure
+open Felipearpa.Tyche.Function
 open Felipearpa.Tyche.Pool.Application
 open Felipearpa.Tyche.Pool.Domain
 open Felipearpa.Tyche.Pool.Infrastructure
@@ -39,7 +40,8 @@ module DependencyInjectionConfigurator =
             .AddAWSService<IAmazonDynamoDB>()
             .AddAWSService<IAmazonS3>()
             .AddScoped<IAccountRepository, AccountDynamoDbRepository>()
-            .AddScoped<IAvatarStorage, AvatarS3Storage>()
+            .AddScoped<IAvatarStorage>(fun sp ->
+                AvatarS3Storage(sp.GetRequiredService<IAmazonS3>(), AvatarBucketSetting.fromEnvironment ()))
             .AddScoped<IGetAccountById, GetAccountById>()
             .AddScoped<LinkAccount>()
             .AddScoped<IPoolGamblerScoreRepository, PoolGamblerScoreDynamoDbRepository>()

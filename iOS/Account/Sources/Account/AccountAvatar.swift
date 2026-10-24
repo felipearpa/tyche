@@ -1,3 +1,4 @@
+import Core
 import Foundation
 import SwiftUI
 import UIKit
@@ -36,6 +37,7 @@ public struct AccountAvatar: View {
     @State private var measuredPixelSize: CGFloat = 0
     @ObservedObject private var revisions = AvatarStoreRevisions.shared
     @Environment(\.displayScale) private var displayScale
+    @Environment(\.diResolver) private var diResolver
 
     public init(accountId: String, email: String) {
         self.accountId = accountId
@@ -104,11 +106,11 @@ public struct AccountAvatar: View {
                 photo = nil
                 photoAccountId = accountId
             }
-            guard loadsPhoto, measuredPixelSize > 0 else {
+            guard loadsPhoto, measuredPixelSize > 0, let store = diResolver.resolve(AvatarImageStore.self) else {
                 photo = nil
                 return
             }
-            photo = await AvatarImageStore.shared.image(
+            photo = await store.image(
                 accountId: accountId,
                 targetPixelSize: measuredPixelSize
             )
@@ -116,11 +118,11 @@ public struct AccountAvatar: View {
             // a photo uploaded on another device appears without leaving the screen.
             while photo == nil, !Task.isCancelled {
                 guard
-                    let delay = await AvatarImageStore.shared.missingRetryDelay(accountId: accountId)
+                    let delay = await store.missingRetryDelay(accountId: accountId)
                 else { return }
                 try? await Task.sleep(nanoseconds: UInt64(delay * 1_000_000_000))
                 guard !Task.isCancelled else { return }
-                photo = await AvatarImageStore.shared.image(
+                photo = await store.image(
                     accountId: accountId,
                     targetPixelSize: measuredPixelSize
                 )
@@ -140,8 +142,8 @@ public struct AccountAvatar: View {
     }
 }
 
-func avatarPhotoRequest(accountId: String) -> URLRequest? {
-    guard let url = AvatarURL.of(accountId: accountId) else { return nil }
+func avatarPhotoRequest(accountId: String, avatarURL: AvatarURL) -> URLRequest? {
+    guard let url = avatarURL.of(accountId: accountId) else { return nil }
 
     var request = URLRequest(url: url)
     request.cachePolicy = .reloadRevalidatingCacheData

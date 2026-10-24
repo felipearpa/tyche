@@ -7,6 +7,7 @@ import UIKit
 // `URLSession.shared` and reports what crossed the wire. It uploads nothing, and only the test
 // runner's own URLCache is written. Enable it with TEST_RUNNER_AVATAR_WIRE_PROBE_ACCOUNT_ID.
 private let probeAccountId = ProcessInfo.processInfo.environment["AVATAR_WIRE_PROBE_ACCOUNT_ID"] ?? ""
+private let probeAvatarURL = AvatarURL(base: "https://tyche-avatars-567776770335.s3.us-east-2.amazonaws.com")
 
 @Suite("Avatar wire probe (live object, read-only)", .serialized)
 struct AvatarWireProbeTests {
@@ -16,7 +17,7 @@ struct AvatarWireProbeTests {
         .enabled(if: !probeAccountId.isEmpty, "set TEST_RUNNER_AVATAR_WIRE_PROBE_ACCOUNT_ID")
     )
     func productionRequestRevalidatesConditionally() async throws {
-        let request = try #require(avatarPhotoRequest(accountId: probeAccountId))
+        let request = try #require(avatarPhotoRequest(accountId: probeAccountId, avatarURL: probeAvatarURL))
         let recorder = WireRecorder()
 
         var deliveredSizes: [Int] = []
@@ -51,6 +52,7 @@ struct AvatarWireProbeTests {
         let clock = ProbeClock()
         let replacements = ProbeReplacements()
         let store = AvatarImageStore(
+            avatarURL: probeAvatarURL,
             fetch: { request in try await URLSession.shared.data(for: request, delegate: recorder) },
             cachedResponse: { request in URLCache.shared.cachedResponse(for: request) },
             now: { clock.now },

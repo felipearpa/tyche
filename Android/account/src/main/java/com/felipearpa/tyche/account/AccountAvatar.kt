@@ -16,6 +16,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.PlatformContext
+import coil3.annotation.ExperimentalCoilApi
 import coil3.compose.AsyncImagePainter
 import coil3.compose.LocalPlatformContext
 import coil3.compose.SubcomposeAsyncImage
@@ -64,6 +65,7 @@ fun AccountAvatar(accountId: String, email: String, modifier: Modifier = Modifie
  * [accountId] holds: the enclosing placeholder row masks this area, and a filler identity must
  * neither reach the avatar store nor show a letter.
  */
+@OptIn(ExperimentalCoilApi::class)
 @Composable
 fun AccountAvatar(
     accountId: String,
@@ -88,6 +90,7 @@ fun AccountAvatar(
     }
 
     val avatarImageStore = koinInject<AvatarImageStore>()
+    val avatarUrl = koinInject<AvatarUrl>()
     val generations by avatarImageStore.generations.collectAsStateWithLifecycle()
     val generation = generations[accountId] ?: 0
 
@@ -132,7 +135,11 @@ fun AccountAvatar(
             // previous generation's variant on a surface composed meanwhile, so a replaced photo
             // swaps in place instead of flashing the letter avatar.
             val request = remember(accountId, generation, bucket) {
-                avatarPhotoRequestConfiguration(accountId = accountId, bucket = bucket)
+                avatarPhotoRequestConfiguration(
+                    avatarUrl = avatarUrl,
+                    accountId = accountId,
+                    bucket = bucket,
+                )
                     .toImageRequestBuilder(context = context)
                     .memoryCacheKey(
                         avatarMemoryCacheKey(
@@ -222,10 +229,11 @@ internal fun AvatarPhotoRequestConfiguration.toImageRequestBuilder(
         .precision(Precision.INEXACT)
 
 internal fun avatarPhotoRequestConfiguration(
+    avatarUrl: AvatarUrl,
     accountId: String,
     bucket: Int,
 ): AvatarPhotoRequestConfiguration {
-    val url = AvatarUrl.of(accountId)
+    val url = avatarUrl.of(accountId)
     return AvatarPhotoRequestConfiguration(
         url = url,
         // Never `no-cache`: Coil's `CacheControlCacheStrategy` (like OkHttp's) answers it with a

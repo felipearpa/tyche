@@ -243,6 +243,7 @@ private let contentMaxWidth: CGFloat = 560
             viewModel: ProfileViewModel(
                 currentAccountModel: .preview(),
                 currentAccountCoordinator: .preview(),
+                avatarURL: AvatarURL(base: "https://avatars.example.com"),
                 onUploadAvatar: { _ in .success(()) }
             ),
             onEditUsername: {}
@@ -256,6 +257,7 @@ private let contentMaxWidth: CGFloat = 560
             viewModel: ProfileViewModel(
                 currentAccountModel: .preview(),
                 currentAccountCoordinator: .preview(),
+                avatarURL: AvatarURL(base: "https://avatars.example.com"),
                 onUploadAvatar: { _ in .success(()) }
             ),
             onEditUsername: {}

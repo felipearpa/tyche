@@ -6,6 +6,8 @@
 	<string>$(JOIN_POOL_URL_TEMPLATE)</string>
 	<key>URL_BASE_PATH</key>
 	<string>$(URL_BASE_PATH)</string>
+	<key>AVATAR_URL_BASE</key>
+	<string>$(AVATAR_URL_BASE)</string>
 	<key>ANDROID_PACKAGE_NAME</key>
 	<string>$(ANDROID_PACKAGE_NAME)</string>
 	<key>SIGN_IN_URL_TEMPLATE</key>

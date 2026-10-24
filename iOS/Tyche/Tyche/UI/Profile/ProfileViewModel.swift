@@ -20,6 +20,7 @@ class ProfileViewModel: ObservableObject {
 
     private let currentAccountModel: CurrentAccountModel
     private let currentAccountCoordinator: CurrentAccountCoordinator
+    private let avatarURL: AvatarURL
     private let onUploadAvatar: (Data) async -> Result<Void, Error>
 
     private var pendingUpload: (image: UIImage, data: Data)?
@@ -28,10 +29,12 @@ class ProfileViewModel: ObservableObject {
     init(
         currentAccountModel: CurrentAccountModel,
         currentAccountCoordinator: CurrentAccountCoordinator,
+        avatarURL: AvatarURL,
         onUploadAvatar: @escaping (Data) async -> Result<Void, Error>
     ) {
         self.currentAccountModel = currentAccountModel
         self.currentAccountCoordinator = currentAccountCoordinator
+        self.avatarURL = avatarURL
         self.onUploadAvatar = onUploadAvatar
 
         currentAccountModel.$account
@@ -50,7 +53,7 @@ class ProfileViewModel: ObservableObject {
             return .local(pendingUpload.image)
         }
 
-        if !accountId.isEmpty, let url = AvatarURL.of(accountId: accountId) {
+        if !accountId.isEmpty, let url = avatarURL.of(accountId: accountId) {
             return .remote(url)
         }
 

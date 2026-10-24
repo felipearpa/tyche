@@ -1,0 +1,12 @@
+//
+//  AppConfigDev.xcconfig
+//  Tyche
+//
+//  Dev environment — used by the "Debug Dev" configuration ("Tyche Dev" scheme).
+//  Overrides only the values that differ from AppConfig.xcconfig.
+//
+
+#include "AppConfig.xcconfig"
+
+URL_BASE_PATH = https:/$()/tyche-api-dev.felipearpa.com
+AVATAR_URL_BASE = https:/$()/tyche-avatars-041269245665.s3.us-east-2.amazonaws.com

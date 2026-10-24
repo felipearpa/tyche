@@ -12,7 +12,7 @@ val avatarImageStoreModule = module {
     single {
         AvatarImageStore(
             memoryCache = CoilAvatarMemoryCacheGateway(context = androidContext()),
-            revalidator = CoilAvatarRevalidator(context = androidContext()),
+            revalidator = CoilAvatarRevalidator(context = androidContext(), avatarUrl = get()),
         )
     }
 

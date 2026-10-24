@@ -24,7 +24,7 @@ let private fakeStorage (result: Result<string, unit>) =
 [<Fact>]
 let ``given the account owner when executed then returns the upload url`` () =
     async {
-        let storage, issued = fakeStorage (Ok "https://tyche-avatars.s3.us-east-2.amazonaws.com/avatars/x.jpg")
+        let storage, issued = fakeStorage (Ok "https://tyche-avatars-123456789012.s3.us-east-2.amazonaws.com/avatars/x.jpg")
         let service = IssueAvatarUploadUrl(storage)
 
         let! result =
@@ -34,7 +34,7 @@ let ``given the account owner when executed then returns the upload url`` () =
                   ContentLength = 512_000L }
             )
 
-        result |> shouldEqual (Ok "https://tyche-avatars.s3.us-east-2.amazonaws.com/avatars/x.jpg")
+        result |> shouldEqual (Ok "https://tyche-avatars-123456789012.s3.us-east-2.amazonaws.com/avatars/x.jpg")
         issued |> List.ofSeq |> shouldEqual [ accountId, 512_000L ]
     }
 

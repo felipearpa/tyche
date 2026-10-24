@@ -54,7 +54,7 @@ struct GamblerScorePlaceholderTests {
         // hands an empty account id to `AccountAvatar`, and an empty id can never
         // produce a request URL.
         #expect(item.avatarAccountId.isEmpty)
-        #expect(AvatarURL.of(accountId: "") == nil)
+        #expect(AvatarURL(base: "https://avatars.example.com").of(accountId: "") == nil)
 
         // Asserted on the string `body` hands to `.accessibilityLabel`; ViewInspector
         // 0.10.2 cannot read the rendered modifier on iOS 26. `accessibilityHidden`

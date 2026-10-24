@@ -7,6 +7,7 @@ import DataPool
 import DataBet
 import Bet
 import Pool
+import Account
 
 struct PoolHomeRouter: View {
     let user: AccountBundle
@@ -237,6 +238,7 @@ private struct PoolHomeDestinations: ViewModifier {
                     viewModel: ProfileViewModel(
                         currentAccountModel: diResolver.resolve(CurrentAccountModel.self)!,
                         currentAccountCoordinator: diResolver.resolve(CurrentAccountCoordinator.self)!,
+                        avatarURL: diResolver.resolve(AvatarURL.self)!,
                         onUploadAvatar: { [diResolver] imageData in
                             await diResolver.resolve(UploadAvatarUseCase.self)!.execute(imageData: imageData)
                         }

@@ -55,7 +55,10 @@ class TycheApplication : Application(), SingletonImageLoader.Factory {
                     NetworkFetcher.Factory(
                         networkClient = {
                             OkHttpClient().asNetworkClient()
-                                .reportingAvatarExchanges(avatarImageStore = get())
+                                .reportingAvatarExchanges(
+                                    avatarImageStore = get(),
+                                    avatarUrl = get(),
+                                )
                         },
                         cacheStrategy = { CacheControlCacheStrategy() },
                         connectivityChecker = { ConnectivityChecker.ONLINE },

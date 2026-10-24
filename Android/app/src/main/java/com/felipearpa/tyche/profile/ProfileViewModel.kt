@@ -27,6 +27,7 @@ sealed class ProfileAvatarSource {
 class ProfileViewModel(
     private val uploadAvatar: UploadAvatar,
     private val currentAccountCoordinator: CurrentAccountCoordinator,
+    private val avatarUrl: AvatarUrl,
 ) : ViewModel() {
     val accountId: StateFlow<String> = currentAccountCoordinator.state
         .map { bundle -> bundle?.accountId.orEmpty() }
@@ -74,7 +75,7 @@ class ProfileViewModel(
                 ProfileAvatarSource.Local(pending.first)
 
             !bundle?.accountId.isNullOrEmpty() ->
-                ProfileAvatarSource.Remote(AvatarUrl.of(bundle!!.accountId))
+                ProfileAvatarSource.Remote(avatarUrl.of(bundle!!.accountId))
 
             else -> ProfileAvatarSource.Letter
         }

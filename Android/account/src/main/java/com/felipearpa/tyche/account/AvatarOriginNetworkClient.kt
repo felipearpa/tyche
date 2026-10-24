@@ -10,14 +10,19 @@ import coil3.network.NetworkResponse
  * this client, `ETag` included. Coil does not hand response headers to the app, so this is the
  * one place the store can learn which remote photo a decoded variant came from.
  */
-fun NetworkClient.reportingAvatarExchanges(avatarImageStore: AvatarImageStore): NetworkClient =
+fun NetworkClient.reportingAvatarExchanges(
+    avatarImageStore: AvatarImageStore,
+    avatarUrl: AvatarUrl,
+): NetworkClient =
     AvatarOriginNetworkClient(
         delegate = this,
+        avatarUrl = avatarUrl,
         onReportExchange = avatarImageStore::noteOriginExchange,
     )
 
 internal class AvatarOriginNetworkClient(
     private val delegate: NetworkClient,
+    private val avatarUrl: AvatarUrl,
     private val nowEpochMillis: () -> Long = { System.currentTimeMillis() },
     private val onReportExchange: (AvatarOriginExchange) -> Unit,
 ) : NetworkClient {
@@ -26,7 +31,7 @@ internal class AvatarOriginNetworkClient(
         request: NetworkRequest,
         block: suspend (response: NetworkResponse) -> T,
     ): T {
-        val accountId = AvatarUrl.accountIdOf(request.url)
+        val accountId = avatarUrl.accountIdOf(request.url)
             ?: return delegate.executeRequest(request, block)
 
         val requestedAt = nowEpochMillis()

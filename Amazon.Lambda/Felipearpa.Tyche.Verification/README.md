@@ -12,7 +12,7 @@ variables below point at the production names.
 
 | Variable | Example |
 |---|---|
-| `POOL_TABLE_NAME`, `POOL_LAYOUT_TABLE_NAME` | `Pool-verify-<date>`, `PoolLayout-verify-<date>` (create with `operations/pool-table.sh create-copy`); the only variables `pagination` needs |
+| `POOL_TABLE_NAME`, `POOL_LAYOUT_TABLE_NAME` | `Pool-verify-<date>`, `PoolLayout-verify-<date>` (create from `operations/` with `TYCHE_STAGE=prod ./pool-table.sh create-copy …`); the only variables `pagination` needs |
 | `POOL_COMMAND_QUEUE_URL`, `POOL_COMMAND_DLQ_URL` | A FIFO queue and its dead-letter queue |
 | `POOL_MAINTENANCE_QUEUE_URL` | A standard queue with a dead-letter queue |
 | `AWS_REGION` | `us-east-2` |

@@ -71,8 +71,6 @@ final class AvatarStoreRevisions: ObservableObject {
 /// while one conditional revalidation per account is coalesced in the background, and a
 /// missing avatar is remembered for the same interval so surfaces do not repeat 404s.
 public actor AvatarImageStore {
-    public static let shared = AvatarImageStore()
-
     typealias Fetch = @Sendable (URLRequest) async throws -> (Data, URLResponse)
 
     private struct EntryKey: Hashable {
@@ -96,6 +94,7 @@ public actor AvatarImageStore {
         var etag: String?
     }
 
+    private let avatarURL: AvatarURL
     private let fetch: Fetch
     private let cachedResponse: @Sendable (URLRequest) -> CachedURLResponse?
     private let now: @Sendable () -> Date
@@ -116,18 +115,28 @@ public actor AvatarImageStore {
 
     private let maxMissingEntries = 512
 
+    public init(avatarURL: AvatarURL) {
+        self.init(
+            avatarURL: avatarURL,
+            fetch: { try await URLSession.shared.data(for: $0) },
+            cachedResponse: { URLCache.shared.cachedResponse(for: $0) },
+            now: { Date() },
+            notifyReplacement: { accountId in
+                await MainActor.run { AvatarStoreRevisions.shared.advance(accountId: accountId) }
+            }
+        )
+    }
+
     init(
-        fetch: @escaping Fetch = { try await URLSession.shared.data(for: $0) },
-        cachedResponse: @escaping @Sendable (URLRequest) -> CachedURLResponse? = {
-            URLCache.shared.cachedResponse(for: $0)
-        },
-        now: @escaping @Sendable () -> Date = { Date() },
+        avatarURL: AvatarURL,
+        fetch: @escaping Fetch,
+        cachedResponse: @escaping @Sendable (URLRequest) -> CachedURLResponse?,
+        now: @escaping @Sendable () -> Date,
         memoryBudget: Int = avatarMemoryBudget,
         freshnessInterval: TimeInterval = avatarFreshnessInterval,
-        notifyReplacement: @escaping @Sendable (String) async -> Void = { accountId in
-            await MainActor.run { AvatarStoreRevisions.shared.advance(accountId: accountId) }
-        }
+        notifyReplacement: @escaping @Sendable (String) async -> Void
     ) {
+        self.avatarURL = avatarURL
         self.fetch = fetch
         self.cachedResponse = cachedResponse
         self.now = now
@@ -236,7 +245,7 @@ public actor AvatarImageStore {
     var accountedCost: Int { totalCost }
 
     private func performLoad(key: EntryKey) async -> UIImage? {
-        guard let request = avatarPhotoRequest(accountId: key.accountId) else { return nil }
+        guard let request = avatarPhotoRequest(accountId: key.accountId, avatarURL: avatarURL) else { return nil }
 
         // Fresh validation with the decoded entry evicted: recover from URLCache alone —
         // but only when the cached bytes are the validated object. After an upload the
@@ -306,7 +315,7 @@ public actor AvatarImageStore {
     private func performRevalidation(accountId: String, generation: Int) async {
         defer { revalidations[accountId] = nil }
 
-        guard let request = avatarPhotoRequest(accountId: accountId) else { return }
+        guard let request = avatarPhotoRequest(accountId: accountId, avatarURL: avatarURL) else { return }
 
         do {
             let (data, response) = try await fetch(request)

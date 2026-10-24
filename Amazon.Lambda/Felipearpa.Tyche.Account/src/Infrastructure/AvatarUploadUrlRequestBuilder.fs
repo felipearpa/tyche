@@ -7,16 +7,26 @@ open Felipearpa.Type
 
 module AvatarUploadUrlRequestBuilder =
 
-    let build (accountId: Ulid) (contentLength: int64) (now: DateTime) =
+    [<Literal>]
+    let private contentType = "image/jpeg"
+
+    [<Literal>]
+    let private cacheControl = "max-age=0, must-revalidate"
+
+    let private uploadUrlExpiry = TimeSpan.FromMinutes 5.0
+
+    let private keyOf (accountId: Ulid) = $"avatars/{accountId.Value}.jpg"
+
+    let build (bucketName: string) (accountId: Ulid) (contentLength: int64) (now: DateTime) =
         let request =
             GetPreSignedUrlRequest(
-                BucketName = AvatarBucket.name,
-                Key = AvatarBucket.keyOf accountId,
+                BucketName = bucketName,
+                Key = keyOf accountId,
                 Verb = HttpVerb.PUT,
-                Expires = now.Add AvatarBucket.uploadUrlExpiry,
-                ContentType = AvatarBucket.contentType
+                Expires = now.Add uploadUrlExpiry,
+                ContentType = contentType
             )
 
         request.Headers.ContentLength <- contentLength
-        request.Headers.CacheControl <- AvatarBucket.cacheControl
+        request.Headers.CacheControl <- cacheControl
         request

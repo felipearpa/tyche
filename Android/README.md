@@ -73,6 +73,20 @@ The app is organised as a multi-module Gradle project. Each feature lives behind
 
 You'll need a `google-services.json` for Firebase and a `local.properties` with the SDK location. Build-time configuration (`urlBasePath`, `signInLinkUrlTemplate`, `joinPoolUrlTemplate`, `iosBundleId`) is read from `gradle.properties`.
 
+The `environment` flavor picks the API and the avatar bucket each build talks to:
+
+| Flavor | API (`URL_BASE_PATH`) | Avatars (`AVATAR_URL_BASE`) |
+|---|---|---|
+| `prod` | `urlBasePath` | `avatarUrlBase` |
+| `dev` (default) | `urlBasePathDev` | `avatarUrlBaseDev` |
+| `local` | `urlBasePathLocal` (ngrok tunnel to the local API host) | `avatarUrlBaseDev` |
+
+```bash
+./gradlew :app:assembleDevDebug
+```
+
+Store builds use `prodRelease` (`./gradlew :app:bundleProdRelease`). All flavors share the Firebase project and the application id, so a device holds one of them at a time.
+
 ## Release notes
 
 See [`CHANGELOG.md`](CHANGELOG.md).

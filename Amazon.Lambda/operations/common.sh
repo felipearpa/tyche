@@ -1,7 +1,16 @@
 # Shared settings for the operator scripts. Override with environment variables to target the
 # isolated verification resources.
-REGION="${AWS_REGION:-us-east-2}"
-STACK="${TYCHE_STACK:-TycheApi}"
+STAGES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../stages" && pwd)"
+
+refuse_missing_stage() {
+  echo "TYCHE_STAGE must be dev or prod, for example: TYCHE_STAGE=dev $0 ..." >&2
+  exit 2
+}
+
+source "$STAGES_DIR/load.sh" "${TYCHE_STAGE:-}" || refuse_missing_stage
+
+REGION="${AWS_REGION:-$REGION}"
+STACK="${TYCHE_STACK:-$STACK}"
 POOL_TABLE="${POOL_TABLE_NAME:-Pool}"
 POOL_LAYOUT_TABLE="${POOL_LAYOUT_TABLE_NAME:-PoolLayout}"
 
